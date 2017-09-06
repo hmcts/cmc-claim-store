@@ -1,0 +1,3 @@
+rootProject.name = 'claim-store'
+
+include 'email-client'

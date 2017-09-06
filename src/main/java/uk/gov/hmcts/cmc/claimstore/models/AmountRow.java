@@ -1,0 +1,48 @@
+package uk.gov.hmcts.cmc.claimstore.models;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import uk.gov.hmcts.cmc.claimstore.constraints.ClaimantAmount;
+import uk.gov.hmcts.cmc.claimstore.constraints.Money;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
+@ClaimantAmount
+public class AmountRow {
+    private final String reason;
+
+    @Money()
+    private final BigDecimal amount;
+
+    public AmountRow(final String reason, final BigDecimal amount) {
+        this.reason = reason;
+        this.amount = amount;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        AmountRow amountRow = (AmountRow) other;
+        return Objects.equals(reason, amountRow.reason)
+            && Objects.equals(amount, amountRow.amount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reason, amount);
+    }
+}

@@ -1,0 +1,26 @@
+{
+  "response": "OWE_ALL_PAID_ALL",
+  "defence": "defence string",
+  "freeMediation": "yes",
+  "moreTimeNeeded": "yes",
+  "defendant": {
+    "type": "individual",
+    "title": "Dr.",
+    "name": "John Rambo",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "correspondenceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "dateOfBirth": "1968-01-02",
+    "mobilePhone": "07873727165",
+    "email": "test@example.com"
+  }
+}

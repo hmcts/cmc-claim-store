@@ -1,0 +1,46 @@
+package uk.gov.hmcts.cmc.claimstore.services.staff;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.Claim;
+
+import java.util.Optional;
+
+public class ClaimIssuedStaffNotificationServiceTest extends BaseTest {
+
+    private static final String DEFENDANT_PIN = "a334frf";
+    private static final String CLAIMANT_EMAIL = "claimant@email-domain.com";
+
+    private Claim claim = SampleClaim.getDefault();
+
+    @Autowired
+    private ClaimIssuedStaffNotificationService service;
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullClaim() {
+        service.notifyStaffClaimIssued(null, Optional.of(DEFENDANT_PIN), CLAIMANT_EMAIL);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullDefendantPin() {
+        service.notifyStaffClaimIssued(claim, Optional.empty(), CLAIMANT_EMAIL);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentWhenGivenEmptyDefendantPin() {
+        service.notifyStaffClaimIssued(claim, Optional.of(""), CLAIMANT_EMAIL);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullClaimantEmail() {
+        service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentWhenGivenEmptyClaimantEmail() {
+        service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), "");
+    }
+
+}
