@@ -1,0 +1,108 @@
+package uk.gov.hmcts.cmc.claimstore.services.staff.content;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+
+import java.time.Clock;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+
+@RunWith(MockitoJUnitRunner.class)
+public class DefendantPinLetterContentProviderTest {
+
+    private static final String DEFENDANT_PIN = "dsf4dd2";
+    private static final String FRONTEND_BASE_URL = "https://moneyclaim.hmcts.net";
+
+    @Mock
+    private NotificationsProperties notificationsProperties;
+
+    private Claim claim = SampleClaim.getDefault();
+
+    private DefendantPinLetterContentProvider provider;
+
+    @Before
+    public void beforeEachTest() {
+        provider = new DefendantPinLetterContentProvider(notificationsProperties,
+            new InterestContentProvider(
+                new InterestCalculationService(Clock.systemDefaultZone())
+            )
+        );
+        when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullClaim() {
+        provider.createContent(null, DEFENDANT_PIN);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullDefendantPin() {
+        provider.createContent(claim, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentWhenGivenEmptyDefendantPin() {
+        provider.createContent(claim, "");
+    }
+
+    @Test
+    public void shouldProvideClaimantName() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("claimantFullName", "John Rambo");
+    }
+
+    @Test
+    public void shouldProvideDefendantName() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("defendantFullName", "John Smith");
+    }
+
+    @Test
+    public void shouldProvideClaimAmount() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("claimTotalAmount", "£80.88");
+    }
+
+    @Test
+    public void shouldProvideFrontendBaseUrl() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("frontendBaseURL", FRONTEND_BASE_URL);
+    }
+
+    @Test
+    public void shouldProvideClaimReferenceNumber() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("claimReferenceNumber", "000CM001");
+    }
+
+    @Test
+    public void shouldProvideDefendantPin() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("defendantPin", DEFENDANT_PIN);
+    }
+
+    @Test
+    public void shouldProvideResponseDeadline() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("responseDeadline", formatDate(RESPONSE_DEADLINE));
+    }
+
+}

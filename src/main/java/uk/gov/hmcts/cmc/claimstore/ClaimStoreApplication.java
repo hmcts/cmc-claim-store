@@ -1,0 +1,17 @@
+package uk.gov.hmcts.cmc.claimstore;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@SuppressWarnings({"HideUtilityClassConstructor", "squid:S1118"}) // Spring needs a constructor, its not a utility class
+public class ClaimStoreApplication {
+
+    public static final String BASE_PACKAGE_NAME = ClaimStoreApplication.class.getPackage().getName();
+
+    public static void main(String[] args) {
+        SpringApplication.run(ClaimStoreApplication.class, args);
+    }
+}
+

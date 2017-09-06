@@ -1,0 +1,74 @@
+{
+  "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
+  "claimant": {
+    "type": "individual",
+    "title": "Dr.",
+    "name": "John Rambo",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "correspondenceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "dateOfBirth": "1968-01-02",
+    "mobilePhone": "07873727165"
+  },
+  "amount": {
+    "type": "breakdown",
+    "rows": [
+      {
+        "reason": "reason",
+        "amount": 40
+      },
+      {
+      },
+      {
+      },
+      {
+      }
+    ]
+  },
+  "interest": {
+    "type": "standard",
+    "rate": 8
+  },
+  "interestDate": {
+    "type": "custom",
+    "date": "2015-02-02",
+    "reason": "I want to claim from this date because that's when that happened"
+  },
+  "defendants": [
+    {
+      "type": "individual",
+      "title": "Dr.",
+      "name": "John Smith",
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "email": "j.smith@example.com"
+    }
+  ],
+  "payment": {
+    "id": "123",
+    "amount": 4000,
+    "reference": "reference",
+    "description": "description",
+    "date_created": "2010-10-12",
+    "state": {
+      "status": "status",
+      "finished": true
+    }
+  },
+  "feeAmountInPennies": 4000,
+  "reason": "reason",
+  "feeCode": "X0012"
+}

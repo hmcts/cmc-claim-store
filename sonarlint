@@ -1,0 +1,3 @@
+#!/bin/bash
+sonarlint -Dsonar.java.libraries=build/libs --src "{src/main/**,email-client/src/main/**}"  --tests "{src/test/**,src/apiTest/**,email-client/src/test/**}"
+

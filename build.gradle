@@ -1,0 +1,198 @@
+plugins {
+    id 'application'
+    id 'checkstyle'
+    id 'io.spring.dependency-management' version '1.0.3.RELEASE'
+    id 'org.springframework.boot' version '1.5.6.RELEASE'
+    id 'org.owasp.dependencycheck' version '1.4.5.1'
+    id 'com.github.ben-manes.versions' version '0.15.0'
+    id 'org.sonarqube' version '2.5'
+    id 'jacoco'
+}
+
+allprojects {
+
+  apply plugin: 'application'
+  apply plugin: 'checkstyle'
+  apply plugin: 'io.spring.dependency-management'
+  apply plugin: 'org.springframework.boot'
+  apply plugin: 'org.owasp.dependencycheck'
+  apply plugin: 'com.github.ben-manes.versions'
+
+  group 'uk.gov.hmcts.cmc'
+  version '1.1.0'
+
+  checkstyle.toolVersion = '7.2'
+  checkstyle.configFile = new File(rootDir, "checkstyle.xml")
+
+// make build fail on Checkstyle issues (https://github.com/gradle/gradle/issues/881)
+  tasks.withType(Checkstyle).each { checkstyleTask ->
+    checkstyleTask.doLast {
+      reports.all { report ->
+        def outputFile = report.destination
+        if (outputFile.exists() && outputFile.text.contains("<error ")) {
+          throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
+        }
+      }
+    }
+  }
+
+  // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
+  dependencyCheck {
+    // Specifies if the build should be failed if a CVSS score above a specified level is identified.
+    // range of 0-10 fails the build, anything greater and it doesn't fail the build
+    failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
+    suppressionFile = 'dependency-check-suppressions.xml'
+  }
+
+  sourceCompatibility = 1.8
+  compileJava {
+    options.compilerArgs << '-parameters' << '-Xlint:deprecation'
+  }
+
+  compileTestJava {
+    options.compilerArgs << '-Xlint:deprecation'
+  }
+
+  mainClassName = 'uk.gov.hmcts.cmc.claimstore.ClaimStoreApplication'
+
+  repositories {
+    maven {
+      url  "https://dl.bintray.com/hmcts/hmcts-maven"
+    }
+    jcenter()
+    mavenLocal()
+  }
+
+}
+
+def springBootVersion = '1.5.6.RELEASE'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+    }
+}
+
+def versions = [
+        springBoot: springBootVersion,
+        jackson: dependencyManagement.importedProperties['jackson.version'],
+        springfoxSwagger: '2.7.0'
+]
+
+configurations {
+  integrationTestCompile.extendsFrom(testCompile)
+  integrationTestRuntime.extendsFrom(testRuntime)
+}
+
+dependencies {
+
+    compile project(':email-client')
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '4.1.2'
+
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: versions.jackson
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
+
+    compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.3.0'
+
+    compile group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
+
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+
+    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.3.0-RELEASE'
+
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '1.2.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: '1.2.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
+
+    compile group: 'uk.gov.hmcts.reform.cmc', name: 'pdf-service-client', version: '1.1.0'
+
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
+    compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
+
+    compile group: 'org.springframework', name: 'spring-context-support', version: '4.3.10.RELEASE'
+    compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
+
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.9.0'
+
+}
+
+sourceSets {
+  integrationTest {
+    java {
+      compileClasspath += main.output + test.output
+      runtimeClasspath += main.output + test.output
+      srcDir('src/integrationTest/java')
+    }
+    resources {
+      srcDir('src/integrationTests/resources')
+    }
+  }
+}
+
+dependencies {
+  integrationTestCompile(sourceSets.test.output)
+  integrationTestCompile(project(':email-client').sourceSets.main.output)
+}
+
+task apiTest(type: Test) {
+  setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
+  setClasspath(sourceSets.integrationTest.runtimeClasspath)
+}
+
+compileIntegrationTestJava {
+  options.compilerArgs << '-Xlint:deprecation'
+}
+
+jacocoTestReport {
+  executionData(test, apiTest)
+}
+
+project.tasks['sonarqube'].dependsOn test, apiTest
+sonarqube {
+  properties {
+    property "sonar.projectName", "CMC :: Claim Store"
+    property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+    property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
+  }
+}
+
+jar {
+  manifest {
+
+    attributes 'Implementation-Title': project.name,
+               'Implementation-Version': project.version
+  }
+}
+
+bootRepackage {
+    classifier 'all'
+}
+
+task printVersion {
+    doLast {
+        print project.version
+    }
+}
+
+run {
+    def debug = System.getProperty("debug")
+    if (debug == 'true') {
+        jvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
+    }
+}

@@ -1,0 +1,55 @@
+---
+version: '2.1'
+
+services:
+  claim-store-api:
+    build:
+      context: .
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    image: docker.artifactory.reform.hmcts.net/cmc/claim-store-api
+    environment:
+      - CLAIM_STORE_DB_HOST=claim-store-database
+      - CLAIM_STORE_DB_PORT=5432
+      - CLAIM_STORE_DB_USERNAME
+      - CLAIM_STORE_DB_PASSWORD
+      - CLAIM_STORE_TEST_SUPPORT_ENABLED
+      - GOV_NOTIFY_API_KEY
+      - FRONTEND_BASE_URL
+      - IDAM_SECRET_KEY
+      - ROOT_APPENDER
+      - JSON_CONSOLE_PRETTY_PRINT
+      - ROOT_LOGGING_LEVEL
+      - REFORM_SERVICE_NAME
+      - REFORM_TEAM
+      - REFORM_ENVIRONMENT
+    volumes:
+      - ./build/install/claim-store:/opt/app/
+    ports:
+      - 4400:4400
+    depends_on:
+      claim-store-database:
+        condition: service_healthy
+    links:
+      - claim-store-database
+
+  claim-store-database:
+    build:
+      context: docker/database
+    image: docker.artifactory.reform.hmcts.net/cmc/claim-store-database
+    healthcheck:
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    environment:
+      - CLAIM_STORE_DB_USERNAME
+      - CLAIM_STORE_DB_PASSWORD
+    ports:
+      - 5430:5432
+    volumes:
+      - claim-store-database-data:/var/lib/postgresql/data
+
+volumes:
+  claim-store-database-data:

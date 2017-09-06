@@ -1,0 +1,103 @@
+package uk.gov.hmcts.cmc.claimstore.services.notifications;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
+import uk.gov.service.notify.NotificationClientException;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceTest {
+
+    private ClaimIssuedNotificationService service;
+    private final String reference = "claimant-issue-notification-" + claim.getReferenceNumber();
+
+    @Before
+    public void beforeEachTest() {
+        service = new ClaimIssuedNotificationService(notificationClient, properties);
+        when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
+    }
+
+    @Test(expected = NotificationException.class)
+    public void emailClaimantShouldThrowRuntimeExceptionWhenNotificationClientThrows() throws Exception {
+        when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+            .thenThrow(mock(NotificationClientException.class));
+
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+    }
+
+    @Test
+    public void emailClaimantShouldSendEmailUsingPredefinedTemplate() throws Exception {
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), anyMap(), anyString());
+    }
+
+    @Test
+    public void emailClaimantShouldSendToClaimantEmail() throws Exception {
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+
+        verify(notificationClient).sendEmail(
+            anyString(), eq(USER_EMAIL), anyMap(), anyString());
+    }
+
+    @Test
+    public void emailClaimantShouldPassClaimReferenceNumberInTemplateParameters() throws Exception {
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
+
+        assertThat(templateParameters.getValue())
+            .containsEntry(ClaimIssuedNotificationService.CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+    }
+
+    @Test
+    public void emailClaimantShouldPassFrontendHostInTemplateParameters() throws Exception {
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
+
+        assertThat(templateParameters.getValue())
+            .containsEntry(ClaimIssuedNotificationService.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
+    }
+
+    @Test
+    public void emailClaimantShouldPassNameInTemplateParameters() throws Exception {
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
+
+        final String name = ((TitledParty) claim.getClaimData().getClaimant()).getTitle()
+            .orElseThrow(IllegalArgumentException::new)
+            + " "
+            + claim.getClaimData().getClaimant().getName();
+
+        assertThat(templateParameters.getValue())
+            .containsEntry(ClaimIssuedNotificationService.CLAIMANT_NAME, name);
+    }
+
+    @Test
+    public void emailClaimantShouldUseClaimReferenceNumberForNotificationReference() throws Exception {
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+
+        verify(notificationClient).sendEmail(anyString(), anyString(),
+            anyMap(), eq(reference));
+    }
+
+}
