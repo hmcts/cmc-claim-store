@@ -78,6 +78,20 @@ public class AddressTest {
     }
 
     @Test
+    public void shouldBeInvalidForEmptyCity() {
+        //given
+        Address address = SampleAddress.builder()
+            .withCity("")
+            .build();
+        //when
+        Set<String> errors = validate(address);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("city : City/town should not be empty");
+    }
+
+    @Test
     public void shouldBeInvalidForTooLongCity() {
         //given
         Address address = SampleAddress.builder()
