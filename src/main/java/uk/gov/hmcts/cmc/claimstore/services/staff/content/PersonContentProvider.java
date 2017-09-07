@@ -9,15 +9,25 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class PersonContentProvider {
 
-    public PersonContent createContent(String name, Address address, Address correspondenceAddress, String email) {
+    public PersonContent createContent(
+                                       String partyType,
+                                       String name,
+                                       Address address,
+                                       Address correspondenceAddress,
+                                       String email,
+                                       String contactPerson,
+                                       String businessName) {
         requireNonNull(name);
         requireNonNull(address);
 
         return new PersonContent(
+            partyType,
             name,
             address,
             correspondenceAddress,
-            email);
+            email,
+            contactPerson,
+            businessName);
     }
 
 }

@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyTypeContentProvider;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -25,6 +27,7 @@ public class ClaimIssuedNotificationService {
     private final Logger logger = LoggerFactory.getLogger(ClaimIssuedNotificationService.class);
 
     public static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
+    public static final String CLAIMANT_TYPE = "claimantType";
     public static final String FRONTEND_BASE_URL = "frontendBaseUrl";
     public static final String EXTERNAL_ID = "externalId";
     public static final String FEES_PAID = "feesPaid";
@@ -78,11 +81,8 @@ public class ClaimIssuedNotificationService {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
-
-        if (!claim.getClaimData().isClaimantRepresented()) {
-            parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
-        }
-
+        parameters.put(CLAIMANT_TYPE, PartyTypeContentProvider.getType(claim.getClaimData().getClaimant()));
+        parameters.put(DEFENDANT_NAME, getNameWithTitle(claim.getClaimData().getDefendant()));
         parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
@@ -92,14 +92,20 @@ public class ClaimIssuedNotificationService {
         return parameters.build();
     }
 
-    private String getNameWithTitle(final Party claimant) {
-        final StringBuilder name = new StringBuilder();
-
-        if (claimant instanceof TitledParty) {
-            ((TitledParty) claimant).getTitle().ifPresent(t -> name.append(t).append(" "));
+    private String getNameWithTitle(final Party party) {
+        final StringBuilder nameWithTitle = new StringBuilder();
+        if (party instanceof TitledParty) {
+            ((TitledParty)party).getTitle().ifPresent(t -> nameWithTitle.append(t).append(" "));
         }
+        return nameWithTitle.append(party.getName()).toString();
+    }
 
-        return name.append(claimant.getName()).toString();
+    private String getNameWithTitle(final TheirDetails otherParty) {
+        final StringBuilder nameWithTitle = new StringBuilder();
+        if (otherParty instanceof TitledParty) {
+            ((TitledParty)otherParty).getTitle().ifPresent(t -> nameWithTitle.append(t).append(" "));
+        }
+        return nameWithTitle.append(otherParty.getName()).toString();
     }
 
 }

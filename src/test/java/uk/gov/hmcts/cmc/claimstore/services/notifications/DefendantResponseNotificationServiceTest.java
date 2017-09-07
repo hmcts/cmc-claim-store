@@ -31,7 +31,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(properties.getTemplates()).thenReturn(templates);
-        when(emailTemplates.getDefendantResponseIssued()).thenReturn(DEFENDANT_RESPONSE_TEMPLATE);
+        when(emailTemplates.getDefendantResponseIssuedToIndividual()).thenReturn(DEFENDANT_RESPONSE_TEMPLATE);
     }
 
     @Test(expected = NotificationException.class)

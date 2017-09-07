@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyTypeContentProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,12 @@ public class MoreTimeRequestedCitizenNotificationHandler {
 
     private static final String REFERENCE_TEMPLATE = "more-time-requested-notification-to-%s-%s";
     private static final String CLAIMANT = "claimant";
-
+    private static final String CLAIMANT_TYPE = "claimantType";
+    private static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
+    private static final String CLAIMANT_NAME = "claimantName";
+    private static final String DEFENDANT_NAME = "defendantName";
+    private static final String RESPONSE_DEADLINE = "responseDeadline";
+    private static final String FRONTEND_BASE_URL = "frontendBaseUrl";
     private final MoreTimeRequestedNotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
 
@@ -61,12 +67,12 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         Claim claim = event.getClaim();
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("claimReferenceNumber", claim.getReferenceNumber());
-        parameters.put("claimantName", claim.getClaimData().getClaimant().getName());
-        parameters.put("defendantName", claim.getClaimData().getDefendant().getName());
-        parameters.put("responseDeadline", formatDate(event.getNewResponseDeadline()));
-        parameters.put("frontendBaseUrl", notificationsProperties.getFrontendBaseUrl());
-
+        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
+        parameters.put(RESPONSE_DEADLINE, formatDate(event.getNewResponseDeadline()));
+        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+        parameters.put(CLAIMANT_TYPE, PartyTypeContentProvider.getType(claim.getClaimData().getClaimant()));
         return parameters;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.PersonContent;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyTypeContentProvider;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
@@ -22,13 +23,25 @@ public class ClaimantContentProvider {
     public ClaimantContent createContent(Party claimant, String submitterEmail) {
         requireNonNull(claimant);
         requireNonBlank(submitterEmail);
-
-        PersonContent personContent = personContentProvider.createContent(claimant.getName(), claimant.getAddress(),
+        requireNonBlank(submitterEmail);
+        PersonContent personContent = personContentProvider.createContent(
+            PartyTypeContentProvider.getType(claimant),
+            claimant.getName(),
+            claimant.getAddress(),
             claimant.getCorrespondenceAddress().orElse(null),
-            submitterEmail);
+            submitterEmail,
+            PartyTypeContentProvider.getClaimantContactPerson(claimant).orElse(null),
+            PartyTypeContentProvider.getClaimantBusinessName(claimant).orElse(null)
 
-        return new ClaimantContent(personContent.getFullName(), personContent.getAddress(),
-            personContent.getCorrespondenceAddress(), submitterEmail);
+        );
+        return new ClaimantContent(
+            personContent.getPartyType(),
+            personContent.getFullName(),
+            personContent.getAddress(),
+            personContent.getCorrespondenceAddress(),
+            submitterEmail,
+            personContent.getContactPerson(),
+            personContent.getBusinessName()
+        );
     }
-
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyTypeContentProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,19 +34,27 @@ public class SealedClaimContentProvider {
         requireNonBlank(submitterEmail);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("claimant", claimantContentProvider.createContent(claim.getClaimData().getClaimant(), submitterEmail));
+
+        map.put("claimant", claimantContentProvider.createContent(
+                                                                  claim.getClaimData().getClaimant(),
+                                                                  submitterEmail)
+        );
 
         TheirDetails defendant = claim.getClaimData().getDefendant();
 
-        String emailAddress = defendant.getEmail().orElse(null);
-
-        map.put("defendant", personContentProvider.createContent(defendant.getName(), defendant.getAddress(),
-            null, emailAddress));
+        map.put("defendant", personContentProvider.createContent(
+            PartyTypeContentProvider.getType(defendant),
+            defendant.getName(),
+            defendant.getAddress(),
+            null,
+            defendant.getEmail().orElse(null),
+            PartyTypeContentProvider.getDefendantContactPerson(defendant).orElse(null),
+            PartyTypeContentProvider.getDefendantBusinessName(defendant).orElse(null))
+        );
 
         map.put("claim", claimContentProvider.createContent(claim));
         map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
 
         return map;
     }
-
 }
