@@ -42,15 +42,19 @@ public abstract class TheirDetails {
     @NotNull
     private final Address address;
 
+    @Valid
+    private final Address serviceAddress;
+
     @Email
     private final String email;
 
     @Valid
     public final Representative representative;
 
-    public TheirDetails(String name, Address address, String email, Representative representative) {
+    public TheirDetails(String name, Address address, Address serviceAddress, String email, Representative representative) {
         this.name = name;
         this.address = address;
+        this.serviceAddress = serviceAddress;
         this.email = email;
         this.representative = representative;
     }
@@ -62,6 +66,8 @@ public abstract class TheirDetails {
     public Address getAddress() {
         return address;
     }
+
+    public Address getServiceAddress() { return serviceAddress; }
 
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);
@@ -84,6 +90,7 @@ public abstract class TheirDetails {
 
         return Objects.equals(this.name, that.name)
             && Objects.equals(this.address, that.address)
+            && Objects.equals(this.serviceAddress, that.serviceAddress)
             && Objects.equals(this.email, that.email)
             && Objects.equals(this.representative, that.representative);
     }
