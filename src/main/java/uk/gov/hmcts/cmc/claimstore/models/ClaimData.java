@@ -43,7 +43,7 @@ public class ClaimData {
 
     @Valid
     @NotEmpty
-    @Size(max = 4, message = "at most {max} defendants are supported")
+    @Size(max = 20, message = "at most {max} defendants are supported")
     @EachNotNull
     private final List<TheirDetails> defendants;
 
