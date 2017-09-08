@@ -68,7 +68,9 @@ public abstract class TheirDetails {
         return address;
     }
 
-    public Address getServiceAddress() { return serviceAddress; }
+    public Address getServiceAddress() {
+        return serviceAddress;
+    }
 
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);
