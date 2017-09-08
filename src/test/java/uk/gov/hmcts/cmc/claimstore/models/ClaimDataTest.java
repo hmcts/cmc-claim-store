@@ -126,27 +126,7 @@ public class ClaimDataTest {
     public void shouldBeInvalidWhenGivenTooManyDefendants() {
         ClaimData claimData = SampleClaimData.builder()
             .clearDefendants()
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendants(SampleTheirDetails.builder().individualDetails(21))
             .build();
 
         Set<String> errors = validate(claimData);
@@ -155,13 +135,10 @@ public class ClaimDataTest {
     }
 
     @Test
-    public void shouldBeValidWhenGivenFourDefendants() {
+    public void shouldBeValidWhenGivenTwentyDefendants() {
         ClaimData claimData = SampleClaimData.builder()
             .clearDefendants()
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
-            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendants(SampleTheirDetails.builder().individualDetails(20))
             .build();
 
         Set<String> errors = validate(claimData);
