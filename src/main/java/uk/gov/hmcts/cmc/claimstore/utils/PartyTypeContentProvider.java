@@ -53,7 +53,7 @@ public class PartyTypeContentProvider {
         }
     }
 
-    public static Optional<String> getDefendantContactPerson(TheirDetails defendant) {
+    public static Optional<String> getDefendantContactPerson(final TheirDetails defendant) {
         if (defendant instanceof CompanyDetails)  {
             return ((CompanyDetails) defendant).getContactPerson();
         } else if (defendant instanceof OrganisationDetails) {
@@ -62,14 +62,14 @@ public class PartyTypeContentProvider {
         return Optional.empty();
     }
 
-    public static Optional<String> getDefendantBusinessName(TheirDetails defendant) {
+    public static Optional<String> getDefendantBusinessName(final TheirDetails defendant) {
         if (defendant instanceof SoleTraderDetails) {
             return ((SoleTraderDetails) defendant).getBusinessName();
         }
         return Optional.empty();
     }
 
-    public static Optional<String> getClaimantContactPerson(Party claimant) {
+    public static Optional<String> getClaimantContactPerson(final Party claimant) {
         if (claimant instanceof Company) {
             return Optional.of(((Company) claimant).getContactPerson());
         } else if (claimant instanceof Organisation) {
@@ -78,7 +78,7 @@ public class PartyTypeContentProvider {
         return Optional.empty();
     }
 
-    public static Optional<String> getClaimantBusinessName(Party claimant) {
+    public static Optional<String> getClaimantBusinessName(final Party claimant) {
         if (claimant instanceof SoleTrader) {
             return ((SoleTrader) claimant).getBusinessName();
         }
