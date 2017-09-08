@@ -9,6 +9,9 @@ import uk.gov.hmcts.cmc.claimstore.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SampleTheirDetails {
 
     private String name = "John Smith";
@@ -71,6 +74,14 @@ public class SampleTheirDetails {
 
     public IndividualDetails individualDetails() {
         return new IndividualDetails(name, address, email, representative, title);
+    }
+
+    public List<TheirDetails> individualDetails(int count) {
+        List<TheirDetails> individualDetailsList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            individualDetailsList.add(new IndividualDetails(name, address, email, representative, title));
+        }
+        return individualDetailsList;
     }
 
     public CompanyDetails companyDetails() {
