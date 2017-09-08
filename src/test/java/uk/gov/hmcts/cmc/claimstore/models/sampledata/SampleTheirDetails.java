@@ -75,31 +75,31 @@ public class SampleTheirDetails {
     }
 
     public TheirDetails partyDetails() {
-        return new IndividualDetails(name, address, email, representative, title);
+        return new IndividualDetails(name, address, serviceAddress, email, representative, title);
     }
 
     public IndividualDetails individualDetails() {
-        return new IndividualDetails(name, address, email, representative, title);
+        return new IndividualDetails(name, address, serviceAddress, email, representative, title);
     }
 
     public List<TheirDetails> individualDetails(int count) {
         List<TheirDetails> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            individualDetailsList.add(new IndividualDetails(name, address, email, representative, title));
+            individualDetailsList.add(new IndividualDetails(name, address, serviceAddress, email, representative, title));
         }
         return individualDetailsList;
     }
 
     public CompanyDetails companyDetails() {
-        return new CompanyDetails(name, address, email, representative, contactPerson);
+        return new CompanyDetails(name, address, serviceAddress, email, representative, contactPerson);
     }
 
     public OrganisationDetails organisationDetails() {
-        return new OrganisationDetails(name, address, email, representative, contactPerson, companiesHouseNumber);
+        return new OrganisationDetails(name, address, serviceAddress, email, representative, contactPerson, companiesHouseNumber);
     }
 
     public SoleTraderDetails soleTraderDetails() {
-        return new SoleTraderDetails(name, address, email, representative, title, businessName);
+        return new SoleTraderDetails(name, address, serviceAddress, email, representative, title, businessName);
     }
 
 }
