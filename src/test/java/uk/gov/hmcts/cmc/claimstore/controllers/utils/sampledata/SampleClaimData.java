@@ -76,6 +76,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData addDefendants(List<TheirDetails> defendants) {
+        this.defendants.addAll(defendants);
+        return this;
+    }
+
     public SampleClaimData withDefendants(List<TheirDetails> defendants) {
         this.defendants = defendants;
         return this;
