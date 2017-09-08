@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.StatementOfValueContent;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.amount.Amount;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountRange;
@@ -33,48 +34,51 @@ public class StatementOfValueProvider {
         + "an order for the landlord to carry out work. ";
 
 
-    public String create(final Claim claim) {
+    public StatementOfValueContent create(final Claim claim) {
 
-        StringBuilder statementOfValue = new StringBuilder();
+        StringBuilder personalInjuryContent = new StringBuilder();
+        StringBuilder housingDisprepairContent = new StringBuilder();
+        StringBuilder claimValueContent = new StringBuilder();
+
         final Optional<PersonalInjury> personalInjuryOptional = claim.getClaimData().getPersonalInjury();
         personalInjuryOptional.ifPresent(personalInjury -> {
-            statementOfValue.append(PERSONAL_INJURY);
-            statementOfValue.append(
+            personalInjuryContent.append(PERSONAL_INJURY);
+            personalInjuryContent.append(
                 String.format(PERSONAL_INJURY_DAMAGES,
                     personalInjury.getGeneralDamages().getDisplayValue()));
         });
 
         claim.getClaimData().getHousingDisrepair().ifPresent(housingDisrepair -> {
             if (personalInjuryOptional.isPresent()) {
-                statementOfValue.append(ALSO_HOUSING_DISREPAIR);
+                housingDisprepairContent.append(ALSO_HOUSING_DISREPAIR);
             } else {
-                statementOfValue.append(HOUSING_DISREPAIR);
+                housingDisprepairContent.append(HOUSING_DISREPAIR);
             }
 
-            statementOfValue.append(
+            housingDisprepairContent.append(
                 String.format(COST_OF_REPAIRS,
                     housingDisrepair.getCostOfRepairsDamages().getDisplayValue()));
             housingDisrepair.getOtherDamages().ifPresent(otherDamages ->
-                statementOfValue.append(String.format(OTHER_DAMAGES, otherDamages.getDisplayValue()))
+                housingDisprepairContent.append(String.format(OTHER_DAMAGES, otherDamages.getDisplayValue()))
             );
         });
 
         Amount claimValue = claim.getClaimData().getAmount();
         if (claimValue instanceof NotKnown) {
-            statementOfValue.append(CAN_NOT_STATE);
+            claimValueContent.append(CAN_NOT_STATE);
         } else if (claimValue instanceof AmountRange) {
             final AmountRange amountRange = (AmountRange) claimValue;
             final Optional<BigDecimal> lowerValueOptional = amountRange.getLowerValue();
             if (lowerValueOptional.isPresent()) {
                 final BigDecimal lowerValue = lowerValueOptional.get();
-                statementOfValue.append(
+                claimValueContent.append(
                     String.format(RECOVER_UP_TO + WORTH_MORE_THAN,
                         formatMoney(amountRange.getHigherValue()),
                         formatMoney(lowerValue)
                     )
                 );
             } else {
-                statementOfValue.append(
+                claimValueContent.append(
                     String.format(RECOVER_UP_TO, formatMoney(amountRange.getHigherValue()))
                 );
             }
@@ -82,7 +86,10 @@ public class StatementOfValueProvider {
         } else {
             throw new IllegalArgumentException("Amount is not valid type.");
         }
-        return statementOfValue.toString();
+
+        return new StatementOfValueContent(personalInjuryContent.toString(),
+            housingDisprepairContent.toString(),
+            claimValueContent.toString());
     }
 
 }
