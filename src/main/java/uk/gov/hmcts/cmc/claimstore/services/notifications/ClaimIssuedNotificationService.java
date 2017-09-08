@@ -27,23 +27,22 @@ public class ClaimIssuedNotificationService {
     private final Logger logger = LoggerFactory.getLogger(ClaimIssuedNotificationService.class);
 
     public static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
-    public static final String CLAIMANT_TYPE = "claimantType";
+    private static final String CLAIMANT_TYPE = "claimantType";
     public static final String FRONTEND_BASE_URL = "frontendBaseUrl";
-    public static final String EXTERNAL_ID = "externalId";
-    public static final String FEES_PAID = "feesPaid";
+    private static final String EXTERNAL_ID = "externalId";
+    private static final String FEES_PAID = "feesPaid";
     public static final String CLAIMANT_NAME = "claimantName";
-    public static final String DEFENDANT_NAME = "defendantName";
-    public static final String ISSUED_ON = "issuedOn";
-    public static final String RESPONSE_DEADLINE = "responseDeadline";
-    public static final String PIN = "pin";
+    private static final String DEFENDANT_NAME = "defendantName";
+    private static final String ISSUED_ON = "issuedOn";
+    private static final String RESPONSE_DEADLINE = "responseDeadline";
+    private static final String PIN = "pin";
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public ClaimIssuedNotificationService(
-        final NotificationClient notificationClient,
-        final NotificationsProperties notificationsProperties) {
+    public ClaimIssuedNotificationService(final NotificationClient notificationClient,
+                                          final NotificationsProperties notificationsProperties) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
     }
@@ -93,19 +92,20 @@ public class ClaimIssuedNotificationService {
     }
 
     private String getNameWithTitle(final Party party) {
-        final StringBuilder nameWithTitle = new StringBuilder();
-        if (party instanceof TitledParty) {
-            ((TitledParty)party).getTitle().ifPresent(t -> nameWithTitle.append(t).append(" "));
-        }
-        return nameWithTitle.append(party.getName()).toString();
+        return new StringBuilder().append(getTitle(party)).append(party.getName()).toString();
     }
 
     private String getNameWithTitle(final TheirDetails otherParty) {
-        final StringBuilder nameWithTitle = new StringBuilder();
-        if (otherParty instanceof TitledParty) {
-            ((TitledParty)otherParty).getTitle().ifPresent(t -> nameWithTitle.append(t).append(" "));
+        return new StringBuilder().append(getTitle(otherParty)).append(otherParty.getName()).toString();
+    }
+
+    private String getTitle(final Object party) {
+        final StringBuilder title = new StringBuilder();
+        if (party instanceof TitledParty) {
+            ((TitledParty) party).getTitle().ifPresent(t -> title.append(t).append(" "));
         }
-        return nameWithTitle.append(otherParty.getName()).toString();
+
+        return title.toString();
     }
 
 }

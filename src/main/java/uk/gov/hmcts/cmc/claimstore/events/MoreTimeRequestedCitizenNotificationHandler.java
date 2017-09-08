@@ -25,6 +25,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     private static final String DEFENDANT_NAME = "defendantName";
     private static final String RESPONSE_DEADLINE = "responseDeadline";
     private static final String FRONTEND_BASE_URL = "frontendBaseUrl";
+
     private final MoreTimeRequestedNotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
 
@@ -68,11 +69,11 @@ public class MoreTimeRequestedCitizenNotificationHandler {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+        parameters.put(CLAIMANT_TYPE, PartyTypeContentProvider.getType(claim.getClaimData().getClaimant()));
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(RESPONSE_DEADLINE, formatDate(event.getNewResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put(CLAIMANT_TYPE, PartyTypeContentProvider.getType(claim.getClaimData().getClaimant()));
         return parameters;
     }
 }

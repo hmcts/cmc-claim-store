@@ -29,11 +29,10 @@ public class DefendantResponseStaffNotificationService {
     private final DefendantResponseCopyService defendantResponseCopyService;
 
     @Autowired
-    public DefendantResponseStaffNotificationService(
-        EmailService emailService,
-        StaffEmailProperties emailProperties,
-        DefendantResponseStaffNotificationEmailContentProvider emailContentProvider,
-        DefendantResponseCopyService defendantResponseCopyService) {
+    public DefendantResponseStaffNotificationService(final EmailService emailService,
+                      final StaffEmailProperties emailProperties,
+                      final DefendantResponseStaffNotificationEmailContentProvider emailContentProvider,
+                      final DefendantResponseCopyService defendantResponseCopyService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;

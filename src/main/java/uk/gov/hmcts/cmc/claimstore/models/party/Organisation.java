@@ -13,14 +13,13 @@ public class Organisation extends Party {
     private final String contactPerson;
     private final String companiesHouseNumber;
 
-    public Organisation(
-        String name,
-        Address address,
-        Address correspondenceAddress,
-        String mobilePhone,
-        Representative representative,
-        String contactPerson,
-        String companiesHouseNumber) {
+    public Organisation(final String name,
+                        final Address address,
+                        final Address correspondenceAddress,
+                        final String mobilePhone,
+                        final Representative representative,
+                        final String contactPerson,
+                        final String companiesHouseNumber) {
         super(name, address, correspondenceAddress, mobilePhone, representative);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;

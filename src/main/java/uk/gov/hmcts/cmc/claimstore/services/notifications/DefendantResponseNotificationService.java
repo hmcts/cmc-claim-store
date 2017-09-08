@@ -51,10 +51,9 @@ public class DefendantResponseNotificationService {
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public DefendantResponseNotificationService(
-        final NotificationClient notificationClient,
-        final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
-        final NotificationsProperties notificationsProperties) {
+    public DefendantResponseNotificationService(final NotificationClient notificationClient,
+               final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
+               final NotificationsProperties notificationsProperties) {
         this.notificationClient = notificationClient;
         this.freeMediationDecisionDateCalculator = freeMediationDecisionDateCalculator;
         this.notificationsProperties = notificationsProperties;
@@ -78,8 +77,10 @@ public class DefendantResponseNotificationService {
         }
     }
 
-    public void notifyClaimant(
-        final Claim claim, final DefendantResponse response, final String submitterEmail, final String reference) {
+    public void notifyClaimant(final Claim claim,
+                               final DefendantResponse response,
+                               final String submitterEmail,
+                               final String reference) {
         final Map<String, String> parameters = aggregateParams(claim, response.getResponse());
         notify(submitterEmail, getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
     }

@@ -12,20 +12,20 @@ public class PersonContent {
     private final String contactPerson;
     private final String businessName;
 
-    public PersonContent(String partyType,
-                         String fullName,
-                         Address address,
-                         Address correspondenceAddress) {
+    public PersonContent(final String partyType,
+                         final String fullName,
+                         final Address address,
+                         final Address correspondenceAddress) {
         this(partyType, fullName, address, correspondenceAddress, null, null, null);
     }
 
-    public PersonContent(String partyType,
-                         String fullName,
-                         Address address,
-                         Address correspondenceAddress,
-                         String email,
-                         String contactPerson,
-                         String businessName) {
+    public PersonContent(final String partyType,
+                         final String fullName,
+                         final Address address,
+                         final Address correspondenceAddress,
+                         final String email,
+                         final String contactPerson,
+                         final String businessName) {
         this.partyType = partyType;
         this.fullName = fullName;
         this.address = address;

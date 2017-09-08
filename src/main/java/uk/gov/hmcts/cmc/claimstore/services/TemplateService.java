@@ -25,7 +25,7 @@ public class TemplateService {
         this.pebbleEngine = pebbleEngine;
     }
 
-    public String evaluate(String template, Map<String, Object> values) {
+    public String evaluate(final String template, final Map<String, Object> values) {
         notNull(template);
         notNull(values);
         try (Writer writer = new StringWriter()) {

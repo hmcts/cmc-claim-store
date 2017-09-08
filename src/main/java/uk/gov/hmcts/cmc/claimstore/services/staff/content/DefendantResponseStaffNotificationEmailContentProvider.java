@@ -17,9 +17,8 @@ public class DefendantResponseStaffNotificationEmailContentProvider
     private final StaffEmailTemplates staffEmailTemplates;
 
     @Autowired
-    public DefendantResponseStaffNotificationEmailContentProvider(
-        TemplateService templateService,
-        StaffEmailTemplates staffEmailTemplates) {
+    public DefendantResponseStaffNotificationEmailContentProvider(TemplateService templateService,
+                                                                  StaffEmailTemplates staffEmailTemplates) {
         this.templateService = templateService;
         this.staffEmailTemplates = staffEmailTemplates;
     }

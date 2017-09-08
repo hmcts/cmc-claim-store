@@ -22,15 +22,13 @@ public class Individual extends Party implements TitledParty {
     @AgeRangeValidator
     private final LocalDate dateOfBirth;
 
-    public Individual(
-        String name,
-        Address address,
-        Address correspondenceAddress,
-        String mobilePhone,
-        Representative representative,
-        String title,
-        LocalDate dateOfBirth
-    ) {
+    public Individual(final String name,
+                      final Address address,
+                      final Address correspondenceAddress,
+                      final String mobilePhone,
+                      final Representative representative,
+                      final String title,
+                      final LocalDate dateOfBirth) {
         super(name, address, correspondenceAddress, mobilePhone, representative);
         this.title = title;
         this.dateOfBirth = dateOfBirth;

@@ -12,7 +12,9 @@ public class NotificationReferenceBuilder {
         // do not instantiate
     }
 
-    private static String reference(final String template, final String toWhom, final String claimReferenceNumber) {
+    private static String reference(final String template,
+                                    final String toWhom,
+                                    final String claimReferenceNumber) {
         return String.format(template, toWhom, claimReferenceNumber);
     }
 

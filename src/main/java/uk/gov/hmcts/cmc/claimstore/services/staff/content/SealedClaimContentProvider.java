@@ -21,9 +21,9 @@ public class SealedClaimContentProvider {
     private final ClaimContentProvider claimContentProvider;
 
     @Autowired
-    public SealedClaimContentProvider(
-        ClaimantContentProvider claimantContentProvider,
-        PersonContentProvider personContentProvider, ClaimContentProvider claimContentProvider) {
+    public SealedClaimContentProvider(ClaimantContentProvider claimantContentProvider,
+                                      PersonContentProvider personContentProvider,
+                                      ClaimContentProvider claimContentProvider) {
         this.claimantContentProvider = claimantContentProvider;
         this.personContentProvider = personContentProvider;
         this.claimContentProvider = claimContentProvider;
@@ -36,8 +36,8 @@ public class SealedClaimContentProvider {
         Map<String, Object> map = new HashMap<>();
 
         map.put("claimant", claimantContentProvider.createContent(
-                                                                  claim.getClaimData().getClaimant(),
-                                                                  submitterEmail)
+            claim.getClaimData().getClaimant(),
+            submitterEmail)
         );
 
         TheirDetails defendant = claim.getClaimData().getDefendant();

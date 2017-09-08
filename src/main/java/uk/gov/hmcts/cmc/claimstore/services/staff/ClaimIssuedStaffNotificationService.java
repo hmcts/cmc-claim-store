@@ -34,14 +34,13 @@ public class ClaimIssuedStaffNotificationService {
     private final LegalSealedClaimContentProvider legalSealedClaimContentProvider;
 
     @Autowired
-    public ClaimIssuedStaffNotificationService(
-        EmailService emailService,
-        StaffEmailProperties staffEmailProperties,
-        ClaimIssuedStaffNotificationEmailContentProvider provider,
-        PDFServiceClient pdfServiceClient,
-        SealedClaimContentProvider sealedClaimContentProvider,
-        DefendantPinLetterContentProvider defendantPinLetterContentProvider,
-        LegalSealedClaimContentProvider legalSealedClaimContentProvider) {
+    public ClaimIssuedStaffNotificationService(final EmailService emailService,
+                                              final StaffEmailProperties staffEmailProperties,
+                                              final ClaimIssuedStaffNotificationEmailContentProvider provider,
+                                              final PDFServiceClient pdfServiceClient,
+                                              final SealedClaimContentProvider sealedClaimContentProvider,
+                                              final DefendantPinLetterContentProvider defendantPinLetterContentProvider,
+                                              final LegalSealedClaimContentProvider legalSealedClaimContentProvider) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.provider = provider;
@@ -65,7 +64,8 @@ public class ClaimIssuedStaffNotificationService {
             getAttachments(claim, defendantPin, submitterEmail));
     }
 
-    private List<EmailAttachment> getAttachments(final Claim claim, final Optional<String> defendantPin,
+    private List<EmailAttachment> getAttachments(final Claim claim,
+                                                 final Optional<String> defendantPin,
                                                  final String submitterEmail) {
         final List<EmailAttachment> emailAttachments = new ArrayList<>();
 

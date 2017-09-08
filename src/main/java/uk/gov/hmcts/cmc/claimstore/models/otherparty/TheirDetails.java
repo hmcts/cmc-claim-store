@@ -48,7 +48,10 @@ public abstract class TheirDetails {
     @Valid
     public final Representative representative;
 
-    public TheirDetails(String name, Address address, String email, Representative representative) {
+    public TheirDetails(final String name,
+                        final Address address,
+                        final String email,
+                        final Representative representative) {
         this.name = name;
         this.address = address;
         this.email = email;
