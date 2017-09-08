@@ -16,11 +16,11 @@ public class ClaimantContentProvider {
     private final PersonContentProvider personContentProvider;
 
     @Autowired
-    public ClaimantContentProvider(PersonContentProvider personContentProvider) {
+    public ClaimantContentProvider(final PersonContentProvider personContentProvider) {
         this.personContentProvider = personContentProvider;
     }
 
-    public ClaimantContent createContent(Party claimant, String submitterEmail) {
+    public ClaimantContent createContent(final Party claimant, final String submitterEmail) {
         requireNonNull(claimant);
         requireNonBlank(submitterEmail);
         requireNonBlank(submitterEmail);

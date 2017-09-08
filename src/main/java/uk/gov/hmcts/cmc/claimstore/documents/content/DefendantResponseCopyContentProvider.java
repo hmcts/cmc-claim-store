@@ -16,11 +16,11 @@ public class DefendantResponseCopyContentProvider {
 
     private final DefendantDetailsContentProvider defendantDetailsContentProvider;
 
-    public DefendantResponseCopyContentProvider(DefendantDetailsContentProvider defendantDetailsContentProvider) {
+    public DefendantResponseCopyContentProvider(final DefendantDetailsContentProvider defendantDetailsContentProvider) {
         this.defendantDetailsContentProvider = defendantDetailsContentProvider;
     }
 
-    public Map<String, Object> createContent(Claim claim, DefendantResponse response) {
+    public Map<String, Object> createContent(final Claim claim, final DefendantResponse response) {
         requireNonNull(claim);
         requireNonNull(response);
 

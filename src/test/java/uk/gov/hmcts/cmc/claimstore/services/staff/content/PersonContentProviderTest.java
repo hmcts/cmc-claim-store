@@ -106,12 +106,12 @@ public class PersonContentProviderTest {
     @Test
     public void shouldProvideExpectedEmailAddress() {
         PersonContent content = provider.createContent(partyType,
-                                                       name,
-                                                       address,
-                                                       correspondenceAddress,
-                                                       emailAddress,
-                                                      null,
-                                                      null);
+                                                        name,
+                                                        address,
+                                                        correspondenceAddress,
+                                                        emailAddress,
+                                                        null,
+                                                        null);
 
         assertThat(content.getEmail()).isEqualTo(emailAddress);
     }
@@ -119,11 +119,12 @@ public class PersonContentProviderTest {
     @Test
     public void shouldAcceptNullEmailAddress() {
         PersonContent content = provider.createContent(partyType,
-                                                       name,
-                                                       address, correspondenceAddress,
-                                                      null,
-                                                      null,
-                                                      null);
+                                                        name,
+                                                        address,
+                                                        correspondenceAddress,
+                                                        null,
+                                                        null,
+                                                        null);
 
         assertThat(content.getEmail()).isEqualTo(null);
     }

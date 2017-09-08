@@ -29,7 +29,7 @@ public class SealedClaimContentProvider {
         this.claimContentProvider = claimContentProvider;
     }
 
-    public Map<String, Object> createContent(Claim claim, String submitterEmail) {
+    public Map<String, Object> createContent(final Claim claim, final String submitterEmail) {
         requireNonNull(claim);
         requireNonBlank(submitterEmail);
 

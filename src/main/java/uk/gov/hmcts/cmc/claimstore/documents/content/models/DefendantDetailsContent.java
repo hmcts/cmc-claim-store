@@ -45,7 +45,7 @@ public class DefendantDetailsContent {
         return defendantResponse.getResponse().getDefendant().getCorrespondenceAddress().orElse(null);
     }
 
-    private Optional<String> defendantDateOfBirth(Party party) {
+    private Optional<String> defendantDateOfBirth(final Party party) {
         if (party instanceof Individual) {
             return Optional.of(formatDate(((Individual) party).getDateOfBirth()));
         }
