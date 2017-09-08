@@ -33,7 +33,8 @@ public class MoreTimeRequestedStaffNotificationHandler {
     public MoreTimeRequestedStaffNotificationHandler(
         final MoreTimeRequestedNotificationService notificationService,
         final NotificationsProperties notificationsProperties,
-        final StaffEmailProperties staffEmailProperties) {
+        final StaffEmailProperties staffEmailProperties
+    ) {
 
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;

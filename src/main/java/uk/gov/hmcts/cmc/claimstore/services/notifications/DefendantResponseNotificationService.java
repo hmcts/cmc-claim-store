@@ -51,9 +51,11 @@ public class DefendantResponseNotificationService {
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public DefendantResponseNotificationService(final NotificationClient notificationClient,
-               final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
-               final NotificationsProperties notificationsProperties) {
+    public DefendantResponseNotificationService(
+        final NotificationClient notificationClient,
+        final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
+        final NotificationsProperties notificationsProperties
+    ) {
         this.notificationClient = notificationClient;
         this.freeMediationDecisionDateCalculator = freeMediationDecisionDateCalculator;
         this.notificationsProperties = notificationsProperties;
@@ -77,19 +79,23 @@ public class DefendantResponseNotificationService {
         }
     }
 
-    public void notifyClaimant(final Claim claim,
-                               final DefendantResponse response,
-                               final String submitterEmail,
-                               final String reference) {
+    public void notifyClaimant(
+        final Claim claim,
+        final DefendantResponse response,
+        final String submitterEmail,
+        final String reference
+    ) {
         final Map<String, String> parameters = aggregateParams(claim, response.getResponse());
         notify(submitterEmail, getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void notify(final String targetEmail,
-                       final String emailTemplate,
-                       final Map<String, String> parameters,
-                       final String reference) {
+    public void notify(
+        final String targetEmail,
+        final String emailTemplate,
+        final Map<String, String> parameters,
+        final String reference
+    ) {
 
         try {
             notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
@@ -99,11 +105,13 @@ public class DefendantResponseNotificationService {
     }
 
     @Recover
-    public void logNotificationFailure(final NotificationException exception,
-                                       final Claim claim,
-                                       final String targetEmail,
-                                       final String emailTemplate,
-                                       final String reference) {
+    public void logNotificationFailure(
+        final NotificationException exception,
+        final Claim claim,
+        final String targetEmail,
+        final String emailTemplate,
+        final String reference
+    ) {
         final String errorMessage = String.format(
             "Failure: failed to send notification ( %s to %s ) due to %s",
             reference, targetEmail, exception.getMessage()

@@ -21,9 +21,11 @@ public class SealedClaimContentProvider {
     private final ClaimContentProvider claimContentProvider;
 
     @Autowired
-    public SealedClaimContentProvider(ClaimantContentProvider claimantContentProvider,
-                                      PersonContentProvider personContentProvider,
-                                      ClaimContentProvider claimContentProvider) {
+    public SealedClaimContentProvider(
+        final ClaimantContentProvider claimantContentProvider,
+        final PersonContentProvider personContentProvider,
+        final ClaimContentProvider claimContentProvider
+    ) {
         this.claimantContentProvider = claimantContentProvider;
         this.personContentProvider = personContentProvider;
         this.claimContentProvider = claimContentProvider;

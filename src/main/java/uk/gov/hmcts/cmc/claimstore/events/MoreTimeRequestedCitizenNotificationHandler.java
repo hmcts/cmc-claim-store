@@ -33,8 +33,8 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     @Autowired
     public MoreTimeRequestedCitizenNotificationHandler(
         final MoreTimeRequestedNotificationService notificationService,
-        final NotificationsProperties notificationsProperties) {
-
+        final NotificationsProperties notificationsProperties
+    ) {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
     }

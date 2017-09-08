@@ -13,11 +13,13 @@ public class IndividualDetails extends TheirDetails implements TitledParty {
     @Size(max = 35, message = "must be at most {max} characters")
     private final String title;
 
-    public IndividualDetails(final String name,
-                             final Address address,
-                             final String email,
-                             final Representative representative,
-                             final String title) {
+    public IndividualDetails(
+        final String name,
+        final Address address,
+        final String email,
+        final Representative representative,
+        final String title
+    ) {
         super(name, address, email, representative);
         this.title = title;
     }

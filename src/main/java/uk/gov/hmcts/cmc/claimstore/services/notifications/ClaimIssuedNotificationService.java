@@ -41,18 +41,22 @@ public class ClaimIssuedNotificationService {
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public ClaimIssuedNotificationService(final NotificationClient notificationClient,
-                                          final NotificationsProperties notificationsProperties) {
+    public ClaimIssuedNotificationService(
+        final NotificationClient notificationClient,
+        final NotificationsProperties notificationsProperties
+    ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void sendMail(final Claim claim,
-                         final String targetEmail,
-                         final Optional<String> pin,
-                         final String emailTemplateId,
-                         final String reference) {
+    public void sendMail(
+        final Claim claim,
+        final String targetEmail,
+        final Optional<String> pin,
+        final String emailTemplateId,
+        final String reference
+    ) {
         final Map<String, String> parameters = aggregateParams(claim, pin);
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
@@ -62,12 +66,14 @@ public class ClaimIssuedNotificationService {
     }
 
     @Recover
-    public void logNotificationFailure(final NotificationException exception,
-                                       final Claim claim,
-                                       final String targetEmail,
-                                       final Optional<String> pin,
-                                       final String emailTemplateId,
-                                       final String reference) {
+    public void logNotificationFailure(
+        final NotificationException exception,
+        final Claim claim,
+        final String targetEmail,
+        final Optional<String> pin,
+        final String emailTemplateId,
+        final String reference
+    ) {
         final String errorMessage = "Failure: "
             + " failed to send notification (" + reference
             + " to " + targetEmail + ") "

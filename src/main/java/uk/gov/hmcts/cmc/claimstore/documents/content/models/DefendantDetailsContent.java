@@ -24,9 +24,11 @@ public class DefendantDetailsContent {
     private final String businessName;
     private final String contactPerson;
 
-    public DefendantDetailsContent(final TheirDetails providedByClaimant,
-                                   final DefendantResponse defendantResponse,
-                                   final Party defendant) {
+    public DefendantDetailsContent(
+        final TheirDetails providedByClaimant,
+        final DefendantResponse defendantResponse,
+        final Party defendant
+    ) {
         final boolean nameAmended = !providedByClaimant.getName().equals(defendant.getName());
         final boolean addressAmended = !providedByClaimant.getAddress().equals(defendant.getAddress());
         this.type = PartyTypeContentProvider.getType(providedByClaimant);

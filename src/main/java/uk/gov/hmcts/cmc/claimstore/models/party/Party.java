@@ -52,11 +52,13 @@ public abstract class Party {
     @Valid
     private final Representative representative;
 
-    public Party(final String name,
-                 final Address address,
-                 final Address correspondenceAddress,
-                 final String mobilePhone,
-                 final Representative representative) {
+    public Party(
+        final String name,
+        final Address address,
+        final Address correspondenceAddress,
+        final String mobilePhone,
+        final Representative representative
+    ) {
         this.name = name;
         this.address = address;
         this.correspondenceAddress = correspondenceAddress;

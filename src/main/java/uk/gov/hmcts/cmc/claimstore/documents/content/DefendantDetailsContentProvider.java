@@ -12,8 +12,8 @@ import static java.util.Objects.requireNonNull;
 public class DefendantDetailsContentProvider {
 
     public DefendantDetailsContent createContent(
-        TheirDetails providedByClaimant,
-        DefendantResponse defendantResponse
+        final TheirDetails providedByClaimant,
+        final DefendantResponse defendantResponse
     ) {
         final Party defendant = defendantResponse.getResponse().getDefendant();
         requireNonNull(providedByClaimant);

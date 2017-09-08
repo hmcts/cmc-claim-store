@@ -20,8 +20,7 @@ public class TemplateService {
     private final PebbleEngine pebbleEngine;
 
     @Autowired
-    public TemplateService(
-        PebbleEngine pebbleEngine) {
+    public TemplateService(final PebbleEngine pebbleEngine) {
         this.pebbleEngine = pebbleEngine;
     }
 
