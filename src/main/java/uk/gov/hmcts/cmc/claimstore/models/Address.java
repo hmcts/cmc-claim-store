@@ -16,6 +16,7 @@ public class Address {
     @Size(max = 100, message = "Address Line2 should not be longer than {max} characters")
     private final String line2;
 
+    @NotBlank(message = "City/town should not be empty")
     @Size(max = 100, message = "City should not be longer than {max} characters")
     private final String city;
 
