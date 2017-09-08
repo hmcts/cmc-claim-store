@@ -131,11 +131,27 @@ public class ClaimDataTest {
             .addDefendant(SampleTheirDetails.builder().individualDetails())
             .addDefendant(SampleTheirDetails.builder().individualDetails())
             .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
+            .addDefendant(SampleTheirDetails.builder().individualDetails())
             .build();
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants : at most 4 defendants are supported");
+        assertThat(errors).containsOnly("defendants : at most 20 defendants are supported");
     }
 
     @Test
