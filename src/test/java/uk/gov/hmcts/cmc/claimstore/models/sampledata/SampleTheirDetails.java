@@ -16,6 +16,7 @@ public class SampleTheirDetails {
 
     private String name = "John Smith";
     private Address address = SampleAddress.validDefaults();
+    private Address serviceAddress = SampleAddress.validDefaults();
     private String email = "j.smith@example.com";
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
@@ -35,6 +36,11 @@ public class SampleTheirDetails {
 
     public SampleTheirDetails withAddress(Address address) {
         this.address = address;
+        return this;
+    }
+
+    public SampleTheirDetails withServiceAddress(Address serviceAddress) {
+        this.serviceAddress = serviceAddress;
         return this;
     }
 
