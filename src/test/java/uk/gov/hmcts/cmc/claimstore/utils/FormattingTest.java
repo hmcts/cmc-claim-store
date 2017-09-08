@@ -21,6 +21,15 @@ public class FormattingTest {
         assertThat(formattedDate).isEqualTo("27 July 2017");
     }
 
+    @Test
+    public void formatDateShouldFormatWithExpectedPatternForOneDigitDay() {
+        LocalDate date = LocalDate.of(2017, 7, 1);
+
+        String formattedDate = Formatting.formatDate(date);
+
+        assertThat(formattedDate).isEqualTo("1 July 2017");
+    }
+
     @Test(expected = NullPointerException.class)
     public void formatDateShouldThrowNullPointerWhenGivenNullDate() {
         Formatting.formatDate((LocalDate) null);
