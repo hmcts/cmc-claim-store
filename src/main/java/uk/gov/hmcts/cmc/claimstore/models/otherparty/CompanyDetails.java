@@ -13,11 +13,12 @@ public class CompanyDetails extends TheirDetails {
     public CompanyDetails(
         String name,
         Address address,
+        Address serviceAddress,
         String email,
         Representative representative,
         String contactPerson
     ) {
-        super(name, address, email, representative);
+        super(name, address, serviceAddress, email, representative);
         this.contactPerson = contactPerson;
     }
 
