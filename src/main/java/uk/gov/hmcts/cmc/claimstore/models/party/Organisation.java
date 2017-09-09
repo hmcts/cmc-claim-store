@@ -27,8 +27,8 @@ public class Organisation extends Party {
         this.companiesHouseNumber = companiesHouseNumber;
     }
 
-    public String getContactPerson() {
-        return contactPerson;
+    public Optional<String> getContactPerson() {
+        return Optional.ofNullable(contactPerson);
     }
 
     public Optional<String> getCompaniesHouseNumber() {

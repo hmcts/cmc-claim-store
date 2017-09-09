@@ -71,9 +71,9 @@ public class PartyTypeContentProvider {
 
     public static Optional<String> getContactPerson(final Party claimant) {
         if (claimant instanceof Company) {
-            return Optional.of(((Company) claimant).getContactPerson());
+            return ((Company) claimant).getContactPerson();
         } else if (claimant instanceof Organisation) {
-            return Optional.of(((Organisation) claimant).getContactPerson());
+            return ((Organisation) claimant).getContactPerson();
         }
         return Optional.empty();
     }

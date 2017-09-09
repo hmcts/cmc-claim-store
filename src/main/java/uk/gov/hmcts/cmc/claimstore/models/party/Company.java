@@ -1,16 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.models.party;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Company extends Party {
 
-    @NotBlank
     private final String contactPerson;
 
     public Company(
@@ -25,8 +24,8 @@ public class Company extends Party {
         this.contactPerson = contactPerson;
     }
 
-    public String getContactPerson() {
-        return contactPerson;
+    public Optional<String> getContactPerson() {
+        return Optional.ofNullable(contactPerson);
     }
 
     @Override
