@@ -20,12 +20,11 @@ public class TemplateService {
     private final PebbleEngine pebbleEngine;
 
     @Autowired
-    public TemplateService(
-        PebbleEngine pebbleEngine) {
+    public TemplateService(final PebbleEngine pebbleEngine) {
         this.pebbleEngine = pebbleEngine;
     }
 
-    public String evaluate(String template, Map<String, Object> values) {
+    public String evaluate(final String template, final Map<String, Object> values) {
         notNull(template);
         notNull(values);
         try (Writer writer = new StringWriter()) {
