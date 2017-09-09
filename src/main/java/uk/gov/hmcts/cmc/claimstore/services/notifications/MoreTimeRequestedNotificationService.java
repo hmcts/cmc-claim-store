@@ -24,10 +24,12 @@ public class MoreTimeRequestedNotificationService {
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void sendMail(final String targetEmail,
-                         final String emailTemplateId,
-                         final Map<String, String> parameters,
-                         final String reference) {
+    public void sendMail(
+        final String targetEmail,
+        final String emailTemplateId,
+        final Map<String, String> parameters,
+        final String reference
+    ) {
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {
@@ -36,11 +38,13 @@ public class MoreTimeRequestedNotificationService {
     }
 
     @Recover
-    public void logNotificationFailure(final NotificationException exception,
-                                       final String targetEmail,
-                                       final String emailTemplateId,
-                                       final Map<String, String> parameters,
-                                       final String reference) {
+    public void logNotificationFailure(
+        final NotificationException exception,
+        final String targetEmail,
+        final String emailTemplateId,
+        final Map<String, String> parameters,
+        final String reference
+    ) {
         final String errorMessage = String.format(
             "Failure: failed to send notification (%s to %s) due to %s",
             reference,

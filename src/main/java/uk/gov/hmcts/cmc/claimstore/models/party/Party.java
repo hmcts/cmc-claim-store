@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.claimstore.constraints.MobilePhoneNumber;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = Organisation.class, name = "organisation")
     }
 )
-public abstract class Party {
+public abstract class Party implements NamedParty {
 
     @NotBlank
     @Size(max = 255, message = "may not be longer than {max} characters")
@@ -52,11 +53,11 @@ public abstract class Party {
     private final Representative representative;
 
     public Party(
-        String name,
-        Address address,
-        Address correspondenceAddress,
-        String mobilePhone,
-        Representative representative
+        final String name,
+        final Address address,
+        final Address correspondenceAddress,
+        final String mobilePhone,
+        final Representative representative
     ) {
         this.name = name;
         this.address = address;
@@ -65,6 +66,7 @@ public abstract class Party {
         this.representative = representative;
     }
 
+    @Override
     public String getName() {
         return name;
     }
