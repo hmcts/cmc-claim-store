@@ -22,7 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyTypeContentProvider;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtil;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -43,9 +43,9 @@ public class DefendantResponseNotificationService {
     private static final String CLAIMANT_NAME = "claimantName";
     private static final String DEFENDANT_NAME = "defendantName";
     private static final String FRONTEND_BASE_URL = "frontendBaseUrl";
-    public static final String CLAIMANT_TYPE = "claimantType";
-    public static final String ISSUED_ON = "issuedOn";
-    public static final String RESPONSE_DEADLINE = "responseDeadline";
+    private static final String CLAIMANT_TYPE = "claimantType";
+    private static final String ISSUED_ON = "issuedOn";
+    private static final String RESPONSE_DEADLINE = "responseDeadline";
     private final NotificationClient notificationClient;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
@@ -64,12 +64,11 @@ public class DefendantResponseNotificationService {
     public void notifyDefendant(final Claim claim, final String defendantEmail, final String reference) {
         final Map<String, String> parameters = aggregateParams(claim);
 
-        notify(defendantEmail, getDefendantResponseIssuedEmailTemplate(claim), parameters, reference);
+        String template = getDefendantResponseIssuedEmailTemplate(claim.getClaimData().getClaimant());
+        notify(defendantEmail, template, parameters, reference);
     }
 
-    private String getDefendantResponseIssuedEmailTemplate(final Claim claim) {
-        final Party party = claim.getClaimData().getClaimant();
-
+    private String getDefendantResponseIssuedEmailTemplate(final Party party) {
         if (party instanceof Individual || party instanceof SoleTrader) {
             return getEmailTemplates().getDefendantResponseIssuedToIndividual();
         } else if (party instanceof Company || party instanceof Organisation) {
@@ -124,7 +123,7 @@ public class DefendantResponseNotificationService {
 
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        parameters.put(CLAIMANT_TYPE, PartyTypeContentProvider.getType(claim.getClaimData().getClaimant()));
+        parameters.put(CLAIMANT_TYPE, PartyUtil.getType(claim.getClaimData().getClaimant()));
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -138,7 +137,7 @@ public class DefendantResponseNotificationService {
 
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        parameters.put(CLAIMANT_TYPE, PartyTypeContentProvider.getType(claim.getClaimData().getClaimant()));
+        parameters.put(CLAIMANT_TYPE, PartyUtil.getType(claim.getClaimData().getClaimant()));
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());

@@ -14,14 +14,14 @@ import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
 
 import java.util.Optional;
 
-public class PartyTypeContentProvider {
+public class PartyUtil {
 
-    public static final String INDIVIDUAL = "individual";
-    public static final String SOLE_TRADER_OR_SELF_EMPLOYED_PERSON = "sole trader or self-employed person";
-    public static final String ON_BEHALF_OF_A_COMPANY = "on behalf of a company";
-    public static final String ON_BEHALF_OF_AN_ORGANISATION = "on behalf of an organisation";
+    private static final String INDIVIDUAL = "individual";
+    private static final String SOLE_TRADER_OR_SELF_EMPLOYED_PERSON = "sole trader or self-employed person";
+    private static final String ON_BEHALF_OF_A_COMPANY = "on behalf of a company";
+    private static final String ON_BEHALF_OF_AN_ORGANISATION = "on behalf of an organisation";
 
-    private PartyTypeContentProvider() {
+    private PartyUtil() {
         // utility class, no instances
     }
 

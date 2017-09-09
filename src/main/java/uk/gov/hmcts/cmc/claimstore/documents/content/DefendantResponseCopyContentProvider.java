@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyTypeContentProvider;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class DefendantResponseCopyContentProvider {
         Map<String, Object> content = new HashMap<>();
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("claimSubmittedOn", formatDate(claim.getCreatedAt()));
-        content.put("claimantType", PartyTypeContentProvider.getType(claim.getClaimData().getClaimant()));
+        content.put("claimantType", PartyUtil.getType(claim.getClaimData().getClaimant()));
         content.put("claimantFullName", claim.getClaimData().getClaimant().getName());
         content.put("defendant", defendantDetailsContentProvider.createContent(
             claim.getClaimData().getDefendant(),

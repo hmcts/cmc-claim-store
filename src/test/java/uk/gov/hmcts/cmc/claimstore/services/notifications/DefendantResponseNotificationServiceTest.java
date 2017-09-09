@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +75,6 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
             eq(DEFENDANT_RESPONSE_TEMPLATE), anyString(), templateParameters.capture(), anyString());
 
         assertThat(templateParameters.getValue())
-            .containsEntry(ClaimIssuedNotificationService.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
+            .containsEntry(NotificationTemplateParameters.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
     }
 }
