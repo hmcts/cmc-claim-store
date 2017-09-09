@@ -69,7 +69,7 @@ public class PartyTypeContentProvider {
         return Optional.empty();
     }
 
-    public static Optional<String> getClaimantContactPerson(final Party claimant) {
+    public static Optional<String> getContactPerson(final Party claimant) {
         if (claimant instanceof Company) {
             return Optional.of(((Company) claimant).getContactPerson());
         } else if (claimant instanceof Organisation) {
@@ -78,7 +78,7 @@ public class PartyTypeContentProvider {
         return Optional.empty();
     }
 
-    public static Optional<String> getClaimantBusinessName(final Party claimant) {
+    public static Optional<String> getBusinessName(final Party claimant) {
         if (claimant instanceof SoleTrader) {
             return ((SoleTrader) claimant).getBusinessName();
         }

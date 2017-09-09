@@ -34,11 +34,11 @@ public class DefendantDetailsContent {
         this.type = PartyTypeContentProvider.getType(providedByClaimant);
         this.fullName = nameAmended ? defendant.getName() : providedByClaimant.getName();
         this.nameAmended = nameAmended;
-        this.businessName = PartyTypeContentProvider.getDefendantBusinessName(providedByClaimant).orElse(null);
-        this.contactPerson = PartyTypeContentProvider.getDefendantContactPerson(providedByClaimant).orElse(null);
+        this.businessName = PartyTypeContentProvider.getBusinessName(defendantResponse.getResponse().getDefendant()).orElse(null);
+        this.contactPerson = PartyTypeContentProvider.getContactPerson(defendantResponse.getResponse().getDefendant()).orElse(null);
         this.address = addressAmended ? defendant.getAddress() : providedByClaimant.getAddress();
-        this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.addressAmended = addressAmended;
+        this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
         this.email = defendantResponse.getDefendantEmail();
     }

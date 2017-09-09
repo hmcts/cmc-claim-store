@@ -30,8 +30,8 @@ public class ClaimantContentProvider {
             claimant.getAddress(),
             claimant.getCorrespondenceAddress().orElse(null),
             submitterEmail,
-            PartyTypeContentProvider.getClaimantContactPerson(claimant).orElse(null),
-            PartyTypeContentProvider.getClaimantBusinessName(claimant).orElse(null)
+            PartyTypeContentProvider.getContactPerson(claimant).orElse(null),
+            PartyTypeContentProvider.getBusinessName(claimant).orElse(null)
 
         );
         return new ClaimantContent(
