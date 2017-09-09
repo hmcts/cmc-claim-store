@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtil;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,13 +45,13 @@ public class SealedClaimContentProvider {
         TheirDetails defendant = claim.getClaimData().getDefendant();
 
         map.put("defendant", personContentProvider.createContent(
-            PartyUtil.getType(defendant),
+            PartyUtils.getType(defendant),
             defendant.getName(),
             defendant.getAddress(),
             null,
             defendant.getEmail().orElse(null),
-            PartyUtil.getDefendantContactPerson(defendant).orElse(null),
-            PartyUtil.getDefendantBusinessName(defendant).orElse(null))
+            PartyUtils.getDefendantContactPerson(defendant).orElse(null),
+            PartyUtils.getDefendantBusinessName(defendant).orElse(null))
         );
 
         map.put("claim", claimContentProvider.createContent(claim));

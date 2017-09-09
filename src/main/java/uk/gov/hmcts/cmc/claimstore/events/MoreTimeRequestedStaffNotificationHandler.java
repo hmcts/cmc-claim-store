@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtil;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class MoreTimeRequestedStaffNotificationHandler {
         parameters.put("claimantName", claim.getClaimData().getClaimant().getName());
         parameters.put("defendantName", claim.getClaimData().getDefendant().getName());
         parameters.put("responseDeadline", formatDate(event.getNewResponseDeadline()));
-        parameters.put("claimantType", PartyUtil.getType(claim.getClaimData().getClaimant()));
+        parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         return parameters;
     }
 }

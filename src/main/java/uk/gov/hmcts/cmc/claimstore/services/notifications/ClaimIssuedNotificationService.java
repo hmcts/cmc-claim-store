@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtil;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -79,7 +79,7 @@ public class ClaimIssuedNotificationService {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
-        parameters.put("claimantType", PartyUtil.getType(claim.getClaimData().getClaimant()));
+        parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
         parameters.put("issuedOn", Formatting.formatDate(claim.getIssuedOn()));
         parameters.put("responseDeadline", Formatting.formatDate(claim.getResponseDeadline()));

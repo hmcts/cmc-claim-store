@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.PersonContent;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtil;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
@@ -25,13 +25,13 @@ public class ClaimantContentProvider {
         requireNonBlank(submitterEmail);
         requireNonBlank(submitterEmail);
         PersonContent personContent = personContentProvider.createContent(
-            PartyUtil.getType(claimant),
+            PartyUtils.getType(claimant),
             claimant.getName(),
             claimant.getAddress(),
             claimant.getCorrespondenceAddress().orElse(null),
             submitterEmail,
-            PartyUtil.getContactPerson(claimant).orElse(null),
-            PartyUtil.getBusinessName(claimant).orElse(null)
+            PartyUtils.getContactPerson(claimant).orElse(null),
+            PartyUtils.getBusinessName(claimant).orElse(null)
 
         );
         return new ClaimantContent(
