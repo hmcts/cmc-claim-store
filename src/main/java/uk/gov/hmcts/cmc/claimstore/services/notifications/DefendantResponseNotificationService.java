@@ -15,7 +15,14 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.party.Company;
+import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
+import uk.gov.hmcts.cmc.claimstore.models.party.Organisation;
+import uk.gov.hmcts.cmc.claimstore.models.party.Party;
+import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -23,6 +30,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+
 
 @Service
 public class DefendantResponseNotificationService {
@@ -35,7 +43,9 @@ public class DefendantResponseNotificationService {
     private static final String CLAIMANT_NAME = "claimantName";
     private static final String DEFENDANT_NAME = "defendantName";
     private static final String FRONTEND_BASE_URL = "frontendBaseUrl";
-
+    private static final String CLAIMANT_TYPE = "claimantType";
+    private static final String ISSUED_ON = "issuedOn";
+    private static final String RESPONSE_DEADLINE = "responseDeadline";
     private final NotificationClient notificationClient;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
@@ -44,7 +54,8 @@ public class DefendantResponseNotificationService {
     public DefendantResponseNotificationService(
         final NotificationClient notificationClient,
         final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
-        final NotificationsProperties notificationsProperties) {
+        final NotificationsProperties notificationsProperties
+    ) {
         this.notificationClient = notificationClient;
         this.freeMediationDecisionDateCalculator = freeMediationDecisionDateCalculator;
         this.notificationsProperties = notificationsProperties;
@@ -53,20 +64,37 @@ public class DefendantResponseNotificationService {
     public void notifyDefendant(final Claim claim, final String defendantEmail, final String reference) {
         final Map<String, String> parameters = aggregateParams(claim);
 
-        notify(defendantEmail, getEmailTemplates().getDefendantResponseIssued(), parameters, reference);
+        String template = getDefendantResponseIssuedEmailTemplate(claim.getClaimData().getClaimant());
+        notify(defendantEmail, template, parameters, reference);
+    }
+
+    private String getDefendantResponseIssuedEmailTemplate(final Party party) {
+        if (party instanceof Individual || party instanceof SoleTrader) {
+            return getEmailTemplates().getDefendantResponseIssuedToIndividual();
+        } else if (party instanceof Company || party instanceof Organisation) {
+            return getEmailTemplates().getDefendantResponseIssuedToCompany();
+        } else {
+            throw new NotificationException(("Unknown claimant type " + party));
+        }
     }
 
     public void notifyClaimant(
-        final Claim claim, final DefendantResponse response, final String submitterEmail, final String reference) {
+        final Claim claim,
+        final DefendantResponse response,
+        final String submitterEmail,
+        final String reference
+    ) {
         final Map<String, String> parameters = aggregateParams(claim, response.getResponse());
         notify(submitterEmail, getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void notify(final String targetEmail,
-                       final String emailTemplate,
-                       final Map<String, String> parameters,
-                       final String reference) {
+    public void notify(
+        final String targetEmail,
+        final String emailTemplate,
+        final Map<String, String> parameters,
+        final String reference
+    ) {
 
         try {
             notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
@@ -76,11 +104,13 @@ public class DefendantResponseNotificationService {
     }
 
     @Recover
-    public void logNotificationFailure(final NotificationException exception,
-                                       final Claim claim,
-                                       final String targetEmail,
-                                       final String emailTemplate,
-                                       final String reference) {
+    public void logNotificationFailure(
+        final NotificationException exception,
+        final Claim claim,
+        final String targetEmail,
+        final String emailTemplate,
+        final String reference
+    ) {
         final String errorMessage = String.format(
             "Failure: failed to send notification ( %s to %s ) due to %s",
             reference, targetEmail, exception.getMessage()
@@ -93,6 +123,7 @@ public class DefendantResponseNotificationService {
 
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -106,12 +137,15 @@ public class DefendantResponseNotificationService {
 
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put(MEDIATION_DECISION_DEADLINE, formatDate(decisionDeadline));
         parameters.put(FREE_MEDIATION_REQUESTED, isFreeMediationRequested ? "yes" : "");
         parameters.put(FREE_MEDIATION_NOT_REQUESTED, !isFreeMediationRequested ? "yes" : "");
+        parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
+        parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
 
         return parameters.build();
     }
