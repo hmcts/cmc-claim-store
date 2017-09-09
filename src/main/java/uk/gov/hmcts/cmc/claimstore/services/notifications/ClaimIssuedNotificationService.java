@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmc.claimstore.models.party.Party;
+import uk.gov.hmcts.cmc.claimstore.models.party.NamedParty;
 import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
@@ -80,7 +79,9 @@ public class ClaimIssuedNotificationService {
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
         parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
-        parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
+        if (!claim.getClaimData().isClaimantRepresented()) {
+            parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
+        }
         parameters.put("issuedOn", Formatting.formatDate(claim.getIssuedOn()));
         parameters.put("responseDeadline", Formatting.formatDate(claim.getResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
@@ -90,21 +91,13 @@ public class ClaimIssuedNotificationService {
         return parameters.build();
     }
 
-    private String getNameWithTitle(final Party party) {
-        return new StringBuilder().append(getTitle(party)).append(party.getName()).toString();
-    }
-
-    private String getNameWithTitle(final TheirDetails otherParty) {
-        return new StringBuilder().append(getTitle(otherParty)).append(otherParty.getName()).toString();
-    }
-
-    private String getTitle(final Object party) {
+    private String getNameWithTitle(final NamedParty party) {
         final StringBuilder title = new StringBuilder();
         if (party instanceof TitledParty) {
             ((TitledParty) party).getTitle().ifPresent(t -> title.append(t).append(" "));
         }
 
-        return title.toString();
+        return title.append(party.getName()).toString();
     }
 
 }

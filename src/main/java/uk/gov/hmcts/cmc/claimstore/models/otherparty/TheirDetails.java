@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
+import uk.gov.hmcts.cmc.claimstore.models.party.NamedParty;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = OrganisationDetails.class, name = "organisation")
     }
 )
-public abstract class TheirDetails {
+public abstract class TheirDetails implements NamedParty {
 
     @NotBlank
     @Size(max = 255, message = "may not be longer than {max} characters")
@@ -60,6 +61,7 @@ public abstract class TheirDetails {
         this.representative = representative;
     }
 
+    @Override
     public String getName() {
         return name;
     }

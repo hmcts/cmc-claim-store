@@ -33,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = Organisation.class, name = "organisation")
     }
 )
-public abstract class Party {
+public abstract class Party implements NamedParty {
 
     @NotBlank
     @Size(max = 255, message = "may not be longer than {max} characters")
@@ -66,6 +66,7 @@ public abstract class Party {
         this.representative = representative;
     }
 
+    @Override
     public String getName() {
         return name;
     }
