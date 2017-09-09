@@ -12,12 +12,13 @@ public class OrganisationDetails extends TheirDetails {
     private final String companiesHouseNumber;
 
     public OrganisationDetails(
-        String name,
-        Address address,
-        String email,
-        Representative representative,
-        String contactPerson,
-        String companiesHouseNumber) {
+        final String name,
+        final Address address,
+        final String email,
+        final Representative representative,
+        final String contactPerson,
+        final String companiesHouseNumber
+    ) {
         super(name, address, email, representative);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;

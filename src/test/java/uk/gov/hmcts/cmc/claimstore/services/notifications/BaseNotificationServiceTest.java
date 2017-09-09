@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+
 import org.mockito.ArgumentCaptor;
+
 import org.mockito.Captor;
 import org.mockito.Mock;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.Map;
+
 
 public abstract class BaseNotificationServiceTest {
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
@@ -30,5 +33,4 @@ public abstract class BaseNotificationServiceTest {
 
     @Captor
     protected ArgumentCaptor<Map<String, String>> templateParameters;
-
 }

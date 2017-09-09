@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,31 +22,41 @@ public class SealedClaimContentProvider {
 
     @Autowired
     public SealedClaimContentProvider(
-        ClaimantContentProvider claimantContentProvider,
-        PersonContentProvider personContentProvider, ClaimContentProvider claimContentProvider) {
+        final ClaimantContentProvider claimantContentProvider,
+        final PersonContentProvider personContentProvider,
+        final ClaimContentProvider claimContentProvider
+    ) {
         this.claimantContentProvider = claimantContentProvider;
         this.personContentProvider = personContentProvider;
         this.claimContentProvider = claimContentProvider;
     }
 
-    public Map<String, Object> createContent(Claim claim, String submitterEmail) {
+    public Map<String, Object> createContent(final Claim claim, final String submitterEmail) {
         requireNonNull(claim);
         requireNonBlank(submitterEmail);
 
         Map<String, Object> map = new HashMap<>();
-        map.put("claimant", claimantContentProvider.createContent(claim.getClaimData().getClaimant(), submitterEmail));
+
+        map.put("claimant", claimantContentProvider.createContent(
+            claim.getClaimData().getClaimant(),
+            submitterEmail)
+        );
 
         TheirDetails defendant = claim.getClaimData().getDefendant();
 
-        String emailAddress = defendant.getEmail().orElse(null);
-
-        map.put("defendant", personContentProvider.createContent(defendant.getName(), defendant.getAddress(),
-            null, emailAddress));
+        map.put("defendant", personContentProvider.createContent(
+            PartyUtils.getType(defendant),
+            defendant.getName(),
+            defendant.getAddress(),
+            null,
+            defendant.getEmail().orElse(null),
+            PartyUtils.getDefendantContactPerson(defendant).orElse(null),
+            PartyUtils.getDefendantBusinessName(defendant).orElse(null))
+        );
 
         map.put("claim", claimContentProvider.createContent(claim));
         map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
 
         return map;
     }
-
 }

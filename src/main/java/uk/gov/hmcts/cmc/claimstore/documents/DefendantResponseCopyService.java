@@ -21,7 +21,8 @@ public class DefendantResponseCopyService {
     public DefendantResponseCopyService(
         DefendantResponseCopyContentProvider contentProvider,
         StaffEmailTemplates emailTemplates,
-        PDFServiceClient pdfServiceClient) {
+        PDFServiceClient pdfServiceClient
+    ) {
         this.contentProvider = contentProvider;
         this.emailTemplates = emailTemplates;
         this.pdfServiceClient = pdfServiceClient;

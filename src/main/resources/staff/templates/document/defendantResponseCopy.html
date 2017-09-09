@@ -135,6 +135,22 @@
           {% endif %}
         </td>
       </tr>
+      {% if defendant.contactPerson is not empty %}
+      <tr>
+        <td>Contact person:</td>
+        <td>
+          {{ defendant.contactPerson }}
+        </td>
+      </tr>
+      {% endif %}
+      {% if defendant.businessName is not empty %}
+      <tr>
+        <td>Business name:</td>
+        <td>
+          Trading as {{ defendant.businessName }}
+        </td>
+      </tr>
+      {% endif %}
       <tr>
         <td>Address:</td>
         <td>
@@ -189,12 +205,14 @@
           {{ defendant.email }}
         </td>
       </tr>
+      {% if defendant.dateOfBirth is not empty %}
       <tr>
         <td>Date of birth:</td>
         <td>
           {{ defendant.dateOfBirth }}
         </td>
       </tr>
+      {% endif %}
     </table>
   </div>
 </div>
