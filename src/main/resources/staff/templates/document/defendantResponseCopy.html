@@ -205,12 +205,14 @@
           {{ defendant.email }}
         </td>
       </tr>
+      {% if defendant.dateOfBirth is not empty %}
       <tr>
         <td>Date of birth:</td>
         <td>
           {{ defendant.dateOfBirth }}
         </td>
       </tr>
+      {% endif %}
     </table>
   </div>
 </div>
