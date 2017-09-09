@@ -13,7 +13,10 @@ public class EmailTemplates {
     private String defendantClaimIssued;
 
     @NotEmpty
-    private String defendantResponseIssued;
+    private String defendantResponseIssuedToIndividual;
+
+    @NotEmpty
+    private String defendantResponseIssuedToCompany;
 
     @NotEmpty
     private String claimantResponseIssued;
@@ -54,12 +57,20 @@ public class EmailTemplates {
         this.defendantClaimIssued = defendantClaimIssued;
     }
 
-    public String getDefendantResponseIssued() {
-        return defendantResponseIssued;
+    public String getDefendantResponseIssuedToIndividual() {
+        return defendantResponseIssuedToIndividual;
     }
 
-    public void setDefendantResponseIssued(String defendantResponseIssued) {
-        this.defendantResponseIssued = defendantResponseIssued;
+    public void setDefendantResponseIssuedToIndividual(String defendantResponseIssuedToIndividual) {
+        this.defendantResponseIssuedToIndividual = defendantResponseIssuedToIndividual;
+    }
+
+    public String getDefendantResponseIssuedToCompany() {
+        return defendantResponseIssuedToCompany;
+    }
+
+    public void setDefendantResponseIssuedToCompany(String defendantResponseIssuedToCompany) {
+        this.defendantResponseIssuedToCompany = defendantResponseIssuedToCompany;
     }
 
     public String getClaimantResponseIssued() {

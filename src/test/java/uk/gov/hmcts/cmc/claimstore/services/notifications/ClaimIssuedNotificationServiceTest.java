@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
             eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
 
         assertThat(templateParameters.getValue())
-            .containsEntry(ClaimIssuedNotificationService.CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+            .containsEntry(NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     @Test
@@ -73,7 +74,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
             eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
 
         assertThat(templateParameters.getValue())
-            .containsEntry(ClaimIssuedNotificationService.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
+            .containsEntry(NotificationTemplateParameters.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
             + claim.getClaimData().getClaimant().getName();
 
         assertThat(templateParameters.getValue())
-            .containsEntry(ClaimIssuedNotificationService.CLAIMANT_NAME, name);
+            .containsEntry(NotificationTemplateParameters.CLAIMANT_NAME, name);
     }
 
     @Test
