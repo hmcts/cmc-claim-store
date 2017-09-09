@@ -16,13 +16,13 @@ public class DefendantDetailsContent {
     private final String type;
     private final String fullName;
     private final Boolean nameAmended;
+    private final String businessName;
+    private final String contactPerson;
     private final Address address;
     private final Address correspondenceAddress;
     private final Boolean addressAmended;
     private final String dateOfBirth;
     private final String email;
-    private final String businessName;
-    private final String contactPerson;
 
     public DefendantDetailsContent(
         final TheirDetails providedByClaimant,
@@ -34,13 +34,13 @@ public class DefendantDetailsContent {
         this.type = PartyTypeContentProvider.getType(providedByClaimant);
         this.fullName = nameAmended ? defendant.getName() : providedByClaimant.getName();
         this.nameAmended = nameAmended;
+        this.businessName = PartyTypeContentProvider.getDefendantBusinessName(providedByClaimant).orElse(null);
+        this.contactPerson = PartyTypeContentProvider.getDefendantContactPerson(providedByClaimant).orElse(null);
         this.address = addressAmended ? defendant.getAddress() : providedByClaimant.getAddress();
         this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.addressAmended = addressAmended;
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
         this.email = defendantResponse.getDefendantEmail();
-        this.businessName = PartyTypeContentProvider.getDefendantBusinessName(providedByClaimant).orElse(null);
-        this.contactPerson = PartyTypeContentProvider.getDefendantContactPerson(providedByClaimant).orElse(null);
     }
 
     private Address correspondenceAddress(final DefendantResponse defendantResponse) {
@@ -60,6 +60,14 @@ public class DefendantDetailsContent {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
     }
 
     public Boolean getNameAmended() {
