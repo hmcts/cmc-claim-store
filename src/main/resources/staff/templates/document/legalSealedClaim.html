@@ -298,8 +298,12 @@
     <tr>
       <td><h4>Statement of value</h4></td>
       <td>
-        <span>{{ statementOfValue.personalInjury }} </span> <br/>
-        <span>{{ statementOfValue.housingDisrepair }} </span><br/>
+        {% if statementOfValue.personalInjury.length > 0 %}
+        <span>{{ statementOfValue.personalInjury }} </span> <br/><br/>
+        {% endif %}
+        {% if statementOfValue.housingDisrepair.length > 0 %}
+        <span>{{ statementOfValue.housingDisrepair }} </span> <br/> <br/>
+        {% endif %}
         <span>{{ statementOfValue.claimValue }} </span>
       </td>
     </tr>
