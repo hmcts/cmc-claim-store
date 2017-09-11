@@ -12,7 +12,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 public class ClaimIssuedStaffNotificationEmailContentProvider implements EmailContentProvider<Claim> {
 
     @Override
-    public EmailContent createContent(Claim claim) {
+    public EmailContent createContent(final Claim claim) {
         requireNonBlank(claim.getReferenceNumber());
 
         return new EmailContent(
