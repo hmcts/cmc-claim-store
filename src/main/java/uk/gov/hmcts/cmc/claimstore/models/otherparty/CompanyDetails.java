@@ -11,12 +11,12 @@ public class CompanyDetails extends TheirDetails {
     private final String contactPerson;
 
     public CompanyDetails(
-        String name,
-        Address address,
-        Address serviceAddress,
-        String email,
-        Representative representative,
-        String contactPerson
+        final String name,
+        final Address address,
+        final Address serviceAddress,
+        final String email,
+        final Representative representative,
+        final String contactPerson
     ) {
         super(name, address, serviceAddress, email, representative);
         this.contactPerson = contactPerson;

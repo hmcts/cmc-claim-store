@@ -46,8 +46,12 @@ public class DefendantResponseService {
     }
 
     @Transactional
-    public DefendantResponse save(final long claimId, final long defendantId,
-                             final ResponseData responseData, final String authorization) {
+    public DefendantResponse save(
+        final long claimId,
+        final long defendantId,
+        final ResponseData responseData,
+        final String authorization
+    ) {
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
         final Long responseId = defendantResponseRepository.save(claimId, defendantId, defendantEmail,
             jsonMapper.toJson(responseData));
