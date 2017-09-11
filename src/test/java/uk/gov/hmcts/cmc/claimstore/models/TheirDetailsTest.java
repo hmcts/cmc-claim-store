@@ -92,8 +92,20 @@ public class TheirDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("address.postcode : Postcode should not be empty");
+            .contains("serviceAddress.postcode : Postcode should not be empty");
     }
+
+    @Test
+    public void shouldBeValidWhenGivenNullServiceAddress() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withServiceAddress(null)
+            .partyDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors).isEmpty();
+    }
+
 
     @Test
     public void shouldBeValidWhenGivenNullEmail() {
