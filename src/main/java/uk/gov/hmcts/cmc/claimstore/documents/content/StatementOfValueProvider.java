@@ -17,20 +17,20 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 @Component
 public class StatementOfValueProvider {
 
-    private static final String CAN_NOT_STATE = "The claimant can’t state the value of the claim. ";
-    private static final String RECOVER_UP_TO = "The claimant expects to recover up to %s. ";
-    private static final String WORTH_MORE_THAN = "The claimant estimates the claim to be worth more than %s. ";
-    private static final String PERSONAL_INJURY = "This claim is for personal injury. ";
-    private static final BigInteger AMOUNT = BigInteger.valueOf(1000);
-    private static final String PERSONAL_INJURY_DAMAGES = "The claimant expects to recover %s "
+    public static final String CAN_NOT_STATE = "The claimant can’t state the value of the claim. ";
+    public static final String RECOVER_UP_TO = "The claimant expects to recover up to %s. ";
+    public static final String WORTH_MORE_THAN = "The claimant estimates the claim to be worth more than %s. ";
+    public static final String PERSONAL_INJURY = "This claim is for personal injury. ";
+    public static final BigInteger AMOUNT = BigInteger.valueOf(1000);
+    public static final String PERSONAL_INJURY_DAMAGES = "The claimant expects to recover %s "
         + formatMoney(AMOUNT) + " as general damages for pain, suffering and loss of amenity. ";
-    private static final String HOUSING_DISREPAIR = "This claim is for housing disrepair and includes an order for "
+    public static final String HOUSING_DISREPAIR = "This claim is for housing disrepair and includes an order for "
         + "the landlord to carry out work. ";
-    private static final String COST_OF_REPAIRS = "The cost of repairs or other work is %s "
+    public static final String COST_OF_REPAIRS = "The cost of repairs or other work is %s "
         + formatMoney(AMOUNT) + ". ";
-    private static final String OTHER_DAMAGES = "The cost of any claim for damages is %s "
+    public static final String OTHER_DAMAGES = "The cost of any claim for damages is %s "
         + formatMoney(AMOUNT) + ". ";
-    private static final String ALSO_HOUSING_DISREPAIR = "This is also a claim for housing disrepair which includes "
+    public static final String ALSO_HOUSING_DISREPAIR = "This is also a claim for housing disrepair which includes "
         + "an order for the landlord to carry out work. ";
 
 
