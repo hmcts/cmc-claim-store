@@ -16,13 +16,13 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
     private final String businessName;
 
     public SoleTraderDetails(
-        String name,
-        Address address,
-        Address serviceAddress,
-        String email,
-        Representative representative,
-        String title,
-        String businessName
+        final String name,
+        final Address address,
+        final Address serviceAddress,
+        final String email,
+        final Representative representative,
+        final String title,
+        final String businessName
     ) {
         super(name, address, serviceAddress, email, representative);
         this.title = title;
