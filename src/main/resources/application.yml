@@ -50,13 +50,14 @@ notifications:
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"
   templates:
     email:
-      claimantClaimIssued: "d7bbde3d-4c74-41f0-a4d4-4df2c53b1310"
-      defendantClaimIssued: "dac659a6-2893-4205-81fb-1d42f47ccb13"
-      defendantResponseIssued: "e8636e5e-17d8-4390-81fb-23235f2d1fbf"
-      claimantResponseIssued: "cf444aa0-d578-4d03-b680-baaf08512016"
-      staffMoreTimeRequested: "b0a060d2-62be-405a-9f74-0377fdaaed28"
-      claimantMoreTimeRequested: "cfe5bb37-6f17-40c8-b14e-18b4fcfb9125"
-      defendantMoreTimeRequested: "03b4dc3d-2768-4aa5-9e29-2e537149254f"
+      claimantClaimIssued: "58e645b8-bcd6-4462-822c-f17da9dd3dc7"
+      defendantClaimIssued: "c38550a0-a981-4698-a644-481ad3dd8228"
+      defendantResponseIssuedToIndividual: "128bfa11-0b09-4162-bb1e-36fa167af191"
+      defendantResponseIssuedToCompany: "611ee21b-0063-4fee-a344-393b73868486"
+      claimantResponseIssued: "c82ab455-4786-4199-a0f3-e9e159b345f1"
+      staffMoreTimeRequested: "23db60df-1dbb-405a-ab95-988b635455d1"
+      claimantMoreTimeRequested: "f325bc6b-2169-4014-9a3c-32100317c6ed"
+      defendantMoreTimeRequested: "07ffde84-b1d7-4ec0-b2db-406b73cd9080"
       representativeClaimIssued: "f2b21b9c-fc4a-4589-807b-3156dbf5bf01"
 
 staff-notifications:
