@@ -14,8 +14,8 @@ import static java.util.Objects.requireNonNull;
 
 public class Formatting {
 
-    private static final String DATE_PATTERN = "dd MMMM uuuu";
-    private static final String DATE_TIME_PATTERN = "dd MMMM uuuu 'at' h:mma";
+    private static final String DATE_PATTERN = "d MMMM uuuu";
+    private static final String DATE_TIME_PATTERN = "d MMMM uuuu 'at' h:mma";
 
     private Formatting() {
         // Statics utility class, no instances
