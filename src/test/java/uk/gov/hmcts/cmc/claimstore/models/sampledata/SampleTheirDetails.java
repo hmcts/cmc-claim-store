@@ -85,7 +85,8 @@ public class SampleTheirDetails {
     public List<TheirDetails> individualDetails(int count) {
         List<TheirDetails> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            individualDetailsList.add(new IndividualDetails(name, address, serviceAddress, email, representative, title));
+            individualDetailsList.add(new IndividualDetails(name, address, serviceAddress,
+                                                            email, representative, title));
         }
         return individualDetailsList;
     }
@@ -95,7 +96,8 @@ public class SampleTheirDetails {
     }
 
     public OrganisationDetails organisationDetails() {
-        return new OrganisationDetails(name, address, serviceAddress, email, representative, contactPerson, companiesHouseNumber);
+        return new OrganisationDetails(name, address, serviceAddress, email, representative,
+                                        contactPerson, companiesHouseNumber);
     }
 
     public SoleTraderDetails soleTraderDetails() {
