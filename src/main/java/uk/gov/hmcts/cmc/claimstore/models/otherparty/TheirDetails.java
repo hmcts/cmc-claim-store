@@ -75,8 +75,8 @@ public abstract class TheirDetails implements NamedParty {
         return address;
     }
 
-    public Address getServiceAddress() {
-        return serviceAddress;
+    public Optional<Address> getServiceAddress() {
+        return Optional.ofNullable(serviceAddress);
     }
 
     public Optional<String> getEmail() {
