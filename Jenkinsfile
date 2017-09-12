@@ -1,15 +1,12 @@
 #!groovy
-@Library(['CMC', 'Reform'])
-import uk.gov.hmcts.Ansible
-@Library(['CMC', 'Reform'])
-import uk.gov.hmcts.Ansible
 
 //noinspection GroovyAssignabilityCheck Jenkins API requires this format
 properties(
   [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/cmc-claim-store/'],
    pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
-
+@Library(['CMC', 'Reform'])
+import uk.gov.hmcts.Ansible
 import uk.gov.hmcts.Packager
 import uk.gov.hmcts.RPMTagger
 import uk.gov.hmcts.Versioner
