@@ -309,7 +309,13 @@
     <tr>
       <td><h4>Statement of value</h4></td>
       <td>
-        {{ statementOfValue }}
+        {% if statementOfValue.personalInjury is defined %}
+        <span>{{ statementOfValue.personalInjury }} </span> <br/><br/>
+        {% endif %}
+        {% if statementOfValue.housingDisrepair is defined %}
+        <span>{{ statementOfValue.housingDisrepair }} </span> <br/> <br/>
+        {% endif %}
+        <span>{{ statementOfValue.claimValue }} </span>
       </td>
     </tr>
   </table>
