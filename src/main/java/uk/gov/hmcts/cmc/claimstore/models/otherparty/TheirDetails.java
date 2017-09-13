@@ -107,7 +107,7 @@ public abstract class TheirDetails implements NamedParty {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, address, email, representative);
+        return Objects.hash(name, address, serviceAddress, email, representative);
     }
 
     @Override
