@@ -5,12 +5,11 @@ properties(
   [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/cmc-claim-store/'],
    pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
-
 @Library(['CMC', 'Reform'])
 import uk.gov.hmcts.Ansible
 import uk.gov.hmcts.Packager
-import uk.gov.hmcts.Versioner
 import uk.gov.hmcts.RPMTagger
+import uk.gov.hmcts.Versioner
 import uk.gov.hmcts.cmc.integrationtests.IntegrationTests
 import uk.gov.hmcts.cmc.smoketests.SmokeTests
 
@@ -37,25 +36,27 @@ timestamps {
           checkout scm
         }
 
-        stage('Build') {
-          sh "./gradlew clean build -x test -x apiTest"
-        }
-
-        stage('OWASP dependency check') {
-          try {
-            sh "./gradlew -DdependencyCheck.failBuild=true dependencyCheck"
-          } catch (ignored) {
-            archiveArtifacts 'build/reports/dependency-check-report.html'
-            notifyBuildResult channel: channel, color: 'warning',
-              message: 'OWASP dependency check failed see the report for the errors'
+        onMaster {
+          stage('Build') {
+            sh "./gradlew clean build -x test -x apiTest"
           }
-        }
 
-        stage('Test (Unit)') {
-          try {
-            sh "./gradlew test"
-          } finally {
-            junit 'build/test-results/test/**/*.xml'
+          stage('OWASP dependency check') {
+            try {
+              sh "./gradlew -DdependencyCheck.failBuild=true dependencyCheck"
+            } catch (ignored) {
+              archiveArtifacts 'build/reports/dependency-check-report.html'
+              notifyBuildResult channel: channel, color: 'warning',
+                message: 'OWASP dependency check failed see the report for the errors'
+            }
+          }
+
+          stage('Test (Unit)') {
+            try {
+              sh "./gradlew test"
+            } finally {
+              junit 'build/test-results/test/**/*.xml'
+            }
           }
         }
 
@@ -74,7 +75,7 @@ timestamps {
         stage('Sonar') {
           onPR {
             withCredentials([string(credentialsId: 'jenkins-github-api-text', variable: 'GITHUB_ACCESS_TOKEN')]) {
-            String prNumber = env.BRANCH_NAME.substring(3)
+              String prNumber = env.BRANCH_NAME.substring(3)
               sh """
                ./gradlew -Dsonar.analysis.mode=preview \
                 -Dsonar.github.endpoint=$GITHUB_ENTERPRISE_API_URL \
