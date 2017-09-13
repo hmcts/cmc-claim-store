@@ -36,12 +36,12 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
-        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
     }
 
     @Test
     public void emailClaimantShouldSendEmailUsingPredefinedTemplate() throws Exception {
-        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), anyMap(), anyString());
@@ -49,7 +49,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void emailClaimantShouldSendToClaimantEmail() throws Exception {
-        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
 
         verify(notificationClient).sendEmail(
             anyString(), eq(USER_EMAIL), anyMap(), anyString());
@@ -57,7 +57,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void emailClaimantShouldPassClaimReferenceNumberInTemplateParameters() throws Exception {
-        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
@@ -68,7 +68,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void emailClaimantShouldPassFrontendHostInTemplateParameters() throws Exception {
-        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
@@ -79,7 +79,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void emailClaimantShouldPassNameInTemplateParameters() throws Exception {
-        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
@@ -95,7 +95,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void emailClaimantShouldUseClaimReferenceNumberForNotificationReference() throws Exception {
-        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference);
+        service.sendMail(claim, USER_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
 
         verify(notificationClient).sendEmail(anyString(), anyString(),
             anyMap(), eq(reference));
