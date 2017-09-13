@@ -12,6 +12,8 @@ public final class SampleClaimIssuedEvent {
     }
 
     public static final String CLAIMANT_EMAIL = SampleClaim.SUBMITTER_EMAIL;
+    public static final String SUBMITTER_SURNAME = "Patrick";
+    public static final String SUBMITTER_FORENAME = "Steven";
     public static final String REPRESENTATIVE_EMAIL = SampleClaim.SUBMITTER_EMAIL;
     public static final String DEFENDANT_EMAIL = SampleDefendantResponse.DEFENDANT_EMAIL;
     public static final String PIN = "Uyasd9834h";

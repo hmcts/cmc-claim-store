@@ -47,9 +47,10 @@ public class ClaimIssuedNotificationService {
         final String targetEmail,
         final Optional<String> pin,
         final String emailTemplateId,
-        final String reference
+        final String reference,
+        final Optional<String> claimantName
     ) {
-        final Map<String, String> parameters = aggregateParams(claim, pin);
+        final Map<String, String> parameters = aggregateParams(claim, pin, claimantName);
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {
@@ -64,7 +65,8 @@ public class ClaimIssuedNotificationService {
         final String targetEmail,
         final Optional<String> pin,
         final String emailTemplateId,
-        final String reference
+        final String reference,
+        final Optional<String> claimantName
     ) {
         final String errorMessage = "Failure: "
             + " failed to send notification (" + reference
@@ -74,13 +76,16 @@ public class ClaimIssuedNotificationService {
         logger.info(errorMessage, exception);
     }
 
-    private Map<String, String> aggregateParams(final Claim claim, final Optional<String> pin) {
+    private Map<String, String> aggregateParams(final Claim claim, final Optional<String> pin,
+                                                final Optional<String> claimantName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
         parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         if (!claim.getClaimData().isClaimantRepresented()) {
+            parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
             parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
+        } else {
+            claimantName.ifPresent(c -> parameters.put(CLAIMANT_NAME, c));
         }
         parameters.put("issuedOn", Formatting.formatDate(claim.getIssuedOn()));
         parameters.put("responseDeadline", Formatting.formatDate(claim.getResponseDeadline()));

@@ -36,7 +36,8 @@ public class JsonMapperTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
-            .withClaimant(SampleParty.builder().withRepresentative(null).individual())
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
             .withFeeCode("X0012")
             .build();
@@ -68,7 +69,8 @@ public class JsonMapperTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
-            .withClaimant(SampleParty.builder().withRepresentative(null).individual())
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
             .build();
 
