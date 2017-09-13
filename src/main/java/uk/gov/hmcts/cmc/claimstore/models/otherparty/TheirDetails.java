@@ -43,6 +43,9 @@ public abstract class TheirDetails implements NamedParty {
     @NotNull
     private final Address address;
 
+    @Valid
+    private final Address serviceAddress;
+
     @Email
     private final String email;
 
@@ -52,11 +55,13 @@ public abstract class TheirDetails implements NamedParty {
     public TheirDetails(
         final String name,
         final Address address,
+        final Address serviceAddress,
         final String email,
         final Representative representative
     ) {
         this.name = name;
         this.address = address;
+        this.serviceAddress = serviceAddress;
         this.email = email;
         this.representative = representative;
     }
@@ -68,6 +73,10 @@ public abstract class TheirDetails implements NamedParty {
 
     public Address getAddress() {
         return address;
+    }
+
+    public Optional<Address> getServiceAddress() {
+        return Optional.ofNullable(serviceAddress);
     }
 
     public Optional<String> getEmail() {
@@ -91,13 +100,14 @@ public abstract class TheirDetails implements NamedParty {
 
         return Objects.equals(this.name, that.name)
             && Objects.equals(this.address, that.address)
+            && Objects.equals(this.serviceAddress, that.serviceAddress)
             && Objects.equals(this.email, that.email)
             && Objects.equals(this.representative, that.representative);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, address, email, representative);
+        return Objects.hash(name, address, serviceAddress, email, representative);
     }
 
     @Override
