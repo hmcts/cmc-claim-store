@@ -51,40 +51,41 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     @Test
     public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
 
-        final ClaimIssuedEvent claimIssuedEvent = new ClaimIssuedEvent(
-            SampleClaimIssuedEvent.CLAIM, SampleClaimIssuedEvent.PIN
-        );
+        final ClaimIssuedEvent claimIssuedEvent
+            = new ClaimIssuedEvent(SampleClaimIssuedEvent.CLAIM, SampleClaimIssuedEvent.PIN);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
         verify(claimIssuedNotificationService, once()).sendMail(SampleClaimIssuedEvent.CLAIM,
             SampleClaimIssuedEvent.CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
-            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber());
+            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+            Optional.empty());
 
         verify(claimIssuedNotificationService, once()).sendMail(SampleClaimIssuedEvent.CLAIM,
             SampleClaimIssuedEvent.DEFENDANT_EMAIL, Optional.of(SampleClaimIssuedEvent.PIN),
             DEFENDANT_CLAIM_ISSUED_TEMPLATE,
-            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber());
+            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+            Optional.empty());
     }
 
     @Test
     public void sendNotificationsSendsNotificationToClaimantOnly() throws NotificationClientException {
 
         Claim claimNoDefendantEmail = getClaimWithNoDefendantEmail();
-        ClaimIssuedEvent claimIssuedEvent = new ClaimIssuedEvent(
-            claimNoDefendantEmail, SampleClaimIssuedEvent.PIN
-        );
+        ClaimIssuedEvent claimIssuedEvent = new ClaimIssuedEvent(claimNoDefendantEmail, SampleClaimIssuedEvent.PIN);
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
         verify(claimIssuedNotificationService, once()).sendMail(claimNoDefendantEmail,
             SampleClaimIssuedEvent.CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
-            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber());
+            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+            Optional.empty());
 
         verify(claimIssuedNotificationService, never()).sendMail(claimNoDefendantEmail,
             SampleClaimIssuedEvent.DEFENDANT_EMAIL, Optional.of(SampleClaimIssuedEvent.PIN),
             DEFENDANT_CLAIM_ISSUED_TEMPLATE,
-            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber());
+            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+            Optional.empty());
     }
 }

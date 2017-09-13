@@ -36,7 +36,8 @@ public class SerializationTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
-            .withClaimant(SampleParty.builder().withRepresentative(null).individual())
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
             .build();
 

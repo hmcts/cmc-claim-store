@@ -26,6 +26,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 public class RequestMoreTimeForResponseTest extends BaseTest {
@@ -33,8 +35,12 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
     private static final String AUTH_TOKEN = "it's me!";
     private static final long DEFENDANT_ID = 100L;
     private static final LocalDate RESPONSE_DEADLINE = LocalDate.now().plusDays(10);
-    private static final UserDetails USER_DETAILS = new UserDetails(DEFENDANT_ID, "myemail@example.com");
-    private static final UserDetails OTHER_USER_DETAILS = new UserDetails(SUBMITTER_ID, "other@example.com");
+    private static final UserDetails USER_DETAILS
+        = new UserDetails(DEFENDANT_ID, "myemail@example.com", SUBMITTER_FORENAME, SUBMITTER_SURNAME);
+
+    private static final UserDetails OTHER_USER_DETAILS
+        = new UserDetails(SUBMITTER_ID, "other@example.com", SUBMITTER_FORENAME, SUBMITTER_SURNAME);
+
     private static final boolean MORE_TIME_ALREADY_REQUESTED = true;
     private static final boolean MORE_TIME_NOT_REQUESTED_YET = false;
 

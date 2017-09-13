@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.utils.MonetaryConversions;
+import uk.gov.hmcts.cmc.claimstore.utils.Optionals;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -38,8 +39,10 @@ public class ClaimData {
     private final UUID externalId;
 
     @Valid
-    @NotNull
-    private final Party claimant;
+    @NotEmpty
+    @Size(max = 20, message = "at most {max} claimants are supported")
+    @EachNotNull
+    private final List<Party> claimants;
 
     @Valid
     @NotEmpty
@@ -92,7 +95,7 @@ public class ClaimData {
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
         final UUID externalId,
-        final Party claimant,
+        final List<Party> claimants,
         final List<TheirDetails> defendants,
         final Payment payment,
         final Amount amount,
@@ -109,7 +112,7 @@ public class ClaimData {
         final String feeCode) {
 
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
-        this.claimant = claimant;
+        this.claimants = claimants;
         this.defendants = defendants;
         this.payment = payment;
         this.amount = amount;
@@ -126,8 +129,8 @@ public class ClaimData {
         this.feeCode = feeCode;
     }
 
-    public Party getClaimant() {
-        return claimant;
+    public List<Party> getClaimants() {
+        return claimants;
     }
 
     public Amount getAmount() {
@@ -147,6 +150,15 @@ public class ClaimData {
     }
 
     @JsonIgnore
+    public Party getClaimant() {
+        if (claimants.size() == 1) {
+            return claimants.get(0);
+        } else {
+            throw new IllegalStateException("This claim has multiple claimants");
+        }
+    }
+
+    @JsonIgnore
     public TheirDetails getDefendant() {
         if (defendants.size() == 1) {
             return defendants.get(0);
@@ -157,7 +169,7 @@ public class ClaimData {
 
     @JsonIgnore
     public Boolean isClaimantRepresented() {
-        return claimant.getRepresentative().isPresent();
+        return claimants.stream().flatMap(p -> Optionals.toStream(p.getRepresentative())).findFirst().isPresent();
     }
 
     @JsonIgnore
@@ -219,7 +231,7 @@ public class ClaimData {
             return false;
         }
         ClaimData that = (ClaimData) other;
-        return Objects.equals(claimant, that.claimant)
+        return Objects.equals(claimants, that.claimants)
             && Objects.equals(defendants, that.defendants)
             && Objects.equals(payment, that.payment)
             && Objects.equals(amount, that.amount)
@@ -240,7 +252,7 @@ public class ClaimData {
     @Override
     public int hashCode() {
         return Objects.hash(
-            claimant,
+            claimants,
             defendants,
             payment,
             amount,
