@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.models.DefaultJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.DefaultJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 @Api
@@ -45,7 +46,7 @@ public class DefaultJudgmentController {
     @ApiOperation("Save default judgment")
     public DefaultJudgment save(
         @PathVariable("claimId") final Long claimId,
-        @NotNull @RequestBody final String defaultJudgment,
+        @NotNull @RequestBody final Map<String, Object> defaultJudgment,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
     ) {
         final long submitterId = userService.getUserDetails(authorisation).getId();
