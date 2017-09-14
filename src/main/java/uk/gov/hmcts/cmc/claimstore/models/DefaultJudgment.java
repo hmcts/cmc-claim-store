@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -15,7 +16,7 @@ public class DefaultJudgment {
     private final Long claimId;
     private final Long claimantId;
     private final String externalId;
-    private final String data;
+    private final Map<String, Object> data;
     private final LocalDateTime createdAt;
 
     public DefaultJudgment(
@@ -23,7 +24,7 @@ public class DefaultJudgment {
         final Long claimId,
         final Long claimantId,
         final String externalId,
-        final String data,
+        final Map<String, Object> data,
         final LocalDateTime createdAt) {
         this.id = id;
         this.claimId = claimId;
@@ -62,7 +63,7 @@ public class DefaultJudgment {
         private Long claimId;
         private Long claimantId;
         private String externalId;
-        private String data;
+        private Map<String, Object> data;
         private LocalDateTime createdAt;
 
         public Builder setId(Long id) {
@@ -80,7 +81,7 @@ public class DefaultJudgment {
             return this;
         }
 
-        public Builder setData(String data) {
+        public Builder setData(Map<String, Object> data) {
             this.data = data;
             return this;
         }
