@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 
 import org.mockito.ArgumentCaptor;
-
 import org.mockito.Captor;
 import org.mockito.Mock;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -10,11 +9,9 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.utils.Optionals;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.Map;
-import java.util.Optional;
 
 
 public abstract class BaseNotificationServiceTest {
