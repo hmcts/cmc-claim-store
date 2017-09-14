@@ -32,7 +32,8 @@ public class ClaimIssuedCitizenActionsHandler {
             event.getSubmitterEmail(),
             Optional.empty(),
             getEmailTemplates().getClaimantClaimIssued(),
-            "claimant-issue-notification-" + claim.getReferenceNumber());
+            "claimant-issue-notification-" + claim.getReferenceNumber(),
+            Optional.empty());
     }
 
     @EventListener
@@ -47,7 +48,8 @@ public class ClaimIssuedCitizenActionsHandler {
                         defendantEmail,
                         Optional.of(event.getPin()),
                         getEmailTemplates().getDefendantClaimIssued(),
-                        "defendant-issue-notification-" + claim.getReferenceNumber()
+                        "defendant-issue-notification-" + claim.getReferenceNumber(),
+                        Optional.empty()
                     ));
         }
     }
