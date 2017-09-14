@@ -51,10 +51,10 @@ public class RepresentedClaimIssuedEvent {
 
     @Override
     public String toString() {
-        return "RepresentedClaimIssuedEvent{" +
-            "claim=" + claim +
-            ", representativeName='" + representativeName + '\'' +
-            ", representativeEmail='" + representativeEmail + '\'' +
-            '}';
+        return "RepresentedClaimIssuedEvent{"
+            + "claim=" + claim
+            + ", representativeName='" + representativeName + '\''
+            + ", representativeEmail='" + representativeEmail + '\''
+            + '}';
     }
 }
