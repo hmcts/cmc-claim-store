@@ -105,8 +105,7 @@ public class ClaimService {
         final Claim claim = getClaimById(issuedClaimId);
 
         eventProducer.createClaimIssuedEvent(claim,
-            pinResponse.map(GeneratePinResponse::getPin)
-                .orElse(null),
+            pinResponse.map(GeneratePinResponse::getPin).orElse(null),
             userDetails.getFullName());
 
         return claim;
