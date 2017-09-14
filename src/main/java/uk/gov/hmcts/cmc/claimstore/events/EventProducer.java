@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.DefaultJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 
 import java.time.LocalDate;
@@ -31,5 +32,9 @@ public class EventProducer {
     public void createMoreTimeForResponseRequestedEvent(
         final Claim claim, final LocalDate newResponseDeadline, final String defendantEmail) {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
+    }
+
+    public void createDefaultJudgmentSubmittedEvent(final DefaultJudgment defaultJudgment, final Claim claim) {
+        publisher.publishEvent(new DefaultJudgmentSubmittedEvent(defaultJudgment, claim));
     }
 }
