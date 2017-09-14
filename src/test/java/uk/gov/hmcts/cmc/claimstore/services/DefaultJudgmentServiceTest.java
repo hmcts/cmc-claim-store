@@ -11,13 +11,17 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefaultJudgment;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefaultJudgmentRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -31,21 +35,25 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class DefaultJudgmentServiceTest {
 
     private static final long DEFAULT_JUDGMENT_ID = 33L;
+    private static final Map<String, Object> DATA = new HashMap<>();
 
     private DefaultJudgmentService defaultJudgmentService;
 
     @Mock
     private ClaimService claimService;
     @Mock
-    private EventProducer eventProducer;
-    @Mock
     private DefaultJudgmentRepository defaultJudgmentRepository;
+    @Mock
+    private JsonMapper jsonMapper;
+    @Mock
+    private EventProducer eventProducer;
 
     @Before
     public void setup() {
         defaultJudgmentService = new DefaultJudgmentService(
             claimService,
             defaultJudgmentRepository,
+            jsonMapper,
             eventProducer
         );
     }
@@ -74,11 +82,11 @@ public class DefaultJudgmentServiceTest {
 
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
         when(defaultJudgmentRepository.getByClaimId(eq(CLAIM_ID))).thenReturn(Optional.empty());
-        when(defaultJudgmentRepository.save(eq(CLAIM_ID), eq(USER_ID), anyString(), eq("{}")))
+        when(defaultJudgmentRepository.save(eq(CLAIM_ID), eq(USER_ID), anyString(), any()))
             .thenReturn(DEFAULT_JUDGMENT_ID);
         when(defaultJudgmentRepository.getById(eq(DEFAULT_JUDGMENT_ID))).thenReturn(Optional.of(defaultJudgment));
 
-        defaultJudgmentService.save(USER_ID, "{}", CLAIM_ID);
+        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
 
         verify(eventProducer, once()).createDefaultJudgmentSubmittedEvent(eq(defaultJudgment), eq(claim));
     }
@@ -88,7 +96,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimService.getClaimById(eq(CLAIM_ID))).thenThrow(new NotFoundException("not found"));
 
-        defaultJudgmentService.save(USER_ID, "{}", CLAIM_ID);
+        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -100,7 +108,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
 
-        defaultJudgmentService.save(differentUser, "{}", CLAIM_ID);
+        defaultJudgmentService.save(differentUser, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -110,7 +118,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
 
-        defaultJudgmentService.save(USER_ID, "{}", CLAIM_ID);
+        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -120,7 +128,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
 
-        defaultJudgmentService.save(USER_ID, "{}", CLAIM_ID);
+        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -131,10 +139,10 @@ public class DefaultJudgmentServiceTest {
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
         when(defaultJudgmentRepository.getByClaimId(eq(CLAIM_ID))).thenReturn(Optional.of(getDefaultJudgmentModel()));
 
-        defaultJudgmentService.save(USER_ID, "{}", CLAIM_ID);
+        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 
     private DefaultJudgment getDefaultJudgmentModel() {
-        return new DefaultJudgment(DEFAULT_JUDGMENT_ID, CLAIM_ID, USER_ID, EXTERNAL_ID, "{}", LocalDateTime.now());
+        return new DefaultJudgment(DEFAULT_JUDGMENT_ID, CLAIM_ID, USER_ID, EXTERNAL_ID, DATA, LocalDateTime.now());
     }
 }

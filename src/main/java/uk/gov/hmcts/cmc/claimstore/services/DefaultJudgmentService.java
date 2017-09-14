@@ -8,24 +8,29 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefaultJudgment;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefaultJudgmentRepository;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Component
 public class DefaultJudgmentService {
 
     private final DefaultJudgmentRepository defaultJudgmentRepository;
     private final ClaimService claimService;
+    private final JsonMapper jsonMapper;
     private final EventProducer eventProducer;
 
     @Autowired
     public DefaultJudgmentService(
         ClaimService claimService,
         DefaultJudgmentRepository defaultJudgmentRepository,
+        JsonMapper jsonMapper,
         EventProducer eventProducer) {
         this.defaultJudgmentRepository = defaultJudgmentRepository;
         this.claimService = claimService;
+        this.jsonMapper = jsonMapper;
         this.eventProducer = eventProducer;
     }
 
@@ -36,7 +41,7 @@ public class DefaultJudgmentService {
     }
 
     @Transactional
-    public DefaultJudgment save(final long submitterId, final String data, final long claimId) {
+    public DefaultJudgment save(final long submitterId, final Map<String, Object> data, final long claimId) {
 
         Claim claim = claimService.getClaimById(claimId);
 
@@ -57,7 +62,7 @@ public class DefaultJudgmentService {
         }
 
         final Long defaultJudgmentId = defaultJudgmentRepository.save(
-            claimId, claim.getSubmitterId(), claim.getClaimData().getExternalId().toString(), data
+            claimId, claim.getSubmitterId(), claim.getClaimData().getExternalId().toString(), jsonMapper.toJson(data)
         );
 
         DefaultJudgment defaultJudgment = defaultJudgmentRepository.getById(defaultJudgmentId).get();
