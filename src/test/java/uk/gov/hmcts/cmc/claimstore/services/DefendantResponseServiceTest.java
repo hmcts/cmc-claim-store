@@ -112,9 +112,12 @@ public class DefendantResponseServiceTest {
         final String jsonApp = new ResourceReader().read("/defendant-response.json");
         when(mapper.toJson(eq(app))).thenReturn(jsonApp);
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(new UserDetails(USER_ID, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME));
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(new UserDetails(USER_ID, DEFENDANT_EMAIL,
+            SUBMITTER_FORENAME, SUBMITTER_SURNAME));
+
         when(defendantResponseRepository.save(eq(CLAIM_ID), eq(DEFENDANT_ID), eq(DEFENDANT_EMAIL), eq(jsonApp)))
             .thenReturn(RESPONSE_ID);
+        
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
         when(defendantResponseRepository.getById(eq(RESPONSE_ID))).thenReturn(Optional.of(DEFENDANT_RESPONSE));
 
