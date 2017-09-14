@@ -36,6 +36,8 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleCla
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.USER_ID;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.RESPONSE_DEADLINE;
@@ -49,9 +51,15 @@ public class ClaimServiceTest {
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INVALID_DEFENDANT_TOKEN = "You shall not pass!";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
-    private static final UserDetails validDefendant = new UserDetails(DEFENDANT_ID, DEFENDANT_EMAIL);
-    private static final UserDetails invalidDefendant = new UserDetails(-1L, DEFENDANT_EMAIL);
-    private static final UserDetails claimantDetails = new UserDetails(11L, SUBMITTER_EMAIL);
+
+    private static final UserDetails validDefendant
+        = new UserDetails(DEFENDANT_ID, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
+
+    private static final UserDetails invalidDefendant
+        = new UserDetails(-1L, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
+
+    private static final UserDetails claimantDetails
+        = new UserDetails(11L, SUBMITTER_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
 
     private ClaimService claimService;
 
@@ -154,7 +162,7 @@ public class ClaimServiceTest {
         Claim createdClaim = claimService.saveClaim(USER_ID, app, authorisationToken);
 
         assertThat(createdClaim).isEqualTo(claim);
-        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null));
+        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null), anyString());
     }
 
     @Test

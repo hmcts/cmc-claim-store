@@ -32,6 +32,8 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDef
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse.RESPONSE_ID;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
@@ -110,7 +112,7 @@ public class DefendantResponseServiceTest {
         final String jsonApp = new ResourceReader().read("/defendant-response.json");
         when(mapper.toJson(eq(app))).thenReturn(jsonApp);
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(new UserDetails(USER_ID, DEFENDANT_EMAIL));
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(new UserDetails(USER_ID, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME));
         when(defendantResponseRepository.save(eq(CLAIM_ID), eq(DEFENDANT_ID), eq(DEFENDANT_EMAIL), eq(jsonApp)))
             .thenReturn(RESPONSE_ID);
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);

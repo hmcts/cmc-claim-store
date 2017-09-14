@@ -37,6 +37,8 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.RESPONSE_DEADLINE;
@@ -89,8 +91,8 @@ public class SaveRepresentativeClaimTest extends BaseTest {
         given(userService.generatePin(anyString(), anyString()))
             .willReturn(new GeneratePinResponse(PIN, LETTER_HOLDER_ID));
 
-        given(userService.getUserDetails(anyString()))
-            .willReturn(new UserDetails(CLAIMANT_ID, "claimant@email.com"));
+        given(userService.getUserDetails(anyString())).willReturn(
+            new UserDetails(CLAIMANT_ID, "claimant@email.com", SUBMITTER_FORENAME, SUBMITTER_SURNAME));
 
         given(holidaysCollection.getPublicHolidays()).willReturn(emptySet());
 

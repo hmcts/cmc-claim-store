@@ -17,6 +17,8 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIss
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.DEFENDANT_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 
 public class EventProducerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -37,12 +39,12 @@ public class EventProducerTest {
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
         //given
-        final UserDetails userDetails = new UserDetails(USER_ID, CLAIMANT_EMAIL);
+        final UserDetails userDetails = new UserDetails(USER_ID, CLAIMANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
         final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN);
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
         //when
-        eventProducer.createClaimIssuedEvent(CLAIM, PIN);
+        eventProducer.createClaimIssuedEvent(CLAIM, PIN, userDetails.getFullName());
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
@@ -51,7 +53,8 @@ public class EventProducerTest {
     @Test
     public void shouldCreateDefendantResponseEvent() throws Exception {
         //given
-        final UserDetails userDetails = new UserDetails(USER_ID, DEFENDANT_EMAIL);
+        final UserDetails userDetails
+            = new UserDetails(USER_ID, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
 
         final DefendantResponseEvent expectedEvent
             = new DefendantResponseEvent(CLAIM, DEFENDANT_RESPONSE);
