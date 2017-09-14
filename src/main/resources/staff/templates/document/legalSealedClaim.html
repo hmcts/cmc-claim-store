@@ -162,29 +162,29 @@
       </td>
       <td>
         {% if claimant.representative is defined %}
-        {{ claimant.representative.organisationName }}
-        <br/>
-        {{ claimant.representative.organisationAddress.line1 }}
-        <br/>
-        {% if claimant.representative.organisationAddress.line2 is defined %}
-        {{ claimant.representative.organisationAddress.line2 }}
-        <br/>
-        {% endif %}
-        {{ claimant.representative.organisationAddress.city }}
-        <br/>
-        {{ claimant.representative.organisationAddress.postcode }}
-        <br/>
-        {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
-        DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
-        <br/>
-        {% endif %}
-        {% if claimant.representative.organisationContactDetails.phone is defined %}
-        Tel: {{ claimant.representative.organisationContactDetails.phone }}
-        {% endif %}
-        {% if claimant.representative.organisationContactDetails.email is defined %}
-        <br/>
-        Email: {{ claimant.representative.organisationContactDetails.email }}
-        {% endif %}
+          {{ claimant.representative.organisationName }}
+          <br/>
+          {{ claimant.representative.organisationAddress.line1 }}
+          <br/>
+          {% if claimant.representative.organisationAddress.line2 is defined %}
+            {{ claimant.representative.organisationAddress.line2 }}
+            <br/>
+          {% endif %}
+          {{ claimant.representative.organisationAddress.city }}
+          <br/>
+          {{ claimant.representative.organisationAddress.postcode }}
+          <br/>
+          {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
+            DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
+            <br/>
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.phone is defined %}
+            Tel: {{ claimant.representative.organisationContactDetails.phone }}
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.email is defined %}
+            <br/>
+            Email: {{ claimant.representative.organisationContactDetails.email }}
+          {% endif %}
 
         {% endif %}
       </td>
@@ -194,81 +194,81 @@
 
 {% set maxDefendants = 2 %}
 {% for defendant in defendants %}
-{% if loop.index < maxDefendants %}
-<div class="section">
-  <table>
-    <tr>
-      {% if loop.length == 1 %}
-        {% set defendantHeading = 'Defendant'%}
-      {% else %}
-        {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
-      {% endif %}
-      <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
-      <td>
-        {{ defendant.title}} {{ defendant.name }}
-        <br/>
-        {{ defendant.address.line1 }}
-        <br/>
-        {% if defendant.address.line2 is defined %}
-        {{ defendant.address.line2 }}
-        <br/>
-        {% endif %}
-        {{ defendant.address.city }}
-        <br/>
-        {{ defendant.address.postcode }}
-        {% if defendant.companiesHouseNumber is defined %}
-        <br/>
-        Companies House number: {{ defendant.companiesHouseNumber }}
-        {% endif %}
-      </td>
-      <td class="two-per-row">
-        {% if defendant.representative is defined %}
-        <h4>Service address</h4>
-        {% endif %}
-      </td>
-      <td>
-        {% if defendant.serviceAddress is defined %}
-          {{ defendant.title}} {{ defendant.name }}
-          <br/>
-          {{ defendant.serviceAddress.organisationAddress.line1 }}
-          <br/>
-          {% if defendant.serviceAddress.line2 is defined %}
-            {{ defendant.serviceAddress.line2 }}
+  {% if loop.index < maxDefendants %}
+    <div class="section">
+      <table>
+        <tr>
+          {% if loop.length == 1 %}
+            {% set defendantHeading = 'Defendant'%}
+          {% else %}
+            {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
+          {% endif %}
+          <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
+          <td>
+            {{ defendant.title}} {{ defendant.name }}
             <br/>
-          {% endif %}
-          {{ defendant.serviceAddress.city }}
-          <br/>
-          {{ defendant.serviceAddress.postcode }}
-        {% else if defendant.representative is defined %}
-          {{ defendant.representative.organisationName }}
-          <br/>
-          {{ defendant.representative.organisationAddress.line1 }}
-          <br/>
-          {% if defendant.representative.organisationAddress.line2 is defined %}
-            {{ defendant.representative.organisationAddress.line2 }}
+            {{ defendant.address.line1 }}
             <br/>
-          {% endif %}
-          {{ defendant.representative.organisationAddress.city }}
-          <br/>
-          {{ defendant.representative.organisationAddress.postcode }}
-          <br/>
-          {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
-            DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
+            {% if defendant.address.line2 is defined %}
+              {{ defendant.address.line2 }}
+              <br/>
+            {% endif %}
+            {{ defendant.address.city }}
             <br/>
-          {% endif %}
-          {% if defendant.representative.organisationContactDetails.phone is defined %}
-            Tel: {{ defendant.representative.organisationContactDetails.phone }}
-          {% endif %}
-          {% if defendant.representative.organisationContactDetails.email is defined %}
-            <br/>
-            Email: {{ defendant.representative.organisationContactDetails.email }}
-          {% endif %}
-        {% endif %}
-      </td>
-    </tr>
-  </table>
-</div>
-{% endif %}
+            {{ defendant.address.postcode }}
+            {% if defendant.companiesHouseNumber is defined %}
+              <br/>
+              Companies House number: {{ defendant.companiesHouseNumber }}
+            {% endif %}
+          </td>
+          <td class="two-per-row">
+            {% if defendant.representative is defined %}
+              <h4>Service address</h4>
+            {% endif %}
+          </td>
+          <td>
+            {% if defendant.serviceAddress is defined %}
+              {{ defendant.title}} {{ defendant.name }}
+              <br/>
+              {{ defendant.serviceAddress.organisationAddress.line1 }}
+              <br/>
+              {% if defendant.serviceAddress.line2 is defined %}
+                {{ defendant.serviceAddress.line2 }}
+                <br/>
+              {% endif %}
+              {{ defendant.serviceAddress.city }}
+              <br/>
+              {{ defendant.serviceAddress.postcode }}
+            {% elseif defendant.representative is defined %}
+              {{ defendant.representative.organisationName }}
+              <br/>
+              {{ defendant.representative.organisationAddress.line1 }}
+              <br/>
+              {% if defendant.representative.organisationAddress.line2 is defined %}
+                {{ defendant.representative.organisationAddress.line2 }}
+                <br/>
+              {% endif %}
+              {{ defendant.representative.organisationAddress.city }}
+              <br/>
+              {{ defendant.representative.organisationAddress.postcode }}
+              <br/>
+              {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
+                DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
+                <br/>
+              {% endif %}
+              {% if defendant.representative.organisationContactDetails.phone is defined %}
+                Tel: {{ defendant.representative.organisationContactDetails.phone }}
+              {% endif %}
+              {% if defendant.representative.organisationContactDetails.email is defined %}
+                <br/>
+                Email: {{ defendant.representative.organisationContactDetails.email }}
+              {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+  {% endif %}
 {% endfor %}
 
 {% if defendantsCount > 2 %}
@@ -430,7 +430,7 @@
             {{ defendant.serviceAddress.city }}
             <br/>
             {{ defendant.serviceAddress.postcode }}
-          {% else if defendant.representative is defined %}
+          {% elseif defendant.representative is defined %}
             {{ defendant.representative.organisationName }}
             <br/>
             {{ defendant.representative.organisationAddress.line1 }}
