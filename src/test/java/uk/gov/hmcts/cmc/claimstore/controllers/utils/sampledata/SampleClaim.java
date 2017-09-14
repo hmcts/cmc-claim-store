@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.ISSUE_DATE;
@@ -66,6 +68,40 @@ public final class SampleClaim {
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
             null);
+    }
+
+    public static Claim getWithResponseDeadline(LocalDate responseDeadline) {
+        return new Claim(
+            CLAIM_ID,
+            USER_ID,
+            LETTER_HOLDER_ID,
+            DEFENDANT_ID,
+            EXTERNAL_ID,
+            REFERENCE_NUMBER,
+            SampleClaimData.builder().withInterestDate(SampleInterestDate.submission()).build(),
+            NOW_IN_LOCAL_ZONE,
+            ISSUE_DATE,
+            responseDeadline,
+            NOT_REQUESTED_FOR_MORE_TIME,
+            SUBMITTER_EMAIL,
+            null);
+    }
+
+    public static Claim getRespondedAt(LocalDateTime respondedAt) {
+        return new Claim(
+            CLAIM_ID,
+            USER_ID,
+            LETTER_HOLDER_ID,
+            DEFENDANT_ID,
+            EXTERNAL_ID,
+            REFERENCE_NUMBER,
+            SampleClaimData.builder().withInterestDate(SampleInterestDate.submission()).build(),
+            NOW_IN_LOCAL_ZONE,
+            ISSUE_DATE,
+            RESPONSE_DEADLINE,
+            NOT_REQUESTED_FOR_MORE_TIME,
+            SUBMITTER_EMAIL,
+            respondedAt);
     }
 
     public static Claim getClaimWithNoDefendantEmail() {
