@@ -37,7 +37,8 @@ public class LegalSealedClaimContentProvider {
         } else {
             content.put("feeAccountNumber", "");
         }
-        content.put("claimant", claim.getClaimData().getClaimant());
+        content.put("claimants", claim.getClaimData().getClaimants());
+        content.put("claimantsCount", claim.getClaimData().getClaimants().size());
         content.put("defendants", claim.getClaimData().getDefendants());
         content.put("defendantsCount", claim.getClaimData().getDefendants().size());
         content.put("claimSummary", claim.getClaimData().getReason());
