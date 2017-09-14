@@ -35,10 +35,8 @@ public class DefendantResponseService {
     }
 
     public DefendantResponse getById(final long responseId) {
-        return defendantResponseRepository
-            .getById(responseId)
-            .orElseThrow(() ->
-                new NotFoundException("Defendant response expected to have been saved, but wasn't"));
+        return defendantResponseRepository.getById(responseId)
+            .orElseThrow(() -> new NotFoundException("Defendant response expected to have been saved, but wasn't"));
     }
 
     public List<DefendantResponse> getByDefendantId(final long defendantId) {
@@ -53,21 +51,19 @@ public class DefendantResponseService {
         final String authorization
     ) {
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
+
         final Long responseId = defendantResponseRepository.save(claimId, defendantId, defendantEmail,
             jsonMapper.toJson(responseData));
+
         final Claim claim = claimService.getClaimById(claimId);
         final DefendantResponse response = getById(responseId);
-
         eventProducer.createDefendantResponseEvent(claim, response);
-
         return response;
     }
 
     public DefendantResponse getByClaimId(long claimId) {
         return defendantResponseRepository.getByClaimId(claimId)
-            .orElseThrow(() ->
-                new NotFoundException("Couldn't find defendant response for claim ID: " + claimId)
-            );
+            .orElseThrow(() -> new NotFoundException("Couldn't find defendant response for claim ID: " + claimId));
     }
 
 }
