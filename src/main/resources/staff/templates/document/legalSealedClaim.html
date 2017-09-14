@@ -239,7 +239,7 @@
               {{ defendant.serviceAddress.city }}
               <br/>
               {{ defendant.serviceAddress.postcode }}
-            {% elseif defendant.representative is defined %}
+            {% else if defendant.representative is defined %}
               {{ defendant.representative.organisationName }}
               <br/>
               {{ defendant.representative.organisationAddress.line1 }}
@@ -430,7 +430,7 @@
             {{ defendant.serviceAddress.city }}
             <br/>
             {{ defendant.serviceAddress.postcode }}
-          {% elseif defendant.representative is defined %}
+          {% else if defendant.representative is defined %}
             {{ defendant.representative.organisationName }}
             <br/>
             {{ defendant.representative.organisationAddress.line1 }}

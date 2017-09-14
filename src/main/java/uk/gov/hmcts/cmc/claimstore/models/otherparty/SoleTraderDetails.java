@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.models.otherparty;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
+import uk.gov.hmcts.cmc.claimstore.models.ServiceAddress;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
 
@@ -18,7 +19,7 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
     public SoleTraderDetails(
         final String name,
         final Address address,
-        final Address serviceAddress,
+        final ServiceAddress serviceAddress,
         final String email,
         final Representative representative,
         final String title,
