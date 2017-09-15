@@ -79,7 +79,7 @@ timestamps {
               sh """
                ./gradlew -Dsonar.analysis.mode=preview \
                 -Dsonar.github.pullRequest=$prNumber \
-                -Dsonar.github.repository=cmc/claim-store \
+                -Dsonar.github.repository=hmcts/cmc-claim-store \
                 -Dsonar.github.oauth=$GITHUB_ACCESS_TOKEN \
                 -Dsonar.host.url=$SONARQUBE_URL \
                 sonarqube
