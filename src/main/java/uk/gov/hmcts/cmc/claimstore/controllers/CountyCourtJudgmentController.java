@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 @Api
 @RestController
 @RequestMapping(
-    path = "/claims/county-court-judgment",
+    path = "/claims",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class CountyCourtJudgmentController {
 
@@ -35,7 +35,7 @@ public class CountyCourtJudgmentController {
         this.userService = userService;
     }
 
-    @PostMapping("/{claimId:\\d+}")
+    @PostMapping("/{claimId:\\d+}/county-court-judgment")
     @ApiOperation("Save County Court Judgment")
     public Claim save(
         @PathVariable("claimId") final Long claimId,
