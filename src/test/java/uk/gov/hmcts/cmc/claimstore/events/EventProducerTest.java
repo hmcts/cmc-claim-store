@@ -99,10 +99,10 @@ public class EventProducerTest {
     public void shouldCreateDefaultJudgmentSubmittedEvent() throws Exception {
 
         // given
-        DefaultJudgmentSubmittedEvent expectedEvent = new DefaultJudgmentSubmittedEvent(CLAIM);
+        CountyCourtJudgmentSubmittedEvent expectedEvent = new CountyCourtJudgmentSubmittedEvent(CLAIM);
 
         // when
-        eventProducer.createDefaultJudgmentSubmittedEvent(CLAIM);
+        eventProducer.createCountyCourtJudgmentSubmittedEvent(CLAIM);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
