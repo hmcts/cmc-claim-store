@@ -35,6 +35,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
     @Test
     public void shouldReturnClaimWithCountyCourtJudgment() throws Exception {
 
+        //given
         Claim claimWithCCJ = SampleClaim.builder()
             .withSubmitterId(CLAIMANT_ID)
             .withResponseDeadline(LocalDate.now().minusDays(2))
@@ -42,7 +43,6 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        //given
         given(claimRepository.getById(CLAIM_ID))
             .willReturn(Optional.of(
                 SampleClaim.builder()
@@ -61,7 +61,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
 
     private ResultActions postCountyCourtJudgment(long claimId, Map<String, Object> data) throws Exception {
         return webClient
-            .perform(post("/claims/county-court-judgment/" + claimId)
+            .perform(post("/claims/" + claimId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
                 .content(jsonMapper.toJson(data))

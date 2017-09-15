@@ -36,19 +36,21 @@ public class CountyCourtJudgmentService {
         Claim claim = getClaim(claimId);
 
         if (!isClaimSubmittedByUser(claim, submitterId)) {
-            throw new ForbiddenActionException("It's not your claim");
+            throw new ForbiddenActionException("Claim " + claimId + "does not belog to user" + submitterId);
         }
 
         if (isResponseAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("Response for the claim was submitted");
+            throw new ForbiddenActionException("Response for the claim " + claimId + " was submitted");
         }
 
         if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("County Court Judgment for the claim was submitted");
+            throw new ForbiddenActionException("County Court Judgment for the claim " + claimId + " was submitted");
         }
 
         if (!canCountyCourtJudgmentBeRequestedYet(claim)) {
-            throw new ForbiddenActionException("You must not request for County Court Judgment yet");
+            throw new ForbiddenActionException(
+                "County Court Judgment for claim " + claimId + " cannot be requested yet"
+            );
         }
 
         claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(data));
