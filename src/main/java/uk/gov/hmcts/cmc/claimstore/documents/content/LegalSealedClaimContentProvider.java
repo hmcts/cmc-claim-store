@@ -42,10 +42,10 @@ public class LegalSealedClaimContentProvider {
         content.put("defendants", claim.getClaimData().getDefendants());
         content.put("defendantsCount", claim.getClaimData().getDefendants().size());
         content.put("claimSummary", claim.getClaimData().getReason());
-        final Representative legalRepresentative = claim.getClaimData()
-            .getClaimant()
-            .getRepresentative()
+
+        final Representative legalRepresentative = claim.getClaimData().getClaimants().get(0).getRepresentative()
             .orElseThrow(IllegalArgumentException::new);
+
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
         content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPound()));
         final StatementOfTruth statementOfTruth = claim.getClaimData()
