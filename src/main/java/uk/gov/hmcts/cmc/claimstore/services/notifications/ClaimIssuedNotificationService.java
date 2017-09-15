@@ -80,9 +80,9 @@ public class ClaimIssuedNotificationService {
                                                 final Optional<String> claimantName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         if (!claim.getClaimData().isClaimantRepresented()) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
+            parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
             parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
         } else {
             claimantName.ifPresent(c -> parameters.put(CLAIMANT_NAME, c));
