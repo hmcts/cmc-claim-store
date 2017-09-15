@@ -28,12 +28,11 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleCla
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultJudgmentServiceTest {
+public class CountyCourtJudgmentServiceTest {
 
-    private static final long DEFAULT_JUDGMENT_ID = 33L;
     private static final Map<String, Object> DATA = new HashMap<>();
 
-    private DefaultJudgmentService defaultJudgmentService;
+    private CountyCourtJudgmentService countyCourtJudgmentService;
 
     @Mock
     private ClaimRepository claimRepository;
@@ -44,7 +43,7 @@ public class DefaultJudgmentServiceTest {
 
     @Before
     public void setup() {
-        defaultJudgmentService = new DefaultJudgmentService(
+        countyCourtJudgmentService = new CountyCourtJudgmentService(
             claimRepository,
             jsonMapper,
             eventProducer
@@ -58,10 +57,10 @@ public class DefaultJudgmentServiceTest {
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
 
-        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
 
         verify(eventProducer, once()).createDefaultJudgmentSubmittedEvent(any(Claim.class));
-        verify(claimRepository, once()).saveDefaultJudgment(eq(CLAIM_ID), any());
+        verify(claimRepository, once()).saveCountyCourtJudgment(eq(CLAIM_ID), any());
     }
 
     @Test(expected = NotFoundException.class)
@@ -69,7 +68,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
 
-        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -81,7 +80,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
 
-        defaultJudgmentService.save(differentUser, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(differentUser, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -91,7 +90,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(respondedClaim));
 
-        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -101,7 +100,7 @@ public class DefaultJudgmentServiceTest {
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(respondedClaim));
 
-        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -111,6 +110,6 @@ public class DefaultJudgmentServiceTest {
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(respondedClaim));
 
-        defaultJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
 }

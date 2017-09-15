@@ -28,8 +28,8 @@ public class Claim {
     private final boolean moreTimeRequested;
     private final String submitterEmail;
     private final LocalDateTime respondedAt;
-    private final Map<String, Object> defaultJudgment;
-    private final LocalDateTime defaultJudgmentRequestedAt;
+    private final Map<String, Object> countyCourtJudgment;
+    private final LocalDateTime countyCourtJudgmentRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about remove parameters here
     public Claim(
@@ -46,8 +46,8 @@ public class Claim {
         final boolean moreTimeRequested,
         final String submitterEmail,
         final LocalDateTime respondedAt,
-        Map<String, Object> defaultJudgment,
-        LocalDateTime defaultJudgmentRequestedAt) {
+        Map<String, Object> countyCourtJudgment,
+        LocalDateTime countyCourtJudgmentRequestedAt) {
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;
@@ -61,8 +61,8 @@ public class Claim {
         this.moreTimeRequested = moreTimeRequested;
         this.submitterEmail = submitterEmail;
         this.respondedAt = respondedAt;
-        this.defaultJudgment = defaultJudgment;
-        this.defaultJudgmentRequestedAt = defaultJudgmentRequestedAt;
+        this.countyCourtJudgment = countyCourtJudgment;
+        this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
     }
 
     public Long getId() {
@@ -117,12 +117,12 @@ public class Claim {
         return respondedAt;
     }
 
-    public Map<String, Object> getDefaultJudgment() {
-        return defaultJudgment;
+    public Map<String, Object> getCountyCourtJudgment() {
+        return countyCourtJudgment;
     }
 
-    public LocalDateTime getDefaultJudgmentRequestedAt() {
-        return defaultJudgmentRequestedAt;
+    public LocalDateTime getCountyCourtJudgmentRequestedAt() {
+        return countyCourtJudgmentRequestedAt;
     }
 
     @Override
@@ -147,8 +147,8 @@ public class Claim {
             && Objects.equals(issuedOn, otherClaim.issuedOn)
             && Objects.equals(responseDeadline, otherClaim.responseDeadline)
             && Objects.equals(respondedAt, otherClaim.respondedAt)
-            && Objects.equals(defaultJudgment, otherClaim.defaultJudgment)
-            && Objects.equals(defaultJudgmentRequestedAt, otherClaim.defaultJudgmentRequestedAt);
+            && Objects.equals(countyCourtJudgment, otherClaim.countyCourtJudgment)
+            && Objects.equals(countyCourtJudgmentRequestedAt, otherClaim.countyCourtJudgmentRequestedAt);
     }
 
     @Override
@@ -173,8 +173,8 @@ public class Claim {
         private LocalDate responseDeadline;
         private boolean moreTimeRequested;
         private LocalDateTime respondedAt;
-        private Map<String, Object> defaultJudgment;
-        private LocalDateTime defaultJudgmentRequestedAt;
+        private Map<String, Object> countyCourtJudgment;
+        private LocalDateTime countyCourtJudgmentRequestedAt;
 
         public Builder setId(Long id) {
             this.id = id;
@@ -241,13 +241,13 @@ public class Claim {
             return this;
         }
 
-        public Builder setDefaultJudgment(Map<String, Object> defaultJudgment) {
-            this.defaultJudgment = defaultJudgment;
+        public Builder setCountyCourtJudgment(Map<String, Object> countyCourtJudgment) {
+            this.countyCourtJudgment = countyCourtJudgment;
             return this;
         }
 
-        public Builder setDefaultJudgmentRequestedAt(LocalDateTime defaultJudgmentRequestedAt) {
-            this.defaultJudgmentRequestedAt = defaultJudgmentRequestedAt;
+        public Builder setCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
+            this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
             return this;
         }
 
@@ -255,7 +255,7 @@ public class Claim {
             return new Claim(
                 id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
                 claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested,
-                submitterEmail, respondedAt, defaultJudgment, defaultJudgmentRequestedAt
+                submitterEmail, respondedAt, countyCourtJudgment, countyCourtJudgmentRequestedAt
             );
         }
     }

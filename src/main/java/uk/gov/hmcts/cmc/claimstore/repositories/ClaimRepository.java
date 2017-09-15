@@ -136,7 +136,7 @@ public interface ClaimRepository {
         + " default_judgment_requested_at = NOW() at timezone 'utc'"
         + "WHERE"
         + " claim_id = :claimId")
-    void saveDefaultJudgment(
+    void saveCountyCourtJudgment(
         @Bind("claimId") final long claimId,
         @Bind("defaultJudgmentData") final String defaultJudgmentData
     );
