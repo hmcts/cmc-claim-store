@@ -85,7 +85,7 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
             null,
             false,
             SUBMITTER_EMAIL,
-            null);
+            null, response, defendantEmail);
     }
 
     private List<Claim> deserialize(MvcResult result) throws UnsupportedEncodingException {

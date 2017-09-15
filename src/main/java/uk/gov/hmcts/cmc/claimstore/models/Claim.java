@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
@@ -27,8 +28,10 @@ public class Claim {
     private final boolean moreTimeRequested;
     private final String submitterEmail;
     private final LocalDateTime respondedAt;
+    private final ResponseData response;
+    private final String defendantEmail;
 
-    @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about remove parameters here
+    @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
         final Long id,
         final Long submitterId,
@@ -42,7 +45,10 @@ public class Claim {
         final LocalDate responseDeadline,
         final boolean moreTimeRequested,
         final String submitterEmail,
-        final LocalDateTime respondedAt) {
+        final LocalDateTime respondedAt,
+        final ResponseData response,
+        final String defendantEmail
+    ) {
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;
@@ -56,6 +62,8 @@ public class Claim {
         this.moreTimeRequested = moreTimeRequested;
         this.submitterEmail = submitterEmail;
         this.respondedAt = respondedAt;
+        this.response = response;
+        this.defendantEmail = defendantEmail;
     }
 
     public Long getId() {
@@ -110,6 +118,14 @@ public class Claim {
         return respondedAt;
     }
 
+    public Optional<ResponseData> getResponse() {
+        return Optional.ofNullable(response);
+    }
+
+    public String getDefendantEmail() {
+        return defendantEmail;
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object other) {
@@ -120,26 +136,26 @@ public class Claim {
             return false;
         }
         Claim otherClaim = (Claim) other;
-        return Objects.equals(id, otherClaim.id)
-            && Objects.equals(submitterId, otherClaim.submitterId)
-            && Objects.equals(submitterEmail, otherClaim.submitterEmail)
-            && Objects.equals(letterHolderId, otherClaim.letterHolderId)
-            && Objects.equals(defendantId, otherClaim.defendantId)
-            && Objects.equals(externalId, otherClaim.externalId)
-            && Objects.equals(referenceNumber, otherClaim.referenceNumber)
-            && Objects.equals(claimData, otherClaim.claimData)
-            && Objects.equals(createdAt, otherClaim.createdAt)
-            && Objects.equals(issuedOn, otherClaim.issuedOn)
-            && Objects.equals(responseDeadline, otherClaim.responseDeadline)
-            && Objects.equals(respondedAt, otherClaim.respondedAt);
+        return moreTimeRequested == otherClaim.moreTimeRequested &&
+            Objects.equals(id, otherClaim.id) &&
+            Objects.equals(submitterId, otherClaim.submitterId) &&
+            Objects.equals(letterHolderId, otherClaim.letterHolderId) &&
+            Objects.equals(defendantId, otherClaim.defendantId) &&
+            Objects.equals(externalId, otherClaim.externalId) &&
+            Objects.equals(referenceNumber, otherClaim.referenceNumber) &&
+            Objects.equals(claimData, otherClaim.claimData) &&
+            Objects.equals(createdAt, otherClaim.createdAt) &&
+            Objects.equals(issuedOn, otherClaim.issuedOn) &&
+            Objects.equals(responseDeadline, otherClaim.responseDeadline) &&
+            Objects.equals(submitterEmail, otherClaim.submitterEmail) &&
+            Objects.equals(respondedAt, otherClaim.respondedAt) &&
+            Objects.equals(response, otherClaim.response) &&
+            Objects.equals(defendantEmail, otherClaim.defendantEmail);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            id, submitterId, submitterEmail, letterHolderId, defendantId, externalId, referenceNumber, claimData,
-            createdAt, issuedOn, responseDeadline, moreTimeRequested, respondedAt
-        );
+        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber, claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail, respondedAt, response, defendantEmail);
     }
 
     public static class Builder {
@@ -156,6 +172,8 @@ public class Claim {
         private LocalDate responseDeadline;
         private boolean moreTimeRequested;
         private LocalDateTime respondedAt;
+        private ResponseData response;
+        private String defendantEmail;
 
         public Builder setId(Long id) {
             this.id = id;
@@ -222,9 +240,19 @@ public class Claim {
             return this;
         }
 
+        public Builder setResponse(ResponseData response) {
+            this.response = response;
+            return this;
+        }
+
+        public Builder setDefendantEmail(String defendantEmail) {
+            this.defendantEmail = defendantEmail;
+            return this;
+        }
+
         public Claim build() {
             return new Claim(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber, claimData,
-                createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail, respondedAt);
+                createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail, respondedAt, response, defendantEmail);
         }
     }
 

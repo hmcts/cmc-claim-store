@@ -48,7 +48,7 @@ public final class SampleClaim {
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
-            null);
+            null, response, defendantEmail);
     }
 
     public static Claim getWithSubmissionInterestDate() {
@@ -65,7 +65,7 @@ public final class SampleClaim {
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
-            null);
+            null, response, defendantEmail);
     }
 
     public static Claim getClaimWithNoDefendantEmail() {
@@ -85,6 +85,6 @@ public final class SampleClaim {
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
-            null);
+            null, response, defendantEmail);
     }
 }

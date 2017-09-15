@@ -1,19 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 
 import java.util.Objects;
 
 public class DefendantResponseEvent {
     private final String userEmail;
     private final Claim claim;
-    private DefendantResponse response;
 
-    public DefendantResponseEvent(final Claim claim, final DefendantResponse response) {
-        this.userEmail = response.getDefendantEmail();
+    public DefendantResponseEvent(final Claim claim) {
+        this.userEmail = claim.getDefendantEmail();
         this.claim = claim;
-        this.response = response;
     }
 
     public String getUserEmail() {
@@ -24,28 +21,21 @@ public class DefendantResponseEvent {
         return claim;
     }
 
-    public DefendantResponse getDefendantResponse() {
-        return response;
-    }
-
     @Override
-    public boolean equals(final Object other) {
-        if (this == other) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-
-        if (other == null || getClass() != other.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
-        final DefendantResponseEvent that = (DefendantResponseEvent) other;
-        return Objects.equals(userEmail, that.userEmail)
-            && Objects.equals(claim, that.claim)
-            && Objects.equals(response, that.response);
+        DefendantResponseEvent that = (DefendantResponseEvent) obj;
+        return Objects.equals(userEmail, that.userEmail) &&
+            Objects.equals(claim, that.claim);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userEmail, claim, response);
+        return Objects.hash(userEmail, claim);
     }
 }

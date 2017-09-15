@@ -21,7 +21,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -122,10 +121,10 @@ public class SupportController {
     }
 
     private void resendStaffNotificationOnDefendantResponseSubmitted(final Claim claim) {
-        DefendantResponse response = defendantResponseRepository.getByClaimId(claim.getId())
-            .orElseThrow(() -> new ConflictException("Claim " + claim.getId() + " does not have associated response"));
-
-        DefendantResponseEvent event = new DefendantResponseEvent(claim, response);
+        if (!claim.getResponse().isPresent()) {
+            throw new ConflictException("Claim " + claim.getId() + " does not have associated response");
+        }
+        DefendantResponseEvent event = new DefendantResponseEvent(claim);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
     }
 

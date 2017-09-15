@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
@@ -26,25 +26,27 @@ public class DefendantDetailsContent {
 
     public DefendantDetailsContent(
         final TheirDetails providedByClaimant,
-        final DefendantResponse defendantResponse,
-        final Party defendant
+        final ResponseData defendantResponse,
+        final String defendantEmail
     ) {
+        final Party defendant = defendantResponse.getDefendant();
+
         final boolean nameAmended = !providedByClaimant.getName().equals(defendant.getName());
         final boolean addressAmended = !providedByClaimant.getAddress().equals(defendant.getAddress());
         this.type = PartyUtils.getType(providedByClaimant);
         this.fullName = nameAmended ? defendant.getName() : providedByClaimant.getName();
         this.nameAmended = nameAmended;
-        this.businessName = PartyUtils.getBusinessName(defendantResponse.getResponse().getDefendant()).orElse(null);
-        this.contactPerson = PartyUtils.getContactPerson(defendantResponse.getResponse().getDefendant()).orElse(null);
+        this.businessName = PartyUtils.getBusinessName(defendantResponse.getDefendant()).orElse(null);
+        this.contactPerson = PartyUtils.getContactPerson(defendantResponse.getDefendant()).orElse(null);
         this.address = addressAmended ? defendant.getAddress() : providedByClaimant.getAddress();
         this.addressAmended = addressAmended;
         this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
-        this.email = defendantResponse.getDefendantEmail();
+        this.email = defendantEmail;
     }
 
-    private Address correspondenceAddress(final DefendantResponse defendantResponse) {
-        return defendantResponse.getResponse().getDefendant().getCorrespondenceAddress().orElse(null);
+    private Address correspondenceAddress(final ResponseData defendantResponse) {
+        return defendantResponse.getDefendant().getCorrespondenceAddress().orElse(null);
     }
 
     private Optional<String> defendantDateOfBirth(final Party party) {

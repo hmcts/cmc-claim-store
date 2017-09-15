@@ -62,6 +62,6 @@ public class GetClaimByExternalIdTest extends BaseTest {
     }
 
     private Claim newClaim(String externalId) {
-        return new Claim(1L, 2L, 3L, 4L, externalId, "000MC001", null, null, null, null, false, SUBMITTER_EMAIL, null);
+        return new Claim(1L, 2L, 3L, 4L, externalId, "000MC001", null, null, null, null, false, SUBMITTER_EMAIL, null, response, defendantEmail);
     }
 }

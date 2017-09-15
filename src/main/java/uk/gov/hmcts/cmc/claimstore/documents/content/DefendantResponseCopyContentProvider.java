@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 
 import java.util.HashMap;
@@ -20,9 +20,9 @@ public class DefendantResponseCopyContentProvider {
         this.defendantDetailsContentProvider = defendantDetailsContentProvider;
     }
 
-    public Map<String, Object> createContent(final Claim claim, final DefendantResponse response) {
+    public Map<String, Object> createContent(final Claim claim) {
         requireNonNull(claim);
-        requireNonNull(response);
+        ResponseData defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         Map<String, Object> content = new HashMap<>();
         content.put("claimReferenceNumber", claim.getReferenceNumber());
@@ -31,9 +31,10 @@ public class DefendantResponseCopyContentProvider {
         content.put("claimantFullName", claim.getClaimData().getClaimant().getName());
         content.put("defendant", defendantDetailsContentProvider.createContent(
             claim.getClaimData().getDefendant(),
-            response
+            defendantResponse,
+            claim.getDefendantEmail()
         ));
-        content.put("responseDefence", response.getResponse().getDefence());
+        content.put("responseDefence", defendantResponse.getDefence());
 
         return content;
     }

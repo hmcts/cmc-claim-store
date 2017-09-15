@@ -104,6 +104,6 @@ public class LinkDefendantToClaimTest extends BaseTest {
             null,
             null,
             false,
-            SUBMITTER_EMAIL, null);
+            SUBMITTER_EMAIL, null, response, defendantEmail);
     }
 }

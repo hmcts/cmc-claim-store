@@ -4,6 +4,7 @@ import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.utils.LocalDateTimeFactory;
 
@@ -30,12 +31,18 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getTimestamp("response_deadline").toLocalDateTime().toLocalDate(),
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
-            toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at"))
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at")),
+            toResponseData(result.getString("response")),
+            result.getString("defendant_email")
         );
     }
 
     private ClaimData toClaimData(final String input) {
         return jsonMapper.fromJson(input, ClaimData.class);
+    }
+
+    private ResponseData toResponseData(final String input) {
+        return jsonMapper.fromJson(input, ResponseData.class);
     }
 
     private Long toNullableLong(final Integer input) {
