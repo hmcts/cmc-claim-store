@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,7 +34,6 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
     @Test
     public void shouldReturnClaimWithCountyCourtJudgment() throws Exception {
 
-        //given
         Claim claimWithCCJ = SampleClaim.builder()
             .withSubmitterId(CLAIMANT_ID)
             .withResponseDeadline(LocalDate.now().minusDays(2))
@@ -53,18 +51,16 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
                 )
             ).willReturn(Optional.of(claimWithCCJ));
 
-        //when
-        postCountyCourtJudgment(CLAIM_ID, new HashMap<>())
-            .andExpect(status().isOk())
-            .andReturn();
+        postCountyCourtJudgment(CLAIM_ID)
+            .andExpect(status().isOk());
     }
 
-    private ResultActions postCountyCourtJudgment(long claimId, Map<String, Object> data) throws Exception {
+    private ResultActions postCountyCourtJudgment(final long claimId) throws Exception {
         return webClient
             .perform(post("/claims/" + claimId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
-                .content(jsonMapper.toJson(data))
+                .content(jsonMapper.toJson(new HashMap<>()))
             );
     }
 }
