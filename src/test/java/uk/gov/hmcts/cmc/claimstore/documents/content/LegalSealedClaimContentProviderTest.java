@@ -21,8 +21,9 @@ public class LegalSealedClaimContentProviderTest {
     @Test
     public void shouldCreateContent() throws Exception {
         //given
-        final Claim claim = SampleClaim.claim(SampleClaimData.builder()
-            .withFeeAmount(BigInteger.valueOf(50001)).build(), "sdasd");
+        final Claim claim = SampleClaim.builder().withClaimData(
+            SampleClaimData.builder().withFeeAmount(BigInteger.valueOf(50001)).build()
+        ).build();
 
         final LegalSealedClaimContentProvider legalSealedClaimContentProvider
             = new LegalSealedClaimContentProvider(statementOfValueProvider);

@@ -129,4 +129,15 @@ public interface ClaimRepository {
         @Bind("claimId") final Long claimId,
         @Bind("responseDeadline") final LocalDate responseDeadline
     );
+
+    @GetGeneratedKeys
+    @SqlUpdate("UPDATE claim SET "
+        + " default_judgment = :defaultJudgmentData::JSONB,"
+        + " default_judgment_requested_at = NOW() at timezone 'utc'"
+        + "WHERE"
+        + " claim_id = :claimId")
+    void saveDefaultJudgment(
+        @Bind("claimId") final long claimId,
+        @Bind("defaultJudgmentData") final String defaultJudgmentData
+    );
 }
