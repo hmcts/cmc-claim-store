@@ -132,12 +132,12 @@ public interface ClaimRepository {
 
     @GetGeneratedKeys
     @SqlUpdate("UPDATE claim SET "
-        + " default_judgment = :defaultJudgmentData::JSONB,"
-        + " default_judgment_requested_at = NOW() at timezone 'utc'"
+        + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
+        + " county_court_judgment_requested_at = now() at timezone 'utc'"
         + "WHERE"
         + " claim_id = :claimId")
     void saveCountyCourtJudgment(
         @Bind("claimId") final long claimId,
-        @Bind("defaultJudgmentData") final String defaultJudgmentData
+        @Bind("countyCourtJudgmentData") final String countyCourtJudgmentData
     );
 }

@@ -96,7 +96,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateDefaultJudgmentSubmittedEvent() throws Exception {
+    public void shouldCreateCountyCourtJudgmentSubmittedEvent() throws Exception {
 
         // given
         CountyCourtJudgmentSubmittedEvent expectedEvent = new CountyCourtJudgmentSubmittedEvent(CLAIM);
