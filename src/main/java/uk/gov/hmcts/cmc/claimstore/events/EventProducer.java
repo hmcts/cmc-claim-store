@@ -33,7 +33,7 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createDefaultJudgmentSubmittedEvent(final Claim claim) {
-        publisher.publishEvent(new DefaultJudgmentSubmittedEvent(claim));
+    public void createCountyCourtJudgmentSubmittedEvent(final Claim claim) {
+        publisher.publishEvent(new CountyCourtJudgmentSubmittedEvent(claim));
     }
 }
