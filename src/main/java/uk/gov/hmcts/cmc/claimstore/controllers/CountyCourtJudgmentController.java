@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.services.DefaultJudgmentService;
+import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import java.util.Map;
@@ -21,17 +21,17 @@ import javax.validation.constraints.NotNull;
 @Api
 @RestController
 @RequestMapping(
-    path = "/default-judgment",
+    path = "claims/county-court-judgment",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class DefaultJudgmentController {
+public class CountyCourtJudgmentController {
 
-    private DefaultJudgmentService defaultJudgmentService;
+    private CountyCourtJudgmentService countyCourtJudgmentService;
     private UserService userService;
 
     @Autowired
-    public DefaultJudgmentController(
-        final DefaultJudgmentService defaultJudgmentService, final UserService userService) {
-        this.defaultJudgmentService = defaultJudgmentService;
+    public CountyCourtJudgmentController(
+        final CountyCourtJudgmentService countyCourtJudgmentService, final UserService userService) {
+        this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.userService = userService;
     }
 
@@ -43,6 +43,6 @@ public class DefaultJudgmentController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
     ) {
         final long submitterId = userService.getUserDetails(authorisation).getId();
-        return defaultJudgmentService.save(submitterId, defaultJudgment, claimId);
+        return countyCourtJudgmentService.save(submitterId, defaultJudgment, claimId);
     }
 }

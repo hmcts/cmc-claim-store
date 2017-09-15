@@ -14,14 +14,14 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @Component
-public class DefaultJudgmentService {
+public class CountyCourtJudgmentService {
 
     private final ClaimRepository claimRepository;
     private final JsonMapper jsonMapper;
     private final EventProducer eventProducer;
 
     @Autowired
-    public DefaultJudgmentService(
+    public CountyCourtJudgmentService(
         ClaimRepository claimRepository,
         JsonMapper jsonMapper,
         EventProducer eventProducer) {
@@ -43,24 +43,24 @@ public class DefaultJudgmentService {
             throw new ForbiddenActionException("Response for the claim was submitted");
         }
 
-        if (isDefaultJudgmentAlreadySubmitted(claim)) {
+        if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("Default Judgment for the claim was submitted");
         }
 
-        if (!canDefaultJudgmentBeRequestedYet(claim)) {
+        if (!canCountyCourtJudgmentBeRequestedYet(claim)) {
             throw new ForbiddenActionException("You must not request for default judgment yet");
         }
 
-        claimRepository.saveDefaultJudgment(claimId, jsonMapper.toJson(data));
+        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(data));
 
-        Claim claimWithDefaultJudgment = getClaim(claimId);
+        Claim claimWithCCJ = getClaim(claimId);
 
-        eventProducer.createDefaultJudgmentSubmittedEvent(claimWithDefaultJudgment);
+        eventProducer.createDefaultJudgmentSubmittedEvent(claimWithCCJ);
 
-        return claimWithDefaultJudgment;
+        return claimWithCCJ;
     }
 
-    private boolean canDefaultJudgmentBeRequestedYet(final Claim claim) {
+    private boolean canCountyCourtJudgmentBeRequestedYet(final Claim claim) {
         return LocalDate.now().isAfter(claim.getResponseDeadline());
     }
 
@@ -72,8 +72,8 @@ public class DefaultJudgmentService {
         return claim.getSubmitterId().equals(submitterId);
     }
 
-    private boolean isDefaultJudgmentAlreadySubmitted(final Claim claim) {
-        return claim.getDefaultJudgment() != null;
+    private boolean isCountyCourtJudgmentAlreadySubmitted(final Claim claim) {
+        return claim.getCountyCourtJudgment() != null;
     }
 
     private Claim getClaim(final long claimId) {
