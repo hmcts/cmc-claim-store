@@ -74,11 +74,10 @@ timestamps {
 
         stage('Sonar') {
           onPR {
-            withCredentials([string(credentialsId: 'jenkins-github-api-text', variable: 'GITHUB_ACCESS_TOKEN')]) {
+            withCredentials([string(credentialsId: 'jenkins-public-github-api-token-text', variable: 'GITHUB_ACCESS_TOKEN')]) {
               String prNumber = env.BRANCH_NAME.substring(3)
               sh """
                ./gradlew -Dsonar.analysis.mode=preview \
-                -Dsonar.github.endpoint=$GITHUB_ENTERPRISE_API_URL \
                 -Dsonar.github.pullRequest=$prNumber \
                 -Dsonar.github.repository=cmc/claim-store \
                 -Dsonar.github.oauth=$GITHUB_ACCESS_TOKEN \
