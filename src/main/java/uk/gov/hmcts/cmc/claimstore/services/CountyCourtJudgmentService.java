@@ -44,11 +44,11 @@ public class CountyCourtJudgmentService {
         }
 
         if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("Default Judgment for the claim was submitted");
+            throw new ForbiddenActionException("County Court Judgment for the claim was submitted");
         }
 
         if (!canCountyCourtJudgmentBeRequestedYet(claim)) {
-            throw new ForbiddenActionException("You must not request for default judgment yet");
+            throw new ForbiddenActionException("You must not request for County Court Judgment yet");
         }
 
         claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(data));

@@ -36,13 +36,13 @@ public class CountyCourtJudgmentController {
     }
 
     @PostMapping("/{claimId:\\d+}")
-    @ApiOperation("Save default judgment")
+    @ApiOperation("Save County Court Judgment")
     public Claim save(
         @PathVariable("claimId") final Long claimId,
-        @NotNull @RequestBody final Map<String, Object> defaultJudgment,
+        @NotNull @RequestBody final Map<String, Object> countyCourtJudgment,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
     ) {
         final long submitterId = userService.getUserDetails(authorisation).getId();
-        return countyCourtJudgmentService.save(submitterId, defaultJudgment, claimId);
+        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, claimId);
     }
 }

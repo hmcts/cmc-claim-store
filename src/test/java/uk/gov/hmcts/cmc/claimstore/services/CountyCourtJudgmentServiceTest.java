@@ -94,7 +94,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void saveThrowsForbiddenActionExceptionWhenUserCannotRequestDefaultJudgmentYet() {
+    public void saveThrowsForbiddenActionExceptionWhenUserCannotRequestCountyCourtJudgmentYet() {
 
         Claim respondedClaim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(12));
 
@@ -104,7 +104,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void saveThrowsForbiddenActionExceptionWhenDefaultJudgmentWasAlreadySubmitted() {
+    public void saveThrowsForbiddenActionExceptionWhenCountyCourtJudgmentWasAlreadySubmitted() {
 
         Claim respondedClaim = SampleClaim.getDefault();
 
