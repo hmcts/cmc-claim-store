@@ -38,8 +38,8 @@ public final class SampleClaim {
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
     private LocalDate issuedOn = ISSUE_DATE;
-    private Map<String, Object> defaultJudgment = null;
-    private LocalDateTime defaultJudgmentRequestedAt = null;
+    private Map<String, Object> countyCourtJudgment = null;
+    private LocalDateTime countyCourtJudgmentRequestedAt = null;
     private ClaimData claimData = SampleClaimData.validDefaults();
 
     private SampleClaim() {
@@ -94,8 +94,8 @@ public final class SampleClaim {
             isMoreTimeRequested,
             submitterEmail,
             respondedAt,
-            defaultJudgment,
-            defaultJudgmentRequestedAt
+            countyCourtJudgment,
+            countyCourtJudgmentRequestedAt
         );
     }
 
@@ -154,13 +154,13 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withDefaultJudgment(Map<String, Object> defaultJudgment) {
-        this.defaultJudgment = defaultJudgment;
+    public SampleClaim withCountyCourtJudgment(Map<String, Object> countyCourtJudgment) {
+        this.countyCourtJudgment = countyCourtJudgment;
         return this;
     }
 
-    public SampleClaim withDefaultJudgmentRequestedAt(LocalDateTime defaultJudgmentRequestedAt) {
-        this.defaultJudgmentRequestedAt = defaultJudgmentRequestedAt;
+    public SampleClaim withCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
+        this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
         return this;
     }
 
