@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 @Api
 @RestController
 @RequestMapping(
-    path = "claims/county-court-judgment",
+    path = "/claims/county-court-judgment",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class CountyCourtJudgmentController {
 

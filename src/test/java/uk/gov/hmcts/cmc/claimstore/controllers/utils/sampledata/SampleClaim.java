@@ -99,7 +99,7 @@ public final class SampleClaim {
         );
     }
 
-    public SampleClaim withUserId(Long userId) {
+    public SampleClaim withSubmitterId(Long userId) {
         this.submitterId = userId;
         return this;
     }
