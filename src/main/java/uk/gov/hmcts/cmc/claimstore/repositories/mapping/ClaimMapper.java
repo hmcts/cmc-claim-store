@@ -5,12 +5,15 @@ import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.utils.LocalDateTimeFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
+import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLocalDateTimeFromUTC;
+import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLong;
 
 public class ClaimMapper implements ResultSetMapper<Claim> {
     private final JsonMapper jsonMapper = JsonMapperFactory.create();
@@ -30,7 +33,9 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getTimestamp("response_deadline").toLocalDateTime().toLocalDate(),
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
-            toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at"))
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at")),
+            toDefaultJudgment(result.getString("default_judgment")),
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("default_judgment_requested_at"))
         );
     }
 
@@ -38,15 +43,11 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         return jsonMapper.fromJson(input, ClaimData.class);
     }
 
-    private Long toNullableLong(final Integer input) {
-        return input != null ? input.longValue() : null;
+    private Map<String, Object> toDefaultJudgment(final String input) {
+        return jsonMapper.fromJson(input, TempCCJClass.class);
     }
 
-    private LocalDateTime toNullableLocalDateTimeFromUTC(Timestamp input) {
-        return input != null ? toLocalDateTimeFromUTC(input) : null;
-    }
+    private class TempCCJClass extends HashMap<String, Object> {
 
-    private LocalDateTime toLocalDateTimeFromUTC(Timestamp input) {
-        return LocalDateTimeFactory.fromUTC(input.toLocalDateTime());
     }
 }

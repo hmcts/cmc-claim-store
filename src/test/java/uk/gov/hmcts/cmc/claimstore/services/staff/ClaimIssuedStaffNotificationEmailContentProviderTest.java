@@ -12,12 +12,14 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullReferenceNumber() {
-        provider.createContent(SampleClaim.claim(null, null));
+        // I think this test doesn't make sense. Ref number is generated automatically on insert
+        // cannot be null
+        provider.createContent(SampleClaim.builder().withReferenceNumber(null).build());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentWhenGivenEmptyReferenceNumber() {
-        provider.createContent(SampleClaim.claim(null, ""));
+        provider.createContent(SampleClaim.builder().withReferenceNumber("").build());
     }
 
     @Test
@@ -37,5 +39,4 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest {
         EmailContent emailContent = provider.createContent(SampleClaim.getDefault());
         assertThat(emailContent.getBody()).isEqualTo("Please find attached claim.");
     }
-
 }

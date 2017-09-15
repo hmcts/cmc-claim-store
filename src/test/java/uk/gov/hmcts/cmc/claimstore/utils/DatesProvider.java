@@ -12,5 +12,6 @@ public final class DatesProvider {
     public static final LocalDateTime NOW_IN_LOCAL_ZONE = LocalDateTimeFactory.nowInLocalZone();
     public static final LocalDate ISSUE_DATE = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(1);
     public static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
+    public static final LocalDateTime DEFAULT_JUDGMENT_REQUESTED_AT = NOW_IN_LOCAL_ZONE.plusDays(16);
     public static final LocalDate INTEREST_DATE = NOW_IN_LOCAL_ZONE.toLocalDate().minusDays(101);
 }

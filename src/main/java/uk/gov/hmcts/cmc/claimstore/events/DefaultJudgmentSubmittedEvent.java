@@ -1,22 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefaultJudgment;
 
 import java.util.Objects;
 
 public class DefaultJudgmentSubmittedEvent {
 
-    private final DefaultJudgment defaultJudgment;
     private final Claim claim;
 
-    public DefaultJudgmentSubmittedEvent(final DefaultJudgment defaultJudgment, final Claim claim) {
-        this.defaultJudgment = defaultJudgment;
+    public DefaultJudgmentSubmittedEvent(final Claim claim) {
         this.claim = claim;
-    }
-
-    public DefaultJudgment getDefaultJudgment() {
-        return defaultJudgment;
     }
 
     public Claim getClaim() {
@@ -34,19 +27,17 @@ public class DefaultJudgmentSubmittedEvent {
         }
 
         final DefaultJudgmentSubmittedEvent that = (DefaultJudgmentSubmittedEvent) other;
-        return Objects.equals(defaultJudgment, that.defaultJudgment)
-            && Objects.equals(claim, that.claim);
+        return Objects.equals(claim, that.claim);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(defaultJudgment, claim);
+        return Objects.hash(claim);
     }
 
     @Override
     public String toString() {
         return "DefaultJudgmentSubmitted "
-            + "defaultJudgment= " + defaultJudgment
             + ", claim='" + claim;
     }
 }

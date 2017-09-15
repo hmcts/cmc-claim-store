@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.DefaultJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +26,7 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTime
 public class EventProducerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
 
-    final UserDetails userDetails = new UserDetails(USER_ID, CLAIMANT_EMAIL);
+    private final UserDetails userDetails = new UserDetails(USER_ID, CLAIMANT_EMAIL);
 
     @Mock
     private UserService userService;
@@ -46,7 +45,11 @@ public class EventProducerTest {
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
 
-        runCreateClaimIssuedEventExpectEventObjectToBeCreated(CLAIM, ClaimIssuedEvent.class);
+        //when
+        eventProducer.createClaimIssuedEvent(CLAIM, PIN);
+
+        //then
+        verify(publisher).publishEvent(any(ClaimIssuedEvent.class));
     }
 
     @Test
@@ -57,22 +60,17 @@ public class EventProducerTest {
         when(claim.getClaimData()).thenReturn(data);
         when(data.isClaimantRepresented()).thenReturn(true);
 
-        runCreateClaimIssuedEventExpectEventObjectToBeCreated(claim, RepresentedClaimIssuedEvent.class);
-    }
-
-    private void runCreateClaimIssuedEventExpectEventObjectToBeCreated(Claim claim, Class expectedEventClass) {
-
         //when
         eventProducer.createClaimIssuedEvent(claim, PIN);
 
         //then
-        verify(publisher).publishEvent(any(expectedEventClass));
+        verify(publisher).publishEvent(any(RepresentedClaimIssuedEvent.class));
     }
 
     @Test
     public void shouldCreateDefendantResponseEvent() throws Exception {
-        //given
 
+        //given
         final DefendantResponseEvent expectedEvent
             = new DefendantResponseEvent(CLAIM, DEFENDANT_RESPONSE);
 
@@ -85,6 +83,7 @@ public class EventProducerTest {
 
     @Test
     public void shouldCreateMoreTimeForResponseRequestEvent() throws Exception {
+
         //given
         final MoreTimeRequestedEvent expectedEvent
             = new MoreTimeRequestedEvent(CLAIM, NEW_RESPONSE_DEADLINE, DEFENDANT_EMAIL);
@@ -100,11 +99,10 @@ public class EventProducerTest {
     public void shouldCreateDefaultJudgmentSubmittedEvent() throws Exception {
 
         // given
-        DefaultJudgment defaultJudgment = mock(DefaultJudgment.class);
-        DefaultJudgmentSubmittedEvent expectedEvent = new DefaultJudgmentSubmittedEvent(defaultJudgment, CLAIM);
+        DefaultJudgmentSubmittedEvent expectedEvent = new DefaultJudgmentSubmittedEvent(CLAIM);
 
         // when
-        eventProducer.createDefaultJudgmentSubmittedEvent(defaultJudgment, CLAIM);
+        eventProducer.createDefaultJudgmentSubmittedEvent(CLAIM);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));

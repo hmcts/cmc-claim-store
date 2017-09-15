@@ -7,9 +7,8 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefaultJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.DefaultJudgmentRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -17,33 +16,24 @@ import java.util.Map;
 @Component
 public class DefaultJudgmentService {
 
-    private final DefaultJudgmentRepository defaultJudgmentRepository;
-    private final ClaimService claimService;
+    private final ClaimRepository claimRepository;
     private final JsonMapper jsonMapper;
     private final EventProducer eventProducer;
 
     @Autowired
     public DefaultJudgmentService(
-        ClaimService claimService,
-        DefaultJudgmentRepository defaultJudgmentRepository,
+        ClaimRepository claimRepository,
         JsonMapper jsonMapper,
         EventProducer eventProducer) {
-        this.defaultJudgmentRepository = defaultJudgmentRepository;
-        this.claimService = claimService;
+        this.claimRepository = claimRepository;
         this.jsonMapper = jsonMapper;
         this.eventProducer = eventProducer;
     }
 
-    public DefaultJudgment getByClaimId(final long claimId) {
-        return defaultJudgmentRepository
-            .getByClaimId(claimId)
-            .orElseThrow(() -> new NotFoundException("Default judgment for claim " + claimId + " not found"));
-    }
-
     @Transactional
-    public DefaultJudgment save(final long submitterId, final Map<String, Object> data, final long claimId) {
+    public Claim save(final long submitterId, final Map<String, Object> data, final long claimId) {
 
-        Claim claim = claimService.getClaimById(claimId);
+        Claim claim = getClaim(claimId);
 
         if (!isClaimSubmittedByUser(claim, submitterId)) {
             throw new ForbiddenActionException("It's not your claim");
@@ -53,27 +43,25 @@ public class DefaultJudgmentService {
             throw new ForbiddenActionException("Response for the claim was submitted");
         }
 
-        if (isDefaultJudgmentAlreadySubmitted(claimId)) {
+        if (isDefaultJudgmentAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("Default Judgment for the claim was submitted");
         }
 
-        if (!canDefaultJudgmentBeRequestedYet(claim.getResponseDeadline())) {
+        if (!canDefaultJudgmentBeRequestedYet(claim)) {
             throw new ForbiddenActionException("You must not request for default judgment yet");
         }
 
-        final Long defaultJudgmentId = defaultJudgmentRepository.save(
-            claimId, claim.getSubmitterId(), claim.getClaimData().getExternalId().toString(), jsonMapper.toJson(data)
-        );
+        claimRepository.saveDefaultJudgment(claimId, jsonMapper.toJson(data));
 
-        DefaultJudgment defaultJudgment = defaultJudgmentRepository.getById(defaultJudgmentId).get();
+        Claim claimWithDefaultJudgment = getClaim(claimId);
 
-        eventProducer.createDefaultJudgmentSubmittedEvent(defaultJudgment, claim);
+        eventProducer.createDefaultJudgmentSubmittedEvent(claimWithDefaultJudgment);
 
-        return defaultJudgment;
+        return claimWithDefaultJudgment;
     }
 
-    private boolean canDefaultJudgmentBeRequestedYet(final LocalDate responseDeadline) {
-        return LocalDate.now().isAfter(responseDeadline);
+    private boolean canDefaultJudgmentBeRequestedYet(final Claim claim) {
+        return LocalDate.now().isAfter(claim.getResponseDeadline());
     }
 
     private boolean isResponseAlreadySubmitted(final Claim claim) {
@@ -84,7 +72,12 @@ public class DefaultJudgmentService {
         return claim.getSubmitterId().equals(submitterId);
     }
 
-    private boolean isDefaultJudgmentAlreadySubmitted(final long claimId) {
-        return defaultJudgmentRepository.getByClaimId(claimId).isPresent();
+    private boolean isDefaultJudgmentAlreadySubmitted(final Claim claim) {
+        return claim.getDefaultJudgment() != null;
+    }
+
+    private Claim getClaim(final long claimId) {
+        return claimRepository.getById(claimId)
+            .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
     }
 }
