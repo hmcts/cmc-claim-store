@@ -37,8 +37,7 @@ public class JsonMapperTest {
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
             .withClaimant(SampleParty.builder().withRepresentative(null).individual())
-            .withDefendant(SampleTheirDetails.builder()
-                            .withServiceAddress(null).withRepresentative(null).individualDetails())
+            .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
             .withFeeCode("X0012")
             .build();
 
@@ -70,8 +69,7 @@ public class JsonMapperTest {
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
             .withClaimant(SampleParty.builder().withRepresentative(null).individual())
-            .withDefendant(SampleTheirDetails.builder()
-                            .withServiceAddress(null).withRepresentative(null).individualDetails())
+            .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
             .build();
 
         assertThat(output).isEqualTo(expected);

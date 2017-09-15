@@ -16,12 +16,11 @@ public class IndividualDetails extends TheirDetails implements TitledParty {
     public IndividualDetails(
         final String name,
         final Address address,
-        final Address serviceAddress,
         final String email,
         final Representative representative,
         final String title
     ) {
-        super(name, address, serviceAddress, email, representative);
+        super(name, address, email, representative);
         this.title = title;
     }
 
