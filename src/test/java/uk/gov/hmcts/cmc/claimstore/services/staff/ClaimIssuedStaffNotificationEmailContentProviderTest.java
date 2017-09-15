@@ -10,18 +10,6 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest {
 
     ClaimIssuedStaffNotificationEmailContentProvider provider = new ClaimIssuedStaffNotificationEmailContentProvider();
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullReferenceNumber() {
-        // I think this test doesn't make sense. Ref number is generated automatically on insert
-        // cannot be null
-        provider.createContent(SampleClaim.builder().withReferenceNumber(null).build());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentWhenGivenEmptyReferenceNumber() {
-        provider.createContent(SampleClaim.builder().withReferenceNumber("").build());
-    }
-
     @Test
     public void shouldFormatEmailSubjectToExpectedValue() {
         EmailContent emailContent = provider.createContent(SampleClaim.getDefault());
