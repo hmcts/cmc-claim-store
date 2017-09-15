@@ -1,14 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Objects;
 
-public class DefaultJudgmentSubmittedEvent {
+public class CountyCourtJudgmentSubmittedEvent {
 
     private final Claim claim;
 
-    public DefaultJudgmentSubmittedEvent(final Claim claim) {
+    public CountyCourtJudgmentSubmittedEvent(final Claim claim) {
         this.claim = claim;
     }
 
@@ -26,7 +27,7 @@ public class DefaultJudgmentSubmittedEvent {
             return false;
         }
 
-        final DefaultJudgmentSubmittedEvent that = (DefaultJudgmentSubmittedEvent) other;
+        final CountyCourtJudgmentSubmittedEvent that = (CountyCourtJudgmentSubmittedEvent) other;
         return Objects.equals(claim, that.claim);
     }
 
@@ -37,7 +38,6 @@ public class DefaultJudgmentSubmittedEvent {
 
     @Override
     public String toString() {
-        return "DefaultJudgmentSubmitted "
-            + ", claim='" + claim;
+        return ReflectionToStringBuilder.toString(this);
     }
 }
