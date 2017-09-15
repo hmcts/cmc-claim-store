@@ -59,6 +59,7 @@
         "postcode": "DF1 3LJ"
       },
       "serviceAddress": {
+        "defendantsAddress": "NO",
         "line1": "52",
         "line2": "Down Street",
         "city": "Manchester",

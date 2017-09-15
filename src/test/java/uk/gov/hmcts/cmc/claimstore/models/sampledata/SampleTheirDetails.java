@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleAddress;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleServiceAddress;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
+import uk.gov.hmcts.cmc.claimstore.models.ServiceAddress;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.IndividualDetails;
@@ -16,7 +18,7 @@ public class SampleTheirDetails {
 
     private String name = "John Smith";
     private Address address = SampleAddress.validDefaults();
-    private Address serviceAddress = SampleAddress.validDefaults();
+    private ServiceAddress serviceAddress = SampleServiceAddress.validDefaults();
     private String email = "j.smith@example.com";
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
@@ -39,7 +41,7 @@ public class SampleTheirDetails {
         return this;
     }
 
-    public SampleTheirDetails withServiceAddress(Address serviceAddress) {
+    public SampleTheirDetails withServiceAddress(ServiceAddress serviceAddress) {
         this.serviceAddress = serviceAddress;
         return this;
     }

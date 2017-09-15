@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
+import uk.gov.hmcts.cmc.claimstore.models.ServiceAddress;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.claimstore.models.party.NamedParty;
 
@@ -44,7 +45,7 @@ public abstract class TheirDetails implements NamedParty {
     private final Address address;
 
     @Valid
-    private final Address serviceAddress;
+    private final ServiceAddress serviceAddress;
 
     @Email
     private final String email;
@@ -55,7 +56,7 @@ public abstract class TheirDetails implements NamedParty {
     public TheirDetails(
         final String name,
         final Address address,
-        final Address serviceAddress,
+        final ServiceAddress serviceAddress,
         final String email,
         final Representative representative
     ) {
@@ -75,7 +76,7 @@ public abstract class TheirDetails implements NamedParty {
         return address;
     }
 
-    public Optional<Address> getServiceAddress() {
+    public Optional<ServiceAddress> getServiceAddress() {
         return Optional.ofNullable(serviceAddress);
     }
 

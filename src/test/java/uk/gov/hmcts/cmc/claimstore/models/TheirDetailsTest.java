@@ -81,21 +81,6 @@ public class TheirDetailsTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenGivenInvalidServiceAddress() {
-        TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withServiceAddress(SampleAddress.builder()
-                .withPostcode("")
-                .build())
-            .partyDetails();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors)
-            .hasSize(1)
-            .contains("serviceAddress.postcode : Postcode should not be empty");
-    }
-
-    @Test
     public void shouldBeValidWhenGivenNullServiceAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withServiceAddress(null)
@@ -105,7 +90,6 @@ public class TheirDetailsTest {
 
         assertThat(validationErrors).isEmpty();
     }
-
 
     @Test
     public void shouldBeValidWhenGivenNullEmail() {

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.models.otherparty;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
+import uk.gov.hmcts.cmc.claimstore.models.ServiceAddress;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class CompanyDetails extends TheirDetails {
     public CompanyDetails(
         final String name,
         final Address address,
-        final Address serviceAddress,
+        final ServiceAddress serviceAddress,
         final String email,
         final Representative representative,
         final String contactPerson
