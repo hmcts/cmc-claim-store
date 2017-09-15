@@ -74,7 +74,7 @@ public class GetClamsByClaimantIdTest extends BaseTest {
     private Claim newClaim(Long id, Long claimantId) {
         return new Claim(id, claimantId, 3L, 1L, "external-id",
             "000MC001", null,null, null, null,
-            false, SUBMITTER_EMAIL, null);
+            false, SUBMITTER_EMAIL, null, null, null);
     }
 
     private List<Claim> deserialize(MvcResult result) throws UnsupportedEncodingException {
