@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-;
-
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class Optionals {
     private Optionals() {
