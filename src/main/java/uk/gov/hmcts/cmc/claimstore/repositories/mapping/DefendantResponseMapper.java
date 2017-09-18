@@ -6,12 +6,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.utils.LocalDateTimeFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+
+import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
 
 @Component
 public class DefendantResponseMapper implements ResultSetMapper<DefendantResponse> {
@@ -31,9 +30,5 @@ public class DefendantResponseMapper implements ResultSetMapper<DefendantRespons
 
     private ResponseData toResponseData(final String input) {
         return jsonMapper.fromJson(input, ResponseData.class);
-    }
-
-    private LocalDateTime toLocalDateTimeFromUTC(Timestamp input) {
-        return LocalDateTimeFactory.fromUTC(input.toLocalDateTime());
     }
 }
