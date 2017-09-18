@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.StatementOfValueContent;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
@@ -27,10 +28,13 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithAmountRange() throws Exception {
         //given
-        final Claim claim = SampleClaim.claim(SampleClaimData.builder()
-            .withAmount(SampleAmountRange.builder().withHigherValue(BigDecimal.valueOf(100.50))
-                .withLowerValue(BigDecimal.valueOf(200.95)).build())
-            .build(), "000LR001");
+        final Claim claim = buildClaimModel(
+            SampleClaimData.builder()
+                .withAmount(
+                    SampleAmountRange.builder()
+                        .withHigherValue(BigDecimal.valueOf(100.50))
+                        .withLowerValue(BigDecimal.valueOf(200.95)).build()
+                ).build());
 
         final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
@@ -45,8 +49,7 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithAmountNotKnown() throws Exception {
         //given
-        final Claim claim = SampleClaim.claim(SampleClaimData.builder()
-            .withAmount(new NotKnown()).build(), "000LR001");
+        final Claim claim = buildClaimModel(SampleClaimData.builder().withAmount(new NotKnown()).build());
 
         final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
@@ -60,8 +63,7 @@ public class StatementOfValueProviderTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowErrorForInvalidAmountType() throws Exception {
         //given
-        final Claim claim = SampleClaim.claim(SampleClaimData.builder()
-            .build(), "000LR001");
+        final Claim claim = SampleClaim.builder().build();
 
         final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
@@ -73,12 +75,17 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithPersonalInjury() throws Exception {
         //given
-        final Claim claim = SampleClaim.claim(SampleClaimData.builder()
-            .withAmount(SampleAmountRange.builder().withHigherValue(BigDecimal.valueOf(100.50))
-                .withLowerValue(BigDecimal.valueOf(200.95)).build())
-            .withPersonalInjury(new PersonalInjury(MORE_THAN_THOUSAND_POUNDS))
-            .withHousingDisrepair(null)
-            .build(), "000LR001");
+        final Claim claim = buildClaimModel(
+            SampleClaimData.builder()
+                .withAmount(
+                    SampleAmountRange.builder()
+                        .withHigherValue(BigDecimal.valueOf(100.50))
+                        .withLowerValue(BigDecimal.valueOf(200.95)).build()
+                )
+                .withPersonalInjury(new PersonalInjury(MORE_THAN_THOUSAND_POUNDS))
+                .withHousingDisrepair(null)
+                .build());
+
         final String expected = String.format(PERSONAL_INJURY_DAMAGES, MORE_THAN_THOUSAND_POUNDS.getDisplayValue());
 
         final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
@@ -94,11 +101,14 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithHousingDisrepair() throws Exception {
         //given
-        final Claim claim = SampleClaim.claim(SampleClaimData.builder()
-            .withPersonalInjury(null)
-            .withAmount(SampleAmountRange.builder().withHigherValue(BigDecimal.valueOf(100.50))
-                .withLowerValue(BigDecimal.valueOf(200.95)).build())
-            .build(), "000LR001");
+        final Claim claim = buildClaimModel(
+            SampleClaimData.builder()
+                .withPersonalInjury(null)
+                .withAmount(SampleAmountRange.builder()
+                    .withHigherValue(BigDecimal.valueOf(100.50))
+                    .withLowerValue(BigDecimal.valueOf(200.95))
+                    .build()
+                ).build());
 
         final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
@@ -112,10 +122,14 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithHousingDisrepairAndPersonalInjury() throws Exception {
         //given
-        final Claim claim = SampleClaim.claim(SampleClaimData.builder()
-            .withAmount(SampleAmountRange.builder().withHigherValue(BigDecimal.valueOf(100.50))
-                .withLowerValue(BigDecimal.valueOf(200.95)).build())
-            .build(), "000LR001");
+        final Claim claim = buildClaimModel(
+            SampleClaimData.builder()
+                .withAmount(
+                    SampleAmountRange.builder()
+                        .withHigherValue(BigDecimal.valueOf(100.50))
+                        .withLowerValue(BigDecimal.valueOf(200.95))
+                        .build()
+                ).build());
 
         final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
@@ -126,4 +140,7 @@ public class StatementOfValueProviderTest {
         assertThat(statementOfValueContent.getHousingDisrepair()).contains(ALSO_HOUSING_DISREPAIR);
     }
 
+    private Claim buildClaimModel(ClaimData claimData) {
+        return SampleClaim.builder().withClaimData(claimData).build();
+    }
 }

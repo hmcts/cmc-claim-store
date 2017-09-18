@@ -21,7 +21,7 @@ public class GetClaimByReferenceNumberTest extends BaseTest {
 
     private final Claim claim = new Claim(
         1L, 2L, 3L, null, EXTERNAL_ID, REFERENCE_NUMBER, null, null, null, null, false, SUBMITTER_EMAIL,
-        null);
+        null, null, null);
 
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
