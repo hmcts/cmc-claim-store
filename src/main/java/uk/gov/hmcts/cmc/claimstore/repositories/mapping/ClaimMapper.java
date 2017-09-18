@@ -44,7 +44,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     }
 
     private Map<String, Object> toCountyCourtJudgment(final String input) {
-        return jsonMapper.fromJson(input, TempCCJClass.class);
+        return input != null ? jsonMapper.fromJson(input, TempCCJClass.class) : null;
     }
 
     private class TempCCJClass extends HashMap<String, Object> {
