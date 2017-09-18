@@ -241,16 +241,53 @@
     <table>
       <tr>
         <td>Declaration:</td>
+        {% if defendant.signerName is empty %}
         <td>
           I, {{ defendant.fullName }}, believe that the facts stated in this defence form are true.
         </td>
+        {% endif %}
+        {% if responseDefence.signerName is not empty %}
+        <td>
+          The Defendant believes that the facts stated in this claim are true.
+        </td>
+        {% endif %}
+
       </tr>
+
+      {% if defendant.signerName is empty %}
       <tr>
         <td></td>
         <td>
           {{ defendant.fullName }}
         </td>
       </tr>
+      {% endif %}
+      {% if defendant.signerName is not empty %}
+      <tr>
+        <td>
+          Name:
+        </td>
+        <td>{{ defendant.signerName }}</td>
+      </tr>
+      <tr>
+        <td>
+          Company:
+        </td>
+        {% if defendant.fullName is not empty %}
+        <td>{{ defendant.fullName }}</td>
+        {% endif %}
+        {% if defendant.businessName is not empty %}
+        <td>{{ defendant.businessName }}</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td>
+          Position held:
+        </td>
+        <td>{{ defendant.signerRole }}</td>
+      </tr>
+      {% endif %}
+
     </table>
   </div>
 </div>

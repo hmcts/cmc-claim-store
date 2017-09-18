@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.Interest;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 
@@ -48,6 +49,15 @@ public class ClaimContentProvider {
             totalAmountComponents.add(interestContent.getAmountUpToNowRealValue());
         }
 
+        String signerName = null;
+        String signerRole = null;
+
+        if(claim.getClaimData().getStatementOfTruth().isPresent()) {
+            StatementOfTruth statementOfTruth = claim.getClaimData().getStatementOfTruth().get();
+            signerName = statementOfTruth.getSignerName();
+            signerRole = statementOfTruth.getSignerRole();
+        }
+
         return new ClaimContent(
             claim.getReferenceNumber(),
             formatDateTime(claim.getCreatedAt()),
@@ -60,7 +70,9 @@ public class ClaimContentProvider {
                 totalAmountComponents.stream()
                     .filter(Objects::nonNull)
                     .reduce(ZERO, BigDecimal::add)
-            )
+            ),
+            signerName,
+            signerRole
         );
     }
 

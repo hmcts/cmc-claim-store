@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
+import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
@@ -23,6 +24,8 @@ public class DefendantDetailsContent {
     private final Boolean addressAmended;
     private final String dateOfBirth;
     private final String email;
+    private final String signerName;
+    private final String signerRole;
 
     public DefendantDetailsContent(
         final TheirDetails providedByClaimant,
@@ -41,6 +44,9 @@ public class DefendantDetailsContent {
         this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
         this.email = defendantResponse.getDefendantEmail();
+        StatementOfTruth statementOfTruth = defendantResponse.getResponse().getStatementOfTruth();
+        this.signerName = statementOfTruth.getSignerName();
+        this.signerRole = statementOfTruth.getSignerRole();
     }
 
     private Address correspondenceAddress(final DefendantResponse defendantResponse) {
@@ -93,4 +99,8 @@ public class DefendantDetailsContent {
     public String getEmail() {
         return email;
     }
+
+    public String getSignerName() { return signerName; }
+
+    public String getSignerRole() { return signerRole; }
 }

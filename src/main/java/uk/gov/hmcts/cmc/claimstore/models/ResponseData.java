@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 
 import java.util.Objects;
@@ -58,16 +59,21 @@ public class ResponseData {
     @NotNull
     private final Party defendant;
 
+    @Valid
+    private final StatementOfTruth statementOfTruth;
+
     public ResponseData(final ResponseType type,
                         final String defence,
                         final FreeMediationOption freeMediation,
                         final MoreTimeNeededOption moreTimeNeeded,
-                        final Party defendant) {
+                        final Party defendant,
+                        final StatementOfTruth statementOfTruth) {
         this.type = type;
         this.defence = defence;
         this.freeMediation = freeMediation;
         this.moreTimeNeeded = moreTimeNeeded;
         this.defendant = defendant;
+        this.statementOfTruth = statementOfTruth;
     }
 
     public ResponseType getType() {
@@ -90,6 +96,8 @@ public class ResponseData {
         return defendant;
     }
 
+    public StatementOfTruth getStatementOfTruth() { return statementOfTruth; }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(final Object other) {
@@ -106,7 +114,8 @@ public class ResponseData {
             && Objects.equals(defence, that.defence)
             && Objects.equals(freeMediation, that.freeMediation)
             && Objects.equals(moreTimeNeeded, that.moreTimeNeeded)
-            && Objects.equals(defendant, that.defendant);
+            && Objects.equals(defendant, that.defendant)
+            && Objects.equals(statementOfTruth, that.statementOfTruth);
     }
 
     @Override
@@ -117,8 +126,8 @@ public class ResponseData {
     @Override
     public String toString() {
         return String.format(
-            "ResponseData{type=%s, defence='%s', freeMediation=%s, moreTimeNeeded=%s, defendant=%s}",
-            type, defence, freeMediation, moreTimeNeeded, defendant
+            "ResponseData{type=%s, defence='%s', freeMediation=%s, moreTimeNeeded=%s, defendant=%s, statementOfTruth=%s}",
+            type, defence, freeMediation, moreTimeNeeded, defendant, statementOfTruth
         );
     }
 }
