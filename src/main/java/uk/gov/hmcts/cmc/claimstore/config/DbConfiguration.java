@@ -57,5 +57,4 @@ public class DbConfiguration {
     public DefendantResponseRepository defendantResponseRepository(DBI dbi) {
         return dbi.onDemand(DefendantResponseRepository.class);
     }
-
 }
