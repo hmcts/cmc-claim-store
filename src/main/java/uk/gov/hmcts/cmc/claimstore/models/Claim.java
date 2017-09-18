@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -27,6 +28,8 @@ public class Claim {
     private final boolean moreTimeRequested;
     private final String submitterEmail;
     private final LocalDateTime respondedAt;
+    private final Map<String, Object> countyCourtJudgment;
+    private final LocalDateTime countyCourtJudgmentRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about remove parameters here
     public Claim(
@@ -42,7 +45,9 @@ public class Claim {
         final LocalDate responseDeadline,
         final boolean moreTimeRequested,
         final String submitterEmail,
-        final LocalDateTime respondedAt) {
+        final LocalDateTime respondedAt,
+        Map<String, Object> countyCourtJudgment,
+        LocalDateTime countyCourtJudgmentRequestedAt) {
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;
@@ -56,6 +61,8 @@ public class Claim {
         this.moreTimeRequested = moreTimeRequested;
         this.submitterEmail = submitterEmail;
         this.respondedAt = respondedAt;
+        this.countyCourtJudgment = countyCourtJudgment;
+        this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
     }
 
     public Long getId() {
@@ -110,6 +117,14 @@ public class Claim {
         return respondedAt;
     }
 
+    public Map<String, Object> getCountyCourtJudgment() {
+        return countyCourtJudgment;
+    }
+
+    public LocalDateTime getCountyCourtJudgmentRequestedAt() {
+        return countyCourtJudgmentRequestedAt;
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object other) {
@@ -131,7 +146,9 @@ public class Claim {
             && Objects.equals(createdAt, otherClaim.createdAt)
             && Objects.equals(issuedOn, otherClaim.issuedOn)
             && Objects.equals(responseDeadline, otherClaim.responseDeadline)
-            && Objects.equals(respondedAt, otherClaim.respondedAt);
+            && Objects.equals(respondedAt, otherClaim.respondedAt)
+            && Objects.equals(countyCourtJudgment, otherClaim.countyCourtJudgment)
+            && Objects.equals(countyCourtJudgmentRequestedAt, otherClaim.countyCourtJudgmentRequestedAt);
     }
 
     @Override
@@ -156,6 +173,8 @@ public class Claim {
         private LocalDate responseDeadline;
         private boolean moreTimeRequested;
         private LocalDateTime respondedAt;
+        private Map<String, Object> countyCourtJudgment;
+        private LocalDateTime countyCourtJudgmentRequestedAt;
 
         public Builder setId(Long id) {
             this.id = id;
@@ -222,9 +241,22 @@ public class Claim {
             return this;
         }
 
+        public Builder setCountyCourtJudgment(Map<String, Object> countyCourtJudgment) {
+            this.countyCourtJudgment = countyCourtJudgment;
+            return this;
+        }
+
+        public Builder setCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
+            this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
+            return this;
+        }
+
         public Claim build() {
-            return new Claim(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber, claimData,
-                createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail, respondedAt);
+            return new Claim(
+                id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
+                claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested,
+                submitterEmail, respondedAt, countyCourtJudgment, countyCourtJudgmentRequestedAt
+            );
         }
     }
 
