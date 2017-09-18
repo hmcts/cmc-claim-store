@@ -27,8 +27,6 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/support")
 public class SupportController {
