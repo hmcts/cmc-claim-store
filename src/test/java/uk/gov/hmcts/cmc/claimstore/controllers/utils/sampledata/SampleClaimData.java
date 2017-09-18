@@ -44,8 +44,10 @@ public class SampleClaimData {
     private String preferredCourt = "LONDON COUNTY COUNCIL";
     private String feeCode = "X0012";
 
-    private HousingDisrepair housingDisrepair = new HousingDisrepair(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
-        DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
+    private HousingDisrepair housingDisrepair = new HousingDisrepair(
+        DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
+        DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
+    );
 
     public static SampleClaimData builder() {
         return new SampleClaimData();

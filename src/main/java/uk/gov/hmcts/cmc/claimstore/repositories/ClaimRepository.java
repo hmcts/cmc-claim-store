@@ -129,4 +129,14 @@ public interface ClaimRepository {
         @Bind("claimId") final Long claimId,
         @Bind("responseDeadline") final LocalDate responseDeadline
     );
+
+    @SqlUpdate("UPDATE claim SET "
+        + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
+        + " county_court_judgment_requested_at = now() at timezone 'utc'"
+        + "WHERE"
+        + " claim_id = :claimId")
+    void saveCountyCourtJudgment(
+        @Bind("claimId") final long claimId,
+        @Bind("countyCourtJudgmentData") final String countyCourtJudgmentData
+    );
 }
