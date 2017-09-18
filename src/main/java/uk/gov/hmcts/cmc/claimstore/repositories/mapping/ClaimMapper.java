@@ -32,7 +32,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at")),
-            toResponseData(result.getString("response")),
+            toNullableResponseData(result.getString("response")),
             result.getString("defendant_email")
         );
     }
@@ -41,8 +41,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         return jsonMapper.fromJson(input, ClaimData.class);
     }
 
-    private ResponseData toResponseData(final String input) {
-        return jsonMapper.fromJson(input, ResponseData.class);
+    private ResponseData toNullableResponseData(final String input) {
+        return input != null ? jsonMapper.fromJson(input, ResponseData.class) : null;
     }
 
     private Long toNullableLong(final Integer input) {
