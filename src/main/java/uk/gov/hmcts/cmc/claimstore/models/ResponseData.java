@@ -4,14 +4,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 
 import java.util.Objects;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -96,7 +100,9 @@ public class ResponseData {
         return defendant;
     }
 
-    public StatementOfTruth getStatementOfTruth() { return statementOfTruth; }
+    public Optional<StatementOfTruth> getStatementOfTruth() {
+        return Optional.ofNullable(statementOfTruth);
+    }
 
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
@@ -125,9 +131,6 @@ public class ResponseData {
 
     @Override
     public String toString() {
-        return String.format(
-            "ResponseData{type=%s, defence='%s', freeMediation=%s, moreTimeNeeded=%s, defendant=%s, statementOfTruth=%s}",
-            type, defence, freeMediation, moreTimeNeeded, defendant, statementOfTruth
-        );
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

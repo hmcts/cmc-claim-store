@@ -12,7 +12,7 @@ public class SampleResponseData {
     private ResponseData.MoreTimeNeededOption moreTimeNeededOption = ResponseData.MoreTimeNeededOption.YES;
     private String defence = "defence string";
     private Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
-    private StatementOfTruth statementOfTruth = new StatementOfTruth(null,null);
+    private StatementOfTruth statementOfTruth;
 
     public static SampleResponseData builder() {
         return new SampleResponseData();
@@ -43,7 +43,9 @@ public class SampleResponseData {
     }
 
     public ResponseData build() {
-        return new ResponseData(responseType, defence, freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth);
+        return new ResponseData(
+            responseType, defence, freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth
+        );
     }
 
     public SampleResponseData withDefaultStatementOfTruth() {

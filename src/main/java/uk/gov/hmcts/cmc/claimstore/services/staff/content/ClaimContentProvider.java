@@ -34,16 +34,15 @@ public class ClaimContentProvider {
         requireNonNull(claim);
 
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
-        totalAmountComponents.add(((AmountBreakDown)claim.getClaimData().getAmount()).getTotalAmount());
+        totalAmountComponents.add(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount());
         totalAmountComponents.add(claim.getClaimData().getPayment().getAmountInPounds());
-
 
         InterestContent interestContent = null;
         if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterestDate(),
-                ((AmountBreakDown)claim.getClaimData().getAmount()).getTotalAmount(),
+                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
                 claim.getCreatedAt()
             );
             totalAmountComponents.add(interestContent.getAmountUpToNowRealValue());
@@ -52,7 +51,7 @@ public class ClaimContentProvider {
         String signerName = null;
         String signerRole = null;
 
-        if(claim.getClaimData().getStatementOfTruth().isPresent()) {
+        if (claim.getClaimData().getStatementOfTruth().isPresent()) {
             StatementOfTruth statementOfTruth = claim.getClaimData().getStatementOfTruth().get();
             signerName = statementOfTruth.getSignerName();
             signerRole = statementOfTruth.getSignerRole();
@@ -63,7 +62,7 @@ public class ClaimContentProvider {
             formatDateTime(claim.getCreatedAt()),
             formatDate(claim.getIssuedOn()),
             claim.getClaimData().getReason(),
-            formatMoney(((AmountBreakDown)claim.getClaimData().getAmount()).getTotalAmount()),
+            formatMoney(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()),
             formatMoney(claim.getClaimData().getPayment().getAmountInPounds()),
             interestContent,
             formatMoney(

@@ -44,9 +44,10 @@ public class DefendantDetailsContent {
         this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
         this.email = defendantResponse.getDefendantEmail();
-        StatementOfTruth statementOfTruth = defendantResponse.getResponse().getStatementOfTruth();
-        this.signerName = statementOfTruth.getSignerName();
-        this.signerRole = statementOfTruth.getSignerRole();
+
+        Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getResponse().getStatementOfTruth();
+        this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
+        this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
     }
 
     private Address correspondenceAddress(final DefendantResponse defendantResponse) {
@@ -100,7 +101,11 @@ public class DefendantDetailsContent {
         return email;
     }
 
-    public String getSignerName() { return signerName; }
+    public String getSignerName() {
+        return signerName;
+    }
 
-    public String getSignerRole() { return signerRole; }
+    public String getSignerRole() {
+        return signerRole;
+    }
 }
