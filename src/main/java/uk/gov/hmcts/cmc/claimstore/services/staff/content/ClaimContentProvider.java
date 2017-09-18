@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
@@ -48,14 +49,9 @@ public class ClaimContentProvider {
             totalAmountComponents.add(interestContent.getAmountUpToNowRealValue());
         }
 
-        String signerName = null;
-        String signerRole = null;
-
-        if (claim.getClaimData().getStatementOfTruth().isPresent()) {
-            StatementOfTruth statementOfTruth = claim.getClaimData().getStatementOfTruth().get();
-            signerName = statementOfTruth.getSignerName();
-            signerRole = statementOfTruth.getSignerRole();
-        }
+        Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
+        String signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
+        String signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
 
         return new ClaimContent(
             claim.getReferenceNumber(),
