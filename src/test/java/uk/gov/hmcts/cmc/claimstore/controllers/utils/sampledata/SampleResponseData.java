@@ -48,8 +48,8 @@ public class SampleResponseData {
         );
     }
 
-    public SampleResponseData withDefaultStatementOfTruth() {
-        this.statementOfTruth = new StatementOfTruth(null,null);
+    public SampleResponseData withStatementOfTruth(final String signerName, final String signerRole) {
+        this.statementOfTruth = new StatementOfTruth(signerName,signerRole);
         return this;
     }
 }
