@@ -130,7 +130,6 @@ public interface ClaimRepository {
         @Bind("responseDeadline") final LocalDate responseDeadline
     );
 
-    @GetGeneratedKeys
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
         + " county_court_judgment_requested_at = now() at timezone 'utc'"
