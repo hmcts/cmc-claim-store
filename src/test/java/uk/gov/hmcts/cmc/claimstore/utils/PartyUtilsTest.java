@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PartyUtilsTest {
 
     @Test
-    public void getType() {
+    public void getTypeMapsPartyTypesCorrectly() {
         assertThat(PartyUtils.getType(SampleParty.builder().individual()))
             .isEqualTo(PartyUtils.INDIVIDUAL);
 
@@ -32,7 +32,7 @@ public class PartyUtilsTest {
     }
 
     @Test
-    public void getTypeTheirDetails() {
+    public void getTypeTheirDetailsMapsPartyTypesCorrectly() {
         assertThat(PartyUtils.getType(SampleTheirDetails.builder().individualDetails()))
             .isEqualTo(PartyUtils.INDIVIDUAL);
 
