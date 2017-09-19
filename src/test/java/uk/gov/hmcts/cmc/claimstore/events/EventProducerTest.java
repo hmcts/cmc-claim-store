@@ -28,7 +28,8 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTime
 public class EventProducerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
 
-    private final UserDetails userDetails = new UserDetails(USER_ID, CLAIMANT_EMAIL);
+    private final UserDetails userDetails
+        = new UserDetails(USER_ID, CLAIMANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
 
     @Mock
     private UserService userService;
@@ -47,7 +48,6 @@ public class EventProducerTest {
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
         //given
-        final UserDetails userDetails = new UserDetails(USER_ID, CLAIMANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
         final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN);
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
@@ -67,7 +67,7 @@ public class EventProducerTest {
         when(data.isClaimantRepresented()).thenReturn(true);
 
         //when
-        eventProducer.createClaimIssuedEvent(claim, PIN);
+        eventProducer.createClaimIssuedEvent(claim, PIN, userDetails.getFullName());
 
         //then
         verify(publisher).publishEvent(any(RepresentedClaimIssuedEvent.class));
@@ -75,10 +75,6 @@ public class EventProducerTest {
 
     @Test
     public void shouldCreateDefendantResponseEvent() throws Exception {
-        //given
-        final UserDetails userDetails
-            = new UserDetails(USER_ID, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
-
         //given
         final DefendantResponseEvent expectedEvent
             = new DefendantResponseEvent(CLAIM, DEFENDANT_RESPONSE);
