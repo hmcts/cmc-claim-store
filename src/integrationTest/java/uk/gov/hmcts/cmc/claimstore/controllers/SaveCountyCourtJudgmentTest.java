@@ -18,6 +18,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 
 public class SaveCountyCourtJudgmentTest extends BaseTest {
 
@@ -26,9 +28,10 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
 
     @Before
     public void setup() {
+        final UserDetails userDetails
+            = new UserDetails(CLAIMANT_ID, "claimant@email.com", SUBMITTER_FORENAME, SUBMITTER_SURNAME);
 
-        given(userService.getUserDetails(anyString()))
-            .willReturn(new UserDetails(CLAIMANT_ID, "claimant@email.com"));
+        given(userService.getUserDetails(anyString())).willReturn(userDetails);
     }
 
     @Test
