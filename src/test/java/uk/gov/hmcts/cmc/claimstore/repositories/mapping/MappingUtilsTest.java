@@ -32,12 +32,12 @@ public class MappingUtilsTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void toLocalDateTimeFromUTCSWhenNullShouldThrow() {
+    public void toLocalDateTimeFromUtcWhenNullShouldThrow() {
         toLocalDateTimeFromUTC(null);
     }
 
     @Test
-    public void toLocalDateTimeFromUTCSReturnsLocalDateTime() {
+    public void toLocalDateTimeFromUtcReturnsLocalDateTime() {
         LocalDateTime dateTime = LocalDateTime.of(2016, 12, 12, 10, 10);
         assertThat(toLocalDateTimeFromUTC(new Timestamp(dateTime.toInstant(ZoneOffset.UTC).toEpochMilli())))
             .isEqualTo(dateTime);
