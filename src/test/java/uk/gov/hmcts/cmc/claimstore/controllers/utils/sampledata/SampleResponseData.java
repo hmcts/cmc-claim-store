@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 
@@ -11,6 +12,7 @@ public class SampleResponseData {
     private ResponseData.MoreTimeNeededOption moreTimeNeededOption = ResponseData.MoreTimeNeededOption.YES;
     private String defence = "defence string";
     private Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
+    private StatementOfTruth statementOfTruth;
 
     public static SampleResponseData builder() {
         return new SampleResponseData();
@@ -41,7 +43,13 @@ public class SampleResponseData {
     }
 
     public ResponseData build() {
-        return new ResponseData(responseType, defence, freeMediationOption, moreTimeNeededOption, defendantDetails);
+        return new ResponseData(
+            responseType, defence, freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth
+        );
     }
 
+    public SampleResponseData withStatementOfTruth(final String signerName, final String signerRole) {
+        this.statementOfTruth = new StatementOfTruth(signerName,signerRole);
+        return this;
+    }
 }
