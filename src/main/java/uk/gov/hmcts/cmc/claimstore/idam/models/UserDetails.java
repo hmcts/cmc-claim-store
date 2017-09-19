@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.idam.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDetails {
@@ -11,10 +13,10 @@ public class UserDetails {
     private final String forename;
     private final String surname;
 
-    public UserDetails(final long id,
-                       final String email,
-                       final String forename,
-                       final String surname
+    public UserDetails(@JsonProperty("id") final long id,
+                       @JsonProperty("email") final String email,
+                       @JsonProperty("forename") final String forename,
+                       @JsonProperty("surname") final String surname
     ) {
         this.id = id;
         this.email = email;
@@ -38,6 +40,7 @@ public class UserDetails {
         return surname;
     }
 
+    @JsonIgnore
     public String getFullName() {
         return forename + ' ' + surname;
     }
