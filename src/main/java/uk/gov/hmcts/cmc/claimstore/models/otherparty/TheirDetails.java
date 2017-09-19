@@ -49,16 +49,21 @@ public abstract class TheirDetails implements NamedParty {
     @Valid
     public final Representative representative;
 
+    @Valid
+    public final Address serviceAddress;
+
     public TheirDetails(
         final String name,
         final Address address,
         final String email,
-        final Representative representative
+        final Representative representative,
+        final Address serviceAddress
     ) {
         this.name = name;
         this.address = address;
         this.email = email;
         this.representative = representative;
+        this.serviceAddress = serviceAddress;
     }
 
     @Override
@@ -78,7 +83,12 @@ public abstract class TheirDetails implements NamedParty {
         return Optional.ofNullable(representative);
     }
 
+    public Optional<Address> getServiceAddress() {
+        return Optional.ofNullable(serviceAddress);
+    }
+
     @Override
+    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -92,12 +102,13 @@ public abstract class TheirDetails implements NamedParty {
         return Objects.equals(this.name, that.name)
             && Objects.equals(this.address, that.address)
             && Objects.equals(this.email, that.email)
-            && Objects.equals(this.representative, that.representative);
+            && Objects.equals(this.representative, that.representative)
+            && Objects.equals(this.serviceAddress, that.serviceAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, address, email, representative);
+        return Objects.hash(name, address, email, representative, serviceAddress);
     }
 
     @Override
