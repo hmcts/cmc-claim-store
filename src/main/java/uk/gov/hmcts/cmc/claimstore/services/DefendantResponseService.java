@@ -35,8 +35,8 @@ public class DefendantResponseService {
     }
 
     public DefendantResponse getById(final long responseId) {
-        return defendantResponseRepository.getById(responseId)
-            .orElseThrow(() -> new NotFoundException("Defendant response expected to have been saved, but wasn't"));
+        final String message = "Defendant response for '" + responseId + "' expected to have been saved, but wasn't";
+        return defendantResponseRepository.getById(responseId).orElseThrow(() -> new NotFoundException(message));
     }
 
     public List<DefendantResponse> getByDefendantId(final long defendantId) {
