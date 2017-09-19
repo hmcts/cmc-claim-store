@@ -88,6 +88,7 @@ public abstract class TheirDetails implements NamedParty {
     }
 
     @Override
+    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
