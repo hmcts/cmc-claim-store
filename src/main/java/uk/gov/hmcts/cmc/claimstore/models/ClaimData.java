@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.utils.MonetaryConversions;
-import uk.gov.hmcts.cmc.claimstore.utils.Optionals;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -169,7 +168,7 @@ public class ClaimData {
 
     @JsonIgnore
     public Boolean isClaimantRepresented() {
-        return claimants.stream().flatMap(p -> Optionals.toStream(p.getRepresentative())).findFirst().isPresent();
+        return claimants.stream().anyMatch(claimant -> claimant.getRepresentative().isPresent());
     }
 
     @JsonIgnore

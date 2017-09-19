@@ -19,7 +19,7 @@ public class EventProducer {
         if (claim.getClaimData().isClaimantRepresented()) {
             publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName));
         } else {
-            publisher.publishEvent(new ClaimIssuedEvent(claim, pin));
+            publisher.publishEvent(new ClaimIssuedEvent(claim, pin, submitterName));
         }
     }
 

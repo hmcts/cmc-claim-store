@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Objects;
@@ -51,10 +52,6 @@ public class RepresentedClaimIssuedEvent {
 
     @Override
     public String toString() {
-        return "RepresentedClaimIssuedEvent{"
-            + "claim=" + claim
-            + ", representativeName='" + representativeName + '\''
-            + ", representativeEmail='" + representativeEmail + '\''
-            + '}';
+        return ReflectionToStringBuilder.toString(this);
     }
 }

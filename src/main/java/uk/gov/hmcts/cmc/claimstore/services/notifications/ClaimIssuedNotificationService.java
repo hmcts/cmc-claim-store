@@ -48,9 +48,9 @@ public class ClaimIssuedNotificationService {
         final Optional<String> pin,
         final String emailTemplateId,
         final String reference,
-        final Optional<String> claimantName
+        final String submitterName
     ) {
-        final Map<String, String> parameters = aggregateParams(claim, pin, claimantName);
+        final Map<String, String> parameters = aggregateParams(claim, pin, submitterName);
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {
@@ -66,7 +66,7 @@ public class ClaimIssuedNotificationService {
         final Optional<String> pin,
         final String emailTemplateId,
         final String reference,
-        final Optional<String> claimantName
+        final String submitterName
     ) {
         final String errorMessage = "Failure: "
             + " failed to send notification (" + reference
@@ -77,16 +77,18 @@ public class ClaimIssuedNotificationService {
     }
 
     private Map<String, String> aggregateParams(final Claim claim, final Optional<String> pin,
-                                                final Optional<String> claimantName) {
+                                                final String submitterName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+
         if (!claim.getClaimData().isClaimantRepresented()) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
             parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
             parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
         } else {
-            claimantName.ifPresent(c -> parameters.put(CLAIMANT_NAME, c));
+            parameters.put(CLAIMANT_NAME, submitterName);
         }
+
         parameters.put("issuedOn", Formatting.formatDate(claim.getIssuedOn()));
         parameters.put("responseDeadline", Formatting.formatDate(claim.getResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
