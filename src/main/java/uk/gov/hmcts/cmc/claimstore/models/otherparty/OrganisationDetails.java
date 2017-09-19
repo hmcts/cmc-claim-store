@@ -16,10 +16,11 @@ public class OrganisationDetails extends TheirDetails {
         final Address address,
         final String email,
         final Representative representative,
+        final Address serviceAddress,
         final String contactPerson,
         final String companiesHouseNumber
     ) {
-        super(name, address, email, representative);
+        super(name, address, email, representative, serviceAddress);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;
     }
