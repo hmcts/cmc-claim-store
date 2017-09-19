@@ -103,7 +103,11 @@ public class SupportController {
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
             claimRepository.linkLetterHolder(claim.getId(), pinResponse.getUserId());
-            claimIssuedStaffNotificationHandler.onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin()));
+
+            final String fullName = userService.getUserDetails(authorisation).getFullName();
+
+            claimIssuedStaffNotificationHandler
+                .onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName));
         } else {
             final UserDetails userDetails = userService.getUserDetails(authorisation);
 

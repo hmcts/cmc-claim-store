@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 @Service
 public class DefendantResponseService {
 
@@ -35,7 +37,7 @@ public class DefendantResponseService {
     }
 
     public DefendantResponse getById(final long responseId) {
-        final String message = "Defendant response for '" + responseId + "' expected to have been saved, but wasn't";
+        final String message = format("Defendant response for %s expected to have been saved, but wasn't", responseId);
         return defendantResponseRepository.getById(responseId).orElseThrow(() -> new NotFoundException(message));
     }
 
