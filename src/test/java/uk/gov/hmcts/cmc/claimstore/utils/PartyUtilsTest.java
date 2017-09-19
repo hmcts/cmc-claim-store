@@ -32,7 +32,7 @@ public class PartyUtilsTest {
     }
 
     @Test
-    public void getTypeTheirDetailsMapsPartyTypesCorrectly() {
+    public void getTypeMapsTheirDetailsPartyTypesCorrectly() {
         assertThat(PartyUtils.getType(SampleTheirDetails.builder().individualDetails()))
             .isEqualTo(PartyUtils.INDIVIDUAL);
 
