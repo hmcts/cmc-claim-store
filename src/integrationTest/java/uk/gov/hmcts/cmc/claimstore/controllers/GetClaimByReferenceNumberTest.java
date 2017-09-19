@@ -11,17 +11,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
 
 @ActiveProfiles("test")
 public class GetClaimByReferenceNumberTest extends BaseTest {
 
     private static final String REFERENCE_NUMBER = "000MC001";
-    private static final String EXTERNAL_ID = "external-id";
+    private static final String EXTERNAL_ID = "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d";
 
-    private final Claim claim = new Claim(
-        1L, 2L, 3L, null, EXTERNAL_ID, REFERENCE_NUMBER, null, null, null, null, false, SUBMITTER_EMAIL,
-        null, response, defendantEmail);
+    private final Claim claim = new Claim.Builder().setId(1L).setSubmitterId(2L).setLetterHolderId(3L)
+        .setExternalId(EXTERNAL_ID)
+        .setReferenceNumber(REFERENCE_NUMBER)
+        .build();
 
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
@@ -56,9 +56,6 @@ public class GetClaimByReferenceNumberTest extends BaseTest {
 
     @Test
     public void shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
-        // we map specific exceptions to http status codes here:
-        // uk.gov.hmcts.cmc.claimstore.controllers.advices.ResourceExceptionHandler
-        // if exception is not mapped to specific http status code -> 500
         given(claimRepository.getByClaimReferenceNumber(eq(REFERENCE_NUMBER))).willThrow(new RuntimeException("error"));
 
         webClient

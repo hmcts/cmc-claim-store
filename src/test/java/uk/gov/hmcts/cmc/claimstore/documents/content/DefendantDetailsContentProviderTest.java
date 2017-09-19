@@ -2,10 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleAddress;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
@@ -27,8 +27,8 @@ public class DefendantDetailsContentProviderTest {
         .withPostcode("BB 127NQ")
         .build();
 
-    private DefendantResponse notAmendedDetails() {
-        return SampleDefendantResponse.getWithDefendantDetails(
+    private ResponseData notAmendedDetails() {
+        return SampleResponseData.builder().withDefendantDetails(
             SampleParty.builder()
                 .withName(defendant.getName())
                 .withAddress(defendant.getAddress())
@@ -37,11 +37,11 @@ public class DefendantDetailsContentProviderTest {
                     DATE_OF_BIRTH
                 )
                 .individual()
-        );
+        ).build();
     }
 
-    private DefendantResponse amendedDetails() {
-        return SampleDefendantResponse.getWithDefendantDetails(
+    private ResponseData amendedDetails() {
+        return SampleResponseData.builder().withDefendantDetails(
             SampleParty.builder()
                 .withName("John Doe")
                 .withAddress(
@@ -55,14 +55,14 @@ public class DefendantDetailsContentProviderTest {
                     DATE_OF_BIRTH
                 )
                 .individual()
-        );
+        ).build();
     }
 
     private DefendantDetailsContentProvider provider = new DefendantDetailsContentProvider();
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendant() {
-        provider.createContent(null, amendedDetails());
+        provider.createContent(null, amendedDetails(), null);
     }
 
     @Test(expected = NullPointerException.class)

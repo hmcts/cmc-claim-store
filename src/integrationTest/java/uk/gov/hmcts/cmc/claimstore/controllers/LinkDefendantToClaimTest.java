@@ -5,6 +5,7 @@ import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Optional;
@@ -13,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
 
 public class LinkDefendantToClaimTest extends BaseTest {
 
@@ -91,19 +91,7 @@ public class LinkDefendantToClaimTest extends BaseTest {
             .andReturn();
     }
 
-    private Claim newClaim(Long id, Long defendantId) {
-        return new Claim(
-            id,
-            SUBMITTER_ID,
-            LETTER_HOLDER_ID,
-            defendantId,
-            null,
-            REFERENCE_NUMBER,
-            null,
-            null,
-            null,
-            null,
-            false,
-            SUBMITTER_EMAIL, null, response, defendantEmail);
+    private Claim newClaim(long claimId, Long defendantId) {
+        return SampleClaim.builder().withClaimId(claimId).withDefendantId(defendantId).build();
     }
 }

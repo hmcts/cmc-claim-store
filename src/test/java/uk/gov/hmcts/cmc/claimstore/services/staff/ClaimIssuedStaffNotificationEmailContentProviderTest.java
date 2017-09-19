@@ -10,16 +10,6 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest {
 
     ClaimIssuedStaffNotificationEmailContentProvider provider = new ClaimIssuedStaffNotificationEmailContentProvider();
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullReferenceNumber() {
-        provider.createContent(SampleClaim.claim(null, null));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentWhenGivenEmptyReferenceNumber() {
-        provider.createContent(SampleClaim.claim(null, ""));
-    }
-
     @Test
     public void shouldFormatEmailSubjectToExpectedValue() {
         EmailContent emailContent = provider.createContent(SampleClaim.getDefault());
@@ -37,5 +27,4 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest {
         EmailContent emailContent = provider.createContent(SampleClaim.getDefault());
         assertThat(emailContent.getBody()).isEqualTo("Please find attached claim.");
     }
-
 }

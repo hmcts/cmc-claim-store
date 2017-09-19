@@ -7,6 +7,7 @@ import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.io.UnsupportedEncodingException;
@@ -16,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
 
 public class GetClaimsByDefendantIdTest extends BaseTest {
 
@@ -72,20 +72,7 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
     }
 
     private Claim newClaim(Long id, Long defendantId) {
-        return new Claim(
-            id,
-            2L,
-            3L,
-            defendantId,
-            "external-id",
-            "000MC001",
-            null,
-            null,
-            null,
-            null,
-            false,
-            SUBMITTER_EMAIL,
-            null, response, defendantEmail);
+        return SampleClaim.builder().withClaimId(id).withDefendantId(defendantId).build();
     }
 
     private List<Claim> deserialize(MvcResult result) throws UnsupportedEncodingException {

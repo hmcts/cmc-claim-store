@@ -223,7 +223,8 @@ public class ClaimServiceTest {
             ISSUE_DATE,
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
-            SUBMITTER_EMAIL, null, response, defendantEmail);
+            SUBMITTER_EMAIL,
+            null, null, null, null, null);
     }
 
     private static Claim createClaimModel(LocalDate responseDeadline, boolean moreTimeAlreadyRequested) {
@@ -239,6 +240,7 @@ public class ClaimServiceTest {
             ISSUE_DATE,
             responseDeadline,
             moreTimeAlreadyRequested,
-            SUBMITTER_EMAIL, null, response, defendantEmail);
+            SUBMITTER_EMAIL,
+            null, null, null, null, null);
     }
 }

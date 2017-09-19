@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
@@ -26,14 +25,12 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     private StaffEmailTemplates templates = new StaffEmailTemplates();
 
     private Claim claim;
-    private DefendantResponse response;
 
     private DefendantResponseStaffNotificationEmailContentProvider service;
 
     @Before
     public void beforeEachTest() {
-        claim = SampleClaim.getDefault();
-        response = SampleDefendantResponse.getDefault();
+        claim = SampleClaim.getWithDefaultResponse();
         service = new DefendantResponseStaffNotificationEmailContentProvider(
             templateService,
             templates
@@ -42,7 +39,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUseRequiredFieldsInTheSubject() {
-        EmailContent content = service.createContent(wrapInMap(claim, response, DEFENDANT_EMAIL));
+        EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
         assertThat(content.getSubject())
             .contains("Civil Money Claim defence submitted:")
             .contains("John Rambo v John Smith")
@@ -51,10 +48,11 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUseRequiredFieldsInTheBody() {
-        EmailContent content = service.createContent(wrapInMap(claim, response, DEFENDANT_EMAIL));
+        EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Mobile number: " + response.getResponse().getDefendant().getMobilePhone().get());
+            .contains("Mobile number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
+                .getMobilePhone().get());
     }
 
     @Test
@@ -79,7 +77,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUsePaidAllDefenceTextIfPaidAllDefenceSelected() {
-        EmailContent content = service.createContent(wrapInMap(claim, response, DEFENDANT_EMAIL));
+        EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
         assertThat(content.getBody())
             .contains("The defendant has submitted an already paid defence which is attached as a PDF.")
             .contains("You need to ask the claimant if they want to proceed with the claim.")
@@ -89,7 +87,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldUseFreeMediationTextIfFreeMediationIsRequested() {
         EmailContent content = service.createContent(
-            wrapInMap(claim, response, DEFENDANT_EMAIL)
+            wrapInMap(claim, DEFENDANT_EMAIL)
         );
         assertThat(content.getBody())
             .contains("The defendant has asked to use the mediation service")

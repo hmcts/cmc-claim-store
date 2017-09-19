@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Optional;
@@ -12,7 +13,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
 
 public class GetClaimByExternalIdTest extends BaseTest {
 
@@ -62,6 +62,6 @@ public class GetClaimByExternalIdTest extends BaseTest {
     }
 
     private Claim newClaim(String externalId) {
-        return new Claim(1L, 2L, 3L, 4L, externalId, "000MC001", null, null, null, null, false, SUBMITTER_EMAIL, null, response, defendantEmail);
+        return SampleClaim.builder().withExternalId(externalId).build();
     }
 }
