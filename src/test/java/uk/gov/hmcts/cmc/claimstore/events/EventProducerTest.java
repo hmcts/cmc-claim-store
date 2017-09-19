@@ -24,6 +24,7 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIss
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent.NEW_RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 
 public class EventProducerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -48,7 +49,7 @@ public class EventProducerTest {
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
         //given
-        final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN);
+        final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME);
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
         //when

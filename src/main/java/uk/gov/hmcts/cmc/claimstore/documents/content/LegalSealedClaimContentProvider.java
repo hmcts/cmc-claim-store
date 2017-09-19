@@ -43,8 +43,9 @@ public class LegalSealedClaimContentProvider {
         content.put("defendantsCount", claim.getClaimData().getDefendants().size());
         content.put("claimSummary", claim.getClaimData().getReason());
 
-        final Representative legalRepresentative = claim.getClaimData().getClaimants().get(0).getRepresentative()
-            .orElseThrow(IllegalArgumentException::new);
+        final Representative legalRepresentative = claim.getClaimData().getClaimants().stream()
+            .findFirst().orElseThrow(IllegalArgumentException::new)
+            .getRepresentative().orElseThrow(IllegalArgumentException::new);
 
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
         content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPound()));
@@ -58,5 +59,4 @@ public class LegalSealedClaimContentProvider {
 
         return content;
     }
-
 }
