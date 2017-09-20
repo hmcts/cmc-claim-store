@@ -20,10 +20,13 @@ import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProv
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.HOUSING_DISREPAIR;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.PERSONAL_INJURY;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.PERSONAL_INJURY_DAMAGES;
+import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.RECOVER_UP_TO;
 import static uk.gov.hmcts.cmc.claimstore.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatementOfValueProviderTest {
+
+    private StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
     @Test
     public void shouldCreateContentWithAmountRange() throws Exception {
@@ -36,8 +39,6 @@ public class StatementOfValueProviderTest {
                         .withLowerValue(BigDecimal.valueOf(200.95)).build()
                 ).build());
 
-        final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
-
         //when
         final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
@@ -47,11 +48,30 @@ public class StatementOfValueProviderTest {
     }
 
     @Test
+    public void shouldCreateContentWithAmountRangeWithoutLowerValue() throws Exception {
+        //given
+        final Claim claim = buildClaimModel(
+            SampleClaimData.builder()
+                .withAmount(
+                    SampleAmountRange.builder()
+                        .withLowerValue(null)
+                        .withHigherValue(BigDecimal.valueOf(100.50))
+                        .build()
+                ).build());
+
+        //when
+        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+
+        //then
+        assertThat(statementOfValueContent.getClaimValue()).contains(String.format(RECOVER_UP_TO, "£100.50"));
+        assertThat(statementOfValueContent.getClaimValue())
+            .doesNotContain("The claimant estimates the claim to be worth more than");
+    }
+
+    @Test
     public void shouldCreateContentWithAmountNotKnown() throws Exception {
         //given
         final Claim claim = buildClaimModel(SampleClaimData.builder().withAmount(new NotKnown()).build());
-
-        final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
         //when
         final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
@@ -65,10 +85,8 @@ public class StatementOfValueProviderTest {
         //given
         final Claim claim = SampleClaim.builder().build();
 
-        final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
-
         //when
-        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+        statementOfValueProvider.create(claim);
 
     }
 
@@ -87,8 +105,6 @@ public class StatementOfValueProviderTest {
                 .build());
 
         final String expected = String.format(PERSONAL_INJURY_DAMAGES, MORE_THAN_THOUSAND_POUNDS.getDisplayValue());
-
-        final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
         //when
         final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
@@ -110,8 +126,6 @@ public class StatementOfValueProviderTest {
                     .build()
                 ).build());
 
-        final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
-
         //when
         final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
@@ -130,8 +144,6 @@ public class StatementOfValueProviderTest {
                         .withLowerValue(BigDecimal.valueOf(200.95))
                         .build()
                 ).build());
-
-        final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
         //when
         final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
