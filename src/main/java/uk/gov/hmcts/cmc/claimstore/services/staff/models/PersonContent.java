@@ -11,16 +11,7 @@ public class PersonContent {
     private final String email;
     private final String contactPerson;
     private final String businessName;
-
-    public PersonContent(
-        final String partyType,
-        final String fullName,
-        final Address address,
-        final Address correspondenceAddress
-    ) {
-        this(partyType, fullName, address, correspondenceAddress, null, null, null);
-    }
-
+    
     public PersonContent(
         final String partyType,
         final String fullName,
