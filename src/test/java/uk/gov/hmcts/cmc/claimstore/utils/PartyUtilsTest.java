@@ -1,11 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.IndividualDetails;
+import uk.gov.hmcts.cmc.claimstore.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.SoleTraderDetails;
+import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Company;
 import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
+import uk.gov.hmcts.cmc.claimstore.models.party.Organisation;
+import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
@@ -31,6 +36,18 @@ public class PartyUtilsTest {
             .isEqualTo(PartyUtils.SOLE_TRADER_OR_SELF_EMPLOYED_PERSON);
     }
 
+    @Test(expected = NotificationException.class)
+    public void getTypeThrowsWhenPartyTypeUnknown() {
+        PartyUtils.getType(new Party(null, null, null, null, null) {
+        });
+    }
+
+    @Test(expected = NotificationException.class)
+    public void getTypeTheirDetailsThrowsWhenPartyTypeUnknown() {
+        PartyUtils.getType(new TheirDetails(null, null, null, null, null) {
+        });
+    }
+
     @Test
     public void getTypeMapsTheirDetailsPartyTypesCorrectly() {
         assertThat(PartyUtils.getType(SampleTheirDetails.builder().individualDetails()))
@@ -49,9 +66,13 @@ public class PartyUtilsTest {
 
     @Test
     public void getDefendantContactPersonReturnsContactPerson() {
-        CompanyDetails defendant = SampleTheirDetails.builder().companyDetails();
-        assertThat(PartyUtils.getDefendantContactPerson(defendant))
-            .isEqualTo(defendant.getContactPerson());
+        CompanyDetails companyDetails = SampleTheirDetails.builder().companyDetails();
+        assertThat(PartyUtils.getDefendantContactPerson(companyDetails))
+            .isEqualTo(companyDetails.getContactPerson());
+
+        OrganisationDetails organisationDetails = SampleTheirDetails.builder().organisationDetails();
+        assertThat(PartyUtils.getDefendantContactPerson(organisationDetails))
+            .isEqualTo(organisationDetails.getContactPerson());
     }
 
     @Test
@@ -77,9 +98,13 @@ public class PartyUtilsTest {
 
     @Test
     public void getContactPerson() {
-        Company claimant = SampleParty.builder().company();
-        assertThat(PartyUtils.getContactPerson(claimant))
-            .isEqualTo(claimant.getContactPerson());
+        Company company = SampleParty.builder().company();
+        assertThat(PartyUtils.getContactPerson(company))
+            .isEqualTo(company.getContactPerson());
+
+        Organisation organisation = SampleParty.builder().organisation();
+        assertThat(PartyUtils.getContactPerson(organisation))
+            .isEqualTo(organisation.getContactPerson());
     }
 
     @Test
