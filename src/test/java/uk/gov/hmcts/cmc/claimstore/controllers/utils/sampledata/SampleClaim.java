@@ -62,7 +62,6 @@ public final class SampleClaim {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
             .withResponse(responseData)
-            .withResponseDeadline(LocalDate.now().plusDays(14))
             .withDefendantEmail(DEFENDANT_EMAIL)
             .build();
     }
