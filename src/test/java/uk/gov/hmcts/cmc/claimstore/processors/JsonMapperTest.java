@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.processors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
@@ -15,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -37,7 +40,10 @@ public class JsonMapperTest {
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
             .withClaimant(SampleParty.builder().withRepresentative(null).individual())
-            .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
+            .withDefendant(SampleTheirDetails.builder()
+                .withRepresentative(null)
+                .withServiceAddress(null)
+                .individualDetails())
             .withFeeCode("X0012")
             .build();
 
@@ -69,7 +75,10 @@ public class JsonMapperTest {
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
             .withClaimant(SampleParty.builder().withRepresentative(null).individual())
-            .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
+            .withDefendant(SampleTheirDetails.builder()
+                .withRepresentative(null)
+                .withServiceAddress(null)
+                .individualDetails())
             .build();
 
         assertThat(output).isEqualTo(expected);
@@ -105,6 +114,17 @@ public class JsonMapperTest {
         //then
         final ResponseData expected = SampleResponseData.validDefaults();
         assertThat(output).isEqualTo(expected);
+    }
+
+    @Test(expected = InvalidApplicationException.class)
+    public void shouldThrowExceptionOnInvalidJson() {
+        processor.fromJson("{asads:", ResponseData.class);
+    }
+
+    @Test(expected = InvalidApplicationException.class)
+    public void shouldThrowExceptionOnInvalidJsonWithTypeReference() {
+        processor.fromJson("{asads:", new TypeReference<List<ResponseData>>() {
+        });
     }
 
 }
