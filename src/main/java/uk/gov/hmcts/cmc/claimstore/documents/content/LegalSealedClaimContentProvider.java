@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -31,12 +30,7 @@ public class LegalSealedClaimContentProvider {
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("claimSubmittedOn", formatDate(claim.getCreatedAt()));
         content.put("claimIssuedOn", formatDate(claim.getIssuedOn()));
-        final Optional<String> feeAccountNumberOptional = claim.getClaimData().getFeeAccountNumber();
-        if (feeAccountNumberOptional.isPresent()) {
-            content.put("feeAccountNumber", feeAccountNumberOptional.get());
-        } else {
-            content.put("feeAccountNumber", "");
-        }
+        claim.getClaimData().getFeeAccountNumber().ifPresent(f -> content.put("feeAccountNumber", f));
         content.put("claimants", claim.getClaimData().getClaimants());
         content.put("claimantsCount", claim.getClaimData().getClaimants().size());
         content.put("defendants", claim.getClaimData().getDefendants());
