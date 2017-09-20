@@ -1,0 +1,5 @@
+The claimant has asked for a County Court Judgment to be made against the defendant.
+
+The claimant, who is making this claim {{ claimantType }}, has requested that the debt be paid {{ requestedDebtRepaymentAction}}.
+
+This email has been sent from the HMCTS Civil Money Claims online court.

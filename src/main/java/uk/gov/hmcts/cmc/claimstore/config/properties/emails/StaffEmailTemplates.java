@@ -22,6 +22,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/defendantResponse/subject.txt");
     }
 
+    public String getCCJRequestSubmittedEmailBody() {
+        return readString("/staff/templates/email/ccjRequestSubmitted/body.txt");
+    }
+
+    public String getCCJRequestSubmittedEmailSubject() {
+        return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt");
+    }
+
     public byte[] getSealedClaim() {
         return readBytes("/staff/templates/document/sealedClaim.html");
     }

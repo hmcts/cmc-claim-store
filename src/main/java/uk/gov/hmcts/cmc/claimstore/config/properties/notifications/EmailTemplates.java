@@ -33,6 +33,9 @@ public class EmailTemplates {
     @NotEmpty
     private String representativeClaimIssued;
 
+    @NotEmpty
+    private String defaultJudgmentRequestSubmitted;
+
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -103,5 +106,13 @@ public class EmailTemplates {
 
     public void setRepresentativeClaimIssued(final String representativeClaimIssued) {
         this.representativeClaimIssued = representativeClaimIssued;
+    }
+
+    public String getDefaultJudgmentRequestSubmitted() {
+        return defaultJudgmentRequestSubmitted;
+    }
+
+    public void setDefaultJudgmentRequestSubmitted(String defaultJudgmentRequestSubmitted) {
+        this.defaultJudgmentRequestSubmitted = defaultJudgmentRequestSubmitted;
     }
 }
