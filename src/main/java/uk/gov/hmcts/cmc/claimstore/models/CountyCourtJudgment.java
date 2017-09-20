@@ -9,7 +9,9 @@ import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -22,7 +24,8 @@ public class CountyCourtJudgment {
     @NotNull
     private final TheirDetails defendant;
 
-    private Double paidAmount;
+    @Min(0)
+    private double paidAmount;
 
     @Valid
     @NotNull
@@ -55,16 +58,16 @@ public class CountyCourtJudgment {
         return paymentOption;
     }
 
-    public Double getPaidAmount() {
+    public double getPaidAmount() {
         return paidAmount;
     }
 
-    public RepaymentPlan getRepaymentPlan() {
-        return repaymentPlan;
+    public Optional<RepaymentPlan> getRepaymentPlan() {
+        return Optional.ofNullable(repaymentPlan);
     }
 
-    public LocalDate getPayBySetDate() {
-        return payBySetDate;
+    public Optional<LocalDate> getPayBySetDate() {
+        return Optional.ofNullable(payBySetDate);
     }
 
     @Override
@@ -86,7 +89,7 @@ public class CountyCourtJudgment {
 
     @Override
     public int hashCode() {
-        return Objects.hash(defendant, paymentOption);
+        return Objects.hash(defendant, paymentOption, paidAmount, repaymentPlan, payBySetDate);
     }
 
     @Override
