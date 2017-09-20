@@ -37,7 +37,10 @@ public class SerializationTest {
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
             .withClaimant(SampleParty.builder().withRepresentative(null).individual())
-            .withDefendant(SampleTheirDetails.builder().withRepresentative(null).individualDetails())
+            .withDefendant(SampleTheirDetails.builder()
+                .withRepresentative(null)
+                .withServiceAddress(null)
+                .individualDetails())
             .build();
 
         assertThat(claimData).isEqualTo(other);

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
@@ -23,6 +24,8 @@ public class DefendantDetailsContent {
     private final Boolean addressAmended;
     private final String dateOfBirth;
     private final String email;
+    private final String signerName;
+    private final String signerRole;
 
     public DefendantDetailsContent(
         final TheirDetails providedByClaimant,
@@ -43,6 +46,10 @@ public class DefendantDetailsContent {
         this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
         this.email = defendantEmail;
+
+        Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getStatementOfTruth();
+        this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
+        this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
     }
 
     private Address correspondenceAddress(final ResponseData defendantResponse) {
@@ -94,5 +101,13 @@ public class DefendantDetailsContent {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getSignerName() {
+        return signerName;
+    }
+
+    public String getSignerRole() {
+        return signerRole;
     }
 }
