@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.CountyCourtJudgmentStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.CountyCourtJudgmentSubmittedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedEvent;
@@ -36,6 +38,7 @@ public class SupportController {
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
+    private final CountyCourtJudgmentStaffNotificationHandler ccjStaffNotificationHandler;
 
     @Autowired
     public SupportController(
@@ -44,7 +47,8 @@ public class SupportController {
         UserService userService,
         ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
         MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
-        DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler
+        DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
+        CountyCourtJudgmentStaffNotificationHandler ccjStaffNotificationHandler
     ) {
         this.claimRepository = claimRepository;
         this.defendantResponseRepository = defendantResponseRepository;
@@ -52,6 +56,7 @@ public class SupportController {
         this.claimIssuedStaffNotificationHandler = claimIssuedStaffNotificationHandler;
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
+        this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -75,10 +80,15 @@ public class SupportController {
             case "response-submitted":
                 resendStaffNotificationOnDefendantResponseSubmitted(claim);
                 break;
+            case "ccj-request-submitted":
+                resendStaffNotificationCCJRequestSubmitted(claim);
+                break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
         }
     }
+
+
 
     private void validateAuthorisationPresentWhenRequired(final String authorisation)
         throws ServletRequestBindingException {
@@ -87,6 +97,12 @@ public class SupportController {
                 "Missing request header 'Authorization' for method parameter of type String"
             );
         }
+    }
+
+    private void resendStaffNotificationCCJRequestSubmitted(final Claim claim) {
+        this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
+            new CountyCourtJudgmentSubmittedEvent(claim)
+        );
     }
 
     private void resendStaffNotificationsOnClaimIssued(final Claim claim, final String authorisation)
@@ -104,7 +120,9 @@ public class SupportController {
                 .getName(), authorisation);
 
             claimRepository.linkLetterHolder(claim.getId(), pinResponse.getUserId());
-            claimIssuedStaffNotificationHandler.onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin()));
+            claimIssuedStaffNotificationHandler.onClaimIssued(
+                new ClaimIssuedEvent(claim, pinResponse.getPin())
+            );
         } else {
             claimIssuedStaffNotificationHandler.onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim));
         }
