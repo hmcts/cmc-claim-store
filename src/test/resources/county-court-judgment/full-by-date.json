@@ -1,0 +1,17 @@
+{
+  "defendant": {
+    "type": "individual",
+    "title": "Dr.",
+    "name": "John Smith",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "email": "j.smith@example.com"
+  },
+  "paymentOption": "FULL",
+  "paidAmount": 0,
+  "payBySetDate": "2100-10-10"
+}

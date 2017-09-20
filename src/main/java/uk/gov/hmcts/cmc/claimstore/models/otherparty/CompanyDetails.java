@@ -5,9 +5,11 @@ import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
 
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.constraints.Size;
 
 public class CompanyDetails extends TheirDetails {
 
+    @Size(max = 255, message = "may not be longer than {max} characters")
     private final String contactPerson;
 
     public CompanyDetails(
