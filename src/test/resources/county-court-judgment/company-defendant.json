@@ -10,6 +10,12 @@
       "city": "Manchester",
       "postcode": "DF1 3LJ"
     },
+    "serviceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
     "email": "j.smith@example.com"
   },
   "paymentOption": "IMMEDIATELY",

@@ -23,12 +23,11 @@ public class CountyCourtJudgmentSerializationTest {
     public void shouldConvertCCJJsonToJavaForIndividual() throws IOException {
 
         //given
-        String input = readJsonFromFile("/county-court-judgment/individual-defendant.json");
         TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).individualDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
 
         //when
-        CountyCourtJudgment other = jsonToModel(input);
+        CountyCourtJudgment other = jsonToModel("/county-court-judgment/individual-defendant.json");
 
         //then
         assertThat(expected).isEqualTo(other);
@@ -38,12 +37,11 @@ public class CountyCourtJudgmentSerializationTest {
     public void shouldConvertCCJJsonToJavaForSoleTrader() throws IOException {
 
         //given
-        String input = readJsonFromFile("/county-court-judgment/sole-trader-defendant.json");
         TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).soleTraderDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
 
         //when
-        CountyCourtJudgment other = jsonToModel(input);
+        CountyCourtJudgment other = jsonToModel("/county-court-judgment/sole-trader-defendant.json");
 
         //then
         assertThat(expected).isEqualTo(other);
@@ -53,12 +51,11 @@ public class CountyCourtJudgmentSerializationTest {
     public void shouldConvertCCJJsonToJavaForCompany() throws IOException {
 
         //given
-        String input = readJsonFromFile("/county-court-judgment/company-defendant.json");
         TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).companyDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
 
         //when
-        CountyCourtJudgment other = jsonToModel(input);
+        CountyCourtJudgment other = jsonToModel("/county-court-judgment/company-defendant.json");
 
         //then
         assertThat(expected).isEqualTo(other);
@@ -68,13 +65,12 @@ public class CountyCourtJudgmentSerializationTest {
     public void shouldConvertCCJJsonToJavaForOrganisation() throws IOException {
 
         //given
-        String input = readJsonFromFile("/county-court-judgment/organisation-defendant.json");
         TheirDetails defendant = SampleTheirDetails.builder()
             .withRepresentative(null).withCompaniesHouseNumber("1243").organisationDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
 
         //when
-        CountyCourtJudgment other = jsonToModel(input);
+        CountyCourtJudgment other = jsonToModel("/county-court-judgment/organisation-defendant.json");
 
         //then
         assertThat(expected).isEqualTo(other);
@@ -84,7 +80,6 @@ public class CountyCourtJudgmentSerializationTest {
     public void shouldConvertCCJJsonToJavaPaidByInstalments() throws IOException {
 
         //given
-        String input = readJsonFromFile("/county-court-judgment/by-installments.json");
         TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).individualDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
             .withDefendant(defendant)
@@ -92,7 +87,7 @@ public class CountyCourtJudgmentSerializationTest {
             .build();
 
         //when
-        CountyCourtJudgment other = jsonToModel(input);
+        CountyCourtJudgment other = jsonToModel("/county-court-judgment/by-installments.json");
 
         //then
         assertThat(expected).isEqualTo(other);
@@ -102,7 +97,6 @@ public class CountyCourtJudgmentSerializationTest {
     public void shouldConvertCCJJsonToJavaPaidFullBySetDate() throws IOException {
 
         //given
-        String input = readJsonFromFile("/county-court-judgment/full-by-date.json");
         TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).individualDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
             .withDefendant(defendant)
@@ -110,17 +104,14 @@ public class CountyCourtJudgmentSerializationTest {
             .build();
 
         //when
-        CountyCourtJudgment other = jsonToModel(input);
+        CountyCourtJudgment other = jsonToModel("/county-court-judgment/full-by-date.json");
 
         //then
         assertThat(expected).isEqualTo(other);
     }
 
-    private static CountyCourtJudgment jsonToModel(final String input) throws IOException {
-        return mapper.readValue(input, CountyCourtJudgment.class);
-    }
-
-    private static String readJsonFromFile(final String path) {
-        return new ResourceReader().read(path);
+    private static CountyCourtJudgment jsonToModel(final String path) throws IOException {
+        final String json = new ResourceReader().read(path);
+        return mapper.readValue(json, CountyCourtJudgment.class);
     }
 }
