@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.time.LocalDate;
@@ -36,8 +37,6 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleCla
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.USER_ID;
-import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
-import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.RESPONSE_DEADLINE;
@@ -53,13 +52,13 @@ public class ClaimServiceTest {
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
 
     private static final UserDetails validDefendant
-        = new UserDetails(DEFENDANT_ID, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
+        = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails invalidDefendant
-        = new UserDetails(-1L, DEFENDANT_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
+        = SampleUserDetails.builder().withUserId(-1L).withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails claimantDetails
-        = new UserDetails(11L, SUBMITTER_EMAIL, SUBMITTER_FORENAME, SUBMITTER_SURNAME);
+        = SampleUserDetails.builder().withUserId(11L).withMail(SUBMITTER_EMAIL).build();
 
     private ClaimService claimService;
 

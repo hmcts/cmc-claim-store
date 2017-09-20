@@ -5,4 +5,11 @@ public interface NotificationTemplateParameters {
     String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
     String CLAIMANT_NAME = "claimantName";
     String SUBMITTER_NAME = "submitterName";
+    String CLAIMANT_TYPE = "claimantType";
+    String DEFENDANT_NAME = "defendantName";
+    String ISSUED_ON = "issuedOn";
+    String RESPONSE_DEADLINE = "responseDeadline";
+    String EXTERNAL_ID = "externalId";
+    String FEES_PAID = "feesPaid";
+    String PIN = "pin";
 }
