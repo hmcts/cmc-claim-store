@@ -10,6 +10,8 @@ public class ClaimContent {
     private final String feeAmount;
     private final InterestContent interest;
     private final String claimTotalAmount;
+    private final String signerName;
+    private final String signerRole;
 
     @SuppressWarnings("squid:S00107") // Suppressed due to MVP timelines, require more time to investigate and fix
     public ClaimContent(
@@ -20,7 +22,9 @@ public class ClaimContent {
         String claimAmount,
         String feeAmount,
         InterestContent interest,
-        String claimTotalAmount) {
+        String claimTotalAmount,
+        String signerName,
+        String signerRole) {
         this.referenceNumber = referenceNumber;
         this.submittedOn = submittedOn;
         this.issuedOn = issuedOn;
@@ -29,6 +33,8 @@ public class ClaimContent {
         this.feeAmount = feeAmount;
         this.interest = interest;
         this.claimTotalAmount = claimTotalAmount;
+        this.signerName = signerName;
+        this.signerRole = signerRole;
     }
 
     public String getReferenceNumber() {
@@ -61,6 +67,14 @@ public class ClaimContent {
 
     public String getClaimTotalAmount() {
         return claimTotalAmount;
+    }
+
+    public String getSignerName() {
+        return signerName;
+    }
+
+    public String getSignerRole() {
+        return signerRole;
     }
 
 }
