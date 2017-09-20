@@ -310,10 +310,10 @@
     <tr>
       <td><h4>Statement of value</h4></td>
       <td>
-        {% if statementOfValue.personalInjury.length > 0 %}
+        {% if statementOfValue.personalInjury is not empty %}
         <span>{{ statementOfValue.personalInjury }} </span> <br/><br/>
         {% endif %}
-        {% if statementOfValue.housingDisrepair.length > 0 %}
+        {% if statementOfValue.housingDisrepair is not empty %}
         <span>{{ statementOfValue.housingDisrepair }} </span> <br/> <br/>
         {% endif %}
         <span>{{ statementOfValue.claimValue }} </span>
