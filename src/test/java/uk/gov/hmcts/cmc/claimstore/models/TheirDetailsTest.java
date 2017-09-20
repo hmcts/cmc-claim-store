@@ -104,4 +104,29 @@ public class TheirDetailsTest {
             .contains("email : not a well-formed email address");
     }
 
+    @Test
+    public void shouldBeValidWhenGivenNullServiceAddress() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withServiceAddress(null)
+            .partyDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenInvalidServiceAddress() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withServiceAddress(SampleAddress.builder()
+                .withPostcode("")
+                .build())
+            .partyDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors)
+            .hasSize(1)
+            .contains("serviceAddress.postcode : Postcode should not be empty");
+    }
 }
