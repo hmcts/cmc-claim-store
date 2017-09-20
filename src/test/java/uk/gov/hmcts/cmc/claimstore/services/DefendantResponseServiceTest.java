@@ -10,12 +10,12 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantR
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.util.Collections;
@@ -32,8 +32,6 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDef
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse.RESPONSE_ID;
-import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
-import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
@@ -112,8 +110,8 @@ public class DefendantResponseServiceTest {
         final String jsonApp = new ResourceReader().read("/defendant-response.json");
         when(mapper.toJson(eq(app))).thenReturn(jsonApp);
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(new UserDetails(USER_ID, DEFENDANT_EMAIL,
-            SUBMITTER_FORENAME, SUBMITTER_SURNAME));
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(
+            SampleUserDetails.builder().withUserId(USER_ID).withMail(DEFENDANT_EMAIL).build());
 
         when(defendantResponseRepository.save(eq(CLAIM_ID), eq(DEFENDANT_ID), eq(DEFENDANT_EMAIL), eq(jsonApp)))
             .thenReturn(RESPONSE_ID);

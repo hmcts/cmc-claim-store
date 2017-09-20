@@ -22,8 +22,15 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FEES_PAID;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.ISSUED_ON;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PIN;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
 
 @Service
 public class ClaimIssuedNotificationService {
@@ -83,18 +90,18 @@ public class ClaimIssuedNotificationService {
 
         if (!claim.getClaimData().isClaimantRepresented()) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
-            parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
-            parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
+            parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
+            parameters.put(DEFENDANT_NAME, getNameWithTitle(claim.getClaimData().getDefendant()));
         } else {
             parameters.put(CLAIMANT_NAME, submitterName);
         }
 
-        parameters.put("issuedOn", Formatting.formatDate(claim.getIssuedOn()));
-        parameters.put("responseDeadline", Formatting.formatDate(claim.getResponseDeadline()));
+        parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
+        parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put("externalId", claim.getExternalId());
-        parameters.put("feesPaid", claim.getClaimData().getFeesPaidInPound().toString());
-        pin.ifPresent(p -> parameters.put("pin", p));
+        parameters.put(EXTERNAL_ID, claim.getExternalId());
+        parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPound().toString());
+        pin.ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
     }
 
