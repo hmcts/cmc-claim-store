@@ -6,13 +6,12 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 
 @Component
-public class CountyCourtJudgmentStaffNotificationHandler {
+public class CCJStaffNotificationHandler {
 
     private final CCJStaffNotificationService ccjStaffNotificationService;
 
     @Autowired
-    public CountyCourtJudgmentStaffNotificationHandler(
-        CCJStaffNotificationService ccjStaffNotificationService) {
+    public CCJStaffNotificationHandler(final CCJStaffNotificationService ccjStaffNotificationService) {
         this.ccjStaffNotificationService = ccjStaffNotificationService;
     }
 

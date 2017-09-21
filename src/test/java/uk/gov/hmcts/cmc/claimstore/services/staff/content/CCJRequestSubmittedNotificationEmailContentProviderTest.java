@@ -16,7 +16,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,12 +43,12 @@ public class CCJRequestSubmittedNotificationEmailContentProviderTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointer() {
+    public void whenInputIsNullThenshouldThrowNullPointer() {
         provider.createContent(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgument() {
+    public void givenInputMapIsEmptyThenshouldThrowIllegalArgument() {
         provider.createContent(Collections.emptyMap());
     }
 
@@ -58,9 +57,7 @@ public class CCJRequestSubmittedNotificationEmailContentProviderTest {
         Map<String, Object> input = new HashMap<>();
         input.put("test","test");
         provider.createContent(input);
-        verify(staffEmailTemplates, times(1)).getCCJRequestSubmittedEmailSubject();
-        verify(staffEmailTemplates, times(1)).getCCJRequestSubmittedEmailBody();
-        verify(templateService, times(2)).evaluate(any(), mapCaptor.capture());
+        verify(templateService).evaluate(any(), mapCaptor.capture());
         assertThat(input.entrySet().containsAll(mapCaptor.getValue().entrySet()));
     }
 

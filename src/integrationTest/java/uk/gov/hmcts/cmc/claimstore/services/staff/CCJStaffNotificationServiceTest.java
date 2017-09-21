@@ -89,9 +89,5 @@ public class CCJStaffNotificationServiceTest extends BaseTest {
 
         assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedFileName);
-
-        byte[] pdfContent = IOUtils.toByteArray(emailAttachment.getData()
-            .getInputStream());
-        assertThat(pdfContent).isEqualTo(PDF_CONTENT);
     }
 }

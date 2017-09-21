@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
 import java.util.Map;
 
 import static org.apache.commons.lang3.Validate.notEmpty;
-import static org.apache.commons.lang3.Validate.notNull;
 
 @Component
 public class CCJRequestSubmittedNotificationEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
@@ -18,8 +17,8 @@ public class CCJRequestSubmittedNotificationEmailContentProvider implements Emai
     private final StaffEmailTemplates staffEmailTemplates;
 
     public CCJRequestSubmittedNotificationEmailContentProvider(
-        TemplateService templateService,
-        StaffEmailTemplates staffEmailTemplates
+        final TemplateService templateService,
+        final StaffEmailTemplates staffEmailTemplates
     ) {
         this.templateService = templateService;
         this.staffEmailTemplates = staffEmailTemplates;
@@ -27,7 +26,6 @@ public class CCJRequestSubmittedNotificationEmailContentProvider implements Emai
 
     @Override
     public EmailContent createContent(final Map<String, Object> input) {
-        notNull(input);
         notEmpty(input);
 
         return new EmailContent(
