@@ -17,7 +17,7 @@ public class UserDetailsTest {
         final String fullName = userDetails.getFullName();
 
         //then
-        Assertions.assertThat(fullName).isEqualTo(SUBMITTER_FORENAME + ' ' + SUBMITTER_SURNAME);
+        Assertions.assertThat(fullName).isEqualTo(SUBMITTER_FORENAME + " " + SUBMITTER_SURNAME);
     }
 
     @Test

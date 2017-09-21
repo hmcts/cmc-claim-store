@@ -44,9 +44,7 @@ public class UserDetails {
 
     @JsonIgnore
     public String getFullName() {
-        final StringBuilder builder = new StringBuilder(forename);
-
-        return getSurname().map(s -> builder.append(' ').append(s).toString())
-            .orElse(builder.toString());
+        return getSurname().map(surname -> String.join(" ", forename, surname))
+            .orElse(forename);
     }
 }
