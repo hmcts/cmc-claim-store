@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -22,11 +23,13 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIss
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.DEFENDANT_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent.NEW_RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 
 public class EventProducerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
 
-    private final UserDetails userDetails = new UserDetails(USER_ID, CLAIMANT_EMAIL);
+    private final UserDetails userDetails
+        = SampleUserDetails.builder().withUserId(USER_ID).withMail(CLAIMANT_EMAIL).build();
 
     @Mock
     private UserService userService;
@@ -44,9 +47,12 @@ public class EventProducerTest {
 
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
+        //given
+        final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME);
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
         //when
-        eventProducer.createClaimIssuedEvent(CLAIM, PIN);
+        eventProducer.createClaimIssuedEvent(CLAIM, PIN, userDetails.getFullName());
 
         //then
         verify(publisher).publishEvent(any(ClaimIssuedEvent.class));
@@ -61,7 +67,7 @@ public class EventProducerTest {
         when(data.isClaimantRepresented()).thenReturn(true);
 
         //when
-        eventProducer.createClaimIssuedEvent(claim, PIN);
+        eventProducer.createClaimIssuedEvent(claim, PIN, userDetails.getFullName());
 
         //then
         verify(publisher).publishEvent(any(RepresentedClaimIssuedEvent.class));
@@ -69,7 +75,6 @@ public class EventProducerTest {
 
     @Test
     public void shouldCreateDefendantResponseEvent() throws Exception {
-
         //given
         final DefendantResponseEvent expectedEvent
             = new DefendantResponseEvent(CLAIM, DEFENDANT_RESPONSE);
