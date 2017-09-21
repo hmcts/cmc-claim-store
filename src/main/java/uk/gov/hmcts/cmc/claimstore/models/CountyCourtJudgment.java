@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
