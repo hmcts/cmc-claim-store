@@ -54,7 +54,7 @@ public class CCJRequestSubmittedNotificationEmailContentProviderTest {
     }
 
     @Test
-    public void shouldCreateValidContent() {
+    public void givenValidInputThenShouldCreateValidContent() {
         Map<String, Object> input = new HashMap<>();
         input.put("test","test");
         provider.createContent(input);
