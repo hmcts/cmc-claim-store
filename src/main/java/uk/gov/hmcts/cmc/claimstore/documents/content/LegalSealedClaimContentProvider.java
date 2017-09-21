@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -31,20 +30,17 @@ public class LegalSealedClaimContentProvider {
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("claimSubmittedOn", formatDate(claim.getCreatedAt()));
         content.put("claimIssuedOn", formatDate(claim.getIssuedOn()));
-        final Optional<String> feeAccountNumberOptional = claim.getClaimData().getFeeAccountNumber();
-        if (feeAccountNumberOptional.isPresent()) {
-            content.put("feeAccountNumber", feeAccountNumberOptional.get());
-        } else {
-            content.put("feeAccountNumber", "");
-        }
-        content.put("claimant", claim.getClaimData().getClaimant());
+        claim.getClaimData().getFeeAccountNumber().ifPresent(f -> content.put("feeAccountNumber", f));
+        content.put("claimants", claim.getClaimData().getClaimants());
+        content.put("claimantsCount", claim.getClaimData().getClaimants().size());
         content.put("defendants", claim.getClaimData().getDefendants());
         content.put("defendantsCount", claim.getClaimData().getDefendants().size());
         content.put("claimSummary", claim.getClaimData().getReason());
-        final Representative legalRepresentative = claim.getClaimData()
-            .getClaimant()
-            .getRepresentative()
-            .orElseThrow(IllegalArgumentException::new);
+
+        final Representative legalRepresentative = claim.getClaimData().getClaimants().stream()
+            .findFirst().orElseThrow(IllegalArgumentException::new)
+            .getRepresentative().orElseThrow(IllegalArgumentException::new);
+
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
         content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPound()));
         final StatementOfTruth statementOfTruth = claim.getClaimData()
@@ -57,5 +53,4 @@ public class LegalSealedClaimContentProvider {
 
         return content;
     }
-
 }
