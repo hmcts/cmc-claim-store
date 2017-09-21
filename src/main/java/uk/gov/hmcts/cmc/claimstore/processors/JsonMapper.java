@@ -23,8 +23,9 @@ public class JsonMapper {
         try {
             return objectMapper.writeValueAsString(input);
         } catch (JsonProcessingException e) {
-            throw new InvalidApplicationException(String.format(SERIALISATION_ERROR_MESSAGE,
-                input.getClass().getSimpleName()), e);
+            throw new InvalidApplicationException(
+                String.format(SERIALISATION_ERROR_MESSAGE, input.getClass().getSimpleName()), e
+            );
         }
     }
 
@@ -32,8 +33,9 @@ public class JsonMapper {
         try {
             return objectMapper.readValue(value, clazz);
         } catch (IOException e) {
-            throw new InvalidApplicationException(String.format(DESERIALISATION_ERROR_MESSAGE,
-                clazz.getSimpleName()), e);
+            throw new InvalidApplicationException(
+                String.format(DESERIALISATION_ERROR_MESSAGE, clazz.getSimpleName()), e
+            );
         }
     }
 
@@ -41,8 +43,9 @@ public class JsonMapper {
         try {
             return objectMapper.readValue(value, typeReference);
         } catch (IOException e) {
-            throw new InvalidApplicationException(String.format(DESERIALISATION_ERROR_MESSAGE,
-                typeReference.getType()), e);
+            throw new InvalidApplicationException(
+                String.format(DESERIALISATION_ERROR_MESSAGE, typeReference.getType()), e
+            );
         }
     }
 }
