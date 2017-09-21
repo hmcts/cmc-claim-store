@@ -13,6 +13,7 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
     @Size(max = 35, message = "must be at most {max} characters")
     private final String title;
 
+    @Size(max = 35, message = "may not be longer than {max} characters")
     private final String businessName;
 
     public SoleTraderDetails(
