@@ -65,15 +65,12 @@ public class CCJStaffNotificationService {
     }
 
     private Map<String, Object> createParameterMap(final Claim claim) {
-        //TODO paymentType is available once ROC-2046 is merged
-        String paymentType = "immediately";
-
         Map<String, Object> map = new HashMap<>();
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
-        map.put("paymentType", paymentType);
+        map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().description());
         return map;
     }
 
