@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.CountyCourtJudgmentStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.CountyCourtJudgmentSubmittedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseStaffNotificationHandler;
@@ -38,17 +38,17 @@ public class SupportController {
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
-    private final CountyCourtJudgmentStaffNotificationHandler ccjStaffNotificationHandler;
+    private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
 
     @Autowired
     public SupportController(
-        ClaimRepository claimRepository,
-        DefendantResponseRepository defendantResponseRepository,
-        UserService userService,
-        ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
-        MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
-        DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
-        CountyCourtJudgmentStaffNotificationHandler ccjStaffNotificationHandler
+        final ClaimRepository claimRepository,
+        final DefendantResponseRepository defendantResponseRepository,
+        final UserService userService,
+        final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
+        final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
+        final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
+        final CCJStaffNotificationHandler ccjStaffNotificationHandler
     ) {
         this.claimRepository = claimRepository;
         this.defendantResponseRepository = defendantResponseRepository;

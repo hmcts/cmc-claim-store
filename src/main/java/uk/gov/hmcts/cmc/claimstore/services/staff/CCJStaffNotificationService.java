@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 @Service
 public class CCJStaffNotificationService {
 
-    public static final String FILE_NAME_FORMAT = "%s-default-judgement.pdf";
+    public static final String FILE_NAME_FORMAT = "%s-country-court-judgment.pdf";
 
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
@@ -34,11 +34,11 @@ public class CCJStaffNotificationService {
 
     @Autowired
     public CCJStaffNotificationService(
-        EmailService emailService,
-        StaffEmailProperties staffEmailProperties,
-        PDFServiceClient pdfServiceClient,
-        CCJRequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
-        DefaultJudgementContentProvider defaultJudgementContentProvider
+        final EmailService emailService,
+        final StaffEmailProperties staffEmailProperties,
+        final PDFServiceClient pdfServiceClient,
+        final CCJRequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
+        final DefaultJudgementContentProvider defaultJudgementContentProvider
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
@@ -47,12 +47,12 @@ public class CCJStaffNotificationService {
         this.defaultJudgementContentProvider = defaultJudgementContentProvider;
     }
 
-    public void notifyStaffCCJRequestSubmitted(Claim claim) {
+    public void notifyStaffCCJRequestSubmitted(final Claim claim) {
         requireNonNull(claim);
         emailService.sendEmail(staffEmailProperties.getSender(), prepareEmailData(claim));
     }
 
-    private EmailData prepareEmailData(Claim claim) {
+    private EmailData prepareEmailData(final Claim claim) {
         Map<String, Object> map = createParameterMap(claim);
 
         EmailContent emailContent = ccjRequestSubmittedEmailContentProvider.createContent(map);
@@ -60,24 +60,26 @@ public class CCJStaffNotificationService {
             staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
-            singletonList(defaultJudgmentPdf(claim))
+            singletonList(generateCcjPdf(claim))
         );
     }
 
-    private Map<String, Object> createParameterMap(Claim claim) {
-        String requestedDebtRepaymentAction = "immediately";
+    private Map<String, Object> createParameterMap(final Claim claim) {
+        //TODO paymentType is available once ROC-2046 is merged
+        String paymentType = "immediately";
+
         Map<String, Object> map = new HashMap<>();
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
-        map.put("requestedDebtRepaymentAction", requestedDebtRepaymentAction);
+        map.put("paymentType", paymentType);
         return map;
     }
 
-    private EmailAttachment defaultJudgmentPdf(Claim claim) {
+    private EmailAttachment generateCcjPdf(final Claim claim) {
         byte[] generatedPdf = pdfServiceClient.generateFromHtml(
-            staffEmailProperties.getEmailTemplates().getLegalSealedClaim(),
+            staffEmailProperties.getEmailTemplates().getCountryCourtJudgment(),
             defaultJudgementContentProvider.createContent(claim)
         );
 
