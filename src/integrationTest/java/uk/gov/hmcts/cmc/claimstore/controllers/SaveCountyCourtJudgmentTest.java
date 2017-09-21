@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,9 +27,10 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
 
     @Before
     public void setup() {
+        final UserDetails userDetails
+            = SampleUserDetails.builder().withUserId(CLAIMANT_ID).withMail("claimant@email.com").build();
 
-        given(userService.getUserDetails(anyString()))
-            .willReturn(new UserDetails(CLAIMANT_ID, "claimant@email.com"));
+        given(userService.getUserDetails(anyString())).willReturn(userDetails);
     }
 
     @Test

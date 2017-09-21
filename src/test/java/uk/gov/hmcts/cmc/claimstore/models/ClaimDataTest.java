@@ -4,6 +4,7 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.math.BigDecimal;
@@ -161,6 +162,17 @@ public class ClaimDataTest {
             .build();
 
         claimData.getDefendant();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void getClaimantShouldThrowIllegalStateWhenThereIsMoreThanOneClaimant() {
+        ClaimData claimData = SampleClaimData.builder()
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().individual())
+            .addClaimant(SampleParty.builder().individual())
+            .build();
+
+        claimData.getClaimant();
     }
 
     @Test

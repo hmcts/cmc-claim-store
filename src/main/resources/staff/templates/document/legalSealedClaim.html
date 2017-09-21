@@ -134,11 +134,18 @@
 
   </table>
 </header>
-
+{% set maxClaimants = 2 %}
+{% for claimant in claimants %}
+{% if loop.index < maxClaimants %}
 <div class="section">
   <table>
     <tr>
-      <td class="two-per-row"><h4>Claimant</h4></td>
+      {% if loop.length == 1 %}
+      {% set claimantHeading = 'Claimant'%}
+      {% else %}
+      {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
+      {% endif %}
+      <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
       <td>
         {{ claimant.title }} {{ claimant.name }}
         <br/>
@@ -191,6 +198,20 @@
     </tr>
   </table>
 </div>
+{% endif %}
+{% endfor %}
+
+{% if claimantsCount > 2 %}
+<div class="section">
+  <table>
+    <tr>
+      <td colspan="4">
+        <strong>See continuation page for further claimants</strong>
+      </td>
+    </tr>
+  </table>
+</div>
+{% endif %}
 
 {% set maxDefendants = 2 %}
 {% for defendant in defendants %}
@@ -199,9 +220,9 @@
   <table>
     <tr>
       {% if loop.length == 1 %}
-        {% set defendantHeading = 'Defendant'%}
+      {% set defendantHeading = 'Defendant'%}
       {% else %}
-        {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
+      {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
       {% endif %}
       <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
       <td>
@@ -383,9 +404,76 @@
   </table>
 </div>
 
-{% if defendantsCount > 2 %}
+{% if claimantsCount > 2 or defendantsCount > 2 %}
 <div class="new-page">
   <p align="center"><strong>Continuation page</strong></p>
+  {% if claimantsCount > 2 %}
+  {% for claimant in claimants %}
+  {% if loop.index >= maxClaimants %}
+
+  <div class="section">
+    <table>
+      <tr class="two-per-row">
+
+        {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
+        <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
+        <td>
+          {{ claimant.title }} {{ claimant.name }}
+          <br/>
+
+          {{ claimant.address.line1 }}
+          <br/>
+          {% if claimant.address.line2 is defined %}
+          {{ claimant.address.line2 }}
+          <br/>
+          {% endif %}
+          {{ claimant.address.city }}
+          <br/>
+          {{ claimant.address.postcode }}
+          {% if claimant.companiesHouseNumber is defined %}
+          <br/>
+          Companies House number: {{ claimant.companiesHouseNumber }}
+          {% endif %}
+        </td>
+        <td class="two-per-row">
+          <h4>Service address</h4>
+        </td>
+        <td>
+          {% if claimant.representative is defined %}
+          {{ claimant.representative.organisationName }}
+          <br/>
+          {{ claimant.representative.organisationAddress.line1 }}
+          <br/>
+          {% if claimant.representative.organisationAddress.line2 is defined %}
+          {{ claimant.representative.organisationAddress.line2 }}
+          <br/>
+          {% endif %}
+          {{ claimant.representative.organisationAddress.city }}
+          <br/>
+          {{ claimant.representative.organisationAddress.postcode }}
+          <br/>
+          {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
+          DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
+          <br/>
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.phone is defined %}
+          Tel: {{ claimant.representative.organisationContactDetails.phone }}
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.email is defined %}
+          <br/>
+          Email: {{ claimant.representative.organisationContactDetails.email }}
+          {% endif %}
+
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+
+  {% if defendantsCount > 2 %}
 
   {% for defendant in defendants %}
   {% if loop.index >= maxDefendants %}
@@ -462,7 +550,7 @@
   </div>
   {% endif %}
   {% endfor %}
-
+  {% endif %}
 </div>
 {% endif %}
 
