@@ -33,7 +33,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at")),
-            toCountyCourtJudgment(result.getString("county_court_judgment")),
+            toNullableCountyCourtJudgment(result.getString("county_court_judgment")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at"))
         );
     }
@@ -42,7 +42,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         return jsonMapper.fromJson(input, ClaimData.class);
     }
 
-    private CountyCourtJudgment toCountyCourtJudgment(final String input) {
+    private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {
         return input != null ? jsonMapper.fromJson(input, CountyCourtJudgment.class) : null;
     }
 }
