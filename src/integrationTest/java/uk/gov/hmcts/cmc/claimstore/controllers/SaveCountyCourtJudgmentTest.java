@@ -34,7 +34,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
 
         given(userService.getUserDetails(anyString())).willReturn(userDetails);
     }
-    
+
     @Ignore
     @Test
     public void shouldReturnClaimWithCountyCourtJudgment() throws Exception {
