@@ -88,8 +88,7 @@ public class SampleParty {
     public Individual individual() {
         return new Individual(name, address, correspondenceAddress, mobilePhone, representative, title, dateOfBirth);
     }
-
-
+    
     public List<Party> individualDetails(int count) {
         List<Party> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
