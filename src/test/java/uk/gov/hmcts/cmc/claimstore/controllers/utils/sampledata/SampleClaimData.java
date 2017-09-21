@@ -83,6 +83,16 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withClaimants(List<Party> claimants) {
+        this.claimants = claimants;
+        return this;
+    }
+
+    public SampleClaimData withClaimant(Party party) {
+        this.claimants = singletonList(party);
+        return this;
+    }
+
     public SampleClaimData addDefendant(TheirDetails defendant) {
         this.defendants.add(defendant);
         return this;

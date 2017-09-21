@@ -164,6 +164,95 @@ public class ClaimDataTest {
         claimData.getDefendant();
     }
 
+    @Test
+    public void shouldBeInvalidWhenGivenNullClaimants() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withClaimants(null)
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors).containsOnly("claimants : may not be empty");
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenNoClaimants() {
+        ClaimData claimData = SampleClaimData.builder()
+            .clearClaimants()
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors).containsOnly("claimants : may not be empty");
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenNullClaimant() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withClaimant(null)
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors).containsOnly("claimants[0] : may not be null");
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenInvalidClaimant() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withClaimant(SampleParty.builder()
+                .withName("")
+                .individual())
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors).containsOnly("claimants[0].name : may not be empty");
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenInvalidClaimantAddress() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withClaimant(SampleParty.builder()
+                .withAddress(null)
+                .individual())
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors).containsOnly("claimants[0].address : may not be null");
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenTooManyClaimants() {
+        ClaimData claimData = SampleClaimData.builder()
+            .clearClaimants()
+            .addClaimants(SampleParty.builder().individualDetails(21))
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors).containsOnly("claimants : at most 20 claimants are supported");
+    }
+
+    @Test
+    public void shouldBeValidWhenGivenTwentyClaimants() {
+        ClaimData claimData = SampleClaimData.builder()
+            .clearClaimants()
+            .addClaimants(SampleParty.builder().individualDetails(20))
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    public void getClaimantShouldReturnDefendantWhenOnlyOneIsSet() {
+        ClaimData claimData = SampleClaimData.validDefaults();
+        assertThat(claimData.getClaimant()).isNotNull();
+    }
+
     @Test(expected = IllegalStateException.class)
     public void getClaimantShouldThrowIllegalStateWhenThereIsMoreThanOneClaimant() {
         ClaimData claimData = SampleClaimData.builder()
