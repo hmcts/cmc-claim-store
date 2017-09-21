@@ -45,7 +45,8 @@ public class CountyCourtJudgment {
         Double paidAmount,
         RepaymentPlan repaymentPlan,
         LocalDate payBySetDate,
-        StatementOfTruth statementOfTruth) {
+        StatementOfTruth statementOfTruth
+    ) {
         this.defendant = defendant;
         this.paymentOption = paymentOption;
         this.paidAmount = paidAmount;
