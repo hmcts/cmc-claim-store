@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,64 +20,7 @@ public class CountyCourtJudgmentSerializationTest {
     private static final ObjectMapper mapper = new JacksonConfiguration().objectMapper();
 
     @Test
-    public void shouldConvertCCJJsonToJavaForIndividual() throws IOException {
-
-        //given
-        TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).individualDetails();
-        CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
-
-        //when
-        CountyCourtJudgment other = jsonToModel("/county-court-judgment/individual-defendant.json");
-
-        //then
-        assertThat(expected).isEqualTo(other);
-    }
-
-    @Test
-    public void shouldConvertCCJJsonToJavaForSoleTrader() throws IOException {
-
-        //given
-        TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).soleTraderDetails();
-        CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
-
-        //when
-        CountyCourtJudgment other = jsonToModel("/county-court-judgment/sole-trader-defendant.json");
-
-        //then
-        assertThat(expected).isEqualTo(other);
-    }
-
-    @Test
-    public void shouldConvertCCJJsonToJavaForCompany() throws IOException {
-
-        //given
-        TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).companyDetails();
-        CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
-
-        //when
-        CountyCourtJudgment other = jsonToModel("/county-court-judgment/company-defendant.json");
-
-        //then
-        assertThat(expected).isEqualTo(other);
-    }
-
-    @Test
-    public void shouldConvertCCJJsonToJavaForOrganisation() throws IOException {
-
-        //given
-        TheirDetails defendant = SampleTheirDetails.builder()
-            .withRepresentative(null).withCompaniesHouseNumber("1243").organisationDetails();
-        CountyCourtJudgment expected = SampleCountyCourtJudgment.builder().withDefendant(defendant).build();
-
-        //when
-        CountyCourtJudgment other = jsonToModel("/county-court-judgment/organisation-defendant.json");
-
-        //then
-        assertThat(expected).isEqualTo(other);
-    }
-
-    @Test
-    public void shouldConvertCCJJsonToJavaPaidByInstalments() throws IOException {
+    public void shouldConvertCCJJsonToJava() throws IOException {
 
         //given
         TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).individualDetails();
@@ -94,25 +36,8 @@ public class CountyCourtJudgmentSerializationTest {
         assertThat(expected).isEqualTo(other);
     }
 
-    @Test
-    public void shouldConvertCCJJsonToJavaPaidFullBySetDate() throws IOException {
-
-        //given
-        TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).individualDetails();
-        CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
-            .withDefendant(defendant)
-            .withPayBySetDate(LocalDate.of(2100, 10, 10))
-            .build();
-
-        //when
-        CountyCourtJudgment other = jsonToModel("/county-court-judgment/full-by-date.json");
-
-        //then
-        assertThat(expected).isEqualTo(other);
-    }
-
     @Test(expected = InvalidTypeIdException.class)
-    public void shouldThrowExceptionForInvalidDefendantType() throws IOException {
+    public void shouldThrowExceptionForUnknownDefendantType() throws IOException {
 
         jsonToModel("/county-court-judgment/invalid-defendant-type.json");
     }
