@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Component
-public class DefaultJudgementContentProvider {
+public class CCJContentProvider {
     //TODO Data for default judgmenrt PDF
 
     public Map<String,Object> createContent(Claim claim) {
