@@ -30,7 +30,7 @@ public class CCJStaffNotificationService {
     private final StaffEmailProperties staffEmailProperties;
     private final PDFServiceClient pdfServiceClient;
     private final CCJRequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider;
-    private final CCJContentProvider defaultJudgementContentProvider;
+    private final CCJContentProvider ccjContentProvider;
 
     @Autowired
     public CCJStaffNotificationService(
@@ -44,7 +44,7 @@ public class CCJStaffNotificationService {
         this.staffEmailProperties = staffEmailProperties;
         this.pdfServiceClient = pdfServiceClient;
         this.ccjRequestSubmittedEmailContentProvider = ccjRequestSubmittedEmailContentProvider;
-        this.defaultJudgementContentProvider = ccjContentProvider;
+        this.ccjContentProvider = ccjContentProvider;
     }
 
     public void notifyStaffCCJRequestSubmitted(final Claim claim) {
@@ -80,7 +80,7 @@ public class CCJStaffNotificationService {
     private EmailAttachment generateCcjPdf(final Claim claim) {
         byte[] generatedPdf = pdfServiceClient.generateFromHtml(
             staffEmailProperties.getEmailTemplates().getCountryCourtJudgment(),
-            defaultJudgementContentProvider.createContent(claim)
+            ccjContentProvider.createContent(claim)
         );
 
         return pdf(
