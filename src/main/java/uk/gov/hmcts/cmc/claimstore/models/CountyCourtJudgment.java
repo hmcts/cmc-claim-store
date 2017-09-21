@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
+import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
 import java.time.LocalDate;
@@ -35,17 +36,22 @@ public class CountyCourtJudgment {
     @Valid
     private final LocalDate payBySetDate;
 
+    @Valid
+    private final StatementOfTruth statementOfTruth;
+
     public CountyCourtJudgment(
         TheirDetails defendant,
         PaymentOption paymentOption,
         Double paidAmount,
         RepaymentPlan repaymentPlan,
-        LocalDate payBySetDate) {
+        LocalDate payBySetDate,
+        StatementOfTruth statementOfTruth) {
         this.defendant = defendant;
         this.paymentOption = paymentOption;
         this.paidAmount = paidAmount;
         this.repaymentPlan = repaymentPlan;
         this.payBySetDate = payBySetDate;
+        this.statementOfTruth = statementOfTruth;
     }
 
     public TheirDetails getDefendant() {
@@ -68,6 +74,10 @@ public class CountyCourtJudgment {
         return Optional.ofNullable(payBySetDate);
     }
 
+    public Optional<StatementOfTruth> getStatementOfTruth() {
+        return Optional.ofNullable(statementOfTruth);
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object other) {
@@ -82,12 +92,13 @@ public class CountyCourtJudgment {
             && Objects.equals(paymentOption, that.paymentOption)
             && Objects.equals(paidAmount, that.paidAmount)
             && Objects.equals(repaymentPlan, that.repaymentPlan)
-            && Objects.equals(payBySetDate, that.payBySetDate);
+            && Objects.equals(payBySetDate, that.payBySetDate)
+            && Objects.equals(statementOfTruth, that.statementOfTruth);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(defendant, paymentOption, paidAmount, repaymentPlan, payBySetDate);
+        return Objects.hash(defendant, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth);
     }
 
     @Override

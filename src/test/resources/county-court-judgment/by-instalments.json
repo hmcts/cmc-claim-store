@@ -1,8 +1,8 @@
 {
   "defendant": {
-    "type": "individual",
-    "title": "Dr.",
+    "type": "company",
     "name": "John Smith",
+    "contactPerson": "Arnold Schwarzenegger",
     "address": {
       "line1": "52",
       "line2": "Down Street",
@@ -19,5 +19,9 @@
     "instalmentAmount": 100,
     "firstPaymentDate": "2100-10-10",
     "paymentSchedule": "EACH_WEEK"
+  },
+  "statementOfTruth": {
+    "signerName": "Arnold Schwarzenegger",
+    "signerRole": "Director"
   }
 }
