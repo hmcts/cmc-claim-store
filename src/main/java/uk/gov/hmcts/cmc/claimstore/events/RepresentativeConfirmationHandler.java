@@ -30,7 +30,8 @@ public class RepresentativeConfirmationHandler {
             event.getRepresentativeEmail(),
             Optional.empty(),
             getEmailTemplates().getRepresentativeClaimIssued(),
-            "representative-issue-notification-" + claim.getReferenceNumber());
+            "representative-issue-notification-" + claim.getReferenceNumber(),
+            event.getRepresentativeName());
     }
 
     private EmailTemplates getEmailTemplates() {

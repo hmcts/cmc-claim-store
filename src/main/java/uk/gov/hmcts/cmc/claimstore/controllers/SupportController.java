@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.events.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -95,18 +96,23 @@ public class SupportController {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
         }
 
-        if (!claim.getClaimData()
-            .isClaimantRepresented()) {
+        if (!claim.getClaimData().isClaimantRepresented()) {
             validateAuthorisationPresentWhenRequired(authorisation);
 
-            GeneratePinResponse pinResponse = userService.generatePin(claim.getClaimData()
-                .getDefendant()
-                .getName(), authorisation);
+            GeneratePinResponse pinResponse = userService
+                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
             claimRepository.linkLetterHolder(claim.getId(), pinResponse.getUserId());
-            claimIssuedStaffNotificationHandler.onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin()));
+
+            final String fullName = userService.getUserDetails(authorisation).getFullName();
+
+            claimIssuedStaffNotificationHandler
+                .onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName));
         } else {
-            claimIssuedStaffNotificationHandler.onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim));
+            final UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            claimIssuedStaffNotificationHandler
+                .onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim, userDetails.getFullName()));
         }
 
     }
@@ -125,7 +131,7 @@ public class SupportController {
         DefendantResponse response = defendantResponseRepository.getByClaimId(claim.getId())
             .orElseThrow(() -> new ConflictException("Claim " + claim.getId() + " does not have associated response"));
 
-        DefendantResponseEvent event = new DefendantResponseEvent(claim, response);
+        final DefendantResponseEvent event = new DefendantResponseEvent(claim, response);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
     }
 
