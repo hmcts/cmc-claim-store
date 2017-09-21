@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
@@ -46,7 +47,7 @@ public final class SampleClaim {
     }
 
     public static Claim getDefault() {
-        return builder().withClaimData(SampleClaimData.submittedByClaimant()).build();
+        return builder().withClaimData(SampleClaimData.submittedByClaimant()).withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build()).build();
     }
 
     public static Claim getDefaultForLegal() {
@@ -57,7 +58,8 @@ public final class SampleClaim {
         return builder()
             .withClaimData(
                 SampleClaimData.builder().withInterestDate(SampleInterestDate.submission()).build()
-            ).build();
+            )
+            .build();
     }
 
     public static Claim getWithResponseDeadline(LocalDate responseDeadline) {

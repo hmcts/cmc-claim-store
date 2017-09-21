@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJRequestSubmittedNotificationEmailContentProvider;
@@ -70,7 +71,11 @@ public class CCJStaffNotificationService {
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
-        map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
+        if (claim.getCountyCourtJudgment() !=null) {
+            map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
+        } else {
+            throw new NotificationException("Payment option must not be null or empty");
+        }
         return map;
     }
 
