@@ -30,7 +30,9 @@ public class SampleClaimData {
 
     private UUID externalId = UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d");
     private Party claimant = SampleParty.builder().individual();
-    private List<TheirDetails> defendants = singletonList(SampleTheirDetails.builder().individualDetails());
+    private List<TheirDetails> defendants = singletonList(
+        SampleTheirDetails.builder().individualDetails()
+    );
     private Payment payment = SamplePayment.validDefaults();
     private Amount amount = SampleAmountBreakdown.validDefaults();
     private Interest interest = SampleInterest.standard();
