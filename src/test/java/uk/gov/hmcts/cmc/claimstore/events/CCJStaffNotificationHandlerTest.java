@@ -13,18 +13,18 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CountyCourtJudgmentStaffNotificationHandlerTest {
+public class CCJStaffNotificationHandlerTest {
 
     private static final CountyCourtJudgmentSubmittedEvent EVENT = new CountyCourtJudgmentSubmittedEvent(
         SampleClaimIssuedEvent.CLAIM);
-    private CountyCourtJudgmentStaffNotificationHandler handler;
+    private CCJStaffNotificationHandler handler;
 
     @Mock
     CCJStaffNotificationService ccjStaffNotificationService;
 
     @Before
     public void setup() {
-        handler = new CountyCourtJudgmentStaffNotificationHandler(ccjStaffNotificationService);
+        handler = new CCJStaffNotificationHandler(ccjStaffNotificationService);
     }
 
     @Test
