@@ -71,7 +71,7 @@ public class CCJStaffNotificationService {
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
-        if (claim.getCountyCourtJudgment() !=null) {
+        if (claim.getCountyCourtJudgment() != null) {
             map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
         } else {
             throw new NotificationException("Payment option must not be null or empty");

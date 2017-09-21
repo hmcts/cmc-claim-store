@@ -47,7 +47,13 @@ public final class SampleClaim {
     }
 
     public static Claim getDefault() {
-        return builder().withClaimData(SampleClaimData.submittedByClaimant()).withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build()).build();
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .withPaymentOptionImmediately()
+                    .build()
+            ).build();
     }
 
     public static Claim getDefaultForLegal() {
