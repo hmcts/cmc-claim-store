@@ -6,12 +6,13 @@ import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SampleCountyCourtJudgment {
 
     private TheirDetails defendant = SampleTheirDetails.builder().individualDetails();
-    private double paidAmount = 0.0;
+    private BigDecimal paidAmount = BigDecimal.valueOf(0);
     private PaymentOption paymentOption = PaymentOption.IMMEDIATELY;
     private RepaymentPlan repaymentPlan;
     private LocalDate payBySetDate;
@@ -26,7 +27,7 @@ public class SampleCountyCourtJudgment {
         return this;
     }
 
-    public SampleCountyCourtJudgment withPaidAmount(double paidAmount) {
+    public SampleCountyCourtJudgment withPaidAmount(BigDecimal paidAmount) {
         this.paidAmount = paidAmount;
         return this;
     }
@@ -46,7 +47,7 @@ public class SampleCountyCourtJudgment {
     }
 
     public SampleCountyCourtJudgment withPayBySetDate(LocalDate payBySetDate) {
-        this.paymentOption = PaymentOption.FULL;
+        this.paymentOption = PaymentOption.FULL_BY_SPECIFIED_DATE;
         this.payBySetDate = payBySetDate;
         this.repaymentPlan = null;
         return this;

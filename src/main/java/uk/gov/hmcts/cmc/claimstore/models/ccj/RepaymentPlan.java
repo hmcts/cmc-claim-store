@@ -2,9 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.models.ccj;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
+import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
+import javax.validation.Valid;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
@@ -17,15 +21,27 @@ public class RepaymentPlan {
         EVERY_MONTH
     }
 
-    private final double remainingAmount;
-    private final double firstPayment;
-    private final double instalmentAmount;
+    @Valid
+    @Money
+    private final BigDecimal remainingAmount;
+
+    @Valid
+    @Money
+    private final BigDecimal firstPayment;
+
+    @Valid
+    @Money
+    private final BigDecimal instalmentAmount;
+
+    @Valid
+    @DateNotInThePast
     private final LocalDate firstPaymentDate;
+
     private final PaymentSchedule paymentSchedule;
 
-    public RepaymentPlan(final double remainingAmount,
-                         final double firstPayment,
-                         final double instalmentAmount,
+    public RepaymentPlan(final BigDecimal remainingAmount,
+                         final BigDecimal firstPayment,
+                         final BigDecimal instalmentAmount,
                          final LocalDate firstPaymentDate,
                          final PaymentSchedule paymentSchedule) {
 
