@@ -22,8 +22,15 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FEES_PAID;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.ISSUED_ON;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PIN;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
 
 @Service
 public class ClaimIssuedNotificationService {
@@ -47,9 +54,10 @@ public class ClaimIssuedNotificationService {
         final String targetEmail,
         final Optional<String> pin,
         final String emailTemplateId,
-        final String reference
+        final String reference,
+        final String submitterName
     ) {
-        final Map<String, String> parameters = aggregateParams(claim, pin);
+        final Map<String, String> parameters = aggregateParams(claim, pin, submitterName);
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {
@@ -64,7 +72,8 @@ public class ClaimIssuedNotificationService {
         final String targetEmail,
         final Optional<String> pin,
         final String emailTemplateId,
-        final String reference
+        final String reference,
+        final String submitterName
     ) {
         final String errorMessage = "Failure: "
             + " failed to send notification (" + reference
@@ -74,20 +83,25 @@ public class ClaimIssuedNotificationService {
         logger.info(errorMessage, exception);
     }
 
-    private Map<String, String> aggregateParams(final Claim claim, final Optional<String> pin) {
+    private Map<String, String> aggregateParams(final Claim claim, final Optional<String> pin,
+                                                final String submitterName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
-        parameters.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
+
         if (!claim.getClaimData().isClaimantRepresented()) {
-            parameters.put("defendantName", getNameWithTitle(claim.getClaimData().getDefendant()));
+            parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
+            parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
+            parameters.put(DEFENDANT_NAME, getNameWithTitle(claim.getClaimData().getDefendant()));
+        } else {
+            parameters.put(CLAIMANT_NAME, submitterName);
         }
-        parameters.put("issuedOn", Formatting.formatDate(claim.getIssuedOn()));
-        parameters.put("responseDeadline", Formatting.formatDate(claim.getResponseDeadline()));
+
+        parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
+        parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put("externalId", claim.getExternalId());
-        parameters.put("feesPaid", claim.getClaimData().getFeesPaidInPound().toString());
-        pin.ifPresent(p -> parameters.put("pin", p));
+        parameters.put(EXTERNAL_ID, claim.getExternalId());
+        parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPound().toString());
+        pin.ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
     }
 
