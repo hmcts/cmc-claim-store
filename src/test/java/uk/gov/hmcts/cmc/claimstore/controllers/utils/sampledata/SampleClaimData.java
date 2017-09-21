@@ -29,10 +29,8 @@ import static java.util.Collections.singletonList;
 public class SampleClaimData {
 
     private UUID externalId = UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d");
-    private Party claimant = SampleParty.builder().individual();
-    private List<TheirDetails> defendants = singletonList(
-        SampleTheirDetails.builder().individualDetails()
-    );
+    private List<Party> claimants = singletonList(SampleParty.builder().individual());
+    private List<TheirDetails> defendants = singletonList(SampleTheirDetails.builder().individualDetails());
     private Payment payment = SamplePayment.validDefaults();
     private Amount amount = SampleAmountBreakdown.validDefaults();
     private Interest interest = SampleInterest.standard();
@@ -40,7 +38,7 @@ public class SampleClaimData {
     private String reason = "reason";
     private BigInteger feeAmount = new BigInteger("4000");
     private String feeAccountNumber = "PBA1234567";
-    private StatementOfTruth statementOfTruth = new StatementOfTruth(claimant.getName(), "Director");
+    private StatementOfTruth statementOfTruth = new StatementOfTruth(claimants.get(0).getName(), "Director");
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
     private String externalReferenceNumber = "CLAIM234324";
     private String preferredCourt = "LONDON COUNTY COUNCIL";
@@ -65,8 +63,18 @@ public class SampleClaimData {
         return this;
     }
 
-    public SampleClaimData withClaimant(Party claimant) {
-        this.claimant = claimant;
+    public SampleClaimData addClaimant(Party claimant) {
+        this.claimants.add(claimant);
+        return this;
+    }
+
+    public SampleClaimData addClaimants(List<Party> claimants) {
+        this.claimants.addAll(claimants);
+        return this;
+    }
+
+    public SampleClaimData clearClaimants() {
+        this.claimants = new ArrayList<>();
         return this;
     }
 
@@ -143,7 +151,7 @@ public class SampleClaimData {
     public ClaimData build() {
         return new ClaimData(
             externalId,
-            claimant,
+            claimants,
             defendants,
             payment,
             amount,
@@ -170,7 +178,8 @@ public class SampleClaimData {
             .withStatementOfTruth(null)
             .withPersonalInjury(null)
             .withHousingDisrepair(null)
-            .withClaimant(SampleParty.builder()
+            .clearClaimants()
+            .addClaimant(SampleParty.builder()
                 .withRepresentative(null)
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
