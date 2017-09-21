@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJRequestSubmittedNotificationEmailContentProvider;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefaultJudgementContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -30,7 +30,7 @@ public class CCJStaffNotificationService {
     private final StaffEmailProperties staffEmailProperties;
     private final PDFServiceClient pdfServiceClient;
     private final CCJRequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider;
-    private final DefaultJudgementContentProvider defaultJudgementContentProvider;
+    private final CCJContentProvider defaultJudgementContentProvider;
 
     @Autowired
     public CCJStaffNotificationService(
@@ -38,13 +38,13 @@ public class CCJStaffNotificationService {
         final StaffEmailProperties staffEmailProperties,
         final PDFServiceClient pdfServiceClient,
         final CCJRequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
-        final DefaultJudgementContentProvider defaultJudgementContentProvider
+        final CCJContentProvider ccjContentProvider
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.pdfServiceClient = pdfServiceClient;
         this.ccjRequestSubmittedEmailContentProvider = ccjRequestSubmittedEmailContentProvider;
-        this.defaultJudgementContentProvider = defaultJudgementContentProvider;
+        this.defaultJudgementContentProvider = ccjContentProvider;
     }
 
     public void notifyStaffCCJRequestSubmitted(final Claim claim) {

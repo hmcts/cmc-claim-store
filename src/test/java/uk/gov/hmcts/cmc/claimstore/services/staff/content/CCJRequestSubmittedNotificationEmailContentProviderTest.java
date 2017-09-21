@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +44,7 @@ public class CCJRequestSubmittedNotificationEmailContentProviderTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void whenInputIsNullThenshouldThrowNullPointer() {
+    public void givenInputIsNullThenshouldThrowNullPointer() {
         provider.createContent(null);
     }
 
@@ -57,7 +58,7 @@ public class CCJRequestSubmittedNotificationEmailContentProviderTest {
         Map<String, Object> input = new HashMap<>();
         input.put("test","test");
         provider.createContent(input);
-        verify(templateService).evaluate(any(), mapCaptor.capture());
+        verify(templateService, times(2)).evaluate(any(), mapCaptor.capture());
         assertThat(input.entrySet().containsAll(mapCaptor.getValue().entrySet()));
     }
 
