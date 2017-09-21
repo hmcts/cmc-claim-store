@@ -1,7 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications.content;
 
-public interface NotificationTemplateParameters {
-    String FRONTEND_BASE_URL = "frontendBaseUrl";
-    String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
-    String CLAIMANT_NAME = "claimantName";
+public final class NotificationTemplateParameters {
+    public static final String FRONTEND_BASE_URL = "frontendBaseUrl";
+    public static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
+    public static final String CLAIMANT_NAME = "claimantName";
+
+    private NotificationTemplateParameters() {
+        // Utility class
+    }
 }
