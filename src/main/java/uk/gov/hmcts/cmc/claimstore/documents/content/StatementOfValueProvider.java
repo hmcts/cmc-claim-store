@@ -41,11 +41,10 @@ public class StatementOfValueProvider {
         StringBuilder claimValueContent = new StringBuilder();
 
         final Optional<PersonalInjury> personalInjuryOptional = claim.getClaimData().getPersonalInjury();
-        personalInjuryOptional.ifPresent(personalInjury -> {
-            personalInjuryContent.append(PERSONAL_INJURY)
-                                 .append(String.format(PERSONAL_INJURY_DAMAGES,
-                                     personalInjury.getGeneralDamages().getDisplayValue()));
-        });
+        personalInjuryOptional.ifPresent(personalInjury -> personalInjuryContent.append(PERSONAL_INJURY)
+            .append(String.format(PERSONAL_INJURY_DAMAGES,
+                personalInjury.getGeneralDamages().getDisplayValue()))
+        );
 
         claim.getClaimData().getHousingDisrepair().ifPresent(housingDisrepair -> {
             if (personalInjuryOptional.isPresent()) {
