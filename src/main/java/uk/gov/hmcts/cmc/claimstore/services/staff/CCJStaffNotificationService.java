@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 @Service
 public class CCJStaffNotificationService {
 
-    public static final String FILE_NAME_FORMAT = "%s-country-court-judgment.pdf";
+    public static final String FILE_NAME_FORMAT = "%s-county-court-judgment.pdf";
 
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
@@ -70,13 +70,13 @@ public class CCJStaffNotificationService {
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
-        map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().description());
+        map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
         return map;
     }
 
     private EmailAttachment generateCcjPdf(final Claim claim) {
         byte[] generatedPdf = pdfServiceClient.generateFromHtml(
-            staffEmailProperties.getEmailTemplates().getCountryCourtJudgment(),
+            staffEmailProperties.getEmailTemplates().getCountyCourtJudgment(),
             ccjContentProvider.createContent(claim)
         );
 
