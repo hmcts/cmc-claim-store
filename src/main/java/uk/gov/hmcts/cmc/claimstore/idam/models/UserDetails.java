@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Optional;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDetails {
 
@@ -36,12 +38,15 @@ public class UserDetails {
         return forename;
     }
 
-    public String getSurname() {
-        return surname;
+    public Optional<String> getSurname() {
+        return Optional.ofNullable(surname);
     }
 
     @JsonIgnore
     public String getFullName() {
-        return forename + ' ' + surname;
+        final StringBuilder builder = new StringBuilder(forename);
+
+        return getSurname().map(s -> builder.append(' ').append(s).toString())
+            .orElse(builder.toString());
     }
 }

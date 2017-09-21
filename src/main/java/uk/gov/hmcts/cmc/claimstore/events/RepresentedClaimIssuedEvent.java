@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Objects;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
+
 public class RepresentedClaimIssuedEvent {
 
     private final Claim claim;
@@ -52,6 +54,6 @@ public class RepresentedClaimIssuedEvent {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this);
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }
