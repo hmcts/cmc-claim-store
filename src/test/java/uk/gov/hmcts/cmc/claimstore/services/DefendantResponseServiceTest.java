@@ -10,12 +10,12 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantR
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.util.Collections;
@@ -110,9 +110,12 @@ public class DefendantResponseServiceTest {
         final String jsonApp = new ResourceReader().read("/defendant-response.json");
         when(mapper.toJson(eq(app))).thenReturn(jsonApp);
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(new UserDetails(USER_ID, DEFENDANT_EMAIL));
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(
+            SampleUserDetails.builder().withUserId(USER_ID).withMail(DEFENDANT_EMAIL).build());
+
         when(defendantResponseRepository.save(eq(CLAIM_ID), eq(DEFENDANT_ID), eq(DEFENDANT_EMAIL), eq(jsonApp)))
             .thenReturn(RESPONSE_ID);
+
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
         when(defendantResponseRepository.getById(eq(RESPONSE_ID))).thenReturn(Optional.of(DEFENDANT_RESPONSE));
 
