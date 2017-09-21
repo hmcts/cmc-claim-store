@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
+import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
 import java.time.LocalDate;
@@ -12,8 +13,9 @@ public class SampleCountyCourtJudgment {
     private TheirDetails defendant = SampleTheirDetails.builder().individualDetails();
     private double paidAmount = 0.0;
     private PaymentOption paymentOption = PaymentOption.IMMEDIATELY;
-    private RepaymentPlan repaymentPlan = null;
-    private LocalDate payBySetDate = null;
+    private RepaymentPlan repaymentPlan;
+    private LocalDate payBySetDate;
+    private StatementOfTruth statementOfTruth;
 
     public static SampleCountyCourtJudgment builder() {
         return new SampleCountyCourtJudgment();
@@ -50,7 +52,14 @@ public class SampleCountyCourtJudgment {
         return this;
     }
 
+    public SampleCountyCourtJudgment withStatementOfThruth(StatementOfTruth statementOfThruth) {
+        this.statementOfTruth = statementOfThruth;
+        return this;
+    }
+
     public CountyCourtJudgment build() {
-        return new CountyCourtJudgment(defendant, paymentOption, paidAmount, repaymentPlan, payBySetDate);
+        return new CountyCourtJudgment(
+            defendant, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
+        );
     }
 }
