@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.models.serialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
@@ -23,7 +22,7 @@ public class CountyCourtJudgmentSerializationTest {
     public void shouldConvertCCJJsonToJava() throws IOException {
 
         //given
-        TheirDetails defendant = SampleTheirDetails.builder().withRepresentative(null).individualDetails();
+        TheirDetails defendant = SampleTheirDetails.builder().individualDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
             .withDefendant(defendant)
             .withRepaymentPlan(SampleRepaymentPlan.builder().build())
@@ -34,12 +33,6 @@ public class CountyCourtJudgmentSerializationTest {
 
         //then
         assertThat(expected).isEqualTo(other);
-    }
-
-    @Test(expected = InvalidTypeIdException.class)
-    public void shouldThrowExceptionForUnknownDefendantType() throws IOException {
-
-        jsonToModel("/county-court-judgment/invalid-defendant-type.json");
     }
 
     private static CountyCourtJudgment jsonToModel(final String path) throws IOException {
