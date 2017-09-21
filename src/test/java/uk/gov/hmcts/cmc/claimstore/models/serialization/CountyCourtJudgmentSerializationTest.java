@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.models.serialization;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
 import org.junit.Test;
@@ -110,12 +109,6 @@ public class CountyCourtJudgmentSerializationTest {
 
         //then
         assertThat(expected).isEqualTo(other);
-    }
-
-    @Test(expected = JsonParseException.class)
-    public void shouldThrowExceptionForInvalidInput() throws IOException {
-
-        jsonToModel("/county-court-judgment/invalid-structure.json");
     }
 
     @Test(expected = InvalidTypeIdException.class)
