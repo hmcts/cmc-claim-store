@@ -22,7 +22,7 @@
   "repaymentPlan": {
     "remainingAmount": 1000,
     "firstPayment": 100,
-    "installmentAmount": 100,
+    "instalmentAmount": 100,
     "firstPaymentDate": "2100-10-10",
     "paymentSchedule": "EACH_WEEK"
   }
