@@ -37,7 +37,6 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
         Claim claimWithCCJ = SampleClaim.builder()
             .withSubmitterId(CLAIMANT_ID)
             .withResponseDeadline(LocalDate.now().minusDays(2))
-            .withCountyCourtJudgment(new HashMap<>())
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
