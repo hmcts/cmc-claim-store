@@ -10,11 +10,11 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = DateNotInTheFutureConstraintValidator.class)
+@Constraint(validatedBy = DateNotInThePastConstraintValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DateNotInThePast {
-    String message() default "is in the future";
+    String message() default "is in the past";
 
     Class<?>[] groups() default {};
 

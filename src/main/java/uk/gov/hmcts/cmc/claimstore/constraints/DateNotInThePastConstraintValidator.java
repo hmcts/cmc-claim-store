@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class DateNotInThePastConstraintValidator implements ConstraintValidator<DateNotInTheFuture, LocalDate> {
+public class DateNotInThePastConstraintValidator implements ConstraintValidator<DateNotInThePast, LocalDate> {
 
     @Override
-    public void initialize(DateNotInTheFuture dateNotInTheFuture) {
+    public void initialize(DateNotInThePast dateNotInThePast) {
         // NO-OP
     }
 
