@@ -8,7 +8,7 @@ public class SampleRepaymentPlan {
 
     private double remainingAmount = 1000;
     private double firstPayment = 100;
-    private double installmentAmount = 100;
+    private double instalmentAmount = 100;
     private LocalDate firstPaymentDate = LocalDate.of(2100, 10, 10);
     private RepaymentPlan.PaymentSchedule paymentSchedule = RepaymentPlan.PaymentSchedule.EACH_WEEK;
 
@@ -26,8 +26,8 @@ public class SampleRepaymentPlan {
         return this;
     }
 
-    public SampleRepaymentPlan withInstallmentAmount(double installmentAmount) {
-        this.installmentAmount = installmentAmount;
+    public SampleRepaymentPlan withInstalmentAmount(double instalmentAmount) {
+        this.instalmentAmount = instalmentAmount;
         return this;
     }
 
@@ -42,6 +42,6 @@ public class SampleRepaymentPlan {
     }
 
     public RepaymentPlan build() {
-        return new RepaymentPlan(remainingAmount, firstPayment, installmentAmount, firstPaymentDate, paymentSchedule);
+        return new RepaymentPlan(remainingAmount, firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule);
     }
 }

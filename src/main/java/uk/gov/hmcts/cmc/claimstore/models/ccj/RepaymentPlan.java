@@ -19,19 +19,19 @@ public class RepaymentPlan {
 
     private final double remainingAmount;
     private final double firstPayment;
-    private final double installmentAmount;
+    private final double instalmentAmount;
     private final LocalDate firstPaymentDate;
     private final PaymentSchedule paymentSchedule;
 
     public RepaymentPlan(final double remainingAmount,
                          final double firstPayment,
-                         final double installmentAmount,
+                         final double instalmentAmount,
                          final LocalDate firstPaymentDate,
                          final PaymentSchedule paymentSchedule) {
 
         this.remainingAmount = remainingAmount;
         this.firstPayment = firstPayment;
-        this.installmentAmount = installmentAmount;
+        this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
         this.paymentSchedule = paymentSchedule;
     }
@@ -48,14 +48,14 @@ public class RepaymentPlan {
         RepaymentPlan that = (RepaymentPlan) other;
         return Objects.equals(remainingAmount, that.remainingAmount)
             && Objects.equals(firstPayment, that.firstPayment)
-            && Objects.equals(installmentAmount, that.installmentAmount)
+            && Objects.equals(instalmentAmount, that.instalmentAmount)
             && Objects.equals(firstPaymentDate, that.firstPaymentDate)
             && Objects.equals(paymentSchedule, that.paymentSchedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(remainingAmount, firstPayment, installmentAmount, firstPaymentDate, paymentSchedule);
+        return Objects.hash(remainingAmount, firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule);
     }
 
     @Override
