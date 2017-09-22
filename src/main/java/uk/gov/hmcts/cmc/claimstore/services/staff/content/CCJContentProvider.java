@@ -9,9 +9,9 @@ import java.util.Map;
 @Component
 public class CCJContentProvider {
 
-    public Map<String,Object> createContent(Claim claim) {
+    public Map<String, Object> createContent(Claim claim) {
         Map<String, Object> map = new HashMap<>();
-        map.put("claim",claim);
+        map.put("claim", claim);
         return map;
     }
 }
