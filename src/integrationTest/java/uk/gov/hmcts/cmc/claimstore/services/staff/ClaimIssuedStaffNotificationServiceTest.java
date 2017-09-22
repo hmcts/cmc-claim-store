@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Optional;
@@ -13,7 +14,7 @@ public class ClaimIssuedStaffNotificationServiceTest extends BaseTest {
     private static final String DEFENDANT_PIN = "a334frf";
     private static final String CLAIMANT_EMAIL = "claimant@email-domain.com";
 
-    private Claim claim = SampleClaim.getDefault();
+    private Claim claim = SampleClaim.builder().withClaimData(SampleClaimData.submittedByClaimant()).build();
 
     @Autowired
     private ClaimIssuedStaffNotificationService service;
