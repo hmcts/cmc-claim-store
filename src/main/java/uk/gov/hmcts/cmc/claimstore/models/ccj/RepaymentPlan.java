@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -22,22 +21,18 @@ public class RepaymentPlan {
         EVERY_MONTH
     }
 
-    @Valid
     @NotNull
     @Money
     private final BigDecimal remainingAmount;
 
-    @Valid
     @NotNull
     @Money
     private final BigDecimal firstPayment;
 
-    @Valid
     @NotNull
     @Money
     private final BigDecimal instalmentAmount;
 
-    @Valid
     @NotNull
     @DateNotInThePast
     private final LocalDate firstPaymentDate;

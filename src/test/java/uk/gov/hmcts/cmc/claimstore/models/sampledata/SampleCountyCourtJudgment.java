@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class SampleCountyCourtJudgment {
 
     private TheirDetails defendant = SampleTheirDetails.builder().individualDetails();
-    private BigDecimal paidAmount = BigDecimal.valueOf(0);
+    private BigDecimal paidAmount = BigDecimal.ZERO;
     private PaymentOption paymentOption = PaymentOption.IMMEDIATELY;
     private RepaymentPlan repaymentPlan;
     private LocalDate payBySetDate;

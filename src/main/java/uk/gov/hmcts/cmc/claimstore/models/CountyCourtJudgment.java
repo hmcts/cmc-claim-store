@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
@@ -24,18 +25,16 @@ public class CountyCourtJudgment {
     @NotNull
     private final TheirDetails defendant;
 
-    @Valid
     @Money
     private BigDecimal paidAmount;
 
-    @Valid
     @NotNull
     private final PaymentOption paymentOption;
 
     @Valid
     private final RepaymentPlan repaymentPlan;
 
-    @Valid
+    @DateNotInThePast
     private final LocalDate payBySetDate;
 
     @Valid
