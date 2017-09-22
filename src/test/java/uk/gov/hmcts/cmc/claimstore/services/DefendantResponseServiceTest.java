@@ -71,7 +71,6 @@ public class DefendantResponseServiceTest {
         responseService.save(CLAIM_ID, DEFENDANT_ID, app, AUTHORISATION);
 
         //then
-        verify(claimService, once()).getClaimById(eq(CLAIM_ID));
         verify(eventProducer, once())
             .createDefendantResponseEvent(eq(claim) );
     }
