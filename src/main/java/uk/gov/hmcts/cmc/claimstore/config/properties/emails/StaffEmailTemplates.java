@@ -22,6 +22,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/defendantResponse/subject.txt");
     }
 
+    public String getCCJRequestSubmittedEmailBody() {
+        return readString("/staff/templates/email/ccjRequestSubmitted/body.txt");
+    }
+
+    public String getCCJRequestSubmittedEmailSubject() {
+        return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt");
+    }
+
     public byte[] getSealedClaim() {
         return readBytes("/staff/templates/document/sealedClaim.html");
     }
@@ -34,7 +42,11 @@ public class StaffEmailTemplates {
         return readBytes("/staff/templates/document/legalSealedClaim.html");
     }
 
-    private byte[] readBytes(String resourcePath) {
+    public byte[] getCountyCourtJudgment() {
+        return readBytes("/staff/templates/document/countyCourtJudgment.html");
+    }
+
+    private byte[] readBytes(final String resourcePath) {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
@@ -42,7 +54,7 @@ public class StaffEmailTemplates {
         }
     }
 
-    private String readString(String resourcePath) {
+    private String readString(final String resourcePath) {
         return new String(
             readBytes(resourcePath),
             Charset.forName("UTF-8")
