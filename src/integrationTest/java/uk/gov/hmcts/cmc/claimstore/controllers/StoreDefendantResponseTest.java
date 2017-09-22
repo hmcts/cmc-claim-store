@@ -111,7 +111,7 @@ public class StoreDefendantResponseTest extends BaseTest {
     public void shouldFailAWhenDefendantResponseFailedStoring() throws Exception {
         //when
         willThrow(new DataAccessResourceFailureException("some failure"))
-        .given(defendantResponseRepository).save(anyLong(), anyLong(), anyString(), anyString());
+            .given(defendantResponseRepository).save(anyLong(), anyLong(), anyString(), anyString());
 
         final MvcResult result = postDefence(SampleResponseData.validDefaults())
             .andExpect(status().isInternalServerError())
@@ -124,9 +124,9 @@ public class StoreDefendantResponseTest extends BaseTest {
     @Test
     public void shouldFailForInvalidDefendantResponse() throws Exception {
         final MvcResult result = postDefence(SampleResponseData.builder()
-                .withResponseType(null)
-                .withMediation(null)
-                .withDefence(null)
+            .withResponseType(null)
+            .withMediation(null)
+            .withDefence(null)
             .build())
             .andExpect(status().isBadRequest())
             .andReturn();
@@ -143,7 +143,7 @@ public class StoreDefendantResponseTest extends BaseTest {
         final String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
         final MvcResult result = postDefence(SampleResponseData.builder()
-                .withDefence(defence)
+            .withDefence(defence)
             .build())
             .andExpect(status().isBadRequest())
             .andReturn();
@@ -155,7 +155,7 @@ public class StoreDefendantResponseTest extends BaseTest {
     @Test
     public void shouldFailForEmptyDefence() throws Exception {
         final MvcResult result = postDefence(SampleResponseData.builder()
-                .withDefence("")
+            .withDefence("")
             .build())
             .andExpect(status().isBadRequest())
             .andReturn();
