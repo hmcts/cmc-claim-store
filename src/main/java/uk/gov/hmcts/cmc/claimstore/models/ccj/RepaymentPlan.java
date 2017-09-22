@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.models.ccj;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.claimstore.constraints.Money;
