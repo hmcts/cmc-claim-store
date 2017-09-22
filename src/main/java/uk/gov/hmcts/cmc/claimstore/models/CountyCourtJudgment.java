@@ -2,16 +2,18 @@ package uk.gov.hmcts.cmc.claimstore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
+import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -23,17 +25,16 @@ public class CountyCourtJudgment {
     @NotNull
     private final TheirDetails defendant;
 
-    @Min(0)
-    private double paidAmount;
+    @Money
+    private BigDecimal paidAmount;
 
-    @Valid
     @NotNull
     private final PaymentOption paymentOption;
 
     @Valid
     private final RepaymentPlan repaymentPlan;
 
-    @Valid
+    @DateNotInThePast
     private final LocalDate payBySetDate;
 
     @Valid
@@ -42,7 +43,7 @@ public class CountyCourtJudgment {
     public CountyCourtJudgment(
         TheirDetails defendant,
         PaymentOption paymentOption,
-        Double paidAmount,
+        BigDecimal paidAmount,
         RepaymentPlan repaymentPlan,
         LocalDate payBySetDate,
         StatementOfTruth statementOfTruth
@@ -63,7 +64,7 @@ public class CountyCourtJudgment {
         return paymentOption;
     }
 
-    public double getPaidAmount() {
+    public BigDecimal getPaidAmount() {
         return paidAmount;
     }
 

@@ -2,13 +2,14 @@ package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SampleRepaymentPlan {
 
-    private double remainingAmount = 1000;
-    private double firstPayment = 100;
-    private double instalmentAmount = 100;
+    private BigDecimal remainingAmount = BigDecimal.valueOf(1000);
+    private BigDecimal firstPayment = BigDecimal.valueOf(100);
+    private BigDecimal instalmentAmount = BigDecimal.valueOf(100);
     private LocalDate firstPaymentDate = LocalDate.of(2100, 10, 10);
     private RepaymentPlan.PaymentSchedule paymentSchedule = RepaymentPlan.PaymentSchedule.EACH_WEEK;
 
@@ -16,17 +17,17 @@ public class SampleRepaymentPlan {
         return new SampleRepaymentPlan();
     }
 
-    public SampleRepaymentPlan withRemainingAmount(double remainingAmount) {
+    public SampleRepaymentPlan withRemainingAmount(BigDecimal remainingAmount) {
         this.remainingAmount = remainingAmount;
         return this;
     }
 
-    public SampleRepaymentPlan withFirstPayment(double firstPayment) {
+    public SampleRepaymentPlan withFirstPayment(BigDecimal firstPayment) {
         this.firstPayment = firstPayment;
         return this;
     }
 
-    public SampleRepaymentPlan withInstalmentAmount(double instalmentAmount) {
+    public SampleRepaymentPlan withInstalmentAmount(BigDecimal instalmentAmount) {
         this.instalmentAmount = instalmentAmount;
         return this;
     }
