@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +33,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
             = SampleUserDetails.builder().withUserId(CLAIMANT_ID).withMail("claimant@email.com").build();
 
         given(userService.getUserDetails(anyString())).willReturn(userDetails);
+        given(pdfServiceClient.generateFromHtml(any(),any())).willReturn(new byte[] {0,0,0});
     }
 
     @Test
@@ -39,6 +42,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
         Claim claimWithCCJ = SampleClaim.builder()
             .withSubmitterId(CLAIMANT_ID)
             .withResponseDeadline(LocalDate.now().minusDays(2))
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
