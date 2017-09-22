@@ -42,7 +42,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseTest {
 
     @Before
     public void beforeEachTest() {
-        claim = SampleClaim.getDefault();
+        claim = SampleClaim.getWithDefaultResponse();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }

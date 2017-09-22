@@ -30,6 +30,7 @@ public class MoreTimeRequestedNotificationService {
         final Map<String, String> parameters,
         final String reference
     ) {
+        System.out.println("Sending email to: " + targetEmail);
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {

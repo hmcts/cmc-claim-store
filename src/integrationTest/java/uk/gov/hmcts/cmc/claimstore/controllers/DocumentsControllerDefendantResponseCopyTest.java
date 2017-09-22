@@ -53,16 +53,6 @@ public class DocumentsControllerDefendantResponseCopyTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenResponseIsNotFound() throws Exception {
-        when(claimRepository.getClaimByExternalId(eq(EXTERNAL_ID))).thenReturn(Optional.of(claim));
-
-        webClient
-            .perform(get("/documents/defendantResponseCopy/" + EXTERNAL_ID))
-            .andExpect(status().isNotFound())
-            .andReturn();
-    }
-
-    @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
         when(claimRepository.getClaimByExternalId(eq(EXTERNAL_ID))).thenReturn(Optional.of(claim));
         when(defendantResponseCopyService.createPdf(eq(claim)))

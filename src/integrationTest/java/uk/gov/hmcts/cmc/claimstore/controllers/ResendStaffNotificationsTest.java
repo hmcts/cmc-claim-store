@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
@@ -160,7 +161,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "response-submitted";
 
-        final Claim claim = sampleClaim().setRespondedAt(LocalDateTime.now()).build();
+        final Claim claim = sampleClaim().setDefendantEmail("j.smith@example.com").setResponse(SampleResponseData.validDefaults()).setRespondedAt(LocalDateTime.now()).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient

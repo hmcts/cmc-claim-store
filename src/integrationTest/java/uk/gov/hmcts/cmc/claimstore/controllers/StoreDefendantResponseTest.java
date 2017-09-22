@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
@@ -52,7 +53,7 @@ public class StoreDefendantResponseTest extends BaseTest {
         ).willReturn(CLAIM_ID);
 
         given(claimRepository.getById(CLAIM_ID))
-            .willReturn(Optional.of(claimAfterSaving));
+            .willReturn(Optional.of(claimAfterSavingWithResponse));
 
         given(userService.getUserDetails(anyString())).willReturn(getDefault());
     }
@@ -65,11 +66,13 @@ public class StoreDefendantResponseTest extends BaseTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        //then
-        final ResponseData output =
-            jsonMapper.fromJson(result.getResponse().getContentAsString(), ResponseData.class);
+        System.out.println(result.getResponse().getContentAsString());
 
-        assertThat(output).isEqualTo(responseData);
+        //then
+        final Claim output =
+            jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);
+
+        assertThat(output.getResponse().orElseThrow(IllegalStateException::new)).isEqualTo(responseData);
     }
 
     @Test
@@ -79,7 +82,7 @@ public class StoreDefendantResponseTest extends BaseTest {
             .andReturn();
 
         verify(staffActionsHandler).onDefendantResponseSubmitted(defendantResponseEventArgument.capture());
-        assertThat(defendantResponseEventArgument.getValue().getClaim()).isEqualTo(claimAfterSaving);
+        assertThat(defendantResponseEventArgument.getValue().getClaim()).isEqualTo(claimAfterSavingWithResponse);
     }
 
     @Test

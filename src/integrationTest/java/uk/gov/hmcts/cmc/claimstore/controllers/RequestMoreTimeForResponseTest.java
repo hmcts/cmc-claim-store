@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.service.notify.NotificationClientException;
@@ -191,6 +192,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
     private Claim createClaimModel(final LocalDate responseDeadline, final boolean alreadyUpdated) {
         return new Claim.Builder()
             .setId(CLAIM_ID)
+            .setSubmitterEmail("submitter@example.com")
             .setSubmitterId(SUBMITTER_ID)
             .setLetterHolderId(LETTER_HOLDER_ID)
             .setDefendantId(DEFENDANT_ID)
@@ -200,6 +202,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
             .setIssuedOn(LocalDate.now())
             .setResponseDeadline(responseDeadline)
             .setMoreTimeRequested(alreadyUpdated)
+            .setResponse(SampleResponseData.validDefaults())
             .build();
     }
 }
