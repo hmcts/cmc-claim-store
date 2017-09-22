@@ -22,7 +22,7 @@ public class DefendantResponseEvent {
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -30,8 +30,8 @@ public class DefendantResponseEvent {
             return false;
         }
         DefendantResponseEvent that = (DefendantResponseEvent) obj;
-        return Objects.equals(userEmail, that.userEmail) &&
-            Objects.equals(claim, that.claim);
+        return Objects.equals(userEmail, that.userEmail)
+            && Objects.equals(claim, that.claim);
     }
 
     @Override

@@ -141,32 +141,31 @@ public class Claim {
     }
 
     @Override
-    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Claim claim = (Claim) o;
-        return moreTimeRequested == claim.moreTimeRequested &&
-            Objects.equals(id, claim.id) &&
-            Objects.equals(submitterId, claim.submitterId) &&
-            Objects.equals(letterHolderId, claim.letterHolderId) &&
-            Objects.equals(defendantId, claim.defendantId) &&
-            Objects.equals(externalId, claim.externalId) &&
-            Objects.equals(referenceNumber, claim.referenceNumber) &&
-            Objects.equals(claimData, claim.claimData) &&
-            Objects.equals(createdAt, claim.createdAt) &&
-            Objects.equals(issuedOn, claim.issuedOn) &&
-            Objects.equals(responseDeadline, claim.responseDeadline) &&
-            Objects.equals(submitterEmail, claim.submitterEmail) &&
-            Objects.equals(respondedAt, claim.respondedAt) &&
-            Objects.equals(response, claim.response) &&
-            Objects.equals(defendantEmail, claim.defendantEmail) &&
-            Objects.equals(countyCourtJudgment, claim.countyCourtJudgment) &&
-            Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt);
+        Claim claim = (Claim) obj;
+        return moreTimeRequested == claim.moreTimeRequested
+            && Objects.equals(id, claim.id)
+            && Objects.equals(submitterId, claim.submitterId)
+            && Objects.equals(letterHolderId, claim.letterHolderId)
+            && Objects.equals(defendantId, claim.defendantId)
+            && Objects.equals(externalId, claim.externalId)
+            && Objects.equals(referenceNumber, claim.referenceNumber)
+            && Objects.equals(claimData, claim.claimData)
+            && Objects.equals(createdAt, claim.createdAt)
+            && Objects.equals(issuedOn, claim.issuedOn)
+            && Objects.equals(responseDeadline, claim.responseDeadline)
+            && Objects.equals(submitterEmail, claim.submitterEmail)
+            && Objects.equals(respondedAt, claim.respondedAt)
+            && Objects.equals(response, claim.response)
+            && Objects.equals(defendantEmail, claim.defendantEmail)
+            && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
+            && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt);
     }
 
     @Override
@@ -285,7 +284,8 @@ public class Claim {
             return new Claim(
                 id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
                 claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested,
-                submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt
+                submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment,
+                countyCourtJudgmentRequestedAt
             );
         }
     }
