@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -37,16 +38,25 @@ public class DefendantResponseService {
         final ResponseData responseData,
         final String authorization
     ) {
+        final Claim claim = claimService.getClaimById(claimId);
+
+        if (isResponseAlreadySubmitted(claim)) {
+            throw new ForbiddenActionException("Response for the claim " + claimId + " was already submitted");
+        }
+
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
         defendantResponseRepository.save(claimId, defendantId, defendantEmail,
             jsonMapper.toJson(responseData));
 
-        final Claim claim = claimService.getClaimById(claimId);
+        final Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
 
+        eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 
-        eventProducer.createDefendantResponseEvent(claim);
+        return claimAfterSavingResponse;
+    }
 
-        return claim;
+    private boolean isResponseAlreadySubmitted(final Claim claim) {
+        return null != claim.getRespondedAt();
     }
 
 }
