@@ -9,7 +9,8 @@ public interface DefendantResponseRepository {
         "UPDATE CLAIM SET "
             + "response = :response::JSONB, "
             + "defendant_id = :defendantId, "
-            + "defendant_email = :defendantEmail "
+            + "defendant_email = :defendantEmail, "
+            + "responded_at = now() AT TIME ZONE 'utc' "
             + "WHERE id = :claimId"
     )
     void save(
