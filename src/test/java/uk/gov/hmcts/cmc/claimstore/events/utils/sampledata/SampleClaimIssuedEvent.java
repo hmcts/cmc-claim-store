@@ -14,5 +14,6 @@ public final class SampleClaimIssuedEvent {
     public static final String DEFENDANT_EMAIL = SampleClaim.DEFENDANT_EMAIL;
     public static final String PIN = "Uyasd9834h";
     public static final Claim CLAIM = SampleClaim.getDefault();
+    public static final Claim CLAIM_WITH_RESPONSE = SampleClaim.getWithDefaultResponse();
 
 }

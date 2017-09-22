@@ -27,7 +27,7 @@ public final class SampleClaim {
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
-    public static final String DEFENDANT_EMAIL = "defendant@example.com";
+    public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
 
     private Long submitterId = USER_ID;
     private Long letterHolderId = LETTER_HOLDER_ID;
@@ -114,20 +114,18 @@ public final class SampleClaim {
 
     public Claim build() {
         return new Claim(
-            CLAIM_ID,
-            USER_ID,
-            LETTER_HOLDER_ID,
-            DEFENDANT_ID,
-            EXTERNAL_ID,
-            REFERENCE_NUMBER,
-            SampleClaimData.builder()
-                .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
-                .build(),
+            claimId,
+            submitterId,
+            letterHolderId,
+            defendantId,
+            externalId,
+            referenceNumber,
+            claimData,
             NOW_IN_LOCAL_ZONE,
-            ISSUE_DATE,
-            RESPONSE_DEADLINE,
-            NOT_REQUESTED_FOR_MORE_TIME,
-            SUBMITTER_EMAIL,
+            issuedOn,
+            responseDeadline,
+            isMoreTimeRequested,
+            submitterEmail,
             null, response, defendantEmail, null, null);
     }
 

@@ -55,6 +55,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().minusMonths(2));
 
+        System.out.println(claim.getResponseDeadline());
+
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);

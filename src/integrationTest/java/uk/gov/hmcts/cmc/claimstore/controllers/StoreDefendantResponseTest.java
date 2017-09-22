@@ -10,11 +10,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
@@ -28,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -37,11 +36,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.Sample
 
 public class StoreDefendantResponseTest extends BaseTest {
 
-    private static final long RESPONSE_ID = 1L;
     private static final long CLAIM_ID = 2L;
     private static final long DEFENDANT_ID = 123L;
-
-    private final DefendantResponse defendantResponse = SampleDefendantResponse.getDefault();
 
     @MockBean
     private DefendantResponseStaffNotificationHandler staffActionsHandler;
@@ -51,12 +47,6 @@ public class StoreDefendantResponseTest extends BaseTest {
 
     @Before
     public void setup() {
-        given(defendantResponseRepository.save(anyLong(), anyLong(), anyString(), anyString()))
-            .willReturn(RESPONSE_ID);
-
-        given(defendantResponseRepository.getById(RESPONSE_ID))
-            .willReturn(Optional.of(defendantResponse));
-
         given(claimRepository.saveRepresented(
             anyString(), anyLong(), any(LocalDate.class), any(LocalDate.class), anyString(), anyString())
         ).willReturn(CLAIM_ID);
@@ -70,15 +60,16 @@ public class StoreDefendantResponseTest extends BaseTest {
     @Test
     public void shouldReturnNewlyCreatedDefendantResponse() throws Exception {
         //when
-        final MvcResult result = postDefence(SampleResponseData.validDefaults())
+        ResponseData responseData = SampleResponseData.validDefaults();
+        final MvcResult result = postDefence(responseData)
             .andExpect(status().isOk())
             .andReturn();
 
         //then
-        final DefendantResponse output =
-            jsonMapper.fromJson(result.getResponse().getContentAsString(), DefendantResponse.class);
+        final ResponseData output =
+            jsonMapper.fromJson(result.getResponse().getContentAsString(), ResponseData.class);
 
-        assertThat(output).isEqualTo(defendantResponse);
+        assertThat(output).isEqualTo(responseData);
     }
 
     @Test
@@ -116,8 +107,8 @@ public class StoreDefendantResponseTest extends BaseTest {
     @Test
     public void shouldFailAWhenDefendantResponseFailedStoring() throws Exception {
         //when
-        given(defendantResponseRepository.save(anyLong(), anyLong(), anyString(), anyString()))
-            .willThrow(new DataAccessResourceFailureException("some failure"));
+        willThrow(new DataAccessResourceFailureException("some failure"))
+        .given(defendantResponseRepository).save(anyLong(), anyLong(), anyString(), anyString());
 
         final MvcResult result = postDefence(SampleResponseData.validDefaults())
             .andExpect(status().isInternalServerError())

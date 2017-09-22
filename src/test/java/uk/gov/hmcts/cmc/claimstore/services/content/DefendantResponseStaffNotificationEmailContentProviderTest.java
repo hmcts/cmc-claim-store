@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
@@ -73,8 +74,13 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUseFullDefenceTextIfFullDefenceSelected() {
+        Claim claim = SampleClaim.builder().withResponse(SampleResponseData.builder()
+            .withResponseType(ResponseData.ResponseType.OWE_NONE)
+            .build())
+            .build();
+
         EmailContent content = service.createContent(
-            wrapInMap(SampleClaim.getWithDefaultResponse(), DEFENDANT_EMAIL)
+            wrapInMap(claim, DEFENDANT_EMAIL)
         );
         assertThat(content.getBody())
             .contains("The defendant has submitted a full defence which is attached as a PDF.")
@@ -103,8 +109,13 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUseAlternativeTextIfFreeMediationIsNotRequested() {
+        Claim claim = SampleClaim.builder().withResponse(SampleResponseData.builder()
+            .withMediation(ResponseData.FreeMediationOption.NO)
+            .build())
+            .build();
+
         EmailContent content = service.createContent(
-            wrapInMap(SampleClaim.getWithDefaultResponse(), DEFENDANT_EMAIL)
+            wrapInMap(claim, DEFENDANT_EMAIL)
         );
         assertThat(content.getBody())
             .contains("The defendant has chosen not to use the free mediation service.")
@@ -113,8 +124,14 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldShowQuestionnaireTextIfMediationNotRequestedAndIsFullDefence() {
+        Claim claim = SampleClaim.builder().withResponse(SampleResponseData.builder()
+            .withResponseType(ResponseData.ResponseType.OWE_NONE)
+            .withMediation(ResponseData.FreeMediationOption.NO)
+            .build())
+            .build();
+
         EmailContent content = service.createContent(
-            wrapInMap(SampleClaim.getWithDefaultResponse(), DEFENDANT_EMAIL)
+            wrapInMap(claim, DEFENDANT_EMAIL)
         );
         assertThat(content.getBody())
             .contains("You must progress to the directions questionnaire procedure.");

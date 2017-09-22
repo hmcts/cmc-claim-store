@@ -8,11 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.email.EmailData;
 
 import java.time.LocalDate;
@@ -149,8 +147,6 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final Claim claim = sampleClaim().setRespondedAt(LocalDateTime.now()).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
-        given(defendantResponseRepository.getByClaimId(CLAIM_ID)).willReturn(Optional.empty());
-
         webClient
             .perform(requestFor(claimReference, event))
             .andExpect(status().isConflict())
@@ -166,11 +162,6 @@ public class ResendStaffNotificationsTest extends BaseTest {
 
         final Claim claim = sampleClaim().setRespondedAt(LocalDateTime.now()).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
-
-        final DefendantResponse defendantResponse = SampleDefendantResponse.getDefault();
-        given(defendantResponseRepository.getByClaimId(CLAIM_ID)).willReturn(Optional.of(defendantResponse));
-        given(defendantResponseRepository.getById(defendantResponse.getId()))
-            .willReturn(Optional.of(defendantResponse));
 
         webClient
             .perform(requestFor(claimReference, event))

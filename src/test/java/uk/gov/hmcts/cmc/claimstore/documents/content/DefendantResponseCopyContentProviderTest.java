@@ -12,7 +12,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class DefendantResponseCopyContentProviderTest {
 
-    private Claim claim = SampleClaim.getDefault();
+    private Claim claim = SampleClaim.getWithDefaultResponse();
 
     private DefendantResponseCopyContentProvider provider = new DefendantResponseCopyContentProvider(
         new DefendantDetailsContentProvider()

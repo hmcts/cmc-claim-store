@@ -14,9 +14,11 @@ import java.util.List;
 
 public class SampleTheirDetails {
 
+    public static final String DEFENDANT_EMAIL = "j.smith@example.com";
+
     private String name = "John Smith";
     private Address address = SampleAddress.validDefaults();
-    private String email = "j.smith@example.com";
+    private String email = DEFENDANT_EMAIL;
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
     private String title = "Dr.";
