@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models.ccj;
 
 public enum PaymentOption {
     IMMEDIATELY("immediately"),
-    FULL("on or before a set date"),
+    FULL_BY_SPECIFIED_DATE("on or before a set date"),
     INSTALMENTS("by instalments");
 
     String description;
