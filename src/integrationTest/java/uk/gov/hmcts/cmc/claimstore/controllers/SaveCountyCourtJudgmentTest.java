@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,15 +33,16 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
             = SampleUserDetails.builder().withUserId(CLAIMANT_ID).withMail("claimant@email.com").build();
 
         given(userService.getUserDetails(anyString())).willReturn(userDetails);
+        given(pdfServiceClient.generateFromHtml(any(),any())).willReturn(new byte[] {0,0,0});
     }
 
-    @Ignore
     @Test
     public void shouldReturnClaimWithCountyCourtJudgment() throws Exception {
 
         Claim claimWithCCJ = SampleClaim.builder()
             .withSubmitterId(CLAIMANT_ID)
             .withResponseDeadline(LocalDate.now().minusDays(2))
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 

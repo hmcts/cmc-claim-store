@@ -26,9 +26,6 @@ public class CCJRequestSubmittedNotificationEmailContentProviderTest {
     @Before
     public void setup() {
         provider = new CCJRequestSubmittedNotificationEmailContentProvider(templateService, staffEmailTemplates);
-
-        // when(staffEmailTemplates.getCCJRequestSubmittedEmailSubject()).thenReturn(EMAIL_SUBJECT);
-        // when(staffEmailTemplates.getCCJRequestSubmittedEmailBody()).thenReturn(EMAIL_BODY);
     }
 
     @Test(expected = NullPointerException.class)
