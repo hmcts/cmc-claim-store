@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SampleParty {
 
@@ -85,6 +87,16 @@ public class SampleParty {
 
     public Individual individual() {
         return new Individual(name, address, correspondenceAddress, mobilePhone, representative, title, dateOfBirth);
+    }
+    
+    public List<Party> individualDetails(int count) {
+        List<Party> individualDetailsList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            individualDetailsList.add(
+                new Individual(name, address, correspondenceAddress, mobilePhone, representative, title, dateOfBirth)
+            );
+        }
+        return individualDetailsList;
     }
 
     public SoleTrader soleTrader() {
