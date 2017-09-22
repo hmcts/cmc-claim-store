@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
-import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 @Api
@@ -39,7 +39,7 @@ public class CountyCourtJudgmentController {
     @ApiOperation("Save County Court Judgment")
     public Claim save(
         @PathVariable("claimId") final Long claimId,
-        @NotNull @RequestBody final Map<String, Object> countyCourtJudgment,
+        @NotNull @RequestBody final CountyCourtJudgment countyCourtJudgment,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
     ) {
         final long submitterId = userService.getUserDetails(authorisation).getId();
