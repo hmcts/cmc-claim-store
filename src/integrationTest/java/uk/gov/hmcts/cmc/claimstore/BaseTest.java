@@ -37,7 +37,7 @@ public abstract class BaseTest {
     protected static final Long DEFENDANT_ID = 555L;
     protected static final String REFERENCE_NUMBER = "000MC001";
     protected final Claim claimAfterSavingWithResponse = SampleClaim.getWithDefaultResponse();
-    
+
     @MockBean
     protected ClaimRepository claimRepository;
 

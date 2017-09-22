@@ -57,12 +57,13 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldDisplayAppropriateMessageWhenMobileNumberIsNotGiven() {
-        Claim claim = SampleClaim.builder().withResponse(SampleResponseData.builder()
-            .withDefendantDetails(
-                SampleParty.builder()
-                    .withMobilePhone(null)
-                    .individual())
-            .build())
+        Claim claim = SampleClaim.builder().withResponse(
+            SampleResponseData.builder()
+                .withDefendantDetails(
+                    SampleParty.builder()
+                        .withMobilePhone(null)
+                        .individual())
+                .build())
             .build();
 
         EmailContent content = service.createContent(wrapInMap(
@@ -74,9 +75,10 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUseFullDefenceTextIfFullDefenceSelected() {
-        Claim claim = SampleClaim.builder().withResponse(SampleResponseData.builder()
-            .withResponseType(ResponseData.ResponseType.OWE_NONE)
-            .build())
+        Claim claim = SampleClaim.builder().withResponse(
+            SampleResponseData.builder()
+                .withResponseType(ResponseData.ResponseType.OWE_NONE)
+                .build())
             .build();
 
         EmailContent content = service.createContent(
@@ -109,9 +111,10 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUseAlternativeTextIfFreeMediationIsNotRequested() {
-        Claim claim = SampleClaim.builder().withResponse(SampleResponseData.builder()
-            .withMediation(ResponseData.FreeMediationOption.NO)
-            .build())
+        Claim claim = SampleClaim.builder().withResponse(
+            SampleResponseData.builder()
+                .withMediation(ResponseData.FreeMediationOption.NO)
+                .build())
             .build();
 
         EmailContent content = service.createContent(
@@ -124,10 +127,11 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldShowQuestionnaireTextIfMediationNotRequestedAndIsFullDefence() {
-        Claim claim = SampleClaim.builder().withResponse(SampleResponseData.builder()
-            .withResponseType(ResponseData.ResponseType.OWE_NONE)
-            .withMediation(ResponseData.FreeMediationOption.NO)
-            .build())
+        Claim claim = SampleClaim.builder().withResponse(
+            SampleResponseData.builder()
+                .withResponseType(ResponseData.ResponseType.OWE_NONE)
+                .withMediation(ResponseData.FreeMediationOption.NO)
+                .build())
             .build();
 
         EmailContent content = service.createContent(

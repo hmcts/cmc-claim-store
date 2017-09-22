@@ -66,8 +66,6 @@ public class StoreDefendantResponseTest extends BaseTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        System.out.println(result.getResponse().getContentAsString());
-
         //then
         final Claim output =
             jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);

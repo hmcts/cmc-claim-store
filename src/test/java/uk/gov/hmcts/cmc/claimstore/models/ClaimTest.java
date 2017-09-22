@@ -72,6 +72,7 @@ public class ClaimTest {
             "claimant@mail.com",
             null,
             null, null,
-            null, null);
+            null,
+            null);
     }
 }
