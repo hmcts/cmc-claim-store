@@ -143,8 +143,12 @@ public class Claim {
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Claim claim = (Claim) o;
         return moreTimeRequested == claim.moreTimeRequested &&
             Objects.equals(id, claim.id) &&
