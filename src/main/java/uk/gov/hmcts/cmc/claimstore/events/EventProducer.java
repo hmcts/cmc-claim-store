@@ -14,16 +14,15 @@ public class EventProducer {
         this.publisher = publisher;
     }
 
-    public void createClaimIssuedEvent(final Claim claim, final String pin) {
+    public void createClaimIssuedEvent(final Claim claim, final String pin, final String submitterName) {
         if (claim.getClaimData().isClaimantRepresented()) {
-            publisher.publishEvent(new RepresentedClaimIssuedEvent(claim));
+            publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName));
         } else {
-            publisher.publishEvent(new ClaimIssuedEvent(claim, pin));
+            publisher.publishEvent(new ClaimIssuedEvent(claim, pin, submitterName));
         }
     }
 
-    public void createDefendantResponseEvent(
-        final Claim claim) {
+    public void createDefendantResponseEvent(final Claim claim) {
         publisher.publishEvent(new DefendantResponseEvent(claim));
     }
 

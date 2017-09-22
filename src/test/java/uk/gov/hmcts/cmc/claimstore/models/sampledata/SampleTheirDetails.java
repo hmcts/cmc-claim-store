@@ -22,11 +22,9 @@ public class SampleTheirDetails {
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
     private String title = "Dr.";
-    private Representative representative = SampleRepresentative.builder()
-        .build();
+    private Representative representative;
     private String companiesHouseNumber;
-
-    private Address serviceAddress = SampleAddress.validDefaults();
+    private Address serviceAddress;
 
     public static SampleTheirDetails builder() {
         return new SampleTheirDetails();

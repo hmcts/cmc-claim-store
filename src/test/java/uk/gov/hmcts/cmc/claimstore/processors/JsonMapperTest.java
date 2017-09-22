@@ -1,20 +1,25 @@
 package uk.gov.hmcts.cmc.claimstore.processors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleRepresentative;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -36,7 +41,8 @@ public class JsonMapperTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
-            .withClaimant(SampleParty.builder().withRepresentative(null).individual())
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .withServiceAddress(null)
@@ -71,7 +77,8 @@ public class JsonMapperTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
-            .withClaimant(SampleParty.builder().withRepresentative(null).individual())
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .withServiceAddress(null)
@@ -91,12 +98,21 @@ public class JsonMapperTest {
 
         //then
         final ClaimData expected = SampleClaimData.builder()
-            .withInterestDate(SampleInterestDate.builder()
-                .withDate(LocalDate.of(2015, 2, 2))
-                .build())
-            .withAmount(SampleAmountRange.builder().withHigherValue(BigDecimal.valueOf(123.56))
-                .withLowerValue(BigDecimal.valueOf(123.56)).build())
-            .build();
+            .withInterestDate(
+                SampleInterestDate.builder()
+                    .withDate(LocalDate.of(2015, 2, 2))
+                    .build()
+            ).withAmount(
+                SampleAmountRange.builder()
+                    .withHigherValue(BigDecimal.valueOf(123.56))
+                    .withLowerValue(BigDecimal.valueOf(123.56))
+                    .build()
+            ).withDefendant(
+                SampleTheirDetails.builder()
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .withServiceAddress(SampleAddress.validDefaults())
+                    .individualDetails()
+            ).build();
         assertThat(output).isEqualTo(expected);
     }
 
@@ -111,6 +127,17 @@ public class JsonMapperTest {
         //then
         final ResponseData expected = SampleResponseData.validDefaults();
         assertThat(output).isEqualTo(expected);
+    }
+
+    @Test(expected = InvalidApplicationException.class)
+    public void shouldThrowExceptionOnInvalidJson() {
+        processor.fromJson("{asads:", ResponseData.class);
+    }
+
+    @Test(expected = InvalidApplicationException.class)
+    public void shouldThrowExceptionOnInvalidJsonWithTypeReference() {
+        processor.fromJson("{asads:", new TypeReference<List<ResponseData>>() {
+        });
     }
 
 }

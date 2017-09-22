@@ -2,13 +2,14 @@ package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ public final class SampleClaim {
     private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
     private LocalDate issuedOn = ISSUE_DATE;
-    private Map<String, Object> countyCourtJudgment = null;
+    private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
     private ClaimData claimData = SampleClaimData.validDefaults();
     private ResponseData response;
@@ -51,7 +52,13 @@ public final class SampleClaim {
     }
 
     public static Claim getDefault() {
-        return builder().withClaimData(SampleClaimData.submittedByClaimant()).build();
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .withPaymentOptionImmediately()
+                    .build()
+            ).build();
     }
 
     public static Claim getWithDefaultResponse() {
@@ -91,7 +98,8 @@ public final class SampleClaim {
         return builder()
             .withClaimData(
                 SampleClaimData.builder().withInterestDate(SampleInterestDate.submission()).build()
-            ).build();
+            )
+            .build();
     }
 
     public static Claim getWithResponseDeadline(LocalDate responseDeadline) {
@@ -126,7 +134,11 @@ public final class SampleClaim {
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
-            null, response, defendantEmail, null, null);
+            respondedAt,
+            response,
+            defendantEmail,
+            countyCourtJudgment,
+            countyCourtJudgmentRequestedAt);
     }
 
     public SampleClaim withSubmitterId(Long userId) {
@@ -184,7 +196,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withCountyCourtJudgment(Map<String, Object> countyCourtJudgment) {
+    public SampleClaim withCountyCourtJudgment(CountyCourtJudgment countyCourtJudgment) {
         this.countyCourtJudgment = countyCourtJudgment;
         return this;
     }

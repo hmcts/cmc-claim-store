@@ -1,6 +1,6 @@
 {
   "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
-  "claimant": {
+  "claimants": [{
     "type": "individual",
     "title": "Dr.",
     "name": "John Rambo",
@@ -18,7 +18,7 @@
     },
     "dateOfBirth": "1968-01-02",
     "mobilePhone": "07873727165"
-  },
+  }],
   "amount": {
     "type": "breakdown",
     "rows": [

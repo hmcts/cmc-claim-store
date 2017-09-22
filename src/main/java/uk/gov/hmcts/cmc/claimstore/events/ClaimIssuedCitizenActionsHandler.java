@@ -32,7 +32,9 @@ public class ClaimIssuedCitizenActionsHandler {
             event.getSubmitterEmail(),
             Optional.empty(),
             getEmailTemplates().getClaimantClaimIssued(),
-            "claimant-issue-notification-" + claim.getReferenceNumber());
+            "claimant-issue-notification-" + claim.getReferenceNumber(),
+            event.getSubmitterName()
+        );
     }
 
     @EventListener
@@ -47,7 +49,8 @@ public class ClaimIssuedCitizenActionsHandler {
                         defendantEmail,
                         Optional.of(event.getPin()),
                         getEmailTemplates().getDefendantClaimIssued(),
-                        "defendant-issue-notification-" + claim.getReferenceNumber()
+                        "defendant-issue-notification-" + claim.getReferenceNumber(),
+                        event.getSubmitterName()
                     ));
         }
     }
@@ -56,5 +59,4 @@ public class ClaimIssuedCitizenActionsHandler {
         final NotificationTemplates templates = notificationsProperties.getTemplates();
         return templates.getEmail();
     }
-
 }

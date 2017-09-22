@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.time.LocalDate;
@@ -49,9 +50,15 @@ public class ClaimServiceTest {
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INVALID_DEFENDANT_TOKEN = "You shall not pass!";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
-    private static final UserDetails validDefendant = new UserDetails(DEFENDANT_ID, DEFENDANT_EMAIL);
-    private static final UserDetails invalidDefendant = new UserDetails(-1L, DEFENDANT_EMAIL);
-    private static final UserDetails claimantDetails = new UserDetails(11L, SUBMITTER_EMAIL);
+
+    private static final UserDetails validDefendant
+        = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
+
+    private static final UserDetails invalidDefendant
+        = SampleUserDetails.builder().withUserId(-1L).withMail(DEFENDANT_EMAIL).build();
+
+    private static final UserDetails claimantDetails
+        = SampleUserDetails.builder().withUserId(11L).withMail(SUBMITTER_EMAIL).build();
 
     private ClaimService claimService;
 
@@ -154,7 +161,7 @@ public class ClaimServiceTest {
         Claim createdClaim = claimService.saveClaim(USER_ID, app, authorisationToken);
 
         assertThat(createdClaim).isEqualTo(claim);
-        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null));
+        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null), anyString());
     }
 
     @Test

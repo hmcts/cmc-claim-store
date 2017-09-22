@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseDa
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailData;
 
 import java.time.LocalDate;
@@ -94,6 +95,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
 
         final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", 333L);
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
+        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 
         webClient
             .perform(requestFor(claimReference, event))

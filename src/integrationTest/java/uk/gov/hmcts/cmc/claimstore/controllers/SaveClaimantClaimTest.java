@@ -8,9 +8,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -74,8 +74,8 @@ public class SaveClaimantClaimTest extends BaseTest {
         given(userService.generatePin(anyString(), anyString()))
             .willReturn(new GeneratePinResponse(PIN, LETTER_HOLDER_ID));
 
-        given(userService.getUserDetails(anyString()))
-            .willReturn(new UserDetails(CLAIMANT_ID, "claimant@email.com"));
+        given(userService.getUserDetails(anyString())).willReturn(
+            SampleUserDetails.builder().withUserId(CLAIMANT_ID).withMail("claimant@email.com").build());
 
         given(holidaysCollection.getPublicHolidays()).willReturn(emptySet());
     }

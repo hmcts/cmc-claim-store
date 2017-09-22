@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.events.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.CountyCourtJudgmentSubmittedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedEvent;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.events.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
@@ -35,15 +38,17 @@ public class SupportController {
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
+    private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
 
     @Autowired
     public SupportController(
-        ClaimRepository claimRepository,
-        DefendantResponseRepository defendantResponseRepository,
-        UserService userService,
-        ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
-        MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
-        DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler
+        final ClaimRepository claimRepository,
+        final DefendantResponseRepository defendantResponseRepository,
+        final UserService userService,
+        final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
+        final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
+        final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
+        final CCJStaffNotificationHandler ccjStaffNotificationHandler
     ) {
         this.claimRepository = claimRepository;
         this.defendantResponseRepository = defendantResponseRepository;
@@ -51,6 +56,7 @@ public class SupportController {
         this.claimIssuedStaffNotificationHandler = claimIssuedStaffNotificationHandler;
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
+        this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -74,10 +80,15 @@ public class SupportController {
             case "response-submitted":
                 resendStaffNotificationOnDefendantResponseSubmitted(claim);
                 break;
+            case "ccj-request-submitted":
+                resendStaffNotificationCCJRequestSubmitted(claim);
+                break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
         }
     }
+
+
 
     private void validateAuthorisationPresentWhenRequired(final String authorisation)
         throws ServletRequestBindingException {
@@ -88,24 +99,36 @@ public class SupportController {
         }
     }
 
+    private void resendStaffNotificationCCJRequestSubmitted(final Claim claim) {
+        this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
+            new CountyCourtJudgmentSubmittedEvent(claim)
+        );
+    }
+
     private void resendStaffNotificationsOnClaimIssued(final Claim claim, final String authorisation)
         throws ServletRequestBindingException {
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
         }
 
-        if (!claim.getClaimData()
-            .isClaimantRepresented()) {
+        if (!claim.getClaimData().isClaimantRepresented()) {
             validateAuthorisationPresentWhenRequired(authorisation);
 
-            GeneratePinResponse pinResponse = userService.generatePin(claim.getClaimData()
-                .getDefendant()
-                .getName(), authorisation);
+            GeneratePinResponse pinResponse = userService
+                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
             claimRepository.linkLetterHolder(claim.getId(), pinResponse.getUserId());
-            claimIssuedStaffNotificationHandler.onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin()));
+
+            final String fullName = userService.getUserDetails(authorisation).getFullName();
+
+            claimIssuedStaffNotificationHandler
+                .onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName));
+
         } else {
-            claimIssuedStaffNotificationHandler.onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim));
+            final UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            claimIssuedStaffNotificationHandler
+                .onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim, userDetails.getFullName()));
         }
 
     }
@@ -124,7 +147,7 @@ public class SupportController {
         if (!claim.getResponse().isPresent()) {
             throw new ConflictException("Claim " + claim.getId() + " does not have associated response");
         }
-        DefendantResponseEvent event = new DefendantResponseEvent(claim);
+        final DefendantResponseEvent event = new DefendantResponseEvent(claim);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
     }
 

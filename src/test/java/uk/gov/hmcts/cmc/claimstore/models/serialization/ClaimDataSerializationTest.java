@@ -1,9 +1,10 @@
-package uk.gov.hmcts.cmc.claimstore.models;
+package uk.gov.hmcts.cmc.claimstore.models.serialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SerializationTest {
+public class ClaimDataSerializationTest {
 
     @Test
     public void shouldConvertJsonToJava() throws IOException {
@@ -36,7 +37,8 @@ public class SerializationTest {
             .withHousingDisrepair(null)
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
-            .withClaimant(SampleParty.builder().withRepresentative(null).individual())
+            .clearClaimants()
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .withServiceAddress(null)
@@ -45,5 +47,4 @@ public class SerializationTest {
 
         assertThat(claimData).isEqualTo(other);
     }
-
 }

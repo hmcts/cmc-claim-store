@@ -16,10 +16,10 @@ import java.util.Optional;
 
 public class PartyUtils {
 
-    private static final String INDIVIDUAL = "as an individual";
-    private static final String SOLE_TRADER_OR_SELF_EMPLOYED_PERSON = "as a sole trader or self-employed person";
-    private static final String ON_BEHALF_OF_A_COMPANY = "on behalf of a company";
-    private static final String ON_BEHALF_OF_AN_ORGANISATION = "on behalf of an organisation";
+    static final String INDIVIDUAL = "as an individual";
+    static final String SOLE_TRADER_OR_SELF_EMPLOYED_PERSON = "as a sole trader or self-employed person";
+    static final String ON_BEHALF_OF_A_COMPANY = "on behalf of a company";
+    static final String ON_BEHALF_OF_AN_ORGANISATION = "on behalf of an organisation";
 
     private PartyUtils() {
         // utility class, no instances

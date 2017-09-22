@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
@@ -34,15 +35,13 @@ public class DefendantDetailsContent {
     ) {
         final Party defendant = defendantResponse.getDefendant();
 
-        final boolean nameAmended = !providedByClaimant.getName().equals(defendant.getName());
-        final boolean addressAmended = !providedByClaimant.getAddress().equals(defendant.getAddress());
+        this.nameAmended  = !providedByClaimant.getName().equals(defendant.getName());
+        this.addressAmended = !providedByClaimant.getAddress().equals(defendant.getAddress());
         this.type = PartyUtils.getType(providedByClaimant);
         this.fullName = nameAmended ? defendant.getName() : providedByClaimant.getName();
-        this.nameAmended = nameAmended;
         this.businessName = PartyUtils.getBusinessName(defendantResponse.getDefendant()).orElse(null);
         this.contactPerson = PartyUtils.getContactPerson(defendantResponse.getDefendant()).orElse(null);
         this.address = addressAmended ? defendant.getAddress() : providedByClaimant.getAddress();
-        this.addressAmended = addressAmended;
         this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
         this.email = defendantEmail;

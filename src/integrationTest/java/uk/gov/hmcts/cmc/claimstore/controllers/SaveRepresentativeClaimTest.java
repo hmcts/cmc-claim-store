@@ -10,13 +10,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.service.notify.NotificationClientException;
@@ -89,8 +89,8 @@ public class SaveRepresentativeClaimTest extends BaseTest {
         given(userService.generatePin(anyString(), anyString()))
             .willReturn(new GeneratePinResponse(PIN, LETTER_HOLDER_ID));
 
-        given(userService.getUserDetails(anyString()))
-            .willReturn(new UserDetails(CLAIMANT_ID, "claimant@email.com"));
+        given(userService.getUserDetails(anyString())).willReturn(
+            SampleUserDetails.builder().withUserId(CLAIMANT_ID).withMail("claimant@email.com").build());
 
         given(holidaysCollection.getPublicHolidays()).willReturn(emptySet());
 
@@ -142,7 +142,8 @@ public class SaveRepresentativeClaimTest extends BaseTest {
     @Test
     public void shouldFailForInvalidClaimApplication() throws Exception {
         ClaimData withValidationFailures = SampleClaimData.builder()
-            .withClaimant(SampleParty.builder()
+            .clearClaimants()
+            .addClaimant(SampleParty.builder()
                 .withName(null)
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
@@ -158,7 +159,7 @@ public class SaveRepresentativeClaimTest extends BaseTest {
         List<String> errors = extractErrors(result);
         assertThat(errors)
             .hasSize(2)
-            .contains("claimant.name : may not be empty")
+            .contains("claimants[0].name : may not be empty")
             .contains("defendants[0].address : may not be null");
     }
 

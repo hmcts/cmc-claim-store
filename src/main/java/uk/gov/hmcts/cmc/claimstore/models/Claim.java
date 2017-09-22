@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class Claim {
     private final LocalDateTime respondedAt;
     private final ResponseData response;
     private final String defendantEmail;
-    private final Map<String, Object> countyCourtJudgment;
+    private final CountyCourtJudgment countyCourtJudgment;
     private final LocalDateTime countyCourtJudgmentRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
@@ -51,7 +50,7 @@ public class Claim {
         final LocalDateTime respondedAt,
         final ResponseData response,
         final String defendantEmail,
-        final Map<String, Object> countyCourtJudgment,
+        final CountyCourtJudgment countyCourtJudgment,
         final LocalDateTime countyCourtJudgmentRequestedAt
     ) {
         this.id = id;
@@ -133,7 +132,7 @@ public class Claim {
         return defendantEmail;
     }
 
-    public Map<String, Object> getCountyCourtJudgment() {
+    public CountyCourtJudgment getCountyCourtJudgment() {
         return countyCourtJudgment;
     }
 
@@ -142,14 +141,11 @@ public class Claim {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        Claim claim = (Claim) other;
+    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Claim claim = (Claim) o;
         return moreTimeRequested == claim.moreTimeRequested &&
             Objects.equals(id, claim.id) &&
             Objects.equals(submitterId, claim.submitterId) &&
@@ -171,10 +167,9 @@ public class Claim {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            id, submitterId, letterHolderId, defendantId, externalId, referenceNumber, claimData, createdAt, issuedOn,
-            responseDeadline, moreTimeRequested, submitterEmail, respondedAt, response, defendantEmail,
-            countyCourtJudgment, countyCourtJudgmentRequestedAt
+        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
+            claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
+            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt
         );
     }
 
@@ -194,7 +189,7 @@ public class Claim {
         private LocalDateTime respondedAt;
         private ResponseData response;
         private String defendantEmail;
-        private Map<String, Object> countyCourtJudgment;
+        private CountyCourtJudgment countyCourtJudgment;
         private LocalDateTime countyCourtJudgmentRequestedAt;
 
         public Builder setId(Long id) {
@@ -272,7 +267,7 @@ public class Claim {
             return this;
         }
 
-        public Builder setCountyCourtJudgment(Map<String, Object> countyCourtJudgment) {
+        public Builder setCountyCourtJudgment(CountyCourtJudgment countyCourtJudgment) {
             this.countyCourtJudgment = countyCourtJudgment;
             return this;
         }

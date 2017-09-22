@@ -38,13 +38,15 @@ public class DefendantResponseService {
         final String authorization
     ) {
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        defendantResponseRepository.save(claimId, defendantId, defendantEmail,
+         defendantResponseRepository.save(claimId, defendantId, defendantEmail,
             jsonMapper.toJson(responseData));
+
         final Claim claim = claimService.getClaimById(claimId);
+
 
         eventProducer.createDefendantResponseEvent(claim);
 
-        return claim;
+        return  claim ;
     }
 
 }

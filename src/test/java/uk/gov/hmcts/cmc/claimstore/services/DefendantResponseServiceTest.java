@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -58,7 +59,12 @@ public class DefendantResponseServiceTest {
         final String jsonApp = new ResourceReader().read("/defendant-response.json");
         when(mapper.toJson(eq(app))).thenReturn(jsonApp);
 
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(new UserDetails(USER_ID, DEFENDANT_EMAIL));
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(
+            new UserDetails(USER_ID, DEFENDANT_EMAIL, "Jonny", "Jones")
+        );
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(
+            SampleUserDetails.builder().withUserId(USER_ID).withMail(DEFENDANT_EMAIL).build());
+
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
 
         //when
