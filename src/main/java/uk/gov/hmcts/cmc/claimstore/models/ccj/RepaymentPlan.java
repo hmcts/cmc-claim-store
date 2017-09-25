@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.models.ccj;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.claimstore.constraints.Money;
@@ -12,14 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class RepaymentPlan {
-
-    public enum PaymentSchedule {
-        EACH_WEEK,
-        EVERY_TWO_WEEKS,
-        EVERY_MONTH
-    }
 
     @NotNull
     @Money
@@ -40,17 +32,39 @@ public class RepaymentPlan {
     @NotNull
     private final PaymentSchedule paymentSchedule;
 
-    public RepaymentPlan(final BigDecimal remainingAmount,
-                         final BigDecimal firstPayment,
-                         final BigDecimal instalmentAmount,
-                         final LocalDate firstPaymentDate,
-                         final PaymentSchedule paymentSchedule) {
+    public RepaymentPlan(
+        final BigDecimal remainingAmount,
+        final BigDecimal firstPayment,
+        final BigDecimal instalmentAmount,
+        final LocalDate firstPaymentDate,
+        final PaymentSchedule paymentSchedule
+    ) {
 
         this.remainingAmount = remainingAmount;
         this.firstPayment = firstPayment;
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
         this.paymentSchedule = paymentSchedule;
+    }
+
+    public BigDecimal getRemainingAmount() {
+        return remainingAmount;
+    }
+
+    public BigDecimal getFirstPayment() {
+        return firstPayment;
+    }
+
+    public BigDecimal getInstalmentAmount() {
+        return instalmentAmount;
+    }
+
+    public LocalDate getFirstPaymentDate() {
+        return firstPaymentDate;
+    }
+
+    public PaymentSchedule getPaymentSchedule() {
+        return paymentSchedule;
     }
 
     @Override
