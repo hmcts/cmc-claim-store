@@ -65,7 +65,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
             .perform(post("/claims/" + claimId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
-                .content(jsonMapper.toJson(new HashMap<>()))
+                .content(jsonMapper.toJson(SampleCountyCourtJudgment.builder().build()))
             );
     }
 }
