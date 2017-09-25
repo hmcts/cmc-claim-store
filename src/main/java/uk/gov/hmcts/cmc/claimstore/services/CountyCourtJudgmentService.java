@@ -7,11 +7,11 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -31,7 +31,7 @@ public class CountyCourtJudgmentService {
     }
 
     @Transactional
-    public Claim save(final long submitterId, final Map<String, Object> data, final long claimId) {
+    public Claim save(final long submitterId, final CountyCourtJudgment countyCourtJudgment, final long claimId) {
 
         Claim claim = getClaim(claimId);
 
@@ -53,7 +53,7 @@ public class CountyCourtJudgmentService {
             );
         }
 
-        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(data));
+        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
 
         Claim claimWithCCJ = getClaim(claimId);
 
