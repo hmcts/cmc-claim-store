@@ -27,7 +27,8 @@ public class NameTest {
     public void shouldBeValidationMessagesForNameLongerThanMax() {
         //given
         ClaimData claimData = SampleClaimData.builder()
-            .withClaimant(SampleParty.builder()
+            .clearClaimants()
+            .addClaimant(SampleParty.builder()
                 .withName(StringUtils.repeat('a', 256))
                 .individual())
             .build();
@@ -38,14 +39,15 @@ public class NameTest {
         //then
         assertThat(messages)
             .hasSize(1)
-            .contains("claimant.name : may not be longer than 255 characters");
+            .contains("claimants[0].name : may not be longer than 255 characters");
     }
 
     @Test
     public void shouldBeValidationMessagesForBlankName() {
         //given
         ClaimData claimData = SampleClaimData.builder()
-            .withClaimant(SampleParty.builder()
+            .clearClaimants()
+            .addClaimant(SampleParty.builder()
                 .withName("")
                 .individual())
             .build();
@@ -56,6 +58,6 @@ public class NameTest {
         //then
         assertThat(messages)
             .hasSize(1)
-            .contains("claimant.name : may not be empty");
+            .contains("claimants[0].name : may not be empty");
     }
 }
