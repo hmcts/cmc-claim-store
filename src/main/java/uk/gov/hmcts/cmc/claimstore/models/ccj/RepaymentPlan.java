@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -15,14 +16,17 @@ public class RepaymentPlan {
 
     @NotNull
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal remainingAmount;
 
     @NotNull
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal firstPayment;
 
     @NotNull
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal instalmentAmount;
 
     @NotNull

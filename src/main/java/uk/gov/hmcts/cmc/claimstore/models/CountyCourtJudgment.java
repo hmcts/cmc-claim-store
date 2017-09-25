@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -26,6 +27,7 @@ public class CountyCourtJudgment {
     private final TheirDetails defendant;
 
     @Money
+    @DecimalMin(value = "0.00")
     private BigDecimal paidAmount;
 
     @NotNull
