@@ -1,5 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
+import com.google.common.base.Throwables;
+import org.postgresql.util.PSQLException;
+import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -19,17 +22,35 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
     private static Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
 
+    private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE
+        = "duplicate key value violates unique constraint \"external_id_unique\"";
+
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> internalServiceError(Exception exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>("Internal server error",
-            new HttpHeaders(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+
+        if (exception instanceof UnableToExecuteStatementException) {
+
+            final Optional<Throwable> cause = Optional.ofNullable(Throwables.getRootCause(exception))
+                .filter(c -> c != exception);
+
+            final Optional<String> exceptionName = cause.map(c -> c.getClass().getName());
+            final Optional<String> message = cause.map(Throwable::getMessage);
+
+            if (exceptionName.isPresent() && exceptionName.get().equals(PSQLException.class.getName())
+                && message.isPresent() && message.get().contains(UNIQUE_CONSTRAINT_MESSAGE)) {
+
+                return new ResponseEntity<>("Duplicate claim for given reference", HttpStatus.CONFLICT);
+            }
+        }
+
+        return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = ForbiddenActionException.class)
