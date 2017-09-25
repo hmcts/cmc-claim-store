@@ -27,9 +27,7 @@ import java.util.Optional;
 @ControllerAdvice
 public class ResourceExceptionHandler {
     private static Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
-
-    private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE
-        = "duplicate key value violates unique constraint";
+    private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE = "duplicate key value violates unique constraint";
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> internalServiceError(Exception exception) {
