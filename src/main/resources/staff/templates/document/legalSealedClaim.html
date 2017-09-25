@@ -28,31 +28,13 @@
       font-family: "Open Sans"
     }
 
-    body {
-      counter-reset: section;
-    }
-
-    .section {
-      margin-bottom: 0px;
-    }
-
-    .section .section-heading {
-      margin-bottom: 10px;
-    }
-
-    .section .section-heading strong:before {
-      counter-increment: section;
-      content: counter(section) ". ";
-    }
-
     table {
       width: 100%;
       border-spacing: 0;
     }
 
     table td {
-      /*border-top: 1px solid #999;*/
-      padding: 5px;
+      padding: 15px 5px;
       vertical-align: top;
     }
 
@@ -100,6 +82,22 @@
         page-break-before: always;
       }
     }
+
+    .defendants-section {
+      min-height: 230px;
+    }
+
+    .claimant-section {
+      min-height: 200px;
+    }
+
+    .continuation-section {
+      min-height: 45px;
+    }
+
+    .brief-details-section {
+      min-height: 300px;
+    }
   </style>
 </head>
 <body>
@@ -135,7 +133,7 @@
   </table>
 </header>
 
-<div class="section">
+<div class="claimant-section">
   <table>
     <tr>
       <td class="two-per-row"><h4>Claimant</h4></td>
@@ -192,10 +190,10 @@
   </table>
 </div>
 
+<div class="defendants-section">
 {% set maxDefendants = 2 %}
 {% for defendant in defendants %}
 {% if loop.index < maxDefendants %}
-<div class="section">
   <table>
     <tr>
       {% if loop.length == 1 %}
@@ -256,22 +254,23 @@
       </td>
     </tr>
   </table>
-</div>
 {% endif %}
 {% endfor %}
+</div>
 
-{% if defendantsCount > 2 %}
-<div class="section">
+<div class="continuation-section">
   <table>
     <tr>
       <td colspan="4">
-        <strong>See continuation page for further defendants</strong>
+        {% if defendantsCount > 2 %}
+          <strong>See continuation page for further defendants</strong>
+        {% endif %}
       </td>
     </tr>
   </table>
 </div>
-{% endif %}
-<div class="section">
+
+<div class="brief-details-section">
   <table>
     <tr>
       <td><h4>Brief details of claim</h4></td>
@@ -282,7 +281,7 @@
   </table>
 </div>
 
-<div class="section">
+<div>
   <table>
     <tr>
       <td><h4>Particulars of claim</h4></td>
@@ -293,7 +292,7 @@
   </table>
 </div>
 
-<div class="section">
+<div>
   <table>
     <tr>
       <td><h4>Statement of value</h4></td>
@@ -310,7 +309,7 @@
   </table>
 </div>
 
-<div class="section">
+<div>
   <table>
     <tr>
       <td rowspan="3"></td>
@@ -341,7 +340,7 @@
 </div>
 
 {% if preferredCourt is defined %}
-<div class="section">
+<div>
   <table>
     <tr>
       <td><h4>Preferred County Court hearing centre</h4></td>
@@ -353,7 +352,7 @@
 </div>
 {% endif %}
 
-<div class="section">
+<div>
   <table>
     <tr>
       <td><h4>Statement of truth</h4></td>
@@ -378,7 +377,7 @@
   {% for defendant in defendants %}
   {% if loop.index >= maxDefendants %}
 
-  <div class="section">
+  <div>
     <table>
       <tr class="two-per-row">
 
