@@ -32,9 +32,6 @@ public class ResourceExceptionHandlerTest extends BaseTest {
 
     @Before
     public void setup() {
-        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
-
         UnableToExecuteStatementException exception = mock(UnableToExecuteStatementException.class);
         PSQLException psqlException = mock(PSQLException.class);
         when(exception.getCause()).thenReturn(psqlException);
@@ -68,7 +65,7 @@ public class ResourceExceptionHandlerTest extends BaseTest {
 
     private ResultActions postClaim(ClaimData claimData) throws Exception {
         return webClient
-            .perform(post("/claims/" + (Long) 123L)
+            .perform(post("/claims/" + (Long) CLAIMANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
                 .content(jsonMapper.toJson(claimData))
