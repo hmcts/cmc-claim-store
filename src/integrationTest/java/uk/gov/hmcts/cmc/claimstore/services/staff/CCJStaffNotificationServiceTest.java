@@ -1,0 +1,93 @@
+package uk.gov.hmcts.cmc.claimstore.services.staff;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.email.EmailAttachment;
+import uk.gov.hmcts.cmc.email.EmailData;
+
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class CCJStaffNotificationServiceTest extends BaseTest {
+
+    @Autowired
+    CCJStaffNotificationService service;
+
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+
+    @Captor
+    private ArgumentCaptor<String> senderArgument;
+    @Captor
+    private ArgumentCaptor<EmailData> emailDataArgument;
+
+    @Autowired
+    private StaffEmailProperties emailProperties;
+
+    private Claim claim;
+
+    @Before
+    public void setup() {
+        claim = SampleClaim.getDefault();
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .thenReturn(PDF_CONTENT);
+    }
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullClaim() {
+        service.notifyStaffCCJRequestSubmitted(null);
+    }
+
+    @Test
+    public void shouldSendEmailToExpectedRecipient() {
+        service.notifyStaffCCJRequestSubmitted(claim);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedContent() {
+        service.notifyStaffCCJRequestSubmitted(claim);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).startsWith("Civil money claims:");
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The claimant has asked for a County Court Judgment to be made against the defendant."
+        );
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
+        service.notifyStaffCCJRequestSubmitted(claim);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        EmailAttachment emailAttachment = emailDataArgument.getValue()
+            .getAttachments()
+            .get(0);
+
+        String expectedFileName = String.format(
+            CCJStaffNotificationService.FILE_NAME_FORMAT,
+            claim.getReferenceNumber()
+        );
+
+        assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
+        assertThat(emailAttachment.getFilename()).isEqualTo(expectedFileName);
+    }
+}
