@@ -85,7 +85,8 @@ public class ClaimService {
         final Optional<Long> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
         final LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
         final LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        final String submitterEmail = userService.getUserDetails(authorisation).getEmail();
+        final UserDetails userDetails = userService.getUserDetails(authorisation);
+        final String submitterEmail = userDetails.getEmail();
 
         final String claimDataString = jsonMapper.toJson(claimData);
         final String externalId = claimData.getExternalId().toString();
@@ -104,8 +105,8 @@ public class ClaimService {
         final Claim claim = getClaimById(issuedClaimId);
 
         eventProducer.createClaimIssuedEvent(claim,
-            pinResponse.map(GeneratePinResponse::getPin)
-                .orElse(null));
+            pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+            userDetails.getFullName());
 
         return claim;
     }

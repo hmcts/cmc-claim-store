@@ -1,6 +1,6 @@
 {
   "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
-  "claimant": {
+  "claimants": [{
     "type": "individual",
     "title": "Dr.",
     "name": "John Rambo",
@@ -32,7 +32,7 @@
         "postcode": "DF1 3LJ"
       }
     }
-  },
+  }],
   "amount": {
     "type": "range",
     "lowerValue": 123.56,
@@ -72,6 +72,12 @@
           "city": "Manchester",
           "postcode": "DF1 3LJ"
         }
+      },
+      "serviceAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
       }
     }
   ],
