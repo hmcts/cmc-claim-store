@@ -13,7 +13,7 @@ import javax.validation.constraints.DecimalMin;
 public class AmountRow {
     private final String reason;
 
-    @Money()
+    @Money
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
