@@ -29,29 +29,32 @@ public class ResourceExceptionHandler {
     private static Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
 
     private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE
-        = "duplicate key value violates unique constraint \"external_id_unique\"";
+        = "duplicate key value violates unique constraint";
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> internalServiceError(Exception exception) {
         logger.error(exception.getMessage(), exception);
+        return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-        if (exception instanceof UnableToExecuteStatementException) {
+    @ExceptionHandler(value = UnableToExecuteStatementException.class)
+    public ResponseEntity<Object> unableToExecuteStatement(UnableToExecuteStatementException exception) {
+        logger.error(exception.getMessage(), exception);
 
-            final Optional<Throwable> cause = Optional.ofNullable(Throwables.getRootCause(exception))
-                .filter(c -> c != exception);
+        final Optional<Throwable> cause = Optional.ofNullable(Throwables.getRootCause(exception))
+            .filter(c -> c != exception);
 
-            final Optional<String> exceptionName = cause.map(c -> c.getClass().getName());
-            final Optional<String> message = cause.map(Throwable::getMessage);
+        final Optional<String> exceptionName = cause.map(c -> c.getClass().getName());
+        final Optional<String> message = cause.map(Throwable::getMessage);
 
-            if (exceptionName.isPresent() && exceptionName.get().equals(PSQLException.class.getName())
-                && message.isPresent() && message.get().contains(UNIQUE_CONSTRAINT_MESSAGE)) {
-
-                return new ResponseEntity<>("Duplicate claim for given reference", HttpStatus.CONFLICT);
-            }
+        if (exceptionName.isPresent() && exceptionName.get().contains(PSQLException.class.getName())
+            && message.isPresent() && message.get().contains(UNIQUE_CONSTRAINT_MESSAGE)) {
+            return new ResponseEntity<>(message.get(), HttpStatus.CONFLICT);
         }
 
         return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
     @ExceptionHandler(value = ForbiddenActionException.class)
     public ResponseEntity<Object> forbidden(Exception exception) {
