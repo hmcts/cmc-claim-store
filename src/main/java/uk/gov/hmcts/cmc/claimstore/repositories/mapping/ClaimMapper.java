@@ -4,12 +4,11 @@ import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLocalDateTimeFromUTC;
@@ -34,7 +33,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at")),
-            toCountyCourtJudgment(result.getString("county_court_judgment")),
+            toNullableCountyCourtJudgment(result.getString("county_court_judgment")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at"))
         );
     }
@@ -43,11 +42,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         return jsonMapper.fromJson(input, ClaimData.class);
     }
 
-    private Map<String, Object> toCountyCourtJudgment(final String input) {
-        return input != null ? jsonMapper.fromJson(input, TempCCJClass.class) : null;
-    }
-
-    private class TempCCJClass extends HashMap<String, Object> {
-
+    private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {
+        return input != null ? jsonMapper.fromJson(input, CountyCourtJudgment.class) : null;
     }
 }

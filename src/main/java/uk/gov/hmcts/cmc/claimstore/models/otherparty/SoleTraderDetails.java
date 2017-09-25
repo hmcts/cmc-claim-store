@@ -13,6 +13,7 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
     @Size(max = 35, message = "must be at most {max} characters")
     private final String title;
 
+    @Size(max = 35, message = "may not be longer than {max} characters")
     private final String businessName;
 
     public SoleTraderDetails(
@@ -20,10 +21,11 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
         final Address address,
         final String email,
         final Representative representative,
+        final Address serviceAddress,
         final String title,
         final String businessName
     ) {
-        super(name, address, email, representative);
+        super(name, address, email, representative, serviceAddress);
         this.title = title;
         this.businessName = businessName;
     }

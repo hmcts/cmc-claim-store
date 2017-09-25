@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
@@ -33,8 +34,13 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
     private static final String AUTH_TOKEN = "it's me!";
     private static final long DEFENDANT_ID = 100L;
     private static final LocalDate RESPONSE_DEADLINE = LocalDate.now().plusDays(10);
-    private static final UserDetails USER_DETAILS = new UserDetails(DEFENDANT_ID, "myemail@example.com");
-    private static final UserDetails OTHER_USER_DETAILS = new UserDetails(SUBMITTER_ID, "other@example.com");
+
+    private static final UserDetails USER_DETAILS
+        = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail("myemail@example.com").build();
+
+    private static final UserDetails OTHER_USER_DETAILS
+        = SampleUserDetails.builder().withUserId(SUBMITTER_ID).withMail("other@example.com").build();
+
     private static final boolean MORE_TIME_ALREADY_REQUESTED = true;
     private static final boolean MORE_TIME_NOT_REQUESTED_YET = false;
 
