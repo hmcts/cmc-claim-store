@@ -42,7 +42,7 @@
       vertical-align: bottom;
     }
 
-    table, .border-bottom {
+    .border-bottom {
       border-bottom: 1px solid #999;
     }
 
@@ -83,27 +83,15 @@
       }
     }
 
-    .defendants-section {
-      min-height: 230px;
-    }
-
-    .claimant-section {
-      min-height: 200px;
-    }
-
-    .continuation-section {
-      min-height: 45px;
-    }
-
-    .brief-details-section {
-      min-height: 300px;
+    .page-one {
+      min-height: 800px;
     }
   </style>
 </head>
 <body>
 
 <header>
-  <table>
+  <table class="border-bottom">
     <tr>
       <td rowspan="5" align="left">
         <img height="150" width="150"
@@ -132,179 +120,189 @@
 
   </table>
 </header>
-{% set maxClaimants = 2 %}
-{% for claimant in claimants %}
-{% if loop.index < maxClaimants %}
-<div class="claimant-section">
-  <table>
-    <tr>
-      {% if loop.length == 1 %}
-      {% set claimantHeading = 'Claimant'%}
-      {% else %}
-      {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
-      {% endif %}
-      <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
-      <td>
-        {{ claimant.title }} {{ claimant.name }}
-        <br/>
 
-        {{ claimant.address.line1 }}
-        <br/>
-        {% if claimant.address.line2 is defined %}
-        {{ claimant.address.line2 }}
-        <br/>
+<div class="page-one">
+  <div class="border-bottom">
+  {% set maxClaimants = 2 %}
+  {% for claimant in claimants %}
+  {% if loop.index < maxClaimants %}
+    <table>
+      <tr>
+        {% if loop.length == 1 %}
+        {% set claimantHeading = 'Claimant'%}
+        {% else %}
+        {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
         {% endif %}
-        {{ claimant.address.city }}
-        <br/>
-        {{ claimant.address.postcode }}
-        {% if claimant.companiesHouseNumber is defined %}
-        <br/>
-        Companies House number: {{ claimant.companiesHouseNumber }}
-        {% endif %}
-      </td>
-      <td class="two-per-row">
-        <h4>Service address</h4>
-      </td>
-      <td>
-        {% if claimant.representative is defined %}
-        {{ claimant.representative.organisationName }}
-        <br/>
-        {{ claimant.representative.organisationAddress.line1 }}
-        <br/>
-        {% if claimant.representative.organisationAddress.line2 is defined %}
-        {{ claimant.representative.organisationAddress.line2 }}
-        <br/>
-        {% endif %}
-        {{ claimant.representative.organisationAddress.city }}
-        <br/>
-        {{ claimant.representative.organisationAddress.postcode }}
-        <br/>
-        {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
-        DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
-        <br/>
-        {% endif %}
-        {% if claimant.representative.organisationContactDetails.phone is defined %}
-        Tel: {{ claimant.representative.organisationContactDetails.phone }}
-        {% endif %}
-        {% if claimant.representative.organisationContactDetails.email is defined %}
-        <br/>
-        Email: {{ claimant.representative.organisationContactDetails.email }}
-        {% endif %}
-
-        {% endif %}
-      </td>
-    </tr>
-  </table>
-</div>
-{% endif %}
-{% endfor %}
-
-{% if claimantsCount > 2 %}
-<div class="section">
-  <table>
-    <tr>
-      <td colspan="4">
-        <strong>See continuation page for further claimants</strong>
-      </td>
-    </tr>
-  </table>
-</div>
-{% endif %}
-
-<div class="defendants-section">
-{% set maxDefendants = 2 %}
-{% for defendant in defendants %}
-{% if loop.index < maxDefendants %}
-  <table>
-    <tr>
-      {% if loop.length == 1 %}
-        {% set defendantHeading = 'Defendant'%}
-      {% else %}
-        {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
-      {% endif %}
-      <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
-      <td>
-        {{ defendant.title}} {{ defendant.name }}
-        <br/>
-        {{ defendant.address.line1 }}
-        <br/>
-        {% if defendant.address.line2 is defined %}
-        {{ defendant.address.line2 }}
-        <br/>
-        {% endif %}
-        {{ defendant.address.city }}
-        <br/>
-        {{ defendant.address.postcode }}
-        {% if defendant.companiesHouseNumber is defined %}
-        <br/>
-        Companies House number: {{ defendant.companiesHouseNumber }}
-        {% endif %}
-      </td>
-      <td class="two-per-row">
-        {% if defendant.representative is defined or defendant.serviceAddress is defined  %}
-        <h4>Service address</h4>
-        {% endif %}
-      </td>
-      <td>
-        {% if defendant.representative is defined %}
-        {{ defendant.representative.organisationName }}
-        <br/>
-        {{ defendant.representative.organisationAddress.line1 }}
-        <br/>
-        {% if defendant.representative.organisationAddress.line2 is defined %}
-        {{ defendant.representative.organisationAddress.line2 }}
-        <br/>
-        {% endif %}
-        {{ defendant.representative.organisationAddress.city }}
-        <br/>
-        {{ defendant.representative.organisationAddress.postcode }}
-        <br/>
-        {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
-        DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
-        <br/>
-        {% endif %}
-        {% if defendant.representative.organisationContactDetails.phone is defined %}
-        Tel: {{ defendant.representative.organisationContactDetails.phone }}
-        {% endif %}
-        {% if defendant.representative.organisationContactDetails.email is defined %}
-        <br/>
-        Email: {{ defendant.representative.organisationContactDetails.email }}
-        {% endif %}
-
-        {% elseif defendant.serviceAddress is defined %}
-          {{ defendant.title}} {{ defendant.name }}
+        <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
+        <td>
+          {{ claimant.title }} {{ claimant.name }}
           <br/>
-          {{ defendant.serviceAddress.line1 }}
+
+          {{ claimant.address.line1 }}
           <br/>
-          {% if defendant.serviceAddress.line2 is defined %}
-            {{ defendant.serviceAddress.line2 }}
-            <br/>
+          {% if claimant.address.line2 is defined %}
+          {{ claimant.address.line2 }}
+          <br/>
           {% endif %}
-          {{ defendant.serviceAddress.city }}
+          {{ claimant.address.city }}
           <br/>
-          {{ defendant.serviceAddress.postcode }}
-        {% endif %}
-      </td>
-    </tr>
-  </table>
-{% endif %}
-{% endfor %}
-</div>
+          {{ claimant.address.postcode }}
+          {% if claimant.companiesHouseNumber is defined %}
+          <br/>
+          Companies House number: {{ claimant.companiesHouseNumber }}
+          {% endif %}
+        </td>
+        <td class="two-per-row">
+          <h4>Service address</h4>
+        </td>
+        <td>
+          {% if claimant.representative is defined %}
+          {{ claimant.representative.organisationName }}
+          <br/>
+          {{ claimant.representative.organisationAddress.line1 }}
+          <br/>
+          {% if claimant.representative.organisationAddress.line2 is defined %}
+          {{ claimant.representative.organisationAddress.line2 }}
+          <br/>
+          {% endif %}
+          {{ claimant.representative.organisationAddress.city }}
+          <br/>
+          {{ claimant.representative.organisationAddress.postcode }}
+          <br/>
+          {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
+          DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
+          <br/>
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.phone is defined %}
+          Tel: {{ claimant.representative.organisationContactDetails.phone }}
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.email is defined %}
+          <br/>
+          Email: {{ claimant.representative.organisationContactDetails.email }}
+          {% endif %}
 
-<div class="continuation-section">
-  <table>
-    <tr>
-      <td colspan="4">
-        {% if defendantsCount > 2 %}
-          <strong>See continuation page for further defendants</strong>
-        {% endif %}
-      </td>
-    </tr>
-  </table>
-</div>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  {% endif %}
+  {% endfor %}
+  </div>
 
-<div class="brief-details-section">
-  <table>
+  {% if claimantsCount > 2 %}
+    <div class="border-bottom">
+      <table>
+        <tr>
+          <td colspan="4">
+              <strong>See continuation page for further claimants</strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+  {% endif %}
+
+  {% if externalReferenceNumber is defined %}
+    <table class="border-bottom">
+      <tr>
+        <td class="two-per-row"><h4>Reference</h4></td>
+        <td>{{ externalReferenceNumber }}</td>
+      </tr>
+    </table>
+  {% endif %}
+
+  <div class="border-bottom">
+    {% set maxDefendants = 2 %}
+    {% for defendant in defendants %}
+    {% if loop.index < maxDefendants %}
+      <table>
+        <tr>
+          {% if loop.length == 1 %}
+            {% set defendantHeading = 'Defendant'%}
+          {% else %}
+            {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
+          {% endif %}
+          <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
+          <td>
+            {{ defendant.title}} {{ defendant.name }}
+            <br/>
+            {{ defendant.address.line1 }}
+            <br/>
+            {% if defendant.address.line2 is defined %}
+            {{ defendant.address.line2 }}
+            <br/>
+            {% endif %}
+            {{ defendant.address.city }}
+            <br/>
+            {{ defendant.address.postcode }}
+            {% if defendant.companiesHouseNumber is defined %}
+            <br/>
+            Companies House number: {{ defendant.companiesHouseNumber }}
+            {% endif %}
+          </td>
+          <td class="two-per-row">
+            {% if defendant.representative is defined or defendant.serviceAddress is defined  %}
+            <h4>Service address</h4>
+            {% endif %}
+          </td>
+          <td>
+            {% if defendant.representative is defined %}
+            {{ defendant.representative.organisationName }}
+            <br/>
+            {{ defendant.representative.organisationAddress.line1 }}
+            <br/>
+            {% if defendant.representative.organisationAddress.line2 is defined %}
+            {{ defendant.representative.organisationAddress.line2 }}
+            <br/>
+            {% endif %}
+            {{ defendant.representative.organisationAddress.city }}
+            <br/>
+            {{ defendant.representative.organisationAddress.postcode }}
+            <br/>
+            {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
+            DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
+            <br/>
+            {% endif %}
+            {% if defendant.representative.organisationContactDetails.phone is defined %}
+            Tel: {{ defendant.representative.organisationContactDetails.phone }}
+            {% endif %}
+            {% if defendant.representative.organisationContactDetails.email is defined %}
+            <br/>
+            Email: {{ defendant.representative.organisationContactDetails.email }}
+            {% endif %}
+
+            {% elseif defendant.serviceAddress is defined %}
+              {{ defendant.title}} {{ defendant.name }}
+              <br/>
+              {{ defendant.serviceAddress.line1 }}
+              <br/>
+              {% if defendant.serviceAddress.line2 is defined %}
+                {{ defendant.serviceAddress.line2 }}
+                <br/>
+              {% endif %}
+              {{ defendant.serviceAddress.city }}
+              <br/>
+              {{ defendant.serviceAddress.postcode }}
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if defendantsCount > 2 %}
+    <div class="border-bottom">
+      <table>
+        <tr>
+          <td colspan="4">
+              <strong>See continuation page for further defendants</strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+  {% endif %}
+
+  <table class="border-bottom">
     <tr>
       <td><h4>Brief details of claim</h4></td>
       <td colspan="3">
@@ -312,10 +310,7 @@
       </td>
     </tr>
   </table>
-</div>
-
-<div>
-  <table>
+  <table class="border-bottom">
     <tr>
       <td><h4>Particulars of claim</h4></td>
       <td>
@@ -325,25 +320,22 @@
   </table>
 </div>
 
-<div>
-  <table>
+  <table class="border-bottom">
     <tr>
       <td><h4>Statement of value</h4></td>
       <td>
         {% if statementOfValue.personalInjury is not empty %}
-        <span>{{ statementOfValue.personalInjury }} </span> <br/><br/>
+          <span>{{ statementOfValue.personalInjury }} </span> <br/><br/>
         {% endif %}
         {% if statementOfValue.housingDisrepair is not empty %}
-        <span>{{ statementOfValue.housingDisrepair }} </span> <br/> <br/>
+          <span>{{ statementOfValue.housingDisrepair }} </span> <br/> <br/>
         {% endif %}
         <span>{{ statementOfValue.claimValue }} </span>
       </td>
     </tr>
   </table>
-</div>
 
-<div>
-  <table>
+  <table class="border-bottom">
     <tr>
       <td rowspan="3"></td>
       <td class="border-bottom">
@@ -370,11 +362,9 @@
       </td>
     </tr>
   </table>
-</div>
 
 {% if preferredCourt is defined %}
-<div>
-  <table>
+  <table class="border-bottom">
     <tr>
       <td><h4>Preferred County Court hearing centre</h4></td>
       <td class="align-bottom">
@@ -382,11 +372,9 @@
       </td>
     </tr>
   </table>
-</div>
 {% endif %}
 
-<div>
-  <table>
+  <table class="border-bottom">
     <tr>
       <td><h4>Statement of truth</h4></td>
       <td>
@@ -401,7 +389,6 @@
       </td>
     </tr>
   </table>
-</div>
 
 {% if claimantsCount > 2 or defendantsCount > 2 %}
 <div class="new-page">
@@ -410,8 +397,7 @@
   {% for claimant in claimants %}
   {% if loop.index >= maxClaimants %}
 
-  <div>
-    <table>
+    <table class="border-bottom">
       <tr class="two-per-row">
 
         {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
@@ -467,7 +453,6 @@
         </td>
       </tr>
     </table>
-  </div>
   {% endif %}
   {% endfor %}
   {% endif %}
@@ -477,8 +462,7 @@
   {% for defendant in defendants %}
   {% if loop.index >= maxDefendants %}
 
-  <div>
-    <table>
+    <table class="border-bottom">
       <tr class="two-per-row">
 
         {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
@@ -546,7 +530,6 @@
         </td>
       </tr>
     </table>
-  </div>
   {% endif %}
   {% endfor %}
   {% endif %}
