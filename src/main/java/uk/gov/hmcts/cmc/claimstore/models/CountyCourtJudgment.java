@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -26,7 +27,8 @@ public class CountyCourtJudgment {
     private final TheirDetails defendant;
 
     @Money
-    private BigDecimal paidAmount;
+    @DecimalMin(value = "0.00")
+    private final BigDecimal paidAmount;
 
     @NotNull
     private final PaymentOption paymentOption;
@@ -41,12 +43,12 @@ public class CountyCourtJudgment {
     private final StatementOfTruth statementOfTruth;
 
     public CountyCourtJudgment(
-        TheirDetails defendant,
-        PaymentOption paymentOption,
-        BigDecimal paidAmount,
-        RepaymentPlan repaymentPlan,
-        LocalDate payBySetDate,
-        StatementOfTruth statementOfTruth
+        final TheirDetails defendant,
+        final PaymentOption paymentOption,
+        final BigDecimal paidAmount,
+        final RepaymentPlan repaymentPlan,
+        final LocalDate payBySetDate,
+        final StatementOfTruth statementOfTruth
     ) {
         this.defendant = defendant;
         this.paymentOption = paymentOption;
