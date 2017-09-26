@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Api
@@ -39,7 +40,7 @@ public class CountyCourtJudgmentController {
     @ApiOperation("Save County Court Judgment")
     public Claim save(
         @PathVariable("claimId") final Long claimId,
-        @NotNull @RequestBody final CountyCourtJudgment countyCourtJudgment,
+        @NotNull @RequestBody @Valid final CountyCourtJudgment countyCourtJudgment,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
     ) {
         final long submitterId = userService.getUserDetails(authorisation).getId();

@@ -6,13 +6,15 @@ import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import javax.validation.constraints.DecimalMin;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @ClaimantAmount
 public class AmountRow {
     private final String reason;
 
-    @Money()
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
     public AmountRow(final String reason, final BigDecimal amount) {

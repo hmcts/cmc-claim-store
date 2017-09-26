@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
@@ -13,10 +14,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 public class AmountRange implements Amount {
 
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal lowerValue;
 
     @NotNull
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal higherValue;
 
     public AmountRange(final BigDecimal lowerValue, final BigDecimal higherValue) {

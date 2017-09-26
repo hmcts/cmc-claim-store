@@ -47,10 +47,10 @@ public abstract class TheirDetails implements NamedParty {
     private final String email;
 
     @Valid
-    public final Representative representative;
+    private final Representative representative;
 
     @Valid
-    public final Address serviceAddress;
+    private final Address serviceAddress;
 
     public TheirDetails(
         final String name,
