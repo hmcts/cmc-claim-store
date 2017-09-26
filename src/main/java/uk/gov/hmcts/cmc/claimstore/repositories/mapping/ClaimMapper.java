@@ -5,6 +5,7 @@ import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 
 import java.sql.ResultSet;
@@ -12,7 +13,6 @@ import java.sql.SQLException;
 
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLocalDateTimeFromUTC;
-import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLong;
 
 public class ClaimMapper implements ResultSetMapper<Claim> {
     private final JsonMapper jsonMapper = JsonMapperFactory.create();
@@ -33,6 +33,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at")),
+            toNullableResponseData(result.getString("response")),
+            result.getString("defendant_email"),
             toNullableCountyCourtJudgment(result.getString("county_court_judgment")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at"))
         );
@@ -40,6 +42,14 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
 
     private ClaimData toClaimData(final String input) {
         return jsonMapper.fromJson(input, ClaimData.class);
+    }
+
+    private ResponseData toNullableResponseData(final String input) {
+        return input != null ? jsonMapper.fromJson(input, ResponseData.class) : null;
+    }
+
+    private Long toNullableLong(final Integer input) {
+        return input != null ? input.longValue() : null;
     }
 
     private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {
