@@ -189,6 +189,15 @@
   {% endfor %}
   </div>
 
+  {% if externalReferenceNumber is defined %}
+  <table class="border-bottom">
+    <tr>
+      <td class="two-per-row"><h4>Claimant solicitor’s reference</h4></td>
+      <td>{{ externalReferenceNumber }}</td>
+    </tr>
+  </table>
+  {% endif %}
+
   {% if claimantsCount > 2 %}
     <div class="border-bottom">
       <table>
@@ -199,15 +208,6 @@
         </tr>
       </table>
     </div>
-  {% endif %}
-
-  {% if externalReferenceNumber is defined %}
-    <table class="border-bottom">
-      <tr>
-        <td class="two-per-row"><h4>Claimant solicitor’s reference</h4></td>
-        <td>{{ externalReferenceNumber }}</td>
-      </tr>
-    </table>
   {% endif %}
 
   <div class="border-bottom">
