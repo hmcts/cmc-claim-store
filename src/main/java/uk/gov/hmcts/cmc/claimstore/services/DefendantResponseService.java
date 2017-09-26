@@ -3,16 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
-
-import java.util.List;
-
-import static java.lang.String.format;
 
 @Service
 public class DefendantResponseService {
@@ -36,36 +31,32 @@ public class DefendantResponseService {
         this.userService = userService;
     }
 
-    public DefendantResponse getById(final long responseId) {
-        final String message = format("Defendant response for %s expected to have been saved, but wasn't", responseId);
-        return defendantResponseRepository.getById(responseId).orElseThrow(() -> new NotFoundException(message));
-    }
-
-    public List<DefendantResponse> getByDefendantId(final long defendantId) {
-        return defendantResponseRepository.getByDefendantId(defendantId);
-    }
-
     @Transactional
-    public DefendantResponse save(
+    public Claim save(
         final long claimId,
         final long defendantId,
         final ResponseData responseData,
         final String authorization
     ) {
-        final String defendantEmail = userService.getUserDetails(authorization).getEmail();
+        final Claim claim = claimService.getClaimById(claimId);
 
-        final Long responseId = defendantResponseRepository.save(claimId, defendantId, defendantEmail,
+        if (isResponseAlreadySubmitted(claim)) {
+            throw new ForbiddenActionException("Response for the claim " + claimId + " was already submitted");
+        }
+
+        final String defendantEmail = userService.getUserDetails(authorization).getEmail();
+        defendantResponseRepository.save(claimId, defendantId, defendantEmail,
             jsonMapper.toJson(responseData));
 
-        final Claim claim = claimService.getClaimById(claimId);
-        final DefendantResponse response = getById(responseId);
-        eventProducer.createDefendantResponseEvent(claim, response);
-        return response;
+        final Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
+
+        eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
+
+        return claimAfterSavingResponse;
     }
 
-    public DefendantResponse getByClaimId(long claimId) {
-        return defendantResponseRepository.getByClaimId(claimId)
-            .orElseThrow(() -> new NotFoundException("Couldn't find defendant response for claim ID: " + claimId));
+    private boolean isResponseAlreadySubmitted(final Claim claim) {
+        return null != claim.getRespondedAt();
     }
 
 }

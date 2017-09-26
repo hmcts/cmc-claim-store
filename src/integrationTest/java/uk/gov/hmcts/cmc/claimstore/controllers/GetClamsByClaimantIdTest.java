@@ -25,14 +25,14 @@ public class GetClamsByClaimantIdTest extends BaseTest {
         long claimantId = 1L;
 
         given(claimRepository.getBySubmitterId(claimantId))
-            .willReturn(Lists.newArrayList(newClaim(1L, claimantId)));
+            .willReturn(Lists.newArrayList(newClaim(claimantId)));
 
         MvcResult result = webClient
             .perform(get("/claims/claimant/" + claimantId))
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserialize(result)).containsExactly(newClaim(1L, claimantId));
+        assertThat(deserialize(result)).containsExactly(newClaim(claimantId));
     }
 
     @Test
@@ -71,10 +71,11 @@ public class GetClamsByClaimantIdTest extends BaseTest {
             .andReturn();
     }
 
-    private Claim newClaim(Long id, Long claimantId) {
-        return new Claim(id, claimantId, 3L, 1L, "external-id",
-            "000MC001", null,null, null, null,
-            false, SUBMITTER_EMAIL, null, null, null);
+    private Claim newClaim(Long claimantId) {
+        return new Claim.Builder().setId(1L).setSubmitterId(claimantId).setLetterHolderId(3L).setDefendantId(1L)
+            .setExternalId("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d").setReferenceNumber("000MC001")
+            .setSubmitterEmail(SUBMITTER_EMAIL)
+            .build();
     }
 
     private List<Claim> deserialize(MvcResult result) throws UnsupportedEncodingException {

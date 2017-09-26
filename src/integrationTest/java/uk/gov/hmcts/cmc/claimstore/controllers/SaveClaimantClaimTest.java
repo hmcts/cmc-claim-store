@@ -58,7 +58,7 @@ public class SaveClaimantClaimTest extends BaseTest {
         RESPONSE_DEADLINE,
         DEADLINE_NOT_UPDATED,
         SUBMITTER_EMAIL,
-        null, null, null);
+        null, null, null, null, null);
 
     @Before
     public void setup() {
