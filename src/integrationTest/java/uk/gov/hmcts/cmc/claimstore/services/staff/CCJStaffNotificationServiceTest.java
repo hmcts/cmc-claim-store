@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -44,6 +43,7 @@ public class CCJStaffNotificationServiceTest extends BaseTest {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
+
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
         service.notifyStaffCCJRequestSubmitted(null);

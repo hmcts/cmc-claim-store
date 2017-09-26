@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class SampleTheirDetails {
     private Representative representative;
     private String companiesHouseNumber;
     private Address serviceAddress;
+    private LocalDate dateOfBirth;
 
     public static SampleTheirDetails builder() {
         return new SampleTheirDetails();
@@ -73,19 +75,24 @@ public class SampleTheirDetails {
         return this;
     }
 
+    public SampleTheirDetails withDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+        return this;
+    }
+
     public TheirDetails partyDetails() {
-        return new IndividualDetails(name, address, email, representative, serviceAddress, title);
+        return new IndividualDetails(name, address, email, representative, serviceAddress, title, dateOfBirth);
     }
 
     public IndividualDetails individualDetails() {
-        return new IndividualDetails(name, address, email, representative, serviceAddress, title);
+        return new IndividualDetails(name, address, email, representative, serviceAddress, title, dateOfBirth);
     }
 
     public List<TheirDetails> individualDetails(int count) {
         List<TheirDetails> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new IndividualDetails(name, address, email, representative, serviceAddress, title)
+                new IndividualDetails(name, address, email, representative, serviceAddress, title, dateOfBirth)
             );
         }
         return individualDetailsList;

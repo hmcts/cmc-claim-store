@@ -36,6 +36,7 @@ public class LegalSealedClaimContentProvider {
         content.put("defendants", claim.getClaimData().getDefendants());
         content.put("defendantsCount", claim.getClaimData().getDefendants().size());
         content.put("claimSummary", claim.getClaimData().getReason());
+        content.put("externalReferenceNumber", claim.getClaimData().getExternalReferenceNumber());
 
         final Representative legalRepresentative = claim.getClaimData().getClaimants().stream()
             .findFirst().orElseThrow(IllegalArgumentException::new)

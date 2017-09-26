@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.models.ccj;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.claimstore.constraints.Money;
@@ -8,29 +7,26 @@ import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class RepaymentPlan {
-
-    public enum PaymentSchedule {
-        EACH_WEEK,
-        EVERY_TWO_WEEKS,
-        EVERY_MONTH
-    }
 
     @NotNull
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal remainingAmount;
 
     @NotNull
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal firstPayment;
 
     @NotNull
     @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal instalmentAmount;
 
     @NotNull
@@ -40,11 +36,13 @@ public class RepaymentPlan {
     @NotNull
     private final PaymentSchedule paymentSchedule;
 
-    public RepaymentPlan(final BigDecimal remainingAmount,
-                         final BigDecimal firstPayment,
-                         final BigDecimal instalmentAmount,
-                         final LocalDate firstPaymentDate,
-                         final PaymentSchedule paymentSchedule) {
+    public RepaymentPlan(
+        final BigDecimal remainingAmount,
+        final BigDecimal firstPayment,
+        final BigDecimal instalmentAmount,
+        final LocalDate firstPaymentDate,
+        final PaymentSchedule paymentSchedule
+    ) {
 
         this.remainingAmount = remainingAmount;
         this.firstPayment = firstPayment;
