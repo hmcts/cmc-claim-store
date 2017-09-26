@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleDefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 
@@ -35,7 +33,6 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseTest {
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     private Claim claim;
-    private DefendantResponse response;
 
     @Autowired
     private StaffEmailProperties emailProperties;
@@ -45,15 +42,14 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseTest {
 
     @Before
     public void beforeEachTest() {
-        claim = SampleClaim.getDefault();
-        response = SampleDefendantResponse.getDefault();
+        claim = SampleClaim.getWithDefaultResponse();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
 
     @Test
     public void shouldSendEmailToExpectedRecipient() {
-        service.notifyStaffDefenceSubmittedFor(claim, response, DEFENDANT_EMAIL);
+        service.notifyStaffDefenceSubmittedFor(claim, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -62,7 +58,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseTest {
 
     @Test
     public void shouldSendEmailWithExpectedContent() {
-        service.notifyStaffDefenceSubmittedFor(claim, response, DEFENDANT_EMAIL);
+        service.notifyStaffDefenceSubmittedFor(claim, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -76,7 +72,7 @@ public class DefendantResponseStaffNotificationServiceTest extends BaseTest {
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        service.notifyStaffDefenceSubmittedFor(claim, response, DEFENDANT_EMAIL);
+        service.notifyStaffDefenceSubmittedFor(claim, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 

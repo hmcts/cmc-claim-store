@@ -20,7 +20,6 @@ public class DefendantResponseStaffNotificationHandler {
     public void onDefendantResponseSubmitted(final DefendantResponseEvent event) {
         defendantResponseStaffNotificationService.notifyStaffDefenceSubmittedFor(
             event.getClaim(),
-            event.getDefendantResponse(),
             event.getUserEmail()
         );
     }

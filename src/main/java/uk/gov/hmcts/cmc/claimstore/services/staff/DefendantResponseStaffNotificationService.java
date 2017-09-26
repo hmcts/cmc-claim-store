@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -43,13 +42,12 @@ public class DefendantResponseStaffNotificationService {
 
     public void notifyStaffDefenceSubmittedFor(
         Claim claim,
-        DefendantResponse defendantResponse,
         String defendantEmail
     ) {
         EmailContent emailContent = emailContentProvider.createContent(
-            wrapInMap(claim, defendantResponse, defendantEmail)
+            wrapInMap(claim, defendantEmail)
         );
-        byte[] defendantResponseCopy = defendantResponseCopyService.createPdf(claim, defendantResponse);
+        byte[] defendantResponseCopy = defendantResponseCopyService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
@@ -66,14 +64,17 @@ public class DefendantResponseStaffNotificationService {
 
     public static Map<String, Object> wrapInMap(
         Claim claim,
-        DefendantResponse defendantResponse,
         String defendantEmail
     ) {
         Map<String, Object> map = new HashMap<>();
         map.put("claim", claim);
-        map.put("response", defendantResponse);
+        map.put("response", claim.getResponse().orElseThrow(IllegalStateException::new));
         map.put("defendantEmail", defendantEmail);
-        map.put("defendantMobilePhone", defendantResponse.getResponse().getDefendant().getMobilePhone().orElse(null));
+        map.put("defendantMobilePhone", claim.getResponse()
+            .orElseThrow(IllegalStateException::new)
+            .getDefendant()
+            .getMobilePhone()
+            .orElse(null));
         return map;
     }
 
