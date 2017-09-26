@@ -43,6 +43,7 @@ public class CCJStaffNotificationServiceTest extends BaseTest {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
+
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
         service.notifyStaffCCJRequestSubmitted(null);
