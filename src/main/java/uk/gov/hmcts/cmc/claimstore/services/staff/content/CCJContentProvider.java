@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class CCJContentProvider {
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
 
-        Map<String, Object> map = new HashMap<>();
+
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
         totalAmountComponents.add(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount());
         totalAmountComponents.add(claim.getClaimData().getPayment().getAmountInPounds());
@@ -47,7 +47,7 @@ public class CCJContentProvider {
             );
             totalAmountComponents.add(interestContent.getAmountUpToNowRealValue());
         }
-        map.put("ccj",
+        return Collections.singletonMap("ccj",
             new CCJContent(
                 claim,
                 interestContent,
@@ -56,9 +56,6 @@ public class CCJContentProvider {
                         .filter(Objects::nonNull)
                         .reduce(ZERO, BigDecimal::add)
                 )
-            )
-        );
-
-        return map;
+            ));
     }
 }

@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 
 @Api
@@ -27,17 +28,20 @@ public class DocumentsController {
     private final DefendantResponseService defendantResponseService;
     private final DefendantResponseCopyService defendantResponseCopyService;
     private final LegalSealedClaimService legalSealedClaimService;
+    private final CountyCourtJudgmentService countyCourtJudgmentService;
 
     public DocumentsController(
-        ClaimService claimService,
-        DefendantResponseService defendantResponseService,
-        DefendantResponseCopyService defendantResponseCopyService,
-        LegalSealedClaimService legalSealedClaimService
+        final ClaimService claimService,
+        final DefendantResponseService defendantResponseService,
+        final DefendantResponseCopyService defendantResponseCopyService,
+        final LegalSealedClaimService legalSealedClaimService,
+        final CountyCourtJudgmentService countyCourtJudgmentService
     ) {
         this.claimService = claimService;
         this.defendantResponseService = defendantResponseService;
         this.defendantResponseCopyService = defendantResponseCopyService;
         this.legalSealedClaimService = legalSealedClaimService;
+        this.countyCourtJudgmentService = countyCourtJudgmentService;
     }
 
     @ApiOperation("Returns a Defendant Response copy for a given claim external id")
@@ -69,6 +73,23 @@ public class DocumentsController {
     ) {
         Claim claim = claimService.getClaimByExternalId(claimExternalId);
         byte[] pdfDocument = legalSealedClaimService.createPdf(claim);
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
+
+    @ApiOperation("Returns a County Court Judgement for a given claim external id")
+    @GetMapping(
+        value = "/ccj/{claimExternalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> ccj(
+        @ApiParam("Claim external id")
+        @PathVariable("claimExternalId") @NotBlank String claimExternalId
+    ) {
+        Claim claim = claimService.getClaimByExternalId(claimExternalId);
+        byte[] pdfDocument = countyCourtJudgmentService.createPdf(claim);
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -10,8 +11,12 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJContentProvider;
+import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.time.LocalDate;
+
+import static java.util.Objects.requireNonNull;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -19,15 +24,26 @@ public class CountyCourtJudgmentService {
     private final ClaimRepository claimRepository;
     private final JsonMapper jsonMapper;
     private final EventProducer eventProducer;
+    private final PDFServiceClient pdfServiceClient;
+    private final StaffEmailTemplates emailTemplates;
+    private final CCJContentProvider ccjContentProvider;
+
 
     @Autowired
     public CountyCourtJudgmentService(
         ClaimRepository claimRepository,
         JsonMapper jsonMapper,
-        EventProducer eventProducer) {
+        EventProducer eventProducer,
+        PDFServiceClient pdfServiceClient,
+        StaffEmailTemplates emailTemplates,
+        CCJContentProvider ccjContentProvider
+    ) {
         this.claimRepository = claimRepository;
         this.jsonMapper = jsonMapper;
         this.eventProducer = eventProducer;
+        this.pdfServiceClient = pdfServiceClient;
+        this.emailTemplates = emailTemplates;
+        this.ccjContentProvider = ccjContentProvider;
     }
 
     @Transactional
@@ -81,5 +97,13 @@ public class CountyCourtJudgmentService {
     private Claim getClaim(final long claimId) {
         return claimRepository.getById(claimId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
+    }
+
+    public byte[] createPdf(Claim claim) {
+        requireNonNull(claim);
+        return pdfServiceClient.generateFromHtml(
+            emailTemplates.getCountyCourtJudgment(),
+            this.ccjContentProvider.createContent(claim)
+        );
     }
 }

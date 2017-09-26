@@ -62,79 +62,27 @@ public class CCJContent {
         this.ccjRequestAt = formatDate(claim.getCountyCourtJudgmentRequestedAt());
         this.paymentRepaymentOption = claim.getCountyCourtJudgment().getPaymentOption().name();
         this.claimFees = formatMoney(claim.getClaimData().getFeesPaidInPound());
-        this.claimAmount = formatMoney(((AmountBreakDown)claim.getClaimData().getAmount()).getTotalAmount());
+        this.claimAmount = formatMoney(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount());
 
         this.interest = interest;
         this.totalAmountWithInterest = totalAmountWithInterest;
 
-        if(claim.getCountyCourtJudgment().getPaymentOption() == PaymentOption.IMMEDIATELY) {
+        if (claim.getCountyCourtJudgment().getPaymentOption() == PaymentOption.IMMEDIATELY) {
             LocalDateTime ccjRequestAt = claim.getCountyCourtJudgmentRequestedAt();
             LocalDateTime adjustedDate = ccjRequestAt.plusDays(28);
             this.paymentByDate = formatDate(adjustedDate);
 
-        } else if(claim.getCountyCourtJudgment().getPaymentOption() == PaymentOption.INSTALMENTS) {
+        } else if (claim.getCountyCourtJudgment().getPaymentOption() == PaymentOption.INSTALMENTS) {
             claim.getCountyCourtJudgment().getRepaymentPlan().ifPresent(rp -> {
                 this.instalmentsAmount = formatMoney(rp.getInstalmentAmount());
                 this.firstPaymentDate = formatDate(rp.getFirstPaymentDate());
             });
-        } else if(claim.getCountyCourtJudgment().getPaymentOption() == PaymentOption.FULL_BY_SPECIFIED_DATE) {
+        } else if (claim.getCountyCourtJudgment().getPaymentOption() == PaymentOption.FULL_BY_SPECIFIED_DATE) {
             this.requestedPaymentDate = formatDate(claim.getCountyCourtJudgmentRequestedAt());
         }
     }
 
     public String getClaimantName() {
         return claimantName;
-    }
-
-    public String getClaimantType() {
-        return claimantType;
-    }
-
-    public String getDefendantName() {
-        return defendantName;
-    }
-
-    public String getDefendantRole() {
-        return defendantRole;
-    }
-
-    public Address getDefendantAddress() {
-        return defendantAddress;
-    }
-
-    public String getIssueDate() {
-        return issueDate;
-    }
-
-    public String getCcjRequestAt() {
-        return ccjRequestAt;
-    }
-
-    public String getPaymentRepaymentOption() {
-        return paymentRepaymentOption;
-    }
-
-    public String getPaymentByDate() {
-        return paymentByDate;
-    }
-
-    public String getRequestedPaymentDate() {
-        return requestedPaymentDate;
-    }
-
-    public String getInstalmentsAmount() {
-        return instalmentsAmount;
-    }
-
-    public String getFirstPaymentDate() {
-        return firstPaymentDate;
-    }
-
-    public String getClaimFees() {
-        return claimFees;
-    }
-
-    public String getClaimAmount() {
-        return claimAmount;
     }
 }
