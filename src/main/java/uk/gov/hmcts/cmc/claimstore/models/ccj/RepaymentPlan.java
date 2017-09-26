@@ -53,6 +53,26 @@ public class RepaymentPlan {
         this.paymentSchedule = paymentSchedule;
     }
 
+    public BigDecimal getRemainingAmount() {
+        return remainingAmount;
+    }
+
+    public BigDecimal getFirstPayment() {
+        return firstPayment;
+    }
+
+    public BigDecimal getInstalmentAmount() {
+        return instalmentAmount;
+    }
+
+    public LocalDate getFirstPaymentDate() {
+        return firstPaymentDate;
+    }
+
+    public PaymentSchedule getPaymentSchedule() {
+        return paymentSchedule;
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object other) {

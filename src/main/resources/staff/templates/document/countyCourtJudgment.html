@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title>{{ claimReferenceNumber }}</title>
+  <title>{{ ccj.claimReferenceNumber }}</title>
   <style>
     @page {
       size: 8.5in 11in;
@@ -61,7 +61,8 @@
     }
 
     table, .border-bottom {
-      border-bottom: 1px solid #999;
+      border: none;
+      margin-bottom: 10px;
     }
 
     td:first-child {
@@ -120,440 +121,128 @@
       <td align="right"><p>In the County Court Money Claims Centre Online Court</p></td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><h3><strong>Claim number: </strong> {{ claimReferenceNumber }}</h3></td>
+      <td colspan="2" align="right"><h3><strong>Claim number: </strong> {{ ccj.claimReferenceNumber }}</h3></td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><strong>Claimant: </strong> {{ feeAccountNumber }}</td>
+      <td colspan="2" align="right"><strong>Claimant: </strong> {{ ccj.claimant.name }}</td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><strong>Defendant: </strong> {{ claimSubmittedOn }}</td>
+      <td colspan="2" align="right"><strong>Defendant: </strong> {{ ccj.defendant.name }}</td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><strong>Date: </strong> {{ claimIssuedOn }}</td>
+      <td colspan="2" align="right"><strong>Date: </strong> {{ ccj.claimIssuedOn }}</td>
     </tr>
-
+    <br/>
+    <tr>
+      <td colspan="2" align="left">{{ ccj.defendant.name }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="left">{{ ccj.defendant.address.line1 }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="left">{{ ccj.defendant.address.line2 }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="left">{{ ccj.defendant.address.city }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" align="left">{{ ccj.defendant.address.postcode }}</td>
+    </tr>
   </table>
 </header>
-{% set maxClaimants = 2 %}
-{% for claimant in claimants %}
-{% if loop.index < maxClaimants %}
-<div class="section">
-  <table>
-    <tr>
-      {% if loop.length == 1 %}
-      {% set claimantHeading = 'Claimant'%}
-      {% else %}
-      {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
-      {% endif %}
-      <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
-      <td>
-        {{ claimant.title }} {{ claimant.name }}
-        <br/>
 
-        {{ claimant.address.line1 }}
-        <br/>
-        {% if claimant.address.line2 is defined %}
-        {{ claimant.address.line2 }}
-        <br/>
-        {% endif %}
-        {{ claimant.address.city }}
-        <br/>
-        {{ claimant.address.postcode }}
-        {% if claimant.companiesHouseNumber is defined %}
-        <br/>
-        Companies House number: {{ claimant.companiesHouseNumber }}
-        {% endif %}
-      </td>
-      <td class="two-per-row">
-        <h4>Service address</h4>
-      </td>
-      <td>
-        {% if claimant.representative is defined %}
-        {{ claimant.representative.organisationName }}
-        <br/>
-        {{ claimant.representative.organisationAddress.line1 }}
-        <br/>
-        {% if claimant.representative.organisationAddress.line2 is defined %}
-        {{ claimant.representative.organisationAddress.line2 }}
-        <br/>
-        {% endif %}
-        {{ claimant.representative.organisationAddress.city }}
-        <br/>
-        {{ claimant.representative.organisationAddress.postcode }}
-        <br/>
-        {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
-        DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
-        <br/>
-        {% endif %}
-        {% if claimant.representative.organisationContactDetails.phone is defined %}
-        Tel: {{ claimant.representative.organisationContactDetails.phone }}
-        {% endif %}
-        {% if claimant.representative.organisationContactDetails.email is defined %}
-        <br/>
-        Email: {{ claimant.representative.organisationContactDetails.email }}
-        {% endif %}
-
-        {% endif %}
-      </td>
-    </tr>
-  </table>
+<div>
+  <p>Dear {{ ccj.defendantName }}</p>
 </div>
-{% endif %}
-{% endfor %}
-
-{% if claimantsCount > 2 %}
-<div class="section">
-  <table>
-    <tr>
-      <td colspan="4">
-        <strong>See continuation page for further claimants</strong>
-      </td>
-    </tr>
-  </table>
-</div>
-{% endif %}
-
-{% set maxDefendants = 2 %}
-{% for defendant in defendants %}
-{% if loop.index < maxDefendants %}
-<div class="section">
-  <table>
-    <tr>
-      {% if loop.length == 1 %}
-      {% set defendantHeading = 'Defendant'%}
-      {% else %}
-      {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
-      {% endif %}
-      <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
-      <td>
-        {{ defendant.title}} {{ defendant.name }}
-        <br/>
-        {{ defendant.address.line1 }}
-        <br/>
-        {% if defendant.address.line2 is defined %}
-        {{ defendant.address.line2 }}
-        <br/>
-        {% endif %}
-        {{ defendant.address.city }}
-        <br/>
-        {{ defendant.address.postcode }}
-        {% if defendant.companiesHouseNumber is defined %}
-        <br/>
-        Companies House number: {{ defendant.companiesHouseNumber }}
-        {% endif %}
-      </td>
-      <td class="two-per-row">
-        {% if defendant.representative is defined or defendant.serviceAddress is defined  %}
-        <h4>Service address</h4>
-        {% endif %}
-      </td>
-      <td>
-        {% if defendant.representative is defined %}
-        {{ defendant.representative.organisationName }}
-        <br/>
-        {{ defendant.representative.organisationAddress.line1 }}
-        <br/>
-        {% if defendant.representative.organisationAddress.line2 is defined %}
-        {{ defendant.representative.organisationAddress.line2 }}
-        <br/>
-        {% endif %}
-        {{ defendant.representative.organisationAddress.city }}
-        <br/>
-        {{ defendant.representative.organisationAddress.postcode }}
-        <br/>
-        {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
-        DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
-        <br/>
-        {% endif %}
-        {% if defendant.representative.organisationContactDetails.phone is defined %}
-        Tel: {{ defendant.representative.organisationContactDetails.phone }}
-        {% endif %}
-        {% if defendant.representative.organisationContactDetails.email is defined %}
-        <br/>
-        Email: {{ defendant.representative.organisationContactDetails.email }}
-        {% endif %}
-
-        {% elseif defendant.serviceAddress is defined %}
-        {{ defendant.title}} {{ defendant.name }}
-        <br/>
-        {{ defendant.serviceAddress.line1 }}
-        <br/>
-        {% if defendant.serviceAddress.line2 is defined %}
-        {{ defendant.serviceAddress.line2 }}
-        <br/>
-        {% endif %}
-        {{ defendant.serviceAddress.city }}
-        <br/>
-        {{ defendant.serviceAddress.postcode }}
-        {% endif %}
-      </td>
-    </tr>
-  </table>
-</div>
-{% endif %}
-{% endfor %}
-
-{% if defendantsCount > 2 %}
-<div class="section">
-  <table>
-    <tr>
-      <td colspan="4">
-        <strong>See continuation page for further defendants</strong>
-      </td>
-    </tr>
-  </table>
-</div>
-{% endif %}
-<div class="section">
-  <table>
-    <tr>
-      <td><h4>Brief details of claim</h4></td>
-      <td colspan="3">
-        {{ claimSummary }}
-      </td>
-    </tr>
-  </table>
-</div>
-
-<div class="section">
-  <table>
-    <tr>
-      <td><h4>Particulars of claim</h4></td>
-      <td>
-        Particulars of claim to follow
-      </td>
-    </tr>
-  </table>
-</div>
-
-<div class="section">
-  <table>
-    <tr>
-      <td><h4>Statement of value</h4></td>
-      <td>
-        {% if statementOfValue.personalInjury is not empty %}
-        <span>{{ statementOfValue.personalInjury }} </span> <br/><br/>
-        {% endif %}
-        {% if statementOfValue.housingDisrepair is not empty %}
-        <span>{{ statementOfValue.housingDisrepair }} </span> <br/> <br/>
-        {% endif %}
-        <span>{{ statementOfValue.claimValue }} </span>
-      </td>
-    </tr>
-  </table>
-</div>
-
-<div class="section">
-  <table>
-    <tr>
-      <td rowspan="3"></td>
-      <td class="border-bottom">
-        Amount claimed
-      </td>
-      <td align="right" class="border-bottom">
-        To be assessed
-      </td>
-    </tr>
-    <tr>
-      <td class="border-bottom">
-        Legal representative’s costs
-      </td>
-      <td align="right" class="border-bottom">
-        To be assessed
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <strong>Court fee</strong>
-      </td>
-      <td align="right">
-        <strong> {{ feePaid }}</strong>
-      </td>
-    </tr>
-  </table>
-</div>
-
-{% if preferredCourt is defined %}
-<div class="section">
-  <table>
-    <tr>
-      <td><h4>Preferred County Court hearing centre</h4></td>
-      <td class="align-bottom">
-        {{ preferredCourt }}
-      </td>
-    </tr>
-  </table>
-</div>
-{% endif %}
-
-<div class="section">
-  <table>
-    <tr>
-      <td><h4>Statement of truth</h4></td>
-      <td>
-        The claimant believes that the facts in this claim form are true.
-        I'm duly authorised by the claimant to sign this statement.
-        <br/><br/>
-        <strong>Name:</strong> {{ signerName }}
-        <br/>
-        <strong>Company:</strong> {{ signerCompany }}
-        <br/>
-        <strong>Position held:</strong> {{ signerRole }}
-      </td>
-    </tr>
-  </table>
-</div>
-
-{% if claimantsCount > 2 or defendantsCount > 2 %}
-<div class="new-page">
-  <p align="center"><strong>Continuation page</strong></p>
-  {% if claimantsCount > 2 %}
-  {% for claimant in claimants %}
-  {% if loop.index >= maxClaimants %}
-
-  <div class="section">
-    <table>
-      <tr class="two-per-row">
-
-        {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
-        <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
-        <td>
-          {{ claimant.title }} {{ claimant.name }}
-          <br/>
-
-          {{ claimant.address.line1 }}
-          <br/>
-          {% if claimant.address.line2 is defined %}
-          {{ claimant.address.line2 }}
-          <br/>
-          {% endif %}
-          {{ claimant.address.city }}
-          <br/>
-          {{ claimant.address.postcode }}
-          {% if claimant.companiesHouseNumber is defined %}
-          <br/>
-          Companies House number: {{ claimant.companiesHouseNumber }}
-          {% endif %}
-        </td>
-        <td class="two-per-row">
-          <h4>Service address</h4>
-        </td>
-        <td>
-          {% if claimant.representative is defined %}
-          {{ claimant.representative.organisationName }}
-          <br/>
-          {{ claimant.representative.organisationAddress.line1 }}
-          <br/>
-          {% if claimant.representative.organisationAddress.line2 is defined %}
-          {{ claimant.representative.organisationAddress.line2 }}
-          <br/>
-          {% endif %}
-          {{ claimant.representative.organisationAddress.city }}
-          <br/>
-          {{ claimant.representative.organisationAddress.postcode }}
-          <br/>
-          {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
-          DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
-          <br/>
-          {% endif %}
-          {% if claimant.representative.organisationContactDetails.phone is defined %}
-          Tel: {{ claimant.representative.organisationContactDetails.phone }}
-          {% endif %}
-          {% if claimant.representative.organisationContactDetails.email is defined %}
-          <br/>
-          Email: {{ claimant.representative.organisationContactDetails.email }}
-          {% endif %}
-
-          {% endif %}
-        </td>
-      </tr>
-    </table>
-  </div>
-  {% endif %}
-  {% endfor %}
+<div>
+  <p>
+    You have not replied to the money claim made against you. This means {{ ccj.claimantName }} who is claiming {{ ccj.claimantType }} has asked for a County Court Judgment (CCJ) to be made against you. A CCJ may make it harder to get credit, such as a mobile phone contract, credit card or mortgage.
+  </p>
+  {% if ccj.paymentOption == 'IMMEDIATELY' %}
+  <p>
+    Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this Register for 6 years unless you pay the total amount you owe on or before {{ ccj.paymentByDate }}.
+  </p>
   {% endif %}
 
-  {% if defendantsCount > 2 %}
-
-  {% for defendant in defendants %}
-  {% if loop.index >= maxDefendants %}
-
-  <div class="section">
-    <table>
-      <tr class="two-per-row">
-
-        {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
-        <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
-        <td>
-          {{ defendant.title }} {{ defendant.name }}
-          <br/>
-          {{ defendant.address.line1 }}
-          <br/>
-          {% if defendant.address.line2 is defined %}
-          {{ defendant.address.line2 }}
-          <br/>
-          {% endif %}
-          {{ defendant.address.city }}
-          <br/>
-          {{ defendant.address.postcode }}
-          {% if defendant.companiesHouseNumber is defined %}
-          <br/>
-          Companies House number: {{ defendant.companiesHouseNumber }}
-          {% endif %}
-        </td>
-        <td class="two-per-row">
-          {% if defendant.representative is defined or defendant.serviceAddress is defined %}
-          <h4>Service address</h4>
-          {% endif %}
-        </td>
-        <td>
-          {% if defendant.representative is defined %}
-          {{ defendant.representative.organisationName }}
-          <br/>
-          {{ defendant.representative.organisationAddress.line1 }}
-          <br/>
-          {% if defendant.representative.organisationAddress.line2 is defined %}
-          {{ defendant.representative.organisationAddress.line2 }}
-          <br/>
-          {% endif %}
-          {{ defendant.representative.organisationAddress.city }}
-          <br/>
-          {{ defendant.representative.organisationAddress.postcode }}
-          <br/>
-          {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
-          DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
-          <br/>
-          {% endif %}
-          {% if defendant.representative.organisationContactDetails.phone is defined %}
-          Tel: {{ defendant.representative.organisationContactDetails.phone }}
-          {% endif %}
-          {% if defendant.representative.organisationContactDetails.email is defined %}
-          <br/>
-          Email: {{ defendant.representative.organisationContactDetails.email }}
-          {% endif %}
-          {% elseif defendant.serviceAddress is defined %}
-          {{ defendant.title}} {{ defendant.name }}
-          <br/>
-          {{ defendant.serviceAddress.line1 }}
-          <br/>
-          {% if defendant.serviceAddress.line2 is defined %}
-          {{ defendant.serviceAddress.line2 }}
-          <br/>
-          {% endif %}
-          {{ defendant.serviceAddress.city }}
-          <br/>
-          {{ defendant.serviceAddress.postcode }}
-          {% endif %}
-        </td>
-      </tr>
-    </table>
-  </div>
+  {% if ccj.paymentOption == 'FULL_BY_SPECIFIED_DATE' %}
+    <p>
+      Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this Register for 6 years unless you pay the total amount you owe on or before ({{ ccj.requestedPaymentDate}}).
+    </p>
   {% endif %}
-  {% endfor %}
+
+  {% if ccj.paymentOption == 'INSTALMENTS' %}
+  Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this Register for 6 years unless you pay the total amount you owe by instalments of ( {{ ccj.instalmentAmount }} ) starting on ( {{ ccj.firstInstalmentDate }} ).
   {% endif %}
+
+  <p>
+    The court therefore orders that you must pay {{ ccj.claimantName}}:
+  </p>
+  <p>
+    debt {{ ccj.claimAmount }}
+    <br/>
+    interest to the date of judgment {{ ccj.interestAmount }}
+    <br/>
+    claim fee {{ ccj.claimFees }}
+    <br/>
+    Total {{ ccj.totalAmountWithInterest }}
+  </p>
+
+  <p>
+    Contact {{ ccj.claimantName }} to arrange payment of the debt.
+  </p>
+  <p>
+    You should use a payment method which gives you proof that you have paid, such as bank transfer. Keep receipts for all payments you make. If you pay by cheque or postal order, send your name, address, claim number and claim reference with your payment.
+  </p>
+  <p>
+    You should allow at least 4 days for your payment to reach the claimant.
+  </p>
+  <p>
+    <strong>If you pay within 28 days</strong>
+  </p>
+  <p>
+    You can apply for a certificate of cancellation to get your name removed from the Register of Judgments, Orders and Fines using <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf">form N443</a> (http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf). This application costs £15.
+  </p>
+  <strong>If you pay after 1 month</strong>
+  <p>
+    You can apply for a certificate of satisfaction to get your debt marked as ‘satisfied’ in the Register of Judgments, Orders and Fines using <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf"> form N443</a> (http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf). This application costs £15.
+  </p>
+  <p>
+    Your name will stay on the Register of Judgments, Orders and Fines for 6 years but people searching it will see that you’ve paid.
+  </p>
+  <strong>
+    If you don’t pay
+  </strong>
+  <p>
+    {{ ccj.claimantName }} can ask the court to collect payment from you if you don’t pay. They could ask the court to:
+  </p>
+
+  <ul>
+    <li>
+      send bailiffs to collect payment - if you don’t pay, the bailiff will visit your home to see if anything can be sold to pay the debt
+    </li>
+    <li>
+      get money deducted from your wages to pay the debt
+    </li>
+    <li>
+      freeze assets or money in an account
+    </li>
+    <li>
+      charge your land or property - this means your land or property could be sold to repay your debt.
+    </li>
+  </ul>
+  <strong>
+    Appeal the judgment
+  </strong>
+  <p>
+    If you did not get the claim form, you can ask for the judgment to be cancelled ( 'set aside'). If the judgment is set aside, the court will take your entry off the Register of Judgments, Orders and Fines.
+  </p>
+  <p>
+    To get a judgment set aside, fill in the <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n244-eng.pdf">application notice (N244)</a> (http://formfinder.hmctsformfinder.justice.gov.uk/n244-eng.pdf) and send it to the court.
+  </p>
+  <p>
+    You may have to pay a <a href="https://www.gov.uk/make-court-claim-for-money/court-fees">court fee</a> (https://www.gov.uk/make-court-claim-for-money/court-fees) of £255. You will not have to pay a fee [or get your fee refunded?] if the judgment is set aside.
+  </p>
 </div>
-{% endif %}
-
 </body>
 </html>
 
