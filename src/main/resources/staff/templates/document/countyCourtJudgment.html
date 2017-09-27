@@ -5,7 +5,7 @@
   <style>
     @page {
       size: 8.5in 11in;
-      margin: 5%;
+      margin: 10%;
 
       @bottom-left {
         content: "OCCN1 (PD 51S)";
@@ -28,31 +28,13 @@
       font-family: "Open Sans"
     }
 
-    body {
-      counter-reset: section;
-    }
-
-    .section {
-      margin-bottom: 0px;
-    }
-
-    .section .section-heading {
-      margin-bottom: 10px;
-    }
-
-    .section .section-heading strong:before {
-      counter-increment: section;
-      content: counter(section) ". ";
-    }
-
     table {
       width: 100%;
       border-spacing: 0;
     }
 
     table td {
-      /*border-top: 1px solid #999;*/
-      padding: 5px;
+      padding: 15px 5px;
       vertical-align: top;
     }
 
@@ -60,9 +42,8 @@
       vertical-align: bottom;
     }
 
-    table, .border-bottom {
-      border: none;
-      margin-bottom: 10px;
+    .border-bottom {
+      border-bottom: 1px solid #999;
     }
 
     td:first-child {
@@ -101,6 +82,16 @@
         page-break-before: always;
       }
     }
+
+    .letter-content {
+      font-size: 20px;
+    }
+
+    .footer {
+      font-size: 17px;
+    }
+
+
   </style>
 </head>
 <body>
@@ -124,54 +115,54 @@
       <td colspan="2" align="right"><h3><strong>Claim number: </strong> {{ ccj.claimReferenceNumber }}</h3></td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><strong>Claimant: </strong> {{ ccj.claimant.name }}</td>
+      <td colspan="2" align="right"><strong>Claimant: </strong> {{ ccj.claimantName }}</td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><strong>Defendant: </strong> {{ ccj.defendant.name }}</td>
+      <td colspan="2" align="right"><strong>Defendant: </strong> {{ ccj.defendantName }}</td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><strong>Date: </strong> {{ ccj.claimIssuedOn }}</td>
-    </tr>
-    <br/>
-    <tr>
-      <td colspan="2" align="left">{{ ccj.defendant.name }}</td>
-    </tr>
-    <tr>
-      <td colspan="2" align="left">{{ ccj.defendant.address.line1 }}</td>
-    </tr>
-    <tr>
-      <td colspan="2" align="left">{{ ccj.defendant.address.line2 }}</td>
-    </tr>
-    <tr>
-      <td colspan="2" align="left">{{ ccj.defendant.address.city }}</td>
-    </tr>
-    <tr>
-      <td colspan="2" align="left">{{ ccj.defendant.address.postcode }}</td>
+      <td colspan="2" align="right"><strong>Date: </strong> {{ ccj.issueDate }}</td>
     </tr>
   </table>
 </header>
 
-<div>
-  <p>Dear {{ ccj.defendantName }}</p>
-</div>
-<div>
+<section class="letter-content">
   <p>
-    You have not replied to the money claim made against you. This means {{ ccj.claimantName }} who is claiming {{ ccj.claimantType }} has asked for a County Court Judgment (CCJ) to be made against you. A CCJ may make it harder to get credit, such as a mobile phone contract, credit card or mortgage.
+    {{ ccj.defendantName }} <br/>
+    {{ ccj.defendantAddress.line1 }} <br/>
+    {% if ccj.defendantAddress.line2 is not empty %}
+    {{ ccj.defendantAddress.line2 }} <br/>
+    {% endif %}
+    {{ ccj.defendantAddress.city }} <br/>
+    {{ ccj.defendantAddress.postcode }} <br/>
+  </p>
+  <p style="margin-top: 4rem">
+    Dear {{ ccj.defendantName }},
+  </p>
+
+  <p>
+    You have not replied to the money claim made against you. This means {{ ccj.claimantName }} who is claiming {{
+    ccj.claimantType }} has asked for a County Court Judgment (CCJ) to be made against you. A CCJ may make it harder to
+    get credit, such as a mobile phone contract, credit card or mortgage.
   </p>
   {% if ccj.paymentOption == 'IMMEDIATELY' %}
   <p>
-    Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this Register for 6 years unless you pay the total amount you owe on or before {{ ccj.paymentByDate }}.
+    Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this
+    Register for 6 years unless you pay the total amount you owe on or before {{ ccj.paymentByDate }}.
   </p>
   {% endif %}
 
   {% if ccj.paymentOption == 'FULL_BY_SPECIFIED_DATE' %}
-    <p>
-      Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this Register for 6 years unless you pay the total amount you owe on or before ({{ ccj.requestedPaymentDate}}).
-    </p>
+  <p>
+    Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this
+    Register for 6 years unless you pay the total amount you owe on or before ({{ ccj.requestedPaymentDate}}).
+  </p>
   {% endif %}
 
   {% if ccj.paymentOption == 'INSTALMENTS' %}
-  Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this Register for 6 years unless you pay the total amount you owe by instalments of ( {{ ccj.instalmentAmount }} ) starting on ( {{ ccj.firstInstalmentDate }} ).
+  Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this
+  Register for 6 years unless you pay the total amount you owe by instalments of ( {{ ccj.instalmentAmount }} ) starting
+  on ( {{ ccj.firstInstalmentDate }} ).
   {% endif %}
 
   <p>
@@ -191,7 +182,9 @@
     Contact {{ ccj.claimantName }} to arrange payment of the debt.
   </p>
   <p>
-    You should use a payment method which gives you proof that you have paid, such as bank transfer. Keep receipts for all payments you make. If you pay by cheque or postal order, send your name, address, claim number and claim reference with your payment.
+    You should use a payment method which gives you proof that you have paid, such as bank transfer. Keep receipts for
+    all payments you make. If you pay by cheque or postal order, send your name, address, claim number and claim
+    reference with your payment.
   </p>
   <p>
     You should allow at least 4 days for your payment to reach the claimant.
@@ -200,14 +193,19 @@
     <strong>If you pay within 28 days</strong>
   </p>
   <p>
-    You can apply for a certificate of cancellation to get your name removed from the Register of Judgments, Orders and Fines using <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf">form N443</a> (http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf). This application costs £15.
+    You can apply for a certificate of cancellation to get your name removed from the Register of Judgments, Orders and
+    Fines using <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf">form N443</a>
+    (http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf). This application costs £15.
   </p>
   <strong>If you pay after 1 month</strong>
   <p>
-    You can apply for a certificate of satisfaction to get your debt marked as ‘satisfied’ in the Register of Judgments, Orders and Fines using <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf"> form N443</a> (http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf). This application costs £15.
+    You can apply for a certificate of satisfaction to get your debt marked as ‘satisfied’ in the Register of Judgments,
+    Orders and Fines using <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf"> form N443</a>
+    (http://formfinder.hmctsformfinder.justice.gov.uk/n443-eng.pdf). This application costs £15.
   </p>
   <p>
-    Your name will stay on the Register of Judgments, Orders and Fines for 6 years but people searching it will see that you’ve paid.
+    Your name will stay on the Register of Judgments, Orders and Fines for 6 years but people searching it will see that
+    you’ve paid.
   </p>
   <strong>
     If you don’t pay
@@ -218,7 +216,8 @@
 
   <ul>
     <li>
-      send bailiffs to collect payment - if you don’t pay, the bailiff will visit your home to see if anything can be sold to pay the debt
+      send bailiffs to collect payment - if you don’t pay, the bailiff will visit your home to see if anything can be
+      sold to pay the debt
     </li>
     <li>
       get money deducted from your wages to pay the debt
@@ -234,15 +233,18 @@
     Appeal the judgment
   </strong>
   <p>
-    If you did not get the claim form, you can ask for the judgment to be cancelled ( 'set aside'). If the judgment is set aside, the court will take your entry off the Register of Judgments, Orders and Fines.
+    If you did not get the claim form, you can ask for the judgment to be cancelled ( 'set aside'). If the judgment is
+    set aside, the court will take your entry off the Register of Judgments, Orders and Fines.
   </p>
   <p>
-    To get a judgment set aside, fill in the <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n244-eng.pdf">application notice (N244)</a> (http://formfinder.hmctsformfinder.justice.gov.uk/n244-eng.pdf) and send it to the court.
+    To get a judgment set aside, fill in the <a href="http://formfinder.hmctsformfinder.justice.gov.uk/n244-eng.pdf">application
+    notice (N244)</a> (http://formfinder.hmctsformfinder.justice.gov.uk/n244-eng.pdf) and send it to the court.
   </p>
   <p>
-    You may have to pay a <a href="https://www.gov.uk/make-court-claim-for-money/court-fees">court fee</a> (https://www.gov.uk/make-court-claim-for-money/court-fees) of £255. You will not have to pay a fee [or get your fee refunded?] if the judgment is set aside.
+    You may have to pay a <a href="https://www.gov.uk/make-court-claim-for-money/court-fees">court fee</a>
+    (https://www.gov.uk/make-court-claim-for-money/court-fees) of £255. You will not have to pay a fee [or get your fee
+    refunded?] if the judgment is set aside.
   </p>
-</div>
+</section>
 </body>
 </html>
-

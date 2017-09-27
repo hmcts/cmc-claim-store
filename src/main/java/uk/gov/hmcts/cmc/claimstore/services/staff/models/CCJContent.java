@@ -22,7 +22,6 @@ public class CCJContent {
     Address claimantAddress;
 
     String defendantName;
-    String defendantRole;
     Address defendantAddress;
 
     String issueDate;

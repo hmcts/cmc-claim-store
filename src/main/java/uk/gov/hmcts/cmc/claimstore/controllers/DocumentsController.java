@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
-import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 
 @Api
 @RestController
