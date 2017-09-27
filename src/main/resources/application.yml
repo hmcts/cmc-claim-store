@@ -74,5 +74,5 @@ spring:
 claim-store:
   test-support:
     enabled: true
-  watermak-pdf:
+  watermark-pdf:
     enabled: true
