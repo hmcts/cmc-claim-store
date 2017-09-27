@@ -112,7 +112,7 @@
       <td align="right"><p>In the County Court Money Claims Centre Online Court</p></td>
     </tr>
     <tr>
-      <td colspan="2" align="right"><h3><strong>Claim number: </strong> {{ ccj.claimReferenceNumber }}</h3></td>
+      <td colspan="2" align="right"><strong>Claim number: </strong> {{ ccj.claimReferenceNumber }}</td>
     </tr>
     <tr>
       <td colspan="2" align="right"><strong>Claimant: </strong> {{ ccj.claimantName }}</td>
@@ -141,10 +141,11 @@
   </p>
 
   <p>
-    You have not replied to the money claim made against you. This means {{ ccj.claimantName }} who is claiming {{
-    ccj.claimantType }} has asked for a County Court Judgment (CCJ) to be made against you. A CCJ may make it harder to
-    get credit, such as a mobile phone contract, credit card or mortgage.
+    You have not replied to the money claim made against you. This means {{ ccj.claimantName }} who is claiming
+    {{ccj.claimantType }} has asked for a County Court Judgment (CCJ) to be made against you. A CCJ may make it harder
+    to get credit, such as a mobile phone contract, credit card or mortgage.
   </p>
+
   {% if ccj.paymentOption == 'IMMEDIATELY' %}
   <p>
     Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this
@@ -160,9 +161,11 @@
   {% endif %}
 
   {% if ccj.paymentOption == 'INSTALMENTS' %}
+  <P>
   Details of this CCJ will be entered on the Register of Judgments, Orders and Fines. Your name will stay on this
   Register for 6 years unless you pay the total amount you owe by instalments of ( {{ ccj.instalmentAmount }} ) starting
   on ( {{ ccj.firstInstalmentDate }} ).
+  </P>
   {% endif %}
 
   <p>
@@ -171,7 +174,7 @@
   <p>
     debt {{ ccj.claimAmount }}
     <br/>
-    interest to the date of judgment {{ ccj.interestAmount }}
+    interest to the date of judgment {{ ccj.interest.amountUpToNow }}
     <br/>
     claim fee {{ ccj.claimFees }}
     <br/>
