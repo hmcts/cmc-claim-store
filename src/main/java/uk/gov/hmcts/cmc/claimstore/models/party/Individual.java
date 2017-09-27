@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.Size;
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Individual extends Party implements TitledParty {
 

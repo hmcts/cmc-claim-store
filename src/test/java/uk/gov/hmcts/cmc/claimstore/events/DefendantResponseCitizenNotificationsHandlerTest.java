@@ -17,7 +17,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class DefendantResponseCitizenNotificationsHandlerTest {
     private DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
     private static final DefendantResponseEvent RESPONSE_EVENT = new DefendantResponseEvent(
-        SampleClaimIssuedEvent.CLAIM, SampleClaimIssuedEvent.DEFENDANT_RESPONSE
+        SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE
     );
 
     @Mock
@@ -35,7 +35,7 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
         defendantResponseCitizenNotificationsHandler.notifyDefendantResponse(RESPONSE_EVENT);
 
         verify(defendantResponseNotificationService, once()).notifyDefendant(
-            eq(SampleClaimIssuedEvent.CLAIM),
+            eq(SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE),
             eq(SampleClaimIssuedEvent.DEFENDANT_EMAIL),
             eq("defendant-response-notification-" + RESPONSE_EVENT.getClaim().getReferenceNumber())
         );
@@ -47,9 +47,7 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
         defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(RESPONSE_EVENT);
 
         verify(defendantResponseNotificationService, once()).notifyClaimant(
-            eq(SampleClaimIssuedEvent.CLAIM),
-            eq(SampleClaimIssuedEvent.DEFENDANT_RESPONSE),
-            eq(SampleClaimIssuedEvent.CLAIM.getSubmitterEmail()),
+            eq(SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE),
             eq("claimant-response-notification-" + RESPONSE_EVENT.getClaim().getReferenceNumber())
         );
     }

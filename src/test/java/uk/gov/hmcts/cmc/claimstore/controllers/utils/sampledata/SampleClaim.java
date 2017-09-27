@@ -3,12 +3,14 @@ package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.ISSUE_DATE;
@@ -26,6 +28,7 @@ public final class SampleClaim {
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
+    public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
 
     private Long submitterId = USER_ID;
     private Long letterHolderId = LETTER_HOLDER_ID;
@@ -42,6 +45,8 @@ public final class SampleClaim {
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
     private ClaimData claimData = SampleClaimData.validDefaults();
+    private ResponseData response;
+    private String defendantEmail;
 
     private SampleClaim() {
     }
@@ -56,8 +61,37 @@ public final class SampleClaim {
             ).build();
     }
 
+    public static Claim getWithDefaultResponse() {
+        return getWithResponse(SampleResponseData.validDefaults());
+    }
+
+    public static Claim getWithResponse(final ResponseData responseData) {
+        return builder()
+            .withClaimData(SampleClaimData.validDefaults())
+            .withResponse(responseData)
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
     public static Claim getDefaultForLegal() {
         return builder().build();
+    }
+
+    public static Claim claim(ClaimData claimData, String referenceNumber) {
+        return new Claim(
+            CLAIM_ID,
+            USER_ID,
+            LETTER_HOLDER_ID,
+            DEFENDANT_ID,
+            EXTERNAL_ID,
+            referenceNumber,
+            Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()),
+            NOW_IN_LOCAL_ZONE,
+            ISSUE_DATE,
+            RESPONSE_DEADLINE,
+            NOT_REQUESTED_FOR_MORE_TIME,
+            SUBMITTER_EMAIL,
+            null, null, null, null, null);
     }
 
     public static Claim getWithSubmissionInterestDate() {
@@ -69,7 +103,6 @@ public final class SampleClaim {
     }
 
     public static Claim getWithResponseDeadline(LocalDate responseDeadline) {
-
         return builder().withResponseDeadline(responseDeadline).build();
     }
 
@@ -96,15 +129,16 @@ public final class SampleClaim {
             externalId,
             referenceNumber,
             claimData,
-            createdAt,
+            NOW_IN_LOCAL_ZONE,
             issuedOn,
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
             respondedAt,
+            response,
+            defendantEmail,
             countyCourtJudgment,
-            countyCourtJudgmentRequestedAt
-        );
+            countyCourtJudgmentRequestedAt);
     }
 
     public SampleClaim withSubmitterId(Long userId) {
@@ -179,6 +213,16 @@ public final class SampleClaim {
 
     public SampleClaim withRespondedAt(LocalDateTime respondedAt) {
         this.respondedAt = respondedAt;
+        return this;
+    }
+
+    public SampleClaim withResponse(final ResponseData responseData) {
+        this.response = responseData;
+        return this;
+    }
+
+    public SampleClaim withDefendantEmail(final String defendantEmail) {
+        this.defendantEmail = defendantEmail;
         return this;
     }
 }

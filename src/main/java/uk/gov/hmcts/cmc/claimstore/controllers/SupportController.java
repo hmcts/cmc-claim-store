@@ -24,9 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 @RestController
@@ -34,7 +32,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 public class SupportController {
 
     private final ClaimRepository claimRepository;
-    private final DefendantResponseRepository defendantResponseRepository;
     private final UserService userService;
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
@@ -44,7 +41,6 @@ public class SupportController {
     @Autowired
     public SupportController(
         final ClaimRepository claimRepository,
-        final DefendantResponseRepository defendantResponseRepository,
         final UserService userService,
         final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
         final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
@@ -52,7 +48,6 @@ public class SupportController {
         final CCJStaffNotificationHandler ccjStaffNotificationHandler
     ) {
         this.claimRepository = claimRepository;
-        this.defendantResponseRepository = defendantResponseRepository;
         this.userService = userService;
         this.claimIssuedStaffNotificationHandler = claimIssuedStaffNotificationHandler;
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
@@ -145,10 +140,10 @@ public class SupportController {
     }
 
     private void resendStaffNotificationOnDefendantResponseSubmitted(final Claim claim) {
-        DefendantResponse response = defendantResponseRepository.getByClaimId(claim.getId())
-            .orElseThrow(() -> new ConflictException("Claim " + claim.getId() + " does not have associated response"));
-
-        final DefendantResponseEvent event = new DefendantResponseEvent(claim, response);
+        if (!claim.getResponse().isPresent()) {
+            throw new ConflictException("Claim " + claim.getId() + " does not have associated response");
+        }
+        final DefendantResponseEvent event = new DefendantResponseEvent(claim);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
     }
 
