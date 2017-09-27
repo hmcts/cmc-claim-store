@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
@@ -29,27 +29,29 @@ public class DefendantDetailsContent {
 
     public DefendantDetailsContent(
         final TheirDetails providedByClaimant,
-        final DefendantResponse defendantResponse,
-        final Party defendant
+        final ResponseData defendantResponse,
+        final String defendantEmail
     ) {
+        final Party defendant = defendantResponse.getDefendant();
+
         this.nameAmended  = !providedByClaimant.getName().equals(defendant.getName());
         this.addressAmended = !providedByClaimant.getAddress().equals(defendant.getAddress());
         this.type = PartyUtils.getType(providedByClaimant);
         this.fullName = nameAmended ? defendant.getName() : providedByClaimant.getName();
-        this.businessName = PartyUtils.getBusinessName(defendantResponse.getResponse().getDefendant()).orElse(null);
-        this.contactPerson = PartyUtils.getContactPerson(defendantResponse.getResponse().getDefendant()).orElse(null);
+        this.businessName = PartyUtils.getBusinessName(defendantResponse.getDefendant()).orElse(null);
+        this.contactPerson = PartyUtils.getContactPerson(defendantResponse.getDefendant()).orElse(null);
         this.address = addressAmended ? defendant.getAddress() : providedByClaimant.getAddress();
         this.correspondenceAddress = correspondenceAddress(defendantResponse);
         this.dateOfBirth = defendantDateOfBirth(defendant).orElse(null);
-        this.email = defendantResponse.getDefendantEmail();
+        this.email = defendantEmail;
 
-        Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getResponse().getStatementOfTruth();
+        Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getStatementOfTruth();
         this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
     }
 
-    private Address correspondenceAddress(final DefendantResponse defendantResponse) {
-        return defendantResponse.getResponse().getDefendant().getCorrespondenceAddress().orElse(null);
+    private Address correspondenceAddress(final ResponseData defendantResponse) {
+        return defendantResponse.getDefendant().getCorrespondenceAddress().orElse(null);
     }
 
     private Optional<String> defendantDateOfBirth(final Party party) {

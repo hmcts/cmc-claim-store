@@ -20,7 +20,6 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleCla
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.DEFENDANT_EMAIL;
-import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.DEFENDANT_RESPONSE;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent.NEW_RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
@@ -77,10 +76,10 @@ public class EventProducerTest {
     public void shouldCreateDefendantResponseEvent() throws Exception {
         //given
         final DefendantResponseEvent expectedEvent
-            = new DefendantResponseEvent(CLAIM, DEFENDANT_RESPONSE);
+            = new DefendantResponseEvent(CLAIM);
 
         //when
-        eventProducer.createDefendantResponseEvent(CLAIM, DEFENDANT_RESPONSE);
+        eventProducer.createDefendantResponseEvent(CLAIM);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));

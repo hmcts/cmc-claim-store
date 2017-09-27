@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 
 @Api
 @RestController
@@ -24,18 +22,15 @@ import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 public class DocumentsController {
 
     private final ClaimService claimService;
-    private final DefendantResponseService defendantResponseService;
     private final DefendantResponseCopyService defendantResponseCopyService;
     private final LegalSealedClaimService legalSealedClaimService;
 
     public DocumentsController(
         ClaimService claimService,
-        DefendantResponseService defendantResponseService,
         DefendantResponseCopyService defendantResponseCopyService,
         LegalSealedClaimService legalSealedClaimService
     ) {
         this.claimService = claimService;
-        this.defendantResponseService = defendantResponseService;
         this.defendantResponseCopyService = defendantResponseCopyService;
         this.legalSealedClaimService = legalSealedClaimService;
     }
@@ -50,8 +45,7 @@ public class DocumentsController {
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
         Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        DefendantResponse response = defendantResponseService.getByClaimId(claim.getId());
-        byte[] pdfDocument = defendantResponseCopyService.createPdf(claim, response);
+        byte[] pdfDocument = defendantResponseCopyService.createPdf(claim);
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)

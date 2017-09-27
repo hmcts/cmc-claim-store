@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
@@ -27,10 +28,12 @@ public class Claim {
     private final boolean moreTimeRequested;
     private final String submitterEmail;
     private final LocalDateTime respondedAt;
+    private final ResponseData response;
+    private final String defendantEmail;
     private final CountyCourtJudgment countyCourtJudgment;
     private final LocalDateTime countyCourtJudgmentRequestedAt;
 
-    @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about remove parameters here
+    @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
         final Long id,
         final Long submitterId,
@@ -45,8 +48,11 @@ public class Claim {
         final boolean moreTimeRequested,
         final String submitterEmail,
         final LocalDateTime respondedAt,
-        CountyCourtJudgment countyCourtJudgment,
-        LocalDateTime countyCourtJudgmentRequestedAt) {
+        final ResponseData response,
+        final String defendantEmail,
+        final CountyCourtJudgment countyCourtJudgment,
+        final LocalDateTime countyCourtJudgmentRequestedAt
+    ) {
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;
@@ -60,6 +66,8 @@ public class Claim {
         this.moreTimeRequested = moreTimeRequested;
         this.submitterEmail = submitterEmail;
         this.respondedAt = respondedAt;
+        this.response = response;
+        this.defendantEmail = defendantEmail;
         this.countyCourtJudgment = countyCourtJudgment;
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
     }
@@ -116,6 +124,14 @@ public class Claim {
         return respondedAt;
     }
 
+    public Optional<ResponseData> getResponse() {
+        return Optional.ofNullable(response);
+    }
+
+    public String getDefendantEmail() {
+        return defendantEmail;
+    }
+
     public CountyCourtJudgment getCountyCourtJudgment() {
         return countyCourtJudgment;
     }
@@ -126,35 +142,38 @@ public class Claim {
 
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Claim otherClaim = (Claim) other;
-        return Objects.equals(id, otherClaim.id)
-            && Objects.equals(submitterId, otherClaim.submitterId)
-            && Objects.equals(submitterEmail, otherClaim.submitterEmail)
-            && Objects.equals(letterHolderId, otherClaim.letterHolderId)
-            && Objects.equals(defendantId, otherClaim.defendantId)
-            && Objects.equals(externalId, otherClaim.externalId)
-            && Objects.equals(referenceNumber, otherClaim.referenceNumber)
-            && Objects.equals(claimData, otherClaim.claimData)
-            && Objects.equals(createdAt, otherClaim.createdAt)
-            && Objects.equals(issuedOn, otherClaim.issuedOn)
-            && Objects.equals(responseDeadline, otherClaim.responseDeadline)
-            && Objects.equals(respondedAt, otherClaim.respondedAt)
-            && Objects.equals(countyCourtJudgment, otherClaim.countyCourtJudgment)
-            && Objects.equals(countyCourtJudgmentRequestedAt, otherClaim.countyCourtJudgmentRequestedAt);
+        Claim claim = (Claim) obj;
+        return moreTimeRequested == claim.moreTimeRequested
+            && Objects.equals(id, claim.id)
+            && Objects.equals(submitterId, claim.submitterId)
+            && Objects.equals(letterHolderId, claim.letterHolderId)
+            && Objects.equals(defendantId, claim.defendantId)
+            && Objects.equals(externalId, claim.externalId)
+            && Objects.equals(referenceNumber, claim.referenceNumber)
+            && Objects.equals(claimData, claim.claimData)
+            && Objects.equals(createdAt, claim.createdAt)
+            && Objects.equals(issuedOn, claim.issuedOn)
+            && Objects.equals(responseDeadline, claim.responseDeadline)
+            && Objects.equals(submitterEmail, claim.submitterEmail)
+            && Objects.equals(respondedAt, claim.respondedAt)
+            && Objects.equals(response, claim.response)
+            && Objects.equals(defendantEmail, claim.defendantEmail)
+            && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
+            && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            id, submitterId, submitterEmail, letterHolderId, defendantId, externalId, referenceNumber, claimData,
-            createdAt, issuedOn, responseDeadline, moreTimeRequested, respondedAt
+        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
+            claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
+            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt
         );
     }
 
@@ -172,6 +191,8 @@ public class Claim {
         private LocalDate responseDeadline;
         private boolean moreTimeRequested;
         private LocalDateTime respondedAt;
+        private ResponseData response;
+        private String defendantEmail;
         private CountyCourtJudgment countyCourtJudgment;
         private LocalDateTime countyCourtJudgmentRequestedAt;
 
@@ -240,6 +261,16 @@ public class Claim {
             return this;
         }
 
+        public Builder setResponse(ResponseData response) {
+            this.response = response;
+            return this;
+        }
+
+        public Builder setDefendantEmail(String defendantEmail) {
+            this.defendantEmail = defendantEmail;
+            return this;
+        }
+
         public Builder setCountyCourtJudgment(CountyCourtJudgment countyCourtJudgment) {
             this.countyCourtJudgment = countyCourtJudgment;
             return this;
@@ -254,7 +285,8 @@ public class Claim {
             return new Claim(
                 id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
                 claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested,
-                submitterEmail, respondedAt, countyCourtJudgment, countyCourtJudgmentRequestedAt
+                submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment,
+                countyCourtJudgmentRequestedAt
             );
         }
     }
