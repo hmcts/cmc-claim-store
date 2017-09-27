@@ -124,7 +124,7 @@ public class ResponseDeadlineCalculatorTest {
     }
 
     /**
-     * The fixture was taken from the real bank holidays API
+     * The fixture was taken from the real bank holidays API.
      */
     private static BankHolidays loadFixture() throws IOException {
         String input = new ResourceReader().read("/bank-holidays.json");
