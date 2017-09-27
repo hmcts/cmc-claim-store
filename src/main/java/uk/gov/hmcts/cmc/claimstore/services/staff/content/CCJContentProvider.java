@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 @Component
 public class CCJContentProvider {
 
-    private final InterestContentProvider interestContentProvider;
+    private InterestContentProvider interestContentProvider;
 
     @Autowired
     public CCJContentProvider(InterestContentProvider interestContentProvider) {

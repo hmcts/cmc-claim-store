@@ -85,4 +85,8 @@ public class CCJContent {
     public String getClaimantName() {
         return claimantName;
     }
+
+    public Address getClaimantAddress() {
+        return claimantAddress;
+    }
 }
