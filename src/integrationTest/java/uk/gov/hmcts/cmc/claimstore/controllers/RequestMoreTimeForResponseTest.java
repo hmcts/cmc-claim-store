@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -26,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.SUBMITTER_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 public class RequestMoreTimeForResponseTest extends BaseTest {
@@ -196,19 +196,19 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
     }
 
     private Claim createClaimModel(final LocalDate responseDeadline, final boolean alreadyUpdated) {
-        return new Claim(
-            CLAIM_ID,
-            SUBMITTER_ID,
-            LETTER_HOLDER_ID,
-            DEFENDANT_ID,
-            null,
-            REFERENCE_NUMBER,
-            SampleClaimData.validDefaults(),
-            LocalDateTime.now(),
-            LocalDate.now(),
-            responseDeadline,
-            alreadyUpdated,
-            SUBMITTER_EMAIL,
-            null, null, null);
+        return new Claim.Builder()
+            .setId(CLAIM_ID)
+            .setSubmitterEmail("submitter@example.com")
+            .setSubmitterId(SUBMITTER_ID)
+            .setLetterHolderId(LETTER_HOLDER_ID)
+            .setDefendantId(DEFENDANT_ID)
+            .setReferenceNumber(REFERENCE_NUMBER)
+            .setClaimData(SampleClaimData.validDefaults())
+            .setCreatedAt(LocalDateTime.now())
+            .setIssuedOn(LocalDate.now())
+            .setResponseDeadline(responseDeadline)
+            .setMoreTimeRequested(alreadyUpdated)
+            .setResponse(SampleResponseData.validDefaults())
+            .build();
     }
 }

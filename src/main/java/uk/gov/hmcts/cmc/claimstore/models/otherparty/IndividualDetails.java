@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.models.otherparty;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.claimstore.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
@@ -16,7 +15,6 @@ public class IndividualDetails extends TheirDetails implements TitledParty {
     @Size(max = 35, message = "must be at most {max} characters")
     private final String title;
 
-    @JsonUnwrapped
     @AgeRangeValidator
     private final LocalDate dateOfBirth;
 

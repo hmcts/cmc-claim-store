@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.DefendantResponse;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.party.Company;
 import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
@@ -80,12 +79,11 @@ public class DefendantResponseNotificationService {
 
     public void notifyClaimant(
         final Claim claim,
-        final DefendantResponse response,
-        final String submitterEmail,
         final String reference
     ) {
-        final Map<String, String> parameters = aggregateParams(claim, response.getResponse());
-        notify(submitterEmail, getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
+        final Map<String, String> parameters = aggregateParams(claim, claim.getResponse()
+            .orElseThrow(IllegalStateException::new));
+        notify(claim.getSubmitterEmail(), getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))

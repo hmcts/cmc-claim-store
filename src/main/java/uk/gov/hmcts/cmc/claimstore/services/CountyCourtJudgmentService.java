@@ -52,7 +52,7 @@ public class CountyCourtJudgmentService {
         Claim claim = getClaim(claimId);
 
         if (!isClaimSubmittedByUser(claim, submitterId)) {
-            throw new ForbiddenActionException("Claim " + claimId + "does not belog to user" + submitterId);
+            throw new ForbiddenActionException("Claim " + claimId + "does not belong to user" + submitterId);
         }
 
         if (isResponseAlreadySubmitted(claim)) {
