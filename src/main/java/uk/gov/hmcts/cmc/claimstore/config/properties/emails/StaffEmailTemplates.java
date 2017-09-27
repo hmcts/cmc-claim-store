@@ -42,6 +42,10 @@ public class StaffEmailTemplates {
         return readBytes("/staff/templates/document/legalSealedClaim.html");
     }
 
+    public byte[] getWaterMarkedLegalSealedClaim() {
+        return readBytes("/staff/templates/document/waterMarkedLegalSealedClaim.html");
+    }
+
     public byte[] getCountyCourtJudgment() {
         return readBytes("/staff/templates/document/countyCourtJudgment.html");
     }

@@ -29,7 +29,7 @@ public class LegalSealedClaimServiceTest {
 
     @Before
     public void beforeEachTest() {
-        service = new LegalSealedClaimService(emailTemplates, pdfServiceClient, contentProvider);
+        service = new LegalSealedClaimService(emailTemplates, pdfServiceClient, contentProvider, false);
     }
 
     @Test(expected = NullPointerException.class)
@@ -43,4 +43,11 @@ public class LegalSealedClaimServiceTest {
         verify(emailTemplates).getLegalSealedClaim();
     }
 
+    @Test
+    public void shouldUseCorrectWaterMarkedTemplateToCreateTheDocument() {
+        service = new LegalSealedClaimService(emailTemplates, pdfServiceClient, contentProvider, true);
+
+        service.createPdf(claim);
+        verify(emailTemplates).getWaterMarkedLegalSealedClaim();
+    }
 }
