@@ -67,6 +67,9 @@ staff-notifications:
 pdfService:
   baseUrl: ${PDF_SERVICE_URL:}
 
+feature_toggles:
+  watermark-pdf:
+    enabled: true
 ---
 spring:
   profiles: test
@@ -74,7 +77,3 @@ spring:
 claim-store:
   test-support:
     enabled: true
-
-feature_toggles:
-  watermark-pdf:
-    enabled: false
