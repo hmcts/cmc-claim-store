@@ -75,4 +75,4 @@ claim-store:
   test-support:
     enabled: true
   watermark-pdf:
-    enabled: true
+    enabled: false
