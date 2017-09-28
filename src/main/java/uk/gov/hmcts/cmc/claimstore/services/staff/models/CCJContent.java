@@ -17,7 +17,7 @@ public class CCJContent {
     private String amountToPayByDefendant;
     private String paymentRepaymentOption;
 
-    public CCJContent( Claim claim ) {
+    public CCJContent(Claim claim) {
         requireNonNull(claim);
 
         this.claimReferenceNumber = claim.getReferenceNumber();
@@ -26,7 +26,11 @@ public class CCJContent {
         this.defendantAddress = defendant.getAddress();
         this.paymentRepaymentOption = claim.getCountyCourtJudgment().getPaymentOption().name();
         this.defendantEmail = defendant.getEmail().orElse(null);
-        this.amountToPayByDefendant = formatMoney(((AmountBreakDown)claim.getClaimData().getAmount()).getTotalAmount());
+        this.amountToPayByDefendant = formatMoney(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount());
+    }
+
+    public String getClaimReferenceNumber() {
+        return claimReferenceNumber;
     }
 
     public String getDefendantName() {
