@@ -86,11 +86,14 @@ public class ResponseDeadlineCalculatorTest {
     @Test
     public void calculatePostponedResponseDeadlineWhenNoBankHolidays() {
 
-        LocalDate responseDeadline = calculator.calculateResponseDeadline(toDate("2017-05-08"));
-        LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(responseDeadline);
+        LocalDate issuedOn = toDate("2017-05-08");
+        LocalDate responseDeadline = calculator.calculateResponseDeadline(issuedOn);
+        LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(issuedOn);
+        LocalDate expectedIssueDate = toDate("2017-05-30"); // Tue as Mon was Bank holidays
+        LocalDate expectedPostponedDate = toDate("2017-06-12"); // Mon as we calculate it based on issue date
 
-        assertThat(responseDeadline).isWeekday().isTheSame(toDate("2017-05-30"));
-        assertThat(postponedDeadline).isWeekday().isTheSame(toDate("2017-06-13"));
+        assertThat(responseDeadline).isWeekday().isTheSame(expectedIssueDate);
+        assertThat(postponedDeadline).isWeekday().isTheSame(expectedPostponedDate);
     }
 
     @Test
@@ -100,7 +103,7 @@ public class ResponseDeadlineCalculatorTest {
         LocalDate expectedPostponedDate = toDate("2017-10-23");
 
         LocalDate responseDeadline = calculator.calculateResponseDeadline(issuedOn);
-        LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(responseDeadline);
+        LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(issuedOn);
 
         assertThat(responseDeadline).isWeekday().isTheSame(expectedIssueDate);
         assertThat(postponedDeadline).isWeekday().isTheSame(expectedPostponedDate);
@@ -113,7 +116,7 @@ public class ResponseDeadlineCalculatorTest {
         LocalDate expectedPostponedDate = toDate("2017-10-18");
 
         LocalDate responseDeadline = calculator.calculateResponseDeadline(issuedOn);
-        LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(responseDeadline);
+        LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(issuedOn);
 
         assertThat(responseDeadline).isWeekday().isTheSame(expectedIssueDate);
         assertThat(postponedDeadline).isWeekday().isTheSame(expectedPostponedDate);
