@@ -26,7 +26,9 @@ public class CCJContent {
         this.defendantAddress = defendant.getAddress();
         this.paymentRepaymentOption = claim.getCountyCourtJudgment().getPaymentOption().name();
         this.defendantEmail = defendant.getEmail().orElse(null);
-        this.amountToPayByDefendant = formatMoney(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount());
+        this.amountToPayByDefendant = formatMoney(
+            ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()
+        );
     }
 
     public String getClaimReferenceNumber() {
