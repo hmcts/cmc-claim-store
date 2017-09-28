@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatPercent;
 @Component
 public class InterestContentProvider {
 
-    private InterestCalculationService interestCalculationService;
+    private final InterestCalculationService interestCalculationService;
 
     @Autowired
     public InterestContentProvider(InterestCalculationService interestCalculationService) {

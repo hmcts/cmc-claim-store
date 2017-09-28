@@ -10,12 +10,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 public class CCJContent {
 
-    String claimReferenceNumber;
-    String defendantName;
-    Address defendantAddress;
-    String defendantEmail;
-    String amountToPayByDefendant;
-    String paymentRepaymentOption;
+    private String claimReferenceNumber;
+    private String defendantName;
+    private Address defendantAddress;
+    private String defendantEmail;
+    private String amountToPayByDefendant;
+    private String paymentRepaymentOption;
 
     public CCJContent( Claim claim ) {
         requireNonNull(claim);
