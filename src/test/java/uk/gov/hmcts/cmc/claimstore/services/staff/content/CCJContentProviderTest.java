@@ -3,22 +3,17 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CCJContentProviderTest {
@@ -30,22 +25,11 @@ public class CCJContentProviderTest {
         .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
         .build();
 
-    @Mock
-    private InterestCalculationService interestCalculationService;
-
     private CCJContentProvider provider;
 
     @Before
     public void setup() {
-        this.provider = new CCJContentProvider(new InterestContentProvider(interestCalculationService));
-
-        Mockito.when(interestCalculationService.calculateInterestUpToNow(
-            any(), any(), any())
-        ).thenReturn(BigDecimal.TEN);
-        Mockito.when(interestCalculationService.calculateDailyAmountFor(
-            any(), any())
-        ).thenReturn(BigDecimal.TEN);
-
+        this.provider = new CCJContentProvider();
     }
 
     @Test(expected = NullPointerException.class)
@@ -60,7 +44,7 @@ public class CCJContentProviderTest {
 
         assertThat(contentMap).isNotNull();
         assertThat(contentMap.get("ccj")).isNotNull();
-        assertThat(((CCJContent) contentMap.get("ccj")).getClaimantName()).isNotEmpty();
+        assertThat(((CCJContent) contentMap.get("ccj")).getDefendantName()).isNotEmpty();
     }
 
 }

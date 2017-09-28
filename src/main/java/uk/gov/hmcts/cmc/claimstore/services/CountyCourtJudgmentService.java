@@ -102,7 +102,7 @@ public class CountyCourtJudgmentService {
     public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
         return pdfServiceClient.generateFromHtml(
-            emailTemplates.getCountyCourtJudgment(),
+            emailTemplates.getCountyCourtJudgmentDetails(),
             this.ccjContentProvider.createContent(claim)
         );
     }

@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class DocumentsController {
     private final LegalSealedClaimService legalSealedClaimService;
     private final CountyCourtJudgmentService countyCourtJudgmentService;
 
+    @Autowired
     public DocumentsController(
         final ClaimService claimService,
         final DefendantResponseCopyService defendantResponseCopyService,
