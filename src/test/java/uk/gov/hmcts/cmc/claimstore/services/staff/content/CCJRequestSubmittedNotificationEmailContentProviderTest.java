@@ -13,8 +13,6 @@ import java.util.Collections;
 @RunWith(MockitoJUnitRunner.class)
 public class CCJRequestSubmittedNotificationEmailContentProviderTest {
 
-    private static final String EMAIL_SUBJECT = "Email Subject";
-    private static final String EMAIL_BODY = "Email Body";
     private CCJRequestSubmittedNotificationEmailContentProvider provider;
 
     @Mock
