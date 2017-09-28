@@ -138,8 +138,9 @@ public class ResendStaffNotificationsTest extends BaseTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        verify(notificationClient).sendEmail(eq("staff-more-time-requested-template"), eq("recipient@example.com"),
-            any(), eq("more-time-requested-notification-to-staff-" + claimReference));
+        verify(notificationClient).sendEmail(eq("staff-more-time-requested-template"),
+            eq("recipient@example.com"), any(),
+            eq("more-time-requested-notification-to-staff-" + claimReference));
     }
 
     @Test
@@ -163,7 +164,9 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "response-submitted";
 
-        final Claim claim = sampleClaim().setDefendantEmail("j.smith@example.com").setResponse(SampleResponseData.validDefaults()).setRespondedAt(LocalDateTime.now()).build();
+        final Claim claim = sampleClaim().setDefendantEmail("j.smith@example.com")
+            .setResponse(SampleResponseData.validDefaults()).setRespondedAt(LocalDateTime.now()).build();
+
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient
