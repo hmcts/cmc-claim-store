@@ -22,7 +22,7 @@ public class LegalSealedClaimContentProvider {
 
     @Autowired
     public LegalSealedClaimContentProvider(final StatementOfValueProvider statementOfValueProvider,
-        @Value("${claim-store.watermark-pdf.enabled}") final boolean watermarkPdfEnabled) {
+        @Value("${feature_toggles.watermark-pdf.enabled}") final boolean watermarkPdfEnabled) {
         this.statementOfValueProvider = statementOfValueProvider;
         this.watermarkPdfEnabled = watermarkPdfEnabled;
     }
