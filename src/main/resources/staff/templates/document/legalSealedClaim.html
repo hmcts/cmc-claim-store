@@ -165,32 +165,30 @@
           <h4>Service address</h4>
         </td>
         <td>
-          {% if claimant.representative is defined %}
           {{ claimant.representative.organisationName }}
           <br/>
           {{ claimant.representative.organisationAddress.line1 }}
           <br/>
           {% if claimant.representative.organisationAddress.line2 is defined %}
-          {{ claimant.representative.organisationAddress.line2 }}
-          <br/>
+            {{ claimant.representative.organisationAddress.line2 }}
+            <br/>
           {% endif %}
           {{ claimant.representative.organisationAddress.city }}
           <br/>
           {{ claimant.representative.organisationAddress.postcode }}
           <br/>
           {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
-          DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
-          <br/>
+            DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
+            <br/>
           {% endif %}
           {% if claimant.representative.organisationContactDetails.phone is defined %}
-          Tel: {{ claimant.representative.organisationContactDetails.phone }}
+            Tel: {{ claimant.representative.organisationContactDetails.phone }}
           {% endif %}
           {% if claimant.representative.organisationContactDetails.email is defined %}
-          <br/>
-          Email: {{ claimant.representative.organisationContactDetails.email }}
+            <br/>
+            Email: {{ claimant.representative.organisationContactDetails.email }}
           {% endif %}
 
-          {% endif %}
         </td>
       </tr>
     </table>
@@ -249,36 +247,33 @@
             {% endif %}
           </td>
           <td class="two-per-row">
-            {% if defendant.representative is defined or defendant.serviceAddress is defined  %}
             <h4>Service address</h4>
-            {% endif %}
           </td>
           <td>
             {% if defendant.representative is defined %}
-            {{ defendant.representative.organisationName }}
-            <br/>
-            {{ defendant.representative.organisationAddress.line1 }}
-            <br/>
-            {% if defendant.representative.organisationAddress.line2 is defined %}
-            {{ defendant.representative.organisationAddress.line2 }}
-            <br/>
-            {% endif %}
-            {{ defendant.representative.organisationAddress.city }}
-            <br/>
-            {{ defendant.representative.organisationAddress.postcode }}
-            <br/>
-            {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
-            DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
-            <br/>
-            {% endif %}
-            {% if defendant.representative.organisationContactDetails.phone is defined %}
-            Tel: {{ defendant.representative.organisationContactDetails.phone }}
-            {% endif %}
-            {% if defendant.representative.organisationContactDetails.email is defined %}
-            <br/>
-            Email: {{ defendant.representative.organisationContactDetails.email }}
-            {% endif %}
-
+              {{ defendant.representative.organisationName }}
+              <br/>
+              {{ defendant.representative.organisationAddress.line1 }}
+              <br/>
+              {% if defendant.representative.organisationAddress.line2 is defined %}
+                {{ defendant.representative.organisationAddress.line2 }}
+                <br/>
+              {% endif %}
+              {{ defendant.representative.organisationAddress.city }}
+              <br/>
+              {{ defendant.representative.organisationAddress.postcode }}
+              <br/>
+              {% if defendant.representative.organisationContactDetails.dxAddress is defined %}
+                DX: {{ defendant.representative.organisationContactDetails.dxAddress}}
+                <br/>
+              {% endif %}
+              {% if defendant.representative.organisationContactDetails.phone is defined %}
+                Tel: {{ defendant.representative.organisationContactDetails.phone }}
+              {% endif %}
+              {% if defendant.representative.organisationContactDetails.email is defined %}
+                <br/>
+                {{ defendant.representative.organisationContactDetails.email }}
+              {% endif %}
             {% elseif defendant.serviceAddress is defined %}
               {{ defendant.title}} {{ defendant.name }}
               <br/>
@@ -291,6 +286,18 @@
               {{ defendant.serviceAddress.city }}
               <br/>
               {{ defendant.serviceAddress.postcode }}
+            {% else %}
+              {{ defendant.title}} {{ defendant.name }}
+              <br/>
+              {{ defendant.address.line1 }}
+              <br/>
+              {% if defendant.address.line2 is defined %}
+                {{ defendant.address.line2 }}
+                <br/>
+              {% endif %}
+              {{ defendant.address.city }}
+              <br/>
+              {{ defendant.address.postcode }}
             {% endif %}
           </td>
         </tr>
