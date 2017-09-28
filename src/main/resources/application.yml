@@ -40,7 +40,7 @@ bankHolidays:
 
 dateCalculations:
   endOfBusinessDayHour: 16
-  serviceDays: 4
+  serviceDays: 5
   responseDays: 14
   requestedAdditionalTimeInDays: 14
   freeMediationTimeForDecisionInDays: 28
