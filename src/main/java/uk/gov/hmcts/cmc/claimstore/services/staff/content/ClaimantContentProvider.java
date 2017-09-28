@@ -23,7 +23,6 @@ public class ClaimantContentProvider {
     public ClaimantContent createContent(final Party claimant, final String submitterEmail) {
         requireNonNull(claimant);
         requireNonBlank(submitterEmail);
-        requireNonBlank(submitterEmail);
         PersonContent personContent = personContentProvider.createContent(
             PartyUtils.getType(claimant),
             claimant.getName(),
