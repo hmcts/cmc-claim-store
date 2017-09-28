@@ -69,7 +69,7 @@ pdfService:
 
 feature_toggles:
   watermark-pdf:
-    enabled: true
+    enabled: false
 ---
 spring:
   profiles: test
