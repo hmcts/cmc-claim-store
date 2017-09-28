@@ -38,9 +38,7 @@ public class LegalSealedClaimContentProviderTest {
     @Test
     public void contentShouldIncludeWaterMarkFlag() throws Exception {
         //given
-        final Claim claim = SampleClaim.builder().withClaimData(
-            SampleClaimData.builder().withFeeAmount(BigInteger.valueOf(50001)).build()
-        ).build();
+        final Claim claim = SampleClaim.getDefaultForLegal();
 
         final LegalSealedClaimContentProvider legalSealedClaimContentProvider
             = new LegalSealedClaimContentProvider(statementOfValueProvider, true);
@@ -49,6 +47,6 @@ public class LegalSealedClaimContentProviderTest {
         final Map<String, Object> contents = legalSealedClaimContentProvider.createContent(claim);
 
         //then
-        assertThat(contents).isNotEmpty().containsKey("waterMark").containsValue(true);
+        assertThat(contents).isNotEmpty().containsKey("waterMark");
     }
 }
