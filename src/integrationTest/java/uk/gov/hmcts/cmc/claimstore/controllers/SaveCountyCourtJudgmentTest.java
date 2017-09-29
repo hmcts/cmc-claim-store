@@ -32,7 +32,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
             = SampleUserDetails.builder().withUserId(CLAIMANT_ID).withMail("claimant@email.com").build();
 
         given(userService.getUserDetails(anyString())).willReturn(userDetails);
-        given(pdfServiceClient.generateFromHtml(any(),any())).willReturn(new byte[] {0,0,0});
+        given(pdfServiceClient.generateFromHtml(any(), any())).willReturn(new byte[]{0, 0, 0});
     }
 
     @Test
