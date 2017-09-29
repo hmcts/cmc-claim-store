@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 
 @Api
 @RestController
@@ -24,15 +26,19 @@ public class DocumentsController {
     private final ClaimService claimService;
     private final DefendantResponseCopyService defendantResponseCopyService;
     private final LegalSealedClaimService legalSealedClaimService;
+    private final CountyCourtJudgmentService countyCourtJudgmentService;
 
+    @Autowired
     public DocumentsController(
-        ClaimService claimService,
-        DefendantResponseCopyService defendantResponseCopyService,
-        LegalSealedClaimService legalSealedClaimService
+        final ClaimService claimService,
+        final DefendantResponseCopyService defendantResponseCopyService,
+        final LegalSealedClaimService legalSealedClaimService,
+        final CountyCourtJudgmentService countyCourtJudgmentService
     ) {
         this.claimService = claimService;
         this.defendantResponseCopyService = defendantResponseCopyService;
         this.legalSealedClaimService = legalSealedClaimService;
+        this.countyCourtJudgmentService = countyCourtJudgmentService;
     }
 
     @ApiOperation("Returns a Defendant Response copy for a given claim external id")
@@ -63,6 +69,23 @@ public class DocumentsController {
     ) {
         Claim claim = claimService.getClaimByExternalId(claimExternalId);
         byte[] pdfDocument = legalSealedClaimService.createPdf(claim);
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
+
+    @ApiOperation("Returns a County Court Judgement for a given claim external id")
+    @GetMapping(
+        value = "/ccj/{claimExternalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> countyCourtJudgement(
+        @ApiParam("Claim external id")
+        @PathVariable("claimExternalId") @NotBlank String claimExternalId
+    ) {
+        Claim claim = claimService.getClaimByExternalId(claimExternalId);
+        byte[] pdfDocument = countyCourtJudgmentService.createPdf(claim);
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)
