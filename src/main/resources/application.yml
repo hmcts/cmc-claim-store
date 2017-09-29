@@ -68,8 +68,7 @@ pdfService:
   baseUrl: ${PDF_SERVICE_URL:}
 
 feature_toggles:
-  watermark-pdf:
-    enabled: false
+  watermark_pdf: false
 ---
 spring:
   profiles: test
