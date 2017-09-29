@@ -136,7 +136,7 @@ public class ClaimService {
         }
 
         LocalDate newDeadline = responseDeadlineCalculator
-            .calculatePostponedResponseDeadline(claim.getResponseDeadline());
+            .calculatePostponedResponseDeadline(claim.getIssuedOn());
 
         claimRepository.requestMoreTime(claimId, newDeadline);
         claim = getClaimById(claimId);

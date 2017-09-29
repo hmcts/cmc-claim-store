@@ -180,7 +180,7 @@ public class ClaimServiceTest {
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
-        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(eq(RESPONSE_DEADLINE)))
+        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(eq(ISSUE_DATE)))
             .thenReturn(newDeadline);
 
         claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);

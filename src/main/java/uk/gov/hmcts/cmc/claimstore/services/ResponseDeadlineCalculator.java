@@ -35,8 +35,14 @@ public class ResponseDeadlineCalculator {
         return calculateFirstWorkingDayAfterOffset(issueDate, serviceDays + timeForResponseInDays);
     }
 
-    public LocalDate calculatePostponedResponseDeadline(LocalDate currentDeadline) {
-        return calculateFirstWorkingDayAfterOffset(currentDeadline, requestedAdditionalTimeInDays);
+    /**
+     * We have to calculate postponed response deadline based on issue date, not current response deadline
+     * as there are some edge cases that will not be covered otherwise.
+     * */
+    public LocalDate calculatePostponedResponseDeadline(LocalDate issueDate) {
+        return calculateFirstWorkingDayAfterOffset(
+            issueDate, serviceDays + timeForResponseInDays + requestedAdditionalTimeInDays
+        );
     }
 
     private LocalDate calculateFirstWorkingDayAfterOffset(final LocalDate date, final int offset) {
