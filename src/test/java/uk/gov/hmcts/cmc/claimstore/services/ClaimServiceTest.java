@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateClaimException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
@@ -165,8 +165,8 @@ public class ClaimServiceTest {
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null), anyString());
     }
 
-    @Test(expected = DuplicateClaimException.class)
-    public void saveClaimShouldThrowDuplicateClaimException() {
+    @Test(expected = ConflictException.class)
+    public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
         final ClaimData app = SampleClaimData.validDefaults();
         final String authorisationToken = "Open same!";
         when(claimRepository.getClaimByExternalId(any())).thenReturn(Optional.of(claim));
