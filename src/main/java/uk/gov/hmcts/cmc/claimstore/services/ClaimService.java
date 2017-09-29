@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DuplicateClaimException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
@@ -75,6 +76,12 @@ public class ClaimService {
 
     @Transactional
     public Claim saveClaim(final long submitterId, final ClaimData claimData, final String authorisation) {
+        final String externalId = claimData.getExternalId().toString();
+
+        claimRepository.getClaimByExternalId(externalId).ifPresent(claim -> {
+            throw new DuplicateClaimException("Duplicate claim for external id " + claim.getExternalId());
+        });
+
         final LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
 
@@ -89,7 +96,6 @@ public class ClaimService {
         final String submitterEmail = userDetails.getEmail();
 
         final String claimDataString = jsonMapper.toJson(claimData);
-        final String externalId = claimData.getExternalId().toString();
 
         long issuedClaimId;
 
