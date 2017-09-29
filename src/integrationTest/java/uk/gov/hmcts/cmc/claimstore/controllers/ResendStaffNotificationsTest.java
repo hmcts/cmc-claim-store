@@ -163,7 +163,11 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "response-submitted";
 
-        final Claim claim = sampleClaim().setDefendantEmail("j.smith@example.com").setResponse(SampleResponseData.validDefaults()).setRespondedAt(LocalDateTime.now()).build();
+        final Claim claim = sampleClaim()
+            .setDefendantEmail("j.smith@example.com")
+            .setResponse(
+                SampleResponseData.validDefaults()).setRespondedAt(LocalDateTime.now()
+            ).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient

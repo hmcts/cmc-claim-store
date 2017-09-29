@@ -84,6 +84,7 @@ public class CCJStaffNotificationServiceTest extends BaseTest {
 
         String expectedFileName = String.format(
             CCJStaffNotificationService.FILE_NAME_FORMAT,
+            claim.getClaimData().getDefendant().getName(),
             claim.getReferenceNumber()
         );
 

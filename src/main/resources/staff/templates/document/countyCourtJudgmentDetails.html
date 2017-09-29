@@ -1,0 +1,116 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>{{ ccj.claimReferenceNumber }}</title>
+  <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 10%;
+    }
+
+    html {
+      /*noinspection CssNoGenericFontName*/
+      font-family: "Open Sans";
+    }
+
+    body {
+      counter-reset: section;
+    }
+
+    .section {
+      margin-top: 25px;
+    }
+
+    .section .section-heading {
+      margin-bottom: 10px;
+    }
+
+    .section .section-heading strong:before {
+      counter-increment: section;
+      content: counter(section) ". ";
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+    }
+
+    table td {
+      border-top: 1px solid #999;
+      padding: 5px;
+    }
+    table tr:last-child td {
+      border-bottom: 1px solid #999;
+    }
+
+    table td:first-child {
+      width: 220px;
+      vertical-align: top;
+    }
+
+    table td:last-child {
+      width: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Defendant details</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Full Name:</td>
+        <td>
+          {{ ccj.defendantName }}
+        </td>
+      </tr>
+      <tr>
+        <td>Address:</td>
+        <td>
+          {{ ccj.defendantAddress.line1 }}
+          <br/>
+          {% if ccj.defendantAddress.line2 is not empty %}
+          {{ ccj.defendantAddress.line2 }}
+          <br/>
+          {% endif %}
+          {{ ccj.defendantAddress.city }}
+          <br/>
+          {{ ccj.defendantAddress.postcode }}
+        </td>
+      </tr>
+      <tr>
+        <td>Email:</td>
+        <td>
+          {{ ccj.defendantEmail }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Payment</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Amount to be paid by defendant:</td>
+        <td>
+          {{ ccj.amountToPayByDefendant }}
+        </td>
+      </tr>
+      <tr>
+        <td>When you want the defendant to pay:</td>
+        <td>
+          {{ ccj.paymentRepaymentOption }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>
