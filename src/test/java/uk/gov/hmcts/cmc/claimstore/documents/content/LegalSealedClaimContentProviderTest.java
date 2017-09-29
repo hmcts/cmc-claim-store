@@ -47,6 +47,6 @@ public class LegalSealedClaimContentProviderTest {
         final Map<String, Object> contents = legalSealedClaimContentProvider.createContent(claim);
 
         //then
-        assertThat(contents).isNotEmpty().containsKey("waterMark");
+        assertThat(contents).isNotEmpty().containsKey("watermarkPdf");
     }
 }
