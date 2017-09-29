@@ -42,8 +42,8 @@ public class StaffEmailTemplates {
         return readBytes("/staff/templates/document/legalSealedClaim.html");
     }
 
-    public byte[] getCountyCourtJudgment() {
-        return readBytes("/staff/templates/document/countyCourtJudgment.html");
+    public byte[] getCountyCourtJudgmentDetails() {
+        return readBytes("/staff/templates/document/countyCourtJudgmentDetails.html");
     }
 
     private byte[] readBytes(final String resourcePath) {

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
@@ -17,10 +18,13 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 public class LegalSealedClaimContentProvider {
 
     private final StatementOfValueProvider statementOfValueProvider;
+    private final boolean watermarkPdf;
 
     @Autowired
-    public LegalSealedClaimContentProvider(final StatementOfValueProvider statementOfValueProvider) {
+    public LegalSealedClaimContentProvider(final StatementOfValueProvider statementOfValueProvider,
+        @Value("${feature_toggles.watermark-pdf.enabled}") final boolean watermarkPdf) {
         this.statementOfValueProvider = statementOfValueProvider;
+        this.watermarkPdf = watermarkPdf;
     }
 
     public Map<String, Object> createContent(final Claim claim) {
@@ -51,6 +55,7 @@ public class LegalSealedClaimContentProvider {
         content.put("signerRole", statementOfTruth.getSignerRole());
         content.put("signerCompany", legalRepresentative.getOrganisationName());
         content.put("statementOfValue", statementOfValueProvider.create(claim));
+        content.put("watermarkPdf", watermarkPdf);
 
         return content;
     }
