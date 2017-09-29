@@ -105,6 +105,16 @@ public class SaveClaimantClaimTest extends BaseTest {
     }
 
     @Test
+    public void claimSaveShouldFailWhenDuplicateExternalId() throws Exception {
+        //given
+        given(claimRepository.getClaimByExternalId(any())).willReturn(Optional.of(claimAfterSaving));
+        //when, then
+        postClaim(SampleClaimData.validDefaults())
+            .andExpect(status().isConflict())
+            .andReturn();
+    }
+
+    @Test
     public void claimSaveShouldRetrySendNotifications() throws Exception {
         //given
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
