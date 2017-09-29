@@ -18,13 +18,13 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 public class LegalSealedClaimContentProvider {
 
     private final StatementOfValueProvider statementOfValueProvider;
-    private final boolean watermarkPdfEnabled;
+    private final boolean watermarkPdf;
 
     @Autowired
     public LegalSealedClaimContentProvider(final StatementOfValueProvider statementOfValueProvider,
-        @Value("${feature_toggles.watermark-pdf.enabled}") final boolean watermarkPdfEnabled) {
+        @Value("${feature_toggles.watermark-pdf.enabled}") final boolean watermarkPdf) {
         this.statementOfValueProvider = statementOfValueProvider;
-        this.watermarkPdfEnabled = watermarkPdfEnabled;
+        this.watermarkPdf = watermarkPdf;
     }
 
     public Map<String, Object> createContent(final Claim claim) {
@@ -55,7 +55,7 @@ public class LegalSealedClaimContentProvider {
         content.put("signerRole", statementOfTruth.getSignerRole());
         content.put("signerCompany", legalRepresentative.getOrganisationName());
         content.put("statementOfValue", statementOfValueProvider.create(claim));
-        content.put("waterMark", watermarkPdfEnabled);
+        content.put("watermarkPdf", watermarkPdf);
 
         return content;
     }
