@@ -90,8 +90,8 @@ public class ClaimController {
     @ApiOperation("Check whether a claim is linked to a defendant")
     public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") final String caseReference) {
         Boolean linked = claimService.getClaimByReference(caseReference)
-            .map(claim -> claim.getDefendantId() != null)
-            .orElse(false);
+            .filter(claim -> claim.getDefendantId() != null)
+            .isPresent();
         return new DefendantLinkStatus(linked);
     }
 }
