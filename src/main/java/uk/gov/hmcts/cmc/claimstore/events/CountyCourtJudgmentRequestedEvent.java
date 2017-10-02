@@ -5,11 +5,11 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Objects;
 
-public class CountyCourtJudgmentSubmittedEvent {
+public class CountyCourtJudgmentRequestedEvent {
 
     private final Claim claim;
 
-    public CountyCourtJudgmentSubmittedEvent(final Claim claim) {
+    public CountyCourtJudgmentRequestedEvent(final Claim claim) {
         this.claim = claim;
     }
 
@@ -27,7 +27,7 @@ public class CountyCourtJudgmentSubmittedEvent {
             return false;
         }
 
-        final CountyCourtJudgmentSubmittedEvent that = (CountyCourtJudgmentSubmittedEvent) other;
+        final CountyCourtJudgmentRequestedEvent that = (CountyCourtJudgmentRequestedEvent) other;
         return Objects.equals(claim, that.claim);
     }
 

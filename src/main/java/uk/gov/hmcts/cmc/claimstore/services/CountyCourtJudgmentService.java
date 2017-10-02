@@ -7,8 +7,10 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJContentProvider;
@@ -69,6 +71,10 @@ public class CountyCourtJudgmentService {
             );
         }
 
+        if (isCountyCourtJudgmentInputValid(countyCourtJudgment)) {
+            throw new UnprocessableEntityException("Given data input is invalid");
+        }
+
         claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
 
         Claim claimWithCCJ = getClaim(claimId);
@@ -76,6 +82,15 @@ public class CountyCourtJudgmentService {
         eventProducer.createCountyCourtJudgmentSubmittedEvent(claimWithCCJ);
 
         return claimWithCCJ;
+    }
+
+    private boolean isCountyCourtJudgmentInputValid(CountyCourtJudgment ccj) {
+        return ((ccj.getPaymentOption().equals(PaymentOption.IMMEDIATELY)
+            && (ccj.getPayBySetDate().isPresent() || ccj.getRepaymentPlan().isPresent()))
+            || (ccj.getPaymentOption().equals(PaymentOption.FULL_BY_SPECIFIED_DATE)
+            && (!ccj.getPayBySetDate().isPresent() || ccj.getRepaymentPlan().isPresent()))
+            || (ccj.getPaymentOption().equals(PaymentOption.INSTALMENTS)
+            && (ccj.getPayBySetDate().isPresent() || !ccj.getRepaymentPlan().isPresent())));
     }
 
     private boolean canCountyCourtJudgmentBeRequestedYet(final Claim claim) {

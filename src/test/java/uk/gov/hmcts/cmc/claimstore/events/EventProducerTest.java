@@ -103,7 +103,7 @@ public class EventProducerTest {
     public void shouldCreateCountyCourtJudgmentSubmittedEvent() throws Exception {
 
         // given
-        CountyCourtJudgmentSubmittedEvent expectedEvent = new CountyCourtJudgmentSubmittedEvent(CLAIM);
+        CountyCourtJudgmentRequestedEvent expectedEvent = new CountyCourtJudgmentRequestedEvent(CLAIM);
 
         // when
         eventProducer.createCountyCourtJudgmentSubmittedEvent(CLAIM);
