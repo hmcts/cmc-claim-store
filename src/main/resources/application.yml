@@ -67,6 +67,8 @@ staff-notifications:
 pdfService:
   baseUrl: ${PDF_SERVICE_URL:}
 
+feature_toggles:
+  watermark_pdf: false
 ---
 spring:
   profiles: test
