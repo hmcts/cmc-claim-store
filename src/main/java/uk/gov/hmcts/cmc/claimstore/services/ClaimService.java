@@ -70,6 +70,11 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
+    public Optional<Claim> getClaimByReference(final String reference) {
+        return claimRepository
+            .getByClaimReferenceNumber(reference);
+    }
+
     public List<Claim> getClaimByDefendantId(final long id) {
         return claimRepository.getByDefendantId(id);
     }

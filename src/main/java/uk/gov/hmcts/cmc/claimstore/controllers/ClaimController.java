@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.DefendantLinkStatus;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 
 import java.util.List;
@@ -83,5 +84,14 @@ public class ClaimController {
     public Claim requestMoreTimeToRespond(@PathVariable("claimId") final Long claimId,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
         return claimService.requestMoreTimeForResponse(claimId, authorisation);
+    }
+
+    @GetMapping("/{caseReference}/defendant-link-status")
+    @ApiOperation("Check whether a claim is linked to a defendant")
+    public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") final String caseReference) {
+        Boolean linked = claimService.getClaimByReference(caseReference)
+            .filter(claim -> claim.getDefendantId() != null)
+            .isPresent();
+        return new DefendantLinkStatus(linked);
     }
 }
