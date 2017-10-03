@@ -2,7 +2,7 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'io.spring.dependency-management' version '1.0.3.RELEASE'
-    id 'org.springframework.boot' version '1.5.6.RELEASE'
+    id 'org.springframework.boot' version '1.5.7.RELEASE'
     id 'org.owasp.dependencycheck' version '1.4.5.1'
     id 'com.github.ben-manes.versions' version '0.15.0'
     id 'org.sonarqube' version '2.5'
@@ -65,7 +65,7 @@ allprojects {
 
 }
 
-def springBootVersion = '1.5.6.RELEASE'
+def springBootVersion = '1.5.7.RELEASE'
 
 dependencyManagement {
     imports {
@@ -99,7 +99,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
 
-    compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.3.0'
+    compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
     compile group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
 
@@ -110,13 +110,13 @@ dependencies {
 
     compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
 
-    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.3.0-RELEASE'
+    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.4.0-RELEASE'
 
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '1.2.1'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: '1.2.1'
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
 
-    compile group: 'uk.gov.hmcts.reform.cmc', name: 'pdf-service-client', version: '1.1.0'
+    compile group: 'uk.gov.hmcts.reform.cmc', name: 'pdf-service-client', version: '1.2.2'
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 
@@ -128,7 +128,7 @@ dependencies {
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.9.0'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.10.0'
 
 }
 
