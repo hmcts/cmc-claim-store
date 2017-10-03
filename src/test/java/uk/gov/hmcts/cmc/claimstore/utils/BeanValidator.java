@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
@@ -20,8 +22,15 @@ public class BeanValidator {
 
     private static <T> Set<String> getMessages(final Set<ConstraintViolation<T>> response) {
         return response.stream()
-            .map(r -> r.getPropertyPath() + " : " + r.getMessage())
+            .map(BeanValidator::prepareMessage)
             .collect(Collectors.toSet());
     }
 
+    private static String prepareMessage(ConstraintViolation property) {
+        if (!StringUtils.isEmpty(property.getPropertyPath().toString())) {
+            return property.getPropertyPath() + " : " + property.getMessage();
+        }
+
+        return property.getMessage();
+    }
 }

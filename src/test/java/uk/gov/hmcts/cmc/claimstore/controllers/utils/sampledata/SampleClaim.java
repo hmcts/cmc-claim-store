@@ -91,7 +91,12 @@ public final class SampleClaim {
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
-            null, null, null, null, null);
+            null,
+            null,
+            null,
+            null,
+            null
+        );
     }
 
     public static Claim getWithSubmissionInterestDate() {

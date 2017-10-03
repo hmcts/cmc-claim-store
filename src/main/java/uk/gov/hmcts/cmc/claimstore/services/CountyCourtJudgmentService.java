@@ -28,7 +28,6 @@ public class CountyCourtJudgmentService {
     private final StaffEmailTemplates emailTemplates;
     private final CCJContentProvider ccjContentProvider;
 
-
     @Autowired
     public CountyCourtJudgmentService(
         ClaimRepository claimRepository,
@@ -73,7 +72,7 @@ public class CountyCourtJudgmentService {
 
         Claim claimWithCCJ = getClaim(claimId);
 
-        eventProducer.createCountyCourtJudgmentSubmittedEvent(claimWithCCJ);
+        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ);
 
         return claimWithCCJ;
     }

@@ -29,7 +29,7 @@ public class AmountRowTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains(" : Claimant Amount is inValid");
+            .contains("Claimant Amount is inValid");
     }
 
     @Test
@@ -41,7 +41,7 @@ public class AmountRowTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains(" : Claimant Amount is inValid");
+            .contains("Claimant Amount is inValid");
     }
 
     @Test

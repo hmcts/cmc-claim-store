@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.claimstore.constraints.Money;
+import uk.gov.hmcts.cmc.claimstore.constraints.ValidCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@ValidCountyCourtJudgment
 public class CountyCourtJudgment {
 
     @Valid

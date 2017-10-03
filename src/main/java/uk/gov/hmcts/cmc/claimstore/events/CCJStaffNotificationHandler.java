@@ -16,7 +16,7 @@ public class CCJStaffNotificationHandler {
     }
 
     @EventListener
-    public void onDefaultJudgmentRequestSubmitted(final CountyCourtJudgmentSubmittedEvent event) {
+    public void onDefaultJudgmentRequestSubmitted(final CountyCourtJudgmentRequestedEvent event) {
         this.ccjStaffNotificationService.notifyStaffCCJRequestSubmitted(
             event.getClaim()
         );
