@@ -27,7 +27,7 @@ public class CountyCourtJudgmentSerializationTest {
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
             .withDefendant(defendant)
             .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withStatementOfThruth(new StatementOfTruth(defendant.getContactPerson().get(), "Director"))
+            .withStatementOfTruth(new StatementOfTruth(defendant.getContactPerson().get(), "Director"))
             .build();
 
         //when
