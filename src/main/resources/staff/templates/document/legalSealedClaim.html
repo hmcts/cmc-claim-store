@@ -201,7 +201,7 @@
   {% if externalReferenceNumber is defined %}
   <table class="border-bottom">
     <tr>
-      <td class="two-per-row"><h4>Claimant solicitor’s reference</h4></td>
+      <td class="two-per-row"><h4>Claimant solicitor reference</h4></td>
       <td>{{ externalReferenceNumber }}</td>
     </tr>
   </table>
@@ -442,42 +442,28 @@
           <h4>Service address</h4>
         </td>
         <td>
-          {% if claimant.representative is defined %}
-            {{ claimant.representative.organisationName }}
+          {{ claimant.representative.organisationName }}
+          <br/>
+          {{ claimant.representative.organisationAddress.line1 }}
+          <br/>
+          {% if claimant.representative.organisationAddress.line2 is defined %}
+          {{ claimant.representative.organisationAddress.line2 }}
+          <br/>
+          {% endif %}
+          {{ claimant.representative.organisationAddress.city }}
+          <br/>
+          {{ claimant.representative.organisationAddress.postcode }}
+          <br/>
+          {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
+            DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
             <br/>
-            {{ claimant.representative.organisationAddress.line1 }}
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.phone is defined %}
+            Tel: {{ claimant.representative.organisationContactDetails.phone }}
+          {% endif %}
+          {% if claimant.representative.organisationContactDetails.email is defined %}
             <br/>
-            {% if claimant.representative.organisationAddress.line2 is defined %}
-            {{ claimant.representative.organisationAddress.line2 }}
-            <br/>
-            {% endif %}
-            {{ claimant.representative.organisationAddress.city }}
-            <br/>
-            {{ claimant.representative.organisationAddress.postcode }}
-            <br/>
-            {% if claimant.representative.organisationContactDetails.dxAddress is defined %}
-              DX: {{ claimant.representative.organisationContactDetails.dxAddress }}
-              <br/>
-            {% endif %}
-            {% if claimant.representative.organisationContactDetails.phone is defined %}
-              Tel: {{ claimant.representative.organisationContactDetails.phone }}
-            {% endif %}
-            {% if claimant.representative.organisationContactDetails.email is defined %}
-              <br/>
-              Email: {{ claimant.representative.organisationContactDetails.email }}
-            {% endif %}
-          {% else %}
-            {{ defendant.title}} {{ defendant.name }}
-            <br/>
-            {{ defendant.address.line1 }}
-            <br/>
-            {% if defendant.address.line2 is defined %}
-              {{ defendant.address.line2 }}
-              <br/>
-            {% endif %}
-            {{ defendant.address.city }}
-            <br/>
-            {{ defendant.address.postcode }}
+            Email: {{ claimant.representative.organisationContactDetails.email }}
           {% endif %}
         </td>
       </tr>
@@ -555,6 +541,18 @@
             {{ defendant.serviceAddress.city }}
             <br/>
             {{ defendant.serviceAddress.postcode }}
+          {% else %}
+            {{ defendant.title}} {{ defendant.name }}
+            <br/>
+            {{ defendant.address.line1 }}
+            <br/>
+            {% if defendant.address.line2 is defined %}
+              {{ defendant.address.line2 }}
+              <br/>
+            {% endif %}
+            {{ defendant.address.city }}
+            <br/>
+            {{ defendant.address.postcode }}
           {% endif %}
         </td>
       </tr>
