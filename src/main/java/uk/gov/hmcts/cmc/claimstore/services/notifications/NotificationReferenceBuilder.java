@@ -49,4 +49,21 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }
+
+    public static class CCJRequested {
+
+        public static final String TEMPLATE = "%s-ccj-requested-notification-%s";
+
+        private CCJRequested() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+        }
+    }
 }

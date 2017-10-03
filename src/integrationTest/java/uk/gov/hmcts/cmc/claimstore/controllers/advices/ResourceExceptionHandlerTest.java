@@ -28,7 +28,6 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleCla
 public class ResourceExceptionHandlerTest extends BaseTest {
     private static final long CLAIMANT_ID = 123L;
 
-
     @Before
     public void setup() {
         UnableToExecuteStatementException exception = mock(UnableToExecuteStatementException.class);

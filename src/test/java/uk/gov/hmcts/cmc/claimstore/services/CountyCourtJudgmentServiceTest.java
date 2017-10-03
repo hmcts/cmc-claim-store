@@ -68,13 +68,14 @@ public class CountyCourtJudgmentServiceTest {
     @Test
     public void saveShouldFinishSuccessfullyForHappyPath() {
 
-        Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().minusMonths(2));
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2)).build();
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentSubmittedEvent(any(Claim.class));
+        verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class));
         verify(claimRepository, once()).saveCountyCourtJudgment(eq(CLAIM_ID), any());
     }
 
