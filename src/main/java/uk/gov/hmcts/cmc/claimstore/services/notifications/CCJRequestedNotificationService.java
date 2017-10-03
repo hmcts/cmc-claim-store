@@ -54,7 +54,7 @@ public class CCJRequestedNotificationService {
 
         final Map<String, String> parameters = aggregateParams(claim);
         notify(
-            claim.getDefendantEmail(),
+            claim.getClaimData().getDefendant().getEmail().get(),
             notificationsProperties.getTemplates().getEmail().getDefendantCCJRequested(),
             parameters,
             NotificationReferenceBuilder.CCJRequested.referenceForDefendant(claim.getReferenceNumber())
