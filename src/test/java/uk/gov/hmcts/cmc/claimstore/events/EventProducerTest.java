@@ -106,7 +106,7 @@ public class EventProducerTest {
         CountyCourtJudgmentRequestedEvent expectedEvent = new CountyCourtJudgmentRequestedEvent(CLAIM);
 
         // when
-        eventProducer.createCountyCourtJudgmentSubmittedEvent(CLAIM);
+        eventProducer.createCountyCourtJudgmentRequestedEvent(CLAIM);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));

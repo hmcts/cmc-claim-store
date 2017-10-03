@@ -31,7 +31,7 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentSubmittedEvent(final Claim claim) {
+    public void createCountyCourtJudgmentRequestedEvent(final Claim claim) {
         publisher.publishEvent(new CountyCourtJudgmentRequestedEvent(claim));
     }
 }

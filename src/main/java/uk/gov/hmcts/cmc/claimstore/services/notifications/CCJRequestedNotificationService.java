@@ -49,9 +49,8 @@ public class CCJRequestedNotificationService {
 
     public void notifyDefendant(final Claim claim) {
 
-        if (claim.getDefendantEmail() == null) {
-            throw new NotificationException(("Unknown defendant email"));
-        }
+        claim.getClaimData().getDefendant().getEmail()
+            .orElseThrow(() -> new NotificationException(("Unknown defendant email")));
 
         final Map<String, String> parameters = aggregateParams(claim);
         notify(

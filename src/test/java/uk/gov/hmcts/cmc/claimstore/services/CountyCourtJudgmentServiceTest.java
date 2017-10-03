@@ -77,7 +77,7 @@ public class CountyCourtJudgmentServiceTest {
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentSubmittedEvent(any(Claim.class));
+        verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class));
         verify(claimRepository, once()).saveCountyCourtJudgment(eq(CLAIM_ID), any());
     }
 

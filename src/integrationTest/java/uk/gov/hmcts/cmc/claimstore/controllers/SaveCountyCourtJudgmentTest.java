@@ -41,8 +41,11 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
         Claim claimWithCCJ = SampleClaim.builder()
             .withSubmitterId(CLAIMANT_ID)
             .withResponseDeadline(LocalDate.now().minusDays(2))
-            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build())
-            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .withPaymentOptionImmediately()
+                    .build()
+            ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
         given(claimRepository.getById(CLAIM_ID))

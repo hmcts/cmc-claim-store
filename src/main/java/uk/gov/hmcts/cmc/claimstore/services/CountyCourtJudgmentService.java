@@ -79,7 +79,7 @@ public class CountyCourtJudgmentService {
 
         Claim claimWithCCJ = getClaim(claimId);
 
-        eventProducer.createCountyCourtJudgmentSubmittedEvent(claimWithCCJ);
+        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ);
 
         return claimWithCCJ;
     }
