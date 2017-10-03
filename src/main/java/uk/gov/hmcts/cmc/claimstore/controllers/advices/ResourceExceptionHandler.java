@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -96,13 +97,23 @@ public class ResourceExceptionHandler {
         List<FieldError> errors = result.getFieldErrors();
 
         for (FieldError error : errors) {
-            builder.append(error.getField())
-                .append(" : ")
-                .append(error.getDefaultMessage())
-                .append(", ");
+            builder = addError(builder, error.getField(), error.getDefaultMessage());
+        }
+
+        ObjectError objectError = result.getGlobalError();
+
+        if (objectError != null) {
+            builder = addError(builder, objectError.getObjectName(), objectError.getDefaultMessage());
         }
 
         builder.delete(builder.length() - 2, builder.length());
         return new ResponseEntity<>(builder.toString(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    private StringBuilder addError(StringBuilder builder, String key, String message) {
+        return builder.append(key)
+            .append(" : ")
+            .append(message)
+            .append(", ");
     }
 }

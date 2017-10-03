@@ -120,7 +120,6 @@ public class EmailTemplates {
     }
 
     public String getClaimantCCJRequested() {
-
         return claimantCCJRequested;
     }
 

@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CCJRequestedNotificationServiceTest extends BaseNotificationServiceTest {
@@ -47,7 +46,7 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
 
         ccjRequestedNotificationService.notifyClaimant(claim);
 
-        verify(notificationClient, once())
+        verify(notificationClient)
             .sendEmail(
                 eq(CLAIMANT_CCJ_REQUESTED_TEMPLATE),
                 eq(claim.getSubmitterEmail()),
@@ -85,7 +84,7 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
 
         ccjRequestedNotificationService.notifyDefendant(claim);
 
-        verify(notificationClient, once())
+        verify(notificationClient)
             .sendEmail(
                 eq(DEFENDANT_CCJ_REQUESTED_TEMPLATE),
                 eq(email),

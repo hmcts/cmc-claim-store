@@ -3,18 +3,23 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -58,16 +63,33 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
                 )
             ).willReturn(Optional.of(claimWithCCJ));
 
-        postCountyCourtJudgment(CLAIM_ID)
+        postCountyCourtJudgment(CLAIM_ID, SampleCountyCourtJudgment.builder().build())
             .andExpect(status().isOk());
     }
 
-    private ResultActions postCountyCourtJudgment(final long claimId) throws Exception {
+    @Test
+    public void shouldFailWhenInvalidCountyCourtModelProvided() throws Exception {
+
+        MvcResult result = postCountyCourtJudgment(
+            CLAIM_ID,
+            SampleCountyCourtJudgment.builder()
+                .withRepaymentPlan(SampleRepaymentPlan.builder().build())
+                .withPaymentOption(PaymentOption.IMMEDIATELY)
+                .build()
+        )
+            .andExpect(status().isBadRequest())
+            .andReturn();
+
+        assertThat(extractErrors(result)).hasSize(1)
+            .contains("countyCourtJudgment : Invalid county court judgment model");
+    }
+
+    private ResultActions postCountyCourtJudgment(final long claimId, final CountyCourtJudgment ccj) throws Exception {
         return webClient
             .perform(post("/claims/" + claimId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
-                .content(jsonMapper.toJson(SampleCountyCourtJudgment.builder().build()))
+                .content(jsonMapper.toJson(ccj))
             );
     }
 }

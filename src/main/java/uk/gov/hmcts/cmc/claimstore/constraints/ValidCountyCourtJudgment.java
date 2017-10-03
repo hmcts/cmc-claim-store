@@ -13,7 +13,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = {ValidCountyCourtJudgmentValidator.class})
 @Documented
 public @interface ValidCountyCourtJudgment {
-    String message() default "Invalid county court judgment model";
+    String message() default "Invalid county court judgment request";
 
     Class<?>[] groups() default {};
 
