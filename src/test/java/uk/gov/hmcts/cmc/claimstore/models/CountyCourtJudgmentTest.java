@@ -34,6 +34,6 @@ public class CountyCourtJudgmentTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("Invalid county court judgment model");
+            .contains("Invalid county court judgment request");
     }
 }

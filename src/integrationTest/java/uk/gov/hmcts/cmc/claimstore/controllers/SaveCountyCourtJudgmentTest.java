@@ -81,7 +81,7 @@ public class SaveCountyCourtJudgmentTest extends BaseTest {
             .andReturn();
 
         assertThat(extractErrors(result)).hasSize(1)
-            .contains("countyCourtJudgment : Invalid county court judgment model");
+            .contains("countyCourtJudgment : Invalid county court judgment request");
     }
 
     private ResultActions postCountyCourtJudgment(final long claimId, final CountyCourtJudgment ccj) throws Exception {
