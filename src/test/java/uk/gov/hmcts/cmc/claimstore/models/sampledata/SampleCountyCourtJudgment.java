@@ -58,8 +58,8 @@ public class SampleCountyCourtJudgment {
         return this;
     }
 
-    public SampleCountyCourtJudgment withStatementOfThruth(StatementOfTruth statementOfThruth) {
-        this.statementOfTruth = statementOfThruth;
+    public SampleCountyCourtJudgment withStatementOfTruth(StatementOfTruth statementOfTruth) {
+        this.statementOfTruth = statementOfTruth;
         return this;
     }
 

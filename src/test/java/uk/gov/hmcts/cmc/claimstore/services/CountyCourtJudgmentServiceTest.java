@@ -10,10 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -79,20 +77,6 @@ public class CountyCourtJudgmentServiceTest {
 
         verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class));
         verify(claimRepository, once()).saveCountyCourtJudgment(eq(CLAIM_ID), any());
-    }
-
-    @Test(expected = UnprocessableEntityException.class)
-    public void saveThrowsUnprocessableEntityExceptionWhenInputDataIncorrect() {
-
-        Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().minusMonths(2));
-        CountyCourtJudgment invalidCcj = SampleCountyCourtJudgment.builder()
-            .withPayBySetDate(LocalDate.now().plusDays(100))
-            .withPaymentOption(PaymentOption.INSTALMENTS)
-            .build();
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
-
-        countyCourtJudgmentService.save(USER_ID, invalidCcj, CLAIM_ID);
     }
 
     @Test(expected = NotFoundException.class)

@@ -13,9 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,7 +51,7 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
             .sendEmail(
                 eq(CLAIMANT_CCJ_REQUESTED_TEMPLATE),
                 eq(claim.getSubmitterEmail()),
-                any(HashMap.class),
+                anyMap(),
                 eq(NotificationReferenceBuilder.CCJRequested.referenceForClaimant(claim.getReferenceNumber()))
             );
     }
@@ -90,7 +89,7 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
             .sendEmail(
                 eq(DEFENDANT_CCJ_REQUESTED_TEMPLATE),
                 eq(email),
-                any(HashMap.class),
+                anyMap(),
                 eq(NotificationReferenceBuilder.CCJRequested.referenceForDefendant(claim.getReferenceNumber()))
             );
     }

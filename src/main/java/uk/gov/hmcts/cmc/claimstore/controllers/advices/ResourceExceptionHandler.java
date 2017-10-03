@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.UnprocessableEntityException;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,12 +33,6 @@ public class ResourceExceptionHandler {
     public ResponseEntity<Object> internalServiceError(Exception exception) {
         logger.error(exception.getMessage(), exception);
         return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(value = UnprocessableEntityException.class)
-    public ResponseEntity<Object> unprocessableException(UnprocessableEntityException exception) {
-        logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(value = UnableToExecuteStatementException.class)
