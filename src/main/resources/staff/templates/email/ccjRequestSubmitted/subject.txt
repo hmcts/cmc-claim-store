@@ -1,1 +1,1 @@
-Civil money claims: {{ claim.referenceNumber }} {{ claim.claimData.claimant.name }} v {{ claim.claimData.defendant.name }} default judgment requested
+Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} default judgment requested
