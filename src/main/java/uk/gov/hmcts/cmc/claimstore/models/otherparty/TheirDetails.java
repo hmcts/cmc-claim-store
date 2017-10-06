@@ -43,7 +43,7 @@ public abstract class TheirDetails implements NamedParty {
     @NotNull
     private final Address address;
 
-    @Email
+    @Email(regexp = "\\S+")
     private final String email;
 
     @Valid
