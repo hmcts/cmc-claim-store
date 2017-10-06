@@ -44,9 +44,16 @@ public class DefendantResponseService {
             throw new ForbiddenActionException("Response for the claim " + claimId + " was already submitted");
         }
 
+        if (isCCJAlreadyRequested(claim)) {
+            throw new ForbiddenActionException(
+                "County Court Judgment for the claim " + claimId + " was already requested"
+            );
+        }
+
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        defendantResponseRepository.save(claimId, defendantId, defendantEmail,
-            jsonMapper.toJson(responseData));
+        defendantResponseRepository.save(
+            claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData)
+        );
 
         final Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
 
@@ -59,4 +66,7 @@ public class DefendantResponseService {
         return null != claim.getRespondedAt();
     }
 
+    private boolean isCCJAlreadyRequested(final Claim claim) {
+        return null != claim.getCountyCourtJudgmentRequestedAt();
+    }
 }
