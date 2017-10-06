@@ -44,12 +44,6 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
     @Test
     public void notifyClaimantShouldCallNotify() throws Exception {
         Claim claim = SampleClaim.builder()
-            .withClaimData(
-                SampleClaimData.builder()
-                    .withDefendants(
-                        Arrays.asList(SampleTheirDetails.builder().withEmail(null).individualDetails())
-                    ).build()
-            )
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
