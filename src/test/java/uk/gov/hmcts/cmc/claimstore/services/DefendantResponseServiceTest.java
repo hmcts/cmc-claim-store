@@ -8,6 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
@@ -15,6 +17,8 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -55,9 +59,8 @@ public class DefendantResponseServiceTest {
     @Test
     public void saveShouldFinishSuccessfully() {
         //given
-        final ResponseData app = SampleResponseData.validDefaults();
         final String jsonApp = new ResourceReader().read("/defendant-response.json");
-        when(mapper.toJson(eq(app))).thenReturn(jsonApp);
+        when(mapper.toJson(eq(VALID_APP))).thenReturn(jsonApp);
 
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(
             new UserDetails(USER_ID, DEFENDANT_EMAIL, "Jonny", "Jones")
@@ -68,11 +71,28 @@ public class DefendantResponseServiceTest {
         when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
 
         //when
-        responseService.save(CLAIM_ID, DEFENDANT_ID, app, AUTHORISATION);
+        responseService.save(CLAIM_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
 
         //then
         verify(eventProducer, once())
-            .createDefendantResponseEvent(eq(claim) );
+            .createDefendantResponseEvent(eq(claim));
     }
 
+    @Test(expected = ResponseAlreadySubmittedException.class)
+    public void saveShouldThrowResponseAlreadySubmittedExceptionWhenResponseSubmitted() {
+
+        when(claimService.getClaimById(eq(CLAIM_ID)))
+            .thenReturn(SampleClaim.builder().withRespondedAt(LocalDateTime.now()).build());
+
+        responseService.save(CLAIM_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+    }
+
+    @Test(expected = CountyCourtJudgmentAlreadyRequestedException.class)
+    public void saveShouldThrowCountyCourtJudgmentAlreadyRequestedExceptionWhenCCJRequested() {
+
+        when(claimService.getClaimById(eq(CLAIM_ID)))
+            .thenReturn(SampleClaim.builder().withCountyCourtJudgmentRequestedAt(LocalDateTime.now()).build());
+
+        responseService.save(CLAIM_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+    }
 }
