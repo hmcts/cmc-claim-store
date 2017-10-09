@@ -13,7 +13,7 @@ public class CCJContent {
 
     private String claimReferenceNumber;
     private String claimantName;
-    private String ccjRequestedDate;
+    private String requestedDate;
     private String defendantName;
     private Address defendantAddress;
     private String defendantEmail;
@@ -33,7 +33,7 @@ public class CCJContent {
             ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()
         );
         this.claimantName = claim.getClaimData().getClaimant().getName();
-        this.ccjRequestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
+        this.requestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
     }
 
     public String getClaimReferenceNumber() {
@@ -64,7 +64,7 @@ public class CCJContent {
         return claimantName;
     }
 
-    public String getCcjRequestedDate() {
-        return ccjRequestedDate;
+    public String getRequestedDate() {
+        return requestedDate;
     }
 }
