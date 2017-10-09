@@ -3,7 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -41,12 +42,17 @@ public class DefendantResponseService {
         final Claim claim = claimService.getClaimById(claimId);
 
         if (isResponseAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("Response for the claim " + claimId + " was already submitted");
+            throw new ResponseAlreadySubmittedException(claimId);
+        }
+
+        if (isCCJAlreadyRequested(claim)) {
+            throw new CountyCourtJudgmentAlreadyRequestedException(claimId);
         }
 
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        defendantResponseRepository.save(claimId, defendantId, defendantEmail,
-            jsonMapper.toJson(responseData));
+        defendantResponseRepository.save(
+            claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData)
+        );
 
         final Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
 
@@ -59,4 +65,7 @@ public class DefendantResponseService {
         return null != claim.getRespondedAt();
     }
 
+    private boolean isCCJAlreadyRequested(final Claim claim) {
+        return null != claim.getCountyCourtJudgmentRequestedAt();
+    }
 }
