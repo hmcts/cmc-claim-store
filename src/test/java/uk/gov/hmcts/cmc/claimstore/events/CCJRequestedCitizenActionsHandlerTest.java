@@ -62,6 +62,6 @@ public class CCJRequestedCitizenActionsHandlerTest {
 
         handler.sendDefendantNotification(new CountyCourtJudgmentRequestedEvent(claimWithoutDefendantEmail));
 
-        verify(ccjRequestedNotificationService, never()).notifyDefendant(eq(EVENT.getClaim()));
+        verify(ccjRequestedNotificationService, never()).notifyDefendant(eq(claimWithoutDefendantEmail));
     }
 }
