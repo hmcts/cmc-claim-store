@@ -8,7 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
@@ -77,8 +78,8 @@ public class DefendantResponseServiceTest {
             .createDefendantResponseEvent(eq(claim));
     }
 
-    @Test(expected = ForbiddenActionException.class)
-    public void saveShouldThrowForbiddenActionExceptionWhenResponseSubmitted() {
+    @Test(expected = ResponseAlreadySubmittedException.class)
+    public void saveShouldThrowResponseAlreadySubmittedExceptionWhenResponseSubmitted() {
 
         when(claimService.getClaimById(eq(CLAIM_ID)))
             .thenReturn(SampleClaim.builder().withRespondedAt(LocalDateTime.now()).build());
@@ -86,8 +87,8 @@ public class DefendantResponseServiceTest {
         responseService.save(CLAIM_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
     }
 
-    @Test(expected = ForbiddenActionException.class)
-    public void saveShouldThrowForbiddenActionExceptionWhenCCJRequested() {
+    @Test(expected = CountyCourtJudgmentAlreadyRequestedException.class)
+    public void saveShouldThrowCountyCourtJudgmentAlreadyRequestedExceptionWhenCCJRequested() {
 
         when(claimService.getClaimById(eq(CLAIM_ID)))
             .thenReturn(SampleClaim.builder().withCountyCourtJudgmentRequestedAt(LocalDateTime.now()).build());
