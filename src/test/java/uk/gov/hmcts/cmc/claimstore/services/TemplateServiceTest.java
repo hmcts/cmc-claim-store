@@ -30,7 +30,7 @@ public class TemplateServiceTest {
     }
 
     @Test(expected = TemplateException.class)
-    public void shouldThrowExeptionOnEmptyObject() {
+    public void shouldThrowTemplateExceptionOnEmptyObject() {
         service = new TemplateService(pebble);
         Map<String, Object> variables = new HashMap<>();
 
