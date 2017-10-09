@@ -101,6 +101,14 @@ public class ClaimServiceTest {
         assertThat(actual).isEqualTo(claim);
     }
 
+    @Test(expected = NotFoundException.class)
+    public void getClaimByIdShouldThrowNotFoundException() {
+
+        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
+
+        claimService.getClaimById(CLAIM_ID);
+    }
+
     @Test
     public void getClaimByLetterHolderIdShouldCallRepositoryWhenValidClaimIsReturned() {
 
