@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -42,7 +43,9 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
 
     @Test
     public void notifyClaimantShouldCallNotify() throws Exception {
-        Claim claim = SampleClaim.getDefault();
+        Claim claim = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
 
         ccjRequestedNotificationService.notifyClaimant(claim);
 
@@ -64,7 +67,9 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
                     .withDefendants(
                         Arrays.asList(SampleTheirDetails.builder().withEmail(null).individualDetails())
                     ).build()
-            ).build();
+            )
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
 
         ccjRequestedNotificationService.notifyDefendant(claim);
     }
@@ -80,7 +85,9 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
                     .withDefendants(
                         Arrays.asList(SampleTheirDetails.builder().withEmail(email).individualDetails())
                     ).build()
-            ).build();
+            )
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
 
         ccjRequestedNotificationService.notifyDefendant(claim);
 

@@ -92,9 +92,59 @@ public class TheirDetailsTest {
     }
 
     @Test
+    public void shouldBeValidWhenGivenValidEmail() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withEmail("user@example.com")
+            .partyDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenEmptyEmail() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withEmail("")
+            .partyDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors)
+            .hasSize(1)
+            .contains("email : not a well-formed email address");
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenEmailWithWhitespacesOnly() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withEmail(" ")
+            .partyDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors)
+            .hasSize(1)
+            .contains("email : not a well-formed email address");
+    }
+
+    @Test
     public void shouldBeInvalidWhenGivenInvalidEmail() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withEmail("this is not a valid email address..")
+            .withEmail("this is not a valid email address")
+            .partyDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors)
+            .hasSize(1)
+            .contains("email : not a well-formed email address");
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenNonTrimmedEmail() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withEmail(" user@example.com ")
             .partyDetails();
 
         Set<String> validationErrors = validate(theirDetails);
