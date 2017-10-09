@@ -13,6 +13,7 @@ public class PebbleConfiguration {
         return new PebbleEngine.Builder()
             .loader(new StringLoader())
             .cacheActive(false)
+            .strictVariables(true)
             .build();
     }
 
