@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -11,6 +12,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 public class CCJContent {
 
     private String claimReferenceNumber;
+    private String claimantName;
+    private String ccjRequestedDate;
     private String defendantName;
     private Address defendantAddress;
     private String defendantEmail;
@@ -29,6 +32,8 @@ public class CCJContent {
         this.amountToPayByDefendant = formatMoney(
             ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()
         );
+        this.claimantName = claim.getClaimData().getClaimant().getName();
+        this.ccjRequestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
     }
 
     public String getClaimReferenceNumber() {
@@ -53,5 +58,13 @@ public class CCJContent {
 
     public String getAmountToPayByDefendant() {
         return amountToPayByDefendant;
+    }
+
+    public String getClaimantName() {
+        return claimantName;
+    }
+
+    public String getCcjRequestedDate() {
+        return ccjRequestedDate;
     }
 }
