@@ -19,6 +19,8 @@ public class CCJContent {
     private String defendantEmail;
     private String amountToPayByDefendant;
     private String paymentRepaymentOption;
+    private String signerName;
+    private String signerRole;
 
     public CCJContent(Claim claim) {
         requireNonNull(claim);
@@ -34,6 +36,11 @@ public class CCJContent {
         );
         this.claimantName = claim.getClaimData().getClaimant().getName();
         this.requestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
+
+        claim.getClaimData().getStatementOfTruth().ifPresent(sot -> {
+            this.signerName = sot.getSignerName();
+            this.signerRole = sot.getSignerRole();
+        });
     }
 
     public String getClaimReferenceNumber() {
@@ -66,5 +73,13 @@ public class CCJContent {
 
     public String getRequestedDate() {
         return requestedDate;
+    }
+
+    public String getSignerName() {
+        return signerName;
+    }
+
+    public String getSignerRole() {
+        return signerRole;
     }
 }

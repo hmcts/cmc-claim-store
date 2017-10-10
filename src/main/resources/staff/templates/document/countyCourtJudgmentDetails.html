@@ -118,10 +118,38 @@
   </div>
   <div class="section-body">
     <table>
-      <tr>
-        <td></td>
-        <td>{{ ccj.claimantName}}</td>
-      </tr>
+      {% if ccj.signerName is empty %}
+        <tr>
+          <td>
+            Name:
+          </td>
+          <td>{{ ccj.claimantName}}</td>
+        </tr>
+      {% endif %}
+
+      {% if ccj.signerName is not empty %}
+        <tr>
+          <td>
+            Organisation:
+          </td>
+          <td>{{ ccj.claimantName }}</td>
+        </tr>
+
+        <tr>
+          <td>
+            Name:
+          </td>
+          <td>{{ ccj.signerName }}</td>
+        </tr>
+
+        <tr>
+          <td>
+            Position held:
+          </td>
+          <td>{{ ccj.signerRole }}</td>
+        </tr>
+      {% endif %}
+
       <tr>
         <td></td>
         <td>I declare that the details I have given are true to the best of my knowledge.</td>
