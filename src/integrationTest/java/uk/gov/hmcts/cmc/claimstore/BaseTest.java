@@ -1,14 +1,20 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.util.EnvironmentTestUtils;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.PostgreSQLContainer;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -28,6 +34,7 @@ import java.util.stream.Collectors;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@ContextConfiguration(initializers = BaseTest.Initializer.class)
 @TestPropertySource("/environment.properties")
 public abstract class BaseTest {
 
@@ -37,6 +44,22 @@ public abstract class BaseTest {
     protected static final Long DEFENDANT_ID = 555L;
     protected static final String REFERENCE_NUMBER = "000MC001";
     protected final Claim claimAfterSavingWithResponse = SampleClaim.getWithDefaultResponse();
+
+    @ClassRule
+    public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:9.6")
+        .withDatabaseName("claimstore");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            EnvironmentTestUtils.addEnvironment(configurableApplicationContext.getEnvironment(),
+                "CLAIM_STORE_DB_HOST=" + postgres.getContainerIpAddress(),
+                "CLAIM_STORE_DB_PORT=" + postgres.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
+                "CLAIM_STORE_DB_USERNAME=" + postgres.getUsername(),
+                "CLAIM_STORE_DB_PASSWORD=" + postgres.getPassword()
+            );
+        }
+    }
 
     @MockBean
     protected ClaimRepository claimRepository;
