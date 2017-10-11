@@ -32,17 +32,16 @@ public class CCJContent {
         this.defendantAddress = defendant.getAddress();
         this.paymentRepaymentOption = countyCourtJudgment.getPaymentOption().name();
         this.defendantEmail = defendant.getEmail().orElse(null);
-        countyCourtJudgment.getRepaymentPlan().ifPresent( repaymentPlan -> {
-                this.amountToPayByDefendant = formatMoney(repaymentPlan.getRemainingAmount());
-            }
+        countyCourtJudgment.getRepaymentPlan().ifPresent(
+            repaymentPlan -> this.amountToPayByDefendant = formatMoney(repaymentPlan.getRemainingAmount())
         );
 
         this.claimantName = claim.getClaimData().getClaimant().getName();
         this.requestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
 
-        countyCourtJudgment.getStatementOfTruth().ifPresent(sot -> {
-            this.signerName = sot.getSignerName();
-            this.signerRole = sot.getSignerRole();
+        countyCourtJudgment.getStatementOfTruth().ifPresent(statementOfTruth -> {
+            this.signerName = statementOfTruth.getSignerName();
+            this.signerRole = statementOfTruth.getSignerRole();
         });
     }
 
