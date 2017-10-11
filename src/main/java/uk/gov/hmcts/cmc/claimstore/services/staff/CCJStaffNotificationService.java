@@ -60,7 +60,7 @@ public class CCJStaffNotificationService {
             staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
-            singletonList(generateCcjPdf(claim))
+            singletonList(generateCountyCourtJudgmentPdf(claim))
         );
     }
 
@@ -74,7 +74,7 @@ public class CCJStaffNotificationService {
         return map;
     }
 
-    private EmailAttachment generateCcjPdf(final Claim claim) {
+    private EmailAttachment generateCountyCourtJudgmentPdf(final Claim claim) {
         byte[] generatedPdf = pdfServiceClient.generateFromHtml(
             staffEmailProperties.getEmailTemplates().getCountyCourtJudgmentDetails(),
             ccjContentProvider.createContent(claim)
