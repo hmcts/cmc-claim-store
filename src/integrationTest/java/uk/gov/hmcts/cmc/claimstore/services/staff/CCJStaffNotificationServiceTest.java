@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +42,12 @@ public class CCJStaffNotificationServiceTest extends BaseTest {
 
     @Before
     public void setup() {
-        claim = SampleClaim.getDefault();
+        claim = SampleClaim
+                        .builder()
+                        .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+                        .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build())
+                        .withClaimData(SampleClaimData.submittedByClaimant())
+                        .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }

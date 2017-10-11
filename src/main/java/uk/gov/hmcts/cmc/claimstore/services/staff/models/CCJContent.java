@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -11,11 +12,15 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 public class CCJContent {
 
     private String claimReferenceNumber;
+    private String claimantName;
+    private String requestedDate;
     private String defendantName;
     private Address defendantAddress;
     private String defendantEmail;
     private String amountToPayByDefendant;
     private String paymentRepaymentOption;
+    private String signerName;
+    private String signerRole;
 
     public CCJContent(Claim claim) {
         requireNonNull(claim);
@@ -29,6 +34,13 @@ public class CCJContent {
         this.amountToPayByDefendant = formatMoney(
             ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()
         );
+        this.claimantName = claim.getClaimData().getClaimant().getName();
+        this.requestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
+
+        claim.getClaimData().getStatementOfTruth().ifPresent(sot -> {
+            this.signerName = sot.getSignerName();
+            this.signerRole = sot.getSignerRole();
+        });
     }
 
     public String getClaimReferenceNumber() {
@@ -53,5 +65,21 @@ public class CCJContent {
 
     public String getAmountToPayByDefendant() {
         return amountToPayByDefendant;
+    }
+
+    public String getClaimantName() {
+        return claimantName;
+    }
+
+    public String getRequestedDate() {
+        return requestedDate;
+    }
+
+    public String getSignerName() {
+        return signerName;
+    }
+
+    public String getSignerRole() {
+        return signerRole;
     }
 }
