@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
 
 import java.util.Collections;
@@ -12,8 +14,15 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class CCJContentProvider {
 
+    private final InterestCalculationService interestCalculationService;
+
+    @Autowired
+    public CCJContentProvider(final InterestCalculationService interestCalculationService) {
+        this.interestCalculationService = interestCalculationService;
+    }
+
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
-        return Collections.singletonMap("ccj",new CCJContent( claim ));
+        return Collections.singletonMap("ccj", new CCJContent(claim, interestCalculationService));
     }
 }

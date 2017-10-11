@@ -8,8 +8,10 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public class CCJContentProviderTest {
 
     @Before
     public void setup() {
-        this.provider = new CCJContentProvider();
+        this.provider = new CCJContentProvider(new InterestCalculationService(Clock.systemDefaultZone()));
     }
 
     @Test(expected = NullPointerException.class)

@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJContentProvider;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
@@ -47,13 +48,16 @@ public class CountyCourtJudgmentServiceTest {
     @Mock
     private PDFServiceClient pdfServiceClient;
 
+    @Mock
+    InterestCalculationService interestCalculationService;
+
     private StaffEmailTemplates emailTemplates = new StaffEmailTemplates();
 
     private CCJContentProvider ccjContentProvider;
 
     @Before
     public void setup() {
-        ccjContentProvider = new CCJContentProvider();
+        ccjContentProvider = new CCJContentProvider(interestCalculationService);
 
         countyCourtJudgmentService = new CountyCourtJudgmentService(
             claimRepository,
