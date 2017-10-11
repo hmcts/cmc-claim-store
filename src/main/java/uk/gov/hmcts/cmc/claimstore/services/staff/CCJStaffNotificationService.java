@@ -84,7 +84,7 @@ public class CCJStaffNotificationService {
             generatedPdf,
             format(
                 FILE_NAME_FORMAT,
-                claim.getClaimData().getDefendant().getName(),
+                claim.getCountyCourtJudgment().getDefendant().getName(),
                 claim.getReferenceNumber()
             )
         );
