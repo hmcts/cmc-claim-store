@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 
@@ -26,18 +26,21 @@ public class CCJContent {
         requireNonNull(claim);
 
         this.claimReferenceNumber = claim.getReferenceNumber();
-        TheirDetails defendant = claim.getClaimData().getDefendant();
+        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
+        TheirDetails defendant = countyCourtJudgment.getDefendant();
         this.defendantName = defendant.getName();
         this.defendantAddress = defendant.getAddress();
-        this.paymentRepaymentOption = claim.getCountyCourtJudgment().getPaymentOption().name();
+        this.paymentRepaymentOption = countyCourtJudgment.getPaymentOption().name();
         this.defendantEmail = defendant.getEmail().orElse(null);
-        this.amountToPayByDefendant = formatMoney(
-            ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()
+        countyCourtJudgment.getRepaymentPlan().ifPresent( repaymentPlan -> {
+                this.amountToPayByDefendant = formatMoney(repaymentPlan.getRemainingAmount());
+            }
         );
+
         this.claimantName = claim.getClaimData().getClaimant().getName();
         this.requestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
 
-        claim.getClaimData().getStatementOfTruth().ifPresent(sot -> {
+        countyCourtJudgment.getStatementOfTruth().ifPresent(sot -> {
             this.signerName = sot.getSignerName();
             this.signerRole = sot.getSignerRole();
         });
