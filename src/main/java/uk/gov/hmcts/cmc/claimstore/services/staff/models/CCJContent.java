@@ -141,7 +141,7 @@ public class CCJContent {
     }
 
     private LocalDate getInterestFromDate(final Claim claim) {
-        if (claim.getClaimData().getInterest().getType().equals(InterestDate.InterestDateType.CUSTOM)) {
+        if (claim.getClaimData().getInterestDate().getType().equals(InterestDate.InterestDateType.CUSTOM)) {
             InterestDate interestDate = claim.getClaimData().getInterestDate();
             return interestDate.getDate();
         } else {
