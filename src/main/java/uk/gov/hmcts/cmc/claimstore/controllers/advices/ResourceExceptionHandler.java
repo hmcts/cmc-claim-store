@@ -58,7 +58,8 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(value = HttpClientErrorException.class)
     public ResponseEntity<Object> httpClientErrorException(HttpClientErrorException exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.valueOf(exception.getRawStatusCode()));
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(),
+            HttpStatus.valueOf(exception.getRawStatusCode()));
     }
 
     @ExceptionHandler(value = ForbiddenActionException.class)
