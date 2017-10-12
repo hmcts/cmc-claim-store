@@ -38,7 +38,7 @@ public class CCJContent {
         TheirDetails defendant = countyCourtJudgment.getDefendant();
         this.defendantName = defendant.getName();
         this.defendantAddress = defendant.getAddress();
-        this.repaymentOption = countyCourtJudgment.getPaymentOption().name();
+        this.repaymentOption = countyCourtJudgment.getPaymentOption().getDescription();
         this.defendantEmail = defendant.getEmail().orElse(null);
         setAmountToPayByDefendant(interestCalculationService, claim);
         if (!countyCourtJudgment.getRepaymentPlan().isPresent()) {
@@ -104,14 +104,9 @@ public class CCJContent {
             countyCourtJudgment.getRepaymentPlan().ifPresent(
                 repaymentPlan -> this.amountToPayByDefendant = formatMoney(repaymentPlan.getRemainingAmount())
             );
-        } else if (countyCourtJudgment.getPaymentOption() == PaymentOption.FULL_BY_SPECIFIED_DATE) {
-            this.amountToPayByDefendant = calculateClaimAmountWithInterest(
-                interestCalculationService,
-                claim,
-                countyCourtJudgment.getPayBySetDate().orElse(null)
-            );
-        } else if (countyCourtJudgment.getPaymentOption() == PaymentOption.IMMEDIATELY) {
-            this.amountToPayByDefendant = calculateClaimAmountWithInterest(
+        } else if (countyCourtJudgment.getPaymentOption() == PaymentOption.FULL_BY_SPECIFIED_DATE
+            || countyCourtJudgment.getPaymentOption() == PaymentOption.IMMEDIATELY) {
+            this.amountToPayByDefendant = calculateRemainingAmount(
                 interestCalculationService,
                 claim,
                 claim.getCountyCourtJudgmentRequestedAt().toLocalDate()
@@ -119,25 +114,34 @@ public class CCJContent {
         }
     }
 
-    private String calculateClaimAmountWithInterest(
+    private String calculateRemainingAmount(
         final InterestCalculationService interestCalculationService,
         final Claim claim,
         final LocalDate toDate
     ) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-        BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount();
+        BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount() != null
+            ? claim.getCountyCourtJudgment().getPaidAmount() : BigDecimal.ZERO;
+        BigDecimal interestAmount = getInterestAmount(
+            interestCalculationService, claim, toDate, claimAmount, paidAmount
+        );
+        return formatMoney(claimAmount.add(interestAmount).subtract(paidAmount));
+    }
 
+    private BigDecimal getInterestAmount(
+        final InterestCalculationService interestCalculationService,
+        final Claim claim, LocalDate toDate,
+        final BigDecimal claimAmount,
+        final BigDecimal paidAmount) {
         if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
-            BigDecimal interestRate = claim.getClaimData().getInterest().getRate();
-            BigDecimal interestAmount = interestCalculationService.calculateInterest(
+            return interestCalculationService.calculateInterest(
                 claimAmount.subtract(paidAmount),
-                interestRate,
+                claim.getClaimData().getInterest().getRate(),
                 getInterestFromDate(claim),
                 toDate
             );
-            return formatMoney(claimAmount.add(interestAmount).subtract(paidAmount));
         }
-        return formatMoney(claimAmount.subtract(paidAmount));
+        return BigDecimal.ZERO;
     }
 
     private LocalDate getInterestFromDate(final Claim claim) {
