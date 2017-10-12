@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.models.InterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.IndividualDetails;
-import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 
@@ -38,11 +37,10 @@ public class CCJContent {
 
         this.claimReferenceNumber = claim.getReferenceNumber();
         CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
-        TheirDetails defendant = countyCourtJudgment.getDefendant();
-        this.defendantName = defendant.getName();
-        this.defendantAddress = defendant.getAddress();
+        this.defendantName = claim.getClaimData().getDefendant().getName();
+        this.defendantAddress = claim.getClaimData().getDefendant().getAddress();
         this.repaymentOption = countyCourtJudgment.getPaymentOption().getDescription();
-        this.defendantEmail = defendant.getEmail().orElse(null);
+        this.defendantEmail = claim.getClaimData().getDefendant().getEmail().orElse(null);
         setAmountToPayByDefendant(interestCalculationService, claim);
         this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
         this.claimantName = claim.getClaimData().getClaimant().getName();
