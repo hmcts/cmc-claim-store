@@ -1,7 +1,4 @@
 <html>
-TODO: DoB
-In the country court
-claim number
 <head>
   <meta charset="UTF-8"/>
   <title>{{ ccj.claimReferenceNumber }}</title>
@@ -54,9 +51,40 @@ claim number
     table td:last-child {
       width: auto;
     }
+
+    header table td, header table tr:last-child td {
+      border: none;
+    }
+
+    header p, header h2 {
+      text-align: right;
+      margin: 0;
+      padding: 0;
+    }
+
+    header td {
+      margin: 0;
+      padding: 0;
+    }
   </style>
 </head>
 <body>
+
+<header>
+  <table>
+    <tr>
+      <td colspan="3"><p>In the County Court Business Centre Online Court</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><h2><strong>Claim number: </strong></h2></td>
+      <td><h2 style="font-weight: normal"> {{ ccj.claimReferenceNumber }}</h2></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>County court judgment requested at: </strong></p></td>
+      <td><p>{{ ccj.requestedAt }}</p></td>
+    </tr>
+  </table>
+</header>
 
 <div class="section">
   <div class="section-heading">
@@ -90,6 +118,14 @@ claim number
           {{ ccj.defendantEmail }}
         </td>
       </tr>
+      {% if ccj.defendantDateOfBirth is defined  %}
+      <tr>
+        <td>Date of birth:</td>
+        <td>
+          {{ ccj.defendantDateOfBirth }}
+        </td>
+      </tr>
+      {% endif %}
     </table>
   </div>
 </div>

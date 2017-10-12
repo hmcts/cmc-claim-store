@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Interest;
 import uk.gov.hmcts.cmc.claimstore.models.InterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
+import uk.gov.hmcts.cmc.claimstore.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 public class CCJContent {
 
+    private String requestedAt;
     private String claimReferenceNumber;
     private String claimantName;
     private String requestedDate;
@@ -29,6 +31,7 @@ public class CCJContent {
     private String repaymentOption;
     private String signerName;
     private String signerRole;
+    private String defendantDateOfBirth;
 
     public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
         requireNonNull(claim);
@@ -41,12 +44,13 @@ public class CCJContent {
         this.repaymentOption = countyCourtJudgment.getPaymentOption().getDescription();
         this.defendantEmail = defendant.getEmail().orElse(null);
         setAmountToPayByDefendant(interestCalculationService, claim);
-        if (!countyCourtJudgment.getRepaymentPlan().isPresent()) {
-            ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-            countyCourtJudgment.getPaidAmount();
-            countyCourtJudgment.getPaymentOption();
-        }
+        this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
         this.claimantName = claim.getClaimData().getClaimant().getName();
+        if (claim.getCountyCourtJudgment().getDefendant() instanceof IndividualDetails) {
+            IndividualDetails details = (IndividualDetails) claim.getCountyCourtJudgment().getDefendant();
+            details.getDateOfBirth()
+                .ifPresent((dateOfBirth -> this.defendantDateOfBirth = Formatting.formatDate(dateOfBirth)));
+        }
         this.requestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
 
         countyCourtJudgment.getStatementOfTruth().ifPresent(statementOfTruth -> {
@@ -93,6 +97,14 @@ public class CCJContent {
 
     public String getSignerRole() {
         return signerRole;
+    }
+
+    public String getRequestedAt() {
+        return requestedAt;
+    }
+
+    public String getDefendantDateOfBirth() {
+        return defendantDateOfBirth;
     }
 
     private void setAmountToPayByDefendant(
