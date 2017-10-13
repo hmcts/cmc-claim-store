@@ -1,0 +1,56 @@
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment;
+
+import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.Interest;
+import uk.gov.hmcts.cmc.claimstore.models.InterestDate;
+import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+
+public final class AmountRemainingContentProvider {
+
+    private AmountRemainingContentProvider() {
+        // Utils class no constructing
+    }
+
+    public static String calculate(
+        final InterestCalculationService interestCalculationService,
+        final Claim claim
+    ) {
+        BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+        BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(BigDecimal.ZERO);
+        BigDecimal interestAmount = getInterestAmount(
+            interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt().toLocalDate(), claimAmount, paidAmount
+        );
+        return formatMoney(claimAmount.add(interestAmount).subtract(paidAmount));
+    }
+
+    private static BigDecimal getInterestAmount(
+        final InterestCalculationService interestCalculationService,
+        final Claim claim, LocalDate toDate,
+        final BigDecimal claimAmount,
+        final BigDecimal paidAmount) {
+        if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
+            return interestCalculationService.calculateInterest(
+                claimAmount.subtract(paidAmount),
+                claim.getClaimData().getInterest().getRate(),
+                getInterestFromDate(claim),
+                toDate
+            );
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private static LocalDate getInterestFromDate(final Claim claim) {
+        if (claim.getClaimData().getInterestDate().getType().equals(InterestDate.InterestDateType.CUSTOM)) {
+            InterestDate interestDate = claim.getClaimData().getInterestDate();
+            return interestDate.getDate();
+        } else {
+            return claim.getCreatedAt().toLocalDate();
+        }
+    }
+}

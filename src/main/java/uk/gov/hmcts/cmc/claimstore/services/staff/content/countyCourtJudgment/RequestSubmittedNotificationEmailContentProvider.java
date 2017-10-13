@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
@@ -11,12 +11,12 @@ import java.util.Map;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 @Component
-public class CCJRequestSubmittedNotificationEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
+public class RequestSubmittedNotificationEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
     private final StaffEmailTemplates staffEmailTemplates;
 
-    public CCJRequestSubmittedNotificationEmailContentProvider(
+    public RequestSubmittedNotificationEmailContentProvider(
         final TemplateService templateService,
         final StaffEmailTemplates staffEmailTemplates
     ) {

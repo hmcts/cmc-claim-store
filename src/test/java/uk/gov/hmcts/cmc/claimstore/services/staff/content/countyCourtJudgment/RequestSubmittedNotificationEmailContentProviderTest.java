@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,9 +11,9 @@ import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CCJRequestSubmittedNotificationEmailContentProviderTest {
+public class RequestSubmittedNotificationEmailContentProviderTest {
 
-    private CCJRequestSubmittedNotificationEmailContentProvider provider;
+    private RequestSubmittedNotificationEmailContentProvider provider;
 
     @Mock
     private TemplateService templateService;
@@ -23,7 +23,7 @@ public class CCJRequestSubmittedNotificationEmailContentProviderTest {
 
     @Before
     public void setup() {
-        provider = new CCJRequestSubmittedNotificationEmailContentProvider(templateService, staffEmailTemplates);
+        provider = new RequestSubmittedNotificationEmailContentProvider(templateService, staffEmailTemplates);
     }
 
     @Test(expected = NullPointerException.class)

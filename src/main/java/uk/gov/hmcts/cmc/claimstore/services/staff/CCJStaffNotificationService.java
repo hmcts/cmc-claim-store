@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJContentProvider;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJRequestSubmittedNotificationEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment.ContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment.RequestSubmittedNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -29,22 +29,22 @@ public class CCJStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
     private final PDFServiceClient pdfServiceClient;
-    private final CCJRequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider;
-    private final CCJContentProvider ccjContentProvider;
+    private final RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider;
+    private final ContentProvider contentProvider;
 
     @Autowired
     public CCJStaffNotificationService(
         final EmailService emailService,
         final StaffEmailProperties staffEmailProperties,
         final PDFServiceClient pdfServiceClient,
-        final CCJRequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
-        final CCJContentProvider ccjContentProvider
+        final RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
+        final ContentProvider contentProvider
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.pdfServiceClient = pdfServiceClient;
         this.ccjRequestSubmittedEmailContentProvider = ccjRequestSubmittedEmailContentProvider;
-        this.ccjContentProvider = ccjContentProvider;
+        this.contentProvider = contentProvider;
     }
 
     public void notifyStaffCCJRequestSubmitted(final Claim claim) {
@@ -77,7 +77,7 @@ public class CCJStaffNotificationService {
     private EmailAttachment generateCountyCourtJudgmentPdf(final Claim claim) {
         byte[] generatedPdf = pdfServiceClient.generateFromHtml(
             staffEmailProperties.getEmailTemplates().getCountyCourtJudgmentDetails(),
-            ccjContentProvider.createContent(claim)
+            contentProvider.createContent(claim)
         );
 
         return pdf(

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CCJContentProviderTest {
+public class ContentProviderTest {
 
     private Claim claim = SampleClaim.builder()
         .withClaimData(SampleClaimData.validDefaults())
@@ -27,11 +27,11 @@ public class CCJContentProviderTest {
         .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
         .build();
 
-    private CCJContentProvider provider;
+    private ContentProvider provider;
 
     @Before
     public void setup() {
-        this.provider = new CCJContentProvider(new InterestCalculationService(Clock.systemDefaultZone()));
+        this.provider = new ContentProvider(new InterestCalculationService(Clock.systemDefaultZone()));
     }
 
     @Test(expected = NullPointerException.class)

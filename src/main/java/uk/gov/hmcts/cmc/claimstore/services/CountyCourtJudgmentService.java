@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.CCJContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment.ContentProvider;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ public class CountyCourtJudgmentService {
     private final EventProducer eventProducer;
     private final PDFServiceClient pdfServiceClient;
     private final StaffEmailTemplates emailTemplates;
-    private final CCJContentProvider ccjContentProvider;
+    private final ContentProvider contentProvider;
 
     @Autowired
     public CountyCourtJudgmentService(
@@ -35,14 +35,14 @@ public class CountyCourtJudgmentService {
         EventProducer eventProducer,
         PDFServiceClient pdfServiceClient,
         StaffEmailTemplates emailTemplates,
-        CCJContentProvider ccjContentProvider
+        ContentProvider contentProvider
     ) {
         this.claimRepository = claimRepository;
         this.jsonMapper = jsonMapper;
         this.eventProducer = eventProducer;
         this.pdfServiceClient = pdfServiceClient;
         this.emailTemplates = emailTemplates;
-        this.ccjContentProvider = ccjContentProvider;
+        this.contentProvider = contentProvider;
     }
 
     @Transactional
@@ -102,7 +102,7 @@ public class CountyCourtJudgmentService {
         requireNonNull(claim);
         return pdfServiceClient.generateFromHtml(
             emailTemplates.getCountyCourtJudgmentDetails(),
-            this.ccjContentProvider.createContent(claim)
+            this.contentProvider.createContent(claim)
         );
     }
 }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,12 +12,12 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 
 @Component
-public class CCJContentProvider {
+public class ContentProvider {
 
     private final InterestCalculationService interestCalculationService;
 
     @Autowired
-    public CCJContentProvider(final InterestCalculationService interestCalculationService) {
+    public ContentProvider(final InterestCalculationService interestCalculationService) {
         this.interestCalculationService = interestCalculationService;
     }
 
