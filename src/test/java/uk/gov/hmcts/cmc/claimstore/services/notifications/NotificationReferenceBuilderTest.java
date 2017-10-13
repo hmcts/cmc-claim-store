@@ -25,12 +25,6 @@ public class NotificationReferenceBuilderTest {
     }
 
     @Test
-    public void shouldGenerateValidReferenceForDefendantCCJRequestedNotification() {
-        assertThat(NotificationReferenceBuilder.CCJRequested.referenceForDefendant("abc"))
-            .isEqualTo("defendant-ccj-requested-notification-abc");
-    }
-
-    @Test
     public void shouldGenerateValidReferenceForClaimantCCJRequestedNotification() {
         assertThat(NotificationReferenceBuilder.CCJRequested.referenceForClaimant("abc"))
             .isEqualTo("claimant-ccj-requested-notification-abc");

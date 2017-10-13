@@ -17,11 +17,6 @@ public class RepaymentPlan {
     @NotNull
     @Money
     @DecimalMin(value = "0.01")
-    private final BigDecimal remainingAmount;
-
-    @NotNull
-    @Money
-    @DecimalMin(value = "0.01")
     private final BigDecimal firstPayment;
 
     @NotNull
@@ -37,22 +32,16 @@ public class RepaymentPlan {
     private final PaymentSchedule paymentSchedule;
 
     public RepaymentPlan(
-        final BigDecimal remainingAmount,
         final BigDecimal firstPayment,
         final BigDecimal instalmentAmount,
         final LocalDate firstPaymentDate,
         final PaymentSchedule paymentSchedule
     ) {
 
-        this.remainingAmount = remainingAmount;
         this.firstPayment = firstPayment;
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
         this.paymentSchedule = paymentSchedule;
-    }
-
-    public BigDecimal getRemainingAmount() {
-        return remainingAmount;
     }
 
     public BigDecimal getFirstPayment() {
@@ -81,8 +70,7 @@ public class RepaymentPlan {
             return false;
         }
         RepaymentPlan that = (RepaymentPlan) other;
-        return Objects.equals(remainingAmount, that.remainingAmount)
-            && Objects.equals(firstPayment, that.firstPayment)
+        return Objects.equals(firstPayment, that.firstPayment)
             && Objects.equals(instalmentAmount, that.instalmentAmount)
             && Objects.equals(firstPaymentDate, that.firstPaymentDate)
             && Objects.equals(paymentSchedule, that.paymentSchedule);
@@ -90,7 +78,7 @@ public class RepaymentPlan {
 
     @Override
     public int hashCode() {
-        return Objects.hash(remainingAmount, firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule);
+        return Objects.hash(firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule);
     }
 
     @Override

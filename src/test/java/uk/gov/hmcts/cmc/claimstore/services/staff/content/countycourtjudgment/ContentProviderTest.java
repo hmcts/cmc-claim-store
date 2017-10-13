@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,15 +8,16 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CCJContentProviderTest {
+public class ContentProviderTest {
 
     private Claim claim = SampleClaim.builder()
         .withClaimData(SampleClaimData.validDefaults())
@@ -25,11 +26,11 @@ public class CCJContentProviderTest {
         .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
         .build();
 
-    private CCJContentProvider provider;
+    private ContentProvider provider;
 
     @Before
     public void setup() {
-        this.provider = new CCJContentProvider();
+        this.provider = new ContentProvider(new InterestCalculationService(Clock.systemDefaultZone()));
     }
 
     @Test(expected = NullPointerException.class)
@@ -44,7 +45,6 @@ public class CCJContentProviderTest {
 
         assertThat(contentMap).isNotNull();
         assertThat(contentMap.get("ccj")).isNotNull();
-        assertThat(((CCJContent) contentMap.get("ccj")).getDefendantName()).isNotEmpty();
     }
 
 }

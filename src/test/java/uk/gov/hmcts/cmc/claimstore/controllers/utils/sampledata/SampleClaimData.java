@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountBreakdown;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
@@ -206,7 +205,7 @@ public class SampleClaimData {
                 .withDate(null)
                 .withReason(null)
                 .build())
-            .withAmount(SampleAmountRange.validDefaults())
+            .withAmount(SampleAmountBreakdown.validDefaults())
             .build();
     }
 
