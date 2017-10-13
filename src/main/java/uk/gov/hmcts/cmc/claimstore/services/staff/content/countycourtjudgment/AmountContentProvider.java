@@ -43,7 +43,10 @@ public class AmountContentProvider {
             formatMoney(dailyAmount),
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
-            formatMoney(claimAmount.add(claim.getClaimData().getFeesPaidInPound()).add(interestAmount).subtract(paidAmount))
+            formatMoney(claimAmount
+                .add(claim.getClaimData().getFeesPaidInPound())
+                .add(interestAmount)
+                .subtract(paidAmount))
         );
 
     }

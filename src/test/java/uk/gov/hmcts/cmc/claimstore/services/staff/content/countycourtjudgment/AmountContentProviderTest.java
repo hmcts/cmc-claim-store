@@ -26,7 +26,8 @@ public class AmountContentProviderTest {
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        assertThat(AmountRemainingContentProvider.calculate(interestCalculationService, claim)).isEqualTo("£40.88");
+        assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
+            .isEqualTo("£80.88");
     }
 
     @Test
@@ -37,7 +38,8 @@ public class AmountContentProviderTest {
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        assertThat(AmountRemainingContentProvider.calculate(interestCalculationService, claim)).isEqualTo("£40.00");
+        assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
+            .isEqualTo("£80.00");
     }
 
     @Test
@@ -49,7 +51,8 @@ public class AmountContentProviderTest {
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        assertThat(AmountRemainingContentProvider.calculate(interestCalculationService, claim)).isEqualTo("£30.66");
+        assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
+            .isEqualTo("£70.66");
     }
 
 }

@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -46,7 +45,6 @@ public class ContentProviderTest {
 
         assertThat(contentMap).isNotNull();
         assertThat(contentMap.get("ccj")).isNotNull();
-        assertThat(((CCJContent) contentMap.get("ccj")).getDefendantName()).isNotEmpty();
     }
 
 }
