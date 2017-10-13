@@ -32,7 +32,6 @@ public class RepaymentPlan {
     private final PaymentSchedule paymentSchedule;
 
     public RepaymentPlan(
-        final BigDecimal remainingAmount,
         final BigDecimal firstPayment,
         final BigDecimal instalmentAmount,
         final LocalDate firstPaymentDate,
