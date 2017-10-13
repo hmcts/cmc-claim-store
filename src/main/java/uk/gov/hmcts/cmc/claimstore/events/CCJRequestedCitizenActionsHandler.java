@@ -23,12 +23,4 @@ public class CCJRequestedCitizenActionsHandler {
 
         ccjRequestedNotificationService.notifyClaimant(claim);
     }
-
-    @EventListener
-    public void sendDefendantNotification(final CountyCourtJudgmentRequestedEvent event) {
-        final Claim claim = event.getClaim();
-
-        claim.getClaimData().getDefendant().getEmail()
-            .ifPresent(defendantEmail -> ccjRequestedNotificationService.notifyDefendant(claim));
-    }
 }
