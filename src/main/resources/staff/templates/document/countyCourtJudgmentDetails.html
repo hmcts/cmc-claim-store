@@ -188,14 +188,20 @@
           {{ ccj.amount.totalAmount }}
         </td>
       </tr>
+<<<<<<< HEAD
+=======
       {% if ccj.amount.interestAmount is defined %}
+>>>>>>> master
       <tr>
         <td>Interest:</td>
         <td>
           {{ ccj.amount.interestAmount }}
         </td>
       </tr>
+<<<<<<< HEAD
+=======
       {% endif %}
+>>>>>>> master
       <tr>
         <td>Interest daily rate:</td>
         <td>
@@ -235,7 +241,7 @@
   </div>
   <div class="section-body">
     <table>
-      {% if ccj.claim.countyCourtJudgment.statementOfTruth.signerName is empty %}
+      {% if ccj.claim.countyCourtJudgment.statementOfTruth is not defined %}
         <tr>
           <td>
             Name:
@@ -244,7 +250,7 @@
         </tr>
       {% endif %}
 
-      {% if ccj.claim.countyCourtJudgment.statementOfTruth.signerName is not empty %}
+      {% if ccj.claim.countyCourtJudgment.statementOfTruth is defined %}
         <tr>
           <td>
             Organisation:
