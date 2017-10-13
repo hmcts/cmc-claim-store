@@ -11,22 +11,41 @@ import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
-public final class AmountRemainingContentProvider {
+public class AmountContentProvider {
 
-    private AmountRemainingContentProvider() {
-        // Utils class no constructing
+    private InterestCalculationService interestCalculationService;
+
+    public AmountContentProvider(InterestCalculationService interestCalculationService) {
+        this.interestCalculationService = interestCalculationService;
     }
 
-    public static String calculate(
-        final InterestCalculationService interestCalculationService,
-        final Claim claim
-    ) {
+    public AmountContent create(Claim claim) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(BigDecimal.ZERO);
-        BigDecimal interestAmount = getInterestAmount(
-            interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt().toLocalDate(), claimAmount, paidAmount
+
+        BigDecimal dailyAmount = BigDecimal.ZERO;
+        BigDecimal interestAmount = BigDecimal.ZERO;
+        if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
+            dailyAmount = interestCalculationService.calculateDailyAmountFor(
+                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
+                claim.getClaimData().getInterest().getRate()
+            );
+
+            interestAmount = getInterestAmount(
+                interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt()
+                    .toLocalDate(), claimAmount, paidAmount)
+            ;
+        }
+
+        return new AmountContent(
+            formatMoney(claimAmount),
+            formatMoney(interestAmount),
+            formatMoney(dailyAmount),
+            formatMoney(claim.getClaimData().getFeesPaidInPound()),
+            formatMoney(paidAmount),
+            formatMoney(claimAmount.add(claim.getClaimData().getFeesPaidInPound()).add(interestAmount).subtract(paidAmount))
         );
-        return formatMoney(claimAmount.add(interestAmount).subtract(paidAmount));
+
     }
 
     private static BigDecimal getInterestAmount(
@@ -34,7 +53,8 @@ public final class AmountRemainingContentProvider {
         final Claim claim, LocalDate toDate,
         final BigDecimal claimAmount,
         final BigDecimal paidAmount) {
-        if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
+        if (!claim.getClaimData().getInterest().getType()
+            .equals(uk.gov.hmcts.cmc.claimstore.models.Interest.InterestType.NO_INTEREST)) {
             return interestCalculationService.calculateInterest(
                 claimAmount.subtract(paidAmount),
                 claim.getClaimData().getInterest().getRate(),

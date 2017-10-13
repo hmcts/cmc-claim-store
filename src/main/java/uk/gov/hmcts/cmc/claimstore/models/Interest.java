@@ -68,6 +68,6 @@ public class Interest {
 
     @Override
     public String toString() {
-        return String.format("Interest{type='%s', rate=%f, reason='%s'}", type, rate, reason);
+        return String.format("AmountContent{type='%s', rate=%f, reason='%s'}", type, rate, reason);
     }
 }
