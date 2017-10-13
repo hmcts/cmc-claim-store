@@ -235,7 +235,7 @@
   </div>
   <div class="section-body">
     <table>
-      {% if ccj.claim.claim.statementOfTruth.signerName is empty %}
+      {% if ccj.claim.countyCourtJudgment.statementOfTruth.signerName is empty %}
         <tr>
           <td>
             Name:
@@ -244,7 +244,7 @@
         </tr>
       {% endif %}
 
-      {% if ccj.claim.claim.statementOfTruth.signerName is not empty %}
+      {% if ccj.claim.countyCourtJudgment.statementOfTruth.signerName is not empty %}
         <tr>
           <td>
             Organisation:
@@ -256,14 +256,14 @@
           <td>
             Name:
           </td>
-          <td>{{ ccj.claim.claim.statementOfTruth.signerName }}</td>
+          <td>{{ ccj.claim.countyCourtJudgment.statementOfTruth.signerName }}</td>
         </tr>
 
         <tr>
           <td>
             Position held:
           </td>
-          <td>{{ ccj.claim.claim.statementOfTruth.signerRole }}</td>
+          <td>{{ ccj.claim.countyCourtJudgment.statementOfTruth.signerRole }}</td>
         </tr>
       {% endif %}
 
