@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AmountRemainingContentProviderTest {
+public class AmountContentProviderTest {
 
     private InterestCalculationService interestCalculationService = new InterestCalculationService(Clock.systemUTC());
 
