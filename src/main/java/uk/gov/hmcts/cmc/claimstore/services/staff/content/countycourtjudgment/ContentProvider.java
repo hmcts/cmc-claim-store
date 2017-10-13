@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

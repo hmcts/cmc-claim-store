@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;

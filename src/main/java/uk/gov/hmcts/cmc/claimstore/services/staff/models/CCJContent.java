@@ -5,8 +5,8 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment.AmountRemainingContentProvider;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countyCourtJudgment.RepaymentPlanContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountRemainingContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 
 import static java.util.Objects.requireNonNull;
