@@ -68,8 +68,8 @@ public class CountyCourtJudgment {
         return paymentOption;
     }
 
-    public BigDecimal getPaidAmount() {
-        return paidAmount;
+    public Optional<BigDecimal> getPaidAmount() {
+        return Optional.ofNullable(paidAmount);
     }
 
     public Optional<RepaymentPlan> getRepaymentPlan() {
