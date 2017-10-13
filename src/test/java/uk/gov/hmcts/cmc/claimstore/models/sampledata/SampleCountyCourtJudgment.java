@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 public class SampleCountyCourtJudgment {
 
-    private TheirDetails defendant = SampleTheirDetails.builder().individualDetails();
+    private LocalDate defendantDateOfBirth;
     private BigDecimal paidAmount = BigDecimal.ZERO;
     private PaymentOption paymentOption = PaymentOption.IMMEDIATELY;
     private RepaymentPlan repaymentPlan;
@@ -22,8 +22,8 @@ public class SampleCountyCourtJudgment {
         return new SampleCountyCourtJudgment();
     }
 
-    public SampleCountyCourtJudgment withDefendant(TheirDetails defendant) {
-        this.defendant = defendant;
+    public SampleCountyCourtJudgment withDefendantDateOfBirth(LocalDate defendantDateOfBirth) {
+        this.defendantDateOfBirth = defendantDateOfBirth;
         return this;
     }
 
@@ -65,7 +65,7 @@ public class SampleCountyCourtJudgment {
 
     public CountyCourtJudgment build() {
         return new CountyCourtJudgment(
-            defendant, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
+            defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
         );
     }
 }
