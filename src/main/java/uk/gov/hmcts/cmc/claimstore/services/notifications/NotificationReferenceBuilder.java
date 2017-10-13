@@ -61,9 +61,5 @@ public class NotificationReferenceBuilder {
         public static String referenceForClaimant(final String claimReferenceNumber) {
             return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
         }
-
-        public static String referenceForDefendant(final String claimReferenceNumber) {
-            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
-        }
     }
 }

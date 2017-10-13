@@ -49,7 +49,7 @@ public class CountyCourtJudgmentServiceTest {
     private PDFServiceClient pdfServiceClient;
 
     @Mock
-    InterestCalculationService interestCalculationService;
+    private InterestCalculationService interestCalculationService;
 
     private StaffEmailTemplates emailTemplates = new StaffEmailTemplates();
 
