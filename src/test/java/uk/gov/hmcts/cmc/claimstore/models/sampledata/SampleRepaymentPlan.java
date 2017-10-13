@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 public class SampleRepaymentPlan {
 
-    private BigDecimal remainingAmount = BigDecimal.valueOf(1000);
     private BigDecimal firstPayment = BigDecimal.valueOf(100);
     private BigDecimal instalmentAmount = BigDecimal.valueOf(100);
     private LocalDate firstPaymentDate = LocalDate.of(2100, 10, 10);
@@ -16,11 +15,6 @@ public class SampleRepaymentPlan {
 
     public static SampleRepaymentPlan builder() {
         return new SampleRepaymentPlan();
-    }
-
-    public SampleRepaymentPlan withRemainingAmount(BigDecimal remainingAmount) {
-        this.remainingAmount = remainingAmount;
-        return this;
     }
 
     public SampleRepaymentPlan withFirstPayment(BigDecimal firstPayment) {
@@ -44,6 +38,6 @@ public class SampleRepaymentPlan {
     }
 
     public RepaymentPlan build() {
-        return new RepaymentPlan(remainingAmount, firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule);
+        return new RepaymentPlan(firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule);
     }
 }

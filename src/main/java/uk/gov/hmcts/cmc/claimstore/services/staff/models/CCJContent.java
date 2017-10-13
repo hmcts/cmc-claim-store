@@ -1,85 +1,64 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
-import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.otherparty.IndividualDetails;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContent;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class CCJContent {
 
-    private String claimReferenceNumber;
-    private String claimantName;
+    private Claim claim;
+    private String requestedAt;
     private String requestedDate;
-    private String defendantName;
-    private Address defendantAddress;
-    private String defendantEmail;
-    private String amountToPayByDefendant;
-    private String paymentRepaymentOption;
-    private String signerName;
-    private String signerRole;
+    private AmountContent amount;
+    private String repaymentOption;
+    private String defendantDateOfBirth;
 
-    public CCJContent(Claim claim) {
+    public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
         requireNonNull(claim);
+        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
 
-        this.claimReferenceNumber = claim.getReferenceNumber();
-        TheirDetails defendant = claim.getClaimData().getDefendant();
-        this.defendantName = defendant.getName();
-        this.defendantAddress = defendant.getAddress();
-        this.paymentRepaymentOption = claim.getCountyCourtJudgment().getPaymentOption().name();
-        this.defendantEmail = defendant.getEmail().orElse(null);
-        this.amountToPayByDefendant = formatMoney(
-            ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()
-        );
-        this.claimantName = claim.getClaimData().getClaimant().getName();
-        this.requestedDate = Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt());
-
-        claim.getClaimData().getStatementOfTruth().ifPresent(sot -> {
-            this.signerName = sot.getSignerName();
-            this.signerRole = sot.getSignerRole();
-        });
+        this.claim = claim;
+        this.repaymentOption = RepaymentPlanContentProvider.create(countyCourtJudgment);
+        this.amount = new AmountContentProvider(interestCalculationService).create(claim);
+        this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
+        this.requestedDate = formatDate(claim.getCountyCourtJudgmentRequestedAt());
+        if (claim.getCountyCourtJudgment().getDefendant() instanceof IndividualDetails) {
+            IndividualDetails details = (IndividualDetails) claim.getCountyCourtJudgment().getDefendant();
+            details.getDateOfBirth()
+                .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
+        }
     }
 
-    public String getClaimReferenceNumber() {
-        return claimReferenceNumber;
+    public Claim getClaim() {
+        return claim;
     }
 
-    public String getDefendantName() {
-        return defendantName;
+    public AmountContent getAmount() {
+        return amount;
     }
 
-    public Address getDefendantAddress() {
-        return defendantAddress;
-    }
-
-    public String getDefendantEmail() {
-        return defendantEmail;
-    }
-
-    public String getPaymentRepaymentOption() {
-        return paymentRepaymentOption;
-    }
-
-    public String getAmountToPayByDefendant() {
-        return amountToPayByDefendant;
-    }
-
-    public String getClaimantName() {
-        return claimantName;
+    public String getRepaymentOption() {
+        return repaymentOption;
     }
 
     public String getRequestedDate() {
         return requestedDate;
     }
 
-    public String getSignerName() {
-        return signerName;
+    public String getRequestedAt() {
+        return requestedAt;
     }
 
-    public String getSignerRole() {
-        return signerRole;
+    public String getDefendantDateOfBirth() {
+        return defendantDateOfBirth;
     }
+
 }

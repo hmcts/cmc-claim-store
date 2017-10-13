@@ -41,10 +41,22 @@ public class InterestCalculationService {
         requireNonNull(claimAmount);
         requireNonNull(interestRate);
         requireNonNull(fromDate);
+        return calculateInterest(claimAmount, interestRate, fromDate, LocalDate.now(clock));
+    }
 
+    public BigDecimal calculateInterest(
+        BigDecimal claimAmount,
+        BigDecimal interestRate,
+        LocalDate fromDate,
+        LocalDate toDate
+    ) {
+        requireNonNull(claimAmount);
+        requireNonNull(interestRate);
+        requireNonNull(fromDate);
+        requireNonNull(toDate);
         return claimAmount
             .multiply(asFraction(interestRate))
-            .multiply(daysUpToNowSince(fromDate))
+            .multiply(daysBetween(fromDate, toDate))
             .divide(NUMBER_OF_DAYS_IN_YEAR, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP)
             .setScale(TO_FULL_PENNIES, RoundingMode.HALF_UP);
     }
@@ -53,11 +65,11 @@ public class InterestCalculationService {
         return interestRate.divide(HUNDRED, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal daysUpToNowSince(LocalDate interestDate) {
+    private BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
         return valueOf(Duration.between(
-                interestDate.atStartOfDay(),
-                LocalDate.now(clock).atStartOfDay()
-            ).toDays());
+            startDate.atStartOfDay(),
+            endDate.atStartOfDay()
+        ).toDays());
     }
 
 }

@@ -36,9 +36,6 @@ public class EmailTemplates {
     @NotEmpty
     private String claimantCCJRequested;
 
-    @NotEmpty
-    private String defendantCCJRequested;
-
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -109,14 +106,6 @@ public class EmailTemplates {
 
     public void setRepresentativeClaimIssued(final String representativeClaimIssued) {
         this.representativeClaimIssued = representativeClaimIssued;
-    }
-
-    public String getDefendantCCJRequested() {
-        return defendantCCJRequested;
-    }
-
-    public void setDefendantCCJRequested(String defendantCCJRequested) {
-        this.defendantCCJRequested = defendantCCJRequested;
     }
 
     public String getClaimantCCJRequested() {
