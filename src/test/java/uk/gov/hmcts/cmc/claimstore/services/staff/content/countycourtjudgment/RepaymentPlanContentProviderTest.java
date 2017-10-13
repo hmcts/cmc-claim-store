@@ -49,7 +49,7 @@ public class RepaymentPlanContentProviderTest {
             .withPayBySetDate(now)
             .build();
 
-        assertThat(RepaymentPlanContentProvider.create(countyCourtJudgment)).isEqualTo("on or before " +
-            Formatting.formatDate(now));
+        assertThat(RepaymentPlanContentProvider.create(countyCourtJudgment)).isEqualTo("on or before "
+            + Formatting.formatDate(now));
     }
 }

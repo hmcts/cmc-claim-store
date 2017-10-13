@@ -29,23 +29,22 @@ public class CCJContent {
 
     public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
         requireNonNull(claim);
-        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
-
         this.claimReferenceNumber = claim.getReferenceNumber();
+        this.claimantName = claim.getClaimData().getClaimant().getName();
         this.defendantName = claim.getClaimData().getDefendant().getName();
         this.defendantAddress = claim.getClaimData().getDefendant().getAddress();
-        this.repaymentOption = RepaymentPlanContentProvider.create(countyCourtJudgment);
         this.defendantEmail = claim.getClaimData().getDefendant().getEmail().orElse(null);
         this.amountToPayByDefendant = AmountRemainingContentProvider.calculate(interestCalculationService, claim);
         this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
-        this.claimantName = claim.getClaimData().getClaimant().getName();
         this.requestedDate = formatDate(claim.getCountyCourtJudgmentRequestedAt());
+
+        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
+        this.repaymentOption = RepaymentPlanContentProvider.create(countyCourtJudgment);
         if (claim.getCountyCourtJudgment().getDefendant() instanceof IndividualDetails) {
             IndividualDetails details = (IndividualDetails) claim.getCountyCourtJudgment().getDefendant();
             details.getDateOfBirth()
                 .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
         }
-
         countyCourtJudgment.getStatementOfTruth().ifPresent(statementOfTruth -> {
             this.signerName = statementOfTruth.getSignerName();
             this.signerRole = statementOfTruth.getSignerRole();

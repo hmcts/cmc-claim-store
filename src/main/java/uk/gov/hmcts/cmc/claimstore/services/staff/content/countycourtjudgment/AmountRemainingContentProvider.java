@@ -24,7 +24,8 @@ public final class AmountRemainingContentProvider {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(BigDecimal.ZERO);
         BigDecimal interestAmount = getInterestAmount(
-            interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt().toLocalDate(), claimAmount, paidAmount
+            interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt().toLocalDate(), claimAmount,
+            paidAmount
         );
         return formatMoney(claimAmount.add(interestAmount).subtract(paidAmount));
     }
