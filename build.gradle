@@ -164,11 +164,27 @@ jacocoTestReport {
 }
 
 project.tasks['sonarqube'].dependsOn test, apiTest
+project.tasks['check'].dependsOn apiTest
 sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
+  }
+}
+
+task codeCoverageReport(type: JacocoReport) {
+  executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+  subprojects.each {
+    sourceSets it.sourceSets.main
+  }
+
+  reports {
+    xml.enabled true
+    xml.destination new File("${buildDir}/reports/jacoco/report.xml")
+    html.enabled false
+    csv.enabled false
   }
 }
 
