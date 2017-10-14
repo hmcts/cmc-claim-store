@@ -173,11 +173,7 @@ sonarqube {
 }
 
 task codeCoverageReport(type: JacocoReport) {
-  executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-  subprojects.each {
-    sourceSets it.sourceSets.main
-  }
+  executionData fileTree(project.rootDir.absolutePath).include("${project.buildDir}/jacoco/*.exec")
 
   reports {
     xml.enabled true
