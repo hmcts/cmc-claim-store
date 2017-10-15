@@ -4,7 +4,6 @@ import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -65,7 +64,7 @@ public class SampleCountyCourtJudgment {
 
     public CountyCourtJudgment build() {
         return new CountyCourtJudgment(
-            defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
+                defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
         );
     }
 }
