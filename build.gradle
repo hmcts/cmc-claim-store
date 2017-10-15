@@ -126,6 +126,7 @@ dependencies {
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
     testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.2'
 
     // https://mvnrepository.com/artifact/org.mockito/mockito-core

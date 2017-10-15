@@ -1,21 +1,32 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class GetClaimByExternalIdTest extends BaseTest {
 
-    private static final String EXTERNAL_ID = "067e6162-3b6f-4ae2-a171-2470b63dff00";
-
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
-        webClient
-            .perform(get("/claims/" + EXTERNAL_ID))
+        UUID externalId = UUID.randomUUID();
+
+        claimStore.save(SampleClaimData.builder().withExternalId(externalId).build());
+
+        MvcResult result = webClient
+            .perform(get("/claims/" + externalId))
             .andExpect(status().isOk())
             .andReturn();
+
+        assertThat(deserializeObjectFrom(result))
+            .extracting(Claim::getExternalId).containsExactly(externalId.toString());
     }
 
     @Test
@@ -28,17 +39,11 @@ public class GetClaimByExternalIdTest extends BaseTest {
 
     @Test
     public void shouldReturn404HttpStatusWhenNoClaimFound() throws Exception {
-        webClient
-            .perform(get("/claims/" + EXTERNAL_ID))
-            .andExpect(status().isNotFound())
-            .andReturn();
-    }
+        String nonExistingExternalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-    @Test
-    public void shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         webClient
-            .perform(get("/claims/" + EXTERNAL_ID))
-            .andExpect(status().isInternalServerError())
+            .perform(get("/claims/" + nonExistingExternalId))
+            .andExpect(status().isNotFound())
             .andReturn();
     }
 }

@@ -52,6 +52,11 @@ public class SampleClaimData {
         return new SampleClaimData();
     }
 
+    public SampleClaimData withExternalId(UUID externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
     public SampleClaimData withHousingDisrepair(HousingDisrepair housingDisrepair) {
         this.housingDisrepair = housingDisrepair;
         return this;

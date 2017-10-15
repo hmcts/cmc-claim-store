@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails.getDefault;
 
+@Ignore
 public class StoreDefendantResponseTest extends BaseTest {
 
     private static final long CLAIM_ID = 2L;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Ignore
 public class DocumentsControllerDefendantResponseCopyTest extends BaseTest {
 
     private static final String EXTERNAL_ID = "1234dsfdf";

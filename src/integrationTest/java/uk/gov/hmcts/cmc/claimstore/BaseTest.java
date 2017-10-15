@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = BaseTest.Initializer.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestPropertySource("/environment.properties")
 public abstract class BaseTest {
 
@@ -61,10 +64,13 @@ public abstract class BaseTest {
         }
     }
 
-    @MockBean
+    @Autowired
     protected ClaimRepository claimRepository;
 
-    @MockBean
+    @Autowired
+    protected ClaimStore claimStore;
+
+    @Autowired
     protected DefendantResponseRepository defendantResponseRepository;
 
     @Autowired
@@ -96,4 +102,12 @@ public abstract class BaseTest {
             .collect(Collectors.toList());
     }
 
+    protected Claim deserializeObjectFrom(MvcResult result) throws UnsupportedEncodingException {
+        return jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);
+    }
+
+    protected List<Claim> deserializeListFrom(MvcResult result) throws UnsupportedEncodingException {
+        return jsonMapper.fromJson(result.getResponse().getContentAsString(), new TypeReference<List<Claim>>() {
+        });
+    }
 }

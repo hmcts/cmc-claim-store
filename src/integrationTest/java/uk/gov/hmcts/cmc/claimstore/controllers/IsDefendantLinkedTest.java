@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
@@ -16,6 +17,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Ignore
 public class IsDefendantLinkedTest extends BaseTest {
 
     private static final String CLAIM_REFERENCE_NUMBER = "000MC001";

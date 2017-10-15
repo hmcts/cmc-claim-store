@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
+@Ignore
 public class RequestMoreTimeForResponseTest extends BaseTest {
 
     private static final String AUTH_TOKEN = "it's me!";

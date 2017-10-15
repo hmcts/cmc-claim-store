@@ -23,6 +23,9 @@ public interface ClaimRepository {
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
     String ORDER_BY_ID_DESCENDING  = " ORDER BY claim.id DESC";
 
+    @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
+    List<Claim> findAll();
+
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getBySubmitterId(@Bind("submitterId") Long submitterId);
 
