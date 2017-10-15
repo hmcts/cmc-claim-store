@@ -1,5 +1,7 @@
 # CMC claim store
 
+[![codecov](https://codecov.io/gh/hmcts/cmc-claim-store/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/cmc-claim-store)
+
 This is the backend service for Civil Money Claims. 
 The service provides a set of RESTful endpoints for the CMC frontend application. 
 The two main responsibilities of this application are:
