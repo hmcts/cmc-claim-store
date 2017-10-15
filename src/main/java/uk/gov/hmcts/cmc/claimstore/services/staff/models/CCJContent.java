@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
@@ -23,18 +21,14 @@ public class CCJContent {
 
     public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
         requireNonNull(claim);
-        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
 
         this.claim = claim;
-        this.repaymentOption = RepaymentPlanContentProvider.create(countyCourtJudgment);
         this.amount = new AmountContentProvider(interestCalculationService).create(claim);
+        claim.getCountyCourtJudgment().getDefendantDateOfBirth()
+            .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
+        this.repaymentOption = RepaymentPlanContentProvider.create(claim.getCountyCourtJudgment());
         this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
         this.requestedDate = formatDate(claim.getCountyCourtJudgmentRequestedAt());
-        if (claim.getCountyCourtJudgment().getDefendant() instanceof IndividualDetails) {
-            IndividualDetails details = (IndividualDetails) claim.getCountyCourtJudgment().getDefendant();
-            details.getDateOfBirth()
-                .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
-        }
     }
 
     public Claim getClaim() {
@@ -43,6 +37,10 @@ public class CCJContent {
 
     public AmountContent getAmount() {
         return amount;
+    }
+
+    public String getDefendantDateOfBirth() {
+        return defendantDateOfBirth;
     }
 
     public String getRepaymentOption() {
@@ -55,10 +53,6 @@ public class CCJContent {
 
     public String getRequestedAt() {
         return requestedAt;
-    }
-
-    public String getDefendantDateOfBirth() {
-        return defendantDateOfBirth;
     }
 
 }
