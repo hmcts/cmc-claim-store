@@ -1,16 +1,4 @@
 {
-  "defendant": {
-    "type": "company",
-    "name": "John Smith",
-    "contactPerson": "Arnold Schwarzenegger",
-    "address": {
-      "line1": "52",
-      "line2": "Down Street",
-      "city": "Manchester",
-      "postcode": "DF1 3LJ"
-    },
-    "email": "j.smith@example.com"
-  },
   "paymentOption": "INSTALMENTS",
   "paidAmount": 0,
   "repaymentPlan": {
