@@ -102,8 +102,8 @@ public abstract class BaseTest {
             .collect(Collectors.toList());
     }
 
-    protected Claim deserializeObjectFrom(MvcResult result) throws UnsupportedEncodingException {
-        return jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);
+    protected <T> T deserializeObjectFrom(MvcResult result, Class<T> targetClass) throws UnsupportedEncodingException {
+        return jsonMapper.fromJson(result.getResponse().getContentAsString(), targetClass);
     }
 
     protected List<Claim> deserializeListFrom(MvcResult result) throws UnsupportedEncodingException {

@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,7 +18,7 @@ public class GetClamsByClaimantIdTest extends BaseTest {
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
         long submitterId = 1L;
 
-        claimStore.save(SampleClaimData.builder().build(), submitterId);
+        claimStore.save(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 
         MvcResult result = webClient
             .perform(get("/claims/claimant/" + submitterId))

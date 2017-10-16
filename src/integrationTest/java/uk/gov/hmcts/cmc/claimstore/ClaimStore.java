@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 @Component
 public class ClaimStore {
@@ -21,11 +22,11 @@ public class ClaimStore {
     @Autowired
     private JsonMapper jsonMapper;
 
-    public long save(ClaimData claimData) {
-        return save(claimData, 1L);
+    public Claim save(ClaimData claimData) {
+        return save(claimData, 1L, LocalDate.now());
     }
 
-    public long save(ClaimData claimData, long submitterId) {
+    public Claim save(ClaimData claimData, long submitterId, LocalDate responseDeadline) {
         Logger logger = LoggerFactory.getLogger(getClass());
 
         logger.info("Saving claim: " + claimData.getExternalId());
@@ -34,19 +35,16 @@ public class ClaimStore {
             submitterId,
             SampleClaim.LETTER_HOLDER_ID,
             LocalDate.now(),
-            LocalDate.now(),
+            responseDeadline,
             claimData.getExternalId().toString(),
             SampleClaim.SUBMITTER_EMAIL
         );
 
-        logger.info("Saved claim has been given ID " + claimId + ". The following claims exists in the DB: "
-            + this.claimRepository.findAll().stream().map(claim ->  claim.getId() + " - " + claim.getExternalId()));
+        logger.info("Saved claim has been given ID " + claimId + ". The following claims exist in the DB: "
+            + this.claimRepository.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
+            .collect(Collectors.toList()));
 
-        return claimId;
-    }
-
-    public void linkDefendant(long claimId, long defendantId) {
-        claimRepository.linkDefendant(claimId, defendantId);
+        return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
     }
 
 }

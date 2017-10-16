@@ -16,8 +16,8 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
         long defendantId = 1L;
 
-        long claimId = claimStore.save(SampleClaimData.builder().build());
-        claimStore.linkDefendant(claimId, defendantId);
+        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        claimRepository.linkDefendant(claim.getId(), defendantId);
 
         MvcResult result = webClient
             .perform(get("/claims/defendant/" + defendantId))

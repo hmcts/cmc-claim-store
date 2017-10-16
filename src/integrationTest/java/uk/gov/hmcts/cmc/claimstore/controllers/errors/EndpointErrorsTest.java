@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -19,8 +21,13 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 // TODO: revert mock configuration to run tests in this class
@@ -55,12 +62,12 @@ public class EndpointErrorsTest {
     @Test
     public void getByExternalId_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         given(claimRepository.getClaimByExternalId("efa77f92-6fb6-45d6-8620-8662176786f1"))
-                .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
 
         webClient
-                .perform(get("/claims/efa77f92-6fb6-45d6-8620-8662176786f1"))
-                .andExpect(status().isInternalServerError())
-                .andReturn();
+            .perform(get("/claims/efa77f92-6fb6-45d6-8620-8662176786f1"))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
     }
 
     @Test
@@ -89,5 +96,67 @@ public class EndpointErrorsTest {
             .andReturn();
     }
 
+    @Test
+    public void getByClaimReferenceNumber_shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
+        given(claimRepository.getByClaimReferenceNumber(any())).willThrow(new RuntimeException("error"));
+
+        webClient
+            .perform(get("/testing-support/claims/000MC001"))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+    }
+
+    @Test
+    public void linkDefendant_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+        given(claimRepository.getByClaimReferenceNumber("000MC001"))
+            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+
+        webClient
+            .perform(get("/claims/000MC001/defendant-link-status"))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+    }
+
+    @Test
+    public void linkDefendantToClaim_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+        Long claimId = 1L;
+
+        given(claimRepository.getById(claimId))
+            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+
+        webClient
+            .perform(put("/claims/" + claimId + "/defendant/2"))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+    }
+
+    @Test
+    public void linkDefendantToClaim_shouldReturn500HttpStatusWhenFailedToMakeLink() throws Exception {
+        Long claimId = 1L;
+        Long defendantId = 2L;
+
+        given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.builder().withClaimId(claimId)
+            .withDefendantId(null).build()));
+        given(claimRepository.linkDefendant(claimId, defendantId))
+            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+
+        webClient
+            .perform(put("/claims/" + claimId + "/defendant/" + defendantId))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+    }
+
+    @Test
+    public void requestMoreTime_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+
+        given(claimRepository.getById(1L))
+            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+
+        webClient
+            .perform(post("/claims/1/request-more-time")
+                .header(HttpHeaders.AUTHORIZATION, "it's me!"))
+            .andExpect(status().isInternalServerError())
+            .andReturn();
+    }
 
 }

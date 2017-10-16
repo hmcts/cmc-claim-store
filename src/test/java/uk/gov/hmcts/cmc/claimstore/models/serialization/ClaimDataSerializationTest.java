@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +29,7 @@ public class ClaimDataSerializationTest {
 
         //then
         ClaimData other = SampleClaimData.builder()
+            .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterestDate(SampleInterestDate.builder()
                 .withDate(LocalDate.of(2015, 2, 2))
                 .build())

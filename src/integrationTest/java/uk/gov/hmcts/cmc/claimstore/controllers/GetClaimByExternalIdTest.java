@@ -25,7 +25,7 @@ public class GetClaimByExternalIdTest extends BaseTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result))
+        assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getExternalId).containsExactly(externalId.toString());
     }
 
