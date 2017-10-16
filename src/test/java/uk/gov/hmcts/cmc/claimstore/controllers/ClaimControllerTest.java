@@ -13,11 +13,13 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.LETTER_HOLDER_ID;
+import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
 
@@ -68,6 +70,18 @@ public class ClaimControllerTest {
 
         //when
         Claim output = claimController.getByLetterHolderId(LETTER_HOLDER_ID);
+
+        //then
+        assertThat(output).isEqualTo(CLAIM);
+    }
+
+    @Test
+    public void shouldReturnClaimForClaimReferenceNumber() throws JsonProcessingException {
+        //given
+        when(claimService.getClaimByReference(eq(REFERENCE_NUMBER))).thenReturn(Optional.of(CLAIM));
+
+        //when
+        Claim output = claimController.getByClaimReference(REFERENCE_NUMBER);
 
         //then
         assertThat(output).isEqualTo(CLAIM);
