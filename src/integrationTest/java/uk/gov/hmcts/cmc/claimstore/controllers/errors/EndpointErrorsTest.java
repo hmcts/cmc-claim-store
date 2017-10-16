@@ -25,7 +25,6 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,13 +39,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EndpointErrorsTest {
 
     private static final Exception UNEXPECTED_ERROR
-        = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
+            = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
 
     @TestConfiguration
     static class MockedConfiguration {
 
         @MockBean
         private Flyway flyway;
+
+        @MockBean
+        private PublicHolidaysCollection holidaysCollection;
+
+        @MockBean
+        private NotificationClient notificationClient;
+
+        @MockBean
+        private EmailService emailService;
+
+        @MockBean
+        private PDFServiceClient pdfServiceClient;
+
+        @MockBean
+        private UserService userService;
     }
 
     @Autowired
@@ -54,21 +68,6 @@ public class EndpointErrorsTest {
 
     @MockBean
     private ClaimRepository claimRepository;
-
-    @MockBean
-    private PublicHolidaysCollection holidaysCollection;
-
-    @MockBean
-    private NotificationClient notificationClient;
-
-    @MockBean
-    private EmailService emailService;
-
-    @MockBean
-    private PDFServiceClient pdfServiceClient;
-
-    @MockBean
-    private UserService userService;
 
     @Test
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
