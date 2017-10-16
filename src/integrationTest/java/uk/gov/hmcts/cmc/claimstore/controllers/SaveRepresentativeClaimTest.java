@@ -70,7 +70,13 @@ public class SaveRepresentativeClaimTest extends BaseTest {
         RESPONSE_DEADLINE,
         DEADLINE_NOT_UPDATED,
         SUBMITTER_EMAIL,
-        null, null, null ,null, null);
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null);
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;

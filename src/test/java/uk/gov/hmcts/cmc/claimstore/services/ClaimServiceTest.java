@@ -253,6 +253,8 @@ public class ClaimServiceTest {
             null,
             null,
             null,
+            null,
+            null,
             null
         );
     }
@@ -271,6 +273,8 @@ public class ClaimServiceTest {
             responseDeadline,
             moreTimeAlreadyRequested,
             SUBMITTER_EMAIL,
+            null,
+            null,
             null,
             null,
             null,

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,6 +33,8 @@ public class Claim {
     private final String defendantEmail;
     private final CountyCourtJudgment countyCourtJudgment;
     private final LocalDateTime countyCourtJudgmentRequestedAt;
+    private final Settlement settlement;
+    private final LocalDateTime settlementReachedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -51,7 +54,9 @@ public class Claim {
         final ResponseData response,
         final String defendantEmail,
         final CountyCourtJudgment countyCourtJudgment,
-        final LocalDateTime countyCourtJudgmentRequestedAt
+        final LocalDateTime countyCourtJudgmentRequestedAt,
+        final Settlement settlement,
+        final LocalDateTime settlementReachedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -70,6 +75,8 @@ public class Claim {
         this.defendantEmail = defendantEmail;
         this.countyCourtJudgment = countyCourtJudgment;
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
+        this.settlement = settlement;
+        this.settlementReachedAt = settlementReachedAt;
     }
 
     public Long getId() {
@@ -140,6 +147,14 @@ public class Claim {
         return countyCourtJudgmentRequestedAt;
     }
 
+    public Settlement getSettlement() {
+        return settlement;
+    }
+
+    public LocalDateTime getSettlementReachedAt() {
+        return settlementReachedAt;
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
@@ -166,14 +181,17 @@ public class Claim {
             && Objects.equals(response, claim.response)
             && Objects.equals(defendantEmail, claim.defendantEmail)
             && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
-            && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt);
+            && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
+            && Objects.equals(settlement, claim.settlement)
+            && Objects.equals(settlementReachedAt, claim.settlementReachedAt);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
             claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
-            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt
+            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
+            settlement, settlementReachedAt
         );
     }
 
@@ -195,6 +213,8 @@ public class Claim {
         private String defendantEmail;
         private CountyCourtJudgment countyCourtJudgment;
         private LocalDateTime countyCourtJudgmentRequestedAt;
+        private Settlement settlement;
+        private LocalDateTime settlementReachedAt;
 
         public Builder setId(Long id) {
             this.id = id;
@@ -281,12 +301,22 @@ public class Claim {
             return this;
         }
 
+        public Builder setSettlement(Settlement settlement) {
+            this.settlement = settlement;
+            return this;
+        }
+
+        public Builder setSettlementReachedAt(LocalDateTime settlementReachedAt) {
+            this.settlementReachedAt = settlementReachedAt;
+            return this;
+        }
+
         public Claim build() {
             return new Claim(
                 id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
                 claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested,
                 submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment,
-                countyCourtJudgmentRequestedAt
+                countyCourtJudgmentRequestedAt, settlement, settlementReachedAt
             );
         }
     }
