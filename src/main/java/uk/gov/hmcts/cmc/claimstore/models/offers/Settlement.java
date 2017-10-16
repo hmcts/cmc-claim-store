@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Settlement {
 
-    private SettlementStatus status = SettlementStatus.UNSETTLED;
+    private SettlementStatus status = SettlementStatus.unsettled;
     private List<PartyStatement> partyStatements;
 
     public SettlementStatus getStatus() {

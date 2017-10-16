@@ -9,7 +9,7 @@ public class SettlementTest {
     @Test
     public void statusShouldBeUnsettledForNewInstance() {
         Settlement settlement = new Settlement();
-        assertThat(settlement.getStatus()).isEqualByComparingTo(SettlementStatus.UNSETTLED);
+        assertThat(settlement.getStatus()).isEqualByComparingTo(SettlementStatus.unsettled);
     }
 
 }
