@@ -213,5 +213,4 @@ public class SampleClaimData {
             .withAmount(SampleAmountBreakdown.validDefaults())
             .build();
     }
-
 }
