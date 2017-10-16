@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
 import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import javax.validation.Valid;
@@ -33,16 +34,18 @@ public class OffersController {
     private ClaimService claimService;
     private UserService userService;
     private AuthorisationService authorisationService;
+    private OffersService offersService;
 
     @Autowired
     public OffersController(
         ClaimService claimService,
         UserService userService,
-        AuthorisationService authorisationService
-    ) {
+        AuthorisationService authorisationService,
+        OffersService offersService) {
         this.claimService = claimService;
         this.userService = userService;
         this.authorisationService = authorisationService;
+        this.offersService = offersService;
     }
 
     @PostMapping(value = "/{claimId:\\d+}/offers/{party}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -56,7 +59,7 @@ public class OffersController {
     ) {
         Claim claim = claimService.getClaimById(claimId);
         assertActionIsPermittedFor(claim, authorisation);
-        return null;
+        return offersService.makeOffer(claim, offer, party);
     }
 
     private void assertActionIsPermittedFor(Claim claim, String authorisation) {
