@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.errors;
 import org.flywaydb.core.Flyway;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,21 +11,33 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,15 +72,40 @@ public class EndpointErrorsTest {
         @MockBean
         private PDFServiceClient pdfServiceClient;
 
-        @MockBean
-        private UserService userService;
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            return new PlatformTransactionManager() {
+
+                @Override
+                public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
+                    return null;
+                }
+
+                @Override
+                public void commit(TransactionStatus status) throws TransactionException {
+
+                }
+
+                @Override
+                public void rollback(TransactionStatus status) throws TransactionException {
+
+                }
+            };
+        }
+
     }
 
     @Autowired
     private MockMvc webClient;
 
+    @Autowired
+    private JsonMapper jsonMapper;
+
     @MockBean
     private ClaimRepository claimRepository;
+
+    @MockBean
+    private UserService userService;
 
     @Test
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
@@ -153,7 +191,7 @@ public class EndpointErrorsTest {
     }
 
     @Test
-    public void getByClaimReferenceNumber_shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
+    public void getByClaimReferenceNumberShouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
         String referenceNumber = "000MC001";
 
         given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
@@ -163,4 +201,28 @@ public class EndpointErrorsTest {
             .andExpect(status().isInternalServerError());
     }
 
+    @Test
+    public void saveClaimShouldReturnConflictForDuplicateClaimFailures() throws Exception {
+        long claimantId = 1L;
+
+        Exception duplicateKeyError = new UnableToExecuteStatementException(new PSQLException(
+                "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
+
+        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.builder()
+            .withUserId(claimantId)
+            .withMail("claimant@email.com")
+            .build());
+
+        given(claimRepository.saveRepresented(anyString(), anyLong(), any(LocalDate.class),
+            any(LocalDate.class), anyString(), anyString()))
+            .willThrow(duplicateKeyError);
+
+        webClient
+            .perform(post("/claims/" + claimantId)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header(HttpHeaders.AUTHORIZATION, "token")
+                .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
+            )
+            .andExpect(status().isConflict());
+    }
 }
