@@ -4,6 +4,11 @@ import java.util.List;
 
 public class Settlement {
 
-    List<Offer> offers;
+    private SettlementStatus status = SettlementStatus.UNSETTLED;
+    private List<Offer> offers;
+
+    public SettlementStatus getStatus() {
+        return status;
+    }
 
 }
