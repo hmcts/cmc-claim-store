@@ -47,8 +47,7 @@ public class GetClamsByClaimantIdTest extends BaseTest {
     public void shouldReturn404HttpStatusWhenClaimantIdParameterIsNotNumber() throws Exception {
         webClient
             .perform(get("/claims/claimant/not-a-number"))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 
 }

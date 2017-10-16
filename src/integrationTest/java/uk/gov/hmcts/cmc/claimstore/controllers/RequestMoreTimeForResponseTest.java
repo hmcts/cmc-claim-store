@@ -64,8 +64,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
 
         webClient
             .perform(request(claim.getId()))
-            .andExpect(status().isOk())
-            .andReturn();
+            .andExpect(status().isOk());
 
         verify(notificationClient, times(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
@@ -87,8 +86,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
 
         webClient
             .perform(request(claim.getId()))
-            .andExpect(status().isOk())
-            .andReturn();
+            .andExpect(status().isOk());
 
         verify(notificationClient, times(8))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
@@ -102,8 +100,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
 
         webClient
             .perform(request(nonExistingClaim))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -115,8 +112,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
 
         webClient
             .perform(request(claim.getId()))
-            .andExpect(status().isForbidden())
-            .andReturn();
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -130,8 +126,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
 
         webClient
             .perform(request(claim.getId()))
-            .andExpect(status().isConflict())
-            .andReturn();
+            .andExpect(status().isConflict());
     }
 
     @Test
@@ -144,16 +139,14 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
 
         webClient
             .perform(request(claim.getId()))
-            .andExpect(status().isConflict())
-            .andReturn();
+            .andExpect(status().isConflict());
     }
 
     @Test
     public void shouldReturn400HttpStatusWhenNoAuthorizationHeaderSet() throws Exception {
         webClient
             .perform(request(900L, new HashMap<>()))
-            .andExpect(status().isBadRequest())
-            .andReturn();
+            .andExpect(status().isBadRequest());
     }
 
     private MockHttpServletRequestBuilder request(final long claimId) {

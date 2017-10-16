@@ -33,15 +33,13 @@ public class GetClaimByReferenceNumberTest extends BaseTest {
 
         webClient
             .perform(get("/testing-support/claims/" + nonExistingReferenceNumber))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldReturn404HttpStatusWhenWrongUrlGiven() throws Exception {
         webClient
             .perform(get("/testing-support/not-existing-endpoint"))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 }

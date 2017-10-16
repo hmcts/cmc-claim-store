@@ -33,8 +33,7 @@ public class GetClaimByExternalIdTest extends BaseTest {
     public void shouldReturn404HttpStatusWhenExternalIdParamIsNotValid() throws Exception {
         webClient
             .perform(get("/claims/not-a-valid-uuid"))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -43,7 +42,6 @@ public class GetClaimByExternalIdTest extends BaseTest {
 
         webClient
             .perform(get("/claims/" + nonExistingExternalId))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 }

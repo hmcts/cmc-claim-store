@@ -32,23 +32,20 @@ public class LinkDefendantToClaimTest extends BaseTest {
 
         webClient
             .perform(put("/claims/" + nonExistingClaimId + "/defendant/2"))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldReturn404HttpStatusWhenClaimParameterIsNotNumber() throws Exception {
         webClient
             .perform(put("/claims/not-a-number/defendant/2"))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldReturn404HttpStatusWhenDefendantParameterIsNotNumber() throws Exception {
         webClient
             .perform(put("/claims/1/defendant/not-a-number"))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 }

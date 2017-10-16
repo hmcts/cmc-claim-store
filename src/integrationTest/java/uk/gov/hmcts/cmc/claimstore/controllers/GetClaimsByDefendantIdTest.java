@@ -46,8 +46,7 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
     public void shouldReturn404HttpStatusWhenDefendantParameterIsNotNumber() throws Exception {
         webClient
             .perform(get("/claims/defendant/not-a-number"))
-            .andExpect(status().isNotFound())
-            .andReturn();
+            .andExpect(status().isNotFound());
     }
 
 }
