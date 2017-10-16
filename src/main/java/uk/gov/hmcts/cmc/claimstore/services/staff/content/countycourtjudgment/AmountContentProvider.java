@@ -33,7 +33,7 @@ public class AmountContentProvider {
 
             interestAmount = getInterestAmount(
                 interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt()
-                    .toLocalDate(), claimAmount, paidAmount)
+                    .toLocalDate(), claimAmount)
             ;
         }
 
@@ -53,13 +53,14 @@ public class AmountContentProvider {
 
     private static BigDecimal getInterestAmount(
         final InterestCalculationService interestCalculationService,
-        final Claim claim, LocalDate toDate,
-        final BigDecimal claimAmount,
-        final BigDecimal paidAmount) {
+        final Claim claim,
+        final LocalDate toDate,
+        final BigDecimal claimAmount
+    ) {
         if (!claim.getClaimData().getInterest().getType()
             .equals(uk.gov.hmcts.cmc.claimstore.models.Interest.InterestType.NO_INTEREST)) {
             return interestCalculationService.calculateInterest(
-                claimAmount.subtract(paidAmount),
+                claimAmount,
                 claim.getClaimData().getInterest().getRate(),
                 getInterestFromDate(claim),
                 toDate
