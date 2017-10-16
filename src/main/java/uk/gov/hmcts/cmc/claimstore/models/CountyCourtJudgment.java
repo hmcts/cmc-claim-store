@@ -2,13 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.claimstore.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.claimstore.constraints.Money;
 import uk.gov.hmcts.cmc.claimstore.constraints.ValidCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,9 +24,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 @ValidCountyCourtJudgment
 public class CountyCourtJudgment {
 
-    @Valid
-    @NotNull
-    private final TheirDetails defendant;
+    @AgeRangeValidator
+    private final LocalDate defendantDateOfBirth;
 
     @Money
     @DecimalMin(value = "0.00")
@@ -45,14 +44,14 @@ public class CountyCourtJudgment {
     private final StatementOfTruth statementOfTruth;
 
     public CountyCourtJudgment(
-        final TheirDetails defendant,
+        final LocalDate defendantDateOfBirth,
         final PaymentOption paymentOption,
         final BigDecimal paidAmount,
         final RepaymentPlan repaymentPlan,
         final LocalDate payBySetDate,
         final StatementOfTruth statementOfTruth
     ) {
-        this.defendant = defendant;
+        this.defendantDateOfBirth = defendantDateOfBirth;
         this.paymentOption = paymentOption;
         this.paidAmount = paidAmount;
         this.repaymentPlan = repaymentPlan;
@@ -60,16 +59,16 @@ public class CountyCourtJudgment {
         this.statementOfTruth = statementOfTruth;
     }
 
-    public TheirDetails getDefendant() {
-        return defendant;
+    public Optional<LocalDate> getDefendantDateOfBirth() {
+        return Optional.ofNullable(defendantDateOfBirth);
     }
 
     public PaymentOption getPaymentOption() {
         return paymentOption;
     }
 
-    public BigDecimal getPaidAmount() {
-        return paidAmount;
+    public Optional<BigDecimal> getPaidAmount() {
+        return Optional.ofNullable(paidAmount);
     }
 
     public Optional<RepaymentPlan> getRepaymentPlan() {
@@ -94,7 +93,7 @@ public class CountyCourtJudgment {
             return false;
         }
         CountyCourtJudgment that = (CountyCourtJudgment) other;
-        return Objects.equals(defendant, that.defendant)
+        return Objects.equals(defendantDateOfBirth, that.defendantDateOfBirth)
             && Objects.equals(paymentOption, that.paymentOption)
             && Objects.equals(paidAmount, that.paidAmount)
             && Objects.equals(repaymentPlan, that.repaymentPlan)
@@ -104,7 +103,8 @@ public class CountyCourtJudgment {
 
     @Override
     public int hashCode() {
-        return Objects.hash(defendant, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth);
+        return Objects.hash(defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate,
+            statementOfTruth);
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
@@ -54,6 +55,12 @@ public class ResourceExceptionHandler {
         return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(value = HttpClientErrorException.class)
+    public ResponseEntity<Object> httpClientErrorException(HttpClientErrorException exception) {
+        logger.error(exception.getMessage(), exception);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(),
+            HttpStatus.valueOf(exception.getRawStatusCode()));
+    }
 
     @ExceptionHandler(value = ForbiddenActionException.class)
     public ResponseEntity<Object> forbidden(Exception exception) {

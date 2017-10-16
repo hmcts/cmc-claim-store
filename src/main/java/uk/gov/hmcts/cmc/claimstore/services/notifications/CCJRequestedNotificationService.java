@@ -48,17 +48,6 @@ public class CCJRequestedNotificationService {
         );
     }
 
-    public void notifyDefendant(final Claim claim) {
-        final Map<String, String> parameters = aggregateParams(claim);
-        sendNotificationEmail(
-            claim.getClaimData().getDefendant().getEmail()
-                .orElseThrow(() -> new NotificationException(("Unknown defendant email"))),
-            notificationsProperties.getTemplates().getEmail().getDefendantCCJRequested(),
-            parameters,
-            NotificationReferenceBuilder.CCJRequested.referenceForDefendant(claim.getReferenceNumber())
-        );
-    }
-
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendNotificationEmail(
         final String targetEmail,

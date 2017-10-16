@@ -43,11 +43,11 @@ public class CCJStaffNotificationServiceTest extends BaseTest {
     @Before
     public void setup() {
         claim = SampleClaim
-                        .builder()
-                        .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-                        .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build())
-                        .withClaimData(SampleClaimData.submittedByClaimant())
-                        .build();
+            .builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build())
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
