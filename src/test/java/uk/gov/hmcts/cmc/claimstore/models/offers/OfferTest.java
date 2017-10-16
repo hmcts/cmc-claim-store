@@ -1,82 +1,36 @@
 package uk.gov.hmcts.cmc.claimstore.models.offers;
 
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
+import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Set;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.claimstore.utils.BeanValidator.validate;
 
 public class OfferTest {
 
+    private ObjectMapper mapper = new JacksonConfiguration().objectMapper();
+    private ResourceReader resourceReader = new ResourceReader();
+
     @Test
-    public void shouldHaveNoValidationErrorsForValidOffer() {
-        Offer offer = SampleOffer.validDefaults();
-
-        Set<String> validationErrors = validate(offer);
-
-        assertThat(validationErrors).isEmpty();
+    public void offerResponseShouldBePendingForNewInstance() {
+        Offer offer = new Offer("I offer to repair the roof", LocalDate.now());
+        assertThat(offer.getResponse()).isEqualByComparingTo(Response.PENDING);
     }
 
     @Test
-    public void shouldBeInvalidIfTextIsNull() {
-        Offer offer = SampleOffer.builder()
-            .withContent(null)
-            .build();
-
-        Set<String> validationErrors = validate(offer);
-
-        assertThat(validationErrors).containsOnly("content : may not be empty");
+    public void offerResponseShouldBePendingForNewInstanceConstructedFromJSON() throws IOException {
+        Offer offerFromJSON = mapper.readValue(resourceReader.read("/new-offer.json"), Offer.class);
+        assertThat(offerFromJSON.getResponse()).isEqualByComparingTo(Response.PENDING);
     }
 
     @Test
-    public void shouldBeInvalidIfTextExceedsLengthLimit() {
-        Offer offer = SampleOffer.builder()
-            .withContent(StringUtils.repeat('X', Offer.CONTENT_LENGTH_LIMIT + 1))
-            .build();
-
-        Set<String> validationErrors = validate(offer);
-
-        assertThat(validationErrors).containsOnly(
-            format("content : may not be longer than %d characters", Offer.CONTENT_LENGTH_LIMIT)
-        );
-    }
-
-    @Test
-    public void shouldBeInvalidIfCompletionDateIsNull() {
-        Offer offer = SampleOffer.builder()
-            .withCompletionDate(null)
-            .build();
-
-        Set<String> validationErrors = validate(offer);
-
-        assertThat(validationErrors).containsOnly("completionDate : may not be null");
-    }
-
-    @Test
-    public void shouldBeInvalidIfCompletionDateIsToday() {
-        Offer offer = SampleOffer.builder()
-            .withCompletionDate(LocalDate.now())
-            .build();
-
-        Set<String> validationErrors = validate(offer);
-
-        assertThat(validationErrors).containsOnly("completionDate : must be in the future");
-    }
-
-    @Test
-    public void shouldBeInvalidIfCompletionDateIsYesterday() {
-        Offer offer = SampleOffer.builder()
-            .withCompletionDate(LocalDate.now().minusDays(1))
-            .build();
-
-        Set<String> validationErrors = validate(offer);
-
-        assertThat(validationErrors).containsOnly("completionDate : must be in the future");
+    public void counterOfferShouldBeAbsentForNewInstance() {
+        Offer offer = new Offer("I offer to repair the roof", LocalDate.now());
+        assertThat(offer.getCounterOffer().isPresent()).isFalse();
     }
 
 }
