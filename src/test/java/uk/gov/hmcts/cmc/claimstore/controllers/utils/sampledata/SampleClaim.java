@@ -24,6 +24,7 @@ public final class SampleClaim {
     public static final Long DEFENDANT_ID = 4L;
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000CM001";
+    public static final String EXTERNAL_REFERENCE = "Ref123";
     public static final String EXTERNAL_ID = UUID.randomUUID().toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
@@ -95,7 +96,8 @@ public final class SampleClaim {
             null,
             null,
             null,
-            null
+            null,
+            EXTERNAL_REFERENCE
         );
     }
 
@@ -143,7 +145,8 @@ public final class SampleClaim {
             response,
             defendantEmail,
             countyCourtJudgment,
-            countyCourtJudgmentRequestedAt);
+            countyCourtJudgmentRequestedAt,
+            EXTERNAL_REFERENCE);
     }
 
     public SampleClaim withSubmitterId(Long userId) {

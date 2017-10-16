@@ -67,6 +67,12 @@ public class ClaimController {
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
     }
 
+    @GetMapping("/representative/{externalReference}")
+    @ApiOperation("Fetch user claims for given external reference number")
+    public List<Claim> getClaimByExternalReference(@PathVariable("externalReference") final String externalReference) {
+        return claimService.getClaimByExternalReference(externalReference);
+    }
+
     @GetMapping("/defendant/{defendantId:\\d+}")
     @ApiOperation("Fetch claims linked to given defendant id")
     public List<Claim> getByDefendantId(@PathVariable("defendantId") final Long defendantId) {

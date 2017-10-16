@@ -32,6 +32,7 @@ public class Claim {
     private final String defendantEmail;
     private final CountyCourtJudgment countyCourtJudgment;
     private final LocalDateTime countyCourtJudgmentRequestedAt;
+    private final String externalReferenceNumber;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -51,7 +52,8 @@ public class Claim {
         final ResponseData response,
         final String defendantEmail,
         final CountyCourtJudgment countyCourtJudgment,
-        final LocalDateTime countyCourtJudgmentRequestedAt
+        final LocalDateTime countyCourtJudgmentRequestedAt,
+        final String externalReferenceNumber
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -70,6 +72,7 @@ public class Claim {
         this.defendantEmail = defendantEmail;
         this.countyCourtJudgment = countyCourtJudgment;
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
+        this.externalReferenceNumber = externalReferenceNumber;
     }
 
     public Long getId() {
@@ -140,6 +143,10 @@ public class Claim {
         return countyCourtJudgmentRequestedAt;
     }
 
+    public String getExternalReferenceNumber() {
+        return externalReferenceNumber;
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
@@ -166,14 +173,16 @@ public class Claim {
             && Objects.equals(response, claim.response)
             && Objects.equals(defendantEmail, claim.defendantEmail)
             && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
-            && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt);
+            && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
+            && Objects.equals(externalReferenceNumber, claim.externalReferenceNumber);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
             claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
-            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt
+            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
+            externalReferenceNumber
         );
     }
 
@@ -195,6 +204,7 @@ public class Claim {
         private String defendantEmail;
         private CountyCourtJudgment countyCourtJudgment;
         private LocalDateTime countyCourtJudgmentRequestedAt;
+        private String externalReferenceNumber;
 
         public Builder setId(Long id) {
             this.id = id;
@@ -281,12 +291,17 @@ public class Claim {
             return this;
         }
 
+        public Builder setExternalReferenceNumber(String externalReferenceNumber) {
+            this.externalReferenceNumber = externalReferenceNumber;
+            return this;
+        }
+
         public Claim build() {
             return new Claim(
                 id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
                 claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested,
                 submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment,
-                countyCourtJudgmentRequestedAt
+                countyCourtJudgmentRequestedAt, externalReferenceNumber
             );
         }
     }

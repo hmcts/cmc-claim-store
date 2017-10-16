@@ -75,6 +75,10 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference);
     }
 
+    public List<Claim> getClaimByExternalReference(final String externalReference) {
+        return claimRepository.getByExternalReference(externalReference);
+    }
+
     public List<Claim> getClaimByDefendantId(final long id) {
         return claimRepository.getByDefendantId(id);
     }
