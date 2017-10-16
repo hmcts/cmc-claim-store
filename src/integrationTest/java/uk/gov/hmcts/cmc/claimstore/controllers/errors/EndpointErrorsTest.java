@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -23,8 +24,10 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -39,6 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -52,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EndpointErrorsTest {
 
     private static final Exception UNEXPECTED_ERROR
-            = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
+        = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
 
     @TestConfiguration
     static class MockedConfiguration {
@@ -103,6 +107,9 @@ public class EndpointErrorsTest {
 
     @MockBean
     private ClaimRepository claimRepository;
+
+    @MockBean
+    private DefendantResponseRepository defendantResponseRepository;
 
     @MockBean
     private UserService userService;
@@ -206,7 +213,7 @@ public class EndpointErrorsTest {
         long claimantId = 1L;
 
         Exception duplicateKeyError = new UnableToExecuteStatementException(new PSQLException(
-                "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
+            "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
 
         given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.builder()
             .withUserId(claimantId)
@@ -224,5 +231,22 @@ public class EndpointErrorsTest {
                 .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
             )
             .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void saveResponseShouldFailWhenDefendantResponseFailedStoring() throws Exception {
+        long claimId = 1L;
+        long defendantId = 2L;
+
+        given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.getDefault()));
+        willThrow(UNEXPECTED_ERROR).given(defendantResponseRepository).save(anyLong(), anyLong(), anyString(), anyString());
+
+        webClient
+            .perform(post("/responses/claim/" + claimId + "/defendant/" + defendantId)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header(HttpHeaders.AUTHORIZATION, "token")
+                .content(jsonMapper.toJson(SampleResponseData.validDefaults()))
+            )
+            .andExpect(status().isInternalServerError());
     }
 }
