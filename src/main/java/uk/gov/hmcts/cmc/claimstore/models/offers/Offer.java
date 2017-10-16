@@ -24,13 +24,17 @@ public class Offer {
     @FutureDate
     private LocalDate completionDate;
 
+    @NotNull
+    private MadeBy madeBy;
+
     private Response response = Response.PENDING;
 
     private Offer counterOffer;
 
-    public Offer(String content, LocalDate completionDate) {
+    public Offer(String content, LocalDate completionDate, MadeBy madeBy) {
         this.content = content;
         this.completionDate = completionDate;
+        this.madeBy = madeBy;
     }
 
     public String getContent() {
@@ -39,6 +43,10 @@ public class Offer {
 
     public LocalDate getCompletionDate() {
         return completionDate;
+    }
+
+    public MadeBy getMadeBy() {
+        return madeBy;
     }
 
     public Response getResponse() {

@@ -17,7 +17,7 @@ public class OfferTest {
 
     @Test
     public void offerResponseShouldBePendingForNewInstance() {
-        Offer offer = new Offer("I offer to repair the roof", LocalDate.now());
+        Offer offer = new Offer("I offer to repair the roof", LocalDate.now(), MadeBy.DEFENDANT);
         assertThat(offer.getResponse()).isEqualByComparingTo(Response.PENDING);
     }
 
@@ -29,7 +29,7 @@ public class OfferTest {
 
     @Test
     public void counterOfferShouldBeAbsentForNewInstance() {
-        Offer offer = new Offer("I offer to repair the roof", LocalDate.now());
+        Offer offer = new Offer("I offer to repair the roof", LocalDate.now(), MadeBy.DEFENDANT);
         assertThat(offer.getCounterOffer().isPresent()).isFalse();
     }
 

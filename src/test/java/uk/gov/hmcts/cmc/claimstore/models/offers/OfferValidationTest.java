@@ -79,4 +79,15 @@ public class OfferValidationTest {
         assertThat(validationErrors).containsOnly("completionDate : must be in the future");
     }
 
+    @Test
+    public void shouldBeInvalidIfMadeByIsNull() {
+        Offer offer = SampleOffer.builder()
+            .madeBy(null)
+            .build();
+
+        Set<String> validationErrors = validate(offer);
+
+        assertThat(validationErrors).containsOnly("madeBy : may not be null");
+    }
+
 }
