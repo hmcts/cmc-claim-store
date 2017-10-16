@@ -52,7 +52,7 @@ public class AmountContentProviderTest {
             .build();
 
         assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
-            .isEqualTo("£70.66");
+            .isEqualTo("£70.88");
     }
 
 }
