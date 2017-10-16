@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.errors;
 
-import org.junit.Ignore;
+import org.flywaydb.core.Flyway;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.skife.jdbi.v2.StatementContext;
@@ -8,8 +8,10 @@ import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,133 +32,136 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// TODO: revert mock configuration to run tests in this class
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
+@ActiveProfiles("test")
 public class EndpointErrorsTest {
 
+    private static final Exception UNEXPECTED_ERROR
+        = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
+
+    @TestConfiguration
+    static class MockedConfiguration {
+
+        @MockBean
+        private Flyway flyway;
+    }
+
     @Autowired
-    protected MockMvc webClient;
+    private MockMvc webClient;
 
     @MockBean
-    protected ClaimRepository claimRepository;
+    private ClaimRepository claimRepository;
 
     @MockBean
-    protected PublicHolidaysCollection holidaysCollection;
+    private PublicHolidaysCollection holidaysCollection;
 
     @MockBean
-    protected NotificationClient notificationClient;
+    private NotificationClient notificationClient;
 
     @MockBean
-    protected EmailService emailService;
+    private EmailService emailService;
 
     @MockBean
-    protected PDFServiceClient pdfServiceClient;
+    private PDFServiceClient pdfServiceClient;
 
     @MockBean
-    protected UserService userService;
+    private UserService userService;
 
     @Test
-    public void getByExternalId_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        given(claimRepository.getClaimByExternalId("efa77f92-6fb6-45d6-8620-8662176786f1"))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+    public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+        String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
+
+        given(claimRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/claims/efa77f92-6fb6-45d6-8620-8662176786f1"))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
+            .perform(get("/claims/" + externalId))
+            .andExpect(status().isInternalServerError());
     }
 
     @Test
-    public void getBySubmitterId_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        long claimantId = 1L;
+    public void searchBySubmitterIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+        long submitterId = 1L;
 
-        given(claimRepository.getBySubmitterId(claimantId))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+        given(claimRepository.getBySubmitterId(submitterId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/claims/claimant/" + claimantId))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
+            .perform(get("/claims/claimant/" + submitterId))
+            .andExpect(status().isInternalServerError());
     }
 
     @Test
-    public void getByDefendantId_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+    public void searchByDefendantIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         long defendantId = 1L;
 
-        given(claimRepository.getByDefendantId(defendantId))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
+        given(claimRepository.getByDefendantId(defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/defendant/" + defendantId))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
+            .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+        long claimId = 1L;
+
+        given(claimRepository.getById(claimId)).willThrow(UNEXPECTED_ERROR);
+
+        webClient
+            .perform(put("/claims/" + claimId + "/defendant/2"))
+            .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToUpdateClaim() throws Exception {
+        long claimId = 1L;
+        long defendantId = 2L;
+
+        given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.builder()
+            .withClaimId(claimId)
+            .withDefendantId(null)
+            .build()));
+        given(claimRepository.linkDefendant(claimId, defendantId)).willThrow(UNEXPECTED_ERROR);
+
+        webClient
+            .perform(put("/claims/" + claimId + "/defendant/" + defendantId))
+            .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void retrieveDefendantLinkStatusShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+        String referenceNumber = "000MC001";
+
+        given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
+
+        webClient
+            .perform(get("/claims/" + referenceNumber + "/defendant-link-status"))
+            .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void requestForMoreTimeShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
+        long claimId = 1L;
+
+        given(claimRepository.getById(claimId)).willThrow(UNEXPECTED_ERROR);
+
+        webClient
+            .perform(post("/claims/" + claimId + "/request-more-time")
+                .header(HttpHeaders.AUTHORIZATION, "it's me!"))
+            .andExpect(status().isInternalServerError());
     }
 
     @Test
     public void getByClaimReferenceNumber_shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
-        given(claimRepository.getByClaimReferenceNumber(any())).willThrow(new RuntimeException("error"));
+        String referenceNumber = "000MC001";
+
+        given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/testing-support/claims/000MC001"))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
-    }
-
-    @Test
-    public void linkDefendant_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        given(claimRepository.getByClaimReferenceNumber("000MC001"))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
-
-        webClient
-            .perform(get("/claims/000MC001/defendant-link-status"))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
-    }
-
-    @Test
-    public void linkDefendantToClaim_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        Long claimId = 1L;
-
-        given(claimRepository.getById(claimId))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
-
-        webClient
-            .perform(put("/claims/" + claimId + "/defendant/2"))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
-    }
-
-    @Test
-    public void linkDefendantToClaim_shouldReturn500HttpStatusWhenFailedToMakeLink() throws Exception {
-        Long claimId = 1L;
-        Long defendantId = 2L;
-
-        given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.builder().withClaimId(claimId)
-            .withDefendantId(null).build()));
-        given(claimRepository.linkDefendant(claimId, defendantId))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
-
-        webClient
-            .perform(put("/claims/" + claimId + "/defendant/" + defendantId))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
-    }
-
-    @Test
-    public void requestMoreTime_shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-
-        given(claimRepository.getById(1L))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
-
-        webClient
-            .perform(post("/claims/1/request-more-time")
-                .header(HttpHeaders.AUTHORIZATION, "it's me!"))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
+            .perform(get("/testing-support/claims/" + referenceNumber))
+            .andExpect(status().isInternalServerError());
     }
 
 }
