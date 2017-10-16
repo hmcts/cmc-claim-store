@@ -1,18 +1,43 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+
+import java.util.Optional;
 
 import static java.lang.String.format;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class MakeOfferTest extends BaseTest {
+
+    private static final Long CLAIM_ID = 12344321L;
+    private static final Long DEFENDANT_ID = 43211234L;
+    private static final String AUTH_TOKEN = "authDataString";
+
+    @Before
+    public void beforeEachTest() {
+        when(claimRepository.getById(CLAIM_ID)).thenReturn(Optional.of(
+            SampleClaim.builder()
+                .withDefendantId(DEFENDANT_ID)
+                .build()
+        ));
+
+        when(userService.getUserDetails(AUTH_TOKEN)).thenReturn(
+            SampleUserDetails.builder()
+                .withUserId(DEFENDANT_ID)
+                .build()
+        );
+    }
 
     @Test
     public void shouldAcceptValidOfferByDefendantAndReturnCreatedStatus() throws Exception {
@@ -28,11 +53,24 @@ public class MakeOfferTest extends BaseTest {
             .andReturn();
     }
 
+    @Test
+    public void shouldReturnForbiddenIfUserIsNotPartyOnClaim() throws Exception {
+        when(userService.getUserDetails(AUTH_TOKEN)).thenReturn(
+            SampleUserDetails.builder()
+                .withUserId(-300L)
+                .build()
+        );
+
+        makeOffer(SampleOffer.validDefaults(), MadeBy.defendant.name())
+            .andExpect(status().isForbidden())
+            .andReturn();
+    }
+
     private ResultActions makeOffer(Offer offer, String party) throws Exception {
         return webClient
-            .perform(post(format("/claims/123/offers/%s", party))
+            .perform(post(format("/claims/%d/offers/%s", CLAIM_ID, party))
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
                 .content(jsonMapper.toJson(offer))
             );
     }

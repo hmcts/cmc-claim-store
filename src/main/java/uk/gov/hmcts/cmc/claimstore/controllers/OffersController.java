@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
+import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Api
 @RestController
@@ -25,6 +29,21 @@ import javax.validation.constraints.NotNull;
     path = "/claims",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class OffersController {
+
+    private ClaimService claimService;
+    private UserService userService;
+    private AuthorisationService authorisationService;
+
+    @Autowired
+    public OffersController(
+        ClaimService claimService,
+        UserService userService,
+        AuthorisationService authorisationService
+    ) {
+        this.claimService = claimService;
+        this.userService = userService;
+        this.authorisationService = authorisationService;
+    }
 
     @PostMapping(value = "/{claimId:\\d+}/offers/{party}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,7 +54,14 @@ public class OffersController {
         @RequestBody @Valid Offer offer,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
+        Claim claim = claimService.getClaimById(claimId);
+        assertActionIsPermittedFor(claim, authorisation);
         return null;
+    }
+
+    private void assertActionIsPermittedFor(Claim claim, String authorisation) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        authorisationService.assertIsPartyOnClaim(claim, userDetails.getId());
     }
 
 }
