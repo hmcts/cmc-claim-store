@@ -20,9 +20,10 @@ import uk.gov.hmcts.cmc.claimstore.models.DefendantLinkStatus;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Api
 @RestController
@@ -38,6 +39,7 @@ public class ClaimController {
 
     private final ClaimService claimService;
     private final UserService userService;
+
     @Autowired
     public ClaimController(final ClaimService claimService, final UserService userService) {
         this.claimService = claimService;
@@ -73,8 +75,10 @@ public class ClaimController {
 
     @GetMapping("/representative/{externalReference}")
     @ApiOperation("Fetch user claims for given external reference number")
-    public List<Claim> getClaimByExternalReference(@PathVariable("externalReference") final String externalReference,
-                                                   @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+    public List<Claim> getClaimByExternalReference(
+        @PathVariable("externalReference") final String externalReference,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+
         final long submitterId = userService.getUserDetails(authorisation).getId();
         return claimService.getClaimByExternalReference(externalReference, submitterId);
     }

@@ -42,13 +42,13 @@ public interface ClaimRepository {
     Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
     @SingleValueResult
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber " +
-        "AND claim.submitter_id = :submitterId")
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber "
+        + "AND claim.submitter_id = :submitterId")
     Optional<Claim> getByClaimReferenceAndSubmitter(@Bind("claimReferenceNumber") String claimReferenceNumber,
                                                     @Bind("submitterId") Long submitterId);
 
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_reference = :externalReference " +
-        "AND claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_reference = :externalReference "
+        + "AND claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
                                        @Bind("submitterId") Long submitterId);
 

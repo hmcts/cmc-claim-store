@@ -37,7 +37,8 @@ public class GetClaimByClaimReferenceTest extends BaseTest {
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
 
-        given(claimRepository.getByClaimReferenceAndSubmitter(eq(REFERENCE_NUMBER), eq(SUBMITTER_ID))).willReturn(Optional.of(claim));
+        given(claimRepository.getByClaimReferenceAndSubmitter(eq(REFERENCE_NUMBER), eq(SUBMITTER_ID)))
+            .willReturn(Optional.of(claim));
 
         webClient
             .perform(get("/claims/" + REFERENCE_NUMBER)
@@ -57,10 +58,11 @@ public class GetClaimByClaimReferenceTest extends BaseTest {
             .andExpect(status().isNotFound())
             .andReturn();
     }
-    
+
     @Test
     public void shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
-        given(claimRepository.getByClaimReferenceAndSubmitter(eq(REFERENCE_NUMBER), eq(SUBMITTER_ID))).willThrow(new RuntimeException("error"));
+        given(claimRepository.getByClaimReferenceAndSubmitter(eq(REFERENCE_NUMBER), eq(SUBMITTER_ID)))
+            .willThrow(new RuntimeException("error"));
 
         webClient
             .perform(get("/claims/" + REFERENCE_NUMBER)

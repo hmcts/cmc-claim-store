@@ -14,13 +14,11 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.LETTER_HOLDER_ID;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
 
