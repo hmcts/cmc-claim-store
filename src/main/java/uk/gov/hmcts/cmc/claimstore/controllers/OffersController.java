@@ -59,7 +59,8 @@ public class OffersController {
     ) {
         Claim claim = claimService.getClaimById(claimId);
         assertActionIsPermittedFor(claim, authorisation);
-        return offersService.makeOffer(claim, offer, party);
+        offersService.makeOffer(claim, offer, party);
+        return claimService.getClaimById(claimId);
     }
 
     private void assertActionIsPermittedFor(Claim claim, String authorisation) {

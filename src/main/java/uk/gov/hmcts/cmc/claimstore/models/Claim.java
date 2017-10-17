@@ -147,8 +147,8 @@ public class Claim {
         return countyCourtJudgmentRequestedAt;
     }
 
-    public Settlement getSettlement() {
-        return settlement;
+    public Optional<Settlement> getSettlement() {
+        return Optional.ofNullable(settlement);
     }
 
     public LocalDateTime getSettlementReachedAt() {
