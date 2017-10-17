@@ -4,7 +4,7 @@ import org.assertj.core.util.Maps;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
@@ -24,7 +24,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class RequestMoreTimeForResponseTest extends BaseTest {
+public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     private static final String AUTH_TOKEN = "it's me!";
 

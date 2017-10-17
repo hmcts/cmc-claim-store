@@ -1,39 +1,18 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.errors;
 
-import org.flywaydb.core.Flyway;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.TransactionStatus;
+import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
-import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
-import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -48,71 +27,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("/environment.properties")
 @ActiveProfiles("test")
-public class EndpointErrorsTest {
+public class EndpointErrorsTest extends MockSpringTest {
 
     private static final Exception UNEXPECTED_ERROR
         = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
 
-    @TestConfiguration
-    static class MockedConfiguration {
-
-        @MockBean
-        private Flyway flyway;
-
-        @MockBean
-        private PublicHolidaysCollection holidaysCollection;
-
-        @MockBean
-        private NotificationClient notificationClient;
-
-        @MockBean
-        private EmailService emailService;
-
-        @MockBean
-        private PDFServiceClient pdfServiceClient;
-
-        @Bean
-        public PlatformTransactionManager transactionManager() {
-            return new PlatformTransactionManager() {
-
-                @Override
-                public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
-                    return null;
-                }
-
-                @Override
-                public void commit(TransactionStatus status) throws TransactionException {
-
-                }
-
-                @Override
-                public void rollback(TransactionStatus status) throws TransactionException {
-
-                }
-            };
-        }
-
-    }
-
     @Autowired
     private MockMvc webClient;
-
-    @Autowired
-    private JsonMapper jsonMapper;
-
-    @MockBean
-    private ClaimRepository claimRepository;
-
-    @MockBean
-    private DefendantResponseRepository defendantResponseRepository;
-
-    @MockBean
-    private UserService userService;
 
     @Test
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {

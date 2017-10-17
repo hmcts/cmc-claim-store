@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ResendStaffNotificationsTest extends BaseTest {
+public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;

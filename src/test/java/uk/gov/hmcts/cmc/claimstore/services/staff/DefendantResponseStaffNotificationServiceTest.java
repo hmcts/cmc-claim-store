@@ -2,19 +2,16 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
-import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.io.IOException;
 
@@ -24,9 +21,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// TODO: make tests run again
-@Ignore
-public class DefendantResponseStaffNotificationServiceTest {
+public class DefendantResponseStaffNotificationServiceTest extends MockSpringTest {
 
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
 
@@ -44,12 +39,6 @@ public class DefendantResponseStaffNotificationServiceTest {
 
     @Autowired
     private DefendantResponseStaffNotificationService service;
-
-    @MockBean
-    private PDFServiceClient pdfServiceClient;
-
-    @MockBean
-    private EmailService emailService;
 
     @Before
     public void beforeEachTest() {

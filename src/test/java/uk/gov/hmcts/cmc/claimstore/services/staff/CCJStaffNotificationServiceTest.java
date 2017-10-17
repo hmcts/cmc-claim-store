@@ -1,17 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
@@ -19,8 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
-import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -31,22 +23,10 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// TODO: make tests run again
-@Ignore
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("/environment.properties")
-public class CCJStaffNotificationServiceTest {
+public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
     @Autowired
     private CCJStaffNotificationService service;
-
-    @MockBean
-    private PDFServiceClient pdfServiceClient;
-
-    @MockBean
-    private EmailService emailService;
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 

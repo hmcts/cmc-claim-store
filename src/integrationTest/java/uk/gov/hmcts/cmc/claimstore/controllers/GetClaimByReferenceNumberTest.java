@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
-public class GetClaimByReferenceNumberTest extends BaseTest {
+public class GetClaimByReferenceNumberTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
