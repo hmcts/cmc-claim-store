@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -64,6 +65,19 @@ public class ClaimStore {
         );
 
         logger.info("Saved response data");
+
+        return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
+    }
+
+    public Claim saveCountyCourtJudgement(long claimId, CountyCourtJudgment ccj) {
+        logger.info("Saving county court judgement with claim : " + claimId);
+
+        this.claimRepository.saveCountyCourtJudgment(
+            claimId,
+            jsonMapper.toJson(ccj)
+        );
+
+        logger.info("Saved county court judgement");
 
         return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
     }

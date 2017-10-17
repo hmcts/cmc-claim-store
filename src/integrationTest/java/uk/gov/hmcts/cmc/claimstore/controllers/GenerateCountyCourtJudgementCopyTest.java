@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -14,14 +14,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
+public class GenerateCountyCourtJudgementCopyTest extends BaseIntegrationTest {
 
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponseData.builder().build());
+        claimStore.saveCountyCourtJudgement(claim.getId(), SampleCountyCourtJudgment.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
@@ -43,7 +43,7 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponseData.builder().build());
+        claimStore.saveCountyCourtJudgement(claim.getId(), SampleCountyCourtJudgment.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
@@ -54,6 +54,6 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String externalId) throws Exception {
         return webClient
-            .perform(get("/documents/defendantResponseCopy/" + externalId));
+            .perform(get("/documents/ccj/" + externalId));
     }
 }
