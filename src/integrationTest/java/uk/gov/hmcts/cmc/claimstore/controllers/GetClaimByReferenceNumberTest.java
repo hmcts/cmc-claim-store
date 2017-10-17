@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.util.Optional;
@@ -18,9 +19,12 @@ public class GetClaimByReferenceNumberTest extends BaseTest {
     private static final String REFERENCE_NUMBER = "000MC001";
     private static final String EXTERNAL_ID = "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d";
 
-    private final Claim claim = new Claim.Builder().setId(1L).setSubmitterId(2L).setLetterHolderId(3L)
-        .setExternalId(EXTERNAL_ID)
-        .setReferenceNumber(REFERENCE_NUMBER)
+    private final Claim claim = SampleClaim.builder()
+        .withId(1L)
+        .withSubmitterId(2L)
+        .withLetterHolderId(3L)
+        .withExternalId(EXTERNAL_ID)
+        .withReferenceNumber(REFERENCE_NUMBER)
         .build();
 
     @Test

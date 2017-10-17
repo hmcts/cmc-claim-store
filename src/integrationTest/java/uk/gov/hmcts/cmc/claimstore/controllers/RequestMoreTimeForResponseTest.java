@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -196,19 +197,19 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
     }
 
     private Claim createClaimModel(final LocalDate responseDeadline, final boolean alreadyUpdated) {
-        return new Claim.Builder()
-            .setId(CLAIM_ID)
-            .setSubmitterEmail("submitter@example.com")
-            .setSubmitterId(SUBMITTER_ID)
-            .setLetterHolderId(LETTER_HOLDER_ID)
-            .setDefendantId(DEFENDANT_ID)
-            .setReferenceNumber(REFERENCE_NUMBER)
-            .setClaimData(SampleClaimData.validDefaults())
-            .setCreatedAt(LocalDateTime.now())
-            .setIssuedOn(LocalDate.now())
-            .setResponseDeadline(responseDeadline)
-            .setMoreTimeRequested(alreadyUpdated)
-            .setResponse(SampleResponseData.validDefaults())
+        return SampleClaim.builder()
+            .withId(CLAIM_ID)
+            .withSubmitterEmail("submitter@example.com")
+            .withSubmitterId(SUBMITTER_ID)
+            .withLetterHolderId(LETTER_HOLDER_ID)
+            .withDefendantId(DEFENDANT_ID)
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withClaimData(SampleClaimData.validDefaults())
+            .withCreatedAt(LocalDateTime.now())
+            .withIssuedOn(LocalDate.now())
+            .withResponseDeadline(responseDeadline)
+            .withMoreTimeRequested(alreadyUpdated)
+            .withResponse(SampleResponseData.validDefaults())
             .build();
     }
 }

@@ -31,6 +31,7 @@ public final class SampleClaim {
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
 
+    private Long id = 123321L;
     private Long submitterId = USER_ID;
     private Long letterHolderId = LETTER_HOLDER_ID;
     private Long defendantId = DEFENDANT_ID;
@@ -151,6 +152,11 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt);
+    }
+
+    public SampleClaim withId(Long id) {
+        this.id = id;
+        return this;
     }
 
     public SampleClaim withSubmitterId(Long userId) {
