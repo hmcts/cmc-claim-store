@@ -51,12 +51,16 @@ public class ClaimStore {
     }
 
     public Claim saveResponse(long claimId, ResponseData responseData) {
+        return saveResponse(claimId, responseData, 1, SampleClaim.DEFENDANT_EMAIL);
+    }
+
+    public Claim saveResponse(long claimId, ResponseData responseData, long defendantId, String defendantEmail) {
         logger.info("Saving response data with claim : " + claimId);
 
         this.claimRepository.saveDefendantResponse(
             claimId,
-            1L,
-            SampleClaim.DEFENDANT_EMAIL,
+            defendantId,
+            defendantEmail,
             jsonMapper.toJson(responseData)
         );
 
