@@ -7,7 +7,7 @@ import java.beans.PropertyEditorSupport;
 public class MadeByEnumConverter extends PropertyEditorSupport {
 
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
+    public void setAsText(String text) {
         setValue(MadeBy.valueOf(text.toUpperCase()));
     }
 
