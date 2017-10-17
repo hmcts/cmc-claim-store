@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantLinkStatus;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -36,10 +37,11 @@ public class ClaimController {
     public static final String CLAIM_REFERENCE_PATTERN = "^\\d{3}(?:LR|MC)\\d{3}$";
 
     private final ClaimService claimService;
-
+    private final UserService userService;
     @Autowired
-    public ClaimController(final ClaimService claimService) {
+    public ClaimController(final ClaimService claimService, final UserService userService) {
         this.claimService = claimService;
+        this.userService = userService;
     }
 
     @GetMapping("/claimant/{submitterId:\\d+}")
@@ -62,15 +64,19 @@ public class ClaimController {
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
     @ApiOperation("Fetch claim for given claim reference")
-    public Claim getByClaimReference(@PathVariable("claimReference") final String claimReference) {
-        return claimService.getClaimByReference(claimReference)
+    public Claim getByClaimReference(@PathVariable("claimReference") final String claimReference,
+                                     @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+        final long submitterId = userService.getUserDetails(authorisation).getId();
+        return claimService.getClaimByReference(claimReference, submitterId)
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
     }
 
     @GetMapping("/representative/{externalReference}")
     @ApiOperation("Fetch user claims for given external reference number")
-    public List<Claim> getClaimByExternalReference(@PathVariable("externalReference") final String externalReference) {
-        return claimService.getClaimByExternalReference(externalReference);
+    public List<Claim> getClaimByExternalReference(@PathVariable("externalReference") final String externalReference,
+                                                   @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+        final long submitterId = userService.getUserDetails(authorisation).getId();
+        return claimService.getClaimByExternalReference(externalReference, submitterId);
     }
 
     @GetMapping("/defendant/{defendantId:\\d+}")

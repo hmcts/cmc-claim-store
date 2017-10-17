@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +34,12 @@ public class ClaimControllerTest {
     @Mock
     private ClaimService claimService;
 
+    @Mock
+    private UserService userService;
+
     @Before
     public void setup() {
-        claimController = new ClaimController(claimService);
+        claimController = new ClaimController(claimService, userService);
     }
 
     @Test
@@ -75,15 +79,4 @@ public class ClaimControllerTest {
         assertThat(output).isEqualTo(CLAIM);
     }
 
-    @Test
-    public void shouldReturnClaimForClaimReferenceNumber() throws JsonProcessingException {
-        //given
-        when(claimService.getClaimByReference(eq(REFERENCE_NUMBER))).thenReturn(Optional.of(CLAIM));
-
-        //when
-        Claim output = claimController.getByClaimReference(REFERENCE_NUMBER);
-
-        //then
-        assertThat(output).isEqualTo(CLAIM);
-    }
 }

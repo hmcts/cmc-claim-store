@@ -18,10 +18,10 @@ import java.util.Optional;
 public interface ClaimRepository {
 
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
-    String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
+        String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
-    String ORDER_BY_ID_DESCENDING  = " ORDER BY claim.id DESC";
+        String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getBySubmitterId(@Bind("submitterId") Long submitterId);
@@ -41,8 +41,16 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
     Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_reference = :externalReference" + ORDER_BY_ID_DESCENDING)
-    List<Claim> getByExternalReference(@Bind("externalReference") String externalReference);
+    @SingleValueResult
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber " +
+        "AND claim.submitter_id = :submitterId")
+    Optional<Claim> getByClaimReferenceAndSubmitter(@Bind("claimReferenceNumber") String claimReferenceNumber,
+                                                    @Bind("submitterId") Long submitterId);
+
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_reference = :externalReference " +
+        "AND claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
+    List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
+                                       @Bind("submitterId") Long submitterId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
