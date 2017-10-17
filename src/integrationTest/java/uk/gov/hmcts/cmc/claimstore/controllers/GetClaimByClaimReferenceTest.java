@@ -57,17 +57,7 @@ public class GetClaimByClaimReferenceTest extends BaseTest {
             .andExpect(status().isNotFound())
             .andReturn();
     }
-
-    @Test
-    public void shouldReturn404HttpStatusWhenWrongUrlGiven() throws Exception {
-
-        webClient
-            .perform(get("/claims/wrong-url-path")
-                .header(HttpHeaders.AUTHORIZATION, "token"))
-            .andExpect(status().isNotFound())
-            .andReturn();
-    }
-
+    
     @Test
     public void shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
         given(claimRepository.getByClaimReferenceAndSubmitter(eq(REFERENCE_NUMBER), eq(SUBMITTER_ID))).willThrow(new RuntimeException("error"));
