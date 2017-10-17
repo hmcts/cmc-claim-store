@@ -13,7 +13,7 @@ public class Settlement {
 
     public void makeOffer(Offer offer, MadeBy party) {
         assertOfferCanBeMadeBy(party);
-        partyStatements.add(new PartyStatement(StatementType.offer, party, offer));
+        partyStatements.add(new PartyStatement(StatementType.OFFER, party, offer));
     }
 
     @JsonIgnore
@@ -35,7 +35,7 @@ public class Settlement {
     }
 
     private boolean offerHasAlreadyBeenMadeBy(MadeBy madeBy) {
-        return getLastStatement().getType().equals(StatementType.offer) && getLastStatement().getMadeBy().equals(madeBy);
+        return getLastStatement().getType().equals(StatementType.OFFER) && getLastStatement().getMadeBy().equals(madeBy);
     }
 
 }

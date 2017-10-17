@@ -29,7 +29,7 @@ public class SettlementMakeOfferTest {
 
         PartyStatement partyStatement = partyStatements.get(0);
         assertThat(partyStatement.getOffer().get()).isEqualTo(offer);
-        assertThat(partyStatement.getType()).isEqualTo(StatementType.offer);
+        assertThat(partyStatement.getType()).isEqualTo(StatementType.OFFER);
         assertThat(partyStatement.getMadeBy()).isEqualTo(MadeBy.defendant);
     }
 
