@@ -4,10 +4,11 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.claimstore.constraints.FutureDate;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Objects;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 
@@ -46,8 +47,8 @@ public class Offer {
         }
 
         Offer other = (Offer) input;
-        return Objects.equals(content, other.content) &&
-            Objects.equals(completionDate, other.completionDate);
+        return Objects.equals(content, other.content)
+            && Objects.equals(completionDate, other.completionDate);
     }
 
     @Override
