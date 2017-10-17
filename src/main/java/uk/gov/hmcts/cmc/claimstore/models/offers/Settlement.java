@@ -11,11 +11,9 @@ public class Settlement {
 
     private List<PartyStatement> partyStatements = new ArrayList<>();
 
-    public void makeOffer(Offer offer, MadeBy madeBy) {
-        if (!partyStatements.isEmpty() && getLastStatement().getType().equals(StatementType.offer) && getLastStatement().getMadeBy().equals(madeBy)) {
-            throw new IllegalSettlementStatementException("You cannot make multiple offers in a row");
-        }
-        partyStatements.add(new PartyStatement(StatementType.offer, madeBy, offer));
+    public void makeOffer(Offer offer, MadeBy party) {
+        assertOfferCanBeMadeBy(party);
+        partyStatements.add(new PartyStatement(StatementType.offer, party, offer));
     }
 
     @JsonIgnore
@@ -28,6 +26,16 @@ public class Settlement {
 
     public List<PartyStatement> getPartyStatements() {
         return Collections.unmodifiableList(partyStatements);
+    }
+
+    private void assertOfferCanBeMadeBy(MadeBy party) {
+        if (!partyStatements.isEmpty() && offerHasAlreadyBeenMadeBy(party)) {
+            throw new IllegalSettlementStatementException("You cannot make multiple offers in a row");
+        }
+    }
+
+    private boolean offerHasAlreadyBeenMadeBy(MadeBy madeBy) {
+        return getLastStatement().getType().equals(StatementType.offer) && getLastStatement().getMadeBy().equals(madeBy);
     }
 
 }
