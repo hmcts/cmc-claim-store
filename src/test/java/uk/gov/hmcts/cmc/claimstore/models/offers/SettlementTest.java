@@ -16,12 +16,6 @@ public class SettlementTest {
     private PartyStatement partyStatement;
 
     @Test
-    public void statusShouldBeUnsettledForNewInstance() {
-        Settlement settlement = new Settlement();
-        assertThat(settlement.getStatus()).isEqualByComparingTo(SettlementStatus.unsettled);
-    }
-
-    @Test
     public void partyStatementsShouldBeAnEmptyListForNewInstance() {
         Settlement settlement = new Settlement();
         assertThat(settlement.getPartyStatements()).isEmpty();
