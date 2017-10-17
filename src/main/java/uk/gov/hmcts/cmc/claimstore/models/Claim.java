@@ -16,7 +16,7 @@ public class Claim {
 
     private final Long id;
     private final Long submitterId;
-    private final Long letterHolderId;
+    private final String letterHolderId;
     private final Long defendantId;
     private final String externalId;
     private final String referenceNumber;
@@ -37,7 +37,7 @@ public class Claim {
     public Claim(
         final Long id,
         final Long submitterId,
-        final Long letterHolderId,
+        final String letterHolderId,
         final Long defendantId,
         final String externalId,
         final String referenceNumber,
@@ -80,7 +80,7 @@ public class Claim {
         return submitterId;
     }
 
-    public Long getLetterHolderId() {
+    public String getLetterHolderId() {
         return letterHolderId;
     }
 
@@ -182,7 +182,7 @@ public class Claim {
         private String externalId;
         private Long submitterId;
         private String submitterEmail;
-        private Long letterHolderId;
+        private String letterHolderId;
         private Long defendantId;
         private String referenceNumber;
         private ClaimData claimData;
@@ -216,7 +216,7 @@ public class Claim {
             return this;
         }
 
-        public Builder setLetterHolderId(Long letterHolderId) {
+        public Builder setLetterHolderId(String letterHolderId) {
             this.letterHolderId = letterHolderId;
             return this;
         }

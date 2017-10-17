@@ -38,7 +38,7 @@ public class SaveClaimantClaimTest extends BaseTest {
 
     private static final long CLAIM_ID = 1L;
     private static final long CLAIMANT_ID = 123L;
-    private static final Long LETTER_HOLDER_ID = 1L;
+    private static final String LETTER_HOLDER_ID = "1";
     private static final Long DEFENDANT_ID = 2L;
     private static final String REFERENCE_NUMBER = "000MC001";
     private static final String PIN = "my-pin";
@@ -65,7 +65,7 @@ public class SaveClaimantClaimTest extends BaseTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
 
-        given(claimRepository.saveSubmittedByClaimant(anyString(), anyLong(), anyLong(), any(LocalDate.class),
+        given(claimRepository.saveSubmittedByClaimant(anyString(), anyLong(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))
             .willReturn(CLAIM_ID);
 

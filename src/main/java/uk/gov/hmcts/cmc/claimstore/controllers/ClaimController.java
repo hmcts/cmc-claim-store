@@ -45,9 +45,9 @@ public class ClaimController {
         return claimService.getClaimBySubmitterId(submitterId);
     }
 
-    @GetMapping("/letter/{letterHolderId:\\d+}")
+    @GetMapping("/letter/{letterHolderId}")
     @ApiOperation("Fetch user claim for given letter holder id")
-    public Claim getByLetterHolderId(@PathVariable("letterHolderId") final Long letterHolderId) {
+    public Claim getByLetterHolderId(@PathVariable("letterHolderId") final String letterHolderId) {
         return claimService.getClaimByLetterHolderId(letterHolderId);
     }
 

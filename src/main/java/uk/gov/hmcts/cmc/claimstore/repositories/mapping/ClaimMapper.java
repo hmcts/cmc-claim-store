@@ -22,7 +22,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         return new Claim(
             result.getLong("id"),
             result.getLong("submitter_id"),
-            result.getLong("letter_holder_id"),
+            result.getString("letter_holder_id"),
             toNullableLong((Integer) result.getObject("defendant_id")),
             result.getString("external_id"),
             result.getString("reference_number"),

@@ -45,7 +45,7 @@ public class SaveRepresentativeClaimTest extends BaseTest {
 
     private static final long CLAIM_ID = 1L;
     private static final long CLAIMANT_ID = 123L;
-    private static final Long LETTER_HOLDER_ID = 1L;
+    private static final String LETTER_HOLDER_ID = "1";
     private static final Long DEFENDANT_ID = 2L;
     private static final String REFERENCE_NUMBER = "000MC001";
     private static final String PIN = "my-pin";

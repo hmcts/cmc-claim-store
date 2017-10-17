@@ -60,7 +60,7 @@ public class ClaimTest {
         return new Claim(
             1L,
             2L,
-            3L,
+            "3",
             4L,
             "external-id",
             "ref number",

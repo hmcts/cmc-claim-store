@@ -28,7 +28,7 @@ public interface ClaimRepository {
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.letter_holder_id = :letterHolderId")
-    Optional<Claim> getByLetterHolderId(@Bind("letterHolderId") Long letterHolderId);
+    Optional<Claim> getByLetterHolderId(@Bind("letterHolderId") String letterHolderId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_id = :externalId")
@@ -97,7 +97,7 @@ public interface ClaimRepository {
     Long saveSubmittedByClaimant(
         @Bind("claim") final String claim,
         @Bind("submitterId") final Long submitterId,
-        @Bind("letterHolderId") final Long letterHolderId,
+        @Bind("letterHolderId") final String letterHolderId,
         @Bind("issuedOn") final LocalDate issuedOn,
         @Bind("responseDeadline") final LocalDate responseDeadline,
         @Bind("externalId") final String externalId,
@@ -109,7 +109,7 @@ public interface ClaimRepository {
     )
     Integer linkLetterHolder(
         @Bind("claimId") final Long claimId,
-        @Bind("letterHolderId") final Long letterHolderId
+        @Bind("letterHolderId") final String letterHolderId
     );
 
     @SqlUpdate(

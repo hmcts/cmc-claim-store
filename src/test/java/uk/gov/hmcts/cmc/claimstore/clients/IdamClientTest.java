@@ -25,7 +25,7 @@ public class IdamClientTest {
     private static final String IDAM_API_URL = "idam-api-url";
     private static final String PIN_ENDPOINT = "/pin";
     private static final String PIN = "my-pin-generated";
-    private static final Long LETTER_HOLDER_ID = 1L;
+    private static final String LETTER_HOLDER_ID = "1";
     private static final String AUTHORISATION = "Bearer: token";
     private static final GeneratePinRequest request = new GeneratePinRequest("a b");
     private static final GeneratePinResponse expResponseBody = new GeneratePinResponse(PIN, LETTER_HOLDER_ID);

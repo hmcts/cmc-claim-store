@@ -58,7 +58,7 @@ public class ClaimService {
         return claimRepository.getBySubmitterId(submitterId);
     }
 
-    public Claim getClaimByLetterHolderId(final long id) {
+    public Claim getClaimByLetterHolderId(final String id) {
         return claimRepository
             .getByLetterHolderId(id)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
@@ -94,7 +94,7 @@ public class ClaimService {
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 
-        final Optional<Long> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        final Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
         final LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
         final LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
         final UserDetails userDetails = userService.getUserDetails(authorisation);

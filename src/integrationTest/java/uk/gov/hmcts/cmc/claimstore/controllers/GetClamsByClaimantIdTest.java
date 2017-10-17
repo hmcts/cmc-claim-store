@@ -72,7 +72,7 @@ public class GetClamsByClaimantIdTest extends BaseTest {
     }
 
     private Claim newClaim(Long claimantId) {
-        return new Claim.Builder().setId(1L).setSubmitterId(claimantId).setLetterHolderId(3L).setDefendantId(1L)
+        return new Claim.Builder().setId(1L).setSubmitterId(claimantId).setLetterHolderId("3").setDefendantId(1L)
             .setExternalId("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d").setReferenceNumber("000MC001")
             .setSubmitterEmail(SUBMITTER_EMAIL)
             .build();

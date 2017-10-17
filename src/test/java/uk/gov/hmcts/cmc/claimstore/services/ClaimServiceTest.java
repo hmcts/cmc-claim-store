@@ -112,7 +112,7 @@ public class ClaimServiceTest {
     @Test
     public void getClaimByLetterHolderIdShouldCallRepositoryWhenValidClaimIsReturned() {
 
-        Long letterHolderId = 1L;
+        String letterHolderId = "1";
         Claim claim = createClaimModel(VALID_APP, letterHolderId);
         Optional<Claim> result = Optional.of(claim);
 
@@ -126,7 +126,7 @@ public class ClaimServiceTest {
     public void getClaimByLetterHolderIdShouldThrowExceptionWhenClaimDoesNotExist() {
 
         Optional<Claim> result = Optional.empty();
-        Long letterHolderId = 0L;
+        String letterHolderId = "0";
 
         when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
 
@@ -235,7 +235,7 @@ public class ClaimServiceTest {
         claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
     }
 
-    private static Claim createClaimModel(ClaimData claimData, Long letterHolderId) {
+    private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
         return new Claim(
             CLAIM_ID,
             USER_ID,
