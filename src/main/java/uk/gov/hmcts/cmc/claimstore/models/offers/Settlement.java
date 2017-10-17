@@ -35,7 +35,8 @@ public class Settlement {
     }
 
     private boolean offerHasAlreadyBeenMadeBy(MadeBy madeBy) {
-        return getLastStatement().getType().equals(StatementType.OFFER) && getLastStatement().getMadeBy().equals(madeBy);
+        return getLastStatement().getType().equals(StatementType.OFFER)
+            && getLastStatement().getMadeBy().equals(madeBy);
     }
 
 }
