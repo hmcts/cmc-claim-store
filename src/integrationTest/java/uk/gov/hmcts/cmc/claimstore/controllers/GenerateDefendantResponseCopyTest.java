@@ -1,38 +1,35 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
 
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
-    @MockBean
-    private DefendantResponseCopyService defendantResponseCopyService;
-
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.validDefaults());
+        claimStore.saveResponse(claim.getId(), SampleResponseData.validDefaults());
 
-        when(defendantResponseCopyService.createPdf(claim)).thenReturn(PDF_BYTES);
+        given(pdfServiceClient.generateFromHtml(any(), any()))
+            .willReturn(PDF_BYTES);
 
-        MvcResult result = makeRequest(claim.getExternalId())
+        makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
+            .andExpect(content().bytes(PDF_BYTES))
             .andReturn();
-
-        assertThat(result.getResponse().getContentAsByteArray()).isEqualTo(PDF_BYTES);
     }
 
     @Test
@@ -45,10 +42,11 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.validDefaults());
+        claimStore.saveResponse(claim.getId(), SampleResponseData.validDefaults());
 
-        when(defendantResponseCopyService.createPdf(claim))
-            .thenThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
+        given(pdfServiceClient.generateFromHtml(any(), any()))
+            .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isInternalServerError());

@@ -51,7 +51,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
         final String nonExistingEvent = "some-event";
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         makeRequest(claim.getReferenceNumber(), nonExistingEvent)
             .andExpect(status().isNotFound());
@@ -61,7 +61,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
         final String event = "claim-issued";
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), 2L);
 
         makeRequest(claim.getReferenceNumber(), event)
@@ -74,7 +74,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         final String event = "claim-issued";
 
-        Claim claim = claimStore.save(SampleClaimData.submittedByClaimant());
+        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
 
         final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", 333L);
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
@@ -94,7 +94,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
         final String event = "more-time-requested";
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isConflict());
@@ -106,7 +106,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
         final String event = "more-time-requested";
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
 
         makeRequest(claim.getReferenceNumber(), event)
@@ -120,7 +120,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
         final String event = "response-submitted";
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isConflict());
@@ -132,7 +132,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
         final String event = "response-submitted";
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         defendantResponseRepository.save(claim.getId(), 2L, "j.smith@example.com",
             jsonMapper.toJson(SampleResponseData.validDefaults()));
 

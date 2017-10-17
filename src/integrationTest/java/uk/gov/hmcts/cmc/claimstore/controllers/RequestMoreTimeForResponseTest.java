@@ -43,7 +43,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
         makeRequest(claim.getId())
@@ -59,7 +59,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
         makeRequest(claim.getId())
@@ -73,7 +73,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     public void shouldRetrySendNotifications() throws Exception {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
@@ -104,7 +104,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     public void shouldReturn403HttpStatusWhenUserIsNotLinkedWithClaim() throws Exception {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(OTHER_USER_DETAILS);
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
         makeRequest(claim.getId())
@@ -117,7 +117,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build(), 1L, responseDeadlineInThePast);
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, responseDeadlineInThePast);
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
         makeRequest(claim.getId())
@@ -128,7 +128,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgain() throws Exception {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
 

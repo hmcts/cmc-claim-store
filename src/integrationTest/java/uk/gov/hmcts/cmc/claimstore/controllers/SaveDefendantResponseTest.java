@@ -46,7 +46,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnNewlyCreatedDefendantResponse() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 
@@ -62,7 +62,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 
@@ -77,7 +77,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 
@@ -90,7 +90,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnInternalServerErrorWhenStaffNotificationFails() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 

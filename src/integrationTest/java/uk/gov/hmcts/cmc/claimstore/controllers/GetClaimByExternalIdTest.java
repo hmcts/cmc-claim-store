@@ -19,7 +19,7 @@ public class GetClaimByExternalIdTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
         UUID externalId = UUID.randomUUID();
 
-        claimStore.save(SampleClaimData.builder().withExternalId(externalId).build());
+        claimStore.saveClaim(SampleClaimData.builder().withExternalId(externalId).build());
 
         MvcResult result = makeRequest(externalId.toString())
             .andExpect(status().isOk())

@@ -15,7 +15,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         MvcResult result = makeRequest(claim.getId(), 1)
             .andExpect(status().isOk())

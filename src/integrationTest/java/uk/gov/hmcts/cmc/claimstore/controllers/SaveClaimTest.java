@@ -69,7 +69,7 @@ public class SaveClaimTest extends BaseIntegrationTest {
         UUID externalId = UUID.randomUUID();
 
         ClaimData claimData = SampleClaimData.builder().withExternalId(externalId).build();
-        claimStore.save(claimData);
+        claimStore.saveClaim(claimData);
 
         makeRequest(claimData)
             .andExpect(status().isConflict());

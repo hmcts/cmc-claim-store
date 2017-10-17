@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
@@ -18,7 +17,7 @@ public class GetClaimByReferenceNumberTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())

@@ -17,7 +17,7 @@ public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
         long defendantId = 1L;
 
-        Claim claim = claimStore.save(SampleClaimData.builder().build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), defendantId);
 
         MvcResult result = makeRequest(defendantId)

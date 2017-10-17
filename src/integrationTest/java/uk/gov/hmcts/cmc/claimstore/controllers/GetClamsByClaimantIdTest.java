@@ -19,7 +19,7 @@ public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
         long submitterId = 1L;
 
-        claimStore.save(SampleClaimData.builder().build(), submitterId, LocalDate.now());
+        claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 
         MvcResult result = makeRequest(submitterId)
             .andExpect(status().isOk())
