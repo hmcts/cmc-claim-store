@@ -47,6 +47,7 @@ public class GetClaimByExternalReferenceTest extends BaseTest {
 
     @Test
     public void shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
+
         given(claimRepository.getByExternalReference(eq(EXTERNAL_REFERENCE), eq(SUBMITTER_ID)))
             .willThrow(new RuntimeException("error"));
 
