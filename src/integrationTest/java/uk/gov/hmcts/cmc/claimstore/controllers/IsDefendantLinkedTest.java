@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
@@ -19,8 +20,7 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
         claimRepository.linkDefendant(claim.getId(), 1L);
 
-        MvcResult result = webClient
-            .perform(get("/claims/" + claim.getReferenceNumber() + "/defendant-link-status"))
+        MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -32,8 +32,7 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndStatusFalseWhenClaimFoundAndIsNotLinked() throws Exception {
         Claim claim = claimStore.save(SampleClaimData.builder().build());
 
-        MvcResult result = webClient
-            .perform(get("/claims/" + claim.getReferenceNumber() + "/defendant-link-status"))
+        MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -43,12 +42,18 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndStatusFalseWhenNotClaimFound() throws Exception {
-        MvcResult result = webClient
-            .perform(get("/claims/000MC900/defendant-link-status"))
+        String nonExistingReferenceNumber = "000MC900";
+
+        MvcResult result = makeRequest(nonExistingReferenceNumber)
             .andExpect(status().isOk())
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, DefendantLinkStatus.class))
             .isEqualTo(new DefendantLinkStatus(false));
+    }
+
+    private ResultActions makeRequest(String referenceNumber) throws Exception {
+        return webClient
+            .perform(get("/claims/" + referenceNumber + "/defendant-link-status"));
     }
 }

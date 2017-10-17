@@ -41,7 +41,7 @@ public class SaveCountyCourtJudgmentTest extends BaseIntegrationTest {
         Claim claim = claimStore.save(SampleClaimData.builder().build(), 1L, LocalDate.now().minus(10, ChronoUnit.DAYS));
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().build();
 
-        MvcResult result = request(claim.getId(), ccj)
+        MvcResult result = makeRequest(claim.getId(), ccj)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -59,7 +59,7 @@ public class SaveCountyCourtJudgmentTest extends BaseIntegrationTest {
             .withPaymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
-        MvcResult result = request(anyClaimId, ccj)
+        MvcResult result = makeRequest(anyClaimId, ccj)
             .andExpect(status().isBadRequest())
             .andReturn();
 
@@ -67,7 +67,7 @@ public class SaveCountyCourtJudgmentTest extends BaseIntegrationTest {
             .contains("countyCourtJudgment : Invalid county court judgment request");
     }
 
-    private ResultActions request(final long claimId, final CountyCourtJudgment ccj) throws Exception {
+    private ResultActions makeRequest(final long claimId, final CountyCourtJudgment ccj) throws Exception {
         return webClient
             .perform(post("/claims/" + claimId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
@@ -27,8 +28,7 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
 
         when(defendantResponseCopyService.createPdf(claim)).thenReturn(PDF_BYTES);
 
-        MvcResult result = webClient
-            .perform(get("/documents/defendantResponseCopy/" + claim.getExternalId()))
+        MvcResult result = makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -39,8 +39,7 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
     public void shouldReturnNotFoundWhenClaimIsNotFound() throws Exception {
         String nonExistingExternalId = "f5b92e36-fc9c-49e6-99f7-74d60aaa8da2";
 
-        webClient
-            .perform(get("/documents/defendantResponseCopy/" + nonExistingExternalId))
+        makeRequest(nonExistingExternalId)
             .andExpect(status().isNotFound());
     }
 
@@ -51,9 +50,13 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
         when(defendantResponseCopyService.createPdf(claim))
             .thenThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
 
-        webClient
-            .perform(get("/documents/defendantResponseCopy/" + claim.getExternalId()))
+        makeRequest(claim.getExternalId())
             .andExpect(status().isInternalServerError());
+    }
+
+    private ResultActions makeRequest(String externalId) throws Exception {
+        return webClient
+            .perform(get("/documents/defendantResponseCopy/" + externalId));
     }
 
 }

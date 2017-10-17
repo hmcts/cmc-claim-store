@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
@@ -16,8 +17,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
         Claim claim = claimStore.save(SampleClaimData.builder().build());
 
-        MvcResult result = webClient
-            .perform(put("/claims/" + claim.getId() + "/defendant/" + 1))
+        MvcResult result = makeRequest(claim.getId(), 1)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -28,24 +28,26 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
-        long nonExistingClaimId = 900L;
+        long nonExistingClaimId = 900;
 
-        webClient
-            .perform(put("/claims/" + nonExistingClaimId + "/defendant/2"))
+        makeRequest(nonExistingClaimId, 1)
             .andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldReturn404HttpStatusWhenClaimParameterIsNotNumber() throws Exception {
-        webClient
-            .perform(put("/claims/not-a-number/defendant/2"))
+        makeRequest("not-a-number", 1)
             .andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldReturn404HttpStatusWhenDefendantParameterIsNotNumber() throws Exception {
-        webClient
-            .perform(put("/claims/1/defendant/not-a-number"))
+        makeRequest(1, "not-a-number")
             .andExpect(status().isNotFound());
+    }
+
+    private ResultActions makeRequest(Object claimId, Object defendantId) throws Exception {
+        return webClient
+            .perform(put("/claims/" + claimId + "/defendant/" + defendantId));
     }
 }

@@ -125,5 +125,4 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
                 .content(jsonMapper.toJson(responseData))
             );
     }
-
 }

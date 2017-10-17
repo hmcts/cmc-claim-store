@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
@@ -20,8 +21,7 @@ public class GetClaimByExternalIdTest extends BaseIntegrationTest {
 
         claimStore.save(SampleClaimData.builder().withExternalId(externalId).build());
 
-        MvcResult result = webClient
-            .perform(get("/claims/" + externalId))
+        MvcResult result = makeRequest(externalId.toString())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -31,8 +31,7 @@ public class GetClaimByExternalIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn404HttpStatusWhenExternalIdParamIsNotValid() throws Exception {
-        webClient
-            .perform(get("/claims/not-a-valid-uuid"))
+        makeRequest("not-a-valid-uuid")
             .andExpect(status().isNotFound());
     }
 
@@ -40,8 +39,12 @@ public class GetClaimByExternalIdTest extends BaseIntegrationTest {
     public void shouldReturn404HttpStatusWhenNoClaimFound() throws Exception {
         String nonExistingExternalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        webClient
-            .perform(get("/claims/" + nonExistingExternalId))
+        makeRequest(nonExistingExternalId)
             .andExpect(status().isNotFound());
+    }
+
+    private ResultActions makeRequest(String externalId) throws Exception {
+        return webClient
+            .perform(get("/claims/" + externalId));
     }
 }

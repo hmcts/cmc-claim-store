@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.assertj.core.util.Maps;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
@@ -45,8 +46,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         Claim claim = claimStore.save(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
-        webClient
-            .perform(request(claim.getId()))
+        makeRequest(claim.getId())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -62,8 +62,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         Claim claim = claimStore.save(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
-        webClient
-            .perform(request(claim.getId()))
+        makeRequest(claim.getId())
             .andExpect(status().isOk());
 
         verify(notificationClient, times(3))
@@ -84,8 +83,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .willThrow(new NotificationClientException(new RuntimeException("2nd email, 2nd attempt fails")))
             .willThrow(new NotificationClientException(new RuntimeException("2nd email, 3rd attempt fails, stop")));
 
-        webClient
-            .perform(request(claim.getId()))
+        makeRequest(claim.getId())
             .andExpect(status().isOk());
 
         verify(notificationClient, times(8))
@@ -98,8 +96,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         long nonExistingClaim = 900L;
 
-        webClient
-            .perform(request(nonExistingClaim))
+        makeRequest(nonExistingClaim)
             .andExpect(status().isNotFound());
     }
 
@@ -110,8 +107,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         Claim claim = claimStore.save(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
-        webClient
-            .perform(request(claim.getId()))
+        makeRequest(claim.getId())
             .andExpect(status().isForbidden());
     }
 
@@ -124,8 +120,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         Claim claim = claimStore.save(SampleClaimData.builder().build(), 1L, responseDeadlineInThePast);
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
-        webClient
-            .perform(request(claim.getId()))
+        makeRequest(claim.getId())
             .andExpect(status().isConflict());
     }
 
@@ -137,29 +132,27 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
 
-        webClient
-            .perform(request(claim.getId()))
+        makeRequest(claim.getId())
             .andExpect(status().isConflict());
     }
 
     @Test
     public void shouldReturn400HttpStatusWhenNoAuthorizationHeaderSet() throws Exception {
-        webClient
-            .perform(request(900L, new HashMap<>()))
+        makeRequest(900L, new HashMap<>())
             .andExpect(status().isBadRequest());
     }
 
-    private MockHttpServletRequestBuilder request(final long claimId) {
-        return request(claimId, Maps.newHashMap(HttpHeaders.AUTHORIZATION, AUTH_TOKEN));
+    private ResultActions makeRequest(final long claimId) throws Exception {
+        return makeRequest(claimId, Maps.newHashMap(HttpHeaders.AUTHORIZATION, AUTH_TOKEN));
     }
 
-    private MockHttpServletRequestBuilder request(final long claimId, Map<String, String> headers) {
+    private ResultActions makeRequest(final long claimId, Map<String, String> headers) throws Exception {
         MockHttpServletRequestBuilder builder = post("/claims/" + claimId + "/request-more-time");
 
         for (Map.Entry<String, String> header : headers.entrySet()) {
             builder.header(header.getKey(), header.getValue());
         }
 
-        return builder;
+        return webClient.perform(builder);
     }
 }

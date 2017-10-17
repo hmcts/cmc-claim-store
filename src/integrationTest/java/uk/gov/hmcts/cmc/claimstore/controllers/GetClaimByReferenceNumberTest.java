@@ -1,8 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
@@ -18,8 +20,7 @@ public class GetClaimByReferenceNumberTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
         Claim claim = claimStore.save(SampleClaimData.builder().build());
 
-        MvcResult result = webClient
-            .perform(get("/testing-support/claims/" + claim.getReferenceNumber()))
+        MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -31,15 +32,12 @@ public class GetClaimByReferenceNumberTest extends BaseIntegrationTest {
     public void shouldReturn404HttpStatusWhenNoClaimFound() throws Exception {
         String nonExistingReferenceNumber = "000MC900";
 
-        webClient
-            .perform(get("/testing-support/claims/" + nonExistingReferenceNumber))
+        makeRequest(nonExistingReferenceNumber)
             .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void shouldReturn404HttpStatusWhenWrongUrlGiven() throws Exception {
-        webClient
-            .perform(get("/testing-support/not-existing-endpoint"))
-            .andExpect(status().isNotFound());
+    private ResultActions makeRequest(String referenceNumber) throws Exception {
+        return webClient
+            .perform(get("/testing-support/claims/" + referenceNumber));
     }
 }

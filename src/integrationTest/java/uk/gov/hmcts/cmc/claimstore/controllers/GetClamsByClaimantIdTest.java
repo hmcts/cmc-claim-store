@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
@@ -20,8 +21,7 @@ public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
 
         claimStore.save(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 
-        MvcResult result = webClient
-            .perform(get("/claims/claimant/" + submitterId))
+        MvcResult result = makeRequest(submitterId)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -34,8 +34,7 @@ public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
         long nonExistingSubmitterId = 900L;
 
-        MvcResult result = webClient
-            .perform(get("/claims/claimant/" + nonExistingSubmitterId))
+        MvcResult result = makeRequest(nonExistingSubmitterId)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -45,9 +44,12 @@ public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn404HttpStatusWhenClaimantIdParameterIsNotNumber() throws Exception {
-        webClient
-            .perform(get("/claims/claimant/not-a-number"))
+        makeRequest("not-a-number")
             .andExpect(status().isNotFound());
     }
 
+    private ResultActions makeRequest(Object submitterId) throws Exception {
+        return webClient
+            .perform(get("/claims/claimant/" + submitterId));
+    }
 }
