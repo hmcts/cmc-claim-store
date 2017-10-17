@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
@@ -39,7 +39,7 @@ public class DefendantResponseServiceTest {
     private DefendantResponseService responseService;
 
     @Mock
-    private DefendantResponseRepository defendantResponseRepository;
+    private ClaimRepository claimRepository;
     @Mock
     private EventProducer eventProducer;
     @Mock
@@ -52,7 +52,7 @@ public class DefendantResponseServiceTest {
     @Before
     public void setup() {
         responseService = new DefendantResponseService(
-            defendantResponseRepository, mapper, eventProducer, claimService, userService
+            claimRepository, mapper, eventProducer, claimService, userService
         );
     }
 

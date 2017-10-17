@@ -133,7 +133,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         final String event = "response-submitted";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        defendantResponseRepository.save(claim.getId(), 2L, "j.smith@example.com",
+        claimRepository.saveDefendantResponse(claim.getId(), 2L, "j.smith@example.com",
             jsonMapper.toJson(SampleResponseData.validDefaults()));
 
         makeRequest(claim.getReferenceNumber(), event)

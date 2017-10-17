@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 
 import java.time.LocalDate;
 import java.util.stream.Collectors;
@@ -23,9 +22,6 @@ public class ClaimStore {
 
     @Autowired
     private ClaimRepository claimRepository;
-
-    @Autowired
-    private DefendantResponseRepository defendantResponseRepository;
 
     @Autowired
     private JsonMapper jsonMapper;
@@ -57,7 +53,7 @@ public class ClaimStore {
     public Claim saveResponse(long claimId, ResponseData responseData) {
         logger.info("Saving response data with claim : " + claimId);
 
-        this.defendantResponseRepository.save(
+        this.claimRepository.saveDefendantResponse(
             claimId,
             1L,
             SampleClaim.DEFENDANT_EMAIL,

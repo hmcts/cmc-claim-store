@@ -161,7 +161,7 @@ public class EndpointErrorsTest extends MockSpringTest {
         long defendantId = 2L;
 
         given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.getDefault()));
-        willThrow(UNEXPECTED_ERROR).given(defendantResponseRepository).save(anyLong(), anyLong(), anyString(), anyString());
+        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyLong(), anyLong(), anyString(), anyString());
 
         webClient
             .perform(post("/responses/claim/" + claimId + "/defendant/" + defendantId)

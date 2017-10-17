@@ -19,7 +19,6 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -48,9 +47,6 @@ public abstract class MockSpringTest {
         @MockBean
         private ClaimRepository claimRepository;
 
-        @MockBean
-        private DefendantResponseRepository defendantResponseRepository;
-
         @Bean
         protected PlatformTransactionManager transactionManager() {
             return new PlatformTransactionManager() {
@@ -78,9 +74,6 @@ public abstract class MockSpringTest {
 
     @Autowired
     protected ClaimRepository claimRepository;
-
-    @Autowired
-    protected DefendantResponseRepository defendantResponseRepository;
 
     @MockBean
     protected UserService userService;

@@ -132,6 +132,21 @@ public interface ClaimRepository {
         @Bind("responseDeadline") final LocalDate responseDeadline
     );
 
+    @SqlUpdate(
+        "UPDATE CLAIM SET "
+            + "response = :response::JSONB, "
+            + "defendant_id = :defendantId, "
+            + "defendant_email = :defendantEmail, "
+            + "responded_at = now() AT TIME ZONE 'utc' "
+            + "WHERE id = :claimId"
+    )
+    void saveDefendantResponse(
+        @Bind("claimId") final Long claimId,
+        @Bind("defendantId") final Long defendantId,
+        @Bind("defendantEmail") final String defendantEmail,
+        @Bind("response") final String response
+    );
+
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
         + " county_court_judgment_requested_at = now() at time zone 'utc'"
