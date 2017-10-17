@@ -16,6 +16,9 @@ public class Settlement {
     }
 
     public PartyStatement getLastStatement() {
+        if (partyStatements.isEmpty()) {
+            throw new IllegalStateException("No statements have been made during that settlement");
+        }
         return partyStatements.get(partyStatements.size() - 1);
     }
 
