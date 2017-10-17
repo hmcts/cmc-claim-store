@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -37,6 +39,9 @@ public abstract class BaseTest {
     protected static final Long DEFENDANT_ID = 555L;
     protected static final String REFERENCE_NUMBER = "000MC001";
     protected final Claim claimAfterSavingWithResponse = SampleClaim.getWithDefaultResponse();
+
+    @MockBean
+    protected OffersRepository offersRepository;
 
     @MockBean
     protected ClaimRepository claimRepository;

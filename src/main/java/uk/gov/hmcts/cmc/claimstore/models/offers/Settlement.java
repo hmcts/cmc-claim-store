@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.models.offers;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.gov.hmcts.cmc.claimstore.exceptions.IllegalSettlementStatementException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,7 @@ public class Settlement {
 
     public void makeOffer(Offer offer, MadeBy madeBy) {
         if (!partyStatements.isEmpty() && getLastStatement().getType().equals(StatementType.offer) && getLastStatement().getMadeBy().equals(madeBy)) {
-            throw new IllegalStateException("You cannot make multiple offers in a row");
+            throw new IllegalSettlementStatementException("You cannot make multiple offers in a row");
         }
         partyStatements.add(new PartyStatement(StatementType.offer, madeBy, offer));
     }

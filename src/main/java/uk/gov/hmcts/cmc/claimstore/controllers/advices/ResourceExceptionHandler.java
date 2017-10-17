@@ -21,6 +21,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 
@@ -127,6 +128,12 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> methodArgumentConversionFailure(MethodArgumentTypeMismatchException exception) {
+        logger.debug(exception.getMessage(), exception);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalSettlementStatementException.class)
+    public ResponseEntity<?> illegalSettlementStatement(IllegalSettlementStatementException exception) {
         logger.debug(exception.getMessage(), exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }

@@ -2,18 +2,25 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.exceptions.IllegalSettlementStatementException;
+import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,6 +30,9 @@ public class MakeOfferTest extends BaseTest {
     private static final Long CLAIM_ID = 12344321L;
     private static final Long DEFENDANT_ID = 43211234L;
     private static final String AUTH_TOKEN = "authDataString";
+
+    @SpyBean
+    private OffersService offersService;
 
     @Before
     public void beforeEachTest() {
@@ -63,6 +73,17 @@ public class MakeOfferTest extends BaseTest {
 
         makeOffer(SampleOffer.validDefaults(), MadeBy.defendant.name())
             .andExpect(status().isForbidden())
+            .andReturn();
+    }
+
+    @Test
+    public void shouldReturnBadRequestIfIllegalSettlementStatementIsSubmitted() throws Exception {
+        Offer offer = SampleOffer.validDefaults();
+        doThrow(new IllegalSettlementStatementException("Invalid statement was mode"))
+            .when(offersService).makeOffer(any(Claim.class), eq(offer), eq(MadeBy.defendant));
+
+        makeOffer(offer, MadeBy.defendant.name())
+            .andExpect(status().isBadRequest())
             .andReturn();
     }
 

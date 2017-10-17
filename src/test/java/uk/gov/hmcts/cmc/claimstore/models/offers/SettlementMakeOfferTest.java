@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models.offers;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class SettlementMakeOfferTest {
         assertThat(partyStatement.getMadeBy()).isEqualTo(MadeBy.defendant);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowDefendantToMakeTwoOffersInARow() {
         Offer offer = SampleOffer.validDefaults();
 
@@ -40,7 +41,7 @@ public class SettlementMakeOfferTest {
         settlement.makeOffer(offer, MadeBy.defendant);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowClaimantToMakeTwoOffersInARow() {
         Offer offer = SampleOffer.validDefaults();
 
