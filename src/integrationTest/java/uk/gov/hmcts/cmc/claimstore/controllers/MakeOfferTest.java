@@ -51,7 +51,7 @@ public class MakeOfferTest extends BaseTest {
 
     @Test
     public void shouldAcceptValidOfferByDefendantAndReturnCreatedStatus() throws Exception {
-        makeOffer(SampleOffer.validDefaults(), MadeBy.defendant.name())
+        makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
             .andExpect(status().isCreated())
             .andReturn();
     }
@@ -71,7 +71,7 @@ public class MakeOfferTest extends BaseTest {
                 .build()
         );
 
-        makeOffer(SampleOffer.validDefaults(), MadeBy.defendant.name())
+        makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
             .andExpect(status().isForbidden())
             .andReturn();
     }
@@ -80,9 +80,9 @@ public class MakeOfferTest extends BaseTest {
     public void shouldReturnBadRequestIfIllegalSettlementStatementIsSubmitted() throws Exception {
         Offer offer = SampleOffer.validDefaults();
         doThrow(new IllegalSettlementStatementException("Invalid statement was mode"))
-            .when(offersService).makeOffer(any(Claim.class), eq(offer), eq(MadeBy.defendant));
+            .when(offersService).makeOffer(any(Claim.class), eq(offer), eq(MadeBy.DEFENDANT));
 
-        makeOffer(offer, MadeBy.defendant.name())
+        makeOffer(offer, MadeBy.DEFENDANT.name())
             .andExpect(status().isBadRequest())
             .andReturn();
     }

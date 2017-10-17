@@ -39,7 +39,7 @@ public class SettlementTest {
     public void getLastStatementShouldReturnLastStatement() {
         Offer offer = SampleOffer.validDefaults();
 
-        settlement.makeOffer(offer, MadeBy.defendant);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
 
         assertThat(settlement.getLastStatement().getOffer().get()).isEqualTo(offer);
     }

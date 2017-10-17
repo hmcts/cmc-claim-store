@@ -22,7 +22,7 @@ public class SettlementMakeOfferTest {
     public void shouldAllowDefendantToMakeAnInitialOffer() {
         Offer offer = SampleOffer.validDefaults();
 
-        settlement.makeOffer(offer, MadeBy.defendant);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
 
         List<PartyStatement> partyStatements = settlement.getPartyStatements();
         assertThat(partyStatements).hasSize(1);
@@ -30,31 +30,31 @@ public class SettlementMakeOfferTest {
         PartyStatement partyStatement = partyStatements.get(0);
         assertThat(partyStatement.getOffer().get()).isEqualTo(offer);
         assertThat(partyStatement.getType()).isEqualTo(StatementType.OFFER);
-        assertThat(partyStatement.getMadeBy()).isEqualTo(MadeBy.defendant);
+        assertThat(partyStatement.getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowDefendantToMakeTwoOffersInARow() {
         Offer offer = SampleOffer.validDefaults();
 
-        settlement.makeOffer(offer, MadeBy.defendant);
-        settlement.makeOffer(offer, MadeBy.defendant);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowClaimantToMakeTwoOffersInARow() {
         Offer offer = SampleOffer.validDefaults();
 
-        settlement.makeOffer(offer, MadeBy.claimant);
-        settlement.makeOffer(offer, MadeBy.claimant);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
     }
 
     @Test
     public void shouldAllowToMakeACounterOffer() {
         Offer offer = SampleOffer.validDefaults();
 
-        settlement.makeOffer(offer, MadeBy.claimant);
-        settlement.makeOffer(offer, MadeBy.defendant);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
 
         assertThat(settlement.getPartyStatements()).hasSize(2);
     }
