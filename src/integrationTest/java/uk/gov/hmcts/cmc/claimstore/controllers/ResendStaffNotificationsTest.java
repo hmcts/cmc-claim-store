@@ -85,9 +85,10 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
-        assertThat(emailDataArgument.getValue().getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailDataArgument.getValue().getSubject()).isEqualTo("Claim " + claim.getReferenceNumber() + " issued");
-        assertThat(emailDataArgument.getValue().getMessage()).isEqualTo("Please find attached claim.");
+        EmailData emailData = emailDataArgument.getValue();
+        assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
+        assertThat(emailData.getSubject()).isEqualTo("Claim " + claim.getReferenceNumber() + " issued");
+        assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
     }
 
     @Test

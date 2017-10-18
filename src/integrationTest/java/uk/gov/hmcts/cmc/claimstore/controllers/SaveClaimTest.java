@@ -130,10 +130,11 @@ public class SaveClaimTest extends BaseIntegrationTest {
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
-        assertThat(emailDataArgument.getValue().getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailDataArgument.getValue().getSubject()).isEqualTo("Claim form " + savedClaim.getReferenceNumber());
-        assertThat(emailDataArgument.getValue().getMessage()).isEqualTo("Please find attached claim.");
-        assertThat(emailDataArgument.getValue().getAttachments()).hasSize(1)
+        EmailData emailData = emailDataArgument.getValue();
+        assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
+        assertThat(emailData.getSubject()).isEqualTo("Claim form " + savedClaim.getReferenceNumber());
+        assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
+        assertThat(emailData.getAttachments()).hasSize(1)
             .first().extracting(EmailAttachment::getFilename)
             .containsExactly(savedClaim.getReferenceNumber() + "-sealed-claim.pdf");
     }

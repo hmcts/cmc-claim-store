@@ -38,7 +38,8 @@ public class SaveCountyCourtJudgmentTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnClaimWithCountyCourtJudgment() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now().minus(10, ChronoUnit.DAYS));
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L,
+            LocalDate.now().minus(10, ChronoUnit.DAYS));
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().build();
 
         MvcResult result = makeRequest(claim.getId(), ccj)
