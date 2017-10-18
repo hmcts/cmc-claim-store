@@ -15,9 +15,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 public class Claim {
 
     private final Long id;
-    private final Long submitterId;
+    private final String submitterId;
     private final String letterHolderId;
-    private final Long defendantId;
+    private final String defendantId;
     private final String externalId;
     private final String referenceNumber;
     @JsonProperty("claim")
@@ -36,9 +36,9 @@ public class Claim {
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
         final Long id,
-        final Long submitterId,
+        final String submitterId,
         final String letterHolderId,
-        final Long defendantId,
+        final String defendantId,
         final String externalId,
         final String referenceNumber,
         final ClaimData claimData,
@@ -76,7 +76,7 @@ public class Claim {
         return id;
     }
 
-    public Long getSubmitterId() {
+    public String getSubmitterId() {
         return submitterId;
     }
 
@@ -84,7 +84,7 @@ public class Claim {
         return letterHolderId;
     }
 
-    public Long getDefendantId() {
+    public String getDefendantId() {
         return defendantId;
     }
 
@@ -180,10 +180,10 @@ public class Claim {
     public static class Builder {
         private Long id;
         private String externalId;
-        private Long submitterId;
+        private String submitterId;
         private String submitterEmail;
         private String letterHolderId;
-        private Long defendantId;
+        private String defendantId;
         private String referenceNumber;
         private ClaimData claimData;
         private LocalDate issuedOn;
@@ -206,7 +206,7 @@ public class Claim {
             return this;
         }
 
-        public Builder setSubmitterId(Long submitterId) {
+        public Builder setSubmitterId(String submitterId) {
             this.submitterId = submitterId;
             return this;
         }
@@ -221,7 +221,7 @@ public class Claim {
             return this;
         }
 
-        public Builder setDefendantId(Long defendantId) {
+        public Builder setDefendantId(String defendantId) {
             this.defendantId = defendantId;
             return this;
         }

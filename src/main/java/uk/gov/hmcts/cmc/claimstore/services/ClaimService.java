@@ -54,7 +54,7 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
 
-    public List<Claim> getClaimBySubmitterId(final long submitterId) {
+    public List<Claim> getClaimBySubmitterId(final String submitterId) {
         return claimRepository.getBySubmitterId(submitterId);
     }
 
@@ -80,7 +80,7 @@ public class ClaimService {
     }
 
     @Transactional
-    public Claim saveClaim(final long submitterId, final ClaimData claimData, final String authorisation) {
+    public Claim saveClaim(final String submitterId, final ClaimData claimData, final String authorisation) {
         final String externalId = claimData.getExternalId().toString();
 
         claimRepository.getClaimByExternalId(externalId).ifPresent(claim -> {
@@ -150,7 +150,7 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(Long claimId, Long defendantId) {
+    public void linkDefendantToClaim(Long claimId, String defendantId) {
         final Claim claim = claimRepository.getById(claimId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
 

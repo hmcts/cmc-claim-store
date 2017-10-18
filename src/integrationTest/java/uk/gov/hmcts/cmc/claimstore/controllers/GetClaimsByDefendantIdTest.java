@@ -71,7 +71,7 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
             .andReturn();
     }
 
-    private Claim newClaim(Long id, Long defendantId) {
+    private Claim newClaim(Long id, String defendantId) {
         return SampleClaim.builder().withClaimId(id).withDefendantId(defendantId).build();
     }
 

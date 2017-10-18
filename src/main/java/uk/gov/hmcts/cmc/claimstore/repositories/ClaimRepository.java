@@ -24,7 +24,7 @@ public interface ClaimRepository {
     String ORDER_BY_ID_DESCENDING  = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
-    List<Claim> getBySubmitterId(@Bind("submitterId") Long submitterId);
+    List<Claim> getBySubmitterId(@Bind("submitterId") String submitterId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.letter_holder_id = :letterHolderId")
@@ -66,7 +66,7 @@ public interface ClaimRepository {
         + ")")
     Long saveRepresented(
         @Bind("claim") final String claim,
-        @Bind("submitterId") final Long submitterId,
+        @Bind("submitterId") final String submitterId,
         @Bind("issuedOn") final LocalDate issuedOn,
         @Bind("responseDeadline") final LocalDate responseDeadline,
         @Bind("externalId") final String externalId,
@@ -96,7 +96,7 @@ public interface ClaimRepository {
         + ")")
     Long saveSubmittedByClaimant(
         @Bind("claim") final String claim,
-        @Bind("submitterId") final Long submitterId,
+        @Bind("submitterId") final String submitterId,
         @Bind("letterHolderId") final String letterHolderId,
         @Bind("issuedOn") final LocalDate issuedOn,
         @Bind("responseDeadline") final LocalDate responseDeadline,
@@ -117,7 +117,7 @@ public interface ClaimRepository {
     )
     Integer linkDefendant(
         @Bind("claimId") final Long claimId,
-        @Bind("defendantId") final Long defendantId
+        @Bind("defendantId") final String defendantId
     );
 
     @SqlUpdate(

@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.EXTERNAL_ID;
 
 public class ResourceExceptionHandlerTest extends BaseTest {
-    private static final long CLAIMANT_ID = 123L;
+    private static final String CLAIMANT_ID = "123";
 
     @Before
     public void setup() {
@@ -36,7 +36,7 @@ public class ResourceExceptionHandlerTest extends BaseTest {
         final String errorMessage = "ERROR: duplicate key value violates unique constraint \"external_id_unique\"";
         when(exception.getCause().getMessage()).thenReturn(errorMessage);
 
-        given(claimRepository.saveRepresented(anyString(), anyLong(), any(LocalDate.class),
+        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))
             .willThrow(exception);
 

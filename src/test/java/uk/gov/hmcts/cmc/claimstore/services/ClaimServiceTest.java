@@ -56,10 +56,10 @@ public class ClaimServiceTest {
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails invalidDefendant
-        = SampleUserDetails.builder().withUserId(-1L).withMail(DEFENDANT_EMAIL).build();
+        = SampleUserDetails.builder().withUserId("-1").withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails claimantDetails
-        = SampleUserDetails.builder().withUserId(11L).withMail(SUBMITTER_EMAIL).build();
+        = SampleUserDetails.builder().withUserId("11").withMail(SUBMITTER_EMAIL).build();
 
     private ClaimService claimService;
 

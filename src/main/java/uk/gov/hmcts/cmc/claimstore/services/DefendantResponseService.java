@@ -35,7 +35,7 @@ public class DefendantResponseService {
     @Transactional
     public Claim save(
         final long claimId,
-        final long defendantId,
+        final String defendantId,
         final ResponseData responseData,
         final String authorization
     ) {

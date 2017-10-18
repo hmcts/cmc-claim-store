@@ -39,9 +39,9 @@ public class ClaimController {
         this.claimService = claimService;
     }
 
-    @GetMapping("/claimant/{submitterId:\\d+}")
+    @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
-    public List<Claim> getBySubmitterId(@PathVariable("submitterId") final Long submitterId) {
+    public List<Claim> getBySubmitterId(@PathVariable("submitterId") final String submitterId) {
         return claimService.getClaimBySubmitterId(submitterId);
     }
 
@@ -57,24 +57,24 @@ public class ClaimController {
         return claimService.getClaimByExternalId(externalId);
     }
 
-    @GetMapping("/defendant/{defendantId:\\d+}")
+    @GetMapping("/defendant/{defendantId}")
     @ApiOperation("Fetch claims linked to given defendant id")
     public List<Claim> getByDefendantId(@PathVariable("defendantId") final Long defendantId) {
         return claimService.getClaimByDefendantId(defendantId);
     }
 
-    @PostMapping(value = "/{submitterId:\\d+}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new claim")
     public Claim save(@Valid @NotNull @RequestBody final ClaimData claimData,
-                      @PathVariable("submitterId") final Long submitterId,
+                      @PathVariable("submitterId") final String submitterId,
                       @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
         return claimService.saveClaim(submitterId, claimData, authorisation);
     }
 
-    @PutMapping("/{claimId:\\d+}/defendant/{defendantId:\\d+}")
+    @PutMapping("/{claimId:\\d+}/defendant/{defendantId}")
     @ApiOperation("Links defendant to existing claim")
     public Claim linkDefendantToClaim(@PathVariable("claimId") final Long claimId,
-                                      @PathVariable("defendantId") final Long defendantId) {
+                                      @PathVariable("defendantId") final String defendantId) {
         claimService.linkDefendantToClaim(claimId, defendantId);
         return claimService.getClaimById(claimId);
     }
