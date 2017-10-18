@@ -12,7 +12,7 @@ public class GetClaimByExternalReferenceTest extends BaseIntegrationTest {
     @Test
     public void shouldReturn404HttpStatusWhenNoClaimFound() throws Exception {
 
-        String nonExistingExternalReferenceNumber = "999LR999";
+        String nonExistingExternalReferenceNumber = "Ref99999";
 
         makeRequest(nonExistingExternalReferenceNumber)
             .andExpect(status().isNotFound());
