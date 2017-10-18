@@ -77,6 +77,13 @@ public class MakeOfferTest extends BaseTest {
     }
 
     @Test
+    public void shouldReturnForbiddenIfUserIsPartyOnClaimButClaimsToBeOppositeParty() throws Exception {
+        makeOffer(SampleOffer.validDefaults(), MadeBy.CLAIMANT.name())
+            .andExpect(status().isForbidden())
+            .andReturn();
+    }
+
+    @Test
     public void shouldReturnBadRequestIfIllegalSettlementStatementIsSubmitted() throws Exception {
         Offer offer = SampleOffer.validDefaults();
         doThrow(new IllegalSettlementStatementException("Invalid statement was mode"))

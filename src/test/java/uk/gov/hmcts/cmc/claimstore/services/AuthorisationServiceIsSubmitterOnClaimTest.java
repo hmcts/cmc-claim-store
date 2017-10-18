@@ -7,38 +7,37 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AuthorisationServiceIsPartyOnClaimTest {
+public class AuthorisationServiceIsSubmitterOnClaimTest {
 
     private static final Long USER_ID = 123456789L;
 
     private AuthorisationService authorisationService = new AuthorisationService();
 
     @Test
-    public void shouldReturnTrueIfUserIsSubmitter() {
+    public void shouldReturnTrueIfUserIsSubmitterOnTheClaim() {
         Claim claim = SampleClaim.builder()
             .withSubmitterId(USER_ID)
             .build();
 
-        assertThat(authorisationService.isPartyOnClaim(claim, USER_ID)).isTrue();
+        assertThat(authorisationService.isSubmitterOnClaim(claim, USER_ID)).isTrue();
     }
 
     @Test
-    public void shouldReturnTrueIfUserIsDefendant() {
+    public void shouldReturnFalseIfUserIsNotSubmitterOnTheClaim() {
         Claim claim = SampleClaim.builder()
-            .withDefendantId(USER_ID)
+            .withSubmitterId(777L)
             .build();
 
-        assertThat(authorisationService.isPartyOnClaim(claim, USER_ID)).isTrue();
-    }
-
-    @Test
-    public void shouldReturnFalseIfUserIsNeitherSubmitterNorDefendant() {
-        assertThat(authorisationService.isPartyOnClaim(SampleClaim.getDefault(), USER_ID)).isFalse();
+        assertThat(authorisationService.isSubmitterOnClaim(claim, USER_ID)).isFalse();
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void assertIsPartyOnClaimShouldThrowForbiddenIfUserIsNotPartyOnClaim() {
-        authorisationService.assertIsPartyOnClaim(SampleClaim.getDefault(), USER_ID);
+    public void assertShouldThrowForbiddenActionExceptionIfUserIsNotSumibmitterOnTheClaim() {
+        Claim claim = SampleClaim.builder()
+            .withSubmitterId(777L)
+            .build();
+
+        authorisationService.assertIsSubmitterOnClaim(claim, USER_ID);
     }
 
 }

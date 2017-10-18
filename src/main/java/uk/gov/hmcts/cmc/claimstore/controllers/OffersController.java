@@ -66,14 +66,19 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimById(claimId);
-        assertActionIsPermittedFor(claim, authorisation);
+        assertActionIsPermittedFor(claim, party, authorisation);
         offersService.makeOffer(claim, offer, party);
         return claimService.getClaimById(claimId);
     }
 
-    private void assertActionIsPermittedFor(Claim claim, String authorisation) {
+    private void assertActionIsPermittedFor(Claim claim, MadeBy party, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
-        authorisationService.assertIsPartyOnClaim(claim, userDetails.getId());
+        if (party.equals(MadeBy.CLAIMANT)) {
+            authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
+        }
+        if (party.equals(MadeBy.DEFENDANT)) {
+            authorisationService.assertIsDefendantOnClaim(claim, userDetails.getId());
+        }
     }
 
 }
