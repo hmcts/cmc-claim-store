@@ -7,6 +7,7 @@ import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.io.UnsupportedEncodingException;
@@ -62,9 +63,14 @@ public class GetClamsByClaimantIdTest extends BaseTest {
     }
 
     private Claim newClaim(String claimantId) {
-        return new Claim.Builder().setId(1L).setSubmitterId(claimantId).setLetterHolderId("3").setDefendantId("1")
-            .setExternalId("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d").setReferenceNumber("000MC001")
-            .setSubmitterEmail(SUBMITTER_EMAIL)
+        return SampleClaim.builder()
+            .withClaimId(1L)
+            .withSubmitterId(claimantId)
+            .withLetterHolderId("3")
+            .withDefendantId("1")
+            .withExternalId("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d")
+            .withReferenceNumber("000MC001")
+            .withSubmitterEmail(SUBMITTER_EMAIL)
             .build();
     }
 

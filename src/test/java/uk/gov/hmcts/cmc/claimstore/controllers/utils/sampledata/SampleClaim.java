@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
@@ -47,6 +48,8 @@ public final class SampleClaim {
     private ClaimData claimData = SampleClaimData.validDefaults();
     private ResponseData response;
     private String defendantEmail;
+    private Settlement settlement = null;
+    private LocalDateTime settlementReachedAt = null;
 
     private SampleClaim() {
     }
@@ -91,6 +94,8 @@ public final class SampleClaim {
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
+            null,
+            null,
             null,
             null,
             null,
@@ -143,7 +148,9 @@ public final class SampleClaim {
             response,
             defendantEmail,
             countyCourtJudgment,
-            countyCourtJudgmentRequestedAt);
+            countyCourtJudgmentRequestedAt,
+            settlement,
+            settlementReachedAt);
     }
 
     public SampleClaim withSubmitterId(String userId) {

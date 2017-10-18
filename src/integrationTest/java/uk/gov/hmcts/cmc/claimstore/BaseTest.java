@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.DefendantResponseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -37,6 +38,9 @@ public abstract class BaseTest {
     protected static final String DEFENDANT_ID = "555";
     protected static final String REFERENCE_NUMBER = "000MC001";
     protected final Claim claimAfterSavingWithResponse = SampleClaim.getWithDefaultResponse();
+
+    @MockBean
+    protected OffersRepository offersRepository;
 
     @MockBean
     protected ClaimRepository claimRepository;
