@@ -94,7 +94,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final Claim claim = sampleClaim(SampleClaimData.submittedByClaimant()).withDefendantId(null).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
-        final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", 333L);
+        final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
         given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 

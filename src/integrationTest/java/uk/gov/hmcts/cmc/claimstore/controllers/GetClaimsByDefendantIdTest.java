@@ -22,7 +22,7 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
 
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
-        long defendantId = 1L;
+        String defendantId = "1";
 
         given(claimRepository.getByDefendantId(defendantId))
             .willReturn(Lists.newArrayList(newClaim(1L, defendantId)));
@@ -37,7 +37,7 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
 
     @Test
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
-        long defendantId = 1L;
+        String defendantId = "1";
 
         given(claimRepository.getByDefendantId(defendantId))
             .willReturn(Lists.newArrayList());
@@ -49,18 +49,10 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
 
         assertThat(deserialize(result)).isEmpty();
     }
-
-    @Test
-    public void shouldReturn404HttpStatusWhenDefendantParameterIsNotNumber() throws Exception {
-        webClient
-            .perform(get("/claims/defendant/not-a-number"))
-            .andExpect(status().isNotFound())
-            .andReturn();
-    }
-
+    
     @Test
     public void shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        long defendantId = 1L;
+        String defendantId = "1";
 
         given(claimRepository.getByDefendantId(defendantId))
             .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
@@ -71,7 +63,7 @@ public class GetClaimsByDefendantIdTest extends BaseTest {
             .andReturn();
     }
 
-    private Claim newClaim(Long id, Long defendantId) {
+    private Claim newClaim(Long id, String defendantId) {
         return SampleClaim.builder().withClaimId(id).withDefendantId(defendantId).build();
     }
 

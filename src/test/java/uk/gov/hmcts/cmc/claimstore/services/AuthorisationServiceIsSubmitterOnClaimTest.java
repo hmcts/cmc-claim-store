@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuthorisationServiceIsSubmitterOnClaimTest {
 
-    private static final Long USER_ID = 123456789L;
+    private static final String USER_ID = "123456789";
 
     private AuthorisationService authorisationService = new AuthorisationService();
 
@@ -25,7 +25,7 @@ public class AuthorisationServiceIsSubmitterOnClaimTest {
     @Test
     public void shouldReturnFalseIfUserIsNotSubmitterOnTheClaim() {
         Claim claim = SampleClaim.builder()
-            .withSubmitterId(777L)
+            .withSubmitterId("777")
             .build();
 
         assertThat(authorisationService.isSubmitterOnClaim(claim, USER_ID)).isFalse();
@@ -34,7 +34,7 @@ public class AuthorisationServiceIsSubmitterOnClaimTest {
     @Test(expected = ForbiddenActionException.class)
     public void assertShouldThrowForbiddenActionExceptionIfUserIsNotSumibmitterOnTheClaim() {
         Claim claim = SampleClaim.builder()
-            .withSubmitterId(777L)
+            .withSubmitterId("777")
             .build();
 
         authorisationService.assertIsSubmitterOnClaim(claim, USER_ID);

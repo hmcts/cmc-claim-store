@@ -16,9 +16,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
 public class Claim {
 
     private final Long id;
-    private final Long submitterId;
-    private final Long letterHolderId;
-    private final Long defendantId;
+    private final String submitterId;
+    private final String letterHolderId;
+    private final String defendantId;
     private final String externalId;
     private final String referenceNumber;
     @JsonProperty("claim")
@@ -39,9 +39,9 @@ public class Claim {
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
         final Long id,
-        final Long submitterId,
-        final Long letterHolderId,
-        final Long defendantId,
+        final String submitterId,
+        final String letterHolderId,
+        final String defendantId,
         final String externalId,
         final String referenceNumber,
         final ClaimData claimData,
@@ -83,15 +83,15 @@ public class Claim {
         return id;
     }
 
-    public Long getSubmitterId() {
+    public String getSubmitterId() {
         return submitterId;
     }
 
-    public Long getLetterHolderId() {
+    public String getLetterHolderId() {
         return letterHolderId;
     }
 
-    public Long getDefendantId() {
+    public String getDefendantId() {
         return defendantId;
     }
 
@@ -199,4 +199,5 @@ public class Claim {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
+
 }

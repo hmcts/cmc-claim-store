@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuthorisationServiceIsDefendantOnClaimTest {
 
-    private static final Long USER_ID = 123456789L;
+    private static final String USER_ID = "123456789";
 
     private AuthorisationService authorisationService = new AuthorisationService();
 
@@ -25,7 +25,7 @@ public class AuthorisationServiceIsDefendantOnClaimTest {
     @Test
     public void shouldReturnFalseIfUserIsNotDefendantOnClaim() {
         Claim claim = SampleClaim.builder()
-            .withDefendantId(777L)
+            .withDefendantId("777")
             .build();
 
         assertThat(authorisationService.isDefendantOnClaim(claim, USER_ID)).isFalse();
@@ -34,7 +34,7 @@ public class AuthorisationServiceIsDefendantOnClaimTest {
     @Test(expected = ForbiddenActionException.class)
     public void assertShouldThrowForbiddenActionExceptionIfUserIsNotDefendantOnClaim() {
         Claim claim = SampleClaim.builder()
-            .withDefendantId(777L)
+            .withDefendantId("777")
             .build();
 
         authorisationService.assertIsDefendantOnClaim(claim, USER_ID);

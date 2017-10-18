@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MakeOfferTest extends BaseTest {
 
     private static final Long CLAIM_ID = 12344321L;
-    private static final Long DEFENDANT_ID = 43211234L;
+    private static final String DEFENDANT_ID = "43211234";
     private static final String AUTH_TOKEN = "authDataString";
 
     @SpyBean
@@ -67,7 +67,7 @@ public class MakeOfferTest extends BaseTest {
     public void shouldReturnForbiddenIfUserIsNotPartyOnClaim() throws Exception {
         when(userService.getUserDetails(AUTH_TOKEN)).thenReturn(
             SampleUserDetails.builder()
-                .withUserId(-300L)
+                .withUserId("-300")
                 .build()
         );
 

@@ -21,8 +21,8 @@ public class GetClaimByReferenceNumberTest extends BaseTest {
 
     private final Claim claim = SampleClaim.builder()
         .withClaimId(1L)
-        .withSubmitterId(2L)
-        .withLetterHolderId(3L)
+        .withSubmitterId("2")
+        .withLetterHolderId("3")
         .withExternalId(EXTERNAL_ID)
         .withReferenceNumber(REFERENCE_NUMBER)
         .build();

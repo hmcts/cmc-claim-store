@@ -59,9 +59,9 @@ public class ClaimTest {
     private static Claim customCreatedAt(final LocalDateTime createdAt) {
         return new Claim(
             1L,
-            2L,
-            3L,
-            4L,
+            "3",
+            "3",
+            "4",
             "external-id",
             "ref number",
             null,

@@ -21,10 +21,10 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleCla
 
 public class GetClamsByClaimantIdTest extends BaseTest {
 
+    private String claimantId = "1";
+
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
-        long claimantId = 1L;
-
         given(claimRepository.getBySubmitterId(claimantId))
             .willReturn(Lists.newArrayList(newClaim(claimantId)));
 
@@ -38,8 +38,6 @@ public class GetClamsByClaimantIdTest extends BaseTest {
 
     @Test
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
-        long claimantId = 1L;
-
         given(claimRepository.getBySubmitterId(claimantId))
             .willReturn(Lists.newArrayList());
 
@@ -52,16 +50,8 @@ public class GetClamsByClaimantIdTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturn404HttpStatusWhenClaimantIdParameterIsNotNumber() throws Exception {
-        webClient
-            .perform(get("/claims/claimant/not-a-number"))
-            .andExpect(status().isNotFound())
-            .andReturn();
-    }
-
-    @Test
     public void shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        long claimantId = 1L;
+        String claimantId = "1";
 
         given(claimRepository.getBySubmitterId(claimantId))
             .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
@@ -72,12 +62,12 @@ public class GetClamsByClaimantIdTest extends BaseTest {
             .andReturn();
     }
 
-    private Claim newClaim(Long claimantId) {
+    private Claim newClaim(String claimantId) {
         return SampleClaim.builder()
             .withClaimId(1L)
             .withSubmitterId(claimantId)
-            .withLetterHolderId(3L)
-            .withDefendantId(1L)
+            .withLetterHolderId("3")
+            .withDefendantId("1")
             .withExternalId("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d")
             .withReferenceNumber("000MC001")
             .withSubmitterEmail(SUBMITTER_EMAIL)

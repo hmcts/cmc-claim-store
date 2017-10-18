@@ -20,9 +20,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.RESPONSE_DEADLINE;
 
 public final class SampleClaim {
 
-    public static final Long USER_ID = 1L;
-    public static final Long LETTER_HOLDER_ID = 2L;
-    public static final Long DEFENDANT_ID = 4L;
+    public static final String USER_ID = "1";
+    public static final String LETTER_HOLDER_ID = "2";
+    public static final String DEFENDANT_ID = "4";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000CM001";
     public static final String EXTERNAL_ID = UUID.randomUUID().toString();
@@ -31,9 +31,9 @@ public final class SampleClaim {
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
 
-    private Long submitterId = USER_ID;
-    private Long letterHolderId = LETTER_HOLDER_ID;
-    private Long defendantId = DEFENDANT_ID;
+    private String submitterId = USER_ID;
+    private String letterHolderId = LETTER_HOLDER_ID;
+    private String defendantId = DEFENDANT_ID;
     private Long claimId = CLAIM_ID;
     private String referenceNumber = REFERENCE_NUMBER;
     private String externalId = EXTERNAL_ID;
@@ -153,17 +153,17 @@ public final class SampleClaim {
             settlementReachedAt);
     }
 
-    public SampleClaim withSubmitterId(Long userId) {
+    public SampleClaim withSubmitterId(String userId) {
         this.submitterId = userId;
         return this;
     }
 
-    public SampleClaim withLetterHolderId(Long letterHolderId) {
+    public SampleClaim withLetterHolderId(String letterHolderId) {
         this.letterHolderId = letterHolderId;
         return this;
     }
 
-    public SampleClaim withDefendantId(Long defendantId) {
+    public SampleClaim withDefendantId(String defendantId) {
         this.defendantId = defendantId;
         return this;
     }
