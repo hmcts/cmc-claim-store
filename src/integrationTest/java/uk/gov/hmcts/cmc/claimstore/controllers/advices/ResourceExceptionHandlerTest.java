@@ -15,7 +15,6 @@ import java.time.LocalDate;
 
 import static java.util.Collections.emptySet;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.EXTERNAL_ID;
 
 public class ResourceExceptionHandlerTest extends BaseTest {
-    private static final long CLAIMANT_ID = 123L;
+    private static final String CLAIMANT_ID = "123";
 
     @Before
     public void setup() {
@@ -36,7 +35,7 @@ public class ResourceExceptionHandlerTest extends BaseTest {
         final String errorMessage = "ERROR: duplicate key value violates unique constraint \"external_id_unique\"";
         when(exception.getCause().getMessage()).thenReturn(errorMessage);
 
-        given(claimRepository.saveRepresented(anyString(), anyLong(), any(LocalDate.class),
+        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))
             .willThrow(exception);
 
@@ -63,7 +62,7 @@ public class ResourceExceptionHandlerTest extends BaseTest {
 
     private ResultActions postClaim(ClaimData claimData) throws Exception {
         return webClient
-            .perform(post("/claims/" + (Long) CLAIMANT_ID)
+            .perform(post("/claims/" + CLAIMANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
                 .content(jsonMapper.toJson(claimData))

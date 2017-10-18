@@ -9,13 +9,13 @@ import java.util.Optional;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDetails {
 
-    private final long id;
+    private final String id;
     private final String email;
 
     private final String forename;
     private final String surname;
 
-    public UserDetails(@JsonProperty("id") final long id,
+    public UserDetails(@JsonProperty("id") final String id,
                        @JsonProperty("email") final String email,
                        @JsonProperty("forename") final String forename,
                        @JsonProperty("surname") final String surname
@@ -26,7 +26,7 @@ public class UserDetails {
         this.surname = surname;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

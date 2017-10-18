@@ -46,7 +46,7 @@ public class CountyCourtJudgmentService {
     }
 
     @Transactional
-    public Claim save(final long submitterId, final CountyCourtJudgment countyCourtJudgment, final long claimId) {
+    public Claim save(final String submitterId, final CountyCourtJudgment countyCourtJudgment, final long claimId) {
 
         Claim claim = getClaim(claimId);
 
@@ -85,7 +85,7 @@ public class CountyCourtJudgmentService {
         return null != claim.getRespondedAt();
     }
 
-    private boolean isClaimSubmittedByUser(final Claim claim, final long submitterId) {
+    private boolean isClaimSubmittedByUser(final Claim claim, final String submitterId) {
         return claim.getSubmitterId().equals(submitterId);
     }
 
