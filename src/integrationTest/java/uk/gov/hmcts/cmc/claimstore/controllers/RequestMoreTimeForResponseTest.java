@@ -198,7 +198,7 @@ public class RequestMoreTimeForResponseTest extends BaseTest {
 
     private Claim createClaimModel(final LocalDate responseDeadline, final boolean alreadyUpdated) {
         return SampleClaim.builder()
-            .withId(CLAIM_ID)
+            .withClaimId(CLAIM_ID)
             .withSubmitterEmail("submitter@example.com")
             .withSubmitterId(SUBMITTER_ID)
             .withLetterHolderId(LETTER_HOLDER_ID)

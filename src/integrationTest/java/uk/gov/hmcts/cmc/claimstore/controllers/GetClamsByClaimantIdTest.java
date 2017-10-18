@@ -74,7 +74,7 @@ public class GetClamsByClaimantIdTest extends BaseTest {
 
     private Claim newClaim(Long claimantId) {
         return SampleClaim.builder()
-            .withId(1L)
+            .withClaimId(1L)
             .withSubmitterId(claimantId)
             .withLetterHolderId(3L)
             .withDefendantId(1L)

@@ -199,7 +199,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
 
     private SampleClaim sampleClaim(final ClaimData claimData) {
         return SampleClaim.builder()
-            .withId(CLAIM_ID)
+            .withClaimId(CLAIM_ID)
             .withExternalId(null)
             .withSubmitterId(SUBMITTER_ID)
             .withSubmitterEmail(SUBMITTER_EMAIL)
