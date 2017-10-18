@@ -23,7 +23,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getId, Claim::getDefendantId)
-            .containsExactly(claim.getId(), 1L);
+            .containsExactly(claim.getId(), "1");
     }
 
     @Test
