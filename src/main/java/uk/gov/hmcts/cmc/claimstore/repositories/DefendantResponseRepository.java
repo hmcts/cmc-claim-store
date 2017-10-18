@@ -15,7 +15,7 @@ public interface DefendantResponseRepository {
     )
     void save(
         @Bind("claimId") final Long claimId,
-        @Bind("defendantId") final Long defendantId,
+        @Bind("defendantId") final String defendantId,
         @Bind("defendantEmail") final String defendantEmail,
         @Bind("response") final String response
     );

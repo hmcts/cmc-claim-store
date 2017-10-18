@@ -21,9 +21,9 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     public Claim map(int index, ResultSet result, StatementContext ctx) throws SQLException {
         return new Claim(
             result.getLong("id"),
-            result.getLong("submitter_id"),
-            result.getLong("letter_holder_id"),
-            toNullableLong((Integer) result.getObject("defendant_id")),
+            result.getString("submitter_id"),
+            result.getString("letter_holder_id"),
+            result.getString("defendant_id"),
             result.getString("external_id"),
             result.getString("reference_number"),
             toClaimData(result.getString("claim")),
@@ -47,10 +47,6 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
 
     private ResponseData toNullableResponseData(final String input) {
         return input != null ? jsonMapper.fromJson(input, ResponseData.class) : null;
-    }
-
-    private Long toNullableLong(final Integer input) {
-        return input != null ? input.longValue() : null;
     }
 
     private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {

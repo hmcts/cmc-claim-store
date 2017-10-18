@@ -7,7 +7,7 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIss
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 
 public final class SampleUserDetails {
-    private Long userId = USER_ID;
+    private String userId = USER_ID;
     private String userEmail = "user@example.com";
     private String forename = SUBMITTER_FORENAME;
     private String surname = SUBMITTER_SURNAME;
@@ -22,7 +22,7 @@ public final class SampleUserDetails {
         return this;
     }
 
-    public SampleUserDetails withUserId(final Long userId) {
+    public SampleUserDetails withUserId(final String userId) {
         this.userId = userId;
         return this;
     }

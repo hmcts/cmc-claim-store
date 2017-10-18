@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -46,15 +46,15 @@ public class ClaimController {
         this.userService = userService;
     }
 
-    @GetMapping("/claimant/{submitterId:\\d+}")
+    @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
-    public List<Claim> getBySubmitterId(@PathVariable("submitterId") final Long submitterId) {
+    public List<Claim> getBySubmitterId(@PathVariable("submitterId") final String submitterId) {
         return claimService.getClaimBySubmitterId(submitterId);
     }
 
-    @GetMapping("/letter/{letterHolderId:\\d+}")
+    @GetMapping("/letter/{letterHolderId}")
     @ApiOperation("Fetch user claim for given letter holder id")
-    public Claim getByLetterHolderId(@PathVariable("letterHolderId") final Long letterHolderId) {
+    public Claim getByLetterHolderId(@PathVariable("letterHolderId") final String letterHolderId) {
         return claimService.getClaimByLetterHolderId(letterHolderId);
     }
 
@@ -68,7 +68,7 @@ public class ClaimController {
     @ApiOperation("Fetch claim for given claim reference")
     public Claim getByClaimReference(@PathVariable("claimReference") final String claimReference,
                                      @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
-        final long submitterId = userService.getUserDetails(authorisation).getId();
+        final String submitterId = userService.getUserDetails(authorisation).getId();
         return claimService.getClaimByReference(claimReference, submitterId)
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
     }
@@ -79,28 +79,28 @@ public class ClaimController {
         @PathVariable("externalReference") final String externalReference,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
 
-        final long submitterId = userService.getUserDetails(authorisation).getId();
+        final String submitterId = userService.getUserDetails(authorisation).getId();
         return claimService.getClaimByExternalReference(externalReference, submitterId);
     }
 
     @GetMapping("/defendant/{defendantId:\\d+}")
     @ApiOperation("Fetch claims linked to given defendant id")
-    public List<Claim> getByDefendantId(@PathVariable("defendantId") final Long defendantId) {
+    public List<Claim> getByDefendantId(@PathVariable("defendantId") final String defendantId) {
         return claimService.getClaimByDefendantId(defendantId);
     }
 
-    @PostMapping(value = "/{submitterId:\\d+}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new claim")
     public Claim save(@Valid @NotNull @RequestBody final ClaimData claimData,
-                      @PathVariable("submitterId") final Long submitterId,
+                      @PathVariable("submitterId") final String submitterId,
                       @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
         return claimService.saveClaim(submitterId, claimData, authorisation);
     }
 
-    @PutMapping("/{claimId:\\d+}/defendant/{defendantId:\\d+}")
+    @PutMapping("/{claimId:\\d+}/defendant/{defendantId}")
     @ApiOperation("Links defendant to existing claim")
     public Claim linkDefendantToClaim(@PathVariable("claimId") final Long claimId,
-                                      @PathVariable("defendantId") final Long defendantId) {
+                                      @PathVariable("defendantId") final String defendantId) {
         claimService.linkDefendantToClaim(claimId, defendantId);
         return claimService.getClaimById(claimId);
     }
