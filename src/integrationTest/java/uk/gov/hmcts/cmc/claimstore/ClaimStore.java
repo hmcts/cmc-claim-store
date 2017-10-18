@@ -27,10 +27,10 @@ public class ClaimStore {
     private JsonMapper jsonMapper;
 
     public Claim saveClaim(ClaimData claimData) {
-        return saveClaim(claimData, 1L, LocalDate.now());
+        return saveClaim(claimData, "1", LocalDate.now());
     }
 
-    public Claim saveClaim(ClaimData claimData, long submitterId, LocalDate responseDeadline) {
+    public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
         logger.info("Saving claim: " + claimData.getExternalId());
 
         Long claimId = this.claimRepository.saveSubmittedByClaimant(
@@ -51,10 +51,10 @@ public class ClaimStore {
     }
 
     public Claim saveResponse(long claimId, ResponseData responseData) {
-        return saveResponse(claimId, responseData, 1, SampleClaim.DEFENDANT_EMAIL);
+        return saveResponse(claimId, responseData, "1", SampleClaim.DEFENDANT_EMAIL);
     }
 
-    public Claim saveResponse(long claimId, ResponseData responseData, long defendantId, String defendantEmail) {
+    public Claim saveResponse(long claimId, ResponseData responseData, String defendantId, String defendantEmail) {
         logger.info("Saving response data with claim : " + claimId);
 
         this.claimRepository.saveDefendantResponse(

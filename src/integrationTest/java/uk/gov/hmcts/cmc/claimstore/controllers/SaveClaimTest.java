@@ -42,10 +42,10 @@ public class SaveClaimTest extends BaseIntegrationTest {
     @Before
     public void setup() {
         given(userService.getUserDetails("token"))
-            .willReturn(SampleUserDetails.builder().withUserId(1L).withMail("claimant@email.com").build());
+            .willReturn(SampleUserDetails.builder().withUserId("1").withMail("claimant@email.com").build());
 
         given(userService.generatePin("John Smith", "token"))
-            .willReturn(new GeneratePinResponse("my-pin", 2L));
+            .willReturn(new GeneratePinResponse("my-pin", "2"));
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});

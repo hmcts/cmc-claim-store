@@ -27,18 +27,18 @@ public interface ClaimRepository {
     List<Claim> findAll();
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
-    List<Claim> getBySubmitterId(@Bind("submitterId") Long submitterId);
+    List<Claim> getBySubmitterId(@Bind("submitterId") String submitterId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.letter_holder_id = :letterHolderId")
-    Optional<Claim> getByLetterHolderId(@Bind("letterHolderId") Long letterHolderId);
+    Optional<Claim> getByLetterHolderId(@Bind("letterHolderId") String letterHolderId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_id = :externalId")
     Optional<Claim> getClaimByExternalId(@Bind("externalId") String externalId);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :defendantId" + ORDER_BY_ID_DESCENDING)
-    List<Claim> getByDefendantId(@Bind("defendantId") Long defendantId);
+    List<Claim> getByDefendantId(@Bind("defendantId") String defendantId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
@@ -69,7 +69,7 @@ public interface ClaimRepository {
         + ")")
     Long saveRepresented(
         @Bind("claim") final String claim,
-        @Bind("submitterId") final Long submitterId,
+        @Bind("submitterId") final String submitterId,
         @Bind("issuedOn") final LocalDate issuedOn,
         @Bind("responseDeadline") final LocalDate responseDeadline,
         @Bind("externalId") final String externalId,
@@ -99,8 +99,8 @@ public interface ClaimRepository {
         + ")")
     Long saveSubmittedByClaimant(
         @Bind("claim") final String claim,
-        @Bind("submitterId") final Long submitterId,
-        @Bind("letterHolderId") final Long letterHolderId,
+        @Bind("submitterId") final String submitterId,
+        @Bind("letterHolderId") final String letterHolderId,
         @Bind("issuedOn") final LocalDate issuedOn,
         @Bind("responseDeadline") final LocalDate responseDeadline,
         @Bind("externalId") final String externalId,
@@ -112,7 +112,7 @@ public interface ClaimRepository {
     )
     Integer linkLetterHolder(
         @Bind("claimId") final Long claimId,
-        @Bind("letterHolderId") final Long letterHolderId
+        @Bind("letterHolderId") final String letterHolderId
     );
 
     @SqlUpdate(
@@ -120,7 +120,7 @@ public interface ClaimRepository {
     )
     Integer linkDefendant(
         @Bind("claimId") final Long claimId,
-        @Bind("defendantId") final Long defendantId
+        @Bind("defendantId") final String defendantId
     );
 
     @SqlUpdate(
@@ -142,7 +142,7 @@ public interface ClaimRepository {
     )
     void saveDefendantResponse(
         @Bind("claimId") final Long claimId,
-        @Bind("defendantId") final Long defendantId,
+        @Bind("defendantId") final String defendantId,
         @Bind("defendantEmail") final String defendantEmail,
         @Bind("response") final String response
     );

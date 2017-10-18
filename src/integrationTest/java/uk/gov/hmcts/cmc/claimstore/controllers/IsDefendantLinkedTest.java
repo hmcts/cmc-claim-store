@@ -18,7 +18,7 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinked() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
-        claimRepository.linkDefendant(claim.getId(), 1L);
+        claimRepository.linkDefendant(claim.getId(), "1");
 
         MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())

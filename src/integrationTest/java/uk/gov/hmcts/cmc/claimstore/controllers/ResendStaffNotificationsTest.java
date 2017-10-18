@@ -62,7 +62,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         final String event = "claim-issued";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.linkDefendant(claim.getId(), 2L);
+        claimRepository.linkDefendant(claim.getId(), "2");
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isConflict());
@@ -76,7 +76,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
 
-        final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", 333L);
+        final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
         given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 
@@ -134,7 +134,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         final String event = "response-submitted";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponseData.validDefaults(), 2L, "j.smith@example.com");
+        claimStore.saveResponse(claim.getId(), SampleResponseData.validDefaults(), "2", "j.smith@example.com");
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());

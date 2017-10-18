@@ -49,7 +49,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void searchBySubmitterIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        long submitterId = 1L;
+        String submitterId = "1";
 
         given(claimRepository.getBySubmitterId(submitterId)).willThrow(UNEXPECTED_ERROR);
 
@@ -60,7 +60,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void searchByDefendantIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        long defendantId = 1L;
+        String defendantId = "1";
 
         given(claimRepository.getByDefendantId(defendantId)).willThrow(UNEXPECTED_ERROR);
 
@@ -83,7 +83,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     @Test
     public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToUpdateClaim() throws Exception {
         long claimId = 1L;
-        long defendantId = 2L;
+        String defendantId = "2";
 
         given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.builder()
             .withClaimId(claimId)
@@ -132,7 +132,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void saveClaimShouldReturnConflictForDuplicateClaimFailures() throws Exception {
-        long claimantId = 1L;
+        String claimantId = "1";
 
         Exception duplicateKeyError = new UnableToExecuteStatementException(new PSQLException(
             "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
@@ -142,7 +142,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withMail("claimant@email.com")
             .build());
 
-        given(claimRepository.saveRepresented(anyString(), anyLong(), any(LocalDate.class),
+        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))
             .willThrow(duplicateKeyError);
 
@@ -158,10 +158,10 @@ public class EndpointErrorsTest extends MockSpringTest {
     @Test
     public void saveResponseShouldFailWhenDefendantResponseFailedStoring() throws Exception {
         long claimId = 1L;
-        long defendantId = 2L;
+        String defendantId = "2";
 
         given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.getDefault()));
-        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyLong(), anyLong(), anyString(),
+        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyLong(), anyString(), anyString(),
             anyString());
 
         webClient

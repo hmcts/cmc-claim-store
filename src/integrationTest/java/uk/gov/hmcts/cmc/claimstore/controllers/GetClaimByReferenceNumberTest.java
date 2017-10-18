@@ -15,6 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 public class GetClaimByReferenceNumberTest extends BaseIntegrationTest {
 
+    private static final String REFERENCE_NUMBER = "000MC001";
+    private static final String EXTERNAL_ID = "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d";
+
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());

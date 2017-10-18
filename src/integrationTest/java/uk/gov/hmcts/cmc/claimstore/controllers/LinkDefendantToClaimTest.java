@@ -17,7 +17,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
-        MvcResult result = makeRequest(claim.getId(), 1)
+        MvcResult result = makeRequest(claim.getId(), "1")
             .andExpect(status().isOk())
             .andReturn();
 
@@ -30,23 +30,11 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
         long nonExistingClaimId = 900;
 
-        makeRequest(nonExistingClaimId, 1)
+        makeRequest(nonExistingClaimId, "1")
             .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void shouldReturn404HttpStatusWhenClaimParameterIsNotNumber() throws Exception {
-        makeRequest("not-a-number", 1)
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void shouldReturn404HttpStatusWhenDefendantParameterIsNotNumber() throws Exception {
-        makeRequest(1, "not-a-number")
-            .andExpect(status().isNotFound());
-    }
-
-    private ResultActions makeRequest(Object claimId, Object defendantId) throws Exception {
+    private ResultActions makeRequest(Object claimId, String defendantId) throws Exception {
         return webClient
             .perform(put("/claims/" + claimId + "/defendant/" + defendantId));
     }

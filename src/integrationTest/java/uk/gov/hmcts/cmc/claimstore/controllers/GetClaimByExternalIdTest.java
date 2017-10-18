@@ -30,12 +30,6 @@ public class GetClaimByExternalIdTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturn404HttpStatusWhenExternalIdParamIsNotValid() throws Exception {
-        makeRequest("not-a-valid-uuid")
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
     public void shouldReturn404HttpStatusWhenNoClaimFound() throws Exception {
         String nonExistingExternalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 

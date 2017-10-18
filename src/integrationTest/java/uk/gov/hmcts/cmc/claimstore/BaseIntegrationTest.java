@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @ActiveProfiles(profiles = "integration-tests", inheritProfiles = false)
 public abstract class BaseIntegrationTest extends MockSpringTest {
 
-    protected static final Long SUBMITTER_ID = 123L;
-    protected static final Long DEFENDANT_ID = 555L;
+    protected static final String SUBMITTER_ID = "123";
+    protected static final String DEFENDANT_ID = "555";
 
     @ClassRule
     public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:9.6")

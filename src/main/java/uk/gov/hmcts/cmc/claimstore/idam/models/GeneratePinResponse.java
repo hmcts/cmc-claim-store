@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class GeneratePinResponse {
 
     private final String pin;
-    private final Long userId;
+    private final String userId;
 
-    public GeneratePinResponse(@JsonProperty("pin") final String pin, @JsonProperty("userId") final Long userId) {
+    public GeneratePinResponse(@JsonProperty("pin") final String pin, @JsonProperty("userId") final String userId) {
         this.pin = pin;
         this.userId = userId;
     }
@@ -16,7 +16,7 @@ public class GeneratePinResponse {
         return pin;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 }

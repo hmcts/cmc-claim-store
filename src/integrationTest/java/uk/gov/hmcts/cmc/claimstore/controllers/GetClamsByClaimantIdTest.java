@@ -17,7 +17,7 @@ public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
-        long submitterId = 1L;
+        String submitterId = "1";
 
         claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 
@@ -32,7 +32,7 @@ public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
-        long nonExistingSubmitterId = 900L;
+        String nonExistingSubmitterId = "900";
 
         MvcResult result = makeRequest(nonExistingSubmitterId)
             .andExpect(status().isOk())
@@ -40,12 +40,6 @@ public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
 
         assertThat(deserializeListFrom(result))
             .isEmpty();
-    }
-
-    @Test
-    public void shouldReturn404HttpStatusWhenClaimantIdParameterIsNotNumber() throws Exception {
-        makeRequest("not-a-number")
-            .andExpect(status().isNotFound());
     }
 
     private ResultActions makeRequest(Object submitterId) throws Exception {

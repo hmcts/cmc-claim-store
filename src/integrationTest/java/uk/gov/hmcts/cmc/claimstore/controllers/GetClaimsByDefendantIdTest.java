@@ -15,7 +15,7 @@ public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
-        long defendantId = 1L;
+        String defendantId = "1";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimRepository.linkDefendant(claim.getId(), defendantId);
@@ -31,7 +31,7 @@ public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
-        long nonExistingDefendantId = 900L;
+        String nonExistingDefendantId = "900";
 
         MvcResult result = makeRequest(nonExistingDefendantId)
             .andExpect(status().isOk())
@@ -41,13 +41,7 @@ public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
             .isEmpty();
     }
 
-    @Test
-    public void shouldReturn404HttpStatusWhenDefendantParameterIsNotNumber() throws Exception {
-        makeRequest("not-a-number")
-            .andExpect(status().isNotFound());
-    }
-
-    private ResultActions makeRequest(Object defendantId) throws Exception {
+    private ResultActions makeRequest(String defendantId) throws Exception {
         return webClient
             .perform(get("/claims/defendant/" + defendantId));
     }

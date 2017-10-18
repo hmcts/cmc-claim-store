@@ -46,7 +46,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnNewlyCreatedDefendantResponse() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 
@@ -62,7 +62,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 
@@ -77,7 +77,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 
@@ -90,7 +90,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnInternalServerErrorWhenStaffNotificationFails() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         ResponseData responseData = SampleResponseData.validDefaults();
 
@@ -103,7 +103,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldFailForEmptyDefence() throws Exception {
         long anyClaimId = 500;
-        long anyDefendantId = 500;
+        String anyDefendantId = "500";
         ResponseData responseData = SampleResponseData.builder()
             .withDefence("")
             .build();
@@ -117,7 +117,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .contains("defence : may not be empty");
     }
 
-    private ResultActions makeRequest(long claimId, long defendantId, ResponseData responseData) throws Exception {
+    private ResultActions makeRequest(long claimId, String defendantId, ResponseData responseData) throws Exception {
         return webClient
             .perform(post("/responses/claim/" + claimId + "/defendant/" + defendantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")

@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     private static final String AUTH_TOKEN = "it's me!";
+    private static final String DEFENDANT_ID = "100";
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withUserId(DEFENDANT_ID)
@@ -117,7 +118,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), 1L, responseDeadlineInThePast);
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", responseDeadlineInThePast);
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
 
         makeRequest(claim.getId())
