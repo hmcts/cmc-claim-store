@@ -38,10 +38,14 @@ public class SettlementTest {
     @Test
     public void getLastStatementShouldReturnLastStatement() {
         Offer offer = SampleOffer.validDefaults();
+        Offer counterOffer = SampleOffer.builder()
+            .withContent("Get me a new roof instead")
+            .build();
 
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.makeOffer(counterOffer, MadeBy.CLAIMANT);
 
-        assertThat(settlement.getLastStatement().getOffer().get()).isEqualTo(offer);
+        assertThat(settlement.getLastStatement().getOffer().get()).isEqualTo(counterOffer);
     }
 
     @Test(expected = IllegalStateException.class)

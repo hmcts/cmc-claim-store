@@ -50,13 +50,14 @@ public class SettlementMakeOfferTest {
     }
 
     @Test
-    public void shouldAllowToMakeACounterOffer() {
+    public void shouldAllowToMakeACounterOffers() {
         Offer offer = SampleOffer.validDefaults();
 
         settlement.makeOffer(offer, MadeBy.CLAIMANT);
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
 
-        assertThat(settlement.getPartyStatements()).hasSize(2);
+        assertThat(settlement.getPartyStatements()).hasSize(3);
     }
 
 }
