@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GetClamsByClaimantIdTest extends BaseIntegrationTest {
+public class GetClaimsByClaimantIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {

@@ -52,7 +52,7 @@ public class DbConfiguration {
     public TestingSupportRepository testingSupportRepository(DBI dbi) {
         return dbi.onDemand(TestingSupportRepository.class);
     }
-    
+
     @Bean
     public OffersRepository offersRepository(DBI dbi) {
         return dbi.onDemand(OffersRepository.class);
