@@ -34,6 +34,27 @@ import javax.sql.DataSource;
 @ActiveProfiles("unit-tests")
 public abstract class MockSpringTest {
 
+    @Autowired
+    protected JsonMapper jsonMapper;
+
+    @Autowired
+    protected ClaimRepository claimRepository;
+
+    @MockBean
+    protected UserService userService;
+
+    @MockBean
+    protected PublicHolidaysCollection holidaysCollection;
+
+    @MockBean
+    protected NotificationClient notificationClient;
+
+    @MockBean
+    protected EmailService emailService;
+
+    @MockBean
+    protected PDFServiceClient pdfServiceClient;
+
     @TestConfiguration
     @Profile("unit-tests")
     static class MockedDatabaseConfiguration {
@@ -58,36 +79,16 @@ public abstract class MockSpringTest {
 
                 @Override
                 public void commit(TransactionStatus status) throws TransactionException {
-
+                    // NO-OP
                 }
 
                 @Override
                 public void rollback(TransactionStatus status) throws TransactionException {
-
+                    // NO-OP
                 }
             };
         }
     }
 
-    @Autowired
-    protected JsonMapper jsonMapper;
-
-    @Autowired
-    protected ClaimRepository claimRepository;
-
-    @MockBean
-    protected UserService userService;
-
-    @MockBean
-    protected PublicHolidaysCollection holidaysCollection;
-
-    @MockBean
-    protected NotificationClient notificationClient;
-
-    @MockBean
-    protected EmailService emailService;
-
-    @MockBean
-    protected PDFServiceClient pdfServiceClient;
 
 }

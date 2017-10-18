@@ -24,18 +24,6 @@ import java.util.stream.Collectors;
 @ActiveProfiles(profiles = "integration-tests", inheritProfiles = false)
 public abstract class BaseIntegrationTest extends MockSpringTest {
 
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            EnvironmentTestUtils.addEnvironment(configurableApplicationContext.getEnvironment(),
-                "CLAIM_STORE_DB_HOST=" + postgres.getContainerIpAddress(),
-                "CLAIM_STORE_DB_PORT=" + postgres.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
-                "CLAIM_STORE_DB_USERNAME=" + postgres.getUsername(),
-                "CLAIM_STORE_DB_PASSWORD=" + postgres.getPassword()
-            );
-        }
-    }
-
     protected static final Long SUBMITTER_ID = 123L;
     protected static final Long DEFENDANT_ID = 555L;
 
@@ -48,6 +36,18 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
 
     @Autowired
     protected ClaimStore claimStore;
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            EnvironmentTestUtils.addEnvironment(configurableApplicationContext.getEnvironment(),
+                "CLAIM_STORE_DB_HOST=" + postgres.getContainerIpAddress(),
+                "CLAIM_STORE_DB_PORT=" + postgres.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
+                "CLAIM_STORE_DB_USERNAME=" + postgres.getUsername(),
+                "CLAIM_STORE_DB_PASSWORD=" + postgres.getPassword()
+            );
+        }
+    }
 
     protected List<String> extractErrors(MvcResult result) throws UnsupportedEncodingException {
         return Arrays.stream(result.getResponse()
