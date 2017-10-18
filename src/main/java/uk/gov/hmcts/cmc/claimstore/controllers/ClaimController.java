@@ -83,7 +83,7 @@ public class ClaimController {
         return claimService.getClaimByExternalReference(externalReference, submitterId);
     }
 
-    @GetMapping("/defendant/{defendantId:\\d+}")
+    @GetMapping("/defendant/{defendantId}")
     @ApiOperation("Fetch claims linked to given defendant id")
     public List<Claim> getByDefendantId(@PathVariable("defendantId") final String defendantId) {
         return claimService.getClaimByDefendantId(defendantId);
