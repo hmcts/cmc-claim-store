@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
@@ -23,10 +23,10 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class CCJStaffNotificationServiceTest extends BaseTest {
+public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
     @Autowired
-    CCJStaffNotificationService service;
+    private CCJStaffNotificationService service;
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 

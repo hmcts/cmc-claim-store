@@ -1,59 +1,44 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
-import uk.gov.hmcts.cmc.claimstore.BaseTest;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
-import java.util.Optional;
+import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GetClaimByExternalIdTest extends BaseTest {
-
-    private static final String EXTERNAL_ID = "067e6162-3b6f-4ae2-a171-2470b63dff00";
+public class GetClaimByExternalIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
+        UUID externalId = UUID.randomUUID();
 
-        given(claimRepository.getClaimByExternalId(EXTERNAL_ID))
-            .willReturn(Optional.of(newClaim(EXTERNAL_ID)));
+        claimStore.saveClaim(SampleClaimData.builder().withExternalId(externalId).build());
 
-        webClient
-            .perform(get("/claims/" + EXTERNAL_ID))
+        MvcResult result = makeRequest(externalId.toString())
             .andExpect(status().isOk())
             .andReturn();
+
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getExternalId).containsExactly(externalId.toString());
     }
 
     @Test
     public void shouldReturn404HttpStatusWhenNoClaimFound() throws Exception {
+        String nonExistingExternalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(claimRepository.getClaimByExternalId(eq(EXTERNAL_ID))).willReturn(Optional.empty());
-
-        webClient
-            .perform(get("/claims/" + EXTERNAL_ID))
-            .andExpect(status().isNotFound())
-            .andReturn();
+        makeRequest(nonExistingExternalId)
+            .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void shouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-
-        given(claimRepository.getClaimByExternalId(EXTERNAL_ID))
-            .willThrow(new UnableToExecuteStatementException("Unexpected error", (StatementContext) null));
-
-        webClient
-            .perform(get("/claims/" + EXTERNAL_ID))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
-    }
-
-    private Claim newClaim(String externalId) {
-        return SampleClaim.builder().withExternalId(externalId).build();
+    private ResultActions makeRequest(String externalId) throws Exception {
+        return webClient
+            .perform(get("/claims/" + externalId));
     }
 }

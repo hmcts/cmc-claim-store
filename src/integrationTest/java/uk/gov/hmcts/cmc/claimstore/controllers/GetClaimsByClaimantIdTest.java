@@ -7,33 +7,34 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
+public class GetClaimsByClaimantIdTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
-        String defendantId = "1";
+        String submitterId = "1";
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.linkDefendant(claim.getId(), defendantId);
+        claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 
-        MvcResult result = makeRequest(defendantId)
+        MvcResult result = makeRequest(submitterId)
             .andExpect(status().isOk())
             .andReturn();
 
         assertThat(deserializeListFrom(result))
             .hasSize(1).first()
-            .extracting(Claim::getDefendantId).containsExactly(defendantId);
+            .extracting(Claim::getSubmitterId).containsExactly(submitterId);
     }
 
     @Test
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
-        String nonExistingDefendantId = "900";
+        String nonExistingSubmitterId = "900";
 
-        MvcResult result = makeRequest(nonExistingDefendantId)
+        MvcResult result = makeRequest(nonExistingSubmitterId)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -41,8 +42,8 @@ public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
             .isEmpty();
     }
 
-    private ResultActions makeRequest(String defendantId) throws Exception {
+    private ResultActions makeRequest(Object submitterId) throws Exception {
         return webClient
-            .perform(get("/claims/defendant/" + defendantId));
+            .perform(get("/claims/claimant/" + submitterId));
     }
 }
