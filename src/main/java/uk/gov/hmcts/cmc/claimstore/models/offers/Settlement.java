@@ -17,7 +17,7 @@ public class Settlement {
     }
 
     @JsonIgnore
-    public PartyStatement getLastStatement() {
+    PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
             throw new IllegalStateException("No statements have yet been made during that settlement");
         }
@@ -29,12 +29,12 @@ public class Settlement {
     }
 
     private void assertOfferCanBeMadeBy(MadeBy party) {
-        if (!partyStatements.isEmpty() && offerHasAlreadyBeenMadeBy(party)) {
+        if (!partyStatements.isEmpty() && lastStatementIsAnOfferMadeBy(party)) {
             throw new IllegalSettlementStatementException("You cannot make multiple offers in a row");
         }
     }
 
-    private boolean offerHasAlreadyBeenMadeBy(MadeBy madeBy) {
+    private boolean lastStatementIsAnOfferMadeBy(MadeBy madeBy) {
         return getLastStatement().getType().equals(StatementType.OFFER)
             && getLastStatement().getMadeBy().equals(madeBy);
     }
