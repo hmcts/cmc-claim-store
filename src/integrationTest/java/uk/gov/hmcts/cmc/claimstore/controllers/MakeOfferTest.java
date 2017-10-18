@@ -29,7 +29,7 @@ public class MakeOfferTest extends BaseTest {
 
     private static final Long CLAIM_ID = 12344321L;
     private static final String DEFENDANT_ID = "43211234";
-    private static final String AUTH_TOKEN = "authDataString";
+    private static final String DEFENDANT_AUTH_TOKEN = "authDataString";
 
     @SpyBean
     private OffersService offersService;
@@ -42,7 +42,7 @@ public class MakeOfferTest extends BaseTest {
                 .build()
         ));
 
-        when(userService.getUserDetails(AUTH_TOKEN)).thenReturn(
+        when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(
             SampleUserDetails.builder()
                 .withUserId(DEFENDANT_ID)
                 .build()
@@ -51,34 +51,34 @@ public class MakeOfferTest extends BaseTest {
 
     @Test
     public void shouldAcceptValidOfferByDefendantAndReturnCreatedStatus() throws Exception {
-        makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
+        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
             .andExpect(status().isCreated())
             .andReturn();
     }
 
     @Test
     public void shouldReturnBadRequestIfPartyIsIncorrectlySpecified() throws Exception {
-        makeOffer(SampleOffer.validDefaults(), "I'm not a valid enum value")
+        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), "I'm not a valid enum value")
             .andExpect(status().isBadRequest())
             .andReturn();
     }
 
     @Test
     public void shouldReturnForbiddenIfUserIsNotPartyOnClaim() throws Exception {
-        when(userService.getUserDetails(AUTH_TOKEN)).thenReturn(
+        when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(
             SampleUserDetails.builder()
-                .withUserId("-300")
+                .withUserId("Not an ID on the claim")
                 .build()
         );
 
-        makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
+        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
             .andExpect(status().isForbidden())
             .andReturn();
     }
 
     @Test
     public void shouldReturnForbiddenIfUserIsPartyOnClaimButClaimsToBeOppositeParty() throws Exception {
-        makeOffer(SampleOffer.validDefaults(), MadeBy.CLAIMANT.name())
+        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), MadeBy.CLAIMANT.name())
             .andExpect(status().isForbidden())
             .andReturn();
     }
@@ -89,16 +89,16 @@ public class MakeOfferTest extends BaseTest {
         doThrow(new IllegalSettlementStatementException("Invalid statement was mode"))
             .when(offersService).makeOffer(any(Claim.class), eq(offer), eq(MadeBy.DEFENDANT));
 
-        makeOffer(offer, MadeBy.DEFENDANT.name())
+        makeOffer(DEFENDANT_AUTH_TOKEN, offer, MadeBy.DEFENDANT.name())
             .andExpect(status().isBadRequest())
             .andReturn();
     }
 
-    private ResultActions makeOffer(Offer offer, String party) throws Exception {
+    private ResultActions makeOffer(String authToken, Offer offer, String party) throws Exception {
         return webClient
             .perform(post(format("/claims/%d/offers/%s", CLAIM_ID, party))
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, authToken)
                 .content(jsonMapper.toJson(offer))
             );
     }
