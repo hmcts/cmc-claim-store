@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -73,7 +74,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "claim-issued";
 
-        final Claim claim = sampleClaim().setDefendantId(DEFENDANT_ID).build();
+        final Claim claim = sampleClaim().withDefendantId(DEFENDANT_ID).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient
@@ -90,7 +91,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "claim-issued";
 
-        final Claim claim = sampleClaim(SampleClaimData.submittedByClaimant()).setDefendantId(null).build();
+        final Claim claim = sampleClaim(SampleClaimData.submittedByClaimant()).withDefendantId(null).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
@@ -114,7 +115,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "more-time-requested";
 
-        final Claim claim = sampleClaim().setMoreTimeRequested(false).build();
+        final Claim claim = sampleClaim().withMoreTimeRequested(false).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient
@@ -130,7 +131,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "more-time-requested";
 
-        final Claim claim = sampleClaim().setMoreTimeRequested(true).build();
+        final Claim claim = sampleClaim().withMoreTimeRequested(true).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient
@@ -147,7 +148,7 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String claimReference = "000MC001";
         final String event = "response-submitted";
 
-        final Claim claim = sampleClaim().setRespondedAt(LocalDateTime.now()).build();
+        final Claim claim = sampleClaim().withRespondedAt(LocalDateTime.now()).build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient
@@ -164,10 +165,10 @@ public class ResendStaffNotificationsTest extends BaseTest {
         final String event = "response-submitted";
 
         final Claim claim = sampleClaim()
-            .setDefendantEmail("j.smith@example.com")
-            .setResponse(
-                SampleResponseData.validDefaults()).setRespondedAt(LocalDateTime.now()
-            ).build();
+            .withDefendantEmail("j.smith@example.com")
+            .withResponse(SampleResponseData.validDefaults())
+            .withRespondedAt(LocalDateTime.now())
+            .build();
         given(claimRepository.getByClaimReferenceNumber(claimReference)).willReturn(Optional.of(claim));
 
         webClient
@@ -192,24 +193,24 @@ public class ResendStaffNotificationsTest extends BaseTest {
             .header(HttpHeaders.AUTHORIZATION, "ABC123");
     }
 
-    private Claim.Builder sampleClaim() {
+    private SampleClaim sampleClaim() {
         return sampleClaim(null);
     }
 
-    private Claim.Builder sampleClaim(final ClaimData claimData) {
-        return new Claim.Builder()
-            .setId(CLAIM_ID)
-            .setExternalId(null)
-            .setSubmitterId(SUBMITTER_ID)
-            .setSubmitterEmail(SUBMITTER_EMAIL)
-            .setLetterHolderId(LETTER_HOLDER_ID)
-            .setDefendantId(DEFENDANT_ID)
-            .setReferenceNumber(REFERENCE_NUMBER)
-            .setClaimData(Optional.ofNullable(claimData).orElse(SampleClaimData.validDefaults()))
-            .setIssuedOn(LocalDate.now())
-            .setCreatedAt(LocalDateTime.now())
-            .setResponseDeadline(LocalDate.now())
-            .setMoreTimeRequested(false)
-            .setRespondedAt(null);
+    private SampleClaim sampleClaim(final ClaimData claimData) {
+        return SampleClaim.builder()
+            .withClaimId(CLAIM_ID)
+            .withExternalId(null)
+            .withSubmitterId(SUBMITTER_ID)
+            .withSubmitterEmail(SUBMITTER_EMAIL)
+            .withLetterHolderId(LETTER_HOLDER_ID)
+            .withDefendantId(DEFENDANT_ID)
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withClaimData(Optional.ofNullable(claimData).orElse(SampleClaimData.validDefaults()))
+            .withIssuedOn(LocalDate.now())
+            .withCreatedAt(LocalDateTime.now())
+            .withResponseDeadline(LocalDate.now())
+            .withMoreTimeRequested(false)
+            .withRespondedAt(null);
     }
 }
