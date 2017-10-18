@@ -50,7 +50,6 @@ public class ClaimServiceTest {
     private static final String VALID_DEFENDANT_TOKEN = "this is valid token for defendant";
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INVALID_DEFENDANT_TOKEN = "You shall not pass!";
-    private static final String EXTERNAL_REFERENCE = "Ref123";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
 
     private static final UserDetails validDefendant
@@ -255,7 +254,8 @@ public class ClaimServiceTest {
             null,
             null,
             null,
-            EXTERNAL_REFERENCE
+            null,
+            null
         );
     }
 
@@ -278,7 +278,8 @@ public class ClaimServiceTest {
             null,
             null,
             null,
-            EXTERNAL_REFERENCE
+            null,
+            null
         );
     }
 }

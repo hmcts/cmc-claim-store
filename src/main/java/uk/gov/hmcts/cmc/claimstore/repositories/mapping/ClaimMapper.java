@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 
 import java.sql.ResultSet;
@@ -37,7 +38,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getString("defendant_email"),
             toNullableCountyCourtJudgment(result.getString("county_court_judgment")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at")),
-            result.getString("external_reference")
+            toNullableSettlement(result.getString("settlement")),
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at"))
         );
     }
 
@@ -52,4 +54,17 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {
         return input != null ? jsonMapper.fromJson(input, CountyCourtJudgment.class) : null;
     }
+
+    private Settlement toNullableSettlement(String input) {
+        return toNullableEntity(input, Settlement.class);
+    }
+
+    private <T> T toNullableEntity(String input, Class<T> entityClass) {
+        if (input == null) {
+            return null;
+        } else {
+            return jsonMapper.fromJson(input, entityClass);
+        }
+    }
+
 }

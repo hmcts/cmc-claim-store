@@ -74,6 +74,7 @@ public class ClaimTest {
             null, null,
             null,
             null,
+            null,
             null);
     }
 }

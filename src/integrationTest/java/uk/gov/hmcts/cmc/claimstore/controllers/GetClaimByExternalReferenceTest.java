@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.cmc.claimstore.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -20,9 +22,9 @@ public class GetClaimByExternalReferenceTest extends BaseTest {
 
     private static final String EXTERNAL_REFERENCE = "Ref123";
 
-    private final Claim claim = new Claim.Builder().setId(1L).setSubmitterId(SUBMITTER_ID)
-        .setReferenceNumber(EXTERNAL_REFERENCE)
-        .build();
+    private final Claim claim = SampleClaim.builder()
+        .withClaimData(SampleClaimData.builder().withExternalReferenceNumber(EXTERNAL_REFERENCE).build())
+        .withSubmitterId(SUBMITTER_ID).build();
 
     @Before
     public void setup() {

@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
@@ -24,7 +25,6 @@ public final class SampleClaim {
     public static final String DEFENDANT_ID = "4";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000CM001";
-    public static final String EXTERNAL_REFERENCE = "Ref123";
     public static final String EXTERNAL_ID = UUID.randomUUID().toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
@@ -48,6 +48,8 @@ public final class SampleClaim {
     private ClaimData claimData = SampleClaimData.validDefaults();
     private ResponseData response;
     private String defendantEmail;
+    private Settlement settlement = null;
+    private LocalDateTime settlementReachedAt = null;
 
     private SampleClaim() {
     }
@@ -97,7 +99,8 @@ public final class SampleClaim {
             null,
             null,
             null,
-            EXTERNAL_REFERENCE
+            null,
+            null
         );
     }
 
@@ -146,7 +149,8 @@ public final class SampleClaim {
             defendantEmail,
             countyCourtJudgment,
             countyCourtJudgmentRequestedAt,
-            EXTERNAL_REFERENCE);
+            settlement,
+            settlementReachedAt);
     }
 
     public SampleClaim withSubmitterId(String userId) {

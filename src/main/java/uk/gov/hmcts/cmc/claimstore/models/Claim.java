@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +33,8 @@ public class Claim {
     private final String defendantEmail;
     private final CountyCourtJudgment countyCourtJudgment;
     private final LocalDateTime countyCourtJudgmentRequestedAt;
-    private final String externalReferenceNumber;
+    private final Settlement settlement;
+    private final LocalDateTime settlementReachedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -53,7 +55,8 @@ public class Claim {
         final String defendantEmail,
         final CountyCourtJudgment countyCourtJudgment,
         final LocalDateTime countyCourtJudgmentRequestedAt,
-        final String externalReferenceNumber
+        final Settlement settlement,
+        final LocalDateTime settlementReachedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -72,7 +75,8 @@ public class Claim {
         this.defendantEmail = defendantEmail;
         this.countyCourtJudgment = countyCourtJudgment;
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
-        this.externalReferenceNumber = externalReferenceNumber;
+        this.settlement = settlement;
+        this.settlementReachedAt = settlementReachedAt;
     }
 
     public Long getId() {
@@ -143,8 +147,12 @@ public class Claim {
         return countyCourtJudgmentRequestedAt;
     }
 
-    public String getExternalReferenceNumber() {
-        return externalReferenceNumber;
+    public Optional<Settlement> getSettlement() {
+        return Optional.ofNullable(settlement);
+    }
+
+    public LocalDateTime getSettlementReachedAt() {
+        return settlementReachedAt;
     }
 
     @Override
@@ -174,7 +182,8 @@ public class Claim {
             && Objects.equals(defendantEmail, claim.defendantEmail)
             && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
             && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
-            && Objects.equals(externalReferenceNumber, claim.externalReferenceNumber);
+            && Objects.equals(settlement, claim.settlement)
+            && Objects.equals(settlementReachedAt, claim.settlementReachedAt);
     }
 
     @Override
@@ -182,132 +191,13 @@ public class Claim {
         return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
             claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
             respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
-            externalReferenceNumber
+            settlement, settlementReachedAt
         );
-    }
-
-    public static class Builder {
-        private Long id;
-        private String externalId;
-        private String submitterId;
-        private String submitterEmail;
-        private String letterHolderId;
-        private String defendantId;
-        private String referenceNumber;
-        private ClaimData claimData;
-        private LocalDate issuedOn;
-        private LocalDateTime createdAt;
-        private LocalDate responseDeadline;
-        private boolean moreTimeRequested;
-        private LocalDateTime respondedAt;
-        private ResponseData response;
-        private String defendantEmail;
-        private CountyCourtJudgment countyCourtJudgment;
-        private LocalDateTime countyCourtJudgmentRequestedAt;
-        private String externalReferenceNumber;
-
-        public Builder setId(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder setExternalId(String externalId) {
-            this.externalId = externalId;
-            return this;
-        }
-
-        public Builder setSubmitterId(String submitterId) {
-            this.submitterId = submitterId;
-            return this;
-        }
-
-        public Builder setSubmitterEmail(String submitterEmail) {
-            this.submitterEmail = submitterEmail;
-            return this;
-        }
-
-        public Builder setLetterHolderId(String letterHolderId) {
-            this.letterHolderId = letterHolderId;
-            return this;
-        }
-
-        public Builder setDefendantId(String defendantId) {
-            this.defendantId = defendantId;
-            return this;
-        }
-
-        public Builder setReferenceNumber(String referenceNumber) {
-            this.referenceNumber = referenceNumber;
-            return this;
-        }
-
-        public Builder setClaimData(ClaimData claimData) {
-            this.claimData = claimData;
-            return this;
-        }
-
-        public Builder setIssuedOn(LocalDate issuedOn) {
-            this.issuedOn = issuedOn;
-            return this;
-        }
-
-        public Builder setCreatedAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder setResponseDeadline(LocalDate responseDeadline) {
-            this.responseDeadline = responseDeadline;
-            return this;
-        }
-
-        public Builder setMoreTimeRequested(boolean moreTimeRequested) {
-            this.moreTimeRequested = moreTimeRequested;
-            return this;
-        }
-
-        public Builder setRespondedAt(LocalDateTime respondedAt) {
-            this.respondedAt = respondedAt;
-            return this;
-        }
-
-        public Builder setResponse(ResponseData response) {
-            this.response = response;
-            return this;
-        }
-
-        public Builder setDefendantEmail(String defendantEmail) {
-            this.defendantEmail = defendantEmail;
-            return this;
-        }
-
-        public Builder setCountyCourtJudgment(CountyCourtJudgment countyCourtJudgment) {
-            this.countyCourtJudgment = countyCourtJudgment;
-            return this;
-        }
-
-        public Builder setCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
-            this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
-            return this;
-        }
-
-        public Builder setExternalReferenceNumber(String externalReferenceNumber) {
-            this.externalReferenceNumber = externalReferenceNumber;
-            return this;
-        }
-
-        public Claim build() {
-            return new Claim(
-                id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
-                claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested,
-                submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment,
-                countyCourtJudgmentRequestedAt, externalReferenceNumber
-            );
-        }
     }
 
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
+
 }
