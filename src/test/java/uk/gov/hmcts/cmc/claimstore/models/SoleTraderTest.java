@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.models;
 
-
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
