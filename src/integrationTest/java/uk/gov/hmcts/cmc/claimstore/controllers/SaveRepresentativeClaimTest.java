@@ -69,7 +69,8 @@ public class SaveRepresentativeClaimTest extends BaseTest {
         RESPONSE_DEADLINE,
         DEADLINE_NOT_UPDATED,
         SUBMITTER_EMAIL,
-        null, null, null ,null, null, null);
+        null, null, null, null, null,
+        null);
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
@@ -77,7 +78,7 @@ public class SaveRepresentativeClaimTest extends BaseTest {
     @Before
     public void setup() throws NotificationClientException {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
+            .willReturn(new byte[] {1, 2, 3, 4});
 
         given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))

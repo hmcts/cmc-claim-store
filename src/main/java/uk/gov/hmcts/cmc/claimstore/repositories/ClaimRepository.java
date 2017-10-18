@@ -47,8 +47,8 @@ public interface ClaimRepository {
     Optional<Claim> getByClaimReferenceAndSubmitter(@Bind("claimReferenceNumber") String claimReferenceNumber,
                                                     @Bind("submitterId") String submitterId);
 
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_reference = :externalReference "
-        + "AND claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId "
+        + " AND claim.claim ->>'externalReferenceNumber' = :claimReferenceNumber" + ORDER_BY_ID_DESCENDING)
     List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
                                        @Bind("submitterId") String submitterId);
 
