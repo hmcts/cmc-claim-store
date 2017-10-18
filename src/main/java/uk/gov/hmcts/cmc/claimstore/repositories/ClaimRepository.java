@@ -35,7 +35,7 @@ public interface ClaimRepository {
     Optional<Claim> getClaimByExternalId(@Bind("externalId") String externalId);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :defendantId" + ORDER_BY_ID_DESCENDING)
-    List<Claim> getByDefendantId(@Bind("defendantId") Long defendantId);
+    List<Claim> getByDefendantId(@Bind("defendantId") String defendantId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")

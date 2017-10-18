@@ -20,7 +20,7 @@ public class LinkDefendantToClaimTest extends BaseTest {
     @Test
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
         Long claimId = 1L;
-        Long defendantId = 2L;
+        String defendantId = "2";
 
         given(claimRepository.getById(claimId))
             .willReturn(Optional.of(newClaim(claimId, null)))
@@ -79,7 +79,7 @@ public class LinkDefendantToClaimTest extends BaseTest {
     @Test
     public void shouldReturn500HttpStatusWhenFailedToMakeLink() throws Exception {
         Long claimId = 1L;
-        Long defendantId = 2L;
+        String defendantId = "2";
 
         given(claimRepository.getById(claimId)).willReturn(Optional.of(newClaim(claimId, null)));
         given(claimRepository.linkDefendant(claimId, defendantId))
@@ -91,7 +91,7 @@ public class LinkDefendantToClaimTest extends BaseTest {
             .andReturn();
     }
 
-    private Claim newClaim(long claimId, Long defendantId) {
+    private Claim newClaim(long claimId, String defendantId) {
         return SampleClaim.builder().withClaimId(claimId).withDefendantId(defendantId).build();
     }
 }

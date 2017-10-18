@@ -59,7 +59,7 @@ public class ClaimController {
 
     @GetMapping("/defendant/{defendantId}")
     @ApiOperation("Fetch claims linked to given defendant id")
-    public List<Claim> getByDefendantId(@PathVariable("defendantId") final Long defendantId) {
+    public List<Claim> getByDefendantId(@PathVariable("defendantId") final String defendantId) {
         return claimService.getClaimByDefendantId(defendantId);
     }
 

@@ -20,7 +20,6 @@ import java.util.Optional;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -37,9 +36,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.RESPONSE_DEADLINE;
 public class SaveClaimantClaimTest extends BaseTest {
 
     private static final long CLAIM_ID = 1L;
-    private static final long CLAIMANT_ID = 123L;
+    private static final String CLAIMANT_ID = "123";
     private static final String LETTER_HOLDER_ID = "1";
-    private static final Long DEFENDANT_ID = 2L;
+    private static final String DEFENDANT_ID = "2";
     private static final String REFERENCE_NUMBER = "000MC001";
     private static final String PIN = "my-pin";
     private static final String EXTERNAL_ID = "external-id";
@@ -65,7 +64,7 @@ public class SaveClaimantClaimTest extends BaseTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
 
-        given(claimRepository.saveSubmittedByClaimant(anyString(), anyLong(), anyString(), any(LocalDate.class),
+        given(claimRepository.saveSubmittedByClaimant(anyString(), anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))
             .willReturn(CLAIM_ID);
 

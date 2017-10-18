@@ -18,7 +18,7 @@ public class GetClaimByReferenceNumberTest extends BaseTest {
     private static final String REFERENCE_NUMBER = "000MC001";
     private static final String EXTERNAL_ID = "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d";
 
-    private final Claim claim = new Claim.Builder().setId(1L).setSubmitterId(2L).setLetterHolderId("3")
+    private final Claim claim = new Claim.Builder().setId(1L).setSubmitterId("2").setLetterHolderId("3")
         .setExternalId(EXTERNAL_ID)
         .setReferenceNumber(REFERENCE_NUMBER)
         .build();

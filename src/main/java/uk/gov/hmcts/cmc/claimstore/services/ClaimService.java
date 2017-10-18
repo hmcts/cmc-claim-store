@@ -75,7 +75,7 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference);
     }
 
-    public List<Claim> getClaimByDefendantId(final long id) {
+    public List<Claim> getClaimByDefendantId(final String id) {
         return claimRepository.getByDefendantId(id);
     }
 
