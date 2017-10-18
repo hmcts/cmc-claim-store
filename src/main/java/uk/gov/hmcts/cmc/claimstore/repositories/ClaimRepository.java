@@ -23,6 +23,9 @@ public interface ClaimRepository {
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
         String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
+    @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
+    List<Claim> findAll();
+
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getBySubmitterId(@Bind("submitterId") String submitterId);
 
@@ -138,6 +141,21 @@ public interface ClaimRepository {
     void requestMoreTime(
         @Bind("claimId") final Long claimId,
         @Bind("responseDeadline") final LocalDate responseDeadline
+    );
+
+    @SqlUpdate(
+        "UPDATE CLAIM SET "
+            + "response = :response::JSONB, "
+            + "defendant_id = :defendantId, "
+            + "defendant_email = :defendantEmail, "
+            + "responded_at = now() AT TIME ZONE 'utc' "
+            + "WHERE id = :claimId"
+    )
+    void saveDefendantResponse(
+        @Bind("claimId") final Long claimId,
+        @Bind("defendantId") final String defendantId,
+        @Bind("defendantEmail") final String defendantEmail,
+        @Bind("response") final String response
     );
 
     @SqlUpdate("UPDATE claim SET "
