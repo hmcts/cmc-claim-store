@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -32,6 +33,7 @@ public class JsonMapperTest {
     public void shouldProcessClaimDataToJson() throws Exception {
         //given
         final ClaimData input = SampleClaimData.builder()
+            .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterestDate(SampleInterestDate.builder()
                 .withDate(LocalDate.of(2015, 2, 2))
                 .build())
@@ -68,6 +70,7 @@ public class JsonMapperTest {
 
         //then
         final ClaimData expected = SampleClaimData.builder()
+            .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterestDate(SampleInterestDate.builder()
                 .withDate(LocalDate.of(2015, 2, 2))
                 .build())
@@ -98,6 +101,7 @@ public class JsonMapperTest {
 
         //then
         final ClaimData expected = SampleClaimData.builder()
+            .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterestDate(
                 SampleInterestDate.builder()
                     .withDate(LocalDate.of(2015, 2, 2))
