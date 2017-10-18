@@ -32,7 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class RequestMoreTimeForResponseTest extends BaseTest {
 
     private static final String AUTH_TOKEN = "it's me!";
-    private static final long DEFENDANT_ID = 100L;
+    private static final String DEFENDANT_ID = "100";
     private static final LocalDate RESPONSE_DEADLINE = LocalDate.now().plusDays(10);
 
     private static final UserDetails USER_DETAILS

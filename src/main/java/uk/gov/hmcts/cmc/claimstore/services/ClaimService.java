@@ -54,11 +54,11 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
 
-    public List<Claim> getClaimBySubmitterId(final long submitterId) {
+    public List<Claim> getClaimBySubmitterId(final String submitterId) {
         return claimRepository.getBySubmitterId(submitterId);
     }
 
-    public Claim getClaimByLetterHolderId(final long id) {
+    public Claim getClaimByLetterHolderId(final String id) {
         return claimRepository
             .getByLetterHolderId(id)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
@@ -75,12 +75,12 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference);
     }
 
-    public List<Claim> getClaimByDefendantId(final long id) {
+    public List<Claim> getClaimByDefendantId(final String id) {
         return claimRepository.getByDefendantId(id);
     }
 
     @Transactional
-    public Claim saveClaim(final long submitterId, final ClaimData claimData, final String authorisation) {
+    public Claim saveClaim(final String submitterId, final ClaimData claimData, final String authorisation) {
         final String externalId = claimData.getExternalId().toString();
 
         claimRepository.getClaimByExternalId(externalId).ifPresent(claim -> {
@@ -94,7 +94,7 @@ public class ClaimService {
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 
-        final Optional<Long> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        final Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
         final LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
         final LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
         final UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -150,7 +150,7 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(Long claimId, Long defendantId) {
+    public void linkDefendantToClaim(Long claimId, String defendantId) {
         final Claim claim = claimRepository.getById(claimId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
 

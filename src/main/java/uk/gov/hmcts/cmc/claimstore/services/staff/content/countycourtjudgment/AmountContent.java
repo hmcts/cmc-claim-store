@@ -1,5 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
+
 public class AmountContent {
 
     private String totalAmount;
@@ -47,5 +51,10 @@ public class AmountContent {
 
     public String getRemainingAmount() {
         return remainingAmount;
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

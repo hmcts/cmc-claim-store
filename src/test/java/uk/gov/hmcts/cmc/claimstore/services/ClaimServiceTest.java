@@ -56,10 +56,10 @@ public class ClaimServiceTest {
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails invalidDefendant
-        = SampleUserDetails.builder().withUserId(-1L).withMail(DEFENDANT_EMAIL).build();
+        = SampleUserDetails.builder().withUserId("-1").withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails claimantDetails
-        = SampleUserDetails.builder().withUserId(11L).withMail(SUBMITTER_EMAIL).build();
+        = SampleUserDetails.builder().withUserId("11").withMail(SUBMITTER_EMAIL).build();
 
     private ClaimService claimService;
 
@@ -112,7 +112,7 @@ public class ClaimServiceTest {
     @Test
     public void getClaimByLetterHolderIdShouldCallRepositoryWhenValidClaimIsReturned() {
 
-        Long letterHolderId = 1L;
+        String letterHolderId = "1";
         Claim claim = createClaimModel(VALID_APP, letterHolderId);
         Optional<Claim> result = Optional.of(claim);
 
@@ -126,7 +126,7 @@ public class ClaimServiceTest {
     public void getClaimByLetterHolderIdShouldThrowExceptionWhenClaimDoesNotExist() {
 
         Optional<Claim> result = Optional.empty();
-        Long letterHolderId = 0L;
+        String letterHolderId = "0";
 
         when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
 
@@ -235,7 +235,7 @@ public class ClaimServiceTest {
         claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
     }
 
-    private static Claim createClaimModel(ClaimData claimData, Long letterHolderId) {
+    private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
         return new Claim(
             CLAIM_ID,
             USER_ID,

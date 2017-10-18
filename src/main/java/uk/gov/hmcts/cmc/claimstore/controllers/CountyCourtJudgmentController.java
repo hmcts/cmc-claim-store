@@ -43,7 +43,7 @@ public class CountyCourtJudgmentController {
         @NotNull @RequestBody @Valid final CountyCourtJudgment countyCourtJudgment,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
     ) {
-        final long submitterId = userService.getUserDetails(authorisation).getId();
+        final String submitterId = userService.getUserDetails(authorisation).getId();
         return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, claimId);
     }
 }
