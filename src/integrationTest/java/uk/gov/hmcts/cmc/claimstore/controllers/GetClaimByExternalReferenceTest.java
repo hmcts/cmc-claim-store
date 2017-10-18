@@ -1,62 +1,25 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-import uk.gov.hmcts.cmc.claimstore.BaseTest;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 
-import java.util.Collections;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GetClaimByExternalReferenceTest extends BaseTest {
-
-    private static final String EXTERNAL_REFERENCE = "Ref123";
-
-    private final Claim claim = SampleClaim.builder()
-        .withClaimData(SampleClaimData.builder().withExternalReferenceNumber(EXTERNAL_REFERENCE).build())
-        .withSubmitterId(SUBMITTER_ID).build();
-
-    @Before
-    public void setup() {
-        final UserDetails userDetails
-            = SampleUserDetails.builder().withUserId(SUBMITTER_ID).withMail("claimant@email.com").build();
-
-        given(userService.getUserDetails(anyString())).willReturn(userDetails);
-    }
+public class GetClaimByExternalReferenceTest extends BaseIntegrationTest {
 
     @Test
-    public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
+    public void shouldReturn404HttpStatusWhenNoClaimFound() throws Exception {
 
-        given(claimRepository.getByExternalReference(eq(EXTERNAL_REFERENCE), eq(SUBMITTER_ID)))
-            .willReturn(Collections.singletonList(claim));
+        String nonExistingExternalReferenceNumber = "999LR999";
 
-        webClient
-            .perform(get("/claims/representative/" + EXTERNAL_REFERENCE)
-                .header(HttpHeaders.AUTHORIZATION, "token"))
-            .andExpect(status().isOk())
-            .andReturn();
+        makeRequest(nonExistingExternalReferenceNumber)
+            .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void shouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
-
-        given(claimRepository.getByExternalReference(eq(EXTERNAL_REFERENCE), eq(SUBMITTER_ID)))
-            .willThrow(new RuntimeException("error"));
-
-        webClient
-            .perform(get("/claims/representative/" + EXTERNAL_REFERENCE)
-                .header(HttpHeaders.AUTHORIZATION, "token"))
-            .andExpect(status().isInternalServerError())
-            .andReturn();
+    private ResultActions makeRequest(String externalReferenceNumber) throws Exception {
+        return webClient
+            .perform(get("/representative/" + externalReferenceNumber));
     }
 }
