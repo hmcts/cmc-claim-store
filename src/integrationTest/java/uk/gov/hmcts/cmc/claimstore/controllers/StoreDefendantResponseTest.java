@@ -49,7 +49,7 @@ public class StoreDefendantResponseTest extends BaseTest {
     @Before
     public void setup() {
         given(claimRepository.saveRepresented(
-            anyString(), anyLong(), any(LocalDate.class), any(LocalDate.class), anyString(), anyString())
+            anyString(), anyString(), any(LocalDate.class), any(LocalDate.class), anyString(), anyString())
         ).willReturn(CLAIM_ID);
 
         given(claimRepository.getById(CLAIM_ID))
@@ -109,7 +109,7 @@ public class StoreDefendantResponseTest extends BaseTest {
     public void shouldFailAWhenDefendantResponseFailedStoring() throws Exception {
         //when
         willThrow(new DataAccessResourceFailureException("some failure"))
-            .given(defendantResponseRepository).save(anyLong(), anyLong(), anyString(), anyString());
+            .given(defendantResponseRepository).save(anyLong(), anyString(), anyString(), anyString());
 
         final MvcResult result = postDefence(SampleResponseData.validDefaults())
             .andExpect(status().isInternalServerError())

@@ -37,7 +37,7 @@ public class DefendantResponseController {
     @ApiOperation("Creates a new defendant response")
     public Claim save(
         @Valid @NotNull @RequestBody final ResponseData responseData,
-        @PathVariable("defendantId") final Long defendantId,
+        @PathVariable("defendantId") final String defendantId,
         @PathVariable("claimId") final Long claimId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorization
     ) {

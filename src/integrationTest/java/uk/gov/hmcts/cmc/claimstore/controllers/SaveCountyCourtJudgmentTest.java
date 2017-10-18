@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SaveCountyCourtJudgmentTest extends BaseTest {
 
     private static final long CLAIM_ID = 1L;
-    private static final long CLAIMANT_ID = 123L;
+    private static final String CLAIMANT_ID = "123";
 
     @Before
     public void setup() {
