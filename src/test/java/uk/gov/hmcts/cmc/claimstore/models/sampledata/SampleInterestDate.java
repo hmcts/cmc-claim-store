@@ -43,7 +43,7 @@ public class SampleInterestDate {
     }
 
     public InterestDate build() {
-        return new InterestDate(type, date ,reason);
+        return new InterestDate(type, date, reason);
     }
 
 }

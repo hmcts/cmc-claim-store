@@ -9,9 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.models.AmountRow;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 import javax.validation.ConstraintValidatorContext;
-
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
