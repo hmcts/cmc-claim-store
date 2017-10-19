@@ -70,7 +70,8 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
-    public Optional<Claim> getClaimByReference(final String reference, final String submitterId) {
+    public Optional<Claim> getClaimByReference(final String reference, final String authorisation) {
+        final String submitterId = userService.getUserDetails(authorisation).getId();
         return claimRepository
             .getByClaimReferenceAndSubmitter(reference, submitterId);
     }
@@ -80,7 +81,8 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference);
     }
 
-    public List<Claim> getClaimByExternalReference(final String externalReference, final String submitterId) {
+    public List<Claim> getClaimByExternalReference(final String externalReference, final String authorisation) {
+        final String submitterId = userService.getUserDetails(authorisation).getId();
         return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 

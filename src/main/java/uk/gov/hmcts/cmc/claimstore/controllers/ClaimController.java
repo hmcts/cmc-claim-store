@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantLinkStatus;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -37,12 +36,10 @@ public class ClaimController {
     public static final String CLAIM_REFERENCE_PATTERN = "^\\d{3}(?:LR|MC)\\d{3}$";
 
     private final ClaimService claimService;
-    private final UserService userService;
 
     @Autowired
-    public ClaimController(final ClaimService claimService, final UserService userService) {
+    public ClaimController(final ClaimService claimService) {
         this.claimService = claimService;
-        this.userService = userService;
     }
 
     @GetMapping("/claimant/{submitterId}")
@@ -67,8 +64,8 @@ public class ClaimController {
     @ApiOperation("Fetch claim for given claim reference")
     public Claim getByClaimReference(@PathVariable("claimReference") final String claimReference,
                                      @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
-        final String submitterId = userService.getUserDetails(authorisation).getId();
-        return claimService.getClaimByReference(claimReference, submitterId)
+
+        return claimService.getClaimByReference(claimReference, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
     }
 
@@ -78,8 +75,7 @@ public class ClaimController {
         @PathVariable("externalReference") final String externalReference,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
 
-        final String submitterId = userService.getUserDetails(authorisation).getId();
-        return claimService.getClaimByExternalReference(externalReference, submitterId);
+        return claimService.getClaimByExternalReference(externalReference, authorisation);
     }
 
     @GetMapping("/defendant/{defendantId}")
