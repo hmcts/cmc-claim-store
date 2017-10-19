@@ -17,6 +17,12 @@ public class AmountContentProviderTest {
 
     private InterestCalculationService interestCalculationService = new InterestCalculationService(Clock.systemUTC());
 
+    private Claim noInterest = SampleClaim.builder()
+        .withClaimData(SampleClaimData.noInterest())
+        .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
+        .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+        .build();
+
     @Test
     public void calculateWithNoPaidAmount() {
         Claim claim = SampleClaim.builder()
@@ -32,13 +38,7 @@ public class AmountContentProviderTest {
 
     @Test
     public void calculateWithNoInterest() {
-        Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.noInterest())
-            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
-            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .build();
-
-        assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
+        assertThat(new AmountContentProvider(interestCalculationService).create(noInterest).getRemainingAmount())
             .isEqualTo("£80.00");
     }
 
@@ -55,4 +55,9 @@ public class AmountContentProviderTest {
             .isEqualTo("£70.88");
     }
 
+    @Test
+    public void interestShouldSayNoInterestIfNoneClaimed() {
+        assertThat(new AmountContentProvider(interestCalculationService).create(noInterest).getInterest().getFromDate())
+            .isEqualTo("No interest claimed");
+    }
 }
