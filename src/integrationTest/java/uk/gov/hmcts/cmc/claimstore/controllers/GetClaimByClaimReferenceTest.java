@@ -27,7 +27,7 @@ public class GetClaimByClaimReferenceTest extends BaseIntegrationTest {
     private static final String AUTH_TOKEN = "I am a valid token";
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withUserId(SUBMITTER_ID)
+        .withUserId("1")
         .withMail("submitter@example.com")
         .build();
 
