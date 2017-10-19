@@ -46,7 +46,7 @@ public class ClaimContentProvider {
                 ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
                 claim.getCreatedAt()
             );
-            totalAmountComponents.add(interestContent.getAmountUpToNowRealValue());
+            totalAmountComponents.add(interestContent.getAmountRealValue());
         }
 
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
