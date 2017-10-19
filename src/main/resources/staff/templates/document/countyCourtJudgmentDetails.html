@@ -189,15 +189,27 @@
         </td>
       </tr>
       <tr>
-        <td>Interest:</td>
+        <td>Interest rate claimed:</td>
         <td>
-          {{ ccj.amount.interestAmount }}
+          {{ ccj.amount.interest.rate }}
         </td>
       </tr>
       <tr>
-        <td>Interest daily rate:</td>
+        <td>Date interest is claimed from:</td>
         <td>
-          {{ ccj.amount.interestDailyAmount }}
+          {{ ccj.amount.interest.fromDate }}
+        </td>
+      </tr>
+      <tr>
+        <td>Interest daily amount:</td>
+        <td>
+          {{ ccj.amount.interest.dailyAmount }}
+        </td>
+      </tr>
+      <tr>
+        <td>Interest:</td>
+        <td>
+          {{ ccj.amount.interest.amount }}
         </td>
       </tr>
       <tr>
