@@ -21,7 +21,7 @@ public interface ClaimRepository {
     String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
-    String ORDER_BY_ID_DESCENDING  = " ORDER BY claim.id DESC";
+    String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
     List<Claim> findAll();
@@ -43,6 +43,17 @@ public interface ClaimRepository {
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
     Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
+
+    @SingleValueResult
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber "
+        + "AND claim.submitter_id = :submitterId")
+    Optional<Claim> getByClaimReferenceAndSubmitter(@Bind("claimReferenceNumber") String claimReferenceNumber,
+                                                    @Bind("submitterId") String submitterId);
+
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId "
+        + " AND claim.claim ->>'externalReferenceNumber' = :externalReference" + ORDER_BY_ID_DESCENDING)
+    List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
+                                       @Bind("submitterId") String submitterId);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")

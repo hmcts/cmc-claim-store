@@ -72,4 +72,5 @@ public class ClaimControllerTest {
         //then
         assertThat(output).isEqualTo(CLAIM);
     }
+
 }

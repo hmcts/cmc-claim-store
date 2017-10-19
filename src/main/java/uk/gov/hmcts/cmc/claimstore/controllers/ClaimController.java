@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.DefendantLinkStatus;
@@ -31,6 +32,8 @@ public class ClaimController {
 
     public static final String UUID_PATTERN = "\\p{XDigit}{8}-\\p{XDigit}"
         + "{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}";
+
+    public static final String CLAIM_REFERENCE_PATTERN = "^\\d{3}(?:LR|MC)\\d{3}$";
 
     private final ClaimService claimService;
 
@@ -55,6 +58,24 @@ public class ClaimController {
     @ApiOperation("Fetch claim for given external id")
     public Claim getByExternalId(@PathVariable("externalId") final String externalId) {
         return claimService.getClaimByExternalId(externalId);
+    }
+
+    @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
+    @ApiOperation("Fetch claim for given claim reference")
+    public Claim getByClaimReference(@PathVariable("claimReference") final String claimReference,
+                                     @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+
+        return claimService.getClaimByReference(claimReference, authorisation)
+            .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
+    }
+
+    @GetMapping("/representative/{externalReference}")
+    @ApiOperation("Fetch user claims for given external reference number")
+    public List<Claim> getClaimByExternalReference(
+        @PathVariable("externalReference") final String externalReference,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+
+        return claimService.getClaimByExternalReference(externalReference, authorisation);
     }
 
     @GetMapping("/defendant/{defendantId}")
