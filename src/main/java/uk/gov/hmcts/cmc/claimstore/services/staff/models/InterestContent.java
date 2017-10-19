@@ -9,8 +9,8 @@ public class InterestContent {
     private String customRateReason;
     private Boolean customFromDate;
     private String fromDate;
-    private String amountUpToNow;
-    private BigDecimal amountUpToNowRealValue;
+    private String amount;
+    private BigDecimal amountRealValue;
     private String dailyAmount;
 
     @SuppressWarnings("squid:S00107")
@@ -20,16 +20,27 @@ public class InterestContent {
         String customRateReason,
         Boolean customFromDate,
         String fromDate,
-        String amountUpToNow,
-        BigDecimal amountUpToNowRealValue,
+        String amount,
+        BigDecimal amountRealValue,
         String dailyAmount) {
         this.rate = rate;
         this.customRate = customRate;
         this.customRateReason = customRateReason;
         this.customFromDate = customFromDate;
         this.fromDate = fromDate;
-        this.amountUpToNow = amountUpToNow;
-        this.amountUpToNowRealValue = amountUpToNowRealValue;
+        this.amount = amount;
+        this.amountRealValue = amountRealValue;
+        this.dailyAmount = dailyAmount;
+    }
+
+    public InterestContent(
+        String rate,
+        String fromDate,
+        String amount,
+        String dailyAmount) {
+        this.rate = rate;
+        this.fromDate = fromDate;
+        this.amount = amount;
         this.dailyAmount = dailyAmount;
     }
 
@@ -53,12 +64,12 @@ public class InterestContent {
         return fromDate;
     }
 
-    public String getAmountUpToNow() {
-        return amountUpToNow;
+    public String getAmount() {
+        return amount;
     }
 
-    public BigDecimal getAmountUpToNowRealValue() {
-        return amountUpToNowRealValue;
+    public BigDecimal getAmountRealValue() {
+        return amountRealValue;
     }
 
     public String getDailyAmount() {

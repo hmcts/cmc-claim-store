@@ -60,7 +60,7 @@ public class DefendantPinLetterContentProvider {
                     .getTotalAmount(),
                 claim.getCreatedAt()
             );
-            totalAmountComponents.add(interestContent.getAmountUpToNowRealValue());
+            totalAmountComponents.add(interestContent.getAmountRealValue());
         }
 
         Map<String, Object> content = new HashMap<>();

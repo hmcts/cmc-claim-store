@@ -2,14 +2,19 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.Interest;
+import uk.gov.hmcts.cmc.claimstore.models.Interest.InterestType;
 import uk.gov.hmcts.cmc.claimstore.models.InterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatPercent;
 
 public class AmountContentProvider {
 
@@ -25,22 +30,39 @@ public class AmountContentProvider {
 
         BigDecimal dailyAmount = BigDecimal.ZERO;
         BigDecimal interestAmount = BigDecimal.ZERO;
-        if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
+        BigDecimal interestRate = BigDecimal.ZERO;
+        Interest interest = claim.getClaimData().getInterest();
+        Optional<LocalDate> interestFromDate = Optional.empty();
+        if (!interest.getType().equals(InterestType.NO_INTEREST)) {
             dailyAmount = interestCalculationService.calculateDailyAmountFor(
                 ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
-                claim.getClaimData().getInterest().getRate()
+                interest.getRate()
             );
 
+            InterestDate interestDate = claim.getClaimData().getInterestDate();
+            if (interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM)) {
+                interestFromDate = Optional.of(interestDate.getDate());
+            } else {
+                interestFromDate = Optional.of(claim.getCreatedAt().toLocalDate());
+            }
+
+            interestRate = interest.getRate();
             interestAmount = getInterestAmount(
                 interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt()
                     .toLocalDate(), claimAmount)
             ;
         }
+        InterestContent interestContent = new InterestContent(
+            formatPercent(interestRate),
+            interestFromDate.map(Formatting::formatDate)
+                .orElse("No interest claimed"),
+            formatMoney(interestAmount),
+            formatMoney(dailyAmount)
+        );
 
         return new AmountContent(
             formatMoney(claimAmount),
-            formatMoney(interestAmount),
-            formatMoney(dailyAmount),
+            interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
             formatMoney(claimAmount
@@ -58,7 +80,7 @@ public class AmountContentProvider {
         final BigDecimal claimAmount
     ) {
         if (!claim.getClaimData().getInterest().getType()
-            .equals(uk.gov.hmcts.cmc.claimstore.models.Interest.InterestType.NO_INTEREST)) {
+            .equals(InterestType.NO_INTEREST)) {
             return interestCalculationService.calculateInterest(
                 claimAmount,
                 claim.getClaimData().getInterest().getRate(),
