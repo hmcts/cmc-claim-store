@@ -48,11 +48,11 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     }
 
     private ResponseData toNullableResponseData(final String input) {
-        return input != null ? jsonMapper.fromJson(input, ResponseData.class) : null;
+        return toNullableEntity(input, ResponseData.class);
     }
 
     private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {
-        return input != null ? jsonMapper.fromJson(input, CountyCourtJudgment.class) : null;
+        return toNullableEntity(input, CountyCourtJudgment.class);
     }
 
     private Settlement toNullableSettlement(String input) {
