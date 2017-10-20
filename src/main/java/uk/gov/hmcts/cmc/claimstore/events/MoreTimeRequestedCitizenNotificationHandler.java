@@ -22,7 +22,6 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     private final MoreTimeRequestedNotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
 
-
     @Autowired
     public MoreTimeRequestedCitizenNotificationHandler(
         final MoreTimeRequestedNotificationService notificationService,

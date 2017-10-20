@@ -111,4 +111,17 @@ public class EventProducerTest {
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
     }
+
+    @Test
+    public void shouldCreateOfferMadeEventEvent() throws Exception {
+
+        // given
+        OfferMadeEvent expectedEvent = new OfferMadeEvent(CLAIM);
+
+        // when
+        eventProducer.createOfferMadeEvent(CLAIM);
+
+        //then
+        verify(publisher).publishEvent(eq(expectedEvent));
+    }
 }
