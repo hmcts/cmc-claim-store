@@ -1,12 +1,9 @@
-package uk.gov.hmcts.cmc.claimstore.services;
+package uk.gov.hmcts.cmc.claimstore.services.bankholidays;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.clients.RestClient;
-import uk.gov.hmcts.cmc.claimstore.processors.RestClientFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,12 +12,9 @@ import java.util.Arrays;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection.BankHolidays;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PublicHolidaysCollectionTest {
@@ -30,23 +24,13 @@ public class PublicHolidaysCollectionTest {
     private static final String BANK_HOLIDAY_API_URL = "bank-holidays-api";
 
     @Mock
-    private RestClientFactory restClientFactory;
-    @Mock
-    private RestClient restClient;
-
-    @Before
-    public void setUp() {
-        when(restClientFactory.create(BANK_HOLIDAY_API_URL)).thenReturn(restClient);
-    }
+    private BankHolidaysApi bankHolidaysApi;
 
     @Test
     public void getAllBankHolidaysShouldBeOk() {
         //given
-        BankHolidays expResponse = createExpectedResponse();
-        when(restClient.get(eq(PublicHolidaysCollection.Endpoints.BANK_HOLIDAYS), any())).thenReturn(expResponse);
-        PublicHolidaysCollection publicHolidaysCollection = new PublicHolidaysCollection(
-            restClientFactory, BANK_HOLIDAY_API_URL
-        );
+        when(bankHolidaysApi.retrieveAll()).thenReturn(createExpectedResponse());
+        PublicHolidaysCollection publicHolidaysCollection = new PublicHolidaysCollection(bankHolidaysApi);
 
         //when
         Set<LocalDate> response = publicHolidaysCollection.getPublicHolidays();
@@ -60,11 +44,8 @@ public class PublicHolidaysCollectionTest {
     @Test
     public void externalApiShouldBeCalledOnlyOnce() {
         // given
-        when(restClient.get(
-            eq(PublicHolidaysCollection.Endpoints.BANK_HOLIDAYS), any())).thenReturn(createExpectedResponse());
-        PublicHolidaysCollection publicHolidaysCollection = new PublicHolidaysCollection(
-            restClientFactory, BANK_HOLIDAY_API_URL
-        );
+        when(bankHolidaysApi.retrieveAll()).thenReturn(createExpectedResponse());
+        PublicHolidaysCollection publicHolidaysCollection = new PublicHolidaysCollection(bankHolidaysApi);
 
         // when
         Set<LocalDate> resultFromApi = publicHolidaysCollection.getPublicHolidays();
@@ -72,7 +53,7 @@ public class PublicHolidaysCollectionTest {
         Set<LocalDate> resultFromCacheAgain = publicHolidaysCollection.getPublicHolidays();
 
         // then
-        verify(restClient, times(1)).get(PublicHolidaysCollection.Endpoints.BANK_HOLIDAYS, BankHolidays.class);
+        verify(bankHolidaysApi, times(1)).retrieveAll();
         assertThat(resultFromApi).isSameAs(resultFromCache).isSameAs(resultFromCacheAgain);
     }
 

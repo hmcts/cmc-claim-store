@@ -70,6 +70,10 @@ pdfService:
 
 feature_toggles:
   watermark_pdf: false
+
+feign:
+  httpclient:
+    enabled: true
 ---
 spring:
   profiles: test
