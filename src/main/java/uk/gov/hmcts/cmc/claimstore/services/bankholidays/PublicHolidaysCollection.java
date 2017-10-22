@@ -13,15 +13,6 @@ import java.util.stream.Collectors;
 @Component
 public class PublicHolidaysCollection {
 
-    static class Endpoints {
-        static final String BANK_HOLIDAYS = "/bank-holidays.json";
-
-        private Endpoints() {
-            // NO-OP
-        }
-
-    }
-
     private final BankHolidaysApi bankHolidaysApi;
 
     private Set<LocalDate> cachedPublicHolidays;

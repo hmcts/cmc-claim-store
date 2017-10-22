@@ -7,6 +7,10 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BankHolidays {
+
+    @JsonProperty(Countries.ENGLAND_AND_WALES)
+    Division englandAndWales;
+
     static final class Countries {
 
         static final String ENGLAND_AND_WALES = "england-and-wales";
@@ -16,9 +20,6 @@ public class BankHolidays {
         }
 
     }
-
-    @JsonProperty(Countries.ENGLAND_AND_WALES)
-    Division englandAndWales;
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class Division {
