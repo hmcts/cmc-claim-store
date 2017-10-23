@@ -9,7 +9,6 @@ public class OfferMadeEvent {
 
     private final Claim claim;
 
-
     public OfferMadeEvent(final Claim claim) {
         this.claim = claim;
     }

@@ -14,7 +14,7 @@ public class OfferResponseDeadlineCalculator {
     private final int endOfBusinessDayHour;
 
     public OfferResponseDeadlineCalculator(
-        WorkingDayIndicator workingDayIndicator,
+        final WorkingDayIndicator workingDayIndicator,
         @Value("${dateCalculations.offerMadeTimeForResponseInDays}") final int offerMadeTimeForResponseInDays,
         @Value("${dateCalculations.endOfBusinessDayHour}") final int endOfBusinessDayHour) {
 
@@ -23,7 +23,7 @@ public class OfferResponseDeadlineCalculator {
         this.endOfBusinessDayHour = endOfBusinessDayHour;
     }
 
-    public LocalDate calculateOfferResponseDeadline(LocalDateTime offerSentAt) {
+    public LocalDate calculateOfferResponseDeadline(final LocalDateTime offerSentAt) {
 
         LocalDate offerMadeOn = offerSentAt.toLocalDate();
 
@@ -44,7 +44,7 @@ public class OfferResponseDeadlineCalculator {
         return result;
     }
 
-    private boolean isTooLateForToday(LocalDateTime dateTime) {
+    private boolean isTooLateForToday(final LocalDateTime dateTime) {
         return dateTime.getHour() >= endOfBusinessDayHour;
     }
 }
