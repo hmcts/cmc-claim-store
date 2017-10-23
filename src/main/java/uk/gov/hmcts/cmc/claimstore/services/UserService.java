@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.idam.client.IdamClient;
+import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -9,18 +9,18 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 @Component
 public class UserService {
 
-    private IdamClient idamClient;
+    private IdamApi idamApi;
 
-    public UserService(final IdamClient idamClient) {
-        this.idamClient = idamClient;
+    public UserService(final IdamApi idamApi) {
+        this.idamApi = idamApi;
     }
 
     public UserDetails getUserDetails(final String authorisation) {
-        return idamClient.retrieveUserDetails(authorisation);
+        return idamApi.retrieveUserDetails(authorisation);
     }
 
     public GeneratePinResponse generatePin(final String name, final String authorisation) {
-        return idamClient.generatePin(
+        return idamApi.generatePin(
             new GeneratePinRequest(name),
             authorisation.replace("Bearer: ", "")
         );
