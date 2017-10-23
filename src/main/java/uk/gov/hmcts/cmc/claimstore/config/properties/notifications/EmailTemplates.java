@@ -36,6 +36,12 @@ public class EmailTemplates {
     @NotEmpty
     private String claimantCCJRequested;
 
+    @NotEmpty
+    private String defendantOfferMade;
+
+    @NotEmpty
+    private String claimantOfferMade;
+
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -114,5 +120,21 @@ public class EmailTemplates {
 
     public void setClaimantCCJRequested(String claimantCCJRequested) {
         this.claimantCCJRequested = claimantCCJRequested;
+    }
+
+    public String getDefendantOfferMade() {
+        return defendantOfferMade;
+    }
+
+    public void setDefendantOfferMade(String defendantOfferMade) {
+        this.defendantOfferMade = defendantOfferMade;
+    }
+
+    public String getClaimantOfferMade() {
+        return claimantOfferMade;
+    }
+
+    public void setClaimantOfferMade(String claimantOfferMade) {
+        this.claimantOfferMade = claimantOfferMade;
     }
 }
