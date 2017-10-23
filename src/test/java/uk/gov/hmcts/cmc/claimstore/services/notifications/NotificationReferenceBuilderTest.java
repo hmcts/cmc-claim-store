@@ -29,4 +29,16 @@ public class NotificationReferenceBuilderTest {
         assertThat(NotificationReferenceBuilder.CCJRequested.referenceForClaimant("abc"))
             .isEqualTo("claimant-ccj-requested-notification-abc");
     }
+
+    @Test
+    public void shouldGenerateValidReferenceForClaimantOfferMadeNotification() {
+        assertThat(NotificationReferenceBuilder.OfferMade.referenceForClaimant("abc"))
+            .isEqualTo("claimant-offer-made-notification-abc");
+    }
+
+    @Test
+    public void shouldGenerateValidReferenceForDefendantOfferMadeNotification() {
+        assertThat(NotificationReferenceBuilder.OfferMade.referenceForDefendant("abc"))
+            .isEqualTo("defendant-offer-made-notification-abc");
+    }
 }

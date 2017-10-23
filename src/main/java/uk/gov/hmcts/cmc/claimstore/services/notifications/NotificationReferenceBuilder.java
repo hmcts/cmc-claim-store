@@ -62,4 +62,21 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
         }
     }
+
+    public static class OfferMade {
+
+        public static final String TEMPLATE = "%s-offer-made-notification-%s";
+
+        private OfferMade() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+        }
+    }
 }
