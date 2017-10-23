@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.idam.client.IdamClient;
+import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
@@ -17,12 +17,13 @@ import static org.mockito.Mockito.when;
 public class UserServiceTest {
 
     private UserService userService;
+
     @Mock
-    private IdamClient idamClient;
+    private IdamApi idamApi;
 
     @Before
     public void setup() {
-        userService = new UserService(idamClient);
+        userService = new UserService(idamApi);
     }
 
     @Test
@@ -30,7 +31,7 @@ public class UserServiceTest {
         //given
         final String authorisationToken = "Open sesame!";
         final UserDetails userDetails = SampleUserDetails.getDefault();
-        when(idamClient.retrieveUserDetails(authorisationToken)).thenReturn(userDetails);
+        when(idamApi.retrieveUserDetails(authorisationToken)).thenReturn(userDetails);
 
         //when
         UserDetails output = userService.getUserDetails(authorisationToken);
@@ -39,7 +40,7 @@ public class UserServiceTest {
         assertThat(output).isNotNull().isEqualTo(userDetails);
 
         //verify
-        verify(idamClient).retrieveUserDetails(authorisationToken);
+        verify(idamApi).retrieveUserDetails(authorisationToken);
     }
 
 }
