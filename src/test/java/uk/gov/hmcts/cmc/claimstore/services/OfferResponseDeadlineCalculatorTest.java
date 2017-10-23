@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
 import java.io.IOException;
 import java.time.LocalDate;
