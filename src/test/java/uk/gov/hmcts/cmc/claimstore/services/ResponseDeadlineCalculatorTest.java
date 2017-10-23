@@ -5,17 +5,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.clients.RestClient;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
-import uk.gov.hmcts.cmc.claimstore.processors.RestClientFactory;
-import uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection.BankHolidays;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidays;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidaysApi;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
@@ -23,30 +21,22 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class ResponseDeadlineCalculatorTest {
 
-    private static final String BANK_HOLIDAY_API_URL = "bank-holidays-api";
-
     private static final int DAYS_FOR_RESPONSE = 14;
     private static final int DAYS_FOR_SERVICE = 5;
     private static final int POSTPONE_BY = 14;
 
     @Mock
-    private RestClientFactory restClientFactory;
-
-    @Mock
-    private RestClient restClient;
+    private BankHolidaysApi bankHolidaysApi;
 
     private ResponseDeadlineCalculator calculator;
 
     @Before
     public void setUp() throws IOException {
-        when(restClientFactory.create(BANK_HOLIDAY_API_URL)).thenReturn(restClient);
-
         WorkingDayIndicator workingDayIndicator = new WorkingDayIndicator(
-            new PublicHolidaysCollection(restClientFactory, BANK_HOLIDAY_API_URL)
+            new PublicHolidaysCollection(bankHolidaysApi)
         );
 
-        when(restClient.get(
-            eq(PublicHolidaysCollection.Endpoints.BANK_HOLIDAYS), any())).thenReturn(loadFixture());
+        when(bankHolidaysApi.retrieveAll()).thenReturn(loadFixture());
 
         calculator = new ResponseDeadlineCalculator(
             workingDayIndicator, DAYS_FOR_SERVICE, DAYS_FOR_RESPONSE, POSTPONE_BY
