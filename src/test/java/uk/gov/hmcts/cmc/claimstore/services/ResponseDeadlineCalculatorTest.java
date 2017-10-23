@@ -13,9 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,10 +103,6 @@ public class ResponseDeadlineCalculatorTest {
 
         assertThat(responseDeadline).isWeekday().isTheSame(expectedDeadlineDate);
         assertThat(postponedDeadline).isWeekday().isTheSame(expectedPostponedDate);
-    }
-
-    private static LocalDate toDate(String dateString) {
-        return LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     /**

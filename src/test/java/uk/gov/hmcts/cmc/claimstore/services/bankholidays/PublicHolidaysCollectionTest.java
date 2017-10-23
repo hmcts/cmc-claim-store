@@ -6,7 +6,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -15,13 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PublicHolidaysCollectionTest {
 
     private static final String BANK_HOLIDAY_1 = "2010-10-10";
     private static final String BANK_HOLIDAY_2 = "2011-11-11";
-    private static final String BANK_HOLIDAY_API_URL = "bank-holidays-api";
 
     @Mock
     private BankHolidaysApi bankHolidaysApi;
@@ -55,12 +54,6 @@ public class PublicHolidaysCollectionTest {
         // then
         verify(bankHolidaysApi, times(1)).retrieveAll();
         assertThat(resultFromApi).isSameAs(resultFromCache).isSameAs(resultFromCacheAgain);
-    }
-
-    private static LocalDate toDate(String dateString) {
-        return LocalDate.parse(
-            dateString, DateTimeFormatter.ofPattern(BankHolidays.Division.EventDate.FORMAT)
-        );
     }
 
     private static BankHolidays createExpectedResponse() {

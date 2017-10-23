@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -17,6 +16,7 @@ import java.util.Set;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDayIndicatorTest {
@@ -78,9 +78,5 @@ public class WorkingDayIndicatorTest {
         assertFalse(service.isWorkingDay(TUESDAY));
         assertFalse(service.isWorkingDay(WEDNESDAY));
         assertFalse(service.isWorkingDay(THURSDAY));
-    }
-
-    private static LocalDate toDate(String dateString) {
-        return LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }
