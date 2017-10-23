@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.clients.RestClient;
 import uk.gov.hmcts.cmc.claimstore.processors.RestClientFactory;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -21,6 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.PublicHolidaysCollection.BankHolidays;
+import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PublicHolidaysCollectionTest {
@@ -74,12 +74,6 @@ public class PublicHolidaysCollectionTest {
         // then
         verify(restClient, times(1)).get(PublicHolidaysCollection.Endpoints.BANK_HOLIDAYS, BankHolidays.class);
         assertThat(resultFromApi).isSameAs(resultFromCache).isSameAs(resultFromCacheAgain);
-    }
-
-    private static LocalDate toDate(String dateString) {
-        return LocalDate.parse(
-            dateString, DateTimeFormatter.ofPattern(BankHolidays.Division.EventDate.FORMAT)
-        );
     }
 
     private static BankHolidays createExpectedResponse() {
