@@ -1,0 +1,46 @@
+{
+    "_embedded": {
+        "documents": [
+            {
+                "documentType": null,
+                "size": 3644305,
+                "mimeType": "application/pdf",
+                "originalDocumentName": "JDP.pdf",
+                "createdBy": "testuser",
+                "lastModifiedBy": "testuser",
+                "modifiedOn": "2017-09-01T13:12:36.860+0000",
+                "createdOn": "2017-09-01T13:12:36.862+0000",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/documents/6"
+                    },
+                    "binary": {
+                        "href": "http://localhost:8080/documents/6/binary"
+                    }
+                },
+                "_embedded": {
+                    "allFileVersions": {
+                        "_embedded": {
+                            "fileVersions": [
+                                {
+                                    "size": 3644305,
+                                    "mimeType": "application/pdf",
+                                    "originalFileName": "JDP.pdf",
+                                    "createdBy": "14",
+                                    "lastModifiedBy": "14",
+                                    "modifiedOn": null,
+                                    "createOn": "2017-09-01T13:12:36.862+0000",
+                                    "_links": {
+                                        "binary": {
+                                            "href": "http://localhost:8080/documents/6/versions/7/binary"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,42 @@
+buildscript {
+  repositories { mavenCentral() }
+}
+
+def springBootVersion = '1.5.7.RELEASE'
+
+def versions = [
+  springBoot        : springBootVersion,
+  jackson           : dependencyManagement.importedProperties['jackson.version'],
+  hibernateValidator: dependencyManagement.importedProperties['hibernate-validator.version']
+]
+
+dependencies {
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
+
+  compile group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
+  compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
+  compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '1.2.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: '1.2.1'
+  compile group: 'commons-io', name: 'commons-io', version: '2.5'
+
+
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: versions.jackson
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
+
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
+  testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.4.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.10.0'
+
+}
+
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+  }
+}
