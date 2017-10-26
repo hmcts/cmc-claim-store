@@ -22,6 +22,7 @@ import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -108,9 +109,9 @@ public class MakeOfferTest extends BaseIntegrationTest {
             .andReturn();
 
         verify(notificationClient, times(1))
-            .sendEmail(any(), any(), anyMap(), eq("claimant-offer-made-notification-000MC001"));
+            .sendEmail(any(), any(), anyMap(), contains("claimant-offer-made-notification-"));
         verify(notificationClient, times(1))
-            .sendEmail(any(), any(), anyMap(), eq("defendant-offer-made-notification-000MC001"));
+            .sendEmail(any(), any(), anyMap(), contains("defendant-offer-made-notification-"));
     }
 
     @Test
@@ -129,9 +130,9 @@ public class MakeOfferTest extends BaseIntegrationTest {
             .andReturn();
 
         verify(notificationClient, times(3))
-            .sendEmail(any(), any(), anyMap(), eq("claimant-offer-made-notification-000MC001"));
+            .sendEmail(any(), any(), anyMap(), contains("claimant-offer-made-notification-"));
         verify(notificationClient, times(3))
-            .sendEmail(any(), any(), anyMap(), eq("defendant-offer-made-notification-000MC001"));
+            .sendEmail(any(), any(), anyMap(), contains("defendant-offer-made-notification-"));
     }
 
     private ResultActions makeOffer(String authToken, Offer offer, String party) throws Exception {
