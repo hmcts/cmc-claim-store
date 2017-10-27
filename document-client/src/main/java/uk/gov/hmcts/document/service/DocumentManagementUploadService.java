@@ -33,7 +33,7 @@ public class DocumentManagementUploadService {
     private static final Logger log = LoggerFactory.getLogger(DocumentManagementUploadService.class);
 
     @Value("${document.management.upload.file.url}")
-    private String evidenceManagementServiceURL;
+    private String documentManagementServiceURL;
 
     @Autowired
     private RestTemplate template;
@@ -48,7 +48,7 @@ public class DocumentManagementUploadService {
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parameters,
             httpHeaders);
 
-        JsonNode filesJsonArray = template.postForObject(evidenceManagementServiceURL, httpEntity, ObjectNode.class)
+        JsonNode filesJsonArray = template.postForObject(documentManagementServiceURL, httpEntity, ObjectNode.class)
             .get("_embedded")
             .get("documents");
 

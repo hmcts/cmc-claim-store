@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.document.exception.TemporaryStoreFailureException;
 
@@ -29,6 +28,9 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -37,7 +39,7 @@ import static org.mockito.Mockito.when;
 public class DocumentManagementUploadServiceTest {
 
     @InjectMocks
-    private DocumentManagementUploadService uploadService = new DocumentManagementUploadService();
+    private DocumentManagementUploadService uploadService = spy(new DocumentManagementUploadService());
 
     @Mock
     private RestTemplate restTemplate;
@@ -45,7 +47,6 @@ public class DocumentManagementUploadServiceTest {
     @Mock
     private MockMultipartFile textFileMultipart;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldUploadFileAndReturnFileUrlWithMetadataWhenValidInputsArePassed() throws Exception {
         MockMultipartFile textFileMultipart = mockMultipartFile();
@@ -54,8 +55,7 @@ public class DocumentManagementUploadServiceTest {
 
         ObjectNode objectNode = (ObjectNode) new ObjectMapper().readTree(hatoesResponse);
 
-        when(restTemplate.postForObject(Mockito.anyString(), Mockito.<HttpEntity<MultiValueMap<String, Object>>>any(),
-            Mockito.any()))
+        when(restTemplate.postForObject(anyString(), any(), any()))
             .thenReturn(objectNode);
 
         assertThat(uploadService.uploadFiles(asList(mockMultipartFile()), "AAAAA", "123333"),
@@ -70,15 +70,14 @@ public class DocumentManagementUploadServiceTest {
 
         verifyInteractionForFileUpload(textFileMultipart);
 
-
     }
-    
+
     @Test(expected = HttpClientErrorException.class)
     public void shouldNotUploadFileAndThrowExceptionWhenAuthorizationTokenIsInvalid() throws Exception {
         MockMultipartFile textFileMultipart = mockMultipartFile();
 
-        when(restTemplate.postForObject(Mockito.anyString(), Mockito.<HttpEntity<MultiValueMap<String, Object>>>any(),
-            Mockito.any())).thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
+        when(restTemplate.postForObject(anyString(), any(),
+            any())).thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
 
         uploadService.uploadFiles(asList(textFileMultipart), "AAAAA", "123333");
 
@@ -108,9 +107,9 @@ public class DocumentManagementUploadServiceTest {
     }
 
     private void verifyInteractionForFileUpload(MockMultipartFile textFileMultipart) {
-        verify(restTemplate).postForObject(Mockito.anyString(),
+        verify(restTemplate).postForObject(anyString(),
             Mockito.<HttpEntity<MultiValueMap<String, Object>>>any(),
-            Mockito.any());
+            any());
 
         verifyNoMoreInteractions(restTemplate);
     }
