@@ -45,10 +45,11 @@ public class DocumentManagementUploadService {
 
         HttpHeaders httpHeaders = setHttpHeaders(authorizationToken);
 
-        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parameters,
-            httpHeaders);
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parameters, httpHeaders);
 
-        JsonNode filesJsonArray = template.postForObject(documentManagementServiceURL, httpEntity, ObjectNode.class)
+        final Object jsonNodes = template.postForObject(documentManagementServiceURL, httpEntity, Object.class);
+
+        JsonNode filesJsonArray = ((JsonNode) jsonNodes)
             .get("_embedded")
             .get("documents");
 

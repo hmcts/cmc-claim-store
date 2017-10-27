@@ -2,16 +2,21 @@ package uk.gov.hmcts.document.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -30,6 +35,7 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -47,16 +53,20 @@ public class DocumentManagementUploadServiceTest {
     @Mock
     private MockMultipartFile textFileMultipart;
 
+    @Before
+    public void before(){
+        ReflectionTestUtils.setField(uploadService, "documentManagementServiceURL", "givenUrl");
+    }
+
     @Test
     public void shouldUploadFileAndReturnFileUrlWithMetadataWhenValidInputsArePassed() throws Exception {
         MockMultipartFile textFileMultipart = mockMultipartFile();
 
-        String hatoesResponse = new String(readAllBytes(get("src/test/resources/fileuploadresponse.txt")));
+        String hateoasResponse = new String(readAllBytes(get("src/test/resources/fileuploadresponse.txt")));
 
-        ObjectNode objectNode = (ObjectNode) new ObjectMapper().readTree(hatoesResponse);
+        ObjectNode objectNode = (ObjectNode) new ObjectMapper().readTree(hateoasResponse);
 
-        when(restTemplate.postForObject(anyString(), any(), any()))
-            .thenReturn(objectNode);
+        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), any())).thenReturn(objectNode);
 
         assertThat(uploadService.uploadFiles(asList(mockMultipartFile()), "AAAAA", "123333"),
             contains(allOf(hasProperty("fileUrl", containsString("http://localhost:8080/documents/6")),
@@ -115,9 +125,8 @@ public class DocumentManagementUploadServiceTest {
     }
 
     private MockMultipartFile mockMultipartFile() {
-        MockMultipartFile textFileMultipart = new MockMultipartFile("file", "JDP.pdf", "application/pdf",
+        return new MockMultipartFile("file", "JDP.pdf", "application/pdf",
             "This is a test pdf file".getBytes());
-        return textFileMultipart;
     }
 
 }
