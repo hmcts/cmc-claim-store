@@ -5,13 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,7 +32,6 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -54,7 +50,7 @@ public class DocumentManagementUploadServiceTest {
     private MockMultipartFile textFileMultipart;
 
     @Before
-    public void before(){
+    public void before() {
         ReflectionTestUtils.setField(uploadService, "documentManagementServiceURL", "givenUrl");
     }
 
@@ -86,8 +82,8 @@ public class DocumentManagementUploadServiceTest {
     public void shouldNotUploadFileAndThrowExceptionWhenAuthorizationTokenIsInvalid() throws Exception {
         MockMultipartFile textFileMultipart = mockMultipartFile();
 
-        when(restTemplate.postForObject(anyString(), any(),
-            any())).thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
+        when(restTemplate.postForObject(anyString(), any(), any()))
+            .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN));
 
         uploadService.uploadFiles(asList(textFileMultipart), "AAAAA", "123333");
 
@@ -112,14 +108,14 @@ public class DocumentManagementUploadServiceTest {
 
         DocumentManagementUploadService uploadServiceImpl = new DocumentManagementUploadService();
 
-        assertThat(uploadServiceImpl.serviceUnavailable(asList(textFileMultipart), "AAAAA", "123333"),
+        assertThat(uploadServiceImpl.serviceUnavailable(asList(textFileMultipart),
+            "AAAAA", "123333"),
             contains(allOf(hasProperty("status", is(HttpStatus.SERVICE_UNAVAILABLE)))));
     }
 
     private void verifyInteractionForFileUpload(MockMultipartFile textFileMultipart) {
         verify(restTemplate).postForObject(anyString(),
-            Mockito.<HttpEntity<MultiValueMap<String, Object>>>any(),
-            any());
+            Mockito.<HttpEntity<MultiValueMap<String, Object>>>any(), any());
 
         verifyNoMoreInteractions(restTemplate);
     }

@@ -1,0 +1,33 @@
+api.version: 0.1
+
+spring:
+  http:
+    multipart:
+      max-file-size: 10000KB
+      max-request-size: 10000KB
+
+auth:
+  provider:
+    service:
+      client:
+        baseUrl: ${AUTH_PROVIDER_SERVICE_CLIENT_BASEURL:http://localhost:8082}
+        microservice: cmc
+        key: AAAAAAAAAAAAAAAA
+        tokenTimeToLiveInSeconds: 900
+    health:
+      url: ${auth.provider.service.client.baseUrl}${auth.provider.health.path}
+
+### Document management Service URL's
+document:
+  management:
+    upload:
+      file:
+        url: ${DOCUMENT_MANAGEMENT_UPLOAD_FILE_URL:http://localhost:3404/documents}
+
+http:
+  connect:
+    timeout: 10000
+    request:
+      timeout: 10000
+    socket:
+      timeout: 10000

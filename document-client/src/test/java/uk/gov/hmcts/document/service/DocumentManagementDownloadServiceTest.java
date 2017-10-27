@@ -2,8 +2,8 @@ package uk.gov.hmcts.document.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -54,8 +54,8 @@ public class DocumentManagementDownloadServiceTest {
         mockTraversionAPI("http://localhost:8080/documents/6/binary");
 
         assertThat(
-            downloadService.downloadFile("http://localhost:8080/documents/6", "AAAABBBB", "12344").getStatusCode(),
-            is(HttpStatus.OK));
+            downloadService.downloadFile("http://localhost:8080/documents/6",
+                "AAAABBBB", "12344").getStatusCode(), is(HttpStatus.OK));
 
         verifyInteractionsToDownloadFiles();
     }
@@ -64,12 +64,13 @@ public class DocumentManagementDownloadServiceTest {
     @Test(expected = ResourceAccessException.class)
     public void shouldNotDownloadFileAndThrowExceptionWhenEMServiceIsUnavailable() throws Exception {
         when(restTemplate.exchange(Mockito.any(String.class), Mockito.any(HttpMethod.class),
-            Matchers.<HttpEntity<String>>any(), Matchers.<Class<Resource>>any()))
+            ArgumentMatchers.<HttpEntity<String>>any(), ArgumentMatchers.<Class<Resource>>any()))
             .thenThrow(ResourceAccessException.class);
 
         mockTraversionAPI("http://localhost:8080/documents/6/binary");
 
-        downloadService.downloadFile("http://localhost:8080/documents/6", "AAAABBBB", "12344");
+        downloadService.downloadFile("http://localhost:8080/documents/6",
+            "AAAABBBB", "12344");
 
         verifyInteractionsToDownloadFiles();
     }
@@ -80,7 +81,8 @@ public class DocumentManagementDownloadServiceTest {
 
         mockTraversionAPI(null);
 
-        downloadService.downloadFile("http://localhost:8080/documents/6", "AAAABBBB", "12344");
+        downloadService.downloadFile("http://localhost:8080/documents/6",
+            "AAAABBBB", "12344");
 
         verifyInteractionsToDownloadFiles();
     }
@@ -90,9 +92,9 @@ public class DocumentManagementDownloadServiceTest {
         DocumentManagementDownloadService downloadServiceImpl = new DocumentManagementDownloadService();
 
         assertThat(
-            downloadServiceImpl.serviceUnavailable("http://localhost:8080/documents/6", "AAAAA", "123333")
-                .getStatusCode(),
-            is(HttpStatus.SERVICE_UNAVAILABLE));
+            downloadServiceImpl.serviceUnavailable("http://localhost:8080/documents/6",
+                "AAAAA", "123333")
+                .getStatusCode(), is(HttpStatus.SERVICE_UNAVAILABLE));
     }
 
     private void mockTraversionAPI(String binaryFileUrl) throws Exception {
@@ -102,7 +104,7 @@ public class DocumentManagementDownloadServiceTest {
 
         when(traversalBuilder.asLink()).thenReturn(link);
 
-        when(traversalBuilder.withHeaders(Matchers.<HttpHeaders>any())).thenReturn(traversalBuilder);
+        when(traversalBuilder.withHeaders(ArgumentMatchers.<HttpHeaders>any())).thenReturn(traversalBuilder);
 
         when(link.getHref()).thenReturn(binaryFileUrl);
     }
@@ -114,18 +116,18 @@ public class DocumentManagementDownloadServiceTest {
         ResponseEntity<Resource> responseEntity = new ResponseEntity<Resource>(marriageCertStream, HttpStatus.OK);
 
         when(restTemplate.exchange(Mockito.any(String.class), Mockito.any(HttpMethod.class),
-            Matchers.<HttpEntity<?>>any(), Matchers.<Class<Resource>>any())).thenReturn(responseEntity);
+            ArgumentMatchers.<HttpEntity<?>>any(), ArgumentMatchers.<Class<Resource>>any())).thenReturn(responseEntity);
     }
 
     private void verifyInteractionsToDownloadFiles() {
         verify(restTemplate).exchange(Mockito.any(String.class), Mockito.any(HttpMethod.class),
-            Matchers.<HttpEntity<?>>any(), Matchers.<Class<Resource>>any());
+            ArgumentMatchers.<HttpEntity<?>>any(), ArgumentMatchers.<Class<Resource>>any());
 
         verify(mockTraverson).follow("$._links.binary.href");
 
         verify(traversalBuilder).asLink();
 
-        verify(traversalBuilder).withHeaders(Matchers.<HttpHeaders>any());
+        verify(traversalBuilder).withHeaders(ArgumentMatchers.<HttpHeaders>any());
 
         verify(link).getHref();
 

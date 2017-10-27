@@ -1,7 +1,6 @@
 package uk.gov.hmcts.document.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,9 @@ public class DocumentManagementUploadService {
 
 
     @CircuitBreaker(exclude = HttpClientErrorException.class)
-    public List<FileUploadResponse> uploadFiles(List<MultipartFile> files, String authorizationToken, String requestId) {
+    public List<FileUploadResponse> uploadFiles(List<MultipartFile> files,
+                                                String authorizationToken, String requestId) {
+
         MultiValueMap<String, Object> parameters = prepareRequest(files);
 
         HttpHeaders httpHeaders = setHttpHeaders(authorizationToken);
@@ -53,7 +54,7 @@ public class DocumentManagementUploadService {
             .get("_embedded")
             .get("documents");
 
-        log.info("For Request Id {} : File upload response from Evidence Management service is {}", requestId,
+        log.info("For Request Id {} : File upload response from Document Management service is {}", requestId,
             filesJsonArray);
 
         return prepareUploadResponse(filesJsonArray);

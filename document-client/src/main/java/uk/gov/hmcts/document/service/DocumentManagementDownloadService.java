@@ -31,11 +31,11 @@ import static org.springframework.util.StringUtils.isEmpty;
 public class DocumentManagementDownloadService {
 
     private static final Logger log = LoggerFactory.getLogger(DocumentManagementDownloadService.class);
-    private final static MediaType MEDIA_TYPE =
-        new MediaType("application", "vnd.uk.gov.hmcts.dm.document.v1+json");
+    private static final MediaType MEDIA_TYPE = new MediaType("application",
+        "vnd.uk.gov.hmcts.dm.document.v1+json");
 
     @Value("${document.management.upload.file.url}")
-    private String evidenceManagementServiceURL;
+    private String documentManagementServiceURL;
 
     @Autowired
     private RestTemplate template;
