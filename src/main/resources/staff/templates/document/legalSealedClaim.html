@@ -3,9 +3,22 @@
   <meta charset="UTF-8" />
   <title>{{ claimReferenceNumber }}</title>
   <style>
+    @page :first {
+      @top-right {
+        content: "";
+      }
+    }
+
     @page {
       size: 8.5in 11in;
       margin: 5%;
+
+      @top-right {
+        content: "Claim number: {{ claimReferenceNumber }}";
+        font-size: 18px;
+        font-weight: bold;
+        font-family: "Open Sans";
+      }
 
       @bottom-left {
         content: "OCCN1 (PD 51S)";
