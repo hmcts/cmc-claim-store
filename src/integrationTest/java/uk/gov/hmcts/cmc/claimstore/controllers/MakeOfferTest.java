@@ -14,14 +14,20 @@ import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 
 import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -89,6 +95,43 @@ public class MakeOfferTest extends BaseIntegrationTest {
         makeOffer(DEFENDANT_AUTH_TOKEN, offer, MadeBy.DEFENDANT.name())
             .andExpect(status().isBadRequest())
             .andReturn();
+    }
+
+    @Test
+    public void shouldSendNotifications() throws Exception {
+        Offer offer = SampleOffer.validDefaults();
+        given(notificationClient.sendEmail(any(), any(), any(), any()))
+            .willReturn(null);
+
+        makeOffer(DEFENDANT_AUTH_TOKEN, offer, MadeBy.DEFENDANT.name())
+            .andExpect(status().isCreated())
+            .andReturn();
+
+        verify(notificationClient, times(1))
+            .sendEmail(any(), any(), anyMap(), contains("claimant-offer-made-notification-"));
+        verify(notificationClient, times(1))
+            .sendEmail(any(), any(), anyMap(), contains("defendant-offer-made-notification-"));
+    }
+
+    @Test
+    public void shouldRetrySendNotifications() throws Exception {
+        Offer offer = SampleOffer.validDefaults();
+        given(notificationClient.sendEmail(any(), any(), any(), any()))
+            .willThrow(new NotificationClientException(new RuntimeException("first attempt fails")))
+            .willThrow(new NotificationClientException(new RuntimeException("1st email, 2nd attempt fails")))
+            .willThrow(new NotificationClientException(new RuntimeException("1st email, 3rd attempt fails, stop")))
+            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 1st attempt fails")))
+            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 2nd attempt fails")))
+            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 3rd attempt fails, stop")));
+
+        makeOffer(DEFENDANT_AUTH_TOKEN, offer, MadeBy.DEFENDANT.name())
+            .andExpect(status().isCreated())
+            .andReturn();
+
+        verify(notificationClient, times(3))
+            .sendEmail(any(), any(), anyMap(), contains("claimant-offer-made-notification-"));
+        verify(notificationClient, times(3))
+            .sendEmail(any(), any(), anyMap(), contains("defendant-offer-made-notification-"));
     }
 
     private ResultActions makeOffer(String authToken, Offer offer, String party) throws Exception {

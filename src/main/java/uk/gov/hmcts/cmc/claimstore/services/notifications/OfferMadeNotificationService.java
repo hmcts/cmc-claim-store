@@ -8,7 +8,6 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -44,9 +43,9 @@ public class OfferMadeNotificationService {
     @Recover
     public void logNotificationFailure(
         final NotificationException exception,
-        final Claim claim,
         final String targetEmail,
         final String emailTemplate,
+        final Map<String, String> parameters,
         final String reference
     ) {
         final String errorMessage = String.format(

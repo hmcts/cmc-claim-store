@@ -68,7 +68,7 @@ public class OfferMadeCitizenActionsHandler {
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put("offerResponseDeadline",
+        parameters.put("responseForOfferDeadline",
             Formatting.formatDate(
                 offerResponseDeadlineCalculator.calculateOfferResponseDeadline(LocalDateTime.now())
             )
