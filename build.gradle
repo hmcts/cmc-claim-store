@@ -122,7 +122,7 @@ dependencies {
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
-    testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.2'
+    testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.3'
 
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.10.0'
 
