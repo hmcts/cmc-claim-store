@@ -1,35 +1,32 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.junit.ClassRule;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.util.EnvironmentTestUtils;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.containers.PostgreSQLContainer;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 
-@ContextConfiguration(initializers = BaseIntegrationTest.Initializer.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
+
+@TestExecutionListeners(listeners = {BaseIntegrationTest.CleanDatabaseListener.class}, mergeMode = MERGE_WITH_DEFAULTS)
 @ActiveProfiles(profiles = "integration-tests", inheritProfiles = false)
 public abstract class BaseIntegrationTest extends MockSpringTest {
 
     protected static final String SUBMITTER_ID = "123";
     protected static final String DEFENDANT_ID = "555";
-
-    @ClassRule
-    public static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:9.6")
-        .withDatabaseName("claimstore");
 
     @Autowired
     protected MockMvc webClient;
@@ -37,15 +34,13 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
     @Autowired
     protected ClaimStore claimStore;
 
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    public static class CleanDatabaseListener extends AbstractTestExecutionListener {
+
         @Override
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            EnvironmentTestUtils.addEnvironment(configurableApplicationContext.getEnvironment(),
-                "CLAIM_STORE_DB_HOST=" + postgres.getContainerIpAddress(),
-                "CLAIM_STORE_DB_PORT=" + postgres.getMappedPort(PostgreSQLContainer.POSTGRESQL_PORT),
-                "CLAIM_STORE_DB_USERNAME=" + postgres.getUsername(),
-                "CLAIM_STORE_DB_PASSWORD=" + postgres.getPassword()
-            );
+        public void beforeTestClass(TestContext testContext) throws Exception {
+            ApplicationContext applicationContext = testContext.getApplicationContext();
+            DataSource dataSource = applicationContext.getBean("dataSource", DataSource.class);
+            JdbcTestUtils.deleteFromTables(new JdbcTemplate(dataSource), "claim");
         }
     }
 
