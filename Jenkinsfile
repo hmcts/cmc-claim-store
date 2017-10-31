@@ -5,7 +5,7 @@ properties(
   [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/cmc-claim-store/'],
    pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
-@Library(['CMC', 'Reform'])
+@Library(['CMC@feature/ROC-2432-Open-sourcing-related-changes', 'Reform'])
 import uk.gov.hmcts.Ansible
 import uk.gov.hmcts.Packager
 import uk.gov.hmcts.RPMTagger
@@ -114,7 +114,8 @@ timestamps {
         stage('Integration Tests') {
           integrationTests.execute([
             'CLAIM_STORE_API_VERSION'     : claimStoreVersion,
-            'CLAIM_STORE_DATABASE_VERSION': claimStoreDatabaseVersion
+            'CLAIM_STORE_DATABASE_VERSION': claimStoreDatabaseVersion,
+            'TESTS_TAG'                   : '@quick'
           ])
         }
 
