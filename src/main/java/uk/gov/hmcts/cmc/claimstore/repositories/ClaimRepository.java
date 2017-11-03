@@ -127,7 +127,7 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET sealed_claim_document_management_binary_uri = :sealedClaimDocumentManagementSelfUri,"
+        "UPDATE claim SET sealed_claim_document_management_self_uri = :sealedClaimDocumentManagementSelfUri,"
             + " sealed_claim_document_management_binary_uri = :sealedClaimDocumentManagementBinaryUri"
             + " WHERE id = :claimId"
     )
