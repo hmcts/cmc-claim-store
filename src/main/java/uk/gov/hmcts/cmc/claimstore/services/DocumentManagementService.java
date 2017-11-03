@@ -12,7 +12,7 @@ import uk.gov.hmcts.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
 
-import static uk.gov.hmcts.cmc.claimstore.services.documentmanagement.Classification.PRIVATE;
+import static uk.gov.hmcts.document.domain.Classification.PRIVATE;
 
 @Service
 public class DocumentManagementService {
