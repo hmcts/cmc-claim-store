@@ -26,22 +26,23 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getString("letter_holder_id"),
             result.getString("defendant_id"),
             result.getString("external_id"),
-            result.getString("external_id"),
             result.getString("reference_number"),
             toClaimData(result.getString("claim")),
             toLocalDateTimeFromUTC(result.getTimestamp("created_at")),
             result.getTimestamp("issued_on").toLocalDateTime().toLocalDate(),
             result.getTimestamp("response_deadline").toLocalDateTime().toLocalDate(),
-            result.getBoolean("more_time_requested"),
-            result.getString("submitter_email"),
+            result.getBoolean("more_time_requested"), result.getString("submitter_email"),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("responded_at")),
             toNullableResponseData(result.getString("response")),
             result.getString("defendant_email"),
             toNullableCountyCourtJudgment(result.getString("county_court_judgment")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at")),
             toNullableSettlement(result.getString("settlement")),
-            toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at"))
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
+            result.getString("sealed_claim_document_management_self_uri"),
+            result.getString("sealed_claim_document_management_binary_uri")
         );
+
     }
 
     private ClaimData toClaimData(final String input) {

@@ -20,7 +20,6 @@ public class Claim {
     private final String letterHolderId;
     private final String defendantId;
     private final String externalId;
-    private final String documentManagementId;
     private final String referenceNumber;
     @JsonProperty("claim")
     private final ClaimData claimData;
@@ -36,6 +35,8 @@ public class Claim {
     private final LocalDateTime countyCourtJudgmentRequestedAt;
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
+    private final String sealedClaimDocumentManagementSelfUri;
+    private final String sealedClaimDocumentManagementBinaryUri;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -44,7 +45,6 @@ public class Claim {
         final String letterHolderId,
         final String defendantId,
         final String externalId,
-        final String documentManagementId,
         final String referenceNumber,
         final ClaimData claimData,
         final LocalDateTime createdAt,
@@ -58,14 +58,15 @@ public class Claim {
         final CountyCourtJudgment countyCourtJudgment,
         final LocalDateTime countyCourtJudgmentRequestedAt,
         final Settlement settlement,
-        final LocalDateTime settlementReachedAt
+        final LocalDateTime settlementReachedAt,
+        final String sealedClaimDocumentManagementSelfUri,
+        final String sealedClaimDocumentManagementBinaryUri
     ) {
         this.id = id;
         this.submitterId = submitterId;
         this.letterHolderId = letterHolderId;
         this.defendantId = defendantId;
         this.externalId = externalId;
-        this.documentManagementId = documentManagementId;
         this.referenceNumber = referenceNumber;
         this.claimData = claimData;
         this.createdAt = createdAt;
@@ -80,6 +81,8 @@ public class Claim {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
+        this.sealedClaimDocumentManagementSelfUri = sealedClaimDocumentManagementSelfUri;
+        this.sealedClaimDocumentManagementBinaryUri = sealedClaimDocumentManagementBinaryUri;
     }
 
     public Long getId() {
@@ -158,8 +161,12 @@ public class Claim {
         return settlementReachedAt;
     }
 
-    public String getDocumentManagementId() {
-        return documentManagementId;
+    public String getSealedClaimDocumentManagementSelfUri() {
+        return sealedClaimDocumentManagementSelfUri;
+    }
+
+    public String getSealedClaimDocumentManagementBinaryUri() {
+        return sealedClaimDocumentManagementBinaryUri;
     }
 
     @Override
@@ -178,7 +185,6 @@ public class Claim {
             && Objects.equals(letterHolderId, claim.letterHolderId)
             && Objects.equals(defendantId, claim.defendantId)
             && Objects.equals(externalId, claim.externalId)
-            && Objects.equals(documentManagementId, claim.documentManagementId)
             && Objects.equals(referenceNumber, claim.referenceNumber)
             && Objects.equals(claimData, claim.claimData)
             && Objects.equals(createdAt, claim.createdAt)
@@ -191,15 +197,17 @@ public class Claim {
             && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
             && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
             && Objects.equals(settlement, claim.settlement)
-            && Objects.equals(settlementReachedAt, claim.settlementReachedAt);
+            && Objects.equals(settlementReachedAt, claim.settlementReachedAt)
+            && Objects.equals(sealedClaimDocumentManagementSelfUri, claim.sealedClaimDocumentManagementSelfUri)
+            && Objects.equals(sealedClaimDocumentManagementBinaryUri, claim.sealedClaimDocumentManagementBinaryUri);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, documentManagementId,
-            referenceNumber, claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
-            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
-            settlement, settlementReachedAt
+        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber, claimData,
+            createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail, respondedAt, response,
+            defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt, settlement, settlementReachedAt,
+            sealedClaimDocumentManagementSelfUri, sealedClaimDocumentManagementBinaryUri
         );
     }
 

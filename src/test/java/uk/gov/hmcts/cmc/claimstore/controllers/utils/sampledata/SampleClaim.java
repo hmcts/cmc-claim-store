@@ -89,21 +89,7 @@ public final class SampleClaim {
             LETTER_HOLDER_ID,
             DEFENDANT_ID,
             EXTERNAL_ID,
-            DOCUMENT_MANAGEMENT_ID,
-            referenceNumber,
-            Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()),
-            NOW_IN_LOCAL_ZONE,
-            ISSUE_DATE,
-            RESPONSE_DEADLINE,
-            NOT_REQUESTED_FOR_MORE_TIME,
-            SUBMITTER_EMAIL,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
+            referenceNumber, Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()), NOW_IN_LOCAL_ZONE, ISSUE_DATE, RESPONSE_DEADLINE, NOT_REQUESTED_FOR_MORE_TIME, SUBMITTER_EMAIL, null, null, null, null, null, null, null, DOCUMENT_MANAGEMENT_ID
         );
     }
 
@@ -140,21 +126,8 @@ public final class SampleClaim {
             letterHolderId,
             defendantId,
             externalId,
-            documentManagementId,
-            referenceNumber,
-            claimData,
-            NOW_IN_LOCAL_ZONE,
-            issuedOn,
-            responseDeadline,
-            isMoreTimeRequested,
-            submitterEmail,
-            respondedAt,
-            response,
-            defendantEmail,
-            countyCourtJudgment,
-            countyCourtJudgmentRequestedAt,
-            settlement,
-            settlementReachedAt);
+            referenceNumber, claimData, NOW_IN_LOCAL_ZONE, issuedOn, responseDeadline, isMoreTimeRequested, submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt, settlement, settlementReachedAt, documentManagementId
+        );
     }
 
     public SampleClaim withSubmitterId(String userId) {
