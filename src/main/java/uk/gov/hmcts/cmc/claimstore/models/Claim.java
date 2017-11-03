@@ -20,6 +20,7 @@ public class Claim {
     private final String letterHolderId;
     private final String defendantId;
     private final String externalId;
+    private final String documentManagementId;
     private final String referenceNumber;
     @JsonProperty("claim")
     private final ClaimData claimData;
@@ -43,6 +44,7 @@ public class Claim {
         final String letterHolderId,
         final String defendantId,
         final String externalId,
+        final String documentManagementId,
         final String referenceNumber,
         final ClaimData claimData,
         final LocalDateTime createdAt,
@@ -63,6 +65,7 @@ public class Claim {
         this.letterHolderId = letterHolderId;
         this.defendantId = defendantId;
         this.externalId = externalId;
+        this.documentManagementId = documentManagementId;
         this.referenceNumber = referenceNumber;
         this.claimData = claimData;
         this.createdAt = createdAt;
@@ -155,6 +158,10 @@ public class Claim {
         return settlementReachedAt;
     }
 
+    public String getDocumentManagementId() {
+        return documentManagementId;
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
@@ -171,6 +178,7 @@ public class Claim {
             && Objects.equals(letterHolderId, claim.letterHolderId)
             && Objects.equals(defendantId, claim.defendantId)
             && Objects.equals(externalId, claim.externalId)
+            && Objects.equals(documentManagementId, claim.documentManagementId)
             && Objects.equals(referenceNumber, claim.referenceNumber)
             && Objects.equals(claimData, claim.claimData)
             && Objects.equals(createdAt, claim.createdAt)
@@ -188,8 +196,8 @@ public class Claim {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
-            claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
+        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, documentManagementId,
+            referenceNumber, claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
             respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
             settlement, settlementReachedAt
         );
@@ -199,5 +207,4 @@ public class Claim {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
 }

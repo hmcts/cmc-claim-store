@@ -118,13 +118,13 @@ public class SupportController {
             final String fullName = userService.getUserDetails(authorisation).getFullName();
 
             claimIssuedStaffNotificationHandler
-                .onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName));
+                .onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation));
 
         } else {
             final UserDetails userDetails = userService.getUserDetails(authorisation);
 
             claimIssuedStaffNotificationHandler
-                .onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim, userDetails.getFullName()));
+                .onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation));
         }
 
     }

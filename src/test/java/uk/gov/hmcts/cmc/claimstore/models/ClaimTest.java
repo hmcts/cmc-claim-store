@@ -63,6 +63,7 @@ public class ClaimTest {
             "3",
             "4",
             "external-id",
+            "document-management-id",
             "ref number",
             null,
             createdAt,

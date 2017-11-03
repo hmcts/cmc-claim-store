@@ -3,10 +3,10 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.documents.content.LegalSealedClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantPinLetterContentProvider;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.SealedClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -29,9 +29,9 @@ public class ClaimIssuedStaffNotificationService {
     private final StaffEmailProperties staffEmailProperties;
     private final ClaimIssuedStaffNotificationEmailContentProvider provider;
     private final PDFServiceClient pdfServiceClient;
-    private final SealedClaimContentProvider sealedClaimContentProvider;
+    private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
     private final DefendantPinLetterContentProvider defendantPinLetterContentProvider;
-    private final LegalSealedClaimContentProvider legalSealedClaimContentProvider;
+    private final LegalSealedClaimPdfService legalSealedClaimPdfService;
 
     @Autowired
     public ClaimIssuedStaffNotificationService(
@@ -39,17 +39,17 @@ public class ClaimIssuedStaffNotificationService {
         final StaffEmailProperties staffEmailProperties,
         final ClaimIssuedStaffNotificationEmailContentProvider provider,
         final PDFServiceClient pdfServiceClient,
-        final SealedClaimContentProvider sealedClaimContentProvider,
+        final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
         final DefendantPinLetterContentProvider defendantPinLetterContentProvider,
-        final LegalSealedClaimContentProvider legalSealedClaimContentProvider
+        final LegalSealedClaimPdfService legalSealedClaimPdfService
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.provider = provider;
         this.pdfServiceClient = pdfServiceClient;
-        this.sealedClaimContentProvider = sealedClaimContentProvider;
+        this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
         this.defendantPinLetterContentProvider = defendantPinLetterContentProvider;
-        this.legalSealedClaimContentProvider = legalSealedClaimContentProvider;
+        this.legalSealedClaimPdfService = legalSealedClaimPdfService;
     }
 
     public void notifyStaffClaimIssued(Claim claim, Optional<String> defendantPin, String submitterEmail) {
@@ -85,10 +85,7 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     private EmailAttachment sealedLegalClaimPdf(Claim claim) {
-        byte[] generatedPdf = pdfServiceClient.generateFromHtml(
-            staffEmailProperties.getEmailTemplates().getLegalSealedClaim(),
-            legalSealedClaimContentProvider.createContent(claim)
-        );
+        byte[] generatedPdf = legalSealedClaimPdfService.createPdf(claim);
 
         return pdf(
             generatedPdf,
@@ -97,10 +94,7 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     private EmailAttachment sealedClaimPdf(Claim claim, String submitterEmail) {
-        byte[] generatedPdf = pdfServiceClient.generateFromHtml(
-            staffEmailProperties.getEmailTemplates().getSealedClaim(),
-            sealedClaimContentProvider.createContent(claim, submitterEmail)
-        );
+        byte[] generatedPdf = citizenSealedClaimPdfService.createPdf(claim, submitterEmail);
 
         return pdf(
             generatedPdf,

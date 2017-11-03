@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
-import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimService;
+import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
@@ -25,19 +25,19 @@ public class DocumentsController {
 
     private final ClaimService claimService;
     private final DefendantResponseCopyService defendantResponseCopyService;
-    private final LegalSealedClaimService legalSealedClaimService;
+    private final LegalSealedClaimPdfService legalSealedClaimPdfService;
     private final CountyCourtJudgmentService countyCourtJudgmentService;
 
     @Autowired
     public DocumentsController(
         final ClaimService claimService,
         final DefendantResponseCopyService defendantResponseCopyService,
-        final LegalSealedClaimService legalSealedClaimService,
+        final LegalSealedClaimPdfService legalSealedClaimPdfService,
         final CountyCourtJudgmentService countyCourtJudgmentService
     ) {
         this.claimService = claimService;
         this.defendantResponseCopyService = defendantResponseCopyService;
-        this.legalSealedClaimService = legalSealedClaimService;
+        this.legalSealedClaimPdfService = legalSealedClaimPdfService;
         this.countyCourtJudgmentService = countyCourtJudgmentService;
     }
 
@@ -68,7 +68,7 @@ public class DocumentsController {
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
         Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        byte[] pdfDocument = legalSealedClaimService.createPdf(claim);
+        byte[] pdfDocument = legalSealedClaimPdfService.createPdf(claim);
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)

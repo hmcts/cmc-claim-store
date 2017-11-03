@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.DEFENDANT_ID;
+import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.DOCUMENT_MANAGEMENT_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.NOT_REQUESTED_FOR_MORE_TIME;
@@ -50,6 +51,7 @@ public class ClaimServiceTest {
     private static final String VALID_DEFENDANT_TOKEN = "this is valid token for defendant";
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INVALID_DEFENDANT_TOKEN = "You shall not pass!";
+    private static final String AUTHORISATION = "Bearer: aaa";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
 
     private static final UserDetails validDefendant
@@ -170,7 +172,9 @@ public class ClaimServiceTest {
         Claim createdClaim = claimService.saveClaim(USER_ID, app, authorisationToken);
 
         assertThat(createdClaim).isEqualTo(claim);
-        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null), anyString());
+
+        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim),
+            eq(null), anyString(), eq(AUTHORISATION));
     }
 
     @Test(expected = ConflictException.class)
@@ -242,6 +246,7 @@ public class ClaimServiceTest {
             letterHolderId,
             DEFENDANT_ID,
             EXTERNAL_ID,
+            null,
             REFERENCE_NUMBER,
             claimData,
             NOW_IN_LOCAL_ZONE,
@@ -266,6 +271,7 @@ public class ClaimServiceTest {
             LETTER_HOLDER_ID,
             DEFENDANT_ID,
             EXTERNAL_ID,
+            DOCUMENT_MANAGEMENT_ID,
             REFERENCE_NUMBER,
             VALID_APP,
             NOW_IN_LOCAL_ZONE,

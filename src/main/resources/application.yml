@@ -34,6 +34,12 @@ idam:
   api:
     url: "http://localhost:8080"
 
+document:
+  management:
+    gateway:
+       api:
+          url: "http://localhost:8083"
+
 bankHolidays:
   api:
     url: "https://www.gov.uk"

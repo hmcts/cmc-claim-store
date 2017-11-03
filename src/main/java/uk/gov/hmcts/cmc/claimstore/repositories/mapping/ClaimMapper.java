@@ -26,6 +26,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getString("letter_holder_id"),
             result.getString("defendant_id"),
             result.getString("external_id"),
+            result.getString("external_id"),
             result.getString("reference_number"),
             toClaimData(result.getString("claim")),
             toLocalDateTimeFromUTC(result.getTimestamp("created_at")),

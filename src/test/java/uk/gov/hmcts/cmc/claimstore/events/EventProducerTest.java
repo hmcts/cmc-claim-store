@@ -47,11 +47,11 @@ public class EventProducerTest {
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
         //given
-        final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME);
+        final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
         //when
-        eventProducer.createClaimIssuedEvent(CLAIM, PIN, userDetails.getFullName());
+        eventProducer.createClaimIssuedEvent(CLAIM, PIN, userDetails.getFullName(), AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(any(ClaimIssuedEvent.class));
@@ -66,7 +66,7 @@ public class EventProducerTest {
         when(data.isClaimantRepresented()).thenReturn(true);
 
         //when
-        eventProducer.createClaimIssuedEvent(claim, PIN, userDetails.getFullName());
+        eventProducer.createClaimIssuedEvent(claim, PIN, userDetails.getFullName(), AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(any(RepresentedClaimIssuedEvent.class));

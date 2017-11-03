@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 
 import java.util.Optional;
@@ -15,12 +16,15 @@ import java.util.Optional;
 public class ClaimIssuedCitizenActionsHandler {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
+    private final DocumentManagementService documentManagementService;
 
     @Autowired
     public ClaimIssuedCitizenActionsHandler(final ClaimIssuedNotificationService claimIssuedNotificationService,
-                                            final NotificationsProperties notificationsProperties) {
+                                            final NotificationsProperties notificationsProperties,
+                                            final DocumentManagementService documentManagementService) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
+        this.documentManagementService = documentManagementService;
     }
 
     @EventListener
@@ -35,6 +39,10 @@ public class ClaimIssuedCitizenActionsHandler {
             "claimant-issue-notification-" + claim.getReferenceNumber(),
             event.getSubmitterName()
         );
+
+        documentManagementService.storeCitizenClaimN1Form(event.getAuthorisation(),
+            event.getClaim(), event.getSubmitterEmail());
+
     }
 
     @EventListener

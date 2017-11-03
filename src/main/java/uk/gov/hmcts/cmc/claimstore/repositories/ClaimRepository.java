@@ -127,6 +127,14 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
+        "UPDATE claim SET document_management_id = :documentManagementId WHERE id = :claimId"
+    )
+    Integer linkDocumentManagement(
+        @Bind("claimId") final Long claimId,
+        @Bind("documentManagementId") final String documentManagementId
+    );
+
+    @SqlUpdate(
         "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
     )
     Integer linkDefendant(

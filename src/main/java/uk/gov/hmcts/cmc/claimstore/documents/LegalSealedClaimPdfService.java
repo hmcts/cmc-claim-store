@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class LegalSealedClaimService {
+public class LegalSealedClaimPdfService {
 
     private final StaffEmailTemplates emailTemplates;
     private final PDFServiceClient pdfServiceClient;
     private final LegalSealedClaimContentProvider legalSealedClaimContentProvider;
 
     @Autowired
-    public LegalSealedClaimService(
+    public LegalSealedClaimPdfService(
         final StaffEmailTemplates emailTemplates,
         final PDFServiceClient pdfServiceClient,
         final LegalSealedClaimContentProvider legalSealedClaimContentProvider

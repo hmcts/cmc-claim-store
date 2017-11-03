@@ -12,12 +12,15 @@ public class ClaimIssuedEvent {
     private final Claim claim;
     private final String pin;
     private final String submitterName;
+    private final String authorisation;
 
-    public ClaimIssuedEvent(final Claim claim, final String pin, final String submitterName) {
+    public ClaimIssuedEvent(final Claim claim, final String pin,
+                            final String submitterName, final String authorisation) {
         this.submitterEmail = claim.getSubmitterEmail();
         this.claim = claim;
         this.pin = pin;
         this.submitterName = submitterName;
+        this.authorisation = authorisation;
     }
 
     public String getSubmitterEmail() {
@@ -36,6 +39,10 @@ public class ClaimIssuedEvent {
         return submitterName;
     }
 
+    public String getAuthorisation() {
+        return authorisation;
+    }
+
     @Override
     public boolean equals(final Object other) {
         if (this == other) {
@@ -47,15 +54,17 @@ public class ClaimIssuedEvent {
         }
 
         final ClaimIssuedEvent that = (ClaimIssuedEvent) other;
+
         return Objects.equals(submitterEmail, that.submitterEmail)
             && Objects.equals(claim, that.claim)
             && Objects.equals(pin, that.pin)
-            && Objects.equals(submitterName, that.submitterName);
+            && Objects.equals(submitterName, that.submitterName)
+            && Objects.equals(authorisation, that.authorisation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(submitterEmail, claim, pin, submitterName);
+        return Objects.hash(submitterEmail, claim, pin, submitterName, authorisation);
     }
 
     @Override

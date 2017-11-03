@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LegalSealedClaimServiceTest {
+public class LegalSealedClaimPdfServiceTest {
 
     @Mock
     private LegalSealedClaimContentProvider contentProvider;
@@ -25,11 +25,11 @@ public class LegalSealedClaimServiceTest {
     @Mock
     private Claim claim;
 
-    private LegalSealedClaimService service;
+    private LegalSealedClaimPdfService service;
 
     @Before
     public void beforeEachTest() {
-        service = new LegalSealedClaimService(emailTemplates, pdfServiceClient, contentProvider);
+        service = new LegalSealedClaimPdfService(emailTemplates, pdfServiceClient, contentProvider);
     }
 
     @Test(expected = NullPointerException.class)

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -26,10 +27,13 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class ClaimIssuedCitizenActionsHandlerTest {
     private static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
     private static final String DEFENDANT_CLAIM_ISSUED_TEMPLATE = "defendantClaimIssued";
+    private static final String AUTHORISATION = "Bearer: aaa";
 
     private ClaimIssuedCitizenActionsHandler claimIssuedCitizenActionsHandler;
     @Mock
     private ClaimIssuedNotificationService claimIssuedNotificationService;
+    @Mock
+    private DocumentManagementService documentManagementService;
     @Mock
     private NotificationsProperties properties;
     @Mock
@@ -41,7 +45,8 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     public void setup() {
         claimIssuedCitizenActionsHandler = new ClaimIssuedCitizenActionsHandler(
             claimIssuedNotificationService,
-            properties
+            properties,
+            documentManagementService
         );
         when(properties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
@@ -53,7 +58,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
 
         final ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(SampleClaimIssuedEvent.CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME);
+            = new ClaimIssuedEvent(SampleClaimIssuedEvent.CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
@@ -76,7 +81,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         Claim claimNoDefendantEmail = getClaimWithNoDefendantEmail();
 
         ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(claimNoDefendantEmail, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME);
+            = new ClaimIssuedEvent(claimNoDefendantEmail, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
