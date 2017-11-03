@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+uk.gov.hmcts.reform.httpproxy.spring.HttpProxyInitialiser,\
+uk.gov.hmcts.reform.httpproxy.spring.HttpProxyConfigurator,\
+uk.gov.hmcts.reform.httpproxy.spring.EnvNoProxyToJavaNonProxyHostsConverter,\
+uk.gov.hmcts.reform.httpproxy.spring.NonProxyHostsDeduplicator
