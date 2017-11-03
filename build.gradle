@@ -109,6 +109,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
 
     compile group: 'uk.gov.hmcts.reform.cmc', name: 'pdf-service-client', version: '1.2.2'
+    compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '1.0.0'
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 
