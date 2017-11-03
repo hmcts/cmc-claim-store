@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
@@ -20,6 +21,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
@@ -28,12 +31,15 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     private static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
     private static final String DEFENDANT_CLAIM_ISSUED_TEMPLATE = "defendantClaimIssued";
     private static final String AUTHORISATION = "Bearer: aaa";
+    private static final byte[] N1_FORM_PDF = {65, 66, 67, 68};
 
     private ClaimIssuedCitizenActionsHandler claimIssuedCitizenActionsHandler;
     @Mock
     private ClaimIssuedNotificationService claimIssuedNotificationService;
     @Mock
     private DocumentManagementService documentManagementService;
+    @Mock
+    private CitizenSealedClaimPdfService citizenSealedClaimPdfService;
     @Mock
     private NotificationsProperties properties;
     @Mock
@@ -46,29 +52,30 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         claimIssuedCitizenActionsHandler = new ClaimIssuedCitizenActionsHandler(
             claimIssuedNotificationService,
             properties,
-            documentManagementService
-        );
+            documentManagementService,
+            citizenSealedClaimPdfService);
         when(properties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(emailTemplates.getClaimantClaimIssued()).thenReturn(CLAIMANT_CLAIM_ISSUED_TEMPLATE);
         when(emailTemplates.getDefendantClaimIssued()).thenReturn(DEFENDANT_CLAIM_ISSUED_TEMPLATE);
+        when(citizenSealedClaimPdfService.createPdf(CLAIM, CLAIMANT_EMAIL)).thenReturn(N1_FORM_PDF);
     }
 
     @Test
     public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
 
         final ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(SampleClaimIssuedEvent.CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
+            = new ClaimIssuedEvent(CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(SampleClaimIssuedEvent.CLAIM,
-            SampleClaimIssuedEvent.CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
+        verify(claimIssuedNotificationService, once()).sendMail(CLAIM,
+            CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
             "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
             SUBMITTER_NAME);
 
-        verify(claimIssuedNotificationService, once()).sendMail(SampleClaimIssuedEvent.CLAIM,
+        verify(claimIssuedNotificationService, once()).sendMail(CLAIM,
             SampleClaimIssuedEvent.DEFENDANT_EMAIL, Optional.of(SampleClaimIssuedEvent.PIN),
             DEFENDANT_CLAIM_ISSUED_TEMPLATE,
             "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
@@ -87,7 +94,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
         verify(claimIssuedNotificationService, once()).sendMail(claimNoDefendantEmail,
-            SampleClaimIssuedEvent.CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
+            CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
             "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
             SUBMITTER_NAME);
 
@@ -96,5 +103,16 @@ public class ClaimIssuedCitizenActionsHandlerTest {
             DEFENDANT_CLAIM_ISSUED_TEMPLATE,
             "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
             SUBMITTER_NAME);
+    }
+
+    @Test
+    public void shouldUploadSealedClaimForm() throws NotificationClientException {
+        final ClaimIssuedEvent claimIssuedEvent
+            = new ClaimIssuedEvent(CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
+
+        claimIssuedCitizenActionsHandler.handleDocumentUpload(claimIssuedEvent);
+
+        verify(citizenSealedClaimPdfService, once()).createPdf(CLAIM, CLAIMANT_EMAIL);
+        verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
     }
 }

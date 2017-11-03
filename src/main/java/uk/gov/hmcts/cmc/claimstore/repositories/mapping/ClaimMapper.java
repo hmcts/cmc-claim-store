@@ -40,7 +40,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableSettlement(result.getString("settlement")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
             result.getString("sealed_claim_document_management_self_uri"),
-            result.getString("sealed_claim_document_management_binary_uri")
+            result.getString("sealed_claim_document_management_binary_urigit ")
         );
 
     }

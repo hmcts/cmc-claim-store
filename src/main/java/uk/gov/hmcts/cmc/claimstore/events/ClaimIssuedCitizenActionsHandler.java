@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
@@ -17,14 +18,17 @@ public class ClaimIssuedCitizenActionsHandler {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentManagementService documentManagementService;
+    private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
 
     @Autowired
     public ClaimIssuedCitizenActionsHandler(final ClaimIssuedNotificationService claimIssuedNotificationService,
                                             final NotificationsProperties notificationsProperties,
-                                            final DocumentManagementService documentManagementService) {
+                                            final DocumentManagementService documentManagementService,
+                                            final CitizenSealedClaimPdfService citizenSealedClaimPdfService) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.documentManagementService = documentManagementService;
+        this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
     }
 
     @EventListener
@@ -39,10 +43,13 @@ public class ClaimIssuedCitizenActionsHandler {
             "claimant-issue-notification-" + claim.getReferenceNumber(),
             event.getSubmitterName()
         );
+    }
 
-        documentManagementService.storeCitizenClaimN1Form(event.getAuthorisation(),
-            event.getClaim(), event.getSubmitterEmail());
-
+    @EventListener
+    public void handleDocumentUpload(final ClaimIssuedEvent event) {
+        final Claim claim = event.getClaim();
+        final byte[] n1FormPdf = citizenSealedClaimPdfService.createPdf(claim, event.getSubmitterEmail());
+        documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim, n1FormPdf);
     }
 
     @EventListener
