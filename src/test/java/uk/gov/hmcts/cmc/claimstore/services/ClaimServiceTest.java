@@ -32,7 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.DEFENDANT_ID;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.DOCUMENT_MANAGEMENT_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.NOT_REQUESTED_FOR_MORE_TIME;
@@ -246,7 +245,7 @@ public class ClaimServiceTest {
             letterHolderId,
             DEFENDANT_ID,
             EXTERNAL_ID,
-            REFERENCE_NUMBER, claimData, NOW_IN_LOCAL_ZONE, ISSUE_DATE, RESPONSE_DEADLINE, NOT_REQUESTED_FOR_MORE_TIME, SUBMITTER_EMAIL, null, null, null, null, null, null, null, null
+            REFERENCE_NUMBER, claimData, NOW_IN_LOCAL_ZONE, ISSUE_DATE, RESPONSE_DEADLINE, NOT_REQUESTED_FOR_MORE_TIME, SUBMITTER_EMAIL, null, null, null, null, null, null, null, null, null
         );
     }
 
@@ -257,7 +256,7 @@ public class ClaimServiceTest {
             LETTER_HOLDER_ID,
             DEFENDANT_ID,
             EXTERNAL_ID,
-            REFERENCE_NUMBER, VALID_APP, NOW_IN_LOCAL_ZONE, ISSUE_DATE, responseDeadline, moreTimeAlreadyRequested, SUBMITTER_EMAIL, null, null, null, null, null, null, null, DOCUMENT_MANAGEMENT_ID
+            REFERENCE_NUMBER, VALID_APP, NOW_IN_LOCAL_ZONE, ISSUE_DATE, responseDeadline, moreTimeAlreadyRequested, SUBMITTER_EMAIL, null, null, null, null, null, null, null, null, null
         );
     }
 }

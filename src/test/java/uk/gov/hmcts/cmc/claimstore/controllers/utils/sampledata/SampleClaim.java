@@ -26,7 +26,6 @@ public final class SampleClaim {
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000CM001";
     public static final String EXTERNAL_ID = UUID.randomUUID().toString();
-    public static final String DOCUMENT_MANAGEMENT_ID = UUID.randomUUID().toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
@@ -38,7 +37,6 @@ public final class SampleClaim {
     private Long claimId = CLAIM_ID;
     private String referenceNumber = REFERENCE_NUMBER;
     private String externalId = EXTERNAL_ID;
-    private String documentManagementId = DOCUMENT_MANAGEMENT_ID;
     private boolean isMoreTimeRequested = NOT_REQUESTED_FOR_MORE_TIME;
     private LocalDate responseDeadline = RESPONSE_DEADLINE;
     private String submitterEmail = SUBMITTER_EMAIL;
@@ -89,7 +87,7 @@ public final class SampleClaim {
             LETTER_HOLDER_ID,
             DEFENDANT_ID,
             EXTERNAL_ID,
-            referenceNumber, Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()), NOW_IN_LOCAL_ZONE, ISSUE_DATE, RESPONSE_DEADLINE, NOT_REQUESTED_FOR_MORE_TIME, SUBMITTER_EMAIL, null, null, null, null, null, null, null, DOCUMENT_MANAGEMENT_ID
+            referenceNumber, Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()), NOW_IN_LOCAL_ZONE, ISSUE_DATE, RESPONSE_DEADLINE, NOT_REQUESTED_FOR_MORE_TIME, SUBMITTER_EMAIL, null, null, null, null, null, null, null, null, null
         );
     }
 
@@ -126,7 +124,7 @@ public final class SampleClaim {
             letterHolderId,
             defendantId,
             externalId,
-            referenceNumber, claimData, NOW_IN_LOCAL_ZONE, issuedOn, responseDeadline, isMoreTimeRequested, submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt, settlement, settlementReachedAt, documentManagementId
+            referenceNumber, claimData, NOW_IN_LOCAL_ZONE, issuedOn, responseDeadline, isMoreTimeRequested, submitterEmail, respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt, settlement, settlementReachedAt, null, null
         );
     }
 
