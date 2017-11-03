@@ -9,19 +9,16 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
@@ -63,12 +60,12 @@ public class RepresentedClaimIssuedEventHandlerTest {
     public void sendNotificationsSendsNotificationsToRepresentative() throws NotificationClientException {
 
         final RepresentedClaimIssuedEvent representedClaimIssuedEvent
-            = new RepresentedClaimIssuedEvent(SampleClaimIssuedEvent.CLAIM, SUBMITTER_NAME, AUTHORISATION);
+            = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         representativeConfirmationHandler.sendConfirmation(representedClaimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(SampleClaimIssuedEvent.CLAIM,
-            SampleClaimIssuedEvent.CLAIMANT_EMAIL, Optional.empty(), REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE,
+        verify(claimIssuedNotificationService, once()).sendMail(CLAIM,
+            CLAIMANT_EMAIL, Optional.empty(), REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE,
             "representative-issue-notification-" + representedClaimIssuedEvent.getClaim().getReferenceNumber(),
             SUBMITTER_NAME);
     }

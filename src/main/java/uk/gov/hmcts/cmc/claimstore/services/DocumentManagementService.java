@@ -12,6 +12,8 @@ import uk.gov.hmcts.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
 
+import static uk.gov.hmcts.cmc.claimstore.services.documentmanagement.Classification.PRIVATE;
+
 @Service
 public class DocumentManagementService {
 
@@ -35,7 +37,7 @@ public class DocumentManagementService {
 
     private Document uploadDocument(final String authorisation, final Claim claim, final byte[] n1FormPdf) {
         final MultipartFile[] files = {new InMemoryMultipartFile(claim.getReferenceNumber(), n1FormPdf)};
-        final UploadResponse response = documentClientApi.upload(authorisation, files, "PRIVATE");
+        final UploadResponse response = documentClientApi.upload(authorisation, files, PRIVATE.toString());
 
         return response.embedded.documents.stream()
             .findFirst()

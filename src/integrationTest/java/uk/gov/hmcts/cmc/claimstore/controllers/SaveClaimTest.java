@@ -51,7 +51,8 @@ public class SaveClaimTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
 
-        given(documentClientApi.upload(anyString(), any(MultipartFile[].class), anyString())).willReturn(getUploadResponse());
+        given(documentClientApi.upload(anyString(), any(MultipartFile[].class), anyString()))
+            .willReturn(getUploadResponse());
     }
 
     @Test
