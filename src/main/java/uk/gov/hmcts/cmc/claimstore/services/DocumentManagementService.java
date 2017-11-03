@@ -38,7 +38,6 @@ public class DocumentManagementService {
         final UploadResponse response = documentClientApi.upload(authorisation, new MultipartFile[]{n1Form}, "PRIVATE");
 
         claimRepository.linkDocumentManagement(claim.getId(), getDocumentManagementId(response));
-
     }
 
     public void storeCitizenClaimN1Form(final String authorisation, final Claim claim, final String submitterEmail) {

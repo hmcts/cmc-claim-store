@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.document.DocumentClientApi;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
@@ -54,6 +55,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected PDFServiceClient pdfServiceClient;
+
+    @MockBean
+    protected DocumentClientApi documentClientApi;
 
     @TestConfiguration
     @Profile("unit-tests")
