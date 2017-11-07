@@ -16,10 +16,15 @@ public class Settlement {
         partyStatements.add(new PartyStatement(StatementType.OFFER, party, offer));
     }
 
+    public void accept(MadeBy party) {
+        assertOfferCanBeAccepted(party);
+        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+    }
+
     @JsonIgnore
     PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
-            throw new IllegalStateException("No statements have yet been made during that settlement");
+            throw new IllegalStateException("No statements have yet been made during that partyStatement");
         }
         return partyStatements.get(partyStatements.size() - 1);
     }
@@ -34,9 +39,26 @@ public class Settlement {
         }
     }
 
-    private boolean lastStatementIsAnOfferMadeBy(MadeBy madeBy) {
-        return getLastStatement().getType().equals(StatementType.OFFER)
-            && getLastStatement().getMadeBy().equals(madeBy);
+    @JsonIgnore
+    private void assertOfferCanBeAccepted(MadeBy party) {
+        assertOfferCanBeMadeBy(party);
+
+        if (partyStatements.isEmpty()) {
+            throw new IllegalSettlementStatementException("Offer has not been made. You can't accept it!");
+        }
+
+        if (!lastStatementIsOffer()) {
+            throw new IllegalSettlementStatementException(
+                "Offer was already " + getLastStatement().getType().toString().toLowerCase()
+            );
+        }
     }
 
+    private boolean lastStatementIsAnOfferMadeBy(MadeBy madeBy) {
+        return lastStatementIsOffer() && getLastStatement().getMadeBy().equals(madeBy);
+    }
+
+    private boolean lastStatementIsOffer() {
+        return getLastStatement().getType().equals(StatementType.OFFER);
+    }
 }

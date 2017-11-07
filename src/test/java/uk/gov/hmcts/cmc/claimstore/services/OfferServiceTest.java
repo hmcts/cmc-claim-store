@@ -43,7 +43,7 @@ public class OfferServiceTest {
     public void shouldSuccessfullySavedOffer() {
 
         // given
-        String settlementJsonMock = "I'm expected to be settlement json";
+        String settlementJsonMock = "I'm expected to be partyStatement json";
         when(jsonMapper.toJson(any(Settlement.class))).thenReturn(settlementJsonMock);
         Claim claim = SampleClaim.getDefault();
         Offer offer = mock(Offer.class);

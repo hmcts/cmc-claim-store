@@ -7,14 +7,23 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class PartyStatement {
 
-    private final StatementType type;
-    private final MadeBy madeBy;
-    private final Offer offer;
+    private StatementType type;
+    private MadeBy madeBy;
+    private Offer offer;
+
+    public PartyStatement() {
+        // default contractor required by Jackson
+    }
 
     public PartyStatement(StatementType type, MadeBy madeBy, Offer offer) {
         this.type = type;
         this.madeBy = madeBy;
         this.offer = offer;
+    }
+
+    public PartyStatement(StatementType type, MadeBy madeBy) {
+        this.type = type;
+        this.madeBy = madeBy;
     }
 
     public StatementType getType() {
@@ -28,5 +37,4 @@ public class PartyStatement {
     public Optional<Offer> getOffer() {
         return Optional.ofNullable(offer);
     }
-
 }

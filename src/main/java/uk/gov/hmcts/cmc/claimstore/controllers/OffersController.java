@@ -71,6 +71,20 @@ public class OffersController {
         return claimService.getClaimById(claimId);
     }
 
+    @PostMapping(value = "/{claimId:\\d+}/offers/{party}/accept", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Save County Court Judgment")
+    public Claim accept(
+        @PathVariable("claimId") Long claimId,
+        @PathVariable("party") MadeBy party,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        Claim claim = claimService.getClaimById(claimId);
+        assertActionIsPermittedFor(claim, party, authorisation);
+        offersService.accept(claim, party);
+        return claimService.getClaimById(claimId);
+    }
+
     private void assertActionIsPermittedFor(Claim claim, MadeBy party, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         if (party.equals(MadeBy.CLAIMANT)) {

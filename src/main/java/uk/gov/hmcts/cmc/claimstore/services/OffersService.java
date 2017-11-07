@@ -34,4 +34,11 @@ public class OffersService {
         offersRepository.updateSettlement(claim.getId(), jsonMapper.toJson(settlement));
         eventProducer.createOfferMadeEvent(claim);
     }
+
+    public void accept(Claim claim, MadeBy party) {
+        Settlement settlement = claim.getSettlement().orElse(new Settlement());
+        settlement.accept(party);
+        offersRepository.updateSettlement(claim.getId(), jsonMapper.toJson(settlement));
+        eventProducer.createOfferAcceptedEvent(claim, party);
+    }
 }

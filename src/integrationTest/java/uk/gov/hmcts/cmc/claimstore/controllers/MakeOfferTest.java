@@ -54,7 +54,7 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     @Test
     public void shouldAcceptValidOfferByDefendantAndReturnCreatedStatus() throws Exception {
-        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
+        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), MadeBy.DEFENDANT.name().toLowerCase())
             .andExpect(status().isCreated())
             .andReturn();
     }
