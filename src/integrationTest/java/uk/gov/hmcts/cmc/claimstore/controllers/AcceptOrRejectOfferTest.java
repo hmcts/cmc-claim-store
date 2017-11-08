@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AcceptOfferTest extends BaseIntegrationTest {
+public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_AUTH_TOKEN = "defendant-authDataString";
     private static final String CLAIMANT_AUTH_TOKEN = "claimant-authDataString";
@@ -64,6 +64,19 @@ public class AcceptOfferTest extends BaseIntegrationTest {
             .andExpect(status().isCreated());
 
         verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT));
+    }
+
+    @Test
+    public void shouldRejectExistingOfferAndReturn201Status() throws Exception {
+        webClient
+            .perform(
+                post(format("/claims/%d/offers/%s/reject", claim.getId(), MadeBy.CLAIMANT.name().toLowerCase()))
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
+            )
+            .andExpect(status().isCreated());
+
+        verify(offersService).reject(any(Claim.class), eq(MadeBy.CLAIMANT));
     }
 
     private void prepareDefendantOffer() {

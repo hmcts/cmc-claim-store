@@ -56,9 +56,17 @@ public class SettlementTest {
     }
 
     @Test
-    public void partyCanAcceptAnOffer() {
+    public void claimantCanAcceptAnOffer() {
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
+
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.ACCEPTATION);
+    }
+
+    @Test
+    public void defendantCanAcceptAnOffer() {
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.accept(MadeBy.DEFENDANT);
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.ACCEPTATION);
     }
@@ -80,6 +88,41 @@ public class SettlementTest {
     public void partyIsNotAllowedToAcceptOfferWhenTheOnlyOfferWasMadeByThemselves() {
         settlement.makeOffer(offer, MadeBy.CLAIMANT);
         settlement.accept(MadeBy.CLAIMANT);
+    }
+
+    @Test
+    public void claimantCanRejectAnOffer() {
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.reject(MadeBy.CLAIMANT);
+
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
+    }
+
+    @Test
+    public void defendantCanRejectAnOffer() {
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.reject(MadeBy.DEFENDANT);
+
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void partyIsNotAllowedToRejectOfferWhenOfferWasNotMade() {
+        settlement.reject(MadeBy.CLAIMANT);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void partyIsNotAllowedToRejectOfferWhenOfferWasAlreadyRejectedByThemselves() {
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.reject(MadeBy.CLAIMANT);
+
+        settlement.reject(MadeBy.CLAIMANT);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void partyIsNotAllowedToRejectOfferWhenTheOnlyOfferWasMadeByThemselves() {
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.reject(MadeBy.CLAIMANT);
     }
 
     @Test(expected = IllegalStateException.class)

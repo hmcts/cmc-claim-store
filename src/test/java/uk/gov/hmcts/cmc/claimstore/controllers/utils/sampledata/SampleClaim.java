@@ -237,4 +237,9 @@ public final class SampleClaim {
         this.defendantEmail = defendantEmail;
         return this;
     }
+
+    public SampleClaim withSettlement(final Settlement settlement) {
+        this.settlement = settlement;
+        return this;
+    }
 }

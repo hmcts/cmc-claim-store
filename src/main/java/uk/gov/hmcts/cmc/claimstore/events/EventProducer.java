@@ -43,4 +43,8 @@ public class EventProducer {
     public void createOfferAcceptedEvent(final Claim claim, final MadeBy party) {
         publisher.publishEvent(new OfferAcceptedEvent(claim, party));
     }
+
+    public void createOfferRejectedEvent(final Claim claim, final MadeBy party) {
+        publisher.publishEvent(new OfferRejectedEvent(claim, party));
+    }
 }

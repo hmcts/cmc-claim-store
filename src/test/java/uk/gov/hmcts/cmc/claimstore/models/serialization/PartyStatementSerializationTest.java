@@ -38,6 +38,17 @@ public class PartyStatementSerializationTest {
         assertThat(other.getOffer().isPresent()).isEqualTo(false);
     }
 
+    @Test
+    public void shouldConvertRejectionJsonToJavaObject() throws IOException {
+        //when
+        PartyStatement other = jsonToModel("/partyStatement/rejection.json");
+
+        //then
+        assertThat(other.getType()).isEqualTo(StatementType.REJECTION);
+        assertThat(other.getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
+        assertThat(other.getOffer().isPresent()).isEqualTo(false);
+    }
+
     private static PartyStatement jsonToModel(final String path) throws IOException {
         final String json = new ResourceReader().read(path);
         return mapper.readValue(json, PartyStatement.class);

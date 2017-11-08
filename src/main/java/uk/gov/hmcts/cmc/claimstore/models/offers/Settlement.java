@@ -17,8 +17,13 @@ public class Settlement {
     }
 
     public void accept(MadeBy party) {
-        assertOfferCanBeAccepted(party);
+        assertOfferCanBeDecided(party);
         partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+    }
+
+    public void reject(MadeBy party) {
+        assertOfferCanBeDecided(party);
+        partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
     }
 
     @JsonIgnore
@@ -40,16 +45,16 @@ public class Settlement {
     }
 
     @JsonIgnore
-    private void assertOfferCanBeAccepted(MadeBy party) {
+    private void assertOfferCanBeDecided(MadeBy party) {
         assertOfferCanBeMadeBy(party);
 
         if (partyStatements.isEmpty()) {
-            throw new IllegalSettlementStatementException("Offer has not been made. You can't accept it!");
+            throw new IllegalSettlementStatementException("Offer has not been made yet.");
         }
 
         if (!lastStatementIsOffer()) {
             throw new IllegalSettlementStatementException(
-                "Offer was already " + getLastStatement().getType().toString().toLowerCase()
+                "Last statement was: " + getLastStatement().getType().toString().toLowerCase() + ", offer expected."
             );
         }
     }
