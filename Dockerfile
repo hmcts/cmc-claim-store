@@ -1,4 +1,4 @@
-FROM openjdk:8-jre
+FROM openjdk:8-jre-alpine
 
 COPY build/install/claim-store /opt/app/
 
