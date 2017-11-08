@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
@@ -120,6 +121,19 @@ public class EventProducerTest {
 
         // when
         eventProducer.createOfferMadeEvent(CLAIM);
+
+        //then
+        verify(publisher).publishEvent(eq(expectedEvent));
+    }
+
+    @Test
+    public void shouldCreateOfferAcceptedEventEvent() throws Exception {
+
+        // given
+        OfferAcceptedEvent expectedEvent = new OfferAcceptedEvent(CLAIM, MadeBy.CLAIMANT);
+
+        // when
+        eventProducer.createOfferAcceptedEvent(CLAIM, MadeBy.CLAIMANT);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
