@@ -1,5 +1,7 @@
 FROM openjdk:8-jre-alpine
 
+RUN apk add --no-cache curl
+
 COPY build/install/claim-store /opt/app/
 
 WORKDIR /opt/app
