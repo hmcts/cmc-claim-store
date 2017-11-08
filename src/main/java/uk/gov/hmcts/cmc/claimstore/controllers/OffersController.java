@@ -58,7 +58,7 @@ public class OffersController {
 
     @PostMapping(value = "/{claimId:\\d+}/offers/{party}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Save County Court Judgment")
+    @ApiOperation("Makes an offer as a party")
     public Claim makeOffer(
         @PathVariable("claimId") Long claimId,
         @PathVariable("party") MadeBy party,
@@ -68,6 +68,34 @@ public class OffersController {
         Claim claim = claimService.getClaimById(claimId);
         assertActionIsPermittedFor(claim, party, authorisation);
         offersService.makeOffer(claim, offer, party);
+        return claimService.getClaimById(claimId);
+    }
+
+    @PostMapping(value = "/{claimId:\\d+}/offers/{party}/accept", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Accepts an offer as a party")
+    public Claim accept(
+        @PathVariable("claimId") Long claimId,
+        @PathVariable("party") MadeBy party,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        Claim claim = claimService.getClaimById(claimId);
+        assertActionIsPermittedFor(claim, party, authorisation);
+        offersService.accept(claim, party);
+        return claimService.getClaimById(claimId);
+    }
+
+    @PostMapping(value = "/{claimId:\\d+}/offers/{party}/reject", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Rejects an offer as a party")
+    public Claim reject(
+        @PathVariable("claimId") Long claimId,
+        @PathVariable("party") MadeBy party,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        Claim claim = claimService.getClaimById(claimId);
+        assertActionIsPermittedFor(claim, party, authorisation);
+        offersService.reject(claim, party);
         return claimService.getClaimById(claimId);
     }
 
