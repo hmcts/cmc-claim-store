@@ -1,31 +1,25 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.document.DocumentClientApi;
-import uk.gov.hmcts.document.domain.Document;
-import uk.gov.hmcts.document.domain.UploadResponse;
-import uk.gov.hmcts.document.utils.InMemoryMultipartFile;
+    import org.apache.commons.io.IOUtils;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.core.io.Resource;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Service;
+    import org.springframework.util.LinkedMultiValueMap;
+    import org.springframework.util.MultiValueMap;
+    import org.springframework.web.multipart.MultipartFile;
+    import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
+    import uk.gov.hmcts.cmc.claimstore.models.Claim;
+    import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+    import uk.gov.hmcts.document.DocumentClientApi;
+    import uk.gov.hmcts.document.domain.Document;
+    import uk.gov.hmcts.document.domain.UploadResponse;
+    import uk.gov.hmcts.document.utils.InMemoryMultipartFile;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+    import java.net.URI;
 
-import static uk.gov.hmcts.document.domain.Classification.PRIVATE;
+    import static uk.gov.hmcts.document.domain.Classification.PRIVATE;
 
 @Service
 public class DocumentManagementService {
@@ -67,32 +61,21 @@ public class DocumentManagementService {
 
     private Document uploadDocument(final String authorisation, final Claim claim, final byte[] n1FormPdf) {
         final MultipartFile[] files
-            = {new InMemoryMultipartFile("files", claim.getReferenceNumber()+".pdf", "application/pdf", n1FormPdf)};
+            = {new InMemoryMultipartFile("files", claim.getReferenceNumber() + ".pdf", "application/pdf", n1FormPdf)};
 
-        final UploadResponse response = documentClientApi.upload(authorisation, files[0]);
+        final UploadResponse response = documentClientApi.upload(authorisation, prepareRequest(files));
 
         return response.embedded.documents.stream()
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Map<String, Object> prepareRequest(MultipartFile[] files) {
-        Map<String, Object> parameters = new HashMap<>();
+    private MultiValueMap<String, Object> prepareRequest(MultipartFile[] files) {
+        MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<>();
         for (MultipartFile file : files) {
-//            try {
-                parameters.put("files", file);
-//                    @Override
-//                    public String getFilename() {
-//                        final String originalFilename = file.getOriginalFilename();
-//                        System.out.println(originalFilename);
-//                        return originalFilename;
-//                    }
-//                }));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            parameters.add("files", file);
         }
-        parameters.put("classification", PRIVATE.toString());
+        parameters.add("classification", PRIVATE.toString());
         return parameters;
     }
 }
