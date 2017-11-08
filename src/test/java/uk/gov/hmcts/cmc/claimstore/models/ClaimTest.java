@@ -63,7 +63,22 @@ public class ClaimTest {
             "3",
             "4",
             "external-id",
-            "ref number", null, createdAt, ISSUE_DATE, RESPONSE_DEADLINE, false, "claimant@mail.com", null, null, null, null, null, null, null, null, null
+            "ref number",
+            null,
+            createdAt,
+            ISSUE_DATE,
+            RESPONSE_DEADLINE,
+            false,
+            "claimant@mail.com",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         );
     }
 }

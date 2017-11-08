@@ -29,16 +29,14 @@ spring:
   mail:
     default-encoding: UTF-8
     test-connection: true
-
+  http:
+    multipart:
+      enabled: true
+      max-file-size: 4000000KB
+      max-request-size: 4000000KB
 idam:
   api:
     url: "http://localhost:8080"
-
-document:
-  management:
-    gateway:
-       api:
-          url: "http://localhost:8083"
 
 bankHolidays:
   api:
@@ -79,6 +77,7 @@ pdfService:
 
 feature_toggles:
   watermark_pdf: false
+  document_management: true
 
 feign:
   httpclient:

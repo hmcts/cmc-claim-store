@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -60,8 +61,8 @@ public class SupportController {
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") final String referenceNumber,
         @PathVariable("event") final String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) final String authorisation
-    ) throws ServletRequestBindingException {
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = true) final String authorisation
+    ) throws ServletRequestBindingException, DocumentManagementException {
 
         Claim claim = claimRepository.getByClaimReferenceNumber(referenceNumber)
             .orElseThrow(() -> new NotFoundException("Claim " + referenceNumber + " does not exist"));
@@ -102,7 +103,7 @@ public class SupportController {
     }
 
     private void resendStaffNotificationsOnClaimIssued(final Claim claim, final String authorisation)
-        throws ServletRequestBindingException {
+        throws ServletRequestBindingException, DocumentManagementException {
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
         }
@@ -123,8 +124,9 @@ public class SupportController {
         } else {
             final UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            claimIssuedStaffNotificationHandler
-                .onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation));
+            claimIssuedStaffNotificationHandler.onRepresentedClaimIssued(
+                new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation)
+            );
         }
 
     }

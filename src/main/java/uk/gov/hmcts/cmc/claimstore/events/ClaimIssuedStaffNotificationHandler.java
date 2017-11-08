@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 
 import java.util.Optional;
@@ -19,20 +20,22 @@ public class ClaimIssuedStaffNotificationHandler {
     }
 
     @EventListener
-    public void onClaimIssued(final ClaimIssuedEvent event) {
+    public void onClaimIssued(final ClaimIssuedEvent event) throws DocumentManagementException {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
             Optional.of(event.getPin()),
-            event.getSubmitterEmail()
+            event.getSubmitterEmail(),
+            event.getAuthorisation()
         );
     }
 
     @EventListener
-    public void onRepresentedClaimIssued(final RepresentedClaimIssuedEvent event) {
+    public void onRepresentedClaimIssued(final RepresentedClaimIssuedEvent event) throws DocumentManagementException {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
             Optional.empty(),
-            event.getRepresentativeEmail()
+            event.getRepresentativeEmail(),
+            event.getAuthorisation()
         );
     }
 }
