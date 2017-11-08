@@ -58,7 +58,7 @@ public class OffersController {
 
     @PostMapping(value = "/{claimId:\\d+}/offers/{party}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Save County Court Judgment")
+    @ApiOperation("Makes an offer as a party")
     public Claim makeOffer(
         @PathVariable("claimId") Long claimId,
         @PathVariable("party") MadeBy party,
@@ -73,7 +73,7 @@ public class OffersController {
 
     @PostMapping(value = "/{claimId:\\d+}/offers/{party}/accept", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Save County Court Judgment")
+    @ApiOperation("Accepts an offer as a party")
     public Claim accept(
         @PathVariable("claimId") Long claimId,
         @PathVariable("party") MadeBy party,
