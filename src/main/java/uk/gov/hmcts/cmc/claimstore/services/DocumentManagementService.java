@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.claimstore.services.documentmanagement.Classification.PRIVATE;
+import static uk.gov.hmcts.document.domain.Classification.PRIVATE;
 
 @Service
 public class DocumentManagementService {
