@@ -90,9 +90,9 @@ public class DocumentsController {
     private byte[] getPdfDocument(final Claim claim, final String authorisation) throws DocumentManagementException {
         final byte[] n1ClaimPdf = legalSealedClaimPdfService.createPdf(claim);
         if (dmFeatureToggle) {
-            return n1ClaimPdf;
-        } else {
             return documentManagementService.getClaimN1Form(authorisation, claim, n1ClaimPdf);
+        } else {
+            return n1ClaimPdf;
         }
     }
 

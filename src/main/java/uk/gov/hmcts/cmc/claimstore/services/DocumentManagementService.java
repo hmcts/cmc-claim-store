@@ -52,6 +52,7 @@ public class DocumentManagementService {
         } else {
             try {
                 final Resource body = responseEntity.getBody();
+
                 return IOUtils.toByteArray(body.getInputStream());
             } catch (Exception e) {
                 throw new DocumentManagementException("Failed reading sealed claim form from Document Store ", e);
