@@ -55,33 +55,31 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
     @Test
     public void shouldAcceptExistingOfferAndReturn201Status() throws Exception {
-        webClient
-            .perform(
-                post(format("/claims/%d/offers/%s/accept", claim.getId(), MadeBy.CLAIMANT.name().toLowerCase()))
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
-            )
-            .andExpect(status().isCreated());
+        postRequestTo("accept");
 
         verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT));
     }
 
     @Test
     public void shouldRejectExistingOfferAndReturn201Status() throws Exception {
-        webClient
-            .perform(
-                post(format("/claims/%d/offers/%s/reject", claim.getId(), MadeBy.CLAIMANT.name().toLowerCase()))
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
-            )
-            .andExpect(status().isCreated());
+        postRequestTo("reject");
 
         verify(offersService).reject(any(Claim.class), eq(MadeBy.CLAIMANT));
     }
 
+    private void postRequestTo(final String endpoint) throws Exception {
+        webClient
+            .perform(
+                post(format("/claims/%d/offers/%s/%s", claim.getId(), MadeBy.CLAIMANT.name(), endpoint))
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
+            )
+            .andExpect(status().isCreated());
+    }
+
     private void prepareDefendantOffer() {
 
-        final String url = format("/claims/%d/offers/%s", claim.getId(), MadeBy.DEFENDANT.name().toLowerCase());
+        final String url = format("/claims/%d/offers/%s", claim.getId(), MadeBy.DEFENDANT.name());
         final String requestBody = jsonMapper.toJson(SampleOffer.validDefaults());
 
         try {

@@ -242,4 +242,9 @@ public final class SampleClaim {
         this.settlement = settlement;
         return this;
     }
+
+    public SampleClaim withSettlementReachedAt(final LocalDateTime settlementReachedAt) {
+        this.settlementReachedAt = settlementReachedAt;
+        return this;
+    }
 }
