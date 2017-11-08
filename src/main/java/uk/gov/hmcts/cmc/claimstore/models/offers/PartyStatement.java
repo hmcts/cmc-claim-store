@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.models.offers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Optional;
@@ -11,10 +12,7 @@ public class PartyStatement {
     private MadeBy madeBy;
     private Offer offer;
 
-    public PartyStatement() {
-        // default contractor required by Jackson
-    }
-
+    @JsonCreator
     public PartyStatement(StatementType type, MadeBy madeBy, Offer offer) {
         this.type = type;
         this.madeBy = madeBy;
