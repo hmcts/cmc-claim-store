@@ -7,12 +7,12 @@ public interface OffersRepository {
 
     @SqlUpdate(
         "UPDATE claim "
-            + "SET partyStatement = :partyStatement::JSONB "
+            + "SET settlement = :settlement::JSONB "
             + "WHERE id = :claimId"
     )
     void updateSettlement(
         @Bind("claimId") Long claimId,
-        @Bind("partyStatement") String settlement
+        @Bind("settlement") String settlement
     );
 
 }

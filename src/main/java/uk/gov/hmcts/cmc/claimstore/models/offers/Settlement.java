@@ -24,7 +24,7 @@ public class Settlement {
     @JsonIgnore
     PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
-            throw new IllegalStateException("No statements have yet been made during that partyStatement");
+            throw new IllegalStateException("No statements have yet been made during that settlement");
         }
         return partyStatements.get(partyStatements.size() - 1);
     }
