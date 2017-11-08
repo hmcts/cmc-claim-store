@@ -138,16 +138,18 @@ timestamps {
               rpmTagger.tagTestingPassedOn('dev')
             }
           }
+
           milestone()
-//          lock(resource: "CMC-deploy-demo", inversePrecedence: true) {
-//            stage('Deploy (Demo)') {
-//              ansible.runDeployPlaybook(version, 'demo')
-//            }
-//            stage('Smoke test (Demo)') {
-//              smokeTests.executeAgainst(env.CMC_DEMO_APPLICATION_URL)
-//            }
-//          }
-//          milestone()
+          lock(resource: "CMC-deploy-demo", inversePrecedence: true) {
+            stage('Deploy (Demo)') {
+              ansible.runDeployPlaybook(version, 'demo')
+            }
+            stage('Smoke test (Demo)') {
+              smokeTests.executeAgainst(env.CMC_DEMO_APPLICATION_URL)
+            }
+          }
+
+          milestone()
         }
       } catch (err) {
         archiveArtifacts 'build/reports/**/*.html'
