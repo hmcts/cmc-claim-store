@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
@@ -35,7 +35,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
     private Claim claim;
 
     @Before
-    public void beforeEachTest() {
+    public void beforeEachTest() throws Exception {
         when(userService.getUserDetails(eq(CLAIMANT_AUTH_TOKEN))).thenReturn(
             SampleUserDetails.builder()
                 .withUserId(SUBMITTER_ID)
@@ -55,44 +55,37 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
     @Test
     public void shouldAcceptExistingOfferAndReturn201Status() throws Exception {
-        postRequestTo("accept");
+        postRequestTo("accept")
+            .andExpect(status().isCreated());
 
         verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT));
     }
 
     @Test
     public void shouldRejectExistingOfferAndReturn201Status() throws Exception {
-        postRequestTo("reject");
+        postRequestTo("reject")
+            .andExpect(status().isCreated());
 
         verify(offersService).reject(any(Claim.class), eq(MadeBy.CLAIMANT));
     }
 
-    private void postRequestTo(final String endpoint) throws Exception {
-        webClient
+    private ResultActions postRequestTo(final String endpoint) throws Exception {
+        return webClient
             .perform(
                 post(format("/claims/%d/offers/%s/%s", claim.getId(), MadeBy.CLAIMANT.name(), endpoint))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
-            )
-            .andExpect(status().isCreated());
+            );
     }
 
-    private void prepareDefendantOffer() {
-
-        final String url = format("/claims/%d/offers/%s", claim.getId(), MadeBy.DEFENDANT.name());
-        final String requestBody = jsonMapper.toJson(SampleOffer.validDefaults());
-
-        try {
-            webClient
-                .perform(
-                    post(url)
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .header(HttpHeaders.AUTHORIZATION, DEFENDANT_AUTH_TOKEN)
-                        .content(requestBody)
-                )
-                .andExpect(status().isCreated());
-        } catch (Exception e) {
-            Assert.fail(format("I was unable to create test data (POST: %s %s)", url, requestBody));
-        }
+    private void prepareDefendantOffer() throws Exception {
+        webClient
+            .perform(
+                post(format("/claims/%d/offers/%s", claim.getId(), MadeBy.DEFENDANT.name()))
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, DEFENDANT_AUTH_TOKEN)
+                    .content(jsonMapper.toJson(SampleOffer.validDefaults()))
+            )
+            .andExpect(status().isCreated());
     }
 }
