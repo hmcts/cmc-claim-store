@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 
 import java.time.LocalDateTime;
 
+import static java.lang.String.format;
+
 @Service
 public class OffersService {
 
@@ -41,26 +43,36 @@ public class OffersService {
     }
 
     public void accept(Claim claim, MadeBy party) {
+        assertMediationHasStarted(claim);
         assertSettlementIsNotReached(claim);
 
-        Settlement settlement = claim.getSettlement().orElse(new Settlement());
+        Settlement settlement = claim.getSettlement().get();
         settlement.accept(party);
+
         offersRepository.acceptOffer(claim.getId(), jsonMapper.toJson(settlement), LocalDateTime.now());
         eventProducer.createOfferAcceptedEvent(claim, party);
     }
 
     public void reject(Claim claim, MadeBy party) {
+        assertMediationHasStarted(claim);
         assertSettlementIsNotReached(claim);
 
-        Settlement settlement = claim.getSettlement().orElse(new Settlement());
+        Settlement settlement = claim.getSettlement().get();
         settlement.reject(party);
+
         offersRepository.updateSettlement(claim.getId(), jsonMapper.toJson(settlement));
         eventProducer.createOfferRejectedEvent(claim, party);
     }
 
+    private void assertMediationHasStarted(final Claim claim) {
+        if (!claim.getSettlement().isPresent()) {
+            throw new ConflictException("Offer has not been made yet.");
+        }
+    }
+
     private void assertSettlementIsNotReached(final Claim claim) {
         if (claim.getSettlementReachedAt() != null) {
-            throw new ConflictException("Settlement for claim " + claim.getId() + " has been already reached");
+            throw new ConflictException(format("Settlement for claim %d has been already reached", claim.getId()));
         }
     }
 }

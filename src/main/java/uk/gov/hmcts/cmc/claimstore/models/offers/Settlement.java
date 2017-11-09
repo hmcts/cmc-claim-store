@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class Settlement {
 
     private List<PartyStatement> partyStatements = new ArrayList<>();
@@ -17,19 +19,19 @@ public class Settlement {
     }
 
     public void accept(MadeBy party) {
-        assertOfferCanBeDecided(party);
+        assertOfferCanBeResponded(party);
         partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
     }
 
     public void reject(MadeBy party) {
-        assertOfferCanBeDecided(party);
+        assertOfferCanBeResponded(party);
         partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
     }
 
     @JsonIgnore
     PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
-            throw new IllegalStateException("No statements have yet been made during that settlement");
+            throw new IllegalSettlementStatementException("No statements have yet been made during that settlement");
         }
         return partyStatements.get(partyStatements.size() - 1);
     }
@@ -44,17 +46,12 @@ public class Settlement {
         }
     }
 
-    @JsonIgnore
-    private void assertOfferCanBeDecided(MadeBy party) {
+    private void assertOfferCanBeResponded(MadeBy party) {
         assertOfferCanBeMadeBy(party);
-
-        if (partyStatements.isEmpty()) {
-            throw new IllegalSettlementStatementException("Offer has not been made yet.");
-        }
 
         if (!lastStatementIsOffer()) {
             throw new IllegalSettlementStatementException(
-                "Last statement was: " + getLastStatement().getType().toString().toLowerCase() + ", offer expected."
+                format("Last statement was: %s , offer expected.", getLastStatement().getType().name().toLowerCase())
             );
         }
     }

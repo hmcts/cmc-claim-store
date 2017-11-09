@@ -49,12 +49,6 @@ public class SettlementTest {
         assertThat(settlement.getLastStatement().getOffer().get()).isEqualTo(counterOffer);
     }
 
-    @Test(expected = IllegalSettlementStatementException.class)
-    public void theSamePartyIsNotAllowedToMakeTwoOffersInRow() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-    }
-
     @Test
     public void claimantCanAcceptAnOffer() {
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
@@ -77,7 +71,7 @@ public class SettlementTest {
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
-    public void partyIsNotAllowedToAcceptOfferWhenOfferWasAlreadyAcceptedByThemselves() {
+    public void partyIsNotAllowedToAcceptOfferWhenOfferWasAlreadyAccepted() {
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
 
@@ -112,7 +106,7 @@ public class SettlementTest {
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
-    public void partyIsNotAllowedToRejectOfferWhenOfferWasAlreadyRejectedByThemselves() {
+    public void partyIsNotAllowedToRejectOfferWhenOfferWasAlreadyRejected() {
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
         settlement.reject(MadeBy.CLAIMANT);
 
@@ -125,9 +119,8 @@ public class SettlementTest {
         settlement.reject(MadeBy.CLAIMANT);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalSettlementStatementException.class)
     public void getLastStatementShouldThrowIllegalStateWhenNoStatementsHaveBeenMade() {
         settlement.getLastStatement();
     }
-
 }

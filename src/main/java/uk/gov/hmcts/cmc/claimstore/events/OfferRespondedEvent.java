@@ -10,7 +10,7 @@ import java.util.Objects;
  * OfferAcceptedEvent and OfferRejectedEvent classes have the same fields, but we want to be able to distinguish
  * action that should be taken on each event.
  */
-public abstract class OfferDecidedEvent {
+public abstract class OfferRespondedEvent {
 
     protected Claim claim;
     protected MadeBy party;
@@ -33,7 +33,7 @@ public abstract class OfferDecidedEvent {
             return false;
         }
 
-        final OfferDecidedEvent that = (OfferDecidedEvent) other;
+        final OfferRespondedEvent that = (OfferRespondedEvent) other;
         return Objects.equals(claim, that.claim) && Objects.equals(party, that.party);
     }
 
