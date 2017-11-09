@@ -43,10 +43,10 @@ public class OffersService {
     }
 
     public void accept(Claim claim, MadeBy party) {
-        assertMediationHasStarted(claim);
         assertSettlementIsNotReached(claim);
 
-        Settlement settlement = claim.getSettlement().get();
+        Settlement settlement = claim.getSettlement()
+            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.accept(party);
 
         offersRepository.acceptOffer(claim.getId(), jsonMapper.toJson(settlement), LocalDateTime.now());
@@ -54,20 +54,14 @@ public class OffersService {
     }
 
     public void reject(Claim claim, MadeBy party) {
-        assertMediationHasStarted(claim);
         assertSettlementIsNotReached(claim);
 
-        Settlement settlement = claim.getSettlement().get();
+        Settlement settlement = claim.getSettlement()
+            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.reject(party);
 
         offersRepository.updateSettlement(claim.getId(), jsonMapper.toJson(settlement));
         eventProducer.createOfferRejectedEvent(claim, party);
-    }
-
-    private void assertMediationHasStarted(final Claim claim) {
-        if (!claim.getSettlement().isPresent()) {
-            throw new ConflictException("Offer has not been made yet.");
-        }
     }
 
     private void assertSettlementIsNotReached(final Claim claim) {
