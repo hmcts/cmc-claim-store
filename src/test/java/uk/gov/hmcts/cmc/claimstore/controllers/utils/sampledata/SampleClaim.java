@@ -99,7 +99,6 @@ public final class SampleClaim {
             null,
             null,
             null,
-            null,
             null
         );
     }
@@ -151,7 +150,6 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            null,
             null
         );
     }

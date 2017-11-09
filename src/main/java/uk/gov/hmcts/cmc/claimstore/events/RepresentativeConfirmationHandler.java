@@ -40,9 +40,6 @@ public class RepresentativeConfirmationHandler {
             getEmailTemplates().getRepresentativeClaimIssued(),
             "representative-issue-notification-" + claim.getReferenceNumber(),
             event.getRepresentativeName());
-
-        final byte[] n1FormPdf = legalSealedClaimPdfService.createPdf(claim);
-        documentManagementService.storeClaimN1Form(event.getAuthorisation(), event.getClaim(), n1FormPdf);
     }
 
     @EventListener

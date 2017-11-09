@@ -127,13 +127,11 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET sealed_claim_document_management_self_uri = :sealedClaimDocumentManagementSelfUri,"
-            + " sealed_claim_document_management_binary_uri = :sealedClaimDocumentManagementBinaryUri"
+        "UPDATE claim SET sealed_claim_document_management_self_uri = :sealedClaimDocumentManagementSelfUri"
             + " WHERE id = :claimId"
     )
     Integer linkDocumentManagement(
         @Bind("claimId") final Long claimId,
-        @Bind("sealedClaimDocumentManagementSelfUri") final String sealedClaimDocumentManagementSelfUri,
         @Bind("sealedClaimDocumentManagementBinaryUri") final String sealedClaimDocumentManagementBinaryUri
     );
 
