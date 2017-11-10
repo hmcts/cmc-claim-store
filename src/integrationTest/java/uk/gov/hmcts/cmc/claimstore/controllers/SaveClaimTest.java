@@ -7,7 +7,6 @@ import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -19,6 +18,7 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +51,7 @@ public class SaveClaimTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
 
-        given(documentClientApi.upload(anyString(), any(MultipartFile[].class), anyString()))
+        given(documentUploadClientApi.upload(anyString(), any(List.class)))
             .willReturn(getUploadResponse());
     }
 

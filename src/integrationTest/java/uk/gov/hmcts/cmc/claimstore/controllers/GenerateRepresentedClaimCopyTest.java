@@ -9,7 +9,10 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -19,6 +22,7 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final String AUTH_TOKEN = "authDataString";
+    private static final byte[] LEGAL_N1_FORM_PDF = {65, 66, 67, 68};
 
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
@@ -28,6 +32,9 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
+
+        given(documentUploadClientApi.upload(anyString(), any(List.class)))
+            .willReturn(getUploadResponse());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())

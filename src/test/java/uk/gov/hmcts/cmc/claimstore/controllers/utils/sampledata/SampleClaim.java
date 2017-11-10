@@ -30,7 +30,7 @@ public final class SampleClaim {
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
-
+    public static final String SEALED_CLAIM_DOCUMENT_MANAGEMENT_SELF_URL = "/self_url";
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
     private String defendantId = DEFENDANT_ID;
@@ -50,6 +50,7 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
+    private String sealedClaimDocumentManagementSelfUrl = null;
 
     private SampleClaim() {
     }
@@ -150,7 +151,8 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            null
+            sealedClaimDocumentManagementSelfUrl
+
         );
     }
 
@@ -236,6 +238,11 @@ public final class SampleClaim {
 
     public SampleClaim withDefendantEmail(final String defendantEmail) {
         this.defendantEmail = defendantEmail;
+        return this;
+    }
+
+    public SampleClaim withSealedClaimDocumentManagementSelfUrl(final String url) {
+        this.sealedClaimDocumentManagementSelfUrl = url;
         return this;
     }
 }

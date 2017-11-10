@@ -132,7 +132,7 @@ public interface ClaimRepository {
     )
     Integer linkDocumentManagement(
         @Bind("claimId") final Long claimId,
-        @Bind("sealedClaimDocumentManagementBinaryUri") final String sealedClaimDocumentManagementBinaryUri
+        @Bind("sealedClaimDocumentManagementSelfUri") final String sealedClaimDocumentManagementSelfUri
     );
 
     @SqlUpdate(
