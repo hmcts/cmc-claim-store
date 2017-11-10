@@ -1,3 +1,4 @@
 rootProject.name = 'claim-store'
 
 include 'email-client'
+include 'document-client'

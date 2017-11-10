@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.email;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.email.EmailAttachment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

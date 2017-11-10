@@ -1,0 +1,31 @@
+api.version: 0.1
+
+spring:
+  http:
+    multipart:
+      max-file-size: 10000KB
+      max-request-size: 10000KB
+
+auth:
+  provider:
+    service:
+      client:
+        baseUrl: ${AUTH_PROVIDER_SERVICE_CLIENT_BASEURL}
+        microservice: ${AUTH_PROVIDER_SERVICE_CLIENT_MICROSERVICE}
+        key: ${AUTH_PROVIDER_SERVICE_CLIENT_KEY}
+        tokenTimeToLiveInSeconds: ${AUTH_PROVIDER_SERVICE_CLIENT_TOKENTIMETOLIVEINSECONDS}
+
+### Document management Service URL's
+document:
+  management:
+    upload:
+      file:
+        url: ${DOCUMENT_MANAGEMENT_UPLOAD_FILE_URL}
+
+http:
+  connect:
+    timeout: ${HTTP_CONNECT_TIMEOUT}
+    request:
+      timeout: ${HTTP_CONNECT_REQUEST_TIMEOUT}
+    socket:
+      timeout: ${HTTP_CONNECT_SOCKET_TIMEOUT}
