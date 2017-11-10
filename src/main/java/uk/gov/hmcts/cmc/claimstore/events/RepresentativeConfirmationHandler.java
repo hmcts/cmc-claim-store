@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -18,15 +19,20 @@ public class RepresentativeConfirmationHandler {
     private final NotificationsProperties notificationsProperties;
     private final DocumentManagementService documentManagementService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
+    private final boolean dmFeatureToggle;
 
-    public RepresentativeConfirmationHandler(final ClaimIssuedNotificationService claimIssuedNotificationService,
-                                             final NotificationsProperties notificationsProperties,
-                                             final DocumentManagementService documentManagementService,
-                                             final LegalSealedClaimPdfService legalSealedClaimPdfService) {
+    public RepresentativeConfirmationHandler(
+        final ClaimIssuedNotificationService claimIssuedNotificationService,
+        final NotificationsProperties notificationsProperties,
+        final DocumentManagementService documentManagementService,
+        final LegalSealedClaimPdfService legalSealedClaimPdfService,
+        @Value("${feature_toggles.document_management}") final boolean dmFeatureToggle
+    ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.documentManagementService = documentManagementService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
+        this.dmFeatureToggle = dmFeatureToggle;
     }
 
     @EventListener
@@ -44,9 +50,11 @@ public class RepresentativeConfirmationHandler {
 
     @EventListener
     public void handleDocumentUpload(final RepresentedClaimIssuedEvent event) {
-        final Claim claim = event.getClaim();
-        final byte[] n1FormPdf = legalSealedClaimPdfService.createPdf(claim);
-        documentManagementService.storeClaimN1Form(event.getAuthorisation(), event.getClaim(), n1FormPdf);
+        if (dmFeatureToggle) {
+            final Claim claim = event.getClaim();
+            final byte[] n1FormPdf = legalSealedClaimPdfService.createPdf(claim);
+            documentManagementService.storeClaimN1Form(event.getAuthorisation(), event.getClaim(), n1FormPdf);
+        }
     }
 
     private EmailTemplates getEmailTemplates() {

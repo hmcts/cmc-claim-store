@@ -22,7 +22,6 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final String AUTH_TOKEN = "authDataString";
-    private static final byte[] LEGAL_N1_FORM_PDF = {65, 66, 67, 68};
 
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {

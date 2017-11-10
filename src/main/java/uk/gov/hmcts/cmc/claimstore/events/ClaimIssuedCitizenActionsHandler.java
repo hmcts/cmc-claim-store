@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
@@ -19,16 +20,21 @@ public class ClaimIssuedCitizenActionsHandler {
     private final NotificationsProperties notificationsProperties;
     private final DocumentManagementService documentManagementService;
     private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
+    private final boolean dmFeatureToggle;
 
     @Autowired
-    public ClaimIssuedCitizenActionsHandler(final ClaimIssuedNotificationService claimIssuedNotificationService,
-                                            final NotificationsProperties notificationsProperties,
-                                            final DocumentManagementService documentManagementService,
-                                            final CitizenSealedClaimPdfService citizenSealedClaimPdfService) {
+    public ClaimIssuedCitizenActionsHandler(
+        final ClaimIssuedNotificationService claimIssuedNotificationService,
+        final NotificationsProperties notificationsProperties,
+        final DocumentManagementService documentManagementService,
+        final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
+        @Value("${feature_toggles.document_management}") final boolean dmFeatureToggle
+    ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.documentManagementService = documentManagementService;
         this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
+        this.dmFeatureToggle = dmFeatureToggle;
     }
 
     @EventListener
@@ -47,9 +53,11 @@ public class ClaimIssuedCitizenActionsHandler {
 
     @EventListener
     public void handleDocumentUpload(final ClaimIssuedEvent event) {
-        final Claim claim = event.getClaim();
-        final byte[] n1FormPdf = citizenSealedClaimPdfService.createPdf(claim, event.getSubmitterEmail());
-        documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim, n1FormPdf);
+        if (dmFeatureToggle) {
+            final Claim claim = event.getClaim();
+            final byte[] n1FormPdf = citizenSealedClaimPdfService.createPdf(claim, event.getSubmitterEmail());
+            documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim, n1FormPdf);
+        }
     }
 
     @EventListener

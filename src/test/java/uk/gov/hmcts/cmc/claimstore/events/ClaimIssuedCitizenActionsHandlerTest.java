@@ -53,7 +53,9 @@ public class ClaimIssuedCitizenActionsHandlerTest {
             claimIssuedNotificationService,
             properties,
             documentManagementService,
-            citizenSealedClaimPdfService);
+            citizenSealedClaimPdfService,
+            true);
+
         when(properties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(emailTemplates.getClaimantClaimIssued()).thenReturn(CLAIMANT_CLAIM_ISSUED_TEMPLATE);
@@ -114,5 +116,23 @@ public class ClaimIssuedCitizenActionsHandlerTest {
 
         verify(citizenSealedClaimPdfService, once()).createPdf(CLAIM, CLAIMANT_EMAIL);
         verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
+    }
+
+    @Test
+    public void shouldNotUploadSealedClaimFormWhenFeatureToggleIsOff() throws NotificationClientException {
+        claimIssuedCitizenActionsHandler = new ClaimIssuedCitizenActionsHandler(
+            claimIssuedNotificationService,
+            properties,
+            documentManagementService,
+            citizenSealedClaimPdfService,
+            false);
+
+        final ClaimIssuedEvent claimIssuedEvent
+            = new ClaimIssuedEvent(CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
+
+        claimIssuedCitizenActionsHandler.handleDocumentUpload(claimIssuedEvent);
+
+        verify(citizenSealedClaimPdfService, never()).createPdf(CLAIM, CLAIMANT_EMAIL);
+        verify(documentManagementService, never()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
     }
 }

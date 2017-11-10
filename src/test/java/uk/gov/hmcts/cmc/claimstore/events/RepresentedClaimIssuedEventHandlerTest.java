@@ -15,6 +15,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Optional;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
@@ -25,7 +26,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 @RunWith(MockitoJUnitRunner.class)
 public class RepresentedClaimIssuedEventHandlerTest {
     private static final String REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE = "representativeClaimIssued";
-    private static final String DEFENDANT_CLAIM_ISSUED_TEMPLATE = "defendantClaimIssued";
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final byte[] N1_FORM_PDF = {65, 66, 67, 68};
 
@@ -49,7 +49,8 @@ public class RepresentedClaimIssuedEventHandlerTest {
             claimIssuedNotificationService,
             properties,
             documentManagementService,
-            legalSealedClaimPdfService);
+            legalSealedClaimPdfService,
+            true);
         when(properties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(emailTemplates.getRepresentativeClaimIssued()).thenReturn(REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE);
@@ -79,5 +80,23 @@ public class RepresentedClaimIssuedEventHandlerTest {
 
         verify(legalSealedClaimPdfService, once()).createPdf(CLAIM);
         verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
+    }
+
+    @Test
+    public void shouldNotUploadSealedClaimFormWhenFeatureToggleIsOff() throws NotificationClientException {
+        representativeConfirmationHandler = new RepresentativeConfirmationHandler(
+            claimIssuedNotificationService,
+            properties,
+            documentManagementService,
+            legalSealedClaimPdfService,
+            false);
+
+        final RepresentedClaimIssuedEvent representedClaimIssuedEvent
+            = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+
+        representativeConfirmationHandler.handleDocumentUpload(representedClaimIssuedEvent);
+
+        verify(legalSealedClaimPdfService, never()).createPdf(CLAIM);
+        verify(documentManagementService, never()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
     }
 }
