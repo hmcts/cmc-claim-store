@@ -90,11 +90,13 @@ public final class SampleClaim {
             EXTERNAL_ID,
             referenceNumber,
             Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()),
-            NOW_IN_LOCAL_ZONE, ISSUE_DATE,
+            NOW_IN_LOCAL_ZONE,
+            ISSUE_DATE,
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
-            null, null,
+            null,
+            null,
             null,
             null,
             null,
@@ -238,6 +240,16 @@ public final class SampleClaim {
 
     public SampleClaim withDefendantEmail(final String defendantEmail) {
         this.defendantEmail = defendantEmail;
+        return this;
+    }
+
+    public SampleClaim withSettlement(final Settlement settlement) {
+        this.settlement = settlement;
+        return this;
+    }
+
+    public SampleClaim withSettlementReachedAt(final LocalDateTime settlementReachedAt) {
+        this.settlementReachedAt = settlementReachedAt;
         return this;
     }
 

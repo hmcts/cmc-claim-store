@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
 
 import java.time.LocalDate;
 
@@ -39,5 +40,13 @@ public class EventProducer {
 
     public void createOfferMadeEvent(final Claim claim) {
         publisher.publishEvent(new OfferMadeEvent(claim));
+    }
+
+    public void createOfferAcceptedEvent(final Claim claim, final MadeBy party) {
+        publisher.publishEvent(new OfferAcceptedEvent(claim, party));
+    }
+
+    public void createOfferRejectedEvent(final Claim claim, final MadeBy party) {
+        publisher.publishEvent(new OfferRejectedEvent(claim, party));
     }
 }

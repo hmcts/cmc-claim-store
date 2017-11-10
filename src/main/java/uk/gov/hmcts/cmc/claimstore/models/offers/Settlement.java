@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class Settlement {
 
     private List<PartyStatement> partyStatements = new ArrayList<>();
@@ -16,10 +18,20 @@ public class Settlement {
         partyStatements.add(new PartyStatement(StatementType.OFFER, party, offer));
     }
 
+    public void accept(MadeBy party) {
+        assertOfferCanBeResponded(party);
+        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+    }
+
+    public void reject(MadeBy party) {
+        assertOfferCanBeResponded(party);
+        partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
+    }
+
     @JsonIgnore
     PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
-            throw new IllegalStateException("No statements have yet been made during that settlement");
+            throw new IllegalSettlementStatementException("No statements have yet been made during that settlement");
         }
         return partyStatements.get(partyStatements.size() - 1);
     }
@@ -34,9 +46,21 @@ public class Settlement {
         }
     }
 
-    private boolean lastStatementIsAnOfferMadeBy(MadeBy madeBy) {
-        return getLastStatement().getType().equals(StatementType.OFFER)
-            && getLastStatement().getMadeBy().equals(madeBy);
+    private void assertOfferCanBeResponded(MadeBy party) {
+        assertOfferCanBeMadeBy(party);
+
+        if (!lastStatementIsOffer()) {
+            throw new IllegalSettlementStatementException(
+                format("Last statement was: %s , offer expected.", getLastStatement().getType().name().toLowerCase())
+            );
+        }
     }
 
+    private boolean lastStatementIsAnOfferMadeBy(MadeBy madeBy) {
+        return lastStatementIsOffer() && getLastStatement().getMadeBy().equals(madeBy);
+    }
+
+    private boolean lastStatementIsOffer() {
+        return getLastStatement().getType().equals(StatementType.OFFER);
+    }
 }
