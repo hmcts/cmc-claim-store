@@ -79,4 +79,38 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }
+
+    public static class OfferAccepted {
+
+        public static final String TEMPLATE = "offer-accepted-by-%s-notification-%s";
+
+        private OfferAccepted() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+        }
+    }
+
+    public static class OfferRejected {
+
+        public static final String TEMPLATE = "offer-rejected-by-%s-notification-%s";
+
+        private OfferRejected() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(final String claimReferenceNumber) {
+            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+        }
+    }
 }
