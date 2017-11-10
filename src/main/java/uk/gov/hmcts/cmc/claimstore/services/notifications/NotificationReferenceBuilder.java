@@ -82,7 +82,7 @@ public class NotificationReferenceBuilder {
 
     public static class OfferAccepted {
 
-        public static final String TEMPLATE = "offer-accepted-by-%s-notification-%s";
+        public static final String TEMPLATE = "to-%s-offer-accepted-by-claimant-notification-%s";
 
         private OfferAccepted() {
             // do not instantiate
@@ -99,7 +99,7 @@ public class NotificationReferenceBuilder {
 
     public static class OfferRejected {
 
-        public static final String TEMPLATE = "offer-rejected-by-%s-notification-%s";
+        public static final String TEMPLATE = "to-%s-offer-rejected-by-claimant-notification-%s";
 
         private OfferRejected() {
             // do not instantiate
