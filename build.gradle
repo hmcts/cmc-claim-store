@@ -79,6 +79,7 @@ configurations {
 dependencies {
 
     compile project(':email-client')
+    compile project(':cmc-domain')
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
