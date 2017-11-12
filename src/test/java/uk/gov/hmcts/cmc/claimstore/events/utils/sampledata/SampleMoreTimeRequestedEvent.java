@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.events.utils.sampledata;
 
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
 

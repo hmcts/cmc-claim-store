@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.models.legalrep.sampledata;
+package uk.gov.hmcts.cmc.claimstore.models.sampledata.legalrep;
 
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.ContactDetails;
 

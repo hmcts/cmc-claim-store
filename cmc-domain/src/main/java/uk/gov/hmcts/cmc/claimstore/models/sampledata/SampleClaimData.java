@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
+package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.Interest;
@@ -11,12 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountBreakdown;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterest;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SamplePayment;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

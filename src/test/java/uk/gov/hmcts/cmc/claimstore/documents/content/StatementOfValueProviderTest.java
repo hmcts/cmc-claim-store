@@ -3,14 +3,14 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.StatementOfValueContent;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 
 import java.math.BigDecimal;
 

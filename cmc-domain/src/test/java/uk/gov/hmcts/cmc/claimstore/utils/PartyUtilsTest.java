@@ -18,8 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class PartyUtilsTest {
 
     @Test

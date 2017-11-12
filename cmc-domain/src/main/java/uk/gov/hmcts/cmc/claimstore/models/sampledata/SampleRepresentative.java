@@ -1,10 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
-import uk.gov.hmcts.cmc.claimstore.models.legalrep.sampledata.SampleContactDetails;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.legalrep.SampleContactDetails;
 
 public class SampleRepresentative {
 

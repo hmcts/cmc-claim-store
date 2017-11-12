@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.util.Set;

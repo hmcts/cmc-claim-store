@@ -1,13 +1,10 @@
-package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
+package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models.legalrep;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.legalrep.sampledata.SampleContactDetails;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.legalrep.SampleContactDetails;
 
 import java.util.Set;
 

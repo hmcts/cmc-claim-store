@@ -1,9 +1,8 @@
-package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
+package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 
 public class SampleResponseData {
 

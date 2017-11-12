@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata;
+package uk.gov.hmcts.cmc.claimstore.models.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 

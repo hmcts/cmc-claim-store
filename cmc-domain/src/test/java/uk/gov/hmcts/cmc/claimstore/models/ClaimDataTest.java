@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData.noInterest;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData.noInterest;
 import static uk.gov.hmcts.cmc.claimstore.utils.BeanValidator.validate;
 
 public class ClaimDataTest {
