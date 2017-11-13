@@ -48,6 +48,16 @@ public class MobilePhoneNumberValidationTest {
     }
 
     @Test
+    public void shouldBeSuccessfulValidationForPhoneNumbeWithRandomCharacter() {
+        //given
+        Individual party = individualWithMobilePhone("0793123231*");
+        //when
+        Set<String> errors = validate(party);
+        //then
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
     public void shouldBeSuccessfulValidationForPhoneNumberOfType4() {
         //given
         Individual party = individualWithMobilePhone("(0044) (0)7931232313");
