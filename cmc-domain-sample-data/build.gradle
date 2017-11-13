@@ -8,6 +8,4 @@ repositories {
 
 dependencies {
   compile project(':cmc-domain-model')
-
-  testCompile group: 'junit', name: 'junit', version: '4.12'
 }
