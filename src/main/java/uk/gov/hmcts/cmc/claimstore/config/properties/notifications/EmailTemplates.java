@@ -42,6 +42,18 @@ public class EmailTemplates {
     @NotEmpty
     private String claimantOfferMade;
 
+    @NotEmpty
+    private String offerAcceptedByClaimantEmailToClaimant;
+
+    @NotEmpty
+    private String offerAcceptedByClaimantEmailToDefendant;
+
+    @NotEmpty
+    private String offerRejectedByClaimantEmailToClaimant;
+
+    @NotEmpty
+    private String offerRejectedByClaimantEmailToDefendant;
+
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -136,5 +148,37 @@ public class EmailTemplates {
 
     public void setClaimantOfferMade(String claimantOfferMade) {
         this.claimantOfferMade = claimantOfferMade;
+    }
+
+    public String getOfferAcceptedByClaimantEmailToClaimant() {
+        return offerAcceptedByClaimantEmailToClaimant;
+    }
+
+    public void setOfferAcceptedByClaimantEmailToClaimant(String offerAcceptedByClaimantEmailToClaimant) {
+        this.offerAcceptedByClaimantEmailToClaimant = offerAcceptedByClaimantEmailToClaimant;
+    }
+
+    public String getOfferAcceptedByClaimantEmailToDefendant() {
+        return offerAcceptedByClaimantEmailToDefendant;
+    }
+
+    public void setOfferAcceptedByClaimantEmailToDefendant(String offerAcceptedByClaimantEmailToDefendant) {
+        this.offerAcceptedByClaimantEmailToDefendant = offerAcceptedByClaimantEmailToDefendant;
+    }
+
+    public String getOfferRejectedByClaimantEmailToClaimant() {
+        return offerRejectedByClaimantEmailToClaimant;
+    }
+
+    public void setOfferRejectedByClaimantEmailToClaimant(String offerRejectedByClaimantEmailToClaimant) {
+        this.offerRejectedByClaimantEmailToClaimant = offerRejectedByClaimantEmailToClaimant;
+    }
+
+    public String getOfferRejectedByClaimantEmailToDefendant() {
+        return offerRejectedByClaimantEmailToDefendant;
+    }
+
+    public void setOfferRejectedByClaimantEmailToDefendant(String offerRejectedByClaimantEmailToDefendant) {
+        this.offerRejectedByClaimantEmailToDefendant = offerRejectedByClaimantEmailToDefendant;
     }
 }
