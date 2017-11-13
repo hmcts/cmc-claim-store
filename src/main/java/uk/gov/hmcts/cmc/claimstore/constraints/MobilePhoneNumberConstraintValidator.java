@@ -16,7 +16,7 @@ public class MobilePhoneNumberConstraintValidator implements ConstraintValidator
             return true;
         }
 
-        String phone = value.replaceAll("[^0-9]", "")
+        String phone = value.replaceAll("\\(|\\)| |-|\\+", "")
             .replaceFirst("^(00)?44", "")
             .replaceFirst("^0*", "");
 
