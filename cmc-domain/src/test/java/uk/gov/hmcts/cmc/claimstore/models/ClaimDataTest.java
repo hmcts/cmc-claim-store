@@ -1,18 +1,18 @@
 package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterest;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleInterest;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleInterestDate;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleTheirDetails;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData.noInterest;
+import static uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData.noInterest;
 import static uk.gov.hmcts.cmc.claimstore.utils.BeanValidator.validate;
 
 public class ClaimDataTest {

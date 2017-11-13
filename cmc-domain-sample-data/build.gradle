@@ -1,0 +1,16 @@
+group 'uk.gov.hmcts.cmc'
+version '1.1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile project(':cmc-domain')
+
+  testCompile group: 'junit', name: 'junit', version: '4.12'
+}

@@ -18,7 +18,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
+import static uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 

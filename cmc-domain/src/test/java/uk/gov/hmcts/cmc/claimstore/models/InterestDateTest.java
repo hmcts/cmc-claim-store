@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleInterestDate;
 
 import java.time.LocalDate;
 import java.util.Set;

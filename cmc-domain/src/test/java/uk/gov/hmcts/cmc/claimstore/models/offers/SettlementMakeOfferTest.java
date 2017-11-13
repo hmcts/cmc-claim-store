@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.models.offers;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.exceptions.IllegalSettlementStatementException;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.offers.SampleOffer;
 
 import java.util.List;
 

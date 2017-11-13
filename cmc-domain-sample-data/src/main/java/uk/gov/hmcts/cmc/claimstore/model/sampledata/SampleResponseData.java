@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.models.sampledata;
+package uk.gov.hmcts.cmc.claimstore.model.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;

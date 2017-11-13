@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
 import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 

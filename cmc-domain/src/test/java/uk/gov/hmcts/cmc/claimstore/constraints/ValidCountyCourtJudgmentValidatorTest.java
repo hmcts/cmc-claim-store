@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleRepaymentPlan;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleRepaymentPlan;
 
 import java.time.LocalDate;
 import javax.validation.ConstraintValidatorContext;

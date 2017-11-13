@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.Interest;
 import uk.gov.hmcts.cmc.claimstore.models.InterestDate;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 

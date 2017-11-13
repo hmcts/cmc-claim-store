@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 
 import java.math.BigDecimal;

@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountRange;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleAmountRange;
 
 import java.util.Set;
 

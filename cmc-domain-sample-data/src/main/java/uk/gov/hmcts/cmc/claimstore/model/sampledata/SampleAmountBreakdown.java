@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.models.sampledata;
+package uk.gov.hmcts.cmc.claimstore.model.sampledata;
 
 import uk.gov.hmcts.cmc.claimstore.models.AmountRow;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;

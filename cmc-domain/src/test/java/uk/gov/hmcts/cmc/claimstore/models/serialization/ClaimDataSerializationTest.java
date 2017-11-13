@@ -3,11 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.models.serialization;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleInterestDate;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleInterestDate;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;

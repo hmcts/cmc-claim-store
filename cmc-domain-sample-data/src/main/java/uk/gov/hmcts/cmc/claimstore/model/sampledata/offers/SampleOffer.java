@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.models.sampledata.offers;
+package uk.gov.hmcts.cmc.claimstore.model.sampledata.offers;
 
 import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
 

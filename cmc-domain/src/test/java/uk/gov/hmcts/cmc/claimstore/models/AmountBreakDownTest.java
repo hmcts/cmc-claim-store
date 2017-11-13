@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountBreakdown;
+import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleAmountBreakdown;
 
 import java.math.BigDecimal;
 import java.util.Set;
