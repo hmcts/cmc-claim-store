@@ -18,20 +18,22 @@ import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class PartyUtilsTest {
 
     @Test
     public void getTypeMapsPartyTypesCorrectly() {
-        Assertions.assertThat(PartyUtils.getType(SampleParty.builder().individual()))
+        assertThat(PartyUtils.getType(SampleParty.builder().individual()))
             .isEqualTo(PartyUtils.INDIVIDUAL);
 
-        Assertions.assertThat(PartyUtils.getType(SampleParty.builder().company()))
+        assertThat(PartyUtils.getType(SampleParty.builder().company()))
             .isEqualTo(PartyUtils.ON_BEHALF_OF_A_COMPANY);
 
-        Assertions.assertThat(PartyUtils.getType(SampleParty.builder().organisation()))
+        assertThat(PartyUtils.getType(SampleParty.builder().organisation()))
             .isEqualTo(PartyUtils.ON_BEHALF_OF_AN_ORGANISATION);
 
-        Assertions.assertThat(PartyUtils.getType(SampleParty.builder().soleTrader()))
+        assertThat(PartyUtils.getType(SampleParty.builder().soleTrader()))
             .isEqualTo(PartyUtils.SOLE_TRADER_OR_SELF_EMPLOYED_PERSON);
     }
 
@@ -49,16 +51,16 @@ public class PartyUtilsTest {
 
     @Test
     public void getTypeMapsTheirDetailsPartyTypesCorrectly() {
-        Assertions.assertThat(PartyUtils.getType(SampleTheirDetails.builder().individualDetails()))
+        assertThat(PartyUtils.getType(SampleTheirDetails.builder().individualDetails()))
             .isEqualTo(PartyUtils.INDIVIDUAL);
 
-        Assertions.assertThat(PartyUtils.getType(SampleTheirDetails.builder().companyDetails()))
+        assertThat(PartyUtils.getType(SampleTheirDetails.builder().companyDetails()))
             .isEqualTo(PartyUtils.ON_BEHALF_OF_A_COMPANY);
 
-        Assertions.assertThat(PartyUtils.getType(SampleTheirDetails.builder().organisationDetails()))
+        assertThat(PartyUtils.getType(SampleTheirDetails.builder().organisationDetails()))
             .isEqualTo(PartyUtils.ON_BEHALF_OF_AN_ORGANISATION);
 
-        Assertions.assertThat(PartyUtils.getType(SampleTheirDetails.builder().soleTraderDetails()))
+        assertThat(PartyUtils.getType(SampleTheirDetails.builder().soleTraderDetails()))
             .isEqualTo(PartyUtils.SOLE_TRADER_OR_SELF_EMPLOYED_PERSON);
 
     }
@@ -66,64 +68,64 @@ public class PartyUtilsTest {
     @Test
     public void getDefendantContactPersonReturnsContactPerson() {
         CompanyDetails companyDetails = SampleTheirDetails.builder().companyDetails();
-        Assertions.assertThat(PartyUtils.getDefendantContactPerson(companyDetails))
+        assertThat(PartyUtils.getDefendantContactPerson(companyDetails))
             .isEqualTo(companyDetails.getContactPerson());
 
         OrganisationDetails organisationDetails = SampleTheirDetails.builder().organisationDetails();
-        Assertions.assertThat(PartyUtils.getDefendantContactPerson(organisationDetails))
+        assertThat(PartyUtils.getDefendantContactPerson(organisationDetails))
             .isEqualTo(organisationDetails.getContactPerson());
     }
 
     @Test
     public void getDefendantContactPersonReturnsEmptyOptionalWhenNotCompanyType() {
         IndividualDetails defendant = SampleTheirDetails.builder().individualDetails();
-        Assertions.assertThat(PartyUtils.getDefendantContactPerson(defendant))
+        assertThat(PartyUtils.getDefendantContactPerson(defendant))
             .isEqualTo(Optional.empty());
     }
 
     @Test
     public void getDefendantBusinessName() {
         SoleTraderDetails defendant = SampleTheirDetails.builder().soleTraderDetails();
-        Assertions.assertThat(PartyUtils.getDefendantBusinessName(defendant))
+        assertThat(PartyUtils.getDefendantBusinessName(defendant))
             .isEqualTo(defendant.getBusinessName());
     }
 
     @Test
     public void getDefendantBusinessNameReturnsEmptyOptionalWhenNotSoleTraderType() {
         IndividualDetails defendant = SampleTheirDetails.builder().individualDetails();
-        Assertions.assertThat(PartyUtils.getDefendantBusinessName(defendant))
+        assertThat(PartyUtils.getDefendantBusinessName(defendant))
             .isEqualTo(Optional.empty());
     }
 
     @Test
     public void getContactPerson() {
         Company company = SampleParty.builder().company();
-        Assertions.assertThat(PartyUtils.getContactPerson(company))
+        assertThat(PartyUtils.getContactPerson(company))
             .isEqualTo(company.getContactPerson());
 
         Organisation organisation = SampleParty.builder().organisation();
-        Assertions.assertThat(PartyUtils.getContactPerson(organisation))
+        assertThat(PartyUtils.getContactPerson(organisation))
             .isEqualTo(organisation.getContactPerson());
     }
 
     @Test
     public void getContactPersonReturnsEmptyOptionalWhenNotCompanyType() {
         Individual claimant = SampleParty.builder().individual();
-        Assertions.assertThat(PartyUtils.getContactPerson(claimant))
+        assertThat(PartyUtils.getContactPerson(claimant))
             .isEqualTo(Optional.empty());
     }
 
     @Test
     public void getBusinessName() {
         SoleTrader claimant = SampleParty.builder().soleTrader();
-        Assertions.assertThat(PartyUtils.getBusinessName(claimant))
+        assertThat(PartyUtils.getBusinessName(claimant))
             .isEqualTo(claimant.getBusinessName());
     }
 
     @Test
     public void getBusinessNameReturnsEmptyOptionalWhenNotSoleTraderType() {
         Individual claimant = SampleParty.builder().individual();
-        Assertions.assertThat(PartyUtils.getBusinessName(claimant))
+        assertThat(PartyUtils.getBusinessName(claimant))
             .isEqualTo(Optional.empty());
     }
 

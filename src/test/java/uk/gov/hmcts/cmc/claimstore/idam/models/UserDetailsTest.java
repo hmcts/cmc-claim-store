@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 
@@ -17,7 +18,7 @@ public class UserDetailsTest {
         final String fullName = userDetails.getFullName();
 
         //then
-        Assertions.assertThat(fullName).isEqualTo(SUBMITTER_FORENAME + " " + SUBMITTER_SURNAME);
+        assertThat(fullName).isEqualTo(SUBMITTER_FORENAME + " " + SUBMITTER_SURNAME);
     }
 
     @Test
@@ -29,6 +30,6 @@ public class UserDetailsTest {
         final String fullName = userDetails.getFullName();
 
         //then
-        Assertions.assertThat(fullName).isEqualTo(SUBMITTER_FORENAME);
+        assertThat(fullName).isEqualTo(SUBMITTER_FORENAME);
     }
 }

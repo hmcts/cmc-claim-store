@@ -1,5 +1,3 @@
-group 'uk.gov.hmcts.cmc'
-
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
@@ -9,7 +7,7 @@ repositories {
 }
 
 dependencies {
-  compile project(':cmc-domain')
+  compile project(':cmc-domain-model')
 
   testCompile group: 'junit', name: 'junit', version: '4.12'
 }
