@@ -48,7 +48,7 @@ public class MobilePhoneNumberValidationTest {
     }
 
     @Test
-    public void shouldBeSuccessfulValidationForPhoneNumberOfType11() {
+    public void shouldBeSuccessfulValidationForPhoneNumbeWithRandomCharacter() {
         //given
         Individual party = individualWithMobilePhone("0793123231*");
         //when
