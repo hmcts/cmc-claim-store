@@ -63,6 +63,10 @@ notifications:
       claimantCCJRequested: "5f4d1c44-1e56-48fd-afe1-f1bd2e575819"
       defendantOfferMade: "c65b9a5a-6e18-4f74-ba5e-4e49a3683153"
       claimantOfferMade: "b5e007a9-1f8b-48f5-bb5b-00b3a099d416"
+      offerAcceptedByClaimantEmailToClaimant: "f1e66067-0ccf-441d-bad4-69fe8d5c4121"
+      offerAcceptedByClaimantEmailToDefendant: "aa5c927f-1a4c-47e3-94d9-6036b89d81b9"
+      offerRejectedByClaimantEmailToClaimant: "13d8af14-ce13-4d87-940c-f86e0cb4d1f0"
+      offerRejectedByClaimantEmailToDefendant: "46be31b4-6af8-46b2-9325-80ff63e78535"
 
 staff-notifications:
   sender:
