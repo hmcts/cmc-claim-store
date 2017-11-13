@@ -1,19 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleAddress;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
 import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.DEFENDANT_EMAIL;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class DefendantDetailsContentProviderTest {

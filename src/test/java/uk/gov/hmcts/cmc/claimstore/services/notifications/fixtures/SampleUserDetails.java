@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures;
 
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.USER_ID;
 
 public final class SampleUserDetails {
     private String userId = USER_ID;
