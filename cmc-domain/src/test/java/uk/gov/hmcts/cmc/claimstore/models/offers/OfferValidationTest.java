@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models.offers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDate;
 import java.util.Set;

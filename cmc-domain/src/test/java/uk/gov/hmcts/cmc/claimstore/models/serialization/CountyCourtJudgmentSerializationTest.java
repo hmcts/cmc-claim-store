@@ -6,9 +6,9 @@ import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.CompanyDetails;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleRepaymentPlan;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleRepaymentPlan;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 
 import java.io.IOException;

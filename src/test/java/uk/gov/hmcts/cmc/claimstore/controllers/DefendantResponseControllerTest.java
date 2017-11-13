@@ -8,15 +8,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim.CLAIM_ID;
-import static uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim.DEFENDANT_ID;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.CLAIM_ID;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.DEFENDANT_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseControllerTest {

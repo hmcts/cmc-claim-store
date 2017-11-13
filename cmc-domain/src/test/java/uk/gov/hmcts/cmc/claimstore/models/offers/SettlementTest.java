@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.IllegalSettlementStatementException;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
 
 import java.util.List;
 

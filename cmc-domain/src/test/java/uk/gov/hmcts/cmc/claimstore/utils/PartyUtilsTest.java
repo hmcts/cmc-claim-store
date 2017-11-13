@@ -13,8 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
 import uk.gov.hmcts.cmc.claimstore.models.party.Organisation;
 import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.util.Optional;
 

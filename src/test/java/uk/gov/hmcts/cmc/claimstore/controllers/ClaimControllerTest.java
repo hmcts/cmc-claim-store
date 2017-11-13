@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 
 import java.util.Collections;
@@ -18,8 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
-import static uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim.LETTER_HOLDER_ID;
-import static uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim.USER_ID;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.USER_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimControllerTest {

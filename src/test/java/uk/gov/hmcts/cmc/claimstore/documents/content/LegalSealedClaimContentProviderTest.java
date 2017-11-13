@@ -5,8 +5,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 
 import java.math.BigInteger;
 import java.util.Map;

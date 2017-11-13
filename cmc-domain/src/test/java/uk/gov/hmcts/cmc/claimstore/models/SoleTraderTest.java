@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
 
 import java.util.Set;
 

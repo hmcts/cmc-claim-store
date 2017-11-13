@@ -13,8 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
 
 import java.time.LocalDate;
 import java.util.Optional;

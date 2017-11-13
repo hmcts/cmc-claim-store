@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;

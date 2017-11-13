@@ -8,9 +8,9 @@ import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleAmountRange;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.model.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 
 import java.math.BigDecimal;
 

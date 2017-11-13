@@ -19,7 +19,6 @@ allprojects {
   apply plugin: 'com.github.ben-manes.versions'
 
   group 'uk.gov.hmcts.cmc'
-  version '1.1.0'
 
   checkstyle {
     maxWarnings = 0
