@@ -1,3 +1,6 @@
 rootProject.name = 'claim-store'
 
 include 'email-client'
+include 'cmc-domain-model'
+include 'cmc-domain-sample-data'
+
