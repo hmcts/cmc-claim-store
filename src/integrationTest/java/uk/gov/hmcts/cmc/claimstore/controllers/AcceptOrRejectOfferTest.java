@@ -15,12 +15,18 @@ import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,6 +65,9 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
             .andExpect(status().isCreated());
 
         verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT));
+
+        Claim claimWithAcceptedOffer = claimStore.getClaim(claim.getId());
+        assertThat(claimWithAcceptedOffer.getSettlementReachedAt()).isBeforeOrEqualTo(LocalDateTime.now());
     }
 
     @Test
@@ -67,6 +76,44 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
             .andExpect(status().isCreated());
 
         verify(offersService).reject(any(Claim.class), eq(MadeBy.CLAIMANT));
+
+        Claim claimWithRejectedOffer = claimStore.getClaim(claim.getId());
+        assertThat(claimWithRejectedOffer.getSettlementReachedAt()).isNull();
+    }
+
+    @Test
+    public void shouldAcceptOfferAndSendNotifications() throws Exception {
+        runTestAndVerifyNotificationsAreSentWhenEverythingIsOkForResponse("accept");
+    }
+
+    @Test
+    public void shouldRejectOfferAndSendNotifications() throws Exception {
+        runTestAndVerifyNotificationsAreSentWhenEverythingIsOkForResponse("reject");
+    }
+
+    private void runTestAndVerifyNotificationsAreSentWhenEverythingIsOkForResponse(
+        final String action
+    ) throws Exception {
+        given(notificationClient.sendEmail(any(), any(), any(), any()))
+            .willReturn(null);
+
+        postRequestTo(action)
+            .andExpect(status().isCreated());
+
+        verify(notificationClient, times(1))
+            .sendEmail(any(), any(), anyMap(), contains("claimant-offer-made-notification-"));
+        verify(notificationClient, times(1))
+            .sendEmail(any(), any(), anyMap(), contains("defendant-offer-made-notification-"));
+
+        verify(notificationClient, times(1))
+            .sendEmail(
+                any(), any(), anyMap(), contains(format("to-claimant-offer-%sed-by-claimant-notification-", action))
+            );
+
+        verify(notificationClient, times(1))
+            .sendEmail(
+                any(), any(), anyMap(), contains(format("to-defendant-offer-%sed-by-claimant-notification-", action))
+            );
     }
 
     private ResultActions postRequestTo(final String endpoint) throws Exception {
