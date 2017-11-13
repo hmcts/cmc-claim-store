@@ -37,6 +37,7 @@ public final class SampleClaim {
     private boolean isMoreTimeRequested = NOT_REQUESTED_FOR_MORE_TIME;
     private LocalDate responseDeadline = RESPONSE_DEADLINE;
     private String submitterEmail = SUBMITTER_EMAIL;
+    private LocalDateTime createdAt = NOW_IN_LOCAL_ZONE;
     private LocalDateTime respondedAt = NOT_RESPONDED;
     private LocalDate issuedOn = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
