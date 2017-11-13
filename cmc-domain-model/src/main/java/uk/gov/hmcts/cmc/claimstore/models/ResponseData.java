@@ -52,7 +52,6 @@ public class ResponseData {
     @Size(max = 99000)
     private final String defence;
 
-    @NotNull
     @JsonUnwrapped
     private final FreeMediationOption freeMediation;
 
