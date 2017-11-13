@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 
@@ -25,6 +25,10 @@ public class ClaimStore {
 
     @Autowired
     private JsonMapper jsonMapper;
+
+    public Claim getClaim(long claimId) {
+        return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
+    }
 
     public Claim saveClaim(ClaimData claimData) {
         return saveClaim(claimData, "1", LocalDate.now());
@@ -47,7 +51,7 @@ public class ClaimStore {
             + this.claimRepository.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
             .collect(Collectors.toList()));
 
-        return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
+        return getClaim(claimId);
     }
 
     public Claim saveResponse(long claimId, ResponseData responseData) {
@@ -66,7 +70,7 @@ public class ClaimStore {
 
         logger.info("Saved response data");
 
-        return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
+        return getClaim(claimId);
     }
 
     public Claim saveCountyCourtJudgement(long claimId, CountyCourtJudgment ccj) {
@@ -79,7 +83,6 @@ public class ClaimStore {
 
         logger.info("Saved county court judgement");
 
-        return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
+        return getClaim(claimId);
     }
-
 }
