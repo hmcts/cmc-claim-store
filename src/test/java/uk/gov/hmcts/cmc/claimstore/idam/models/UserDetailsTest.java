@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.idam.models;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 

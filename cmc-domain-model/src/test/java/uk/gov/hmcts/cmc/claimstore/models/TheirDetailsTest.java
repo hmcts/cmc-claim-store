@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.models;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleTheirDetails;
 
 import java.util.Set;
