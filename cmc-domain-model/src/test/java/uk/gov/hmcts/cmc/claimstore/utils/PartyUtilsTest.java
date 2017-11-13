@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.claimstore.models.otherparty.CompanyDetails;
