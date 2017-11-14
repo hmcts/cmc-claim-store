@@ -1,18 +1,16 @@
 {% if response.type == 'OWE_NONE' %}
 The defendant has submitted a full defence which is attached as a PDF.
+
+{% if response.freeMediation.orElse('NO') == 'YES' %}
+The defendant has asked to use the mediation service, you must contact the claimant to ask if they want to mediate. If both parties want to mediate then you need to transfer the claim to the small claims mediation service.
+{% else %}
+The defendant has chosen not to use the free mediation service.
+{% endif %}
+You must progress to the directions questionnaire procedure.
 {% elseif response.type == 'OWE_ALL_PAID_ALL' %}
 The defendant has submitted an already paid defence which is attached as a PDF.
 
 You need to ask the claimant if they want to proceed with the claim.
-{% endif %}
-
-{% if response.freeMediation.orElse('NO')  == 'YES' %}
-The defendant has asked to use the mediation service, you must contact the claimant to ask if they want to mediate. If both parties want to mediate then you need to transfer the claim to the small claims mediation service.
-{% else %}
-The defendant has chosen not to use the free mediation service.
-{% if response.type == 'OWE_NONE' %}
-You must progress to the directions questionnaire procedure.
-{% endif %}
 {% endif %}
 
 Defendant's details can be found on the attached defence copy. Additional contact details are:

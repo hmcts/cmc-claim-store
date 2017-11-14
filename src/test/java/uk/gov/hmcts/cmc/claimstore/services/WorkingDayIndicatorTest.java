@@ -16,7 +16,7 @@ import java.util.Set;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDate;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDayIndicatorTest {

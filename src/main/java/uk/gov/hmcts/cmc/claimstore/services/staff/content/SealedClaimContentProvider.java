@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
 import java.util.Map;

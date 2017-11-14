@@ -4,13 +4,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.StatementOfValueContent;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.amount.NotKnown;
-import uk.gov.hmcts.cmc.claimstore.models.particulars.PersonalInjury;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
+import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.math.BigDecimal;
 
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProv
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.PERSONAL_INJURY;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.PERSONAL_INJURY_DAMAGES;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.StatementOfValueProvider.RECOVER_UP_TO;
-import static uk.gov.hmcts.cmc.claimstore.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
+import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatementOfValueProviderTest {
