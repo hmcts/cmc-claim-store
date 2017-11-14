@@ -8,13 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
 import uk.gov.hmcts.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.document.DocumentMetadataDownloadClientApi;
@@ -47,14 +45,14 @@ public class DocumentManagementServiceTest {
     @Mock
     private DocumentDownloadClientApi documentDownloadClientApi;
     @Mock
-    private ClaimRepository claimRepository;
+    private ClaimService claimService;
     @Mock
     private ResponseEntity<Resource> responseEntity;
 
     @Before
     public void setup() {
         documentManagementService = new DocumentManagementService(documentMetadataDownloadApi,
-            documentDownloadClientApi, documentUploadClientApi, claimRepository);
+            documentDownloadClientApi, documentUploadClientApi, claimService);
     }
 
     @Test
@@ -76,7 +74,8 @@ public class DocumentManagementServiceTest {
         when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
 
         //when
-        documentManagementService.storeClaimN1Form(authorisationToken, claim, legalN1FormPdf);
+        documentManagementService.storeClaimN1Form(authorisationToken, claim.getId(), claim.getReferenceNumber(),
+            legalN1FormPdf);
 
         //verify
         verifyDocumentUpload(authorisationToken, claim, links, files);
@@ -96,78 +95,15 @@ public class DocumentManagementServiceTest {
         when(documentMetadataDownloadApi.getDocumentMetadata(authorisationToken, selfUri)).thenReturn(document);
         when(documentDownloadClientApi.downloadBinary(authorisationToken, binaryUri)).thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(resource);
-        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
 
         //when
-        final byte[] claimN1Form = documentManagementService.getClaimN1Form(authorisationToken, claim, legalN1FormPdf);
+        final byte[] claimN1Form = documentManagementService.getClaimN1Form(authorisationToken,
+            claim.getSealedClaimDocumentManagementSelfPath());
 
         //then
         assertThat(claimN1Form).isNotNull().isEqualTo(legalN1FormPdf);
         //verify
         verifyDocumentDownload(authorisationToken, selfUri, binaryUri);
-    }
-
-    @Test
-    public void shouldUploadSealedClaimFormWhenBinaryIsNotPresent() {
-        //given
-        final String authorisationToken = "Open sesame!";
-        final String selfUri = SampleClaim.SEALED_CLAIM_DOCUMENT_MANAGEMENT_SELF_URL;
-        final Claim claim = SampleClaim.builder().withSealedClaimDocumentManagementSelfUrl(selfUri).build();
-        final Document document = getUploadResponse().getEmbedded().getDocuments().get(0);
-        final String binaryUri = URI.create(document.links.binary.href).getPath();
-        final byte[] legalN1FormPdf = {65, 66, 67, 68};
-        final UploadResponse uploadResponse = getUploadResponse();
-
-        final Document.Links links = getLinks(uploadResponse);
-
-        final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
-
-        final InMemoryMultipartFile file
-            = new InMemoryMultipartFile(FILES_NAME, originalFileName, APPLICATION_PDF, legalN1FormPdf);
-
-        final List<MultipartFile> files = Collections.singletonList(file);
-
-        when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
-        when(documentMetadataDownloadApi.getDocumentMetadata(authorisationToken, selfUri)).thenReturn(document);
-        when(documentDownloadClientApi.downloadBinary(authorisationToken, binaryUri)).thenReturn(responseEntity);
-        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.NOT_FOUND);
-
-        //when
-        final byte[] claimN1Form = documentManagementService.getClaimN1Form(authorisationToken, claim, legalN1FormPdf);
-
-        //then
-        assertThat(claimN1Form).isNotNull().isEqualTo(legalN1FormPdf);
-        //verify
-        verifyDocumentDownload(authorisationToken, selfUri, binaryUri);
-        verifyDocumentUpload(authorisationToken, claim, links, files);
-    }
-
-    @Test
-    public void shouldUploadClaimDoesNotHaveDocumentManagementUrl() {
-        //given
-        final String authorisationToken = "Open sesame!";
-        final Claim claim = SampleClaim.getDefault();
-        final byte[] legalN1FormPdf = {65, 66, 67, 68};
-        final UploadResponse uploadResponse = getUploadResponse();
-
-        final Document.Links links = getLinks(uploadResponse);
-
-        final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
-
-        final InMemoryMultipartFile file
-            = new InMemoryMultipartFile(FILES_NAME, originalFileName, APPLICATION_PDF, legalN1FormPdf);
-
-        final List<MultipartFile> files = Collections.singletonList(file);
-
-        when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
-
-        //when
-        final byte[] claimN1Form = documentManagementService.getClaimN1Form(authorisationToken, claim, legalN1FormPdf);
-
-        //then
-        assertThat(claimN1Form).isNotNull().isEqualTo(legalN1FormPdf);
-        //verify
-        verifyDocumentUpload(authorisationToken, claim, links, files);
     }
 
     private Document.Links getLinks(final UploadResponse uploadResponse) {
@@ -180,7 +116,7 @@ public class DocumentManagementServiceTest {
                                       final Document.Links links, final List<MultipartFile> files) {
         verify(documentUploadClientApi).upload(authorisationToken, files);
 
-        verify(claimRepository).linkDocumentManagement(eq(claim.getId()),
+        verify(claimService).linkDocumentManagement(eq(claim.getId()),
             eq(URI.create(links.self.href).getPath()));
     }
 

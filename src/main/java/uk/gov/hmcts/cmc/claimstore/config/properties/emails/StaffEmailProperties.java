@@ -16,14 +16,14 @@ public class StaffEmailProperties {
     @NotBlank
     private String recipient;
 
-    private final StaffEmailTemplates emailTemplates;
+    private final EmailContentTemplates emailTemplates;
 
     @Autowired
-    public StaffEmailProperties(StaffEmailTemplates emailTemplates) {
+    public StaffEmailProperties(EmailContentTemplates emailTemplates) {
         this.emailTemplates = emailTemplates;
     }
 
-    public StaffEmailTemplates getEmailTemplates() {
+    public EmailContentTemplates getEmailTemplates() {
         return emailTemplates;
     }
 

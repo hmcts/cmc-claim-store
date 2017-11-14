@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.EmailContentTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 
 import java.util.Collections;
@@ -19,11 +19,11 @@ public class RequestSubmittedNotificationEmailContentProviderTest {
     private TemplateService templateService;
 
     @Mock
-    private StaffEmailTemplates staffEmailTemplates;
+    private EmailContentTemplates emailTemplates;
 
     @Before
     public void setup() {
-        provider = new RequestSubmittedNotificationEmailContentProvider(templateService, staffEmailTemplates);
+        provider = new RequestSubmittedNotificationEmailContentProvider(templateService, emailTemplates);
     }
 
     @Test(expected = NullPointerException.class)

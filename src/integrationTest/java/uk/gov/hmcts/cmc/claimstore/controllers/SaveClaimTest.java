@@ -8,11 +8,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.DataHelper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -52,7 +53,7 @@ public class SaveClaimTest extends BaseIntegrationTest {
             .willReturn(new byte[]{1, 2, 3, 4});
 
         given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(getUploadResponse());
+            .willReturn(DataHelper.documentManagementUploadResponse());
     }
 
     @Test

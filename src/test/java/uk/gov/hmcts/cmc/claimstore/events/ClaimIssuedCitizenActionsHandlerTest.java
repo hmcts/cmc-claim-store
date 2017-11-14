@@ -20,9 +20,9 @@ import java.util.Optional;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
@@ -112,10 +112,12 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         final ClaimIssuedEvent claimIssuedEvent
             = new ClaimIssuedEvent(CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
 
-        claimIssuedCitizenActionsHandler.handleDocumentUpload(claimIssuedEvent);
+        claimIssuedCitizenActionsHandler.uploadDocumentToEvidenceStore(claimIssuedEvent);
 
         verify(citizenSealedClaimPdfService, once()).createPdf(CLAIM, CLAIMANT_EMAIL);
-        verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
+
+        verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM.getId(),
+            CLAIM.getReferenceNumber(), N1_FORM_PDF);
     }
 
     @Test
@@ -130,9 +132,11 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         final ClaimIssuedEvent claimIssuedEvent
             = new ClaimIssuedEvent(CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME, AUTHORISATION);
 
-        claimIssuedCitizenActionsHandler.handleDocumentUpload(claimIssuedEvent);
+        claimIssuedCitizenActionsHandler.uploadDocumentToEvidenceStore(claimIssuedEvent);
 
         verify(citizenSealedClaimPdfService, never()).createPdf(CLAIM, CLAIMANT_EMAIL);
-        verify(documentManagementService, never()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
+
+        verify(documentManagementService, never()).storeClaimN1Form(AUTHORISATION, CLAIM.getId(),
+            CLAIM.getReferenceNumber(), N1_FORM_PDF);
     }
 }

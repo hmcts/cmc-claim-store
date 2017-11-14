@@ -1,0 +1,8 @@
+{
+  "type": "OFFER",
+  "madeBy": "DEFENDANT",
+  "offer": {
+    "content": "I will fix the leaking roof",
+    "completionDate": "2019-10-10"
+  }
+}

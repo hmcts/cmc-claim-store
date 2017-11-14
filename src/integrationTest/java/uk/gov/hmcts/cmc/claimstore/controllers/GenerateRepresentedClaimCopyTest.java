@@ -4,9 +4,10 @@ import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.claimstore.DataHelper;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleAmountRange;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
             .willReturn(PDF_BYTES);
 
         given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(getUploadResponse());
+            .willReturn(DataHelper.documentManagementUploadResponse());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())

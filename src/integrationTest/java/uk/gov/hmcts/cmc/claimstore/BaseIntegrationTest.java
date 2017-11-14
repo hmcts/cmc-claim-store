@@ -12,8 +12,6 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
-import uk.gov.hmcts.document.domain.UploadResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -61,10 +59,5 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
     protected List<Claim> deserializeListFrom(MvcResult result) throws UnsupportedEncodingException {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), new TypeReference<List<Claim>>() {
         });
-    }
-
-    protected UploadResponse getUploadResponse() {
-        final String response = new ResourceReader().read("/document_management_response.json");
-        return jsonMapper.fromJson(response, UploadResponse.class);
     }
 }

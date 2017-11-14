@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.EmailContentTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
@@ -14,20 +14,20 @@ public class DefendantResponseStaffNotificationEmailContentProvider
     implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
-    private final StaffEmailTemplates staffEmailTemplates;
+    private final EmailContentTemplates emailTemplates;
 
     @Autowired
     public DefendantResponseStaffNotificationEmailContentProvider(final TemplateService templateService,
-                                                                  final StaffEmailTemplates staffEmailTemplates) {
+                                                                  final EmailContentTemplates emailTemplates) {
         this.templateService = templateService;
-        this.staffEmailTemplates = staffEmailTemplates;
+        this.emailTemplates = emailTemplates;
     }
 
     @Override
     public EmailContent createContent(final Map<String, Object> input) {
         return new EmailContent(
-            evaluateTemplate(staffEmailTemplates.getDefendantResponseEmailSubject(), input),
-            evaluateTemplate(staffEmailTemplates.getDefendantResponseEmailBody(), input)
+            evaluateTemplate(emailTemplates.getDefendantResponseEmailSubject(), input),
+            evaluateTemplate(emailTemplates.getDefendantResponseEmailBody(), input)
         );
     }
 

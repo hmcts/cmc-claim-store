@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,41 +14,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
-import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
-import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.DocumentsService;
 
 @Api
 @RestController
 @RequestMapping("/documents")
 public class DocumentsController {
 
-    private final ClaimService claimService;
-    private final DefendantResponseCopyService defendantResponseCopyService;
-    private final LegalSealedClaimPdfService legalSealedClaimPdfService;
-    private final CountyCourtJudgmentService countyCourtJudgmentService;
-    private final DocumentManagementService documentManagementService;
-    private final boolean dmFeatureToggle;
+    private final DocumentsService documentsService;
 
     @Autowired
-    public DocumentsController(
-        final ClaimService claimService,
-        final DefendantResponseCopyService defendantResponseCopyService,
-        final LegalSealedClaimPdfService legalSealedClaimPdfService,
-        final CountyCourtJudgmentService countyCourtJudgmentService,
-        final DocumentManagementService documentManagementService,
-        @Value("${feature_toggles.document_management}") final boolean dmFeatureToggle
-    ) {
-        this.claimService = claimService;
-        this.defendantResponseCopyService = defendantResponseCopyService;
-        this.legalSealedClaimPdfService = legalSealedClaimPdfService;
-        this.countyCourtJudgmentService = countyCourtJudgmentService;
-        this.documentManagementService = documentManagementService;
-        this.dmFeatureToggle = dmFeatureToggle;
+    public DocumentsController(final DocumentsService documentsService) {
+        this.documentsService = documentsService;
     }
 
     @ApiOperation("Returns a Defendant Response copy for a given claim external id")
@@ -61,8 +37,8 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        byte[] pdfDocument = defendantResponseCopyService.createPdf(claim);
+        final byte[] pdfDocument = documentsService.defendantResponseCopy(claimExternalId);
+
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)
@@ -78,22 +54,13 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
-    ) throws DocumentManagementException {
-        Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        byte[] pdfDocument = getPdfDocument(claim, authorisation);
+    ) {
+        final byte[] pdfDocument = documentsService.legalSealedClaim(claimExternalId, authorisation);
+
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)
             .body(new ByteArrayResource(pdfDocument));
-    }
-
-    private byte[] getPdfDocument(final Claim claim, final String authorisation) throws DocumentManagementException {
-        final byte[] n1ClaimPdf = legalSealedClaimPdfService.createPdf(claim);
-        if (dmFeatureToggle) {
-            return documentManagementService.getClaimN1Form(authorisation, claim, n1ClaimPdf);
-        } else {
-            return n1ClaimPdf;
-        }
     }
 
     @ApiOperation("Returns a County Court Judgement for a given claim external id")
@@ -105,8 +72,8 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        byte[] pdfDocument = countyCourtJudgmentService.createPdf(claim);
+        final byte[] pdfDocument = documentsService.countyCourtJudgement(claimExternalId);
+
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)

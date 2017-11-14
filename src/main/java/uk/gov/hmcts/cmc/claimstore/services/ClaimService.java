@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.utils.LocalDateTimeFactory;
@@ -166,5 +168,22 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
 
         claimRepository.linkDefendant(claim.getId(), defendantId);
+    }
+
+    public void linkLetterHolder(final Long claimId, final String userId) {
+        claimRepository.linkLetterHolder(claimId, userId);
+    }
+
+    public void linkDocumentManagement(final Long claimId, final String sealedClaimDocumentManagementSelfPath) {
+        claimRepository.linkDocumentManagement(claimId, sealedClaimDocumentManagementSelfPath);
+    }
+
+    public void saveCountyCourtJudgment(final long claimId, final CountyCourtJudgment countyCourtJudgment) {
+        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
+    }
+
+    public void saveDefendantResponse(final long claimId, final String defendantId, final String defendantEmail,
+                                      final ResponseData responseData) {
+        claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData));
     }
 }

@@ -20,19 +20,18 @@ import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 @RestController
 @RequestMapping("/support")
 public class SupportController {
 
-    private final ClaimRepository claimRepository;
+    private final ClaimService claimService;
     private final UserService userService;
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
@@ -41,14 +40,14 @@ public class SupportController {
 
     @Autowired
     public SupportController(
-        final ClaimRepository claimRepository,
+        final ClaimService claimService,
         final UserService userService,
         final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
         final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         final CCJStaffNotificationHandler ccjStaffNotificationHandler
     ) {
-        this.claimRepository = claimRepository;
+        this.claimService = claimService;
         this.userService = userService;
         this.claimIssuedStaffNotificationHandler = claimIssuedStaffNotificationHandler;
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
@@ -62,9 +61,9 @@ public class SupportController {
         @PathVariable("referenceNumber") final String referenceNumber,
         @PathVariable("event") final String event,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = true) final String authorisation
-    ) throws ServletRequestBindingException, DocumentManagementException {
+    ) throws ServletRequestBindingException {
 
-        Claim claim = claimRepository.getByClaimReferenceNumber(referenceNumber)
+        Claim claim = claimService.getClaimByReference(referenceNumber)
             .orElseThrow(() -> new NotFoundException("Claim " + referenceNumber + " does not exist"));
 
         switch (event) {
@@ -86,7 +85,6 @@ public class SupportController {
     }
 
 
-
     private void validateAuthorisationPresentWhenRequired(final String authorisation)
         throws ServletRequestBindingException {
         if (StringUtils.isBlank(authorisation)) {
@@ -103,7 +101,7 @@ public class SupportController {
     }
 
     private void resendStaffNotificationsOnClaimIssued(final Claim claim, final String authorisation)
-        throws ServletRequestBindingException, DocumentManagementException {
+        throws ServletRequestBindingException {
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
         }
@@ -114,7 +112,7 @@ public class SupportController {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
-            claimRepository.linkLetterHolder(claim.getId(), pinResponse.getUserId());
+            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
 
             final String fullName = userService.getUserDetails(authorisation).getFullName();
 

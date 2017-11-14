@@ -3,10 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
 
 import java.util.Optional;
 
@@ -22,27 +21,22 @@ public class ClaimIssuedStaffNotificationServiceTest extends MockSpringTest {
     private ClaimIssuedStaffNotificationService service;
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullClaim() throws DocumentManagementException {
+    public void shouldThrowNullPointerWhenGivenNullClaim() {
         service.notifyStaffClaimIssued(null, Optional.of(DEFENDANT_PIN), CLAIMANT_EMAIL, AUTHORISATION);
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullDefendantPin() throws DocumentManagementException {
+    public void shouldThrowNullPointerWhenGivenNullDefendantPin() {
         service.notifyStaffClaimIssued(claim, Optional.empty(), CLAIMANT_EMAIL, AUTHORISATION);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentWhenGivenEmptyDefendantPin() throws DocumentManagementException {
-        service.notifyStaffClaimIssued(claim, Optional.of(""), CLAIMANT_EMAIL, AUTHORISATION);
-    }
-
     @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullClaimantEmail() throws DocumentManagementException {
+    public void shouldThrowNullPointerWhenGivenNullClaimantEmail() {
         service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), null, AUTHORISATION);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentWhenGivenEmptyClaimantEmail() throws DocumentManagementException {
+    public void shouldThrowIllegalArgumentWhenGivenEmptyClaimantEmail() {
         service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), "", AUTHORISATION);
     }
 

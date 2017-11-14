@@ -5,30 +5,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
-import uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.EmailContentTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.CLAIM_ID;
-import static uk.gov.hmcts.cmc.claimstore.controllers.utils.sampledata.SampleClaim.USER_ID;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.CLAIM_ID;
+import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,7 +37,7 @@ public class CountyCourtJudgmentServiceTest {
     private CountyCourtJudgmentService countyCourtJudgmentService;
 
     @Mock
-    private ClaimRepository claimRepository;
+    private ClaimService claimService;
     @Mock
     private JsonMapper jsonMapper;
     @Mock
@@ -51,7 +49,7 @@ public class CountyCourtJudgmentServiceTest {
     @Mock
     private InterestCalculationService interestCalculationService;
 
-    private StaffEmailTemplates emailTemplates = new StaffEmailTemplates();
+    private EmailContentTemplates emailTemplates = new EmailContentTemplates();
 
     private ContentProvider contentProvider;
 
@@ -60,8 +58,7 @@ public class CountyCourtJudgmentServiceTest {
         contentProvider = new ContentProvider(interestCalculationService);
 
         countyCourtJudgmentService = new CountyCourtJudgmentService(
-            claimRepository,
-            jsonMapper,
+            claimService,
             eventProducer,
             pdfServiceClient,
             emailTemplates,
@@ -75,18 +72,18 @@ public class CountyCourtJudgmentServiceTest {
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2)).build();
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
 
         verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class));
-        verify(claimRepository, once()).saveCountyCourtJudgment(eq(CLAIM_ID), any());
+        verify(claimService, once()).saveCountyCourtJudgment(eq(CLAIM_ID), any());
     }
 
     @Test(expected = NotFoundException.class)
     public void saveThrowsNotFoundExceptionWhenClaimDoesNotExist() {
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
+        when(claimService.getClaimById(eq(CLAIM_ID))).thenThrow(new NotFoundException("Claim not found by id"));
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
@@ -98,7 +95,7 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim claim = SampleClaim.getDefault();
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
 
         countyCourtJudgmentService.save(differentUser, DATA, CLAIM_ID);
     }
@@ -108,7 +105,7 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.builder().withRespondedAt(LocalDateTime.now().minusDays(2)).build();
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(respondedClaim));
+        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
@@ -118,7 +115,7 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(12));
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(respondedClaim));
+        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }
@@ -128,7 +125,7 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getDefault();
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(respondedClaim));
+        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
     }

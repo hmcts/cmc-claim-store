@@ -49,11 +49,13 @@ public class RepresentativeConfirmationHandler {
     }
 
     @EventListener
-    public void handleDocumentUpload(final RepresentedClaimIssuedEvent event) {
+    public void uploadDocumentToEvidenceStore(final RepresentedClaimIssuedEvent event) {
         if (dmFeatureToggle) {
             final Claim claim = event.getClaim();
             final byte[] n1FormPdf = legalSealedClaimPdfService.createPdf(claim);
-            documentManagementService.storeClaimN1Form(event.getAuthorisation(), event.getClaim(), n1FormPdf);
+
+            documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim.getId(),
+                claim.getReferenceNumber(), n1FormPdf);
         }
     }
 

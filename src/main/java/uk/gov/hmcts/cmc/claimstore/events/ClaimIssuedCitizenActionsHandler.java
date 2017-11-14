@@ -20,7 +20,7 @@ public class ClaimIssuedCitizenActionsHandler {
     private final NotificationsProperties notificationsProperties;
     private final DocumentManagementService documentManagementService;
     private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
-    private final boolean dmFeatureToggle;
+    private final boolean documentManagementFeatureEnabled;
 
     @Autowired
     public ClaimIssuedCitizenActionsHandler(
@@ -28,13 +28,13 @@ public class ClaimIssuedCitizenActionsHandler {
         final NotificationsProperties notificationsProperties,
         final DocumentManagementService documentManagementService,
         final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
-        @Value("${feature_toggles.document_management}") final boolean dmFeatureToggle
+        @Value("${feature_toggles.document_management}") final boolean documentManagementFeatureEnabled
     ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.documentManagementService = documentManagementService;
         this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
-        this.dmFeatureToggle = dmFeatureToggle;
+        this.documentManagementFeatureEnabled = documentManagementFeatureEnabled;
     }
 
     @EventListener
@@ -52,11 +52,13 @@ public class ClaimIssuedCitizenActionsHandler {
     }
 
     @EventListener
-    public void handleDocumentUpload(final ClaimIssuedEvent event) {
-        if (dmFeatureToggle) {
+    public void uploadDocumentToEvidenceStore(final ClaimIssuedEvent event) {
+        if (documentManagementFeatureEnabled) {
             final Claim claim = event.getClaim();
             final byte[] n1FormPdf = citizenSealedClaimPdfService.createPdf(claim, event.getSubmitterEmail());
-            documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim, n1FormPdf);
+
+            documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim.getId(),
+                claim.getReferenceNumber(), n1FormPdf);
         }
     }
 

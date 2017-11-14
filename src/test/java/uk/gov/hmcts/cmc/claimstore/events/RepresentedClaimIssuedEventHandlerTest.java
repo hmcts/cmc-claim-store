@@ -76,10 +76,12 @@ public class RepresentedClaimIssuedEventHandlerTest {
         final RepresentedClaimIssuedEvent representedClaimIssuedEvent
             = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
-        representativeConfirmationHandler.handleDocumentUpload(representedClaimIssuedEvent);
+        representativeConfirmationHandler.uploadDocumentToEvidenceStore(representedClaimIssuedEvent);
 
         verify(legalSealedClaimPdfService, once()).createPdf(CLAIM);
-        verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
+
+        verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM.getId(),
+            CLAIM.getReferenceNumber(), N1_FORM_PDF);
     }
 
     @Test
@@ -94,9 +96,11 @@ public class RepresentedClaimIssuedEventHandlerTest {
         final RepresentedClaimIssuedEvent representedClaimIssuedEvent
             = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
-        representativeConfirmationHandler.handleDocumentUpload(representedClaimIssuedEvent);
+        representativeConfirmationHandler.uploadDocumentToEvidenceStore(representedClaimIssuedEvent);
 
         verify(legalSealedClaimPdfService, never()).createPdf(CLAIM);
-        verify(documentManagementService, never()).storeClaimN1Form(AUTHORISATION, CLAIM, N1_FORM_PDF);
+
+        verify(documentManagementService, never()).storeClaimN1Form(AUTHORISATION, CLAIM.getId(),
+            CLAIM.getReferenceNumber(), N1_FORM_PDF);
     }
 }

@@ -44,6 +44,7 @@ public class ClaimIssuedEvent {
     }
 
     @Override
+    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(final Object other) {
         if (this == other) {
             return true;
