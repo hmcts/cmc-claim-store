@@ -174,16 +174,16 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void linkDocumentManagement(final Long claimId, final String sealedClaimDocumentManagementSelfPath) {
+    void linkDocumentManagement(final Long claimId, final String sealedClaimDocumentManagementSelfPath) {
         claimRepository.linkDocumentManagement(claimId, sealedClaimDocumentManagementSelfPath);
     }
 
-    public void saveCountyCourtJudgment(final long claimId, final CountyCourtJudgment countyCourtJudgment) {
+    void saveCountyCourtJudgment(final long claimId, final CountyCourtJudgment countyCourtJudgment) {
         claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
     }
 
-    public void saveDefendantResponse(final long claimId, final String defendantId, final String defendantEmail,
-                                      final ResponseData responseData) {
+    void saveDefendantResponse(final long claimId, final String defendantId, final String defendantEmail,
+                               final ResponseData responseData) {
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData));
     }
 }

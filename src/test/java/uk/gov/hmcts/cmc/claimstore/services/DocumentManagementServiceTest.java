@@ -10,6 +10,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -106,6 +107,31 @@ public class DocumentManagementServiceTest {
         verifyDocumentDownload(authorisationToken, selfUri, binaryUri);
     }
 
+    @Test(expected = DocumentManagementException.class)
+    public void shouldThrowWhenUploadSealedClaimFails() {
+        //given
+        final String authorisationToken = "Open sesame!";
+        final Claim claim = SampleClaim.getDefault();
+        final UploadResponse uploadResponse = getFailedResponse();
+
+        final byte[] legalN1FormPdf = {65, 66, 67, 68};
+        final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
+
+        final InMemoryMultipartFile file
+            = new InMemoryMultipartFile(FILES_NAME, originalFileName, APPLICATION_PDF, legalN1FormPdf);
+
+        final List<MultipartFile> files = Collections.singletonList(file);
+
+        when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
+
+        //when
+        documentManagementService.storeClaimN1Form(authorisationToken, claim.getId(), claim.getReferenceNumber(),
+            legalN1FormPdf);
+
+        //verify
+        verify(documentUploadClientApi).upload(authorisationToken, files);
+    }
+
     private Document.Links getLinks(final UploadResponse uploadResponse) {
         return uploadResponse.getEmbedded().getDocuments().stream()
             .findFirst()
@@ -127,6 +153,15 @@ public class DocumentManagementServiceTest {
 
     private UploadResponse getUploadResponse() {
         final String response = new ResourceReader().read("/document_management_response.json");
+        return new JsonMapper(new ObjectMapper()).fromJson(response, UploadResponse.class);
+    }
+
+    private UploadResponse getFailedResponse() {
+        final String response = "{\n"
+            + "  \"_embedded\": {\n"
+            + "    \"documents\": []"
+            + "}"
+            + "}";
         return new JsonMapper(new ObjectMapper()).fromJson(response, UploadResponse.class);
     }
 }

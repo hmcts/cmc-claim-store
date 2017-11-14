@@ -6,6 +6,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.document.DocumentUploadClientApi;
@@ -43,11 +44,11 @@ public class DocumentManagementService {
 
     public void storeClaimN1Form(final String authorisation, final long claimId,
                                  final String claimReferenceNumber, final byte[] n1FormPdf) {
-        final Document document = uploadDocument(authorisation, claimReferenceNumber, n1FormPdf);
+        final Document document = uploadDocument(authorisation, claimId, claimReferenceNumber, n1FormPdf);
         claimService.linkDocumentManagement(claimId, URI.create(document.links.self.href).getPath());
     }
 
-    private Document uploadDocument(final String authorisation, final String claimReferenceNumber,
+    private Document uploadDocument(final String authorisation, final long claimId, final String claimReferenceNumber,
                                     final byte[] n1FormPdf) {
         final String originalFileName = claimReferenceNumber + PDF_EXTENSION;
         final MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, APPLICATION_PDF, n1FormPdf);
@@ -55,10 +56,10 @@ public class DocumentManagementService {
 
         return response.getEmbedded().getDocuments().stream()
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new DocumentManagementException("Failed uploading claim form for " + claimId));
     }
 
-    public byte[] getClaimN1Form(final String authorisation, final String sealedClaimDocumentManagementSelfPath) {
+    byte[] getClaimN1Form(final String authorisation, final String sealedClaimDocumentManagementSelfPath) {
         final Document documentMetadata = documentMetadataDownloadApi.getDocumentMetadata(authorisation,
             sealedClaimDocumentManagementSelfPath);
 
