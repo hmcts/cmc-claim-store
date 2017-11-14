@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class ClaimIssuedEvent {
     private final String submitterEmail;

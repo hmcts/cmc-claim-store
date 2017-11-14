@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 
 import static java.lang.String.format;

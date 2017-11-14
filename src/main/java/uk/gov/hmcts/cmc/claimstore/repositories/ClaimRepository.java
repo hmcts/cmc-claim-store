@@ -6,8 +6,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import org.skife.jdbi.v2.sqlobject.customizers.SingleValueResult;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.ClaimMapper;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
 import java.util.List;

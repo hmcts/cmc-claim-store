@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.PDF_EXTENSION;

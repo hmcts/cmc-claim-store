@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore;
 
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
-import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
+import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.document.domain.UploadResponse;
 
 public class DataHelper {

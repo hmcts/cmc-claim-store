@@ -9,9 +9,8 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDateTime;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDateTime;
 
 public class IssueDateCalculatorTest {
 

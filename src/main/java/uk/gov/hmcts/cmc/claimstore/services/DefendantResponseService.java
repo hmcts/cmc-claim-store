@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
 
 @Service
 public class DefendantResponseService {

@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
-import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Optional;

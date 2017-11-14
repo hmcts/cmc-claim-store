@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;

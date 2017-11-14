@@ -9,23 +9,21 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.CLAIM_ID;
-import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.DEFENDANT_ID;
-import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseServiceTest {
@@ -38,21 +36,15 @@ public class DefendantResponseServiceTest {
     private DefendantResponseService responseService;
 
     @Mock
-    private ClaimRepository claimRepository;
-    @Mock
     private EventProducer eventProducer;
     @Mock
     private UserService userService;
     @Mock
     private ClaimService claimService;
-    @Mock
-    private JsonMapper mapper;
 
     @Before
     public void setup() {
-        responseService = new DefendantResponseService(
-            eventProducer, claimService, userService
-        );
+        responseService = new DefendantResponseService(eventProducer, claimService, userService);
     }
 
     @Test

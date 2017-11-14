@@ -7,10 +7,10 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Optional;
 
