@@ -4,11 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 
 import java.time.Clock;
 import java.time.LocalDateTime;

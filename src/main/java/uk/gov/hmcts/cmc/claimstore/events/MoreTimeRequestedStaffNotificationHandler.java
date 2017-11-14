@@ -5,9 +5,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 
-import uk.gov.hmcts.cmc.claimstore.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
