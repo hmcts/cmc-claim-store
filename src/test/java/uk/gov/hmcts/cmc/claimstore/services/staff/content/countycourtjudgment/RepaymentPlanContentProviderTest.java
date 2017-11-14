@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

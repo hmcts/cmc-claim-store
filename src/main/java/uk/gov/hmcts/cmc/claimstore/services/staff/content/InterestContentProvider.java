@@ -2,10 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Interest;
-import uk.gov.hmcts.cmc.claimstore.models.InterestDate;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
+import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
