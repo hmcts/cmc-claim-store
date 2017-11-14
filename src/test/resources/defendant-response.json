@@ -1,5 +1,5 @@
 {
-  "response": "OWE_ALL_PAID_ALL",
+  "response": "OWE_NONE",
   "defence": "defence string",
   "freeMediation": "yes",
   "moreTimeNeeded": "yes",

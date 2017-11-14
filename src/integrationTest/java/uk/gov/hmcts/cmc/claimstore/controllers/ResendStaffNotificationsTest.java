@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -134,7 +135,16 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         final String event = "response-submitted";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponseData.validDefaults(), "2", "j.smith@example.com");
+        claimStore.saveResponse(
+            claim.getId(),
+            SampleResponseData
+                .builder()
+                .withResponseType(ResponseData.ResponseType.OWE_ALL_PAID_ALL)
+                .withMediation(null)
+                .build(),
+            DEFENDANT_ID,
+            "j.smith@example.com"
+        );
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());
