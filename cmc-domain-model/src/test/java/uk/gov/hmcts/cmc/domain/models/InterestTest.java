@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class InterestTest {
 
@@ -15,7 +16,7 @@ public class InterestTest {
         //given
         Interest interest = new Interest(null, null, null);
         //when
-        Set<String> errors = BeanValidator.validate(interest);
+        Set<String> errors = validate(interest);
         //then
         assertThat(errors)
             .hasSize(2)
@@ -30,7 +31,7 @@ public class InterestTest {
         //given
         Interest interest = new Interest(Interest.InterestType.STANDARD, new BigDecimal(8), "reason");
         //when
-        Set<String> errors = BeanValidator.validate(interest);
+        Set<String> errors = validate(interest);
         //then
         assertThat(errors).isEmpty();
     }
@@ -40,7 +41,7 @@ public class InterestTest {
         //given
         Interest interest = new Interest(Interest.InterestType.NO_INTEREST, null, "reason");
         //when
-        Set<String> errors = BeanValidator.validate(interest);
+        Set<String> errors = validate(interest);
         //then
         assertThat(errors).isEmpty();
     }

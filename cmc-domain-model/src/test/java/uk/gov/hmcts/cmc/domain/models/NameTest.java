@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.utils.BeanValidator;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class NameTest {
 
@@ -17,7 +18,7 @@ public class NameTest {
         //given
         ClaimData claimData = SampleClaimData.validDefaults();
         //when
-        Set<String> response = BeanValidator.validate(claimData);
+        Set<String> response = validate(claimData);
         //then
         assertThat(response)
             .hasSize(0);
@@ -34,7 +35,7 @@ public class NameTest {
             .build();
 
         //when
-        Set<String> messages = BeanValidator.validate(claimData);
+        Set<String> messages = validate(claimData);
 
         //then
         assertThat(messages)
@@ -53,7 +54,7 @@ public class NameTest {
             .build();
 
         //when
-        Set<String> messages = BeanValidator.validate(claimData);
+        Set<String> messages = validate(claimData);
 
         //then
         assertThat(messages)

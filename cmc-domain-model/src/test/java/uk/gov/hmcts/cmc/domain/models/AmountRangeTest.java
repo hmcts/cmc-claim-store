@@ -9,6 +9,7 @@ import java.util.Set;
 
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class AmountRangeTest {
     @Test
@@ -16,7 +17,7 @@ public class AmountRangeTest {
         //given
         final AmountRange amountRow = SampleAmountRange.validDefaults();
         //when
-        Set<String> errors = BeanValidator.validate(amountRow);
+        Set<String> errors = validate(amountRow);
         //then
         assertThat(errors).isEmpty();
     }
@@ -28,7 +29,7 @@ public class AmountRangeTest {
             .withLowerValue(valueOf(9999999.99)).build();
 
         //when
-        Set<String> errors = BeanValidator.validate(amountRow);
+        Set<String> errors = validate(amountRow);
         //then
         assertThat(errors).isEmpty();
     }
@@ -40,7 +41,7 @@ public class AmountRangeTest {
             .withLowerValue(valueOf(0.01)).build();
 
         //when
-        Set<String> errors = BeanValidator.validate(amountRow);
+        Set<String> errors = validate(amountRow);
         //then
         assertThat(errors).isEmpty();
     }
@@ -50,7 +51,7 @@ public class AmountRangeTest {
         //given
         final AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(10000000)).build();
         //when
-        Set<String> errors = BeanValidator.validate(amountRow);
+        Set<String> errors = validate(amountRow);
         //then
         assertThat(errors).containsExactly("higherValue : can not be more than 2 fractions");
     }
@@ -62,7 +63,7 @@ public class AmountRangeTest {
             .withLowerValue(valueOf(0)).build();
 
         //when
-        Set<String> errors = BeanValidator.validate(amountRow);
+        Set<String> errors = validate(amountRow);
         //then
 
         final String[] expectedErroMessages = {"higherValue : must be greater than or equal to 0.01",

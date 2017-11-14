@@ -10,6 +10,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class AmountBreakDownTest {
 
@@ -21,7 +22,7 @@ public class AmountBreakDownTest {
             .addRow(new AmountRow("reason", new BigDecimal("40")))
             .build();
         //when
-        Set<String> validationMessages = BeanValidator.validate(amountBreakDown);
+        Set<String> validationMessages = validate(amountBreakDown);
         //then
         assertThat(validationMessages).isEmpty();
     }
@@ -33,7 +34,7 @@ public class AmountBreakDownTest {
             .withRows(null)
             .build();
         //when
-        Set<String> validationMessages = BeanValidator.validate(amountBreakDown);
+        Set<String> validationMessages = validate(amountBreakDown);
         //then
         assertThat(validationMessages)
             .hasSize(1)
@@ -49,7 +50,7 @@ public class AmountBreakDownTest {
             .addRow(new AmountRow("reason", new BigDecimal("10")))
             .build();
         //when
-        Set<String> validationMessages = BeanValidator.validate(amountBreakDown);
+        Set<String> validationMessages = validate(amountBreakDown);
         //then
         assertThat(validationMessages)
             .hasSize(1)
@@ -63,7 +64,7 @@ public class AmountBreakDownTest {
             .withRows(emptyList())
             .build();
         //when
-        Set<String> validationMessages = BeanValidator.validate(amountBreakDown);
+        Set<String> validationMessages = validate(amountBreakDown);
         //then
         assertThat(validationMessages)
             .hasSize(1)
@@ -78,7 +79,7 @@ public class AmountBreakDownTest {
             .addRow(new AmountRow("reason", new BigDecimal("0")))
             .build();
         //when
-        Set<String> validationMessages = BeanValidator.validate(amountBreakDown);
+        Set<String> validationMessages = validate(amountBreakDown);
         //then
         assertThat(validationMessages)
             .hasSize(2)

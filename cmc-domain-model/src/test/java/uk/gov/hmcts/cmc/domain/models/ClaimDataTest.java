@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class ClaimDataTest {
 
@@ -27,7 +28,7 @@ public class ClaimDataTest {
         //given
         ClaimData claimData = SampleClaimData.noInterest();
         //when
-        Set<String> response = BeanValidator.validate(claimData);
+        Set<String> response = validate(claimData);
         //then
         assertThat(response).isNotNull().hasSize(0);
     }
@@ -40,7 +41,7 @@ public class ClaimDataTest {
             .withInterestDate(invalidDate)
             .build();
         //when
-        Set<String> response = BeanValidator.validate(claimData);
+        Set<String> response = validate(claimData);
         //then
         assertThat(response)
             .hasSize(1)
@@ -57,7 +58,7 @@ public class ClaimDataTest {
             .withInterestDate(invalidDate)
             .build();
         //when
-        Set<String> response = BeanValidator.validate(claimData);
+        Set<String> response = validate(claimData);
         //then
         assertThat(response)
             .hasSize(1)
@@ -71,7 +72,7 @@ public class ClaimDataTest {
             .withInterestDate(invalidDate)
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).isEmpty();
     }
@@ -82,7 +83,7 @@ public class ClaimDataTest {
             .withDefendants(null)
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("defendants : may not be empty");
     }
@@ -93,7 +94,7 @@ public class ClaimDataTest {
             .clearDefendants()
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("defendants : may not be empty");
     }
@@ -104,7 +105,7 @@ public class ClaimDataTest {
             .withDefendant(null)
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("defendants[0] : may not be null");
     }
@@ -117,7 +118,7 @@ public class ClaimDataTest {
                 .individualDetails())
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("defendants[0].name : may not be empty");
     }
@@ -129,7 +130,7 @@ public class ClaimDataTest {
             .addDefendants(SampleTheirDetails.builder().individualDetails(21))
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("defendants : at most 20 defendants are supported");
     }
@@ -141,7 +142,7 @@ public class ClaimDataTest {
             .addDefendants(SampleTheirDetails.builder().individualDetails(20))
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).isEmpty();
     }
@@ -169,7 +170,7 @@ public class ClaimDataTest {
             .withClaimants(null)
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("claimants : may not be empty");
     }
@@ -180,7 +181,7 @@ public class ClaimDataTest {
             .clearClaimants()
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("claimants : may not be empty");
     }
@@ -191,7 +192,7 @@ public class ClaimDataTest {
             .withClaimant(null)
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("claimants[0] : may not be null");
     }
@@ -204,7 +205,7 @@ public class ClaimDataTest {
                 .individual())
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("claimants[0].name : may not be empty");
     }
@@ -217,7 +218,7 @@ public class ClaimDataTest {
                 .individual())
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("claimants[0].address : may not be null");
     }
@@ -229,7 +230,7 @@ public class ClaimDataTest {
             .addClaimants(SampleParty.builder().individualDetails(21))
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).containsOnly("claimants : at most 20 claimants are supported");
     }
@@ -241,7 +242,7 @@ public class ClaimDataTest {
             .addClaimants(SampleParty.builder().individualDetails(20))
             .build();
 
-        Set<String> errors = BeanValidator.validate(claimData);
+        Set<String> errors = validate(claimData);
 
         assertThat(errors).isEmpty();
     }

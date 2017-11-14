@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.utils.BeanValidator;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class CompanyDetailsTest {
 
@@ -17,7 +18,7 @@ public class CompanyDetailsTest {
             .withContactPerson(null)
             .companyDetails();
 
-        Set<String> validationErrors = BeanValidator.validate(companyDetails);
+        Set<String> validationErrors = validate(companyDetails);
 
         assertThat(validationErrors).isEmpty();
     }
@@ -28,7 +29,7 @@ public class CompanyDetailsTest {
             .withContactPerson("")
             .companyDetails();
 
-        Set<String> validationErrors = BeanValidator.validate(companyDetails);
+        Set<String> validationErrors = validate(companyDetails);
 
         assertThat(validationErrors).isEmpty();
     }

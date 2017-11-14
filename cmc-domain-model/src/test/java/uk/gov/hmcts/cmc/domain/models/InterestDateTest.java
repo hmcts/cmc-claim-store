@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class InterestDateTest {
 
@@ -20,7 +21,7 @@ public class InterestDateTest {
             .withReason(null)
             .build();
         //when
-        Set<String> errors = BeanValidator.validate(interestDate);
+        Set<String> errors = validate(interestDate);
         //then
         assertThat(errors)
             .hasSize(2)
@@ -38,7 +39,7 @@ public class InterestDateTest {
             .withDate(LocalDate.of(2015, 2, 5))
             .build();
         //when
-        Set<String> errors = BeanValidator.validate(interestDate);
+        Set<String> errors = validate(interestDate);
         //then
         assertThat(errors).isEmpty();
     }
@@ -51,7 +52,7 @@ public class InterestDateTest {
             .withDate(LocalDate.of(2015, 2, 5))
             .build();
         //when
-        Set<String> errors = BeanValidator.validate(interestDate);
+        Set<String> errors = validate(interestDate);
         //then
         assertThat(errors).isEmpty();
     }
@@ -65,7 +66,7 @@ public class InterestDateTest {
             .withDate(todayPlusOne)
             .build();
         //when
-        Set<String> errors = BeanValidator.validate(interestDate);
+        Set<String> errors = validate(interestDate);
         //then
         assertThat(errors)
             .hasSize(1)
@@ -80,7 +81,7 @@ public class InterestDateTest {
             .withReason("")
             .build();
         //when
-        Set<String> errors = BeanValidator.validate(interestDate);
+        Set<String> errors = validate(interestDate);
         //then
         assertThat(errors)
             .hasSize(1)
@@ -95,7 +96,7 @@ public class InterestDateTest {
             .withReason(null)
             .build();
         //when
-        Set<String> errors = BeanValidator.validate(interestDate);
+        Set<String> errors = validate(interestDate);
         //then
         assertThat(errors).isEmpty();
     }

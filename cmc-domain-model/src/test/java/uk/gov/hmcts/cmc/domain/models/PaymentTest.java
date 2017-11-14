@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.utils.BeanValidator;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class PaymentTest {
 
@@ -15,7 +16,7 @@ public class PaymentTest {
         //given
         Payment payment = SamplePayment.validDefaults();
         //when
-        Set<String> errors = BeanValidator.validate(payment);
+        Set<String> errors = validate(payment);
         //then
         assertThat(errors).isNotNull().hasSize(0);
     }
@@ -26,7 +27,7 @@ public class PaymentTest {
         Payment payment = new Payment(null, null, null,
             null, null, null);
         //when
-        Set<String> errors = BeanValidator.validate(payment);
+        Set<String> errors = validate(payment);
         //then
         assertThat(errors).hasSize(6).contains(
             "id : may not be empty",
