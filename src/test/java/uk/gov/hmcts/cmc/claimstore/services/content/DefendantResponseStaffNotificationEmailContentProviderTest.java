@@ -92,7 +92,17 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUsePaidAllDefenceTextIfPaidAllDefenceSelected() {
-        EmailContent content = service.createContent(wrapInMap(SampleClaim.getWithDefaultResponse(), DEFENDANT_EMAIL));
+        EmailContent content = service.createContent(
+            wrapInMap(
+                SampleClaim.builder()
+                    .withResponse(
+                        SampleResponseData
+                            .builder()
+                            .withResponseType(ResponseData.ResponseType.OWE_ALL_PAID_ALL)
+                            .withMediation(null)
+                            .build()
+                    ).build(),
+                DEFENDANT_EMAIL));
         assertThat(content.getBody())
             .contains("The defendant has submitted an already paid defence which is attached as a PDF.")
             .contains("You need to ask the claimant if they want to proceed with the claim.")

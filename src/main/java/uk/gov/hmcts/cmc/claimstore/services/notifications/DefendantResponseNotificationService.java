@@ -130,7 +130,9 @@ public class DefendantResponseNotificationService {
     }
 
     private Map<String, String> aggregateParams(final Claim claim, final ResponseData responseData) {
-        boolean isFreeMediationRequested = responseData.getFreeMediation().equals(ResponseData.FreeMediationOption.YES);
+        boolean isFreeMediationRequested = responseData.getFreeMediation()
+            .orElse(ResponseData.FreeMediationOption.NO).equals(ResponseData.FreeMediationOption.YES);
+
         LocalDate decisionDeadline = freeMediationDecisionDateCalculator.calculateDecisionDate(LocalDate.now());
 
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();

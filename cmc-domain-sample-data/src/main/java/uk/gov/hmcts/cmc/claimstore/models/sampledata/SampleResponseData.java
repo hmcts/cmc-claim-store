@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.models.party.Party;
 
 public class SampleResponseData {
 
-    private ResponseData.ResponseType responseType = ResponseData.ResponseType.OWE_ALL_PAID_ALL;
+    private ResponseData.ResponseType responseType = ResponseData.ResponseType.OWE_NONE;
     private ResponseData.FreeMediationOption freeMediationOption = ResponseData.FreeMediationOption.YES;
     private ResponseData.MoreTimeNeededOption moreTimeNeededOption = ResponseData.MoreTimeNeededOption.YES;
     private String defence = "defence string";
