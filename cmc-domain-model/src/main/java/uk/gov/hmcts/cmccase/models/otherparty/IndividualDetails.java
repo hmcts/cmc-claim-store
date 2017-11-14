@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmccase.models.otherparty;
 
-import uk.gov.hmcts.cmccase.models.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmccase.models.Address;
+import uk.gov.hmcts.cmccase.models.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmccase.models.legalrep.Representative;
 import uk.gov.hmcts.cmccase.models.party.TitledParty;
 

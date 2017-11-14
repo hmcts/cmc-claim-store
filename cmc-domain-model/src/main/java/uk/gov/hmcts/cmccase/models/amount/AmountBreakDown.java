@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmccase.models.amount;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import uk.gov.hmcts.cmccase.models.constraints.MinTotalAmount;
 import uk.gov.hmcts.cmccase.models.AmountRow;
+import uk.gov.hmcts.cmccase.models.constraints.MinTotalAmount;
 
 import java.math.BigDecimal;
 import java.util.List;

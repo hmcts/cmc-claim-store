@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmccase.models.party;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import uk.gov.hmcts.cmccase.models.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmccase.models.Address;
+import uk.gov.hmcts.cmccase.models.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmccase.models.legalrep.Representative;
 
 import java.time.LocalDate;

@@ -6,10 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.ClaimData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 
 import java.util.Collections;
 import java.util.List;

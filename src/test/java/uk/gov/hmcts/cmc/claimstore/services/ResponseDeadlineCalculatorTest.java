@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.toDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
+import static uk.gov.hmcts.cmccase.utils.DatesProvider.toDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ResponseDeadlineCalculatorTest {

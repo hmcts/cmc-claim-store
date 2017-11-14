@@ -8,11 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.email.EmailData;
 
 import java.time.LocalDate;
 

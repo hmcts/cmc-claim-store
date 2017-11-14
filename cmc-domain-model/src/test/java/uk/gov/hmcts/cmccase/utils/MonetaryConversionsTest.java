@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmccase.utils;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmccase.utils.MonetaryConversions;
 
 import java.math.BigDecimal;
 

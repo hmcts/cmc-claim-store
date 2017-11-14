@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.ResponseData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;

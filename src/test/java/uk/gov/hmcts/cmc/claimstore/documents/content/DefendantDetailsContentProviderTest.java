@@ -13,8 +13,8 @@ import uk.gov.hmcts.cmccase.models.sampledata.SampleTheirDetails;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 
 public class DefendantDetailsContentProviderTest {
 

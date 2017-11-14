@@ -6,14 +6,14 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.services.OffersService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmccase.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.offers.MadeBy;
 import uk.gov.hmcts.cmccase.models.offers.Offer;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmccase.models.sampledata.offers.SampleOffer;
-import uk.gov.hmcts.cmc.claimstore.services.OffersService;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;

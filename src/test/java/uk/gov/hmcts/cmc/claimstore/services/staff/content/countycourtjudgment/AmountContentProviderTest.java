@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 
 import java.math.BigDecimal;
 import java.time.Clock;

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmccase.models.constraints;
 
 import java.time.LocalDate;
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 

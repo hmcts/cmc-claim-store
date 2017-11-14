@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmccase.models.constraints.FutureDate;
 
 import java.time.LocalDate;
 import java.util.Objects;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 

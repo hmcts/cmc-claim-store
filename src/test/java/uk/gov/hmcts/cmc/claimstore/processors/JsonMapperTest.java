@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
+import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmccase.models.ClaimData;
 import uk.gov.hmcts.cmccase.models.ResponseData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleAddress;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.cmccase.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleRepresentative;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleTheirDetails;
-import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmccase.utils.ResourceReader;
 
 import java.math.BigDecimal;

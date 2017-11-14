@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmccase.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmccase.models.ccj.PaymentOption;
+import uk.gov.hmcts.cmccase.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmccase.models.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmccase.models.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmccase.models.constraints.Money;
 import uk.gov.hmcts.cmccase.models.constraints.ValidCountyCourtJudgment;
-import uk.gov.hmcts.cmccase.models.ccj.PaymentOption;
-import uk.gov.hmcts.cmccase.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmccase.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;

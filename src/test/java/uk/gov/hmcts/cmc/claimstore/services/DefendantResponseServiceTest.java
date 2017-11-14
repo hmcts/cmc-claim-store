@@ -9,13 +9,13 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.ResponseData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmccase.utils.ResourceReader;
 
 import java.time.LocalDateTime;
@@ -23,10 +23,10 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.USER_ID;
-import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseServiceTest {

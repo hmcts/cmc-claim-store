@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.offers.MadeBy;
-import uk.gov.hmcts.cmccase.models.offers.Offer;
-import uk.gov.hmcts.cmccase.models.offers.converters.MadeByEnumConverter;
 import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.offers.MadeBy;
+import uk.gov.hmcts.cmccase.models.offers.Offer;
+import uk.gov.hmcts.cmccase.models.offers.converters.MadeByEnumConverter;
 
 import javax.validation.Valid;
 

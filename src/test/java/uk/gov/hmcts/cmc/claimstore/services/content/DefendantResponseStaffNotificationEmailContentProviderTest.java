@@ -4,14 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.ResponseData;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmccase.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
-import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;

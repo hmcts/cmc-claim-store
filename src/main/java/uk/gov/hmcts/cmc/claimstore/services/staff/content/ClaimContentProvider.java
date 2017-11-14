@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmccase.models.Interest;
 import uk.gov.hmcts.cmccase.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmccase.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
-import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

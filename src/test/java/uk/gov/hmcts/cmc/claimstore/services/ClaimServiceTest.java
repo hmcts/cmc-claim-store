@@ -12,12 +12,12 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.ClaimData;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.ClaimData;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmccase.utils.ResourceReader;
 
 import java.time.LocalDate;
@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.EXTERNAL_ID;
@@ -41,7 +42,6 @@ import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmccase.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmccase.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmccase.utils.DatesProvider.RESPONSE_DEADLINE;
-import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
