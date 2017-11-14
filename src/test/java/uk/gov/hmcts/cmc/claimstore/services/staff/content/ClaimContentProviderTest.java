@@ -3,16 +3,16 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.Clock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.ISSUE_DATE;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 
 public class ClaimContentProviderTest {
 

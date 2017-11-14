@@ -3,11 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.ClaimData;
-import uk.gov.hmcts.cmccase.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmccase.models.ResponseData;
-import uk.gov.hmcts.cmccase.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

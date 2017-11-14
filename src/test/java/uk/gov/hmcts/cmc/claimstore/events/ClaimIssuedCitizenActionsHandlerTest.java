@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
-import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Optional;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimIssuedCitizenActionsHandlerTest {

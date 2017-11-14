@@ -20,10 +20,10 @@ import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.offers.MadeBy;
-import uk.gov.hmcts.cmccase.models.offers.Offer;
-import uk.gov.hmcts.cmccase.models.offers.converters.MadeByEnumConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.converters.MadeByEnumConverter;
 
 import javax.validation.Valid;
 

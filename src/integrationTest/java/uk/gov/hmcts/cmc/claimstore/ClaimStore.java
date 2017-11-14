@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.ClaimData;
-import uk.gov.hmcts.cmccase.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmccase.models.ResponseData;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
 import java.util.stream.Collectors;

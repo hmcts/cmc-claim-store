@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
-import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
 

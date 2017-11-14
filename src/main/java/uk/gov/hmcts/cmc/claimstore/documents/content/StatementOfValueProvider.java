@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.StatementOfValueContent;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.amount.Amount;
-import uk.gov.hmcts.cmccase.models.amount.AmountRange;
-import uk.gov.hmcts.cmccase.models.amount.NotKnown;
-import uk.gov.hmcts.cmccase.models.particulars.PersonalInjury;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.amount.Amount;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
+import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

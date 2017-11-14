@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 
-import static uk.gov.hmcts.cmccase.utils.ToStringStyle.ourStyle;
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class AmountContent {
 

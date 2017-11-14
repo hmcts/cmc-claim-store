@@ -15,8 +15,8 @@ import java.util.TreeSet;
 
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.toDate;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.toDateTime;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDateTime;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferResponseDeadlineCalculatorTest {

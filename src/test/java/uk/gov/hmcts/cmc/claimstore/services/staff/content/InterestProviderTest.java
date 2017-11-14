@@ -4,11 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.Interest;
-import uk.gov.hmcts.cmccase.models.InterestDate;
-import uk.gov.hmcts.cmccase.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.math.BigDecimal;
 import java.time.Clock;

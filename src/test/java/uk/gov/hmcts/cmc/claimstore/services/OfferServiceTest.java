@@ -9,12 +9,12 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.offers.MadeBy;
-import uk.gov.hmcts.cmccase.models.offers.Offer;
-import uk.gov.hmcts.cmccase.models.offers.Settlement;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmccase.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDateTime;
 

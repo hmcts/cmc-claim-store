@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.ResponseData;
-import uk.gov.hmcts.cmccase.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
 import java.util.Map;

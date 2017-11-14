@@ -2,19 +2,19 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
-import uk.gov.hmcts.cmccase.models.Address;
-import uk.gov.hmcts.cmccase.models.ResponseData;
-import uk.gov.hmcts.cmccase.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleAddress;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 
 public class DefendantDetailsContentProviderTest {
 

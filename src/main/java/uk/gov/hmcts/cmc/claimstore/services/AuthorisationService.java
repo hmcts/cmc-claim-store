@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
-import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Service
 public class AuthorisationService {

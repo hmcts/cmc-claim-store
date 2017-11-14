@@ -15,10 +15,10 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmccase.models.Claim;
-import uk.gov.hmcts.cmccase.models.ClaimData;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmccase.utils.ResourceReader;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,17 +31,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.CLAIM_ID;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.DEFENDANT_ID;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.EXTERNAL_ID;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.NOT_REQUESTED_FOR_MORE_TIME;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
-import static uk.gov.hmcts.cmccase.models.sampledata.SampleClaim.USER_ID;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.ISSUE_DATE;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
-import static uk.gov.hmcts.cmccase.utils.DatesProvider.RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.NOT_REQUESTED_FOR_MORE_TIME;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {

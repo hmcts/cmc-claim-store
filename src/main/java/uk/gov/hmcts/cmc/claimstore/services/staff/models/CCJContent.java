@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Am
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;

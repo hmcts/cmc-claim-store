@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
-import uk.gov.hmcts.cmccase.models.Address;
-import uk.gov.hmcts.cmccase.models.ResponseData;
-import uk.gov.hmcts.cmccase.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmccase.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmccase.models.party.Individual;
-import uk.gov.hmcts.cmccase.models.party.Party;
-import uk.gov.hmcts.cmccase.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Individual;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.Optional;
 

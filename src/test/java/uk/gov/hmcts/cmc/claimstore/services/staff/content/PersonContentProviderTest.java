@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.PersonContent;
-import uk.gov.hmcts.cmccase.models.Address;
-import uk.gov.hmcts.cmccase.models.sampledata.SampleAddress;
+import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
