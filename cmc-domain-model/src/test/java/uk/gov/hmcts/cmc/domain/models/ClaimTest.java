@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 
 public class ClaimTest {
 
@@ -45,13 +46,13 @@ public class ClaimTest {
 
     @Test
     public void isNotEqualWhenOnlyOneFieldIsDifferent() {
-        Claim claim1 = customCreatedAt(DatesProvider.NOW_IN_LOCAL_ZONE.plusNanos(1));
-        Claim claim2 = customCreatedAt(DatesProvider.NOW_IN_LOCAL_ZONE);
+        Claim claim1 = customCreatedAt(NOW_IN_LOCAL_ZONE.plusNanos(1));
+        Claim claim2 = customCreatedAt(NOW_IN_LOCAL_ZONE);
         assertThat(claim1).isNotEqualTo(claim2);
     }
 
     private static Claim customValues() {
-        return customCreatedAt(DatesProvider.NOW_IN_LOCAL_ZONE);
+        return customCreatedAt(NOW_IN_LOCAL_ZONE);
     }
 
     private static Claim customCreatedAt(final LocalDateTime createdAt) {
