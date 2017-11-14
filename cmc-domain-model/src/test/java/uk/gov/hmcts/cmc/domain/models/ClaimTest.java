@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.utils.DatesProvider;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
-import uk.gov.hmcts.cmc.domain.utils.BeanValidator;
 
 import java.util.Set;
 

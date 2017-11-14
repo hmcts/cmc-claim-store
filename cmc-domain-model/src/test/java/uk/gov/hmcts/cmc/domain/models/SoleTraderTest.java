@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.utils.BeanValidator;
 
 import java.util.Set;
 

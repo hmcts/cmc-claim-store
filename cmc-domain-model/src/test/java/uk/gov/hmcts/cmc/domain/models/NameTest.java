@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.utils.BeanValidator;
 
 import java.util.Set;
 

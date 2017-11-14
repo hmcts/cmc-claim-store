@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.constraints.InterDependentFields;
-import uk.gov.hmcts.cmc.domain.utils.ToStringStyle;
 
 import java.math.BigDecimal;
 import java.util.Objects;

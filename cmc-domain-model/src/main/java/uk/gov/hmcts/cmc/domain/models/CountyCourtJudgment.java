@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.models.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.constraints.ValidCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.domain.utils.ToStringStyle;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

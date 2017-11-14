@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
-import uk.gov.hmcts.cmc.domain.utils.BeanValidator;
 
 import java.math.BigDecimal;
 import java.util.Set;

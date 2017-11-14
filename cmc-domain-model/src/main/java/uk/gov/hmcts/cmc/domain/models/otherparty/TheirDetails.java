@@ -10,7 +10,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
-import uk.gov.hmcts.cmc.domain.utils.ToStringStyle;
 
 import java.util.Objects;
 import java.util.Optional;
