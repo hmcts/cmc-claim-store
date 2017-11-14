@@ -27,39 +27,33 @@ public class DocumentManagementService {
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadApi;
     private final DocumentDownloadClientApi documentDownloadClientApi;
     private final DocumentUploadClientApi documentUploadClientApi;
-    private final ClaimService claimService;
 
     @Autowired
     public DocumentManagementService(
         final DocumentMetadataDownloadClientApi documentMetadataDownloadApi,
         final DocumentDownloadClientApi documentDownloadClientApi,
-        final DocumentUploadClientApi documentUploadClientApi,
-        final ClaimService claimService
+        final DocumentUploadClientApi documentUploadClientApi
     ) {
         this.documentMetadataDownloadApi = documentMetadataDownloadApi;
         this.documentDownloadClientApi = documentDownloadClientApi;
         this.documentUploadClientApi = documentUploadClientApi;
-        this.claimService = claimService;
     }
 
-    public void storeClaimN1Form(final String authorisation, final long claimId,
-                                 final String claimReferenceNumber, final byte[] n1FormPdf) {
-        final Document document = uploadDocument(authorisation, claimId, claimReferenceNumber, n1FormPdf);
-        claimService.linkDocumentManagement(claimId, URI.create(document.links.self.href).getPath());
-    }
-
-    private Document uploadDocument(final String authorisation, final long claimId, final String claimReferenceNumber,
-                                    final byte[] n1FormPdf) {
-        final String originalFileName = claimReferenceNumber + PDF_EXTENSION;
-        final MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, APPLICATION_PDF, n1FormPdf);
+    public String uploadSingleDocument(final String authorisation, final String originalFileName,
+                                       final byte[] documentBytes, final String contentType) {
+        final MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
         final UploadResponse response = documentUploadClientApi.upload(authorisation, singletonList(file));
 
-        return response.getEmbedded().getDocuments().stream()
+        final String message = "Document management failed uploading file" + originalFileName;
+
+        final Document document = response.getEmbedded().getDocuments().stream()
             .findFirst()
-            .orElseThrow(() -> new DocumentManagementException("Failed uploading claim form for " + claimId));
+            .orElseThrow(() -> new DocumentManagementException(message));
+
+        return URI.create(document.links.self.href).getPath();
     }
 
-    byte[] getClaimN1Form(final String authorisation, final String sealedClaimDocumentManagementSelfPath) {
+    byte[] downloadDocument(final String authorisation, final String sealedClaimDocumentManagementSelfPath) {
         final Document documentMetadata = documentMetadataDownloadApi.getDocumentMetadata(authorisation,
             sealedClaimDocumentManagementSelfPath);
 

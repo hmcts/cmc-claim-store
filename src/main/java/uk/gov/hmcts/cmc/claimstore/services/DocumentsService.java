@@ -8,9 +8,11 @@ import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.PDF_EXTENSION;
 
 @Service
 public class DocumentsService {
+    public static final String APPLICATION_PDF = "application/pdf";
     private final ClaimService claimService;
     private final DefendantResponseCopyService defendantResponseCopyService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
@@ -52,10 +54,14 @@ public class DocumentsService {
             final String n1FormDocumentManagementPath = claim.getSealedClaimDocumentManagementSelfPath();
 
             if (isBlank(n1FormDocumentManagementPath)) {
-                documentManagementService.storeClaimN1Form(authorisation, claim.getId(),
-                    claim.getReferenceNumber(), n1ClaimPdf);
+                final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
+
+                final String documentManagementSelfPath = documentManagementService.uploadSingleDocument(authorisation,
+                    originalFileName, n1ClaimPdf, APPLICATION_PDF);
+
+                claimService.linkDocumentManagement(claim.getId(), documentManagementSelfPath);
             } else {
-                return documentManagementService.getClaimN1Form(authorisation, n1FormDocumentManagementPath);
+                return documentManagementService.downloadDocument(authorisation, n1FormDocumentManagementPath);
             }
         }
 

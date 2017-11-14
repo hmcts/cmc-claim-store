@@ -11,15 +11,18 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.PDF_EXTENSION;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 public class PdfGenerationService {
 
+    public static final String APPLICATION_PDF = "application/pdf";
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
     private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
     private final DocumentManagementService documentManagementService;
+    private final ClaimService claimService;
     private final boolean documentManagementFeatureEnabled;
 
     @Autowired
@@ -28,12 +31,14 @@ public class PdfGenerationService {
         final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
         final DefendantPinLetterPdfService defendantPinLetterPdfService,
         final DocumentManagementService documentManagementService,
+        final ClaimService claimService,
         @Value("${feature_toggles.document_management}") final boolean documentManagementFeatureEnabled
     ) {
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
         this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
         this.documentManagementService = documentManagementService;
+        this.claimService = claimService;
         this.documentManagementFeatureEnabled = documentManagementFeatureEnabled;
     }
 
@@ -51,11 +56,15 @@ public class PdfGenerationService {
     private byte[] getPdfDocument(final String authorisation, final Claim claim, final byte[] n1ClaimPdf) {
         if (documentManagementFeatureEnabled) {
             if (isNotBlank(claim.getSealedClaimDocumentManagementSelfPath())) {
-                return documentManagementService.getClaimN1Form(authorisation,
+                return documentManagementService.downloadDocument(authorisation,
                     claim.getSealedClaimDocumentManagementSelfPath());
             } else {
-                documentManagementService.storeClaimN1Form(authorisation, claim.getId(),
-                    claim.getReferenceNumber(), n1ClaimPdf);
+                final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
+
+                final String documentManagementSelfPath = documentManagementService.uploadSingleDocument(authorisation,
+                    originalFileName, n1ClaimPdf, APPLICATION_PDF);
+
+                claimService.linkDocumentManagement(claim.getId(), documentManagementSelfPath);
             }
         }
 

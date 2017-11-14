@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 
@@ -15,24 +16,29 @@ import java.util.Optional;
 
 @Component
 public class RepresentativeConfirmationHandler {
+    private static final String PDF_EXTENSION = ".pdf";
+    public static final String APPLICATION_PDF = "application/pdf";
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentManagementService documentManagementService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
-    private final boolean dmFeatureToggle;
+    private final ClaimService claimService;
+    private final boolean documentManagementFeatureEnabled;
 
     public RepresentativeConfirmationHandler(
         final ClaimIssuedNotificationService claimIssuedNotificationService,
         final NotificationsProperties notificationsProperties,
         final DocumentManagementService documentManagementService,
         final LegalSealedClaimPdfService legalSealedClaimPdfService,
-        @Value("${feature_toggles.document_management}") final boolean dmFeatureToggle
+        final ClaimService claimService,
+        @Value("${feature_toggles.document_management}") final boolean documentManagementFeatureEnabled
     ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.documentManagementService = documentManagementService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
-        this.dmFeatureToggle = dmFeatureToggle;
+        this.claimService = claimService;
+        this.documentManagementFeatureEnabled = documentManagementFeatureEnabled;
     }
 
     @EventListener
@@ -50,12 +56,15 @@ public class RepresentativeConfirmationHandler {
 
     @EventListener
     public void uploadDocumentToEvidenceStore(final RepresentedClaimIssuedEvent event) {
-        if (dmFeatureToggle) {
+        if (documentManagementFeatureEnabled) {
             final Claim claim = event.getClaim();
             final byte[] n1FormPdf = legalSealedClaimPdfService.createPdf(claim);
+            final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
 
-            documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim.getId(),
-                claim.getReferenceNumber(), n1FormPdf);
+            final String documentManagementSelfPath = documentManagementService.uploadSingleDocument(
+                event.getAuthorisation(), originalFileName, n1FormPdf, APPLICATION_PDF);
+
+            claimService.linkDocumentManagement(claim.getId(), documentManagementSelfPath);
         }
     }
 

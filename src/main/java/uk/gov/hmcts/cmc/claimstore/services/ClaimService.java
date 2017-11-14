@@ -174,7 +174,7 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    void linkDocumentManagement(final Long claimId, final String sealedClaimDocumentManagementSelfPath) {
+    public void linkDocumentManagement(final Long claimId, final String sealedClaimDocumentManagementSelfPath) {
         claimRepository.linkDocumentManagement(claimId, sealedClaimDocumentManagementSelfPath);
     }
 

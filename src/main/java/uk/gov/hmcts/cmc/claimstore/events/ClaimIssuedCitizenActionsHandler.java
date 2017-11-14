@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 
@@ -16,10 +17,13 @@ import java.util.Optional;
 
 @Component
 public class ClaimIssuedCitizenActionsHandler {
+    private static final String PDF_EXTENSION = ".pdf";
+    public static final String APPLICATION_PDF = "application/pdf";
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentManagementService documentManagementService;
     private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
+    private final ClaimService claimService;
     private final boolean documentManagementFeatureEnabled;
 
     @Autowired
@@ -28,12 +32,14 @@ public class ClaimIssuedCitizenActionsHandler {
         final NotificationsProperties notificationsProperties,
         final DocumentManagementService documentManagementService,
         final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
+        final ClaimService claimService,
         @Value("${feature_toggles.document_management}") final boolean documentManagementFeatureEnabled
     ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.documentManagementService = documentManagementService;
         this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
+        this.claimService = claimService;
         this.documentManagementFeatureEnabled = documentManagementFeatureEnabled;
     }
 
@@ -56,9 +62,12 @@ public class ClaimIssuedCitizenActionsHandler {
         if (documentManagementFeatureEnabled) {
             final Claim claim = event.getClaim();
             final byte[] n1FormPdf = citizenSealedClaimPdfService.createPdf(claim, event.getSubmitterEmail());
+            final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
 
-            documentManagementService.storeClaimN1Form(event.getAuthorisation(), claim.getId(),
-                claim.getReferenceNumber(), n1FormPdf);
+            final String documentManagementSelfPath = documentManagementService.uploadSingleDocument(
+                event.getAuthorisation(), originalFileName, n1FormPdf, APPLICATION_PDF);
+
+            claimService.linkDocumentManagement(claim.getId(), documentManagementSelfPath);
         }
     }
 

@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.service.notify.NotificationClientException;
@@ -28,6 +29,8 @@ public class RepresentedClaimIssuedEventHandlerTest {
     private static final String REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE = "representativeClaimIssued";
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final byte[] N1_FORM_PDF = {65, 66, 67, 68};
+    private static final String DOCUMENT_MANAGEMENT_SELF_PATH = "/self/uri/path";
+    public static final String PDF_EXTENSION = ".pdf";
 
     private RepresentativeConfirmationHandler representativeConfirmationHandler;
     @Mock
@@ -42,6 +45,8 @@ public class RepresentedClaimIssuedEventHandlerTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
+    @Mock
+    private ClaimService claimService;
 
     @Before
     public void setup() {
@@ -50,6 +55,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
             properties,
             documentManagementService,
             legalSealedClaimPdfService,
+            claimService,
             true);
         when(properties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
@@ -73,6 +79,9 @@ public class RepresentedClaimIssuedEventHandlerTest {
 
     @Test
     public void shouldUploadSealedClaimForm() throws NotificationClientException {
+        when(documentManagementService.uploadSingleDocument(AUTHORISATION, CLAIM.getReferenceNumber() + PDF_EXTENSION,
+            N1_FORM_PDF, "application/pdf")).thenReturn(DOCUMENT_MANAGEMENT_SELF_PATH);
+
         final RepresentedClaimIssuedEvent representedClaimIssuedEvent
             = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
@@ -80,8 +89,10 @@ public class RepresentedClaimIssuedEventHandlerTest {
 
         verify(legalSealedClaimPdfService, once()).createPdf(CLAIM);
 
-        verify(documentManagementService, once()).storeClaimN1Form(AUTHORISATION, CLAIM.getId(),
-            CLAIM.getReferenceNumber(), N1_FORM_PDF);
+        verify(documentManagementService, once()).uploadSingleDocument(AUTHORISATION,
+            CLAIM.getReferenceNumber() + PDF_EXTENSION, N1_FORM_PDF, "application/pdf");
+
+        verify(claimService, once()).linkDocumentManagement(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
     }
 
     @Test
@@ -91,6 +102,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
             properties,
             documentManagementService,
             legalSealedClaimPdfService,
+            claimService,
             false);
 
         final RepresentedClaimIssuedEvent representedClaimIssuedEvent
@@ -100,7 +112,9 @@ public class RepresentedClaimIssuedEventHandlerTest {
 
         verify(legalSealedClaimPdfService, never()).createPdf(CLAIM);
 
-        verify(documentManagementService, never()).storeClaimN1Form(AUTHORISATION, CLAIM.getId(),
-            CLAIM.getReferenceNumber(), N1_FORM_PDF);
+        verify(documentManagementService, never()).uploadSingleDocument(AUTHORISATION,
+            CLAIM.getReferenceNumber(), N1_FORM_PDF, "application/pdf");
+
+        verify(claimService, never()).linkDocumentManagement(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
     }
 }

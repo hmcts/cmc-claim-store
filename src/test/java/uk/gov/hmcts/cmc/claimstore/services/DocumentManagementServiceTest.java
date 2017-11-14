@@ -46,14 +46,12 @@ public class DocumentManagementServiceTest {
     @Mock
     private DocumentDownloadClientApi documentDownloadClientApi;
     @Mock
-    private ClaimService claimService;
-    @Mock
     private ResponseEntity<Resource> responseEntity;
 
     @Before
     public void setup() {
         documentManagementService = new DocumentManagementService(documentMetadataDownloadApi,
-            documentDownloadClientApi, documentUploadClientApi, claimService);
+            documentDownloadClientApi, documentUploadClientApi);
     }
 
     @Test
@@ -75,11 +73,14 @@ public class DocumentManagementServiceTest {
         when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
 
         //when
-        documentManagementService.storeClaimN1Form(authorisationToken, claim.getId(), claim.getReferenceNumber(),
-            legalN1FormPdf);
+        final String output = documentManagementService.uploadSingleDocument(authorisationToken,
+            claim.getReferenceNumber() + PDF_EXTENSION, legalN1FormPdf, APPLICATION_PDF);
+
+        //then
+        assertThat(output).isNotBlank().isEqualTo(URI.create(links.self.href).getPath());
 
         //verify
-        verifyDocumentUpload(authorisationToken, claim, links, files);
+        verify(documentUploadClientApi).upload(authorisationToken, files);
     }
 
     @Test
@@ -98,7 +99,7 @@ public class DocumentManagementServiceTest {
         when(responseEntity.getBody()).thenReturn(resource);
 
         //when
-        final byte[] claimN1Form = documentManagementService.getClaimN1Form(authorisationToken,
+        final byte[] claimN1Form = documentManagementService.downloadDocument(authorisationToken,
             claim.getSealedClaimDocumentManagementSelfPath());
 
         //then
@@ -125,8 +126,8 @@ public class DocumentManagementServiceTest {
         when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
 
         //when
-        documentManagementService.storeClaimN1Form(authorisationToken, claim.getId(), claim.getReferenceNumber(),
-            legalN1FormPdf);
+        documentManagementService.uploadSingleDocument(authorisationToken, claim.getReferenceNumber() + PDF_EXTENSION,
+            legalN1FormPdf, APPLICATION_PDF);
 
         //verify
         verify(documentUploadClientApi).upload(authorisationToken, files);
@@ -136,14 +137,6 @@ public class DocumentManagementServiceTest {
         return uploadResponse.getEmbedded().getDocuments().stream()
             .findFirst()
             .orElseThrow(IllegalArgumentException::new).links;
-    }
-
-    private void verifyDocumentUpload(final String authorisationToken, final Claim claim,
-                                      final Document.Links links, final List<MultipartFile> files) {
-        verify(documentUploadClientApi).upload(authorisationToken, files);
-
-        verify(claimService).linkDocumentManagement(eq(claim.getId()),
-            eq(URI.create(links.self.href).getPath()));
     }
 
     private void verifyDocumentDownload(final String authorisationToken, final String selfUri, final String binaryUri) {
