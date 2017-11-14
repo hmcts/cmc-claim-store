@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Address;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.PersonContent;
+import uk.gov.hmcts.cmc.domain.models.Address;
 
 import static java.util.Objects.requireNonNull;
 
