@@ -52,8 +52,6 @@ public class ResponseData {
     @Size(max = 99000)
     private final String defence;
 
-    @NotNull
-    @JsonUnwrapped
     private final FreeMediationOption freeMediation;
 
     @JsonUnwrapped
@@ -88,8 +86,8 @@ public class ResponseData {
         return defence;
     }
 
-    public FreeMediationOption getFreeMediation() {
-        return freeMediation;
+    public Optional<FreeMediationOption> getFreeMediation() {
+        return Optional.ofNullable(freeMediation);
     }
 
     public MoreTimeNeededOption getMoreTimeNeeded() {
