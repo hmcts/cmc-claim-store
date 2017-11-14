@@ -130,6 +130,7 @@ public class DefendantResponseNotificationService {
     }
 
     private Map<String, String> aggregateParams(final Claim claim, final ResponseData responseData) {
+        boolean isFreeMediationApplicable = responseData.getFreeMediation().isPresent();
         boolean isFreeMediationRequested = responseData.getFreeMediation()
             .orElse(ResponseData.FreeMediationOption.NO).equals(ResponseData.FreeMediationOption.YES);
 
@@ -142,8 +143,10 @@ public class DefendantResponseNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put(MEDIATION_DECISION_DEADLINE, formatDate(decisionDeadline));
-        parameters.put(FREE_MEDIATION_REQUESTED, isFreeMediationRequested ? "yes" : "");
-        parameters.put(FREE_MEDIATION_NOT_REQUESTED, !isFreeMediationRequested ? "yes" : "");
+        parameters.put(FREE_MEDIATION_REQUESTED, isFreeMediationApplicable && isFreeMediationRequested ? "yes" : "");
+        parameters.put(
+            FREE_MEDIATION_NOT_REQUESTED, isFreeMediationApplicable && !isFreeMediationRequested ? "yes" : ""
+        );
         parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
 
