@@ -10,6 +10,8 @@ import java.util.Optional;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 public class AmountRange implements Amount {
 
     @Money
@@ -54,7 +56,7 @@ public class AmountRange implements Amount {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.ourStyle());
+        return ReflectionToStringBuilder.toString(this, ourStyle());
 
     }
 }

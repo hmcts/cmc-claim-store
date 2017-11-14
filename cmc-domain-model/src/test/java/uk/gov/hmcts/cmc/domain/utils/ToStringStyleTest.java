@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class ToStringStyleTest {
 
@@ -36,7 +37,7 @@ public class ToStringStyleTest {
 
         @Override
         public String toString() {
-            return ReflectionToStringBuilder.toString(this, ToStringStyle.ourStyle());
+            return ReflectionToStringBuilder.toString(this, ourStyle());
         }
     }
 }

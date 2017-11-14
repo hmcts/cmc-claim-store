@@ -19,6 +19,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @ValidCountyCourtJudgment
 public class CountyCourtJudgment {
@@ -108,6 +110,6 @@ public class CountyCourtJudgment {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.ourStyle());
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

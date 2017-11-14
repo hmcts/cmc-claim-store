@@ -17,6 +17,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 /**
  * This class and its subtypes represent the data that a person provides about themselves.
  */
@@ -111,7 +113,7 @@ public abstract class Party implements NamedParty {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.ourStyle());
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 
 }

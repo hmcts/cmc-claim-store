@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Claim {
 
@@ -196,7 +198,7 @@ public class Claim {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.ourStyle());
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 
 }

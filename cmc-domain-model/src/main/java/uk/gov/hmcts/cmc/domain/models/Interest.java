@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @InterDependentFields(field = "rate", dependentField = "type")
 public class Interest {
@@ -70,6 +72,6 @@ public class Interest {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.ourStyle());
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

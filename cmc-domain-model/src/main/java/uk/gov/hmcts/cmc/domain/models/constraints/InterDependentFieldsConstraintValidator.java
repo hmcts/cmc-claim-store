@@ -19,6 +19,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestDateType.SUBMISSION;
 
 
@@ -186,7 +187,7 @@ public class InterDependentFieldsConstraintValidator implements ConstraintValida
     }
 
     private boolean interestTypeIsNoInterest(final Interest.InterestType type) {
-        return type.equals(Interest.InterestType.NO_INTEREST);
+        return type.equals(NO_INTEREST);
     }
 
 }

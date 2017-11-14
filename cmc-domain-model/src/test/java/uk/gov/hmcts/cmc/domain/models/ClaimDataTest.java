@@ -13,6 +13,8 @@ import java.math.BigInteger;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.DIFFERENT;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterest;
 import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
 public class ClaimDataTest {
@@ -53,7 +55,7 @@ public class ClaimDataTest {
         //given
         ClaimData claimData = SampleClaimData.builder()
             .withInterest(SampleInterest.builder()
-                .withType(Interest.InterestType.DIFFERENT)
+                .withType(DIFFERENT)
                 .build())
             .withInterestDate(invalidDate)
             .build();
@@ -68,7 +70,7 @@ public class ClaimDataTest {
     @Test
     public void shouldBeValidWhenGivenNoInterestWithInvalidInterestDate() {
         ClaimData claimData = SampleClaimData.builder()
-            .withInterest(SampleInterest.noInterest())
+            .withInterest(noInterest())
             .withInterestDate(invalidDate)
             .build();
 

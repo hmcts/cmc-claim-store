@@ -10,6 +10,8 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ContactDetails {
 
@@ -63,7 +65,7 @@ public class ContactDetails {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.ourStyle());
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 
 }
