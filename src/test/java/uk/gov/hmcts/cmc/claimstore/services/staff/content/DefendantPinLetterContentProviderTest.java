@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 
 import java.time.Clock;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmccase.utils.DatesProvider.RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @RunWith(MockitoJUnitRunner.class)

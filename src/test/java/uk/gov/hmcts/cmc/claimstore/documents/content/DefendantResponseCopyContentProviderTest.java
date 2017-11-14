@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
 
 import java.util.Map;
 

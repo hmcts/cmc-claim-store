@@ -3,9 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
 
 import java.util.Optional;
 

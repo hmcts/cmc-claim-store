@@ -7,10 +7,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.offers.MadeBy;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmccase.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
-import uk.gov.hmcts.cmc.claimstore.models.Address;
+import uk.gov.hmcts.cmccase.models.Address;
 
 public class ClaimantContent extends PersonContent {
 

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
-import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.ccj.PaymentOption;
-import uk.gov.hmcts.cmc.claimstore.models.ccj.RepaymentPlan;
+import uk.gov.hmcts.cmccase.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmccase.models.ccj.PaymentOption;
+import uk.gov.hmcts.cmccase.models.ccj.RepaymentPlan;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;

@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
-import uk.gov.hmcts.cmc.claimstore.models.offers.Offer;
-import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.offers.MadeBy;
+import uk.gov.hmcts.cmccase.models.offers.Offer;
+import uk.gov.hmcts.cmccase.models.offers.Settlement;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 

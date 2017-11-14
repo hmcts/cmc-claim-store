@@ -11,7 +11,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmccase.models.Claim;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;

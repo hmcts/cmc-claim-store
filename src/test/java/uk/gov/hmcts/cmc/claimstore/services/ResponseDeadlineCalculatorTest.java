@@ -9,13 +9,13 @@ import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidays;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidaysApi;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
-import uk.gov.hmcts.cmc.claimstore.utils.ResourceReader;
+import uk.gov.hmcts.cmccase.utils.ResourceReader;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.utils.DatesProvider.toDate;
+import static uk.gov.hmcts.cmccase.utils.DatesProvider.toDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)

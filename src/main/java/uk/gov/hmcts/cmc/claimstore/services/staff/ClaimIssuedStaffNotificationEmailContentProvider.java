@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
 

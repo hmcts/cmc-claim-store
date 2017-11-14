@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleClaim;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -11,11 +11,11 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineExce
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmccase.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

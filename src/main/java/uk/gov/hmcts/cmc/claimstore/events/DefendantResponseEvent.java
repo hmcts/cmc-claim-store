@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmccase.models.Claim;
 
 import java.util.Objects;
 

@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.Interest;
-import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.Interest;
+import uk.gov.hmcts.cmccase.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 
 import java.math.BigDecimal;

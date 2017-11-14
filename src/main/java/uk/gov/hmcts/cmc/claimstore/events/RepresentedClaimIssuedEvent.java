@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmccase.models.Claim;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
+import static uk.gov.hmcts.cmccase.utils.ToStringStyle.ourStyle;
 
 public class RepresentedClaimIssuedEvent {
 

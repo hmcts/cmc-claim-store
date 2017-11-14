@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmccase.models.party.Individual;
+import uk.gov.hmcts.cmccase.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
 
 import static org.assertj.core.api.Assertions.assertThat;

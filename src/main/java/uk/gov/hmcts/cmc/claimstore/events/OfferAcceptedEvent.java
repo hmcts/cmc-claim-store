@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.offers.MadeBy;
 
 public class OfferAcceptedEvent extends OfferRespondedEvent {
 

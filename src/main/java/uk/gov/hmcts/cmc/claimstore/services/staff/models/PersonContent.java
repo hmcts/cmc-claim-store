@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
-import uk.gov.hmcts.cmc.claimstore.models.Address;
+import uk.gov.hmcts.cmccase.models.Address;
 
 public class PersonContent {
 
@@ -11,7 +11,7 @@ public class PersonContent {
     private final String email;
     private final String contactPerson;
     private final String businessName;
-    
+
     public PersonContent(
         final String partyType,
         final String fullName,

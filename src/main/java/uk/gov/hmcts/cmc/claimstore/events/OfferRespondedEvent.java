@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
+import uk.gov.hmcts.cmccase.models.Claim;
+import uk.gov.hmcts.cmccase.models.offers.MadeBy;
 
 import java.util.Objects;
 

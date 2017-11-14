@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmccase.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.OfferResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.OfferMadeNotificationService;
