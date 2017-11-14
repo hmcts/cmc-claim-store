@@ -16,9 +16,13 @@ public class MobilePhoneNumberConstraintValidator implements ConstraintValidator
             return true;
         }
 
-        String phone = value.replaceAll("[^0-9]", "")
+        System.out.println(value);
+
+        String phone = value.replaceAll("[() +]", "")
             .replaceFirst("^(00)?44", "")
             .replaceFirst("^0*", "");
+
+        System.out.println(phone);
 
         return phone.startsWith("7") && phone.length() == 10;
     }
