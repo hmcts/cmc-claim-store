@@ -1,0 +1,15 @@
+plugins {
+  id 'net.ltgt.apt' version '0.10'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  compile project(':cmc-domain-model')
+
+  compileOnly 'org.projectlombok:lombok:1.16.18'
+
+  apt "org.projectlombok:lombok:1.16.18"
+}
