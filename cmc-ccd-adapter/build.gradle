@@ -8,10 +8,8 @@ repositories {
 
 dependencies {
   compile project(':cmc-domain-model')
-
-  compileOnly 'org.projectlombok:lombok:1.16.18'
-
-  apt "org.projectlombok:lombok:1.16.18"
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
+  apt group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
 
   testCompile group: 'junit', name: 'junit', version: '4.12'
   testCompile project(':cmc-domain-sample-data')
