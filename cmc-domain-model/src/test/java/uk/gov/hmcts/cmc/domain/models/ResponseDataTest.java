@@ -32,7 +32,6 @@ public class ResponseDataTest {
         //given
         ResponseData responseData = SampleResponseData.builder()
             .withDefence(null)
-            .withMediation(null)
             .withResponseType(null)
             .build();
 
@@ -41,11 +40,10 @@ public class ResponseDataTest {
 
         //then
         assertThat(errors)
-            .hasSize(3)
+            .hasSize(2)
             .contains(
                 "type : may not be null",
-                "defence : may not be empty",
-                "freeMediation : may not be null"
+                "defence : may not be empty"
             );
     }
 
@@ -55,7 +53,6 @@ public class ResponseDataTest {
         //given
         ResponseData responseData = SampleResponseData.builder()
             .withDefence("")
-            .withMediation(null)
             .withResponseType(null)
             .build();
 
@@ -64,11 +61,10 @@ public class ResponseDataTest {
 
         //then
         assertThat(errors)
-            .hasSize(3)
+            .hasSize(2)
             .contains(
                 "type : may not be null",
-                "defence : may not be empty",
-                "freeMediation : may not be null"
+                "defence : may not be empty"
             );
     }
 
@@ -78,18 +74,17 @@ public class ResponseDataTest {
         final String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
         ResponseData responseData = SampleResponseData.builder()
-            .withDefence(defence).withMediation(null).withResponseType(null).build();
+            .withDefence(defence).withResponseType(null).build();
 
         //when
         Set<String> errors = validate(responseData);
 
         //then
         assertThat(errors)
-            .hasSize(3)
+            .hasSize(2)
             .contains(
                 "defence : size must be between 0 and 99000",
-                "type : may not be null",
-                "freeMediation : may not be null"
+                "type : may not be null"
             );
     }
 }
