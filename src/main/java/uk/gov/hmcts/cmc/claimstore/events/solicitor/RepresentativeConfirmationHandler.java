@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.events;
+package uk.gov.hmcts.cmc.claimstore.events.solicitor;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

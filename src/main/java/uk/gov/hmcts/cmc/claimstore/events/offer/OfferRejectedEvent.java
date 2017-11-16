@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.events;
+package uk.gov.hmcts.cmc.claimstore.events.offer;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;

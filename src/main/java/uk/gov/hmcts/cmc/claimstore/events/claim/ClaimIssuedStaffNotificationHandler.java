@@ -1,8 +1,9 @@
-package uk.gov.hmcts.cmc.claimstore.events;
+package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 
 import java.util.Optional;
