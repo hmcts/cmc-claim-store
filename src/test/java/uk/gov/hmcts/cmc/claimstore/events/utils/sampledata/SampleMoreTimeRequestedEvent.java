@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.utils.sampledata;
 
-import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
