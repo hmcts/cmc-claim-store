@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.events.CCJStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.CountyCourtJudgmentRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseEvent;
-import uk.gov.hmcts.cmc.claimstore.events.DefendantResponseStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.MoreTimeRequestedStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -83,7 +83,6 @@ public class SupportController {
                 throw new NotFoundException("Event " + event + " is not supported");
         }
     }
-
 
 
     private void validateAuthorisationPresentWhenRequired(final String authorisation)
