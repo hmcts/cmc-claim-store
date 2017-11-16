@@ -1,10 +1,11 @@
-package uk.gov.hmcts.cmc.claimstore.events;
+package uk.gov.hmcts.cmc.claimstore.events.response;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -19,16 +20,18 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MoreTimeRequestedCitizenNotificationHandlerTest {
+public class MoreTimeRequestedStaffNotificationHandlerTest {
 
-    private static final String FRONTEND_URL = "domain";
-    private static final String DEFENDANT_TEMPLATE_ID = "defendant template id";
+    private static final String STAFF_EMAIL_ADDRESS = "staff@example.com";
+    private static final String STAFF_TEMPLATE_ID = "staff template id";
 
-    private MoreTimeRequestedCitizenNotificationHandler handler;
+    private MoreTimeRequestedStaffNotificationHandler handler;
 
     @Mock
     private MoreTimeRequestedNotificationService moreTimeRequestedNotificationService;
 
+    @Mock
+    private StaffEmailProperties staffEmailProperties;
     @Mock
     private NotificationsProperties notificationsProperties;
     @Mock
@@ -38,29 +41,31 @@ public class MoreTimeRequestedCitizenNotificationHandlerTest {
 
     @Before
     public void setup() {
-        when(notificationsProperties.getTemplates()).thenReturn(templates);
-        when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_URL);
-        when(templates.getEmail()).thenReturn(emailTemplates);
-        when(emailTemplates.getDefendantMoreTimeRequested()).thenReturn(DEFENDANT_TEMPLATE_ID);
+        when(staffEmailProperties.getRecipient()).thenReturn(STAFF_EMAIL_ADDRESS);
 
-        handler = new MoreTimeRequestedCitizenNotificationHandler(
+        when(notificationsProperties.getTemplates()).thenReturn(templates);
+        when(templates.getEmail()).thenReturn(emailTemplates);
+        when(emailTemplates.getStaffMoreTimeRequested()).thenReturn(STAFF_TEMPLATE_ID);
+
+        handler = new MoreTimeRequestedStaffNotificationHandler(
             moreTimeRequestedNotificationService,
-            notificationsProperties
+            notificationsProperties,
+            staffEmailProperties
         );
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToDefendant() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToStaff() throws NotificationClientException {
 
         final MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefault();
 
         handler.sendNotifications(event);
 
         verify(moreTimeRequestedNotificationService, once()).sendMail(
-            eq(event.getDefendantEmail()),
-            eq(DEFENDANT_TEMPLATE_ID),
+            eq(STAFF_EMAIL_ADDRESS),
+            eq(STAFF_TEMPLATE_ID),
             anyMap(),
-            eq(SampleMoreTimeRequestedEvent.getReference("defendant", event.getClaim().getReferenceNumber()))
+            eq(SampleMoreTimeRequestedEvent.getReference("staff", event.getClaim().getReferenceNumber()))
         );
     }
 }

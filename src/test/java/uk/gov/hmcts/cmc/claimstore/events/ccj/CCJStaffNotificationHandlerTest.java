@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.events;
+package uk.gov.hmcts.cmc.claimstore.events.ccj;
 
 import org.junit.Before;
 import org.junit.Test;
