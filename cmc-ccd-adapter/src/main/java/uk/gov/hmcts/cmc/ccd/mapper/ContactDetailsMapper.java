@@ -7,6 +7,9 @@ public class ContactDetailsMapper
 
     @Override
     public ContactDetails to(uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails contactDetails) {
+        if (contactDetails == null) {
+            return null;
+        }
         return ContactDetails.builder()
             .email(contactDetails.getEmail().orElse(null))
             .phone(contactDetails.getPhone().orElse(null))
@@ -16,6 +19,9 @@ public class ContactDetailsMapper
 
     @Override
     public uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails from(ContactDetails contactDetails) {
+        if (contactDetails == null) {
+            return null;
+        }
         return new uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails(
             contactDetails.getPhone(), contactDetails.getEmail(), contactDetails.getDxAddress()
         );

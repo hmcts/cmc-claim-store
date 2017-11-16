@@ -4,14 +4,14 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.mapper.util.AssertUtil.assertAddressEqualTo;
 
 
 public class AddressMapperTest {
 
 
-    Mapper<uk.gov.hmcts.cmc.ccd.domain.Address, Address> mapper = new AddressMapper();
+    AddressMapper mapper = new AddressMapper();
 
     @Test
     public void shouldMapAddressToCCD() {
@@ -22,11 +22,8 @@ public class AddressMapperTest {
         uk.gov.hmcts.cmc.ccd.domain.Address ccdAddress = mapper.to(address);
 
         //then
-        assertNotNull(ccdAddress);
-        assertEquals(ccdAddress.getLine1(), address.getLine1());
-        assertEquals(ccdAddress.getLine2(), address.getLine2());
-        assertEquals(ccdAddress.getCity(), address.getCity());
-        assertEquals(ccdAddress.getPostcode(), address.getPostcode());
+        assertThat(ccdAddress).isNotNull();
+        assertAddressEqualTo(address, ccdAddress);
 
     }
 
@@ -44,10 +41,7 @@ public class AddressMapperTest {
         Address cmcAddress = mapper.from(address);
 
         //then
-        assertNotNull(cmcAddress);
-        assertEquals(cmcAddress.getLine1(), address.getLine1());
-        assertEquals(cmcAddress.getLine2(), address.getLine2());
-        assertEquals(cmcAddress.getCity(), address.getCity());
-        assertEquals(cmcAddress.getPostcode(), address.getPostcode());
+        assertThat(cmcAddress).isNotNull();
+        assertAddressEqualTo(cmcAddress, address);
     }
 }

@@ -3,9 +3,8 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.mapper.util.AssertUtil.assertContactDetailsEqualTo;
 
 public class ContactDetailsMapperTest {
 
@@ -13,7 +12,19 @@ public class ContactDetailsMapperTest {
     private static final String EMAIL = "my@email.com";
     private static final String DX = "dx123";
 
-    Mapper<uk.gov.hmcts.cmc.ccd.domain.ContactDetails, ContactDetails> mapper = new ContactDetailsMapper();
+    ContactDetailsMapper mapper = new ContactDetailsMapper();
+
+    @Test
+    public void shouldGetTargetNullIfSourceIsNullForTo() {
+        //given
+        ContactDetails contactDetails = null;
+
+        //when
+        uk.gov.hmcts.cmc.ccd.domain.ContactDetails ccdContactDetails = mapper.to(contactDetails);
+
+        //then
+        assertThat(ccdContactDetails).isNull();
+    }
 
     @Test
     public void shouldMapContactDetailsToCCD() {
@@ -24,11 +35,23 @@ public class ContactDetailsMapperTest {
         uk.gov.hmcts.cmc.ccd.domain.ContactDetails ccdContactDetails = mapper.to(contactDetails);
 
         //then
-        assertNotNull(ccdContactDetails);
-        assertEquals(ccdContactDetails.getEmail(), EMAIL);
-        assertEquals(ccdContactDetails.getPhone(), PHONE);
-        assertEquals(ccdContactDetails.getDxAddress(), DX);
+        assertThat(ccdContactDetails).isNotNull();
+        assertThat(ccdContactDetails.getEmail()).isEqualTo(EMAIL);
+        assertThat(ccdContactDetails.getPhone()).isEqualTo(PHONE);
+        assertThat(ccdContactDetails.getDxAddress()).isEqualTo(DX);
 
+    }
+
+    @Test
+    public void shouldGetTargetNullIfSourceIsNullForFrom() {
+        //given
+        uk.gov.hmcts.cmc.ccd.domain.ContactDetails contactDetails = null;
+
+        //when
+        ContactDetails cmcContactDetails = mapper.from(contactDetails);
+
+        //then
+        assertThat(cmcContactDetails).isNull();
     }
 
     @Test
@@ -44,12 +67,11 @@ public class ContactDetailsMapperTest {
         ContactDetails cmcContactDetails = mapper.from(contactDetails);
 
         //then
-        assertNotNull(cmcContactDetails);
-        assertTrue(cmcContactDetails.getPhone().isPresent());
-        assertTrue(cmcContactDetails.getEmail().isPresent());
-        assertTrue(cmcContactDetails.getDxAddress().isPresent());
-        assertEquals(cmcContactDetails.getPhone().orElse(null), contactDetails.getPhone());
-        assertEquals(cmcContactDetails.getEmail().orElse(null), contactDetails.getEmail());
-        assertEquals(cmcContactDetails.getDxAddress().orElse(null), contactDetails.getDxAddress());
+        assertThat(cmcContactDetails).isNotNull();
+        assertThat(cmcContactDetails.getPhone().isPresent());
+        assertThat(cmcContactDetails.getEmail().isPresent());
+        assertThat(cmcContactDetails.getDxAddress().isPresent());
+
+        assertContactDetailsEqualTo(cmcContactDetails, contactDetails);
     }
 }

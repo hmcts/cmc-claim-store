@@ -6,12 +6,20 @@ repositories {
   mavenCentral()
 }
 
+def springBootVersion = '1.5.7.RELEASE'
+
+def versions = [
+  springBoot: springBootVersion
+]
+
 dependencies {
   compile project(':cmc-domain-model')
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: versions.springBoot
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
   apt group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
 
   testCompile group: 'junit', name: 'junit', version: '4.12'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
   testCompile project(':cmc-domain-sample-data')
 
 }
