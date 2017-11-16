@@ -40,6 +40,7 @@ public class ClaimIssuedStaffNotificationService {
     private final boolean documentManagementFeatureEnabled;
 
     @Autowired
+    @SuppressWarnings("squid:S00107")
     public ClaimIssuedStaffNotificationService(
         final EmailService emailService,
         final StaffEmailProperties staffEmailProperties,
@@ -49,7 +50,8 @@ public class ClaimIssuedStaffNotificationService {
         final DefendantPinLetterPdfService defendantPinLetterPdfService,
         final DocumentManagementService documentManagementService,
         final DocumentManagementSealedClaimHandler documentManagementSealedClaimHandler,
-        @Value("${feature_toggles.document_management}") final boolean documentManagementFeatureEnabled) {
+        @Value("${feature_toggles.document_management}") final boolean documentManagementFeatureEnabled
+    ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.provider = provider;
@@ -112,9 +114,10 @@ public class ClaimIssuedStaffNotificationService {
 
     private byte[] getSealedClaimPdfDocument(final String authorisation, final Claim claim,
                                              final String submitterEmail) {
-        if (documentManagementFeatureEnabled && claim.getSealedClaimDocumentManagementSelfPath().isPresent()) {
-            return documentManagementService.downloadDocument(authorisation,
-                claim.getSealedClaimDocumentManagementSelfPath().get());
+        final Optional<String> documentManagementSelfPath = claim.getSealedClaimDocumentManagementSelfPath();
+
+        if (documentManagementFeatureEnabled && documentManagementSelfPath.isPresent()) {
+            return documentManagementService.downloadDocument(authorisation, documentManagementSelfPath.get());
         } else {
 
             if (claim.getClaimData().isClaimantRepresented()) {
