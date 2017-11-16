@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.content;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.EmailContentTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
@@ -24,7 +24,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
         new PebbleConfiguration().pebbleEngine()
     );
 
-    private EmailContentTemplates templates = new EmailContentTemplates();
+    private StaffEmailTemplates templates = new StaffEmailTemplates();
 
     private DefendantResponseStaffNotificationEmailContentProvider service;
 

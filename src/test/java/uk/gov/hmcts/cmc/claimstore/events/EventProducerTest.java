@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -48,7 +50,8 @@ public class EventProducerTest {
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
         //given
-        final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
+        final ClaimIssuedEvent expectedEvent
+            = new ClaimIssuedEvent(CLAIM, Optional.of(PIN), Optional.of(SUBMITTER_NAME), AUTHORISATION);
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
         //when

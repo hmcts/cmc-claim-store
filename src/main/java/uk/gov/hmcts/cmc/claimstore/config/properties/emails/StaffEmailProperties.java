@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.emails;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -15,17 +14,6 @@ public class StaffEmailProperties {
     private String sender;
     @NotBlank
     private String recipient;
-
-    private final EmailContentTemplates emailTemplates;
-
-    @Autowired
-    public StaffEmailProperties(EmailContentTemplates emailTemplates) {
-        this.emailTemplates = emailTemplates;
-    }
-
-    public EmailContentTemplates getEmailTemplates() {
-        return emailTemplates;
-    }
 
     public String getSender() {
         return sender;

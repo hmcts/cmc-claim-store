@@ -174,8 +174,9 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void linkDocumentManagement(final Long claimId, final String sealedClaimDocumentManagementSelfPath) {
-        claimRepository.linkDocumentManagement(claimId, sealedClaimDocumentManagementSelfPath);
+    public void linkSealedClaimDocumentManagementPath(final Long claimId,
+                                                      final String sealedClaimDocumentManagementSelfPath) {
+        claimRepository.link(claimId, sealedClaimDocumentManagementSelfPath);
     }
 
     void saveCountyCourtJudgment(final long claimId, final CountyCourtJudgment countyCourtJudgment) {

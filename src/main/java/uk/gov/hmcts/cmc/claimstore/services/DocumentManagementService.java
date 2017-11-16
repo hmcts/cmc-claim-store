@@ -24,9 +24,9 @@ public class DocumentManagementService {
     static final String APPLICATION_PDF = "application/pdf";
     static final String PDF_EXTENSION = ".pdf";
     static final String FILES_NAME = "files";
-    private final DocumentMetadataDownloadClientApi documentMetadataDownloadApi;
-    private final DocumentDownloadClientApi documentDownloadClientApi;
-    private final DocumentUploadClientApi documentUploadClientApi;
+    private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
+    private final DocumentDownloadClientApi documentDownloadClient;
+    private final DocumentUploadClientApi documentUploadClient;
 
     @Autowired
     public DocumentManagementService(
@@ -34,30 +34,29 @@ public class DocumentManagementService {
         final DocumentDownloadClientApi documentDownloadClientApi,
         final DocumentUploadClientApi documentUploadClientApi
     ) {
-        this.documentMetadataDownloadApi = documentMetadataDownloadApi;
-        this.documentDownloadClientApi = documentDownloadClientApi;
-        this.documentUploadClientApi = documentUploadClientApi;
+        this.documentMetadataDownloadClient = documentMetadataDownloadApi;
+        this.documentDownloadClient = documentDownloadClientApi;
+        this.documentUploadClient = documentUploadClientApi;
     }
 
-    public String uploadSingleDocument(final String authorisation, final String originalFileName,
-                                       final byte[] documentBytes, final String contentType) {
+    public String uploadDocument(final String authorisation, final String originalFileName,
+                                 final byte[] documentBytes, final String contentType) {
         final MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
-        final UploadResponse response = documentUploadClientApi.upload(authorisation, singletonList(file));
-
-        final String message = "Document management failed uploading file" + originalFileName;
+        final UploadResponse response = documentUploadClient.upload(authorisation, singletonList(file));
 
         final Document document = response.getEmbedded().getDocuments().stream()
             .findFirst()
-            .orElseThrow(() -> new DocumentManagementException(message));
+            .orElseThrow(() ->
+                new DocumentManagementException("Document management failed uploading file" + originalFileName));
 
         return URI.create(document.links.self.href).getPath();
     }
 
-    byte[] downloadDocument(final String authorisation, final String sealedClaimDocumentManagementSelfPath) {
-        final Document documentMetadata = documentMetadataDownloadApi.getDocumentMetadata(authorisation,
-            sealedClaimDocumentManagementSelfPath);
+    public byte[] downloadDocument(final String authorisation, final String documentSelfPath) {
+        final Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(authorisation,
+            documentSelfPath);
 
-        final ResponseEntity<Resource> responseEntity = documentDownloadClientApi.downloadBinary(authorisation,
+        final ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(authorisation,
             URI.create(documentMetadata.links.binary.href).getPath());
 
         return ((ByteArrayResource) (responseEntity.getBody())).getByteArray();

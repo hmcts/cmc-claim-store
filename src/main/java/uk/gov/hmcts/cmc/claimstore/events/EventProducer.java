@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 public class EventProducer {
@@ -19,9 +20,11 @@ public class EventProducer {
                                        final String submitterName, final String authorisation) {
 
         if (claim.getClaimData().isClaimantRepresented()) {
-            publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName, authorisation));
+            publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, Optional.of(submitterName), authorisation));
         } else {
-            publisher.publishEvent(new ClaimIssuedEvent(claim, pin, submitterName, authorisation));
+            publisher.publishEvent(
+                new ClaimIssuedEvent(claim, Optional.of(pin), Optional.of(submitterName), authorisation)
+            );
         }
     }
 

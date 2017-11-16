@@ -4,17 +4,18 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class RepresentedClaimIssuedEvent {
 
     private final Claim claim;
-    private final String representativeName;
+    private final Optional<String> representativeName;
     private final String representativeEmail;
     private final String authorisation;
 
-    public RepresentedClaimIssuedEvent(Claim claim, final String submitterName, final String authorisation) {
+    public RepresentedClaimIssuedEvent(Claim claim, final Optional<String> submitterName, final String authorisation) {
         this.claim = claim;
         this.representativeName = submitterName;
         this.representativeEmail = claim.getSubmitterEmail();
@@ -29,7 +30,7 @@ public class RepresentedClaimIssuedEvent {
         return representativeEmail;
     }
 
-    public String getRepresentativeName() {
+    public Optional<String> getRepresentativeName() {
         return representativeName;
     }
 

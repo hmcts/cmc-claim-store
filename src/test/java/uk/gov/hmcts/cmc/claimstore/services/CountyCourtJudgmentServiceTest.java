@@ -5,18 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.EmailContentTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,30 +34,14 @@ public class CountyCourtJudgmentServiceTest {
     @Mock
     private ClaimService claimService;
     @Mock
-    private JsonMapper jsonMapper;
-    @Mock
     private EventProducer eventProducer;
-
-    @Mock
-    private PDFServiceClient pdfServiceClient;
-
-    @Mock
-    private InterestCalculationService interestCalculationService;
-
-    private EmailContentTemplates emailTemplates = new EmailContentTemplates();
-
-    private ContentProvider contentProvider;
 
     @Before
     public void setup() {
-        contentProvider = new ContentProvider(interestCalculationService);
 
         countyCourtJudgmentService = new CountyCourtJudgmentService(
             claimService,
-            eventProducer,
-            pdfServiceClient,
-            emailTemplates,
-            contentProvider
+            eventProducer
         );
     }
 

@@ -27,6 +27,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/support")
 public class SupportController {
@@ -116,14 +118,14 @@ public class SupportController {
 
             final String fullName = userService.getUserDetails(authorisation).getFullName();
 
-            claimIssuedStaffNotificationHandler
-                .onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation));
-
+            claimIssuedStaffNotificationHandler.onClaimIssued(
+                new ClaimIssuedEvent(claim, Optional.of(pinResponse.getPin()), Optional.of(fullName), authorisation)
+            );
         } else {
             final UserDetails userDetails = userService.getUserDetails(authorisation);
 
             claimIssuedStaffNotificationHandler.onRepresentedClaimIssued(
-                new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation)
+                new RepresentedClaimIssuedEvent(claim, Optional.of(userDetails.getFullName()), authorisation)
             );
         }
 

@@ -3,40 +3,26 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.EmailContentTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.time.LocalDate;
-
-import static java.util.Objects.requireNonNull;
 
 @Component
 public class CountyCourtJudgmentService {
 
     private final ClaimService claimService;
     private final EventProducer eventProducer;
-    private final PDFServiceClient pdfServiceClient;
-    private final EmailContentTemplates emailTemplates;
-    private final ContentProvider contentProvider;
 
     @Autowired
     public CountyCourtJudgmentService(
         final ClaimService claimService,
-        final EventProducer eventProducer,
-        final PDFServiceClient pdfServiceClient,
-        final EmailContentTemplates emailTemplates,
-        final ContentProvider contentProvider
+        final EventProducer eventProducer
     ) {
         this.claimService = claimService;
         this.eventProducer = eventProducer;
-        this.pdfServiceClient = pdfServiceClient;
-        this.emailTemplates = emailTemplates;
-        this.contentProvider = contentProvider;
     }
 
     @Transactional
@@ -85,13 +71,5 @@ public class CountyCourtJudgmentService {
 
     private boolean isCountyCourtJudgmentAlreadySubmitted(final Claim claim) {
         return claim.getCountyCourtJudgment() != null;
-    }
-
-    public byte[] createPdf(Claim claim) {
-        requireNonNull(claim);
-        return pdfServiceClient.generateFromHtml(
-            emailTemplates.getCountyCourtJudgmentDetails(),
-            this.contentProvider.createContent(claim)
-        );
     }
 }

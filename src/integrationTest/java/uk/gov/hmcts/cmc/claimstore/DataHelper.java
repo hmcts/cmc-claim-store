@@ -12,7 +12,7 @@ public class DataHelper {
     }
 
     public static UploadResponse documentManagementUploadResponse() {
-        final String response = new ResourceReader().read("/document_management_response.json");
+        final String response = new ResourceReader().read("/document-management-response.json");
         return jsonMapper.fromJson(response, UploadResponse.class);
     }
 }

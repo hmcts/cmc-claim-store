@@ -47,7 +47,7 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
-    private String sealedClaimDocumentManagementSelfUrl = null;
+    private String sealedClaimDocumentManagementSelfPath = null;
 
     private SampleClaim() {
     }
@@ -150,7 +150,7 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocumentManagementSelfUrl
+            sealedClaimDocumentManagementSelfPath
 
         );
     }
@@ -250,8 +250,8 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withSealedClaimDocumentManagementSelfUrl(final String url) {
-        this.sealedClaimDocumentManagementSelfUrl = url;
+    public SampleClaim withSealedClaimDocumentManagementSelfPath(final String path) {
+        this.sealedClaimDocumentManagementSelfPath = path;
         return this;
     }
 }

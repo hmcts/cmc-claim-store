@@ -37,7 +37,7 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        final byte[] pdfDocument = documentsService.defendantResponseCopy(claimExternalId);
+        final byte[] pdfDocument = documentsService.generateDefendantResponseCopy(claimExternalId);
 
         return ResponseEntity
             .ok()
@@ -55,7 +55,7 @@ public class DocumentsController {
         @PathVariable("claimExternalId") @NotBlank String claimExternalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
     ) {
-        final byte[] pdfDocument = documentsService.legalSealedClaim(claimExternalId, authorisation);
+        final byte[] pdfDocument = documentsService.generateLegalSealedClaim(claimExternalId, authorisation);
 
         return ResponseEntity
             .ok()
@@ -72,7 +72,7 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        final byte[] pdfDocument = documentsService.countyCourtJudgement(claimExternalId);
+        final byte[] pdfDocument = documentsService.generateCountyCourtJudgement(claimExternalId);
 
         return ResponseEntity
             .ok()

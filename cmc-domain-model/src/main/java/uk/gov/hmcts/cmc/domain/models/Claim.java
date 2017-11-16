@@ -158,8 +158,8 @@ public class Claim {
         return settlementReachedAt;
     }
 
-    public String getSealedClaimDocumentManagementSelfPath() {
-        return sealedClaimDocumentManagementSelfPath;
+    public Optional<String> getSealedClaimDocumentManagementSelfPath() {
+        return Optional.ofNullable(sealedClaimDocumentManagementSelfPath);
     }
 
     @Override

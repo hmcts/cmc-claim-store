@@ -73,7 +73,7 @@ public class DocumentManagementServiceTest {
         when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
 
         //when
-        final String output = documentManagementService.uploadSingleDocument(authorisationToken,
+        final String output = documentManagementService.uploadDocument(authorisationToken,
             claim.getReferenceNumber() + PDF_EXTENSION, legalN1FormPdf, APPLICATION_PDF);
 
         //then
@@ -88,7 +88,7 @@ public class DocumentManagementServiceTest {
         //given
         final String authorisationToken = "Open sesame!";
         final String selfUri = SampleClaim.SEALED_CLAIM_DOCUMENT_MANAGEMENT_SELF_URL;
-        final Claim claim = SampleClaim.builder().withSealedClaimDocumentManagementSelfUrl(selfUri).build();
+        final Claim claim = SampleClaim.builder().withSealedClaimDocumentManagementSelfPath(selfUri).build();
         final Document document = getUploadResponse().getEmbedded().getDocuments().get(0);
         final String binaryUri = URI.create(document.links.binary.href).getPath();
         final byte[] legalN1FormPdf = {65, 66, 67, 68};
@@ -98,9 +98,12 @@ public class DocumentManagementServiceTest {
         when(documentDownloadClientApi.downloadBinary(authorisationToken, binaryUri)).thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(resource);
 
+        final String selfPath = claim.getSealedClaimDocumentManagementSelfPath()
+            .orElseThrow(IllegalArgumentException::new);
+
         //when
-        final byte[] claimN1Form = documentManagementService.downloadDocument(authorisationToken,
-            claim.getSealedClaimDocumentManagementSelfPath());
+
+        final byte[] claimN1Form = documentManagementService.downloadDocument(authorisationToken, selfPath);
 
         //then
         assertThat(claimN1Form).isNotNull().isEqualTo(legalN1FormPdf);
@@ -126,7 +129,7 @@ public class DocumentManagementServiceTest {
         when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
 
         //when
-        documentManagementService.uploadSingleDocument(authorisationToken, claim.getReferenceNumber() + PDF_EXTENSION,
+        documentManagementService.uploadDocument(authorisationToken, claim.getReferenceNumber() + PDF_EXTENSION,
             legalN1FormPdf, APPLICATION_PDF);
 
         //verify
@@ -145,7 +148,7 @@ public class DocumentManagementServiceTest {
     }
 
     private UploadResponse getUploadResponse() {
-        final String response = new ResourceReader().read("/document_management_response.json");
+        final String response = new ResourceReader().read("/document-management-response.json");
         return new JsonMapper(new ObjectMapper()).fromJson(response, UploadResponse.class);
     }
 
