@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentManagementSealedClaimHandler;
-import uk.gov.hmcts.cmc.claimstore.events.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Optional;

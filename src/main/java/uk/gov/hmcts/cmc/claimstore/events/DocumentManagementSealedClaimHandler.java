@@ -6,6 +6,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;

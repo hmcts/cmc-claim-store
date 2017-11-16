@@ -7,9 +7,9 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.events.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentManagementSealedClaimHandler;
-import uk.gov.hmcts.cmc.claimstore.events.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
