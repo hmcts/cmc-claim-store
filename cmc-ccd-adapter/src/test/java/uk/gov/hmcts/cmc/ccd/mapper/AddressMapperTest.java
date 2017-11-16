@@ -11,14 +11,15 @@ import static org.junit.Assert.assertNotNull;
 public class AddressMapperTest {
 
 
+    Mapper<uk.gov.hmcts.cmc.ccd.domain.Address, Address> mapper = new AddressMapper();
+
     @Test
     public void shouldMapAddressToCCD() {
         //given
         Address address = SampleAddress.builder().build();
 
         //when
-        AddressMapper addressMapper = new AddressMapper();
-        uk.gov.hmcts.cmc.ccd.domain.Address ccdAddress = addressMapper.toCCD(address);
+        uk.gov.hmcts.cmc.ccd.domain.Address ccdAddress = mapper.to(address);
 
         //then
         assertNotNull(ccdAddress);
@@ -40,8 +41,7 @@ public class AddressMapperTest {
             .build();
 
         //when
-        AddressMapper addressMapper = new AddressMapper();
-        Address cmcAddress = addressMapper.toCMC(address);
+        Address cmcAddress = mapper.from(address);
 
         //then
         assertNotNull(cmcAddress);

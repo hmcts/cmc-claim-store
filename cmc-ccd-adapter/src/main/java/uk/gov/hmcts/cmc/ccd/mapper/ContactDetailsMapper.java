@@ -2,19 +2,20 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import uk.gov.hmcts.cmc.ccd.domain.ContactDetails;
 
-public class ContactDetailsMapper {
+public class ContactDetailsMapper
+    implements Mapper<ContactDetails, uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails> {
 
-    ContactDetails toCCD(uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails contactDetails) {
+    @Override
+    public ContactDetails to(uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails contactDetails) {
         return ContactDetails.builder()
             .email(contactDetails.getEmail().orElse(null))
             .phone(contactDetails.getPhone().orElse(null))
             .dxAddress(contactDetails.getDxAddress().orElse(null))
             .build();
-
     }
 
-    uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails toCMC(ContactDetails contactDetails) {
-
+    @Override
+    public uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails from(ContactDetails contactDetails) {
         return new uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails(
             contactDetails.getPhone(), contactDetails.getEmail(), contactDetails.getDxAddress()
         );

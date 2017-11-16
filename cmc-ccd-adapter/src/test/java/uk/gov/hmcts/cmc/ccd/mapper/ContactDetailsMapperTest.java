@@ -12,7 +12,8 @@ public class ContactDetailsMapperTest {
     private static final String PHONE = "07987654321";
     private static final String EMAIL = "my@email.com";
     private static final String DX = "dx123";
-    ContactDetailsMapper contactDetailsMapper = new ContactDetailsMapper();
+
+    Mapper<uk.gov.hmcts.cmc.ccd.domain.ContactDetails, ContactDetails> mapper = new ContactDetailsMapper();
 
     @Test
     public void shouldMapContactDetailsToCCD() {
@@ -20,7 +21,7 @@ public class ContactDetailsMapperTest {
         ContactDetails contactDetails = new ContactDetails(PHONE, EMAIL, DX);
 
         //when
-        uk.gov.hmcts.cmc.ccd.domain.ContactDetails ccdContactDetails = contactDetailsMapper.toCCD(contactDetails);
+        uk.gov.hmcts.cmc.ccd.domain.ContactDetails ccdContactDetails = mapper.to(contactDetails);
 
         //then
         assertNotNull(ccdContactDetails);
@@ -40,7 +41,7 @@ public class ContactDetailsMapperTest {
             .build();
 
         //when
-        ContactDetails cmcContactDetails = contactDetailsMapper.toCMC(contactDetails);
+        ContactDetails cmcContactDetails = mapper.from(contactDetails);
 
         //then
         assertNotNull(cmcContactDetails);
