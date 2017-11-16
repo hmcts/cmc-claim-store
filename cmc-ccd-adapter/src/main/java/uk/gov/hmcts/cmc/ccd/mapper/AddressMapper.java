@@ -6,7 +6,7 @@ public class AddressMapper {
 
     uk.gov.hmcts.cmc.ccd.domain.Address toCCD(Address address) {
 
-        uk.gov.hmcts.cmc.ccd.domain.Address ccdAddress = uk.gov.hmcts.cmc.ccd.domain.Address
+        return uk.gov.hmcts.cmc.ccd.domain.Address
             .builder()
             .line1(address.getLine1())
             .line2(address.getLine2())
@@ -14,12 +14,11 @@ public class AddressMapper {
             .postcode(address.getPostcode())
             .build();
 
-        return ccdAddress;
     }
 
     Address toCMC(uk.gov.hmcts.cmc.ccd.domain.Address address) {
-        Address cmcAddress = new Address(address.getLine1(), address.getLine2(),
+        return new Address(address.getLine1(), address.getLine2(),
             address.getCity(), address.getPostcode());
-        return cmcAddress;
+
     }
 }
