@@ -1,11 +1,13 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class CcdCase {
 
     private final String referenceNumber;
@@ -15,5 +17,5 @@ public class CcdCase {
     private final LocalDate issuedOn;
     private final String submitterEmail;
     private final ClaimData claimData;
-    
+
 }
