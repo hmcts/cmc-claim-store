@@ -7,8 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.mapper.util.AssertUtil.assertAddressEqualTo;
-import static uk.gov.hmcts.cmc.ccd.mapper.util.AssertUtil.assertContactDetailsEqualTo;
+import static uk.gov.hmcts.cmc.ccd.mapper.util.AssertUtil.assertRepresentativeEqualTo;
 
 public class RepresentativeMapperTest {
 
@@ -38,12 +37,7 @@ public class RepresentativeMapperTest {
 
         //then
         assertThat(ccdRepresentative).isNotNull();
-        assertThat(ccdRepresentative.getOrganisationName()).isEqualTo(representative.getOrganisationName());
-        assertAddressEqualTo(representative.getOrganisationAddress(), ccdRepresentative.getOrganisationAddress());
-        assertThat(representative.getOrganisationContactDetails()).isPresent();
-        assertContactDetailsEqualTo(representative.getOrganisationContactDetails()
-                .orElseThrow(IllegalStateException::new),
-            ccdRepresentative.getOrganisationContactDetails());
+        assertRepresentativeEqualTo(representative, ccdRepresentative);
     }
 
     @Test
@@ -82,10 +76,7 @@ public class RepresentativeMapperTest {
         Representative cmcRepresentative = representativeMapper.from(representative);
 
         //then
-        assertThat(cmcRepresentative.getOrganisationName()).isEqualTo("My Org");
-        assertAddressEqualTo(cmcRepresentative.getOrganisationAddress(), address);
-        assertContactDetailsEqualTo(cmcRepresentative.getOrganisationContactDetails()
-                .orElseThrow(IllegalStateException::new), contactDetails);
+        assertRepresentativeEqualTo(cmcRepresentative, representative);
     }
 
 }

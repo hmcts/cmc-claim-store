@@ -68,9 +68,9 @@ public class ContactDetailsMapperTest {
 
         //then
         assertThat(cmcContactDetails).isNotNull();
-        assertThat(cmcContactDetails.getPhone().isPresent());
-        assertThat(cmcContactDetails.getEmail().isPresent());
-        assertThat(cmcContactDetails.getDxAddress().isPresent());
+        assertThat(cmcContactDetails.getPhone()).isPresent();
+        assertThat(cmcContactDetails.getEmail()).isPresent();
+        assertThat(cmcContactDetails.getDxAddress()).isPresent();
 
         assertContactDetailsEqualTo(cmcContactDetails, contactDetails);
     }
