@@ -29,8 +29,9 @@ public class SettlementAgreementCopyService {
 
     public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
+        byte[] settlementAgreement = emailTemplates.getSettlementAgreement();
         return pdfServiceClient.generateFromHtml(
-            emailTemplates.getSettlementAgreement(),
+            settlementAgreement,
             contentProvider.createContent(claim)
         );
     }

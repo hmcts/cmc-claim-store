@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import java.util.Objects;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 /**
  * OfferAcceptedEvent and OfferRejectedEvent classes have the same fields, but we want to be able to distinguish
  * action that should be taken on each event.
@@ -44,6 +46,6 @@ public abstract class OfferRespondedEvent {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this);
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

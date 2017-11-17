@@ -18,16 +18,19 @@ import static java.lang.String.format;
 @Service
 public class OffersService {
 
+    private final ClaimService claimService;
     private final OffersRepository offersRepository;
     private final JsonMapper jsonMapper;
     private final EventProducer eventProducer;
 
     @Autowired
     public OffersService(
+        ClaimService claimService,
         OffersRepository offersRepository,
         EventProducer eventProducer,
         JsonMapper jsonMapper
     ) {
+        this.claimService = claimService;
         this.offersRepository = offersRepository;
         this.eventProducer = eventProducer;
         this.jsonMapper = jsonMapper;
@@ -50,7 +53,7 @@ public class OffersService {
         settlement.accept(party);
 
         offersRepository.acceptOffer(claim.getId(), jsonMapper.toJson(settlement), LocalDateTime.now());
-        eventProducer.createOfferAcceptedEvent(claim, party);
+        eventProducer.createOfferAcceptedEvent(claimService.getClaimById(claim.getId()), party);
     }
 
     public void reject(Claim claim, MadeBy party) {

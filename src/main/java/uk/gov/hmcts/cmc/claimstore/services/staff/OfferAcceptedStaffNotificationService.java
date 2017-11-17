@@ -44,7 +44,7 @@ public class OfferAcceptedStaffNotificationService {
         Claim claim
     ) {
         EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim));
-        byte[] defendantResponseCopy = copyService.createPdf(claim);
+        byte[] pdf = copyService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
@@ -52,7 +52,7 @@ public class OfferAcceptedStaffNotificationService {
                 emailContent.getSubject(),
                 emailContent.getBody(),
                 singletonList(pdf(
-                    defendantResponseCopy,
+                    pdf,
                     format(FILE_NAME_FORMAT, claim.getReferenceNumber())
                 ))
             )
@@ -63,7 +63,9 @@ public class OfferAcceptedStaffNotificationService {
         Claim claim
     ) {
         Map<String, Object> map = new HashMap<>();
-        map.put("claim", claim);
+        map.put("claimReferenceNumber", claim.getReferenceNumber());
+        map.put("claimantName", claim.getClaimData().getClaimant().getName());
+        map.put("defendantName", claim.getClaimData().getDefendant().getName());
         return map;
     }
 
