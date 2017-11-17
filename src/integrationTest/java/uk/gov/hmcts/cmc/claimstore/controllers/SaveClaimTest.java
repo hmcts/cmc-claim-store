@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
-import uk.gov.hmcts.cmc.claimstore.DataHelper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -33,6 +32,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
 
 public class SaveClaimTest extends BaseIntegrationTest {
 
@@ -53,7 +53,7 @@ public class SaveClaimTest extends BaseIntegrationTest {
             .willReturn(new byte[]{1, 2, 3, 4});
 
         given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(DataHelper.documentManagementUploadResponse());
+            .willReturn(documentManagementUploadResponse());
     }
 
     @Test

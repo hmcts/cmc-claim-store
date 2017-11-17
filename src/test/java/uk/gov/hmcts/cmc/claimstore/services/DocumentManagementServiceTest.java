@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,10 +10,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.document.DocumentUploadClientApi;
@@ -33,6 +30,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.APPLICATION_PDF;
 import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.FILES_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.PDF_EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.failedDocumentManagementUploadResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentManagementServiceTest {
@@ -59,7 +58,7 @@ public class DocumentManagementServiceTest {
         //given
         final String authorisationToken = "Open sesame!";
         final Claim claim = SampleClaim.getDefault();
-        final UploadResponse uploadResponse = getUploadResponse();
+        final UploadResponse uploadResponse = documentManagementUploadResponse();
         final Document.Links links = getLinks(uploadResponse);
 
         final byte[] legalN1FormPdf = {65, 66, 67, 68};
@@ -89,7 +88,7 @@ public class DocumentManagementServiceTest {
         final String authorisationToken = "Open sesame!";
         final String selfUri = SampleClaim.SEALED_CLAIM_DOCUMENT_MANAGEMENT_SELF_URL;
         final Claim claim = SampleClaim.builder().withSealedClaimDocumentManagementSelfPath(selfUri).build();
-        final Document document = getUploadResponse().getEmbedded().getDocuments().get(0);
+        final Document document = documentManagementUploadResponse().getEmbedded().getDocuments().get(0);
         final String binaryUri = URI.create(document.links.binary.href).getPath();
         final byte[] legalN1FormPdf = {65, 66, 67, 68};
         final Resource resource = new ByteArrayResource(legalN1FormPdf);
@@ -116,7 +115,7 @@ public class DocumentManagementServiceTest {
         //given
         final String authorisationToken = "Open sesame!";
         final Claim claim = SampleClaim.getDefault();
-        final UploadResponse uploadResponse = getFailedResponse();
+        final UploadResponse uploadResponse = failedDocumentManagementUploadResponse();
 
         final byte[] legalN1FormPdf = {65, 66, 67, 68};
         final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
@@ -145,19 +144,5 @@ public class DocumentManagementServiceTest {
     private void verifyDocumentDownload(final String authorisationToken, final String selfUri, final String binaryUri) {
         verify(documentMetadataDownloadApi).getDocumentMetadata(eq(authorisationToken), eq(selfUri));
         verify(documentDownloadClientApi).downloadBinary(eq(authorisationToken), eq(binaryUri));
-    }
-
-    private UploadResponse getUploadResponse() {
-        final String response = new ResourceReader().read("/document-management-response.json");
-        return new JsonMapper(new ObjectMapper()).fromJson(response, UploadResponse.class);
-    }
-
-    private UploadResponse getFailedResponse() {
-        final String response = "{\n"
-            + "  \"_embedded\": {\n"
-            + "    \"documents\": []"
-            + "}"
-            + "}";
-        return new JsonMapper(new ObjectMapper()).fromJson(response, UploadResponse.class);
     }
 }

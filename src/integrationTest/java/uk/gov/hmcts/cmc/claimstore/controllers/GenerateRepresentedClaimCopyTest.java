@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
-import uk.gov.hmcts.cmc.claimstore.DataHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -18,6 +17,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
 
 public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
@@ -34,7 +34,7 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
             .willReturn(PDF_BYTES);
 
         given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(DataHelper.documentManagementUploadResponse());
+            .willReturn(documentManagementUploadResponse());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
