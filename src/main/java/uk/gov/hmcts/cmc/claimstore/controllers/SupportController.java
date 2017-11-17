@@ -33,6 +33,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 @RequestMapping("/support")
 public class SupportController {
 
+    private static final String CLAIM = "Claim ";
     private final ClaimRepository claimRepository;
     private final UserService userService;
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
@@ -69,7 +70,7 @@ public class SupportController {
     ) throws ServletRequestBindingException {
 
         Claim claim = claimRepository.getByClaimReferenceNumber(referenceNumber)
-            .orElseThrow(() -> new NotFoundException("Claim " + referenceNumber + " does not exist"));
+            .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 
         switch (event) {
             case "claim-issued":
@@ -147,7 +148,7 @@ public class SupportController {
 
     private void resendStaffNotificationOnDefendantResponseSubmitted(final Claim claim) {
         if (!claim.getResponse().isPresent()) {
-            throw new ConflictException("Claim " + claim.getId() + " does not have associated response");
+            throw new ConflictException(CLAIM + claim.getId() + " does not have associated response");
         }
         final DefendantResponseEvent event = new DefendantResponseEvent(claim);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
@@ -155,7 +156,7 @@ public class SupportController {
 
     private void resendStaffNotificationOnOfferAccepted(final Claim claim) {
         if (claim.getSettlementReachedAt() == null) {
-            throw new ConflictException("Claim " + claim.getId() + " does not have a settlement");
+            throw new ConflictException(CLAIM + claim.getId() + " does not have a settlement");
         }
         final OfferAcceptedEvent event = new OfferAcceptedEvent(claim, null);
         offerAcceptedStaffNotificationHandler.onOfferAccepted(event);
