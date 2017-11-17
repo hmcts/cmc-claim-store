@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -23,33 +24,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
 
-public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
+public class GenerateRepresentedClaimCopyTest extends DocumentManagementBaseIntegrationTest {
 
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final String AUTH_TOKEN = "Bearer authDataString";
-    private static final Resource resource = new ByteArrayResource(PDF_BYTES);
-
-    @Mock
-    private ResponseEntity<Resource> responseEntity;
 
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder()
             .withAmount(SampleAmountRange.builder().build())
             .build());
-
-        given(pdfServiceClient.generateFromHtml(any(), any()))
-            .willReturn(PDF_BYTES);
-
-        given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(documentManagementUploadResponse());
-
-        given(documentMetadataDownloadApi.getDocumentMetadata(anyString(), anyString()))
-            .willReturn(documentManagementUploadResponse().getEmbedded().getDocuments().get(0));
-
-        given(documentDownloadClientApi.downloadBinary(anyString(), anyString())).willReturn(responseEntity);
-
-        given(responseEntity.getBody()).willReturn(resource);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())

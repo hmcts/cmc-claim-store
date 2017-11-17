@@ -53,7 +53,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
     public void sendNotificationsSendsNotificationsToRepresentative() throws NotificationClientException {
 
         final RepresentedClaimIssuedEvent representedClaimIssuedEvent
-            = new RepresentedClaimIssuedEvent(CLAIM, Optional.of(SUBMITTER_NAME), AUTHORISATION);
+            = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         representativeConfirmationHandler.sendConfirmation(representedClaimIssuedEvent);
 

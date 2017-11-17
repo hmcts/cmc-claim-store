@@ -13,9 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Optional;
-
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.DocumentManagementSealedClaimHandler.APPLICATION_PDF;
@@ -49,8 +46,7 @@ public class DocumentManagementSealedClaimHandlerTest {
             documentManagementService,
             citizenSealedClaimPdfService,
             legalSealedClaimPdfService,
-            claimService,
-            true
+            claimService
         );
 
         when(citizenSealedClaimPdfService.createPdf(CLAIM, CLAIMANT_EMAIL)).thenReturn(N1_FORM_PDF);
@@ -59,10 +55,11 @@ public class DocumentManagementSealedClaimHandlerTest {
 
     @Test
     public void shouldUploadCitizenSealedClaimForm() {
-        final ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(CLAIM, Optional.of(PIN), Optional.of(SUBMITTER_NAME), AUTHORISATION);
+        final ClaimIssuedEvent claimIssuedEvent = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
 
-        when(documentManagementService.uploadDocument(AUTHORISATION, CLAIM.getReferenceNumber() + PDF_EXTENSION,
+        final String originalFileName = CLAIM.getReferenceNumber() + PDF_EXTENSION;
+
+        when(documentManagementService.uploadDocument(AUTHORISATION, originalFileName,
             N1_FORM_PDF, APPLICATION_PDF)).thenReturn(DOCUMENT_MANAGEMENT_SELF_PATH);
 
         documentManagementSealedClaimHandler.uploadCitizenSealedClaimToEvidenceStore(claimIssuedEvent);
@@ -70,7 +67,7 @@ public class DocumentManagementSealedClaimHandlerTest {
         verify(citizenSealedClaimPdfService, once()).createPdf(CLAIM, CLAIMANT_EMAIL);
 
         verify(documentManagementService, once()).uploadDocument(AUTHORISATION,
-            CLAIM.getReferenceNumber() + PDF_EXTENSION, N1_FORM_PDF, APPLICATION_PDF);
+            originalFileName, N1_FORM_PDF, APPLICATION_PDF);
 
         verify(claimService, once())
             .linkSealedClaimDocumentManagementPath(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
@@ -78,37 +75,14 @@ public class DocumentManagementSealedClaimHandlerTest {
     }
 
     @Test
-    public void shouldNotUploadCitizenSealedClaimFormWhenFeatureToggleIsOff() throws NotificationClientException {
-        documentManagementSealedClaimHandler = new DocumentManagementSealedClaimHandler(
-            documentManagementService,
-            citizenSealedClaimPdfService,
-            legalSealedClaimPdfService,
-            claimService,
-            false
-        );
-
-        final ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(CLAIM, Optional.of(PIN), Optional.of(SUBMITTER_NAME), AUTHORISATION);
-
-        documentManagementSealedClaimHandler.uploadCitizenSealedClaimToEvidenceStore(claimIssuedEvent);
-
-        verify(citizenSealedClaimPdfService, never()).createPdf(CLAIM, CLAIMANT_EMAIL);
-
-        verify(documentManagementService, never()).uploadDocument(AUTHORISATION,
-            CLAIM.getReferenceNumber() + PDF_EXTENSION, N1_FORM_PDF, APPLICATION_PDF);
-
-        verify(claimService, never())
-            .linkSealedClaimDocumentManagementPath(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
-    }
-
-
-    @Test
     public void shouldUploadLegalSealedClaimForm() throws NotificationClientException {
-        when(documentManagementService.uploadDocument(AUTHORISATION, CLAIM.getReferenceNumber() + PDF_EXTENSION,
-            N1_FORM_PDF, "application/pdf")).thenReturn(DOCUMENT_MANAGEMENT_SELF_PATH);
+        final String originalFileName = CLAIM.getReferenceNumber() + PDF_EXTENSION;
+
+        when(documentManagementService.uploadDocument(AUTHORISATION, originalFileName,
+            N1_FORM_PDF, APPLICATION_PDF)).thenReturn(DOCUMENT_MANAGEMENT_SELF_PATH);
 
         final RepresentedClaimIssuedEvent representedClaimIssuedEvent
-            = new RepresentedClaimIssuedEvent(CLAIM, Optional.of(SUBMITTER_NAME), AUTHORISATION);
+            = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         documentManagementSealedClaimHandler
             .uploadRepresentativeSealedClaimToEvidenceStore(representedClaimIssuedEvent);
@@ -116,34 +90,9 @@ public class DocumentManagementSealedClaimHandlerTest {
         verify(legalSealedClaimPdfService, once()).createPdf(CLAIM);
 
         verify(documentManagementService, once()).uploadDocument(AUTHORISATION,
-            CLAIM.getReferenceNumber() + PDF_EXTENSION, N1_FORM_PDF, "application/pdf");
+            originalFileName, N1_FORM_PDF, APPLICATION_PDF);
 
         verify(claimService, once())
-            .linkSealedClaimDocumentManagementPath(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
-    }
-
-    @Test
-    public void shouldNotUploadLegalSealedClaimFormWhenFeatureToggleIsOff() throws NotificationClientException {
-        documentManagementSealedClaimHandler = new DocumentManagementSealedClaimHandler(
-            documentManagementService,
-            citizenSealedClaimPdfService,
-            legalSealedClaimPdfService,
-            claimService,
-            false
-        );
-
-        final RepresentedClaimIssuedEvent representedClaimIssuedEvent
-            = new RepresentedClaimIssuedEvent(CLAIM, Optional.of(SUBMITTER_NAME), AUTHORISATION);
-
-        documentManagementSealedClaimHandler
-            .uploadRepresentativeSealedClaimToEvidenceStore(representedClaimIssuedEvent);
-
-        verify(legalSealedClaimPdfService, never()).createPdf(CLAIM);
-
-        verify(documentManagementService, never()).uploadDocument(AUTHORISATION,
-            CLAIM.getReferenceNumber(), N1_FORM_PDF, APPLICATION_PDF);
-
-        verify(claimService, never())
             .linkSealedClaimDocumentManagementPath(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
     }
 

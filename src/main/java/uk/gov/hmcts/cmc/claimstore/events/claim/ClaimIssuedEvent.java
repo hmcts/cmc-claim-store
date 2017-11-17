@@ -11,12 +11,12 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class ClaimIssuedEvent {
     private final String submitterEmail;
     private final Claim claim;
-    private final Optional<String> pin;
-    private final Optional<String> submitterName;
+    private final String pin;
+    private final String submitterName;
     private final String authorisation;
 
-    public ClaimIssuedEvent(final Claim claim, final Optional<String> pin,
-                            final Optional<String> submitterName, final String authorisation) {
+    public ClaimIssuedEvent(final Claim claim, final String pin,
+                            final String submitterName, final String authorisation) {
         this.submitterEmail = claim.getSubmitterEmail();
         this.claim = claim;
         this.pin = pin;
@@ -33,11 +33,11 @@ public class ClaimIssuedEvent {
     }
 
     public Optional<String> getPin() {
-        return pin;
+        return Optional.ofNullable(pin);
     }
 
     public Optional<String> getSubmitterName() {
-        return submitterName;
+        return Optional.ofNullable(submitterName);
     }
 
     public String getAuthorisation() {

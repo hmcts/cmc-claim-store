@@ -1,16 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -20,11 +15,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.email.EmailData;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -32,33 +25,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
 
-public class ResendStaffNotificationsTest extends BaseIntegrationTest {
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
-    private static final Resource resource = new ByteArrayResource(PDF_BYTES);
-
-    @Mock
-    private ResponseEntity<Resource> responseEntity;
+public class ResendStaffNotificationsTest extends DocumentManagementBaseIntegrationTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
-
-    @Before
-    public void setup() {
-        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(PDF_BYTES);
-
-        given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(documentManagementUploadResponse());
-
-        given(documentMetadataDownloadApi.getDocumentMetadata(anyString(), anyString()))
-            .willReturn(documentManagementUploadResponse().getEmbedded().getDocuments().get(0));
-
-        given(documentDownloadClientApi.downloadBinary(anyString(), anyString())).willReturn(responseEntity);
-
-        given(responseEntity.getBody()).willReturn(resource);
-    }
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {

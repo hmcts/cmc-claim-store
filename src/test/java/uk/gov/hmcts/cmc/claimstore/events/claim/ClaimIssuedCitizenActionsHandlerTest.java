@@ -58,7 +58,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
 
         final ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(CLAIM, Optional.of(PIN), Optional.of(SUBMITTER_NAME), AUTHORISATION);
+            = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
@@ -81,7 +81,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         Claim claimNoDefendantEmail = getClaimWithNoDefendantEmail();
 
         ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(claimNoDefendantEmail, Optional.of(PIN), Optional.of(SUBMITTER_NAME), AUTHORISATION);
+            = new ClaimIssuedEvent(claimNoDefendantEmail, PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);

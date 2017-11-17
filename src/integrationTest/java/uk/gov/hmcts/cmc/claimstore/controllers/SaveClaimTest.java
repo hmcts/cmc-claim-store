@@ -4,14 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -22,7 +18,6 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,16 +31,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
 
-public class SaveClaimTest extends BaseIntegrationTest {
+public class SaveClaimTest extends DocumentManagementBaseIntegrationTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
-    private static final Resource resource = new ByteArrayResource(PDF_BYTES);
 
-    @Mock
-    private ResponseEntity<Resource> responseEntity;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
@@ -56,19 +46,6 @@ public class SaveClaimTest extends BaseIntegrationTest {
 
         given(userService.generatePin("John Smith", "token"))
             .willReturn(new GeneratePinResponse("my-pin", "2"));
-
-        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
-
-        given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(documentManagementUploadResponse());
-
-        given(documentMetadataDownloadApi.getDocumentMetadata(anyString(), anyString()))
-            .willReturn(documentManagementUploadResponse().getEmbedded().getDocuments().get(0));
-
-        given(documentDownloadClientApi.downloadBinary(anyString(), anyString())).willReturn(responseEntity);
-
-        given(responseEntity.getBody()).willReturn(resource);
     }
 
     @Test

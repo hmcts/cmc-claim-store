@@ -55,11 +55,11 @@ public class DocumentManagementSealedClaimDocumentService implements SealedClaim
     private void uploadClaim(final Claim claim, final String authorisation) {
         if (claim.getClaimData().isClaimantRepresented()) {
             documentManagementSealedClaimHandler.uploadRepresentativeSealedClaimToEvidenceStore(
-                new RepresentedClaimIssuedEvent(claim, Optional.empty(), authorisation)
+                new RepresentedClaimIssuedEvent(claim, null, authorisation)
             );
         } else {
             documentManagementSealedClaimHandler.uploadCitizenSealedClaimToEvidenceStore(
-                new ClaimIssuedEvent(claim, Optional.empty(), Optional.empty(), authorisation)
+                new ClaimIssuedEvent(claim, null, null, authorisation)
             );
         }
     }
