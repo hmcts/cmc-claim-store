@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Objects;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 public class OfferMadeEvent {
 
     private final Claim claim;
@@ -38,6 +40,6 @@ public class OfferMadeEvent {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this);
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

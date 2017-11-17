@@ -30,6 +30,22 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt");
     }
 
+    public String getSettlementAgreementEmailBody() {
+        return readString("/staff/templates/email/settlementAgreement/body.txt");
+    }
+
+    public String getSettlementAgreementEmailSubject() {
+        return readString("/staff/templates/email/settlementAgreement/subject.txt");
+    }
+
+    public String getClaimIssuedEmailBody() {
+        return readString("/staff/templates/email/claimIssued/body.txt");
+    }
+
+    public String getClaimIssuedEmailSubject() {
+        return readString("/staff/templates/email/claimIssued/subject.txt");
+    }
+
     public byte[] getSealedClaim() {
         return readBytes("/staff/templates/document/sealedClaim.html");
     }
@@ -44,6 +60,10 @@ public class StaffEmailTemplates {
 
     public byte[] getCountyCourtJudgmentDetails() {
         return readBytes("/staff/templates/document/countyCourtJudgmentDetails.html");
+    }
+
+    public byte[] getSettlementAgreement() {
+        return readBytes("/staff/templates/document/settlementAgreement.html");
     }
 
     private byte[] readBytes(final String resourcePath) {
