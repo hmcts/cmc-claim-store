@@ -1,1 +1,190 @@
-Place holder template
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>{{ claim.referenceNumber }} Settlement agreement</title>
+  <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 10%;
+
+    }
+
+    html {
+      /*noinspection CssNoGenericFontName*/
+      font-family: "Open Sans";
+    }
+
+    body {
+      counter-reset: section;
+    }
+
+    .section {
+      margin-top: 25px;
+    }
+
+    .section .section-heading {
+      margin-bottom: 10px;
+    }
+
+    .section .section-heading strong:before {
+      counter-increment: section;
+      content: counter(section) ". ";
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+    }
+
+    table td {
+      border-top: 1px solid #999;
+      padding: 5px;
+    }
+    table tr:last-child td {
+      border-bottom: 1px solid #999;
+    }
+
+    table td:first-child {
+      width: 220px;
+      vertical-align: top;
+    }
+
+    table td:last-child {
+      width: auto;
+    }
+
+    header table td, header table tr:last-child td {
+      border: none;
+    }
+
+    header p, header h2 {
+      text-align: right;
+      margin: 0;
+      padding: 0;
+    }
+
+    header td {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+
+  <table>
+    <tr>
+      <td colspan="3"><p>In the County Court Business Centre Online Court</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><h2><strong>Claim number: </strong></h2></td>
+      <td><h2 style="font-weight: normal"> {{ claim.referenceNumber }}</h2></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Date: </strong></p></td>
+      <td><p>{{ settlementReachedAt }}</p></td>
+    </tr>
+  </table>
+</header>
+
+<h2>Settlement agreement</h2>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Defendant details</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Full Name:</td>
+        <td>
+          {{ defendant.fullName }}
+        </td>
+      </tr>
+      <tr>
+        <td>Address:</td>
+        <td>
+          {{ defendant.address.line1 }}
+          <br/>
+          {% if defendant.address.line2 is not empty %}
+          {{ defendant.address.line2 }}
+          <br/>
+          {% endif %}
+          {{ defendant.address.city }}
+          <br/>
+          {{ defendant.address.postcode }}
+        </td>
+      </tr>
+      {% if defendant.email is defined %}
+      <tr>
+        <td>Email:</td>
+        <td>
+          {{ defendant.email }}
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Claimant details</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Full Name:</td>
+        <td>
+          {{ claimant.name }}
+        </td>
+      </tr>
+      <tr>
+        <td>Address:</td>
+        <td>
+          {{ claimant.address.line1 }}
+          <br/>
+          {% if claimant.address.line2 is not empty %}
+          {{ claimant.address.line2 }}
+          <br/>
+          {% endif %}
+          {{ claimant.address.city }}
+          <br/>
+          {{ claimant.address.postcode }}
+        </td>
+      </tr>
+      <tr>
+        <td>Email:</td>
+        <td>
+          {{ claim.submitterEmail }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Settlement agreement</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Agreement:</td>
+        <td>
+          {{ acceptedOffer }}
+        </td>
+      </tr>
+      <tr>
+        <td>Payment date:</td>
+        <td>
+          {{ defendant.fullName }} will complete the settlement on or before {{ acceptedOfferCompletionDate }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>
