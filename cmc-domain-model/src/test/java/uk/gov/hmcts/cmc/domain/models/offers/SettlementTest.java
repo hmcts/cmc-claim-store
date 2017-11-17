@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementTest {
 
+    private static final String COUNTER_OFFER = "Get me a new roof instead";
     @Mock
     private PartyStatement partyStatement;
 
@@ -40,7 +41,7 @@ public class SettlementTest {
     @Test
     public void getLastStatementShouldReturnLastStatement() {
         Offer counterOffer = SampleOffer.builder()
-            .withContent("Get me a new roof instead")
+            .withContent(COUNTER_OFFER)
             .build();
 
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
@@ -123,4 +124,30 @@ public class SettlementTest {
     public void getLastStatementShouldThrowIllegalStateWhenNoStatementsHaveBeenMade() {
         settlement.getLastStatement();
     }
+
+    @Test
+    public void getLastOfferStatementShouldGiveLastStatementThatIsAnOffer() {
+        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.reject(MadeBy.DEFENDANT);
+
+        Offer counterOffer = SampleOffer.builder()
+            .withContent(COUNTER_OFFER)
+            .build();
+
+        settlement.makeOffer(counterOffer, MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        assertThat(settlement.getLastOfferStatement().getOffer()
+            .orElseThrow(IllegalArgumentException::new)
+            .getContent()
+        )
+            .isEqualTo(COUNTER_OFFER);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void getLastOfferStatementShouldThrowWhenNoStatements() {
+        settlement.getLastOfferStatement();
+    }
+
+
 }
