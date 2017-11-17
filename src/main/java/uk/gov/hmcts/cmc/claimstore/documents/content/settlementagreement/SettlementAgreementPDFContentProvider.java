@@ -23,7 +23,6 @@ public class SettlementAgreementPDFContentProvider {
         this.defendantDetailsContentProvider = defendantDetailsContentProvider;
     }
 
-
     public Map<String, Object> createContent(final Claim claim) {
         requireNonNull(claim);
         Map<String, Object> content = new HashMap<>();
