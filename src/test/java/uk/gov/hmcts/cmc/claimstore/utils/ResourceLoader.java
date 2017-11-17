@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
