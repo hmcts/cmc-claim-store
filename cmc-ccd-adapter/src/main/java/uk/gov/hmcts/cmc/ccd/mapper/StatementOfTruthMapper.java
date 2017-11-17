@@ -1,25 +1,24 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.StatementOfTruth;
+import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 @Component
-public class StatementOfTruthMapper
-    implements Mapper<StatementOfTruth, uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth> {
+public class StatementOfTruthMapper implements Mapper<CCDStatementOfTruth, StatementOfTruth> {
 
     @Override
-    public StatementOfTruth to(uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth statementOfTruth) {
+    public CCDStatementOfTruth to(StatementOfTruth statementOfTruth) {
 
-        return StatementOfTruth.builder()
+        return CCDStatementOfTruth.builder()
             .signerName(statementOfTruth.getSignerName())
             .signerRole(statementOfTruth.getSignerRole())
             .build();
     }
 
     @Override
-    public uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth from(StatementOfTruth statementOfTruth) {
+    public StatementOfTruth from(CCDStatementOfTruth statementOfTruth) {
 
-        return new uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth(statementOfTruth.getSignerName(),
-            statementOfTruth.getSignerRole());
+        return new StatementOfTruth(statementOfTruth.getSignerName(), statementOfTruth.getSignerRole());
     }
 }

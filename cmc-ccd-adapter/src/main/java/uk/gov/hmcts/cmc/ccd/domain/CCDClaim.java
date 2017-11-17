@@ -19,10 +19,10 @@ public class CCDClaim {
     private final BigDecimal minAmount;
     private final BigDecimal maxAmount;
     private final String preferredCourt;
-    private final PersonalInjury personalInjury;
-    private final HousingDisrepair housingDisrepair;
-    private final StatementOfTruth statementOfTruth;
-    private final List<Party> claimants;
-    private final List<Party> defendants;
+    private final CCDPersonalInjury personalInjury;
+    private final CCDHousingDisrepair housingDisrepair;
+    private final CCDStatementOfTruth statementOfTruth;
+    private final List<CCDParty> claimants;
+    private final List<CCDParty> defendants;
 }
 

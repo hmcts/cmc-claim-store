@@ -5,13 +5,14 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Organisation {
+public class CCDSoleTrader {
 
+    private final String title;
     private final String name;
+    private final String businessName;
+    private final String mobilePhone;
     private final CCDAddress address;
     private final CCDAddress correspondenceAddress;
-    private final String mobilePhone;
     private final CCDRepresentative representative;
-    private final String contactPerson;
-    private final String companiesHouseNumber;
+
 }

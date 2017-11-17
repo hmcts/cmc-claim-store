@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class StatementOfTruth {
+public class CCDStatementOfTruth {
     private final String signerName;
     private final String signerRole;
 }

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
-public enum PartyType {
+public enum CCDPartyType {
     INDIVIDUAL,
     ORGANISATION,
     SOLETRADER,

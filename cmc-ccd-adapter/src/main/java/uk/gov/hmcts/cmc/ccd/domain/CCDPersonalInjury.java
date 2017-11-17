@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PersonalInjury {
-    private final DamagesExpectation generalDamages;
+public class CCDPersonalInjury {
+    private final CCDDamagesExpectation generalDamages;
 }

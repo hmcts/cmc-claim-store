@@ -3,10 +3,10 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
+import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 @Component
-public class RepresentativeMapper
-    implements Mapper<CCDRepresentative, uk.gov.hmcts.cmc.domain.models.legalrep.Representative> {
+public class RepresentativeMapper implements Mapper<CCDRepresentative, Representative> {
 
     private final AddressMapper addressMapper;
     private final ContactDetailsMapper contactDetailsMapper;
@@ -18,7 +18,7 @@ public class RepresentativeMapper
     }
 
     @Override
-    public CCDRepresentative to(uk.gov.hmcts.cmc.domain.models.legalrep.Representative representative) {
+    public CCDRepresentative to(Representative representative) {
 
         return CCDRepresentative.builder()
             .organisationName(representative.getOrganisationName())
@@ -30,11 +30,12 @@ public class RepresentativeMapper
     }
 
     @Override
-    public uk.gov.hmcts.cmc.domain.models.legalrep.Representative from(CCDRepresentative representative) {
+    public Representative from(CCDRepresentative representative) {
 
-        return new uk.gov.hmcts.cmc.domain.models.legalrep.Representative(
+        return new Representative(
             representative.getOrganisationName(),
             addressMapper.from(representative.getOrganisationAddress()),
-            contactDetailsMapper.from(representative.getOrganisationContactDetails()));
+            contactDetailsMapper.from(representative.getOrganisationContactDetails())
+        );
     }
 }

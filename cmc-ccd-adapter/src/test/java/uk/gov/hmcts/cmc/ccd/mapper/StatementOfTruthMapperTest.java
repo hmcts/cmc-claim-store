@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +16,7 @@ public class StatementOfTruthMapperTest {
         StatementOfTruth statementOfTruth = new StatementOfTruth("name", "role");
 
         //when
-        uk.gov.hmcts.cmc.ccd.domain.StatementOfTruth ccdStatementOfTruth = statementOfTruthMapper.to(statementOfTruth);
+        CCDStatementOfTruth ccdStatementOfTruth = statementOfTruthMapper.to(statementOfTruth);
         //then
         assertThat(ccdStatementOfTruth).isNotNull();
         assertThat(ccdStatementOfTruth.getSignerName()).isEqualTo("name");
@@ -25,7 +26,7 @@ public class StatementOfTruthMapperTest {
     @Test
     public void shouldMapStatementOfTruthFromCCD() {
         //given
-        uk.gov.hmcts.cmc.ccd.domain.StatementOfTruth statementOfTruth = uk.gov.hmcts.cmc.ccd.domain.StatementOfTruth
+        CCDStatementOfTruth statementOfTruth = CCDStatementOfTruth
             .builder()
             .signerName("name")
             .signerRole("role")
