@@ -1,6 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.stereotypes;
 
+import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+
+import java.util.Map;
 
 /**
  * Intended for classes which create content for email sent via SMTP server.
@@ -10,6 +13,12 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 @SuppressWarnings("squid:S1609") // Not a functional interface
 public interface EmailContentProvider<T> {
 
+    TemplateService getTemplateService();
+
     EmailContent createContent(T input);
+
+    default String evaluateTemplate(final String template, final Map<String, Object> input) {
+        return getTemplateService().evaluate(template, input).trim();
+    }
 
 }

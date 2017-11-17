@@ -14,7 +14,9 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -59,11 +61,20 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     private EmailData prepareEmailData(Claim claim, Optional<String> defendantPin, String submitterEmail) {
-        EmailContent emailContent = provider.createContent(claim);
+        EmailContent emailContent = provider.createContent(wrapInMap(claim));
         return new EmailData(staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
             getAttachments(claim, defendantPin, submitterEmail));
+    }
+
+    static Map<String, Object> wrapInMap(
+        Claim claim
+    ) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("claimReferenceNumber", claim.getReferenceNumber());
+        map.put("claimantRepresented", claim.getClaimData().isClaimantRepresented());
+        return map;
     }
 
     private List<EmailAttachment> getAttachments(
