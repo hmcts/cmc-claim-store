@@ -39,6 +39,9 @@ public class OfferServiceTest {
     private OffersService offersService;
 
     @Mock
+    private ClaimService claimService;
+
+    @Mock
     private OffersRepository offersRepository;
 
     @Mock
@@ -49,7 +52,7 @@ public class OfferServiceTest {
 
     @Before
     public void setup() {
-        offersService = new OffersService(offersRepository, eventProducer, jsonMapper);
+        offersService = new OffersService(claimService, offersRepository, eventProducer, jsonMapper);
         when(jsonMapper.toJson(any(Settlement.class))).thenReturn(settlementJsonMock);
     }
 
@@ -72,6 +75,8 @@ public class OfferServiceTest {
     public void shouldSuccessfullyAcceptOffer() {
         // given
         Claim claimWithOffer = buildClaimWithOffer();
+        Claim acceptedOffer = buildClaimWithAcceptedOffer();
+        when(claimService.getClaimById(eq(claimWithOffer.getId()))).thenReturn(acceptedOffer);
 
         // when
         offersService.accept(claimWithOffer, decidedBy);
@@ -79,7 +84,8 @@ public class OfferServiceTest {
         //then
         verify(offersRepository)
             .acceptOffer(eq(claimWithOffer.getId()), eq(settlementJsonMock), any(LocalDateTime.class));
-        verify(eventProducer).createOfferAcceptedEvent(eq(claimWithOffer), eq(decidedBy));
+
+        verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
 
     @Test(expected = ConflictException.class)
@@ -107,5 +113,16 @@ public class OfferServiceTest {
         settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
 
         return SampleClaim.builder().withSettlement(settlement).build();
+    }
+
+    private static Claim buildClaimWithAcceptedOffer() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
+        settlement.accept(MadeBy.CLAIMANT);
+
+
+        return SampleClaim.builder()
+            .withSettlementReachedAt(LocalDateTime.now())
+            .withSettlement(settlement).build();
     }
 }
