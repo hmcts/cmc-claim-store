@@ -49,7 +49,7 @@ public class Settlement {
         Collections.reverse(tmpList);
 
         return tmpList.stream()
-            .filter((partyStatement -> partyStatement.getOffer().isPresent()))
+            .filter((partyStatement -> partyStatement.getType() == StatementType.OFFER))
             .findFirst()
             .orElseThrow(() -> new IllegalSettlementStatementException("No statements with an offer found"));
 
