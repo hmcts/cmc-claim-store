@@ -40,7 +40,7 @@ public class Settlement {
     }
 
     @JsonIgnore
-    public PartyStatement getLastStatementWithOffer() {
+    public PartyStatement getLastOfferStatement() {
         if (partyStatements.isEmpty()) {
             throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
         }

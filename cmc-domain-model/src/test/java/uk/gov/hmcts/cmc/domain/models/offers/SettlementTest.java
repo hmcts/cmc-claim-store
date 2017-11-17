@@ -126,7 +126,7 @@ public class SettlementTest {
     }
 
     @Test
-    public void getLastStatementWithOfferShouldGiveLastStatementThatIsAnOffer() {
+    public void getLastOfferStatementShouldGiveLastStatementThatIsAnOffer() {
         settlement.makeOffer(offer, MadeBy.CLAIMANT);
         settlement.reject(MadeBy.DEFENDANT);
 
@@ -137,7 +137,7 @@ public class SettlementTest {
         settlement.makeOffer(counterOffer, MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
 
-        assertThat(settlement.getLastStatementWithOffer().getOffer()
+        assertThat(settlement.getLastOfferStatement().getOffer()
             .orElseThrow(IllegalArgumentException::new)
             .getContent()
         )
@@ -145,8 +145,8 @@ public class SettlementTest {
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
-    public void getLastStatementWithOfferShouldThrowWhenNoStatements() {
-        settlement.getLastStatementWithOffer();
+    public void getLastOfferStatementShouldThrowWhenNoStatements() {
+        settlement.getLastOfferStatement();
     }
 
 

@@ -27,7 +27,7 @@ public class SettlementAgreementPDFContentProvider {
         requireNonNull(claim);
 
         Offer acceptedOffer = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
-            .getLastStatementWithOffer().getOffer().orElseThrow(IllegalArgumentException::new);
+            .getLastOfferStatement().getOffer().orElseThrow(IllegalArgumentException::new);
         Map<String, Object> content = new HashMap<>();
         content.put("settlementReachedAt", formatDateTime(claim.getSettlementReachedAt()));
         content.put("acceptedOffer", acceptedOffer.getContent());
