@@ -18,7 +18,7 @@ public interface EmailContentProvider<T> {
     EmailContent createContent(T input);
 
     default String evaluateTemplate(final String template, final Map<String, Object> input) {
-        return getTemplateService().evaluate(template, input);
+        return getTemplateService().evaluate(template, input).trim();
     }
 
 }

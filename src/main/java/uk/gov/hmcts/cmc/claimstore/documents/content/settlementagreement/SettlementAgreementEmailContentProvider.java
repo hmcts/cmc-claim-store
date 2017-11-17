@@ -29,8 +29,8 @@ public class SettlementAgreementEmailContentProvider implements EmailContentProv
         notEmpty(input);
 
         return new EmailContent(
-            evaluateTemplate(staffEmailTemplates.getSettlementAgreementEmailSubject(), input).trim(),
-            evaluateTemplate(staffEmailTemplates.getSettlementAgreementEmailBody(), input).trim()
+            evaluateTemplate(staffEmailTemplates.getSettlementAgreementEmailSubject(), input),
+            evaluateTemplate(staffEmailTemplates.getSettlementAgreementEmailBody(), input)
         );
     }
 

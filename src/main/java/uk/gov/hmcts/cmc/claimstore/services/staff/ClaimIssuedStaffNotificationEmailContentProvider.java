@@ -25,7 +25,7 @@ public class ClaimIssuedStaffNotificationEmailContentProvider implements EmailCo
     @Override
     public EmailContent createContent(final Map<String, Object> claim) {
         return new EmailContent(
-            evaluateTemplate(staffEmailTemplates.getClaimIssuedEmailSubject(), claim).trim(),
+            evaluateTemplate(staffEmailTemplates.getClaimIssuedEmailSubject(), claim),
             staffEmailTemplates.getClaimIssuedEmailBody().trim()
         );
     }
