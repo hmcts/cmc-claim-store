@@ -55,7 +55,6 @@ public class Settlement {
 
     }
 
-
     public List<PartyStatement> getPartyStatements() {
         return Collections.unmodifiableList(partyStatements);
     }
