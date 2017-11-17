@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -45,6 +46,7 @@ public class OffersService {
         eventProducer.createOfferMadeEvent(claim);
     }
 
+    @Transactional
     public void accept(Claim claim, MadeBy party) {
         assertSettlementIsNotReached(claim);
 
