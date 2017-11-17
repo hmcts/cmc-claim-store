@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantDetailsContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +25,13 @@ public class SettlementAgreementPDFContentProvider {
 
     public Map<String, Object> createContent(final Claim claim) {
         requireNonNull(claim);
+
+        Offer acceptedOffer = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
+            .getLastOfferStatement().getOffer().orElseThrow(IllegalArgumentException::new);
         Map<String, Object> content = new HashMap<>();
         content.put("settlementReachedAt", formatDateTime(claim.getSettlementReachedAt()));
-        content.put("acceptedOffer", "");
-        content.put("acceptedOfferCompletionDate", formatDate(LocalDate.now()));
+        content.put("acceptedOffer", acceptedOffer.getContent());
+        content.put("acceptedOfferCompletionDate", formatDate(acceptedOffer.getCompletionDate()));
         content.put("claim", claim);
         content.put("claimant", claim.getClaimData().getClaimant());
         content.put("defendant", defendantDetailsContentProvider.createContent(
