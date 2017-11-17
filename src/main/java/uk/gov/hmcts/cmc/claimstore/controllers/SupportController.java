@@ -51,7 +51,7 @@ public class SupportController {
         final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         final CCJStaffNotificationHandler ccjStaffNotificationHandler,
         final OfferAcceptedStaffNotificationHandler offerAcceptedStaffNotificationHandler
-        ) {
+    ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.claimIssuedStaffNotificationHandler = claimIssuedStaffNotificationHandler;
