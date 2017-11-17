@@ -1,16 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentManagementSealedClaimHandler;
-import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.SealedClaimDocumentService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -32,35 +26,22 @@ public class ClaimIssuedStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
     private final ClaimIssuedStaffNotificationEmailContentProvider provider;
-    private final LegalSealedClaimPdfService legalSealedClaimPdfService;
-    private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
-    private final DocumentManagementService documentManagementService;
-    private final DocumentManagementSealedClaimHandler documentManagementSealedClaimHandler;
-    private final boolean documentManagementFeatureEnabled;
+    private final SealedClaimDocumentService sealedClaimDocumentService;
 
     @Autowired
-    @SuppressWarnings("squid:S00107")
     public ClaimIssuedStaffNotificationService(
         final EmailService emailService,
         final StaffEmailProperties staffEmailProperties,
         final ClaimIssuedStaffNotificationEmailContentProvider provider,
-        final LegalSealedClaimPdfService legalSealedClaimPdfService,
-        final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
         final DefendantPinLetterPdfService defendantPinLetterPdfService,
-        final DocumentManagementService documentManagementService,
-        final DocumentManagementSealedClaimHandler documentManagementSealedClaimHandler,
-        @Value("${feature_toggles.document_management}") final boolean documentManagementFeatureEnabled
+        final SealedClaimDocumentService sealedClaimDocumentService
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.provider = provider;
-        this.legalSealedClaimPdfService = legalSealedClaimPdfService;
-        this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
-        this.documentManagementService = documentManagementService;
-        this.documentManagementSealedClaimHandler = documentManagementSealedClaimHandler;
-        this.documentManagementFeatureEnabled = documentManagementFeatureEnabled;
+        this.sealedClaimDocumentService = sealedClaimDocumentService;
     }
 
     public void notifyStaffClaimIssued(final Claim claim,
@@ -94,7 +75,7 @@ public class ClaimIssuedStaffNotificationService {
 
         if (!claim.getClaimData().isClaimantRepresented()) {
             String pin = defendantPin.orElseThrow(NullPointerException::new);
-            emailAttachments.add(sealedClaimPdf(authorisation, claim, submitterEmail));
+            emailAttachments.add(sealedClaimPdf(authorisation, claim));
             emailAttachments.add(defendantPinLetterPdf(claim, pin));
         } else {
             emailAttachments.add(sealedLegalClaimPdf(authorisation, claim));
@@ -104,7 +85,8 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     private EmailAttachment sealedLegalClaimPdf(final String authorisation, final Claim claim) {
-        byte[] generatedPdf = getSealedClaimPdfDocument(authorisation, claim, null);
+        final byte[] generatedPdf
+            = sealedClaimDocumentService.generateLegalSealedClaim(claim.getExternalId(), authorisation);
 
         return pdf(
             generatedPdf,
@@ -112,32 +94,9 @@ public class ClaimIssuedStaffNotificationService {
         );
     }
 
-    private byte[] getSealedClaimPdfDocument(final String authorisation, final Claim claim,
-                                             final String submitterEmail) {
-        final Optional<String> documentManagementSelfPath = claim.getSealedClaimDocumentManagementSelfPath();
-
-        if (documentManagementFeatureEnabled && documentManagementSelfPath.isPresent()) {
-            return documentManagementService.downloadDocument(authorisation, documentManagementSelfPath.get());
-        } else {
-
-            if (claim.getClaimData().isClaimantRepresented()) {
-                documentManagementSealedClaimHandler.uploadRepresentativeSealedClaimToEvidenceStore(
-                    new RepresentedClaimIssuedEvent(claim, Optional.empty(), authorisation)
-                );
-
-                return legalSealedClaimPdfService.createPdf(claim);
-            } else {
-                documentManagementSealedClaimHandler.uploadCitizenSealedClaimToEvidenceStore(
-                    new ClaimIssuedEvent(claim, Optional.empty(), Optional.empty(), authorisation)
-                );
-
-                return citizenSealedClaimPdfService.createPdf(claim, submitterEmail);
-            }
-        }
-    }
-
-    private EmailAttachment sealedClaimPdf(final String authorisation, final Claim claim, final String submitterEmail) {
-        byte[] generatedPdf = getSealedClaimPdfDocument(authorisation, claim, submitterEmail);
+    private EmailAttachment sealedClaimPdf(final String authorisation, final Claim claim) {
+        byte[] generatedPdf = sealedClaimDocumentService.generateCitizenSealedClaim(claim.getExternalId(),
+            authorisation, claim.getSubmitterEmail());
 
         return pdf(
             generatedPdf,

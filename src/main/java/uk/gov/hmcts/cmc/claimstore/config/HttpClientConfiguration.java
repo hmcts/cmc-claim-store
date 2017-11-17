@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.logging.httpcomponents.OutboundRequestIdSettingInterc
 import uk.gov.hmcts.reform.logging.httpcomponents.OutboundRequestLoggingInterceptor;
 
 @Configuration
-public class FeignClientConfiguration {
+public class HttpClientConfiguration {
 
     @Bean
     public Client getFeignHttpClient() {

@@ -4,7 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -37,7 +41,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagemen
 public class SaveClaimTest extends BaseIntegrationTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final Resource resource = new ByteArrayResource(PDF_BYTES);
 
+    @Mock
+    private ResponseEntity<Resource> responseEntity;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
@@ -54,6 +62,13 @@ public class SaveClaimTest extends BaseIntegrationTest {
 
         given(documentUploadClientApi.upload(anyString(), any(List.class)))
             .willReturn(documentManagementUploadResponse());
+
+        given(documentMetadataDownloadApi.getDocumentMetadata(anyString(), anyString()))
+            .willReturn(documentManagementUploadResponse().getEmbedded().getDocuments().get(0));
+
+        given(documentDownloadClientApi.downloadBinary(anyString(), anyString())).willReturn(responseEntity);
+
+        given(responseEntity.getBody()).willReturn(resource);
     }
 
     @Test

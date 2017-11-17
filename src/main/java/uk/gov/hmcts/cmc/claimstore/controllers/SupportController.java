@@ -62,7 +62,7 @@ public class SupportController {
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") final String referenceNumber,
         @PathVariable("event") final String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = true) final String authorisation
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) final String authorisation
     ) throws ServletRequestBindingException {
 
         Claim claim = claimService.getClaimByReference(referenceNumber)

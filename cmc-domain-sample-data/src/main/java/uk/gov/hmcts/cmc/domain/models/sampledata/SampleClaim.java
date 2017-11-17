@@ -24,10 +24,11 @@ public final class SampleClaim {
     public static final String REFERENCE_NUMBER = "000CM001";
     public static final String EXTERNAL_ID = UUID.randomUUID().toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
-    public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
     public static final String SEALED_CLAIM_DOCUMENT_MANAGEMENT_SELF_URL = "/self_url";
+
+    private static final LocalDateTime NOT_RESPONDED = null;
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
     private String defendantId = DEFENDANT_ID;
@@ -138,7 +139,7 @@ public final class SampleClaim {
             externalId,
             referenceNumber,
             claimData,
-            NOW_IN_LOCAL_ZONE,
+            createdAt,
             issuedOn,
             responseDeadline,
             isMoreTimeRequested,

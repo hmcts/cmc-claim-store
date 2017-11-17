@@ -35,7 +35,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.failedDocumentMan
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentManagementServiceTest {
+    public static final Claim CLAIM = SampleClaim.getDefault();
 
+    private static final String AUTHORISATION_TOKEN = "Bearer Open sesame!";
+    private static final byte[] N_1_FORM_PDF = {65, 66, 67, 68};
+    private static final String ORIGINAL_FILE_NAME = CLAIM.getReferenceNumber() + PDF_EXTENSION;
     private DocumentManagementService documentManagementService;
 
     @Mock
@@ -56,45 +60,38 @@ public class DocumentManagementServiceTest {
     @Test
     public void shouldUploadSealedClaimForm() {
         //given
-        final String authorisationToken = "Open sesame!";
-        final Claim claim = SampleClaim.getDefault();
         final UploadResponse uploadResponse = documentManagementUploadResponse();
         final Document.Links links = getLinks(uploadResponse);
 
-        final byte[] legalN1FormPdf = {65, 66, 67, 68};
-        final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
-
         final InMemoryMultipartFile file
-            = new InMemoryMultipartFile(FILES_NAME, originalFileName, APPLICATION_PDF, legalN1FormPdf);
+            = new InMemoryMultipartFile(FILES_NAME, ORIGINAL_FILE_NAME, APPLICATION_PDF, N_1_FORM_PDF);
 
         final List<MultipartFile> files = Collections.singletonList(file);
 
-        when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
+        when(documentUploadClientApi.upload(AUTHORISATION_TOKEN, files)).thenReturn(uploadResponse);
 
         //when
-        final String output = documentManagementService.uploadDocument(authorisationToken,
-            claim.getReferenceNumber() + PDF_EXTENSION, legalN1FormPdf, APPLICATION_PDF);
+        final String output = documentManagementService.uploadDocument(AUTHORISATION_TOKEN,
+            ORIGINAL_FILE_NAME, N_1_FORM_PDF, APPLICATION_PDF);
 
         //then
         assertThat(output).isNotBlank().isEqualTo(URI.create(links.self.href).getPath());
 
         //verify
-        verify(documentUploadClientApi).upload(authorisationToken, files);
+        verify(documentUploadClientApi).upload(AUTHORISATION_TOKEN, files);
     }
 
     @Test
     public void shouldDownloadSealedClaimForm() {
         //given
-        final String authorisationToken = "Open sesame!";
         final String selfUri = SampleClaim.SEALED_CLAIM_DOCUMENT_MANAGEMENT_SELF_URL;
         final Claim claim = SampleClaim.builder().withSealedClaimDocumentManagementSelfPath(selfUri).build();
         final Document document = documentManagementUploadResponse().getEmbedded().getDocuments().get(0);
         final String binaryUri = URI.create(document.links.binary.href).getPath();
-        final byte[] legalN1FormPdf = {65, 66, 67, 68};
-        final Resource resource = new ByteArrayResource(legalN1FormPdf);
+        final Resource resource = new ByteArrayResource(N_1_FORM_PDF);
 
-        when(documentMetadataDownloadApi.getDocumentMetadata(authorisationToken, selfUri)).thenReturn(document);
-        when(documentDownloadClientApi.downloadBinary(authorisationToken, binaryUri)).thenReturn(responseEntity);
+        when(documentMetadataDownloadApi.getDocumentMetadata(AUTHORISATION_TOKEN, selfUri)).thenReturn(document);
+        when(documentDownloadClientApi.downloadBinary(AUTHORISATION_TOKEN, binaryUri)).thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(resource);
 
         final String selfPath = claim.getSealedClaimDocumentManagementSelfPath()
@@ -102,37 +99,32 @@ public class DocumentManagementServiceTest {
 
         //when
 
-        final byte[] claimN1Form = documentManagementService.downloadDocument(authorisationToken, selfPath);
+        final byte[] claimN1Form = documentManagementService.downloadDocument(AUTHORISATION_TOKEN, selfPath);
 
         //then
-        assertThat(claimN1Form).isNotNull().isEqualTo(legalN1FormPdf);
+        assertThat(claimN1Form).isNotNull().isEqualTo(N_1_FORM_PDF);
         //verify
-        verifyDocumentDownload(authorisationToken, selfUri, binaryUri);
+        verifyDocumentDownload(AUTHORISATION_TOKEN, selfUri, binaryUri);
     }
 
     @Test(expected = DocumentManagementException.class)
     public void shouldThrowWhenUploadSealedClaimFails() {
         //given
-        final String authorisationToken = "Open sesame!";
-        final Claim claim = SampleClaim.getDefault();
         final UploadResponse uploadResponse = failedDocumentManagementUploadResponse();
 
-        final byte[] legalN1FormPdf = {65, 66, 67, 68};
-        final String originalFileName = claim.getReferenceNumber() + PDF_EXTENSION;
-
         final InMemoryMultipartFile file
-            = new InMemoryMultipartFile(FILES_NAME, originalFileName, APPLICATION_PDF, legalN1FormPdf);
+            = new InMemoryMultipartFile(FILES_NAME, ORIGINAL_FILE_NAME, APPLICATION_PDF, N_1_FORM_PDF);
 
         final List<MultipartFile> files = Collections.singletonList(file);
 
-        when(documentUploadClientApi.upload(authorisationToken, files)).thenReturn(uploadResponse);
+        when(documentUploadClientApi.upload(AUTHORISATION_TOKEN, files)).thenReturn(uploadResponse);
 
         //when
-        documentManagementService.uploadDocument(authorisationToken, claim.getReferenceNumber() + PDF_EXTENSION,
-            legalN1FormPdf, APPLICATION_PDF);
+        documentManagementService.uploadDocument(AUTHORISATION_TOKEN,
+            ORIGINAL_FILE_NAME, N_1_FORM_PDF, APPLICATION_PDF);
 
         //verify
-        verify(documentUploadClientApi).upload(authorisationToken, files);
+        verify(documentUploadClientApi).upload(AUTHORISATION_TOKEN, files);
     }
 
     private Document.Links getLinks(final UploadResponse uploadResponse) {
