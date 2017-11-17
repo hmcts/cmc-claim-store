@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Address {
+public class CCDAddress {
 
     private final String line1;
     private final String line2;

@@ -5,12 +5,12 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Company {
+public class CCDCompany {
 
     private final String name;
-    private final Address address;
+    private final CCDAddress address;
     private final String mobilePhone;
     private final String contactPerson;
-    private final Address correspondenceAddress;
-    private final Representative representative;
+    private final CCDAddress correspondenceAddress;
+    private final CCDRepresentative representative;
 }

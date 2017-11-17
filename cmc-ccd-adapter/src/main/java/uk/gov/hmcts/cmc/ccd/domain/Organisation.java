@@ -8,10 +8,10 @@ import lombok.Data;
 public class Organisation {
 
     private final String name;
-    private final Address address;
-    private final Address correspondenceAddress;
+    private final CCDAddress address;
+    private final CCDAddress correspondenceAddress;
     private final String mobilePhone;
-    private final Representative representative;
+    private final CCDRepresentative representative;
     private final String contactPerson;
     private final String companiesHouseNumber;
 }

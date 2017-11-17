@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.mapper.util.AssertUtil.assertContactDetailsEqualTo;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class ContactDetailsMapperTest {
 
@@ -15,49 +15,22 @@ public class ContactDetailsMapperTest {
     ContactDetailsMapper mapper = new ContactDetailsMapper();
 
     @Test
-    public void shouldGetTargetNullIfSourceIsNullForTo() {
-        //given
-        ContactDetails contactDetails = null;
-
-        //when
-        uk.gov.hmcts.cmc.ccd.domain.ContactDetails ccdContactDetails = mapper.to(contactDetails);
-
-        //then
-        assertThat(ccdContactDetails).isNull();
-    }
-
-    @Test
     public void shouldMapContactDetailsToCCD() {
         //given
         ContactDetails contactDetails = new ContactDetails(PHONE, EMAIL, DX);
 
         //when
-        uk.gov.hmcts.cmc.ccd.domain.ContactDetails ccdContactDetails = mapper.to(contactDetails);
+        CCDContactDetails ccdContactDetails = mapper.to(contactDetails);
 
         //then
-        assertThat(ccdContactDetails).isNotNull();
-        assertThat(ccdContactDetails.getEmail()).isEqualTo(EMAIL);
-        assertThat(ccdContactDetails.getPhone()).isEqualTo(PHONE);
-        assertThat(ccdContactDetails.getDxAddress()).isEqualTo(DX);
+        assertThat(ccdContactDetails).isEqualTo(contactDetails);
 
-    }
-
-    @Test
-    public void shouldGetTargetNullIfSourceIsNullForFrom() {
-        //given
-        uk.gov.hmcts.cmc.ccd.domain.ContactDetails contactDetails = null;
-
-        //when
-        ContactDetails cmcContactDetails = mapper.from(contactDetails);
-
-        //then
-        assertThat(cmcContactDetails).isNull();
     }
 
     @Test
     public void shouldMapContactDetailsToCMC() {
         //given
-        uk.gov.hmcts.cmc.ccd.domain.ContactDetails contactDetails = uk.gov.hmcts.cmc.ccd.domain.ContactDetails.builder()
+        CCDContactDetails contactDetails = CCDContactDetails.builder()
             .phone(PHONE)
             .email(EMAIL)
             .dxAddress(DX)
@@ -67,11 +40,6 @@ public class ContactDetailsMapperTest {
         ContactDetails cmcContactDetails = mapper.from(contactDetails);
 
         //then
-        assertThat(cmcContactDetails).isNotNull();
-        assertThat(cmcContactDetails.getPhone()).isPresent();
-        assertThat(cmcContactDetails.getEmail()).isPresent();
-        assertThat(cmcContactDetails.getDxAddress()).isPresent();
-
-        assertContactDetailsEqualTo(cmcContactDetails, contactDetails);
+        assertThat(cmcContactDetails).isEqualTo(contactDetails);
     }
 }

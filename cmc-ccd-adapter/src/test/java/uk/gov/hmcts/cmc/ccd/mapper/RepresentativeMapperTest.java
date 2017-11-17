@@ -1,13 +1,13 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.ccd.domain.Address;
-import uk.gov.hmcts.cmc.ccd.domain.ContactDetails;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.mapper.util.AssertUtil.assertRepresentativeEqualTo;
 
 public class RepresentativeMapperTest {
 
@@ -15,57 +15,33 @@ public class RepresentativeMapperTest {
     private ContactDetailsMapper contactDetailsMapper = new ContactDetailsMapper();
     private RepresentativeMapper representativeMapper = new RepresentativeMapper(addressMapper, contactDetailsMapper);
 
-
-    @Test
-    public void shouldGetTargetNullIfSourceIsNullForTo() {
-        //given
-        Representative representative = null;
-
-        //when
-        uk.gov.hmcts.cmc.ccd.domain.Representative ccdRepresentative = representativeMapper.to(representative);
-        //then
-        assertThat(ccdRepresentative).isNull();
-    }
-
     @Test
     public void shouldMapRepresentativeToCCD() {
         //given
         Representative representative = SampleRepresentative.builder().build();
 
         //when
-        uk.gov.hmcts.cmc.ccd.domain.Representative ccdRepresentative = representativeMapper.to(representative);
+        CCDRepresentative ccdRepresentative = representativeMapper.to(representative);
 
         //then
-        assertThat(ccdRepresentative).isNotNull();
-        assertRepresentativeEqualTo(representative, ccdRepresentative);
-    }
-
-    @Test
-    public void shouldGetTargetNullIfSourceIsNullForFrom() {
-        //given
-        uk.gov.hmcts.cmc.ccd.domain.Representative representative = null;
-
-        //when
-        Representative cmcRepresentative = representativeMapper.from(representative);
-        //then
-        assertThat(cmcRepresentative).isNull();
+        assertThat(ccdRepresentative).isEqualTo(representative);
     }
 
     @Test
     public void shouldMapRepresentativeToCMC() {
         //given
-        final ContactDetails contactDetails = ContactDetails.builder()
+        final CCDContactDetails contactDetails = CCDContactDetails.builder()
             .phone("07987654321")
             .email(",my@email.com")
             .dxAddress("dx123")
             .build();
-        final Address address = Address.builder()
+        final CCDAddress address = CCDAddress.builder()
             .line1("line 1")
             .line2("line 2")
             .city("city")
             .postcode("postcode")
             .build();
-        uk.gov.hmcts.cmc.ccd.domain.Representative representative = uk.gov.hmcts.cmc.ccd.domain.Representative
+        CCDRepresentative representative = CCDRepresentative
             .builder()
             .organisationName("My Org")
             .organisationContactDetails(contactDetails)
@@ -76,7 +52,7 @@ public class RepresentativeMapperTest {
         Representative cmcRepresentative = representativeMapper.from(representative);
 
         //then
-        assertRepresentativeEqualTo(cmcRepresentative, representative);
+        assertThat(representative).isEqualTo(cmcRepresentative);
     }
 
 }

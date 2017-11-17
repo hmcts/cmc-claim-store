@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class Claim {
+public class CCDClaim {
 
     private final String reason;
     private final String feeCode;

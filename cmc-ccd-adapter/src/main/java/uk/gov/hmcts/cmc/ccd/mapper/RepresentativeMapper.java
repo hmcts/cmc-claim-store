@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.Representative;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 
 @Component
 public class RepresentativeMapper
-    implements Mapper<Representative, uk.gov.hmcts.cmc.domain.models.legalrep.Representative> {
+    implements Mapper<CCDRepresentative, uk.gov.hmcts.cmc.domain.models.legalrep.Representative> {
 
     private final AddressMapper addressMapper;
     private final ContactDetailsMapper contactDetailsMapper;
@@ -18,12 +18,9 @@ public class RepresentativeMapper
     }
 
     @Override
-    public Representative to(uk.gov.hmcts.cmc.domain.models.legalrep.Representative representative) {
-        if (representative == null) {
-            return null;
-        }
+    public CCDRepresentative to(uk.gov.hmcts.cmc.domain.models.legalrep.Representative representative) {
 
-        return Representative.builder()
+        return CCDRepresentative.builder()
             .organisationName(representative.getOrganisationName())
             .organisationAddress(addressMapper.to(representative.getOrganisationAddress()))
             .organisationContactDetails(
@@ -33,10 +30,8 @@ public class RepresentativeMapper
     }
 
     @Override
-    public uk.gov.hmcts.cmc.domain.models.legalrep.Representative from(Representative representative) {
-        if (representative == null) {
-            return null;
-        }
+    public uk.gov.hmcts.cmc.domain.models.legalrep.Representative from(CCDRepresentative representative) {
+
         return new uk.gov.hmcts.cmc.domain.models.legalrep.Representative(
             representative.getOrganisationName(),
             addressMapper.from(representative.getOrganisationAddress()),

@@ -1,16 +1,16 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import uk.gov.hmcts.cmc.ccd.domain.ContactDetails;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
+import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 
-public class ContactDetailsMapper
-    implements Mapper<ContactDetails, uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails> {
+@Component
+public class ContactDetailsMapper implements Mapper<CCDContactDetails, ContactDetails> {
 
     @Override
-    public ContactDetails to(uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails contactDetails) {
-        if (contactDetails == null) {
-            return null;
-        }
-        return ContactDetails.builder()
+    public CCDContactDetails to(ContactDetails contactDetails) {
+
+        return CCDContactDetails.builder()
             .email(contactDetails.getEmail().orElse(null))
             .phone(contactDetails.getPhone().orElse(null))
             .dxAddress(contactDetails.getDxAddress().orElse(null))
@@ -18,11 +18,9 @@ public class ContactDetailsMapper
     }
 
     @Override
-    public uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails from(ContactDetails contactDetails) {
-        if (contactDetails == null) {
-            return null;
-        }
-        return new uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails(
+    public ContactDetails from(CCDContactDetails contactDetails) {
+
+        return new ContactDetails(
             contactDetails.getPhone(), contactDetails.getEmail(), contactDetails.getDxAddress()
         );
     }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class Case {
+public class CCDCase {
 
     private final String referenceNumber;
     private final String submitterId;
@@ -16,6 +16,6 @@ public class Case {
     private final String externalId;
     private final LocalDate issuedOn;
     private final String submitterEmail;
-    private final Claim claim;
+    private final CCDClaim claim;
 
 }

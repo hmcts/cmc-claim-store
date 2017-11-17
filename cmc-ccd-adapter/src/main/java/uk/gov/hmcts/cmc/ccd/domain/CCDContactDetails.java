@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ContactDetails {
+public class CCDContactDetails {
 
     private final String phone;
     private final String email;
