@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 @Data
@@ -13,7 +14,7 @@ public class CCDClaim {
     private final String reason;
     private final String feeCode;
     private final String feeAccountNumber;
-    private final BigDecimal feeAmountInPennies;
+    private final BigInteger feeAmountInPennies;
     private final String externalReferenceNumber;
     private final String externalId;
     private final BigDecimal minAmount;

@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class RepresentativeMapperTest {
 

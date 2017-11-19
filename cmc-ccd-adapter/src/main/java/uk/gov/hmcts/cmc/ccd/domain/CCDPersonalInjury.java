@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class CCDPersonalInjury {
-    private final CCDDamagesExpectation generalDamages;
+    private final String generalDamages;
 }

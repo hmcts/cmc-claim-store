@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class CCDHousingDisrepair {
-    private final CCDDamagesExpectation costOfRepairsDamages;
-    private final CCDDamagesExpectation otherDamages;
+    private final String costOfRepairsDamages;
+    private final String otherDamages;
 
 }

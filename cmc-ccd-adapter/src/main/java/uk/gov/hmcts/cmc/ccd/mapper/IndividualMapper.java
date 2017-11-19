@@ -23,14 +23,17 @@ public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
     @Override
     public CCDIndividual to(Individual individual) {
 
-        return CCDIndividual.builder()
-            .title(individual.getTitle().orElse(null))
+        final CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
+        individual.getTitle().ifPresent(title -> builder.title(title));
+        individual.getMobilePhone().ifPresent(mobilePhone -> builder.mobilePhone(mobilePhone));
+        individual.getCorrespondenceAddress()
+            .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+        individual.getRepresentative()
+            .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+        return builder
             .name(individual.getName())
-            .mobilePhone(individual.getMobilePhone().orElse(null))
             .dateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE))
             .address(addressMapper.to(individual.getAddress()))
-            .correspondenceAddress(addressMapper.to(individual.getCorrespondenceAddress().orElse(null)))
-            .representative(representativeMapper.to(individual.getRepresentative().orElse(null)))
             .build();
     }
 

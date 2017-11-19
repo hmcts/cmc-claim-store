@@ -2,8 +2,10 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Individual;
 
 public class Assertions {
 
@@ -24,5 +26,13 @@ public class Assertions {
 
     public static CCDContactDetailsAssert assertThat(CCDContactDetails ccdContactDetails) {
         return new CCDContactDetailsAssert(ccdContactDetails);
+    }
+
+    public static RepresentativeAssert assertThat(CCDRepresentative ccdRepresentative) {
+        return new RepresentativeAssert(ccdRepresentative);
+    }
+
+    public static IndividualAssert assertThat(Individual individual) {
+        return new IndividualAssert(individual);
     }
 }
