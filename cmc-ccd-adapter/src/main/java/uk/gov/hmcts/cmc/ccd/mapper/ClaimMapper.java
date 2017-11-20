@@ -36,7 +36,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         claimData.getPersonalInjury()
             .ifPresent(personalInjury -> builder.personalInjury(personalInjuryMapper.to(personalInjury)));
 
-        claimData.getHousingDisrepair().ifPresent(housingDisrepair -> housingDisrepairMapper.to(housingDisrepair));
+        claimData.getHousingDisrepair()
+            .ifPresent(housingDisrepair -> builder.housingDisrepair(housingDisrepairMapper.to(housingDisrepair)));
+
         claimData.getClaimants().forEach(partyMapper::to);
 
         // TODO: amount field mapping is pending
