@@ -24,7 +24,6 @@ public class ClaimIssuedStaffNotificationHandler {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
             event.getPin(),
-            event.getSubmitterEmail(),
             event.getAuthorisation()
         );
     }
@@ -34,7 +33,6 @@ public class ClaimIssuedStaffNotificationHandler {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
             Optional.empty(),
-            event.getRepresentativeEmail(),
             event.getAuthorisation()
         );
     }

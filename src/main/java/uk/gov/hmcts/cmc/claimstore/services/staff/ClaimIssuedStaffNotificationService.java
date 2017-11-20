@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -48,23 +47,22 @@ public class ClaimIssuedStaffNotificationService {
 
     public void notifyStaffClaimIssued(final Claim claim,
                                        final Optional<String> defendantPin,
-                                       final String submitterEmail,
-                                       final String authorisation) {
+                                       final String authorisation
+    ) {
         requireNonNull(claim);
-        requireNonBlank(submitterEmail);
-        final EmailData emailData = prepareEmailData(claim, defendantPin, submitterEmail, authorisation);
+        final EmailData emailData = prepareEmailData(claim, defendantPin, authorisation);
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
     private EmailData prepareEmailData(final Claim claim,
                                        final Optional<String> defendantPin,
-                                       final String submitterEmail,
-                                       final String authorisation) {
+                                       final String authorisation
+    ) {
         EmailContent emailContent = provider.createContent(wrapInMap(claim));
         return new EmailData(staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
-            getAttachments(claim, defendantPin, submitterEmail, authorisation));
+            getAttachments(claim, defendantPin, authorisation));
     }
 
     static Map<String, Object> wrapInMap(Claim claim) {
@@ -77,7 +75,6 @@ public class ClaimIssuedStaffNotificationService {
     private List<EmailAttachment> getAttachments(
         final Claim claim,
         final Optional<String> defendantPin,
-        final String submitterEmail,
         final String authorisation
     ) {
         final List<EmailAttachment> emailAttachments = new ArrayList<>();
@@ -94,8 +91,8 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     private EmailAttachment sealedLegalClaimPdf(final String authorisation, final Claim claim) {
-        final byte[] generatedPdf
-            = sealedClaimDocumentService.generateLegalSealedClaim(claim.getExternalId(), authorisation);
+        final byte[] generatedPdf = sealedClaimDocumentService.generateLegalSealedClaim(claim.getExternalId(),
+            authorisation);
 
         return pdf(
             generatedPdf,

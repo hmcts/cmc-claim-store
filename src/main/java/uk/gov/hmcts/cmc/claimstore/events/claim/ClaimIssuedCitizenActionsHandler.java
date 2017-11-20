@@ -36,7 +36,7 @@ public class ClaimIssuedCitizenActionsHandler {
             Optional.empty(),
             getEmailTemplates().getClaimantClaimIssued(),
             "claimant-issue-notification-" + claim.getReferenceNumber(),
-            event.getSubmitterName().orElseThrow(IllegalArgumentException::new)
+            event.getSubmitterName()
         );
     }
 
@@ -53,7 +53,7 @@ public class ClaimIssuedCitizenActionsHandler {
                         event.getPin(),
                         getEmailTemplates().getDefendantClaimIssued(),
                         "defendant-issue-notification-" + claim.getReferenceNumber(),
-                        event.getSubmitterName().orElseThrow(IllegalArgumentException::new)
+                        event.getSubmitterName()
                     ));
         }
     }
