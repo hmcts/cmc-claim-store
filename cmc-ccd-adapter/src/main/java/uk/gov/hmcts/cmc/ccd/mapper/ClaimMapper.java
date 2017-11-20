@@ -52,6 +52,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Override
     public ClaimData from(CCDClaim ccdClaim) {
-        throw new RuntimeException("Not Implemented yet!");
+        return null;
     }
 }

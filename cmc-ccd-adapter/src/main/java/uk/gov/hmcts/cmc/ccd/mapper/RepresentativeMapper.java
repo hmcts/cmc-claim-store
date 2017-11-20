@@ -2,9 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+
+import java.util.Optional;
 
 @Component
 public class RepresentativeMapper implements Mapper<CCDRepresentative, Representative> {
@@ -35,9 +38,10 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
 
     @Override
     public Representative from(CCDRepresentative representative) {
+        final Optional<CCDContactDetails> organisationContactDetailsOptional = representative.getOrganisationContactDetails();
         final ContactDetails organisationContactDetails =
-            representative.getOrganisationContactDetails()
-                .isPresent() ? contactDetailsMapper.from(representative.getOrganisationContactDetails().get()) : null;
+            organisationContactDetailsOptional
+                .isPresent() ? contactDetailsMapper.from(organisationContactDetailsOptional.get()) : null;
 
         return new Representative(
             representative.getOrganisationName(),
