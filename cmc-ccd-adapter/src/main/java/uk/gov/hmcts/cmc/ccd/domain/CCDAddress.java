@@ -1,14 +1,14 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class CCDAddress {
 
-    private final String line1;
-    private final String line2;
-    private final String city;
-    private final String postcode;
+    private String line1;
+    private String line2;
+    private String city;
+    private String postcode;
 }

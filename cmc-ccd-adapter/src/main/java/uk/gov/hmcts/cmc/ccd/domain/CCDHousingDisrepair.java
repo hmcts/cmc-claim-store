@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class CCDHousingDisrepair {
-    private final String costOfRepairsDamages;
-    private final String otherDamages;
+    private String costOfRepairsDamages;
+    private String otherDamages;
 
 }

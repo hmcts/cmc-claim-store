@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class CCDStatementOfTruth {
-    private final String signerName;
-    private final String signerRole;
+    private String signerName;
+    private String signerRole;
 }

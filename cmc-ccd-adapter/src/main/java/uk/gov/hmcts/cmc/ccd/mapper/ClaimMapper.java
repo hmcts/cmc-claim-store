@@ -11,13 +11,15 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
+    private final PartyMapper partyMapper;
 
     @Autowired
     public ClaimMapper(PersonalInjuryMapper personalInjuryMapper, HousingDisrepairMapper housingDisrepairMapper,
-                       StatementOfTruthMapper statementOfTruthMapper) {
+                       StatementOfTruthMapper statementOfTruthMapper, PartyMapper partyMapper) {
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
         this.statementOfTruthMapper = statementOfTruthMapper;
+        this.partyMapper = partyMapper;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .ifPresent(personalInjury -> builder.personalInjury(personalInjuryMapper.to(personalInjury)));
 
         claimData.getHousingDisrepair().ifPresent(housingDisrepair -> housingDisrepairMapper.to(housingDisrepair));
+        claimData.getClaimants().forEach(partyMapper::to);
 
         // TODO: amount field mapping is pending
 
@@ -47,6 +50,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Override
     public ClaimData from(CCDClaim ccdClaim) {
-        return null;
+        throw new RuntimeException("Not Implemented yet!");
     }
 }

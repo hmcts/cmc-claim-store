@@ -1,17 +1,17 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class CCDOrganisation {
 
-    private final String name;
-    private final CCDAddress address;
-    private final CCDAddress correspondenceAddress;
-    private final String mobilePhone;
-    private final CCDRepresentative representative;
-    private final String contactPerson;
-    private final String companiesHouseNumber;
+    private String name;
+    private CCDAddress address;
+    private CCDAddress correspondenceAddress;
+    private String mobilePhone;
+    private CCDRepresentative representative;
+    private String contactPerson;
+    private String companiesHouseNumber;
 }

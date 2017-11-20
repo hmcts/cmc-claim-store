@@ -1,17 +1,17 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.Optional;
 
-@Data
+@Value
 @Builder
 public class CCDContactDetails {
 
-    private final String phone;
-    private final String email;
-    private final String dxAddress;
+    private String phone;
+    private String email;
+    private String dxAddress;
 
     public Optional<String> getPhone() {
         return Optional.ofNullable(phone);

@@ -1,8 +1,14 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CCDPartyType {
-    INDIVIDUAL,
-    ORGANISATION,
-    SOLETRADER,
-    COMPANY
+    INDIVIDUAL("Individual"),
+    ORGANISATION("Organisation"),
+    SOLE_TRADER("SoleTrader"),
+    COMPANY("Company");
+
+    private String value;
+
+    CCDPartyType(final String value) {
+        this.value = value;
+    }
 }

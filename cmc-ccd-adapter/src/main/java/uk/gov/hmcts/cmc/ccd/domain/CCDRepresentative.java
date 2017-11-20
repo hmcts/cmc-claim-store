@@ -1,17 +1,17 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.Optional;
 
-@Data
+@Value
 @Builder
 public class CCDRepresentative {
 
-    private final String organisationName;
-    private final CCDAddress organisationAddress;
-    private final CCDContactDetails organisationContactDetails;
+    private String organisationName;
+    private CCDAddress organisationAddress;
+    private CCDContactDetails organisationContactDetails;
 
     public Optional<CCDContactDetails> getOrganisationContactDetails() {
         return Optional.ofNullable(organisationContactDetails);

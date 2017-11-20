@@ -1,21 +1,21 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
+@Value
 @Builder
 public class CCDCase {
 
-    private final String referenceNumber;
-    private final String submitterId;
-    private final LocalDateTime submittedOn;
-    private final String externalId;
-    private final LocalDate issuedOn;
-    private final String submitterEmail;
-    private final CCDClaim claim;
+    private String referenceNumber;
+    private String submitterId;
+    private LocalDateTime submittedOn;
+    private String externalId;
+    private LocalDate issuedOn;
+    private String submitterEmail;
+    private CCDClaim claim;
 
 }
