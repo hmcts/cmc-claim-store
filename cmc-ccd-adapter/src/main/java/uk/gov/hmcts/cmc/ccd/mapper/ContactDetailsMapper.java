@@ -10,18 +10,21 @@ public class ContactDetailsMapper implements Mapper<CCDContactDetails, ContactDe
     @Override
     public CCDContactDetails to(ContactDetails contactDetails) {
 
-        return CCDContactDetails.builder()
-            .email(contactDetails.getEmail().orElse(null))
-            .phone(contactDetails.getPhone().orElse(null))
-            .dxAddress(contactDetails.getDxAddress().orElse(null))
-            .build();
+        final CCDContactDetails.CCDContactDetailsBuilder builder = CCDContactDetails.builder();
+        contactDetails.getEmail().ifPresent(builder::email);
+        contactDetails.getPhone().ifPresent(builder::phone);
+        contactDetails.getDxAddress().ifPresent(builder::dxAddress);
+
+        return builder.build();
     }
 
     @Override
     public ContactDetails from(CCDContactDetails contactDetails) {
 
         return new ContactDetails(
-            contactDetails.getPhone(), contactDetails.getEmail(), contactDetails.getDxAddress()
+            contactDetails.getPhone().orElse(null),
+            contactDetails.getEmail().orElse(null),
+            contactDetails.getDxAddress().orElse(null)
         );
     }
 }

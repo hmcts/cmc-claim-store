@@ -26,10 +26,13 @@ public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
         final CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
         individual.getTitle().ifPresent(builder::title);
         individual.getMobilePhone().ifPresent(builder::mobilePhone);
+
         individual.getCorrespondenceAddress()
             .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+
         individual.getRepresentative()
             .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+
         return builder
             .name(individual.getName())
             .dateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE))

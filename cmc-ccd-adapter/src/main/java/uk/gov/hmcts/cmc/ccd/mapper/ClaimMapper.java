@@ -22,13 +22,26 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Override
     public CCDClaim to(ClaimData claimData) {
-        return CCDClaim.builder()
+        final CCDClaim.CCDClaimBuilder builder = CCDClaim.builder();
+        claimData.getFeeCode().ifPresent(builder::feeCode);
+        claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
+        claimData.getExternalReferenceNumber().ifPresent(builder::externalReferenceNumber);
+        claimData.getPreferredCourt().ifPresent(builder::preferredCourt);
+
+        claimData.getStatementOfTruth()
+            .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
+
+        claimData.getPersonalInjury()
+            .ifPresent(personalInjury -> builder.personalInjury(personalInjuryMapper.to(personalInjury)));
+
+        claimData.getHousingDisrepair().ifPresent(housingDisrepair -> housingDisrepairMapper.to(housingDisrepair));
+
+        // TODO: amount field mapping is pending
+
+        return builder
             .reason(claimData.getReason())
-            .feeCode(claimData.getFeeCode().orElse(""))
-            .feeAccountNumber(claimData.getFeeAccountNumber().orElse(""))
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
             .externalId(claimData.getExternalId().toString())
-            .externalReferenceNumber(claimData.getExternalReferenceNumber().orElse(""))
             .build();
     }
 

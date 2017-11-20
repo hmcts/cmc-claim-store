@@ -15,19 +15,25 @@ public class ContactDetailsAssert extends AbstractAssert<ContactDetailsAssert, C
     public ContactDetailsAssert isEqualTo(CCDContactDetails ccdContactDetails) {
         isNotNull();
 
-        if (!Objects.equals(actual.getPhone().orElse(null), ccdContactDetails.getPhone())) {
+        final String phoneActual = actual.getPhone().orElse(null);
+        final String phone = ccdContactDetails.getPhone().orElse(null);
+        if (!Objects.equals(phoneActual, phone)) {
             failWithMessage("Expected ContactDetails.phone to be <%s> but was <%s>",
-                ccdContactDetails.getPhone(), actual.getPhone().orElse(null));
+                phone, phoneActual);
         }
 
-        if (!Objects.equals(actual.getEmail().orElse(null), ccdContactDetails.getEmail())) {
+        final String emailActual = actual.getEmail().orElse(null);
+        final String email = ccdContactDetails.getEmail().orElse(null);
+        if (!Objects.equals(emailActual, email)) {
             failWithMessage("Expected ContactDetails.email to be <%s> but was <%s>",
-                ccdContactDetails.getEmail(), actual.getEmail().orElse(null));
+                email, emailActual);
         }
 
-        if (!Objects.equals(actual.getDxAddress().orElse(null), ccdContactDetails.getDxAddress())) {
+        final String dxAddressActual = actual.getDxAddress().orElse(null);
+        final String dxAddress = ccdContactDetails.getDxAddress().orElse(null);
+        if (!Objects.equals(dxAddressActual, dxAddress)) {
             failWithMessage("Expected ContactDetails.dxAddress to be <%s> but was <%s>",
-                ccdContactDetails.getDxAddress(), actual.getDxAddress().orElse(null));
+                dxAddress, dxAddressActual);
         }
 
         return this;

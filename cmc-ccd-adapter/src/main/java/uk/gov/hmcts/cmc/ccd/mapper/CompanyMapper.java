@@ -23,10 +23,13 @@ public class CompanyMapper implements Mapper<CCDCompany, Company> {
         final CCDCompany.CCDCompanyBuilder builder = CCDCompany.builder();
         company.getMobilePhone().ifPresent(builder::mobilePhone);
         company.getContactPerson().ifPresent(builder::contactPerson);
+
         company.getCorrespondenceAddress()
             .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+
         company.getRepresentative()
             .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+
         builder
             .name(company.getName())
             .address(addressMapper.to(company.getAddress()));

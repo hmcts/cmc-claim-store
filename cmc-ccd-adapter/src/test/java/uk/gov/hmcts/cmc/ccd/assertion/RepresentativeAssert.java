@@ -24,7 +24,7 @@ public class RepresentativeAssert extends AbstractAssert<RepresentativeAssert, C
 
         assertThat(representative.getOrganisationAddress()).isEqualTo(actual.getOrganisationAddress());
         assertThat(representative.getOrganisationContactDetails().orElse(null))
-            .isEqualTo(actual.getOrganisationContactDetails());
+            .isEqualTo(actual.getOrganisationContactDetails().orElse(null));
 
         return this;
     }

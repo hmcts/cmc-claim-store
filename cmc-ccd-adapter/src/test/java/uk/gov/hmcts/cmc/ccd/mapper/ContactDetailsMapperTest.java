@@ -23,7 +23,7 @@ public class ContactDetailsMapperTest {
         CCDContactDetails ccdContactDetails = mapper.to(contactDetails);
 
         //then
-        assertThat(ccdContactDetails).isEqualTo(contactDetails);
+        assertThat(contactDetails).isEqualTo(ccdContactDetails);
 
     }
 
