@@ -20,14 +20,18 @@ public class OrganisationMapper implements Mapper<CCDOrganisation, Organisation>
     @Override
     public CCDOrganisation to(Organisation organisation) {
 
-        return CCDOrganisation.builder()
+        final CCDOrganisation.CCDOrganisationBuilder builder = CCDOrganisation.builder();
+        organisation.getCorrespondenceAddress()
+            .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+        organisation.getRepresentative()
+            .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+        organisation.getMobilePhone().ifPresent(builder::mobilePhone);
+        organisation.getCompaniesHouseNumber().ifPresent(builder::companiesHouseNumber);
+        builder
             .name(organisation.getName())
-            .address(addressMapper.to(organisation.getAddress()))
-            .correspondenceAddress(addressMapper.to(organisation.getCorrespondenceAddress().orElse(null)))
-            .mobilePhone(organisation.getMobilePhone().orElse(null))
-            .representative(representativeMapper.to(organisation.getRepresentative().orElse(null)))
-            .companiesHouseNumber(organisation.getCompaniesHouseNumber().orElse(null))
-            .build();
+            .address(addressMapper.to(organisation.getAddress()));
+
+        return builder.build();
     }
 
     @Override

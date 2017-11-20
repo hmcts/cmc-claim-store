@@ -19,15 +19,20 @@ public class SoleTraderMapper implements Mapper<CCDSoleTrader, SoleTrader> {
 
     @Override
     public CCDSoleTrader to(SoleTrader soleTrader) {
-        return CCDSoleTrader.builder()
-            .title(soleTrader.getTitle().orElse(null))
+
+        final CCDSoleTrader.CCDSoleTraderBuilder builder = CCDSoleTrader.builder();
+        soleTrader.getTitle().ifPresent(builder::title);
+        soleTrader.getMobilePhone().ifPresent(builder::mobilePhone);
+        soleTrader.getBusinessName().ifPresent(builder::businessName);
+        soleTrader.getCorrespondenceAddress()
+            .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+        soleTrader.getRepresentative()
+            .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+        builder
             .name(soleTrader.getName())
-            .mobilePhone(soleTrader.getMobilePhone().orElse(null))
-            .businessName(soleTrader.getBusinessName().orElse(null))
-            .address(addressMapper.to(soleTrader.getAddress()))
-            .correspondenceAddress(addressMapper.to(soleTrader.getCorrespondenceAddress().orElse(null)))
-            .representative(representativeMapper.to(soleTrader.getRepresentative().orElse(null)))
-            .build();
+            .address(addressMapper.to(soleTrader.getAddress()));
+
+        return builder.build();
     }
 
     @Override

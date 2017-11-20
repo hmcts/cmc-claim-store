@@ -20,14 +20,18 @@ public class CompanyMapper implements Mapper<CCDCompany, Company> {
     @Override
     public CCDCompany to(Company company) {
 
-        return CCDCompany.builder()
+        final CCDCompany.CCDCompanyBuilder builder = CCDCompany.builder();
+        company.getMobilePhone().ifPresent(builder::mobilePhone);
+        company.getContactPerson().ifPresent(builder::contactPerson);
+        company.getCorrespondenceAddress()
+            .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+        company.getRepresentative()
+            .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+        builder
             .name(company.getName())
-            .mobilePhone(company.getMobilePhone().orElse(null))
-            .contactPerson(company.getContactPerson().orElse(null))
-            .address(addressMapper.to(company.getAddress()))
-            .correspondenceAddress(addressMapper.to(company.getCorrespondenceAddress().orElse(null)))
-            .representative(representativeMapper.to(company.getRepresentative().orElse(null)))
-            .build();
+            .address(addressMapper.to(company.getAddress()));
+
+        return builder.build();
     }
 
     @Override
