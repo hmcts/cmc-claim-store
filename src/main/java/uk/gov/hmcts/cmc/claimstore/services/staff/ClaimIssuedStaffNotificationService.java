@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -47,22 +48,23 @@ public class ClaimIssuedStaffNotificationService {
 
     public void notifyStaffClaimIssued(final Claim claim,
                                        final Optional<String> defendantPin,
-                                       final String authorisation
-    ) {
+                                       final String submitterEmail,
+                                       final String authorisation) {
         requireNonNull(claim);
-        final EmailData emailData = prepareEmailData(claim, defendantPin, authorisation);
+        requireNonBlank(submitterEmail);
+        final EmailData emailData = prepareEmailData(claim, defendantPin, submitterEmail, authorisation);
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
     private EmailData prepareEmailData(final Claim claim,
                                        final Optional<String> defendantPin,
-                                       final String authorisation
-    ) {
+                                       final String submitterEmail,
+                                       final String authorisation) {
         EmailContent emailContent = provider.createContent(wrapInMap(claim));
         return new EmailData(staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
-            getAttachments(claim, defendantPin, authorisation));
+            getAttachments(claim, defendantPin, submitterEmail, authorisation));
     }
 
     static Map<String, Object> wrapInMap(Claim claim) {
@@ -75,13 +77,14 @@ public class ClaimIssuedStaffNotificationService {
     private List<EmailAttachment> getAttachments(
         final Claim claim,
         final Optional<String> defendantPin,
+        final String submitterEmail,
         final String authorisation
     ) {
         final List<EmailAttachment> emailAttachments = new ArrayList<>();
 
         if (!claim.getClaimData().isClaimantRepresented()) {
             String pin = defendantPin.orElseThrow(NullPointerException::new);
-            emailAttachments.add(sealedClaimPdf(authorisation, claim));
+            emailAttachments.add(sealedClaimPdf(authorisation, claim, submitterEmail));
             emailAttachments.add(defendantPinLetterPdf(claim, pin));
         } else {
             emailAttachments.add(sealedLegalClaimPdf(authorisation, claim));
@@ -100,9 +103,9 @@ public class ClaimIssuedStaffNotificationService {
         );
     }
 
-    private EmailAttachment sealedClaimPdf(final String authorisation, final Claim claim) {
+    private EmailAttachment sealedClaimPdf(final String authorisation, final Claim claim, final String submitterEmail) {
         byte[] generatedPdf = sealedClaimDocumentService.generateCitizenSealedClaim(claim.getExternalId(),
-            authorisation, claim.getSubmitterEmail());
+            authorisation, submitterEmail);
 
         return pdf(
             generatedPdf,

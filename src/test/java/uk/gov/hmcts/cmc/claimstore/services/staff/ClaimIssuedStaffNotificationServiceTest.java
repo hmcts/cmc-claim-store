@@ -12,6 +12,7 @@ import java.util.Optional;
 public class ClaimIssuedStaffNotificationServiceTest extends MockSpringTest {
 
     private static final String DEFENDANT_PIN = "a334frf";
+    private static final String CLAIMANT_EMAIL = "claimant@email-domain.com";
     private static final String AUTHORISATION = "Bearer: aaa";
 
     private Claim claim = SampleClaim.builder().withClaimData(SampleClaimData.submittedByClaimant()).build();
@@ -21,11 +22,22 @@ public class ClaimIssuedStaffNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyStaffClaimIssued(null, Optional.of(DEFENDANT_PIN), AUTHORISATION);
+        service.notifyStaffClaimIssued(null, Optional.of(DEFENDANT_PIN), CLAIMANT_EMAIL, AUTHORISATION);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendantPin() {
-        service.notifyStaffClaimIssued(claim, Optional.empty(), AUTHORISATION);
+        service.notifyStaffClaimIssued(claim, Optional.empty(), CLAIMANT_EMAIL, AUTHORISATION);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullClaimantEmail() {
+        service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), null, AUTHORISATION);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentWhenGivenEmptyClaimantEmail() {
+        service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), "", AUTHORISATION);
+    }
+
 }
