@@ -29,7 +29,6 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIss
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent.NEW_RESPONSE_DEADLINE;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 public class EventProducerTest {
@@ -55,11 +54,10 @@ public class EventProducerTest {
     @Test
     public void shouldCreateClaimIssueEvent() throws Exception {
         //given
-        final ClaimIssuedEvent expectedEvent = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME);
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
         //when
-        eventProducer.createClaimIssuedEvent(CLAIM, PIN, userDetails.getFullName());
+        eventProducer.createClaimIssuedEvent(CLAIM, PIN, userDetails.getFullName(), AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(any(ClaimIssuedEvent.class));
@@ -74,7 +72,7 @@ public class EventProducerTest {
         when(data.isClaimantRepresented()).thenReturn(true);
 
         //when
-        eventProducer.createClaimIssuedEvent(claim, PIN, userDetails.getFullName());
+        eventProducer.createClaimIssuedEvent(claim, PIN, userDetails.getFullName(), AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(any(RepresentedClaimIssuedEvent.class));
