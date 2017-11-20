@@ -23,12 +23,12 @@ public class SealedClaimDocumentService {
         this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
     }
 
-    public byte[] generateLegalSealedClaim(final String claimExternalId, final String authorisation) {
+    public byte[] generateLegalSealedClaim(final String claimExternalId) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
         return legalSealedClaimPdfService.createPdf(claim);
     }
 
-    public byte[] generateCitizenSealedClaim(final String claimExternalId, final String authorisation,
+    public byte[] generateCitizenSealedClaim(final String claimExternalId,
                                              final String submitterEmail) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
         return citizenSealedClaimPdfService.createPdf(claim, submitterEmail);

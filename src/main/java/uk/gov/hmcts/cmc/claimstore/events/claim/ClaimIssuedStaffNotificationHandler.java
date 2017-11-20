@@ -22,7 +22,7 @@ public class ClaimIssuedStaffNotificationHandler {
     public void onClaimIssued(final ClaimIssuedEvent event) {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
-            event.getPin(),
+            event.getPin().orElse(null),
             event.getAuthorisation(),
             event.getSubmitterEmail()
         );

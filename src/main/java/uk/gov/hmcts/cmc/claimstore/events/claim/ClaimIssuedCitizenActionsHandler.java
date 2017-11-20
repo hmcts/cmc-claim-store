@@ -31,7 +31,7 @@ public class ClaimIssuedCitizenActionsHandler {
         claimIssuedNotificationService.sendMail(
             claim,
             event.getSubmitterEmail(),
-            null,
+            event.getPin().orElse(null),
             getEmailTemplates().getClaimantClaimIssued(),
             "claimant-issue-notification-" + claim.getReferenceNumber(),
             event.getSubmitterName()
@@ -48,7 +48,7 @@ public class ClaimIssuedCitizenActionsHandler {
                     claimIssuedNotificationService.sendMail(
                         claim,
                         defendantEmail,
-                        event.getPin(),
+                        event.getPin().orElse(null),
                         getEmailTemplates().getDefendantClaimIssued(),
                         "defendant-issue-notification-" + claim.getReferenceNumber(),
                         event.getSubmitterName()
