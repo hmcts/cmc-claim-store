@@ -13,8 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Optional;
-
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
@@ -58,7 +56,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
         representativeConfirmationHandler.sendConfirmation(representedClaimIssuedEvent);
 
         verify(claimIssuedNotificationService, once()).sendMail(CLAIM,
-            CLAIMANT_EMAIL, Optional.empty(), REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE,
+            CLAIMANT_EMAIL, null, REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE,
             "representative-issue-notification-" + representedClaimIssuedEvent.getClaim().getReferenceNumber(),
             SUBMITTER_NAME);
     }

@@ -9,8 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.util.Optional;
-
 @Component
 public class ClaimIssuedCitizenActionsHandler {
 
@@ -33,7 +31,7 @@ public class ClaimIssuedCitizenActionsHandler {
         claimIssuedNotificationService.sendMail(
             claim,
             event.getSubmitterEmail(),
-            Optional.empty(),
+            null,
             getEmailTemplates().getClaimantClaimIssued(),
             "claimant-issue-notification-" + claim.getReferenceNumber(),
             event.getSubmitterName()

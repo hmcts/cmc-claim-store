@@ -7,8 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
-import java.util.Optional;
-
 public class ClaimIssuedStaffNotificationServiceTest extends MockSpringTest {
 
     private static final String DEFENDANT_PIN = "a334frf";
@@ -22,22 +20,22 @@ public class ClaimIssuedStaffNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyStaffClaimIssued(null, Optional.of(DEFENDANT_PIN), CLAIMANT_EMAIL, AUTHORISATION);
+        service.notifyStaffClaimIssued(null, DEFENDANT_PIN, CLAIMANT_EMAIL, AUTHORISATION);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendantPin() {
-        service.notifyStaffClaimIssued(claim, Optional.empty(), CLAIMANT_EMAIL, AUTHORISATION);
+        service.notifyStaffClaimIssued(claim, null, CLAIMANT_EMAIL, AUTHORISATION);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimantEmail() {
-        service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), null, AUTHORISATION);
+        service.notifyStaffClaimIssued(claim, DEFENDANT_PIN, null, AUTHORISATION);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentWhenGivenEmptyClaimantEmail() {
-        service.notifyStaffClaimIssued(claim, Optional.of(DEFENDANT_PIN), "", AUTHORISATION);
+        service.notifyStaffClaimIssued(claim, DEFENDANT_PIN, "", AUTHORISATION);
     }
 
 }

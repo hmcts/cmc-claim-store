@@ -48,7 +48,7 @@ public class ClaimIssuedStaffNotificationService {
 
     public void notifyStaffClaimIssued(
         final Claim claim,
-        final Optional<String> defendantPin,
+        final String defendantPin,
         final String submitterEmail,
         final String authorisation
     ) {
@@ -60,7 +60,7 @@ public class ClaimIssuedStaffNotificationService {
 
     private EmailData prepareEmailData(
         final Claim claim,
-        final Optional<String> defendantPin,
+        final String defendantPin,
         final String submitterEmail,
         final String authorisation
     ) {
@@ -80,14 +80,14 @@ public class ClaimIssuedStaffNotificationService {
 
     private List<EmailAttachment> getAttachments(
         final Claim claim,
-        final Optional<String> defendantPin,
+        final String defendantPin,
         final String submitterEmail,
         final String authorisation
     ) {
         final List<EmailAttachment> emailAttachments = new ArrayList<>();
 
         if (!claim.getClaimData().isClaimantRepresented()) {
-            String pin = defendantPin.orElseThrow(NullPointerException::new);
+            String pin = Optional.ofNullable(defendantPin).orElseThrow(NullPointerException::new);
             emailAttachments.add(sealedClaimPdf(authorisation, claim, submitterEmail));
             emailAttachments.add(defendantPinLetterPdf(claim, pin));
         } else {
