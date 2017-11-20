@@ -38,7 +38,8 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
 
     @Override
     public Representative from(CCDRepresentative representative) {
-        final Optional<CCDContactDetails> organisationContactDetailsOptional = representative.getOrganisationContactDetails();
+        final Optional<CCDContactDetails> organisationContactDetailsOptional =
+            representative.getOrganisationContactDetails();
         final ContactDetails organisationContactDetails =
             organisationContactDetailsOptional
                 .isPresent() ? contactDetailsMapper.from(organisationContactDetailsOptional.get()) : null;
