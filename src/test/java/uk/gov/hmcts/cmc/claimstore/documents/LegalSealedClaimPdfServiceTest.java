@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.LegalSealedClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
@@ -13,23 +13,23 @@ import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LegalSealedClaimServiceTest {
+public class LegalSealedClaimPdfServiceTest {
 
     @Mock
     private LegalSealedClaimContentProvider contentProvider;
     @Mock
-    private StaffEmailTemplates emailTemplates;
+    private DocumentTemplates documentTemplates;
     @Mock
     private PDFServiceClient pdfServiceClient;
 
     @Mock
     private Claim claim;
 
-    private LegalSealedClaimService service;
+    private LegalSealedClaimPdfService service;
 
     @Before
     public void beforeEachTest() {
-        service = new LegalSealedClaimService(emailTemplates, pdfServiceClient, contentProvider);
+        service = new LegalSealedClaimPdfService(documentTemplates, pdfServiceClient, contentProvider);
     }
 
     @Test(expected = NullPointerException.class)
@@ -40,7 +40,7 @@ public class LegalSealedClaimServiceTest {
     @Test
     public void shouldUseCorrectTemplateToCreateTheDocument() {
         service.createPdf(claim);
-        verify(emailTemplates).getLegalSealedClaim();
+        verify(documentTemplates).getLegalSealedClaim();
     }
 
 }

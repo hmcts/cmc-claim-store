@@ -12,33 +12,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
-import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
-import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.services.DocumentsService;
 
 @Api
 @RestController
 @RequestMapping("/documents")
 public class DocumentsController {
 
-    private final ClaimService claimService;
-    private final DefendantResponseCopyService defendantResponseCopyService;
-    private final LegalSealedClaimService legalSealedClaimService;
-    private final CountyCourtJudgmentService countyCourtJudgmentService;
+    private final DocumentsService documentsService;
 
     @Autowired
-    public DocumentsController(
-        final ClaimService claimService,
-        final DefendantResponseCopyService defendantResponseCopyService,
-        final LegalSealedClaimService legalSealedClaimService,
-        final CountyCourtJudgmentService countyCourtJudgmentService
-    ) {
-        this.claimService = claimService;
-        this.defendantResponseCopyService = defendantResponseCopyService;
-        this.legalSealedClaimService = legalSealedClaimService;
-        this.countyCourtJudgmentService = countyCourtJudgmentService;
+    public DocumentsController(final DocumentsService documentsService) {
+        this.documentsService = documentsService;
     }
 
     @ApiOperation("Returns a Defendant Response copy for a given claim external id")
@@ -50,8 +35,8 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        byte[] pdfDocument = defendantResponseCopyService.createPdf(claim);
+        final byte[] pdfDocument = documentsService.generateDefendantResponseCopy(claimExternalId);
+
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)
@@ -67,8 +52,8 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        byte[] pdfDocument = legalSealedClaimService.createPdf(claim);
+        final byte[] pdfDocument = documentsService.generateLegalSealedClaim(claimExternalId);
+
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)
@@ -84,8 +69,25 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        byte[] pdfDocument = countyCourtJudgmentService.createPdf(claim);
+        final byte[] pdfDocument = documentsService.generateCountyCourtJudgement(claimExternalId);
+
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
+
+    @ApiOperation("Returns a settlement agreement for a given claim external id")
+    @GetMapping(
+        value = "/settlementAgreement/{claimExternalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> settlementAgreement(
+        @ApiParam("Claim external id")
+        @PathVariable("claimExternalId") @NotBlank String claimExternalId
+    ) {
+        final byte[] pdfDocument = documentsService.generateSettlementAgreement(claimExternalId);
+
         return ResponseEntity
             .ok()
             .contentLength(pdfDocument.length)

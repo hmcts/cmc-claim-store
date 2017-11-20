@@ -9,14 +9,11 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ResponseData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.LocalDateTime;
 
@@ -39,29 +36,20 @@ public class DefendantResponseServiceTest {
     private DefendantResponseService responseService;
 
     @Mock
-    private ClaimRepository claimRepository;
-    @Mock
     private EventProducer eventProducer;
     @Mock
     private UserService userService;
     @Mock
     private ClaimService claimService;
-    @Mock
-    private JsonMapper mapper;
 
     @Before
     public void setup() {
-        responseService = new DefendantResponseService(
-            claimRepository, mapper, eventProducer, claimService, userService
-        );
+        responseService = new DefendantResponseService(eventProducer, claimService, userService);
     }
 
     @Test
     public void saveShouldFinishSuccessfully() {
         //given
-        final String jsonApp = new ResourceReader().read("/defendant-response.json");
-        when(mapper.toJson(eq(VALID_APP))).thenReturn(jsonApp);
-
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(
             new UserDetails(USER_ID, DEFENDANT_EMAIL, "Jonny", "Jones")
         );

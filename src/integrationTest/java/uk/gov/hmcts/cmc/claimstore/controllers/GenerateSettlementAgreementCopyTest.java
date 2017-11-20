@@ -1,12 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -15,16 +18,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
+public class GenerateSettlementAgreementCopyTest extends BaseIntegrationTest {
 
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
-    private static final String AUTH_TOKEN = "Bearer authDataString";
 
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder()
-            .withAmount(SampleAmountRange.builder().build())
-            .build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        claimStore.saveResponse(claim.getId(), SampleResponseData.builder().build());
+
+        Settlement settlement = new Settlement();
+        Offer offer = SampleOffer.validDefaults();
+
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+
+        claimStore.makeOffer(claim.getId(), settlement);
+
+        settlement.accept(MadeBy.CLAIMANT);
+        claimStore.acceptOffer(claim.getId(), settlement);
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
@@ -45,9 +56,8 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder()
-            .withAmount(SampleAmountRange.builder().build())
-            .build());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        claimStore.saveResponse(claim.getId(), SampleResponseData.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
@@ -58,8 +68,6 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String externalId) throws Exception {
         return webClient
-            .perform(get("/documents/legalSealedClaim/" + externalId)
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            );
+            .perform(get("/documents/settlementAgreement/" + externalId));
     }
 }
