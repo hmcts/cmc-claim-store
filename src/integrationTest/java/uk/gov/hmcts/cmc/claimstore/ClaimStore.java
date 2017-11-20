@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,6 +25,9 @@ public class ClaimStore {
 
     @Autowired
     private ClaimRepository claimRepository;
+
+    @Autowired
+    private OffersRepository offersRepository;
 
     @Autowired
     private JsonMapper jsonMapper;
@@ -82,6 +88,31 @@ public class ClaimStore {
         );
 
         logger.info("Saved county court judgement");
+
+        return getClaim(claimId);
+    }
+
+    public Claim makeOffer(long claimId, Settlement settlement) {
+        logger.info("Saving offer with claim : " + claimId);
+
+        this.offersRepository.updateSettlement(
+            claimId,
+            jsonMapper.toJson(settlement)
+        );
+
+        logger.info("Saved offer");
+
+        return getClaim(claimId);
+    }
+
+    public Claim acceptOffer(long claimId, Settlement settlement) {
+        this.offersRepository.acceptOffer(
+            claimId,
+            jsonMapper.toJson(settlement),
+            LocalDateTime.now()
+        );
+
+        logger.info("Accepted offer");
 
         return getClaim(claimId);
     }
