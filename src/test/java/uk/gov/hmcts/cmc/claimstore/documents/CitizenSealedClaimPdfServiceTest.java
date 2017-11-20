@@ -34,7 +34,12 @@ public class CitizenSealedClaimPdfServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.createPdf(null, null);
+        service.createPdf(null, "submitter@email.com");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullSubmitterEmail() {
+        service.createPdf(claim, null);
     }
 
     @Test

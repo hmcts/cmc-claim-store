@@ -31,9 +31,8 @@ public class DefendantResponseStaffNotificationEmailContentProvider
         );
     }
 
-    private String evaluateTemplate(final String template, final Map<String, Object> input) {
-        return templateService.evaluate(template, input);
+    @Override
+    public TemplateService getTemplateService() {
+        return templateService;
     }
-
-
 }

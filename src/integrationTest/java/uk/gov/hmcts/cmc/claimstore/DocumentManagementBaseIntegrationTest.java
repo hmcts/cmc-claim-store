@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
 
-public class DocumentManagementBaseIntegrationTest extends BaseIntegrationTest{
+public abstract class DocumentManagementBaseIntegrationTest extends BaseIntegrationTest {
     protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final Resource resource = new ByteArrayResource(PDF_BYTES);
 
@@ -22,7 +22,7 @@ public class DocumentManagementBaseIntegrationTest extends BaseIntegrationTest{
     private ResponseEntity<Resource> responseEntity;
 
     @Before
-    public void before(){
+    public void before() {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
 

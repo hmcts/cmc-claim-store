@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 
 import java.util.ArrayList;
@@ -8,9 +9,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class Settlement {
 
+    private static final String NO_STATEMENTS_MADE = "No statements have yet been made during that settlement";
     private List<PartyStatement> partyStatements = new ArrayList<>();
 
     public void makeOffer(Offer offer, MadeBy party) {
@@ -31,9 +34,25 @@ public class Settlement {
     @JsonIgnore
     PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
-            throw new IllegalSettlementStatementException("No statements have yet been made during that settlement");
+            throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
         }
         return partyStatements.get(partyStatements.size() - 1);
+    }
+
+    @JsonIgnore
+    public PartyStatement getLastOfferStatement() {
+        if (partyStatements.isEmpty()) {
+            throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
+        }
+
+        List<PartyStatement> tmpList = new ArrayList<>(partyStatements);
+        Collections.reverse(tmpList);
+
+        return tmpList.stream()
+            .filter((partyStatement -> partyStatement.getType() == StatementType.OFFER))
+            .findFirst()
+            .orElseThrow(() -> new IllegalSettlementStatementException("No statements with an offer found"));
+
     }
 
     public List<PartyStatement> getPartyStatements() {
@@ -62,5 +81,10 @@ public class Settlement {
 
     private boolean lastStatementIsOffer() {
         return getLastStatement().getType().equals(StatementType.OFFER);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

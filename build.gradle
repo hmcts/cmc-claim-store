@@ -153,6 +153,8 @@ dependencies {
 }
 
 task apiTest(type: Test) {
+  group = 'verification'
+  description = 'Runs the api tests'
   setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
 }
@@ -198,6 +200,7 @@ bootRepackage {
 }
 
 task printVersion {
+  description 'Prints the version of this project'
   doLast {
     print project.version
   }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -18,16 +19,19 @@ import static java.lang.String.format;
 @Service
 public class OffersService {
 
+    private final ClaimService claimService;
     private final OffersRepository offersRepository;
     private final JsonMapper jsonMapper;
     private final EventProducer eventProducer;
 
     @Autowired
     public OffersService(
+        ClaimService claimService,
         OffersRepository offersRepository,
         EventProducer eventProducer,
         JsonMapper jsonMapper
     ) {
+        this.claimService = claimService;
         this.offersRepository = offersRepository;
         this.eventProducer = eventProducer;
         this.jsonMapper = jsonMapper;
@@ -42,6 +46,7 @@ public class OffersService {
         eventProducer.createOfferMadeEvent(claim);
     }
 
+    @Transactional
     public void accept(Claim claim, MadeBy party) {
         assertSettlementIsNotReached(claim);
 
@@ -50,7 +55,7 @@ public class OffersService {
         settlement.accept(party);
 
         offersRepository.acceptOffer(claim.getId(), jsonMapper.toJson(settlement), LocalDateTime.now());
-        eventProducer.createOfferAcceptedEvent(claim, party);
+        eventProducer.createOfferAcceptedEvent(claimService.getClaimById(claim.getId()), party);
     }
 
     public void reject(Claim claim, MadeBy party) {

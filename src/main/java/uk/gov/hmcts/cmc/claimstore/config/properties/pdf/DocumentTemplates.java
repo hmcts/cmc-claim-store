@@ -29,6 +29,10 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/countyCourtJudgmentDetails.html");
     }
 
+    public byte[] getSettlementAgreement() {
+        return readBytes("/staff/templates/document/settlementAgreement.html");
+    }
+
     private byte[] readBytes(final String resourcePath) {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
             return IOUtils.toByteArray(inputStream);

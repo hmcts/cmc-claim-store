@@ -9,6 +9,13 @@ import java.nio.charset.Charset;
 
 @Component
 public class StaffEmailTemplates {
+    public String getClaimIssuedEmailBody() {
+        return readString("/staff/templates/email/claimIssued/body.txt");
+    }
+
+    public String getClaimIssuedEmailSubject() {
+        return readString("/staff/templates/email/claimIssued/subject.txt");
+    }
 
     public String getDefendantResponseEmailBody() {
         return readString("/staff/templates/email/defendantResponse/body.txt");
@@ -24,6 +31,14 @@ public class StaffEmailTemplates {
 
     public String getCCJRequestSubmittedEmailSubject() {
         return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt");
+    }
+
+    public String getSettlementAgreementEmailBody() {
+        return readString("/staff/templates/email/settlementAgreement/body.txt");
+    }
+
+    public String getSettlementAgreementEmailSubject() {
+        return readString("/staff/templates/email/settlementAgreement/subject.txt");
     }
 
     private String readString(final String resourcePath) {

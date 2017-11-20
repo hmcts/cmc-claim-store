@@ -12,7 +12,9 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -58,11 +60,18 @@ public class ClaimIssuedStaffNotificationService {
                                        final Optional<String> defendantPin,
                                        final String submitterEmail,
                                        final String authorisation) {
-        EmailContent emailContent = provider.createContent(claim);
+        EmailContent emailContent = provider.createContent(wrapInMap(claim));
         return new EmailData(staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
             getAttachments(claim, defendantPin, submitterEmail, authorisation));
+    }
+
+    static Map<String, Object> wrapInMap(Claim claim) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("claimReferenceNumber", claim.getReferenceNumber());
+        map.put("claimantRepresented", claim.getClaimData().isClaimantRepresented());
+        return map;
     }
 
     private List<EmailAttachment> getAttachments(
