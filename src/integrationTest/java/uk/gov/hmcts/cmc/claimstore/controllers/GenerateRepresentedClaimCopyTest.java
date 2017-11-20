@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,9 +16,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "feature_toggles.document_management=false"
+    }
+)
 public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final String AUTH_TOKEN = "Bearer authDataString";
 
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
@@ -56,6 +64,8 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String externalId) throws Exception {
         return webClient
-            .perform(get("/documents/legalSealedClaim/" + externalId));
+            .perform(get("/documents/legalSealedClaim/" + externalId)
+                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
+            );
     }
 }

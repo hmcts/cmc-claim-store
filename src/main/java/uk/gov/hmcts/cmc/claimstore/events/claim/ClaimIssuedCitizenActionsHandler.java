@@ -13,12 +13,15 @@ import java.util.Optional;
 
 @Component
 public class ClaimIssuedCitizenActionsHandler {
+
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public ClaimIssuedCitizenActionsHandler(final ClaimIssuedNotificationService claimIssuedNotificationService,
-                                            final NotificationsProperties notificationsProperties) {
+    public ClaimIssuedCitizenActionsHandler(
+        final ClaimIssuedNotificationService claimIssuedNotificationService,
+        final NotificationsProperties notificationsProperties
+    ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
     }
@@ -33,7 +36,7 @@ public class ClaimIssuedCitizenActionsHandler {
             Optional.empty(),
             getEmailTemplates().getClaimantClaimIssued(),
             "claimant-issue-notification-" + claim.getReferenceNumber(),
-            event.getSubmitterName()
+            event.getSubmitterName().orElseThrow(IllegalArgumentException::new)
         );
     }
 
@@ -47,10 +50,10 @@ public class ClaimIssuedCitizenActionsHandler {
                     claimIssuedNotificationService.sendMail(
                         claim,
                         defendantEmail,
-                        Optional.of(event.getPin()),
+                        event.getPin(),
                         getEmailTemplates().getDefendantClaimIssued(),
                         "defendant-issue-notification-" + claim.getReferenceNumber(),
-                        event.getSubmitterName()
+                        event.getSubmitterName().orElseThrow(IllegalArgumentException::new)
                     ));
         }
     }

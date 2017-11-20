@@ -9,9 +9,12 @@ import java.nio.charset.Charset;
 
 @Component
 public class StaffEmailTemplates {
+    public String getClaimIssuedEmailBody() {
+        return readString("/staff/templates/email/claimIssued/body.txt");
+    }
 
-    public byte[] getDefendantResponseCopy() {
-        return readBytes("/staff/templates/document/defendantResponseCopy.html");
+    public String getClaimIssuedEmailSubject() {
+        return readString("/staff/templates/email/claimIssued/subject.txt");
     }
 
     public String getDefendantResponseEmailBody() {
@@ -38,32 +41,11 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/settlementAgreement/subject.txt");
     }
 
-    public String getClaimIssuedEmailBody() {
-        return readString("/staff/templates/email/claimIssued/body.txt");
-    }
-
-    public String getClaimIssuedEmailSubject() {
-        return readString("/staff/templates/email/claimIssued/subject.txt");
-    }
-
-    public byte[] getSealedClaim() {
-        return readBytes("/staff/templates/document/sealedClaim.html");
-    }
-
-    public byte[] getDefendantPinLetter() {
-        return readBytes("/staff/templates/document/defendantPinLetter.html");
-    }
-
-    public byte[] getLegalSealedClaim() {
-        return readBytes("/staff/templates/document/legalSealedClaim.html");
-    }
-
-    public byte[] getCountyCourtJudgmentDetails() {
-        return readBytes("/staff/templates/document/countyCourtJudgmentDetails.html");
-    }
-
-    public byte[] getSettlementAgreement() {
-        return readBytes("/staff/templates/document/settlementAgreement.html");
+    private String readString(final String resourcePath) {
+        return new String(
+            readBytes(resourcePath),
+            Charset.forName("UTF-8")
+        );
     }
 
     private byte[] readBytes(final String resourcePath) {
@@ -73,12 +55,4 @@ public class StaffEmailTemplates {
             throw new IllegalStateException(e);
         }
     }
-
-    private String readString(final String resourcePath) {
-        return new String(
-            readBytes(resourcePath),
-            Charset.forName("UTF-8")
-        );
-    }
-
 }

@@ -170,7 +170,9 @@ public class ClaimServiceTest {
         Claim createdClaim = claimService.saveClaim(USER_ID, app, authorisationToken);
 
         assertThat(createdClaim).isEqualTo(claim);
-        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null), anyString());
+
+        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
+            anyString(), eq(authorisationToken));
     }
 
     @Test(expected = ConflictException.class)

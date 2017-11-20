@@ -12,11 +12,14 @@ import java.util.Optional;
 
 @Component
 public class RepresentativeConfirmationHandler {
+
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
 
-    public RepresentativeConfirmationHandler(final ClaimIssuedNotificationService claimIssuedNotificationService,
-                                             final NotificationsProperties notificationsProperties) {
+    public RepresentativeConfirmationHandler(
+        final ClaimIssuedNotificationService claimIssuedNotificationService,
+        final NotificationsProperties notificationsProperties
+    ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
     }
@@ -31,7 +34,7 @@ public class RepresentativeConfirmationHandler {
             Optional.empty(),
             getEmailTemplates().getRepresentativeClaimIssued(),
             "representative-issue-notification-" + claim.getReferenceNumber(),
-            event.getRepresentativeName());
+            event.getRepresentativeName().orElseThrow(IllegalArgumentException::new));
     }
 
     private EmailTemplates getEmailTemplates() {
