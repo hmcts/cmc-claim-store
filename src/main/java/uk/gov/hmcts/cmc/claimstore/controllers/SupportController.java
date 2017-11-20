@@ -25,7 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -34,7 +34,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 public class SupportController {
 
     private static final String CLAIM = "Claim ";
-    private final ClaimRepository claimRepository;
+    private final ClaimService claimService;
     private final UserService userService;
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
@@ -44,7 +44,7 @@ public class SupportController {
 
     @Autowired
     public SupportController(
-        final ClaimRepository claimRepository,
+        final ClaimService claimService,
         final UserService userService,
         final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
         final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
@@ -52,7 +52,7 @@ public class SupportController {
         final CCJStaffNotificationHandler ccjStaffNotificationHandler,
         final OfferAcceptedStaffNotificationHandler offerAcceptedStaffNotificationHandler
     ) {
-        this.claimRepository = claimRepository;
+        this.claimService = claimService;
         this.userService = userService;
         this.claimIssuedStaffNotificationHandler = claimIssuedStaffNotificationHandler;
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
@@ -69,7 +69,7 @@ public class SupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) final String authorisation
     ) throws ServletRequestBindingException {
 
-        Claim claim = claimRepository.getByClaimReferenceNumber(referenceNumber)
+        Claim claim = claimService.getClaimByReference(referenceNumber)
             .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 
         switch (event) {
@@ -120,18 +120,19 @@ public class SupportController {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
-            claimRepository.linkLetterHolder(claim.getId(), pinResponse.getUserId());
+            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
 
             final String fullName = userService.getUserDetails(authorisation).getFullName();
 
-            claimIssuedStaffNotificationHandler
-                .onClaimIssued(new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName));
-
+            claimIssuedStaffNotificationHandler.onClaimIssued(
+                new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
+            );
         } else {
             final UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            claimIssuedStaffNotificationHandler
-                .onRepresentedClaimIssued(new RepresentedClaimIssuedEvent(claim, userDetails.getFullName()));
+            claimIssuedStaffNotificationHandler.onRepresentedClaimIssued(
+                new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation)
+            );
         }
 
     }

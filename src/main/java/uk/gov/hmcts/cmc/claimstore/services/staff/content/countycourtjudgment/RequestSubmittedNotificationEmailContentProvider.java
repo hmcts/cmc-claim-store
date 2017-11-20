@@ -14,14 +14,14 @@ import static org.apache.commons.lang3.Validate.notEmpty;
 public class RequestSubmittedNotificationEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
-    private final StaffEmailTemplates staffEmailTemplates;
+    private final StaffEmailTemplates emailTemplates;
 
     public RequestSubmittedNotificationEmailContentProvider(
         final TemplateService templateService,
-        final StaffEmailTemplates staffEmailTemplates
+        final StaffEmailTemplates emailTemplates
     ) {
         this.templateService = templateService;
-        this.staffEmailTemplates = staffEmailTemplates;
+        this.emailTemplates = emailTemplates;
     }
 
     @Override
@@ -29,8 +29,8 @@ public class RequestSubmittedNotificationEmailContentProvider implements EmailCo
         notEmpty(input);
 
         return new EmailContent(
-            evaluateTemplate(staffEmailTemplates.getCCJRequestSubmittedEmailSubject(), input),
-            evaluateTemplate(staffEmailTemplates.getCCJRequestSubmittedEmailBody(), input)
+            evaluateTemplate(emailTemplates.getCCJRequestSubmittedEmailSubject(), input),
+            evaluateTemplate(emailTemplates.getCCJRequestSubmittedEmailBody(), input)
         );
     }
 

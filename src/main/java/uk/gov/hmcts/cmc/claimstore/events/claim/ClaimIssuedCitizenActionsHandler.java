@@ -9,16 +9,17 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.util.Optional;
-
 @Component
 public class ClaimIssuedCitizenActionsHandler {
+
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public ClaimIssuedCitizenActionsHandler(final ClaimIssuedNotificationService claimIssuedNotificationService,
-                                            final NotificationsProperties notificationsProperties) {
+    public ClaimIssuedCitizenActionsHandler(
+        final ClaimIssuedNotificationService claimIssuedNotificationService,
+        final NotificationsProperties notificationsProperties
+    ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
     }
@@ -30,7 +31,7 @@ public class ClaimIssuedCitizenActionsHandler {
         claimIssuedNotificationService.sendMail(
             claim,
             event.getSubmitterEmail(),
-            Optional.empty(),
+            null,
             getEmailTemplates().getClaimantClaimIssued(),
             "claimant-issue-notification-" + claim.getReferenceNumber(),
             event.getSubmitterName()
@@ -47,7 +48,7 @@ public class ClaimIssuedCitizenActionsHandler {
                     claimIssuedNotificationService.sendMail(
                         claim,
                         defendantEmail,
-                        Optional.of(event.getPin()),
+                        event.getPin().orElseThrow(IllegalArgumentException::new),
                         getEmailTemplates().getDefendantClaimIssued(),
                         "defendant-issue-notification-" + claim.getReferenceNumber(),
                         event.getSubmitterName()
