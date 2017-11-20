@@ -20,22 +20,22 @@ public class ClaimIssuedStaffNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyStaffClaimIssued(null, DEFENDANT_PIN, CLAIMANT_EMAIL, AUTHORISATION);
+        service.notifyStaffClaimIssued(null, DEFENDANT_PIN, CLAIMANT_EMAIL);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendantPin() {
-        service.notifyStaffClaimIssued(claim, null, CLAIMANT_EMAIL, AUTHORISATION);
+        service.notifyStaffClaimIssued(claim, null, CLAIMANT_EMAIL);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimantEmail() {
-        service.notifyStaffClaimIssued(claim, DEFENDANT_PIN, null, AUTHORISATION);
+        service.notifyStaffClaimIssued(claim, DEFENDANT_PIN, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentWhenGivenEmptyClaimantEmail() {
-        service.notifyStaffClaimIssued(claim, DEFENDANT_PIN, "", AUTHORISATION);
+        service.notifyStaffClaimIssued(claim, DEFENDANT_PIN, "");
     }
 
 }
