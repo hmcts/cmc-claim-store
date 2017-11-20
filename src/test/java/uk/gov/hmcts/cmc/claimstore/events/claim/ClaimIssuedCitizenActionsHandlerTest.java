@@ -13,8 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificatio
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Optional;
-
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,16 +61,31 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(CLAIM,
-            CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
-            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(CLAIM,
+                CLAIMANT_EMAIL,
+                null,
+                CLAIMANT_CLAIM_ISSUED_TEMPLATE,
+                "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME);
 
-        verify(claimIssuedNotificationService, once()).sendMail(CLAIM,
-            SampleClaimIssuedEvent.DEFENDANT_EMAIL, Optional.of(PIN),
-            DEFENDANT_CLAIM_ISSUED_TEMPLATE,
-            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(CLAIM,
+                SampleClaimIssuedEvent.DEFENDANT_EMAIL,
+                PIN,
+                DEFENDANT_CLAIM_ISSUED_TEMPLATE,
+                "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME
+            );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void sendFailSendingNotificationToDefendantWhenPinIsMissing() throws NotificationClientException {
+
+        final ClaimIssuedEvent claimIssuedEvent
+            = new ClaimIssuedEvent(CLAIM, null, SUBMITTER_NAME, AUTHORISATION);
+
+        claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
     }
 
     @Test
@@ -86,15 +99,21 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(claimNoDefendantEmail,
-            CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
-            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(claimNoDefendantEmail,
+                CLAIMANT_EMAIL,
+                null,
+                CLAIMANT_CLAIM_ISSUED_TEMPLATE,
+                "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME
+            );
 
-        verify(claimIssuedNotificationService, never()).sendMail(claimNoDefendantEmail,
-            SampleClaimIssuedEvent.DEFENDANT_EMAIL, Optional.of(PIN),
-            DEFENDANT_CLAIM_ISSUED_TEMPLATE,
-            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, never())
+            .sendMail(claimNoDefendantEmail,
+                SampleClaimIssuedEvent.DEFENDANT_EMAIL,
+                PIN,
+                DEFENDANT_CLAIM_ISSUED_TEMPLATE,
+                "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME);
     }
 }

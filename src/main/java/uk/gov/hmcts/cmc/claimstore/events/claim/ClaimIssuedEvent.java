@@ -15,8 +15,11 @@ public class ClaimIssuedEvent {
     private final String submitterName;
     private final String authorisation;
 
-    public ClaimIssuedEvent(final Claim claim, final String pin,
-                            final String submitterName, final String authorisation) {
+    public ClaimIssuedEvent(final Claim claim,
+                            final String pin,
+                            final String submitterName,
+                            final String authorisation
+    ) {
         this.submitterEmail = claim.getSubmitterEmail();
         this.claim = claim;
         this.pin = pin;

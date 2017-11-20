@@ -35,6 +35,16 @@ public class DocumentManagementSealedClaimDocumentService implements SealedClaim
         return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation);
     }
 
+    @Override
+    public byte[] generateCitizenSealedClaim(
+        final String claimExternalId,
+        final String authorisation,
+        final String submitterEmail
+    ) {
+        final Claim claim = claimService.getClaimByExternalId(claimExternalId);
+        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation);
+    }
+
     private byte[] downloadOrUploadAndGenerateLegalN1FormPdfDocument(final Claim claim, final String authorisation) {
         final Optional<String> n1FormDocumentManagementPath = claim.getSealedClaimDocumentManagementSelfPath();
 
@@ -62,12 +72,5 @@ public class DocumentManagementSealedClaimDocumentService implements SealedClaim
                 new ClaimIssuedEvent(claim, null, null, authorisation)
             );
         }
-    }
-
-    @Override
-    public byte[] generateCitizenSealedClaim(final String claimExternalId, final String authorisation,
-                                             final String submitterEmail) {
-        final Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation);
     }
 }

@@ -8,8 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.util.Optional;
-
 @Component
 public class RepresentativeConfirmationHandler {
 
@@ -31,7 +29,7 @@ public class RepresentativeConfirmationHandler {
         claimIssuedNotificationService.sendMail(
             claim,
             event.getRepresentativeEmail(),
-            Optional.empty(),
+            null,
             getEmailTemplates().getRepresentativeClaimIssued(),
             "representative-issue-notification-" + claim.getReferenceNumber(),
             event.getRepresentativeName().orElseThrow(IllegalArgumentException::new));
