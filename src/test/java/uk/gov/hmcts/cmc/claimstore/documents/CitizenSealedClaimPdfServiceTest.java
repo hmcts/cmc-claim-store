@@ -6,17 +6,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseCopyContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.SealedClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefendantResponseCopyServiceTest {
+public class CitizenSealedClaimPdfServiceTest {
 
     @Mock
-    private DefendantResponseCopyContentProvider contentProvider;
+    private SealedClaimContentProvider contentProvider;
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
@@ -25,23 +25,27 @@ public class DefendantResponseCopyServiceTest {
     @Mock
     private Claim claim;
 
-    private DefendantResponseCopyService service;
+    private CitizenSealedClaimPdfService service;
 
     @Before
     public void beforeEachTest() {
-        service = new DefendantResponseCopyService(contentProvider, documentTemplates, pdfServiceClient);
+        service = new CitizenSealedClaimPdfService(documentTemplates, pdfServiceClient, contentProvider);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.createPdf(null);
+        service.createPdf(null, "submitter@email.com");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullSubmitterEmail() {
+        service.createPdf(claim, null);
     }
 
     @Test
     public void shouldUseCorrectTemplateToCreateTheDocument() {
-        service.createPdf(claim);
-
-        verify(documentTemplates).getDefendantResponseCopy();
+        service.createPdf(claim, "submitter@email.com");
+        verify(documentTemplates).getSealedClaim();
     }
 
 }

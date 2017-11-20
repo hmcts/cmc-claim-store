@@ -13,11 +13,12 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificatio
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Optional;
-
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getClaimWithNoDefendantEmail;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getClaimWith
 public class ClaimIssuedCitizenActionsHandlerTest {
     private static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
     private static final String DEFENDANT_CLAIM_ISSUED_TEMPLATE = "defendantClaimIssued";
+    private static final String AUTHORISATION = "Bearer: aaa";
 
     private ClaimIssuedCitizenActionsHandler claimIssuedCitizenActionsHandler;
     @Mock
@@ -43,6 +45,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
             claimIssuedNotificationService,
             properties
         );
+
         when(properties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(emailTemplates.getClaimantClaimIssued()).thenReturn(CLAIMANT_CLAIM_ISSUED_TEMPLATE);
@@ -53,21 +56,36 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
 
         final ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(SampleClaimIssuedEvent.CLAIM, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME);
+            = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(SampleClaimIssuedEvent.CLAIM,
-            SampleClaimIssuedEvent.CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
-            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(CLAIM,
+                CLAIMANT_EMAIL,
+                null,
+                CLAIMANT_CLAIM_ISSUED_TEMPLATE,
+                "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME);
 
-        verify(claimIssuedNotificationService, once()).sendMail(SampleClaimIssuedEvent.CLAIM,
-            SampleClaimIssuedEvent.DEFENDANT_EMAIL, Optional.of(SampleClaimIssuedEvent.PIN),
-            DEFENDANT_CLAIM_ISSUED_TEMPLATE,
-            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(CLAIM,
+                SampleClaimIssuedEvent.DEFENDANT_EMAIL,
+                PIN,
+                DEFENDANT_CLAIM_ISSUED_TEMPLATE,
+                "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME
+            );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void sendFailSendingNotificationToDefendantWhenPinIsMissing() throws NotificationClientException {
+
+        final ClaimIssuedEvent claimIssuedEvent
+            = new ClaimIssuedEvent(CLAIM, null, SUBMITTER_NAME, AUTHORISATION);
+
+        claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
     }
 
     @Test
@@ -76,20 +94,26 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         Claim claimNoDefendantEmail = getClaimWithNoDefendantEmail();
 
         ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(claimNoDefendantEmail, SampleClaimIssuedEvent.PIN, SUBMITTER_NAME);
+            = new ClaimIssuedEvent(claimNoDefendantEmail, PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(claimNoDefendantEmail,
-            SampleClaimIssuedEvent.CLAIMANT_EMAIL, Optional.empty(), CLAIMANT_CLAIM_ISSUED_TEMPLATE,
-            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(claimNoDefendantEmail,
+                CLAIMANT_EMAIL,
+                null,
+                CLAIMANT_CLAIM_ISSUED_TEMPLATE,
+                "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME
+            );
 
-        verify(claimIssuedNotificationService, never()).sendMail(claimNoDefendantEmail,
-            SampleClaimIssuedEvent.DEFENDANT_EMAIL, Optional.of(SampleClaimIssuedEvent.PIN),
-            DEFENDANT_CLAIM_ISSUED_TEMPLATE,
-            "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, never())
+            .sendMail(claimNoDefendantEmail,
+                SampleClaimIssuedEvent.DEFENDANT_EMAIL,
+                PIN,
+                DEFENDANT_CLAIM_ISSUED_TEMPLATE,
+                "defendant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME);
     }
 }

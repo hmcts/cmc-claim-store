@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 
-import java.util.Optional;
-
 @Component
 public class ClaimIssuedStaffNotificationHandler {
 
@@ -15,7 +13,8 @@ public class ClaimIssuedStaffNotificationHandler {
 
     @Autowired
     public ClaimIssuedStaffNotificationHandler(
-        ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService) {
+        final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
+    ) {
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
     }
 
@@ -23,8 +22,8 @@ public class ClaimIssuedStaffNotificationHandler {
     public void onClaimIssued(final ClaimIssuedEvent event) {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
-            Optional.of(event.getPin()),
-            event.getSubmitterEmail()
+            event.getPin().orElse(null),
+            event.getAuthorisation()
         );
     }
 
@@ -32,8 +31,8 @@ public class ClaimIssuedStaffNotificationHandler {
     public void onRepresentedClaimIssued(final RepresentedClaimIssuedEvent event) {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
-            Optional.empty(),
-            event.getRepresentativeEmail()
+            null,
+            event.getAuthorisation()
         );
     }
 }

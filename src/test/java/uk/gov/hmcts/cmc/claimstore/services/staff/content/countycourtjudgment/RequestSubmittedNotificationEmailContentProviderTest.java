@@ -19,11 +19,11 @@ public class RequestSubmittedNotificationEmailContentProviderTest {
     private TemplateService templateService;
 
     @Mock
-    private StaffEmailTemplates staffEmailTemplates;
+    private StaffEmailTemplates emailTemplates;
 
     @Before
     public void setup() {
-        provider = new RequestSubmittedNotificationEmailContentProvider(templateService, staffEmailTemplates);
+        provider = new RequestSubmittedNotificationEmailContentProvider(templateService, emailTemplates);
     }
 
     @Test(expected = NullPointerException.class)
