@@ -14,10 +14,12 @@ public class DocumentsService {
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
 
     @Autowired
-    public DocumentsService(final SealedClaimDocumentService sealedClaimDocumentService,
-                            final ClaimService claimService,
-                            final DefendantResponseCopyService defendantResponseCopyService,
-                            final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService) {
+    public DocumentsService(
+        final SealedClaimDocumentService sealedClaimDocumentService,
+        final ClaimService claimService,
+        final DefendantResponseCopyService defendantResponseCopyService,
+        final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService
+    ) {
 
         this.sealedClaimDocumentService = sealedClaimDocumentService;
         this.claimService = claimService;

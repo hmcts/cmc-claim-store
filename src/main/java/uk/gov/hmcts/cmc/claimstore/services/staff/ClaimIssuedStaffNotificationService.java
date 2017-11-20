@@ -84,7 +84,7 @@ public class ClaimIssuedStaffNotificationService {
 
         if (!claim.getClaimData().isClaimantRepresented()) {
             String pin = defendantPin.orElseThrow(NullPointerException::new);
-            emailAttachments.add(sealedClaimPdf(authorisation, claim));
+            emailAttachments.add(sealedClaimPdf(authorisation, claim, submitterEmail));
             emailAttachments.add(defendantPinLetterPdf(claim, pin));
         } else {
             emailAttachments.add(sealedLegalClaimPdf(authorisation, claim));
@@ -103,9 +103,9 @@ public class ClaimIssuedStaffNotificationService {
         );
     }
 
-    private EmailAttachment sealedClaimPdf(final String authorisation, final Claim claim) {
+    private EmailAttachment sealedClaimPdf(final String authorisation, final Claim claim, final String submitterEmail) {
         byte[] generatedPdf = sealedClaimDocumentService.generateCitizenSealedClaim(claim.getExternalId(),
-            authorisation, claim.getSubmitterEmail());
+            authorisation, submitterEmail);
 
         return pdf(
             generatedPdf,
