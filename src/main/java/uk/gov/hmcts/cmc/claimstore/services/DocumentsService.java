@@ -22,7 +22,7 @@ public class DocumentsService {
         final DefendantResponseCopyService defendantResponseCopyService,
         final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         final SettlementAgreementCopyService settlementAgreementCopyService
-        ) {
+    ) {
 
         this.sealedClaimDocumentService = sealedClaimDocumentService;
         this.claimService = claimService;

@@ -36,7 +36,7 @@ public class GenerateSettlementAgreementCopyTest extends BaseIntegrationTest {
 
         settlement.accept(MadeBy.CLAIMANT);
         claimStore.acceptOffer(claim.getId(), settlement);
-        
+
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
 
