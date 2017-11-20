@@ -6,12 +6,10 @@ import io.swagger.annotations.ApiParam;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentsService;
@@ -52,10 +50,9 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> legalSealedClaim(
         @ApiParam("Claim external id")
-        @PathVariable("claimExternalId") @NotBlank String claimExternalId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
+        @PathVariable("claimExternalId") @NotBlank String claimExternalId
     ) {
-        final byte[] pdfDocument = documentsService.generateLegalSealedClaim(claimExternalId, authorisation);
+        final byte[] pdfDocument = documentsService.generateLegalSealedClaim(claimExternalId);
 
         return ResponseEntity
             .ok()

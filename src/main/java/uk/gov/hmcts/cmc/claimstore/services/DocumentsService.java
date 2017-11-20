@@ -32,7 +32,7 @@ public class DocumentsService {
         return defendantResponseCopyService.createPdf(claim);
     }
 
-    public byte[] generateLegalSealedClaim(final String claimExternalId, final String authorisation) {
+    public byte[] generateLegalSealedClaim(final String claimExternalId) {
         return sealedClaimDocumentService.generateLegalSealedClaim(claimExternalId);
     }
 
