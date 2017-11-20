@@ -46,20 +46,24 @@ public class ClaimIssuedStaffNotificationService {
         this.sealedClaimDocumentService = sealedClaimDocumentService;
     }
 
-    public void notifyStaffClaimIssued(final Claim claim,
-                                       final Optional<String> defendantPin,
-                                       final String submitterEmail,
-                                       final String authorisation) {
+    public void notifyStaffClaimIssued(
+        final Claim claim,
+        final Optional<String> defendantPin,
+        final String submitterEmail,
+        final String authorisation
+    ) {
         requireNonNull(claim);
         requireNonBlank(submitterEmail);
         final EmailData emailData = prepareEmailData(claim, defendantPin, submitterEmail, authorisation);
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
-    private EmailData prepareEmailData(final Claim claim,
-                                       final Optional<String> defendantPin,
-                                       final String submitterEmail,
-                                       final String authorisation) {
+    private EmailData prepareEmailData(
+        final Claim claim,
+        final Optional<String> defendantPin,
+        final String submitterEmail,
+        final String authorisation
+    ) {
         EmailContent emailContent = provider.createContent(wrapInMap(claim));
         return new EmailData(staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
