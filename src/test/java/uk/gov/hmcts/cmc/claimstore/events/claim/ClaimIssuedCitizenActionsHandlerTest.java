@@ -79,6 +79,15 @@ public class ClaimIssuedCitizenActionsHandlerTest {
             );
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void sendFailSendingNotificationToDefendantWhenPinIsMissing() throws NotificationClientException {
+
+        final ClaimIssuedEvent claimIssuedEvent
+            = new ClaimIssuedEvent(CLAIM, null, SUBMITTER_NAME, AUTHORISATION);
+
+        claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
+    }
+
     @Test
     public void sendNotificationsSendsNotificationToClaimantOnly() throws NotificationClientException {
 
@@ -90,10 +99,14 @@ public class ClaimIssuedCitizenActionsHandlerTest {
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(claimNoDefendantEmail,
-            CLAIMANT_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE,
-            "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(claimNoDefendantEmail,
+                CLAIMANT_EMAIL,
+                null,
+                CLAIMANT_CLAIM_ISSUED_TEMPLATE,
+                "claimant-issue-notification-" + claimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME
+            );
 
         verify(claimIssuedNotificationService, never())
             .sendMail(claimNoDefendantEmail,
