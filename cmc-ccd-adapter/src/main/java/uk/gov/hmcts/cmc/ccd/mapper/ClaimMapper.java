@@ -41,8 +41,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
         claimData.getClaimants().forEach(partyMapper::to);
 
-        // TODO: amount field mapping is pending
-
         return builder
             .reason(claimData.getReason())
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
