@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
@@ -50,6 +51,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Override
     public ClaimData from(CCDClaim ccdClaim) {
-        return null;
+        throw new NotImplementedException();
     }
 }

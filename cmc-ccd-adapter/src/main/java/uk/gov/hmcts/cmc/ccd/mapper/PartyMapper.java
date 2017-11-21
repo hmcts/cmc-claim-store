@@ -29,14 +29,13 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
     private final RepresentativeMapper representativeMapper;
 
     @Autowired
-    public PartyMapper(
-        IndividualMapper individualMapper, 
-        CompanyMapper companyMapper,
-        OrganisationMapper organisationMapper, 
-        SoleTraderMapper soleTraderMapper,
-        AddressMapper addressMapper, 
-        RepresentativeMapper representativeMapper
-    ) {
+    public PartyMapper(final IndividualMapper individualMapper,
+                       final CompanyMapper companyMapper,
+                       final OrganisationMapper organisationMapper,
+                       final SoleTraderMapper soleTraderMapper,
+                       final AddressMapper addressMapper,
+                       final RepresentativeMapper representativeMapper) {
+
         this.individualMapper = individualMapper;
         this.companyMapper = companyMapper;
         this.organisationMapper = organisationMapper;
