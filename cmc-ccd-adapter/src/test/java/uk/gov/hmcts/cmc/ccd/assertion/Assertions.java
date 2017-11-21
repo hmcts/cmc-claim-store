@@ -5,7 +5,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
+import uk.gov.hmcts.cmc.domain.models.party.Organisation;
+import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 public class Assertions {
 
@@ -34,5 +37,17 @@ public class Assertions {
 
     public static IndividualAssert assertThat(Individual individual) {
         return new IndividualAssert(individual);
+    }
+
+    public static SoleTraderAssert assertThat(SoleTrader soleTrader) {
+        return new SoleTraderAssert(soleTrader);
+    }
+
+    public static OrganisationAssert assertThat(Organisation organisation) {
+        return new OrganisationAssert(organisation);
+    }
+
+    public static CompanyAssert assertThat(Company company) {
+        return new CompanyAssert(company);
     }
 }
