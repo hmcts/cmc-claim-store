@@ -109,7 +109,7 @@ public class ClaimIssuedStaffNotificationService {
 
     private EmailAttachment sealedClaimPdf(final Claim claim, final String submitterEmail, final String authorisation) {
         byte[] generatedPdf = sealedClaimDocumentService.generateCitizenSealedClaim(claim.getExternalId(),
-            submitterEmail, authorisation);
+            authorisation, submitterEmail);
 
         return pdf(
             generatedPdf,

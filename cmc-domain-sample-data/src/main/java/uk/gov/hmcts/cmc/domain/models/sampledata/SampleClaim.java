@@ -152,7 +152,6 @@ public final class SampleClaim {
             settlement,
             settlementReachedAt,
             sealedClaimDocumentManagementSelfPath
-
         );
     }
 
