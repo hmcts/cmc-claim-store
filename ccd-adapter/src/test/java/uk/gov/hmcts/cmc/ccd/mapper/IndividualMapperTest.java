@@ -23,7 +23,7 @@ public class IndividualMapperTest {
 
     @Autowired
     private IndividualMapper individualMapper;
-    
+
     @Test
     public void shouldMapIndividualToCCD() {
         //given

@@ -57,7 +57,7 @@ public class OrganisationMapperTest {
             .organisationAddress(ccdAddress)
             .build();
         CCDOrganisation ccdOrganisation = CCDOrganisation.builder()
-            .name("Individual")
+            .name("Xyz & Co")
             .address(ccdAddress)
             .mobilePhone("07987654321")
             .correspondenceAddress(ccdAddress)

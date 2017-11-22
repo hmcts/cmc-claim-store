@@ -19,7 +19,7 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class RepresentativeMapperTest {
-    
+
     @Autowired
     private RepresentativeMapper representativeMapper;
 

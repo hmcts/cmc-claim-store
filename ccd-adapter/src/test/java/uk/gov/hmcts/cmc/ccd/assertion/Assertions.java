@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -59,5 +60,9 @@ public class Assertions {
 
     public static ClaimDataAssert assertThat(ClaimData claimData) {
         return new ClaimDataAssert(claimData);
+    }
+
+    public static CompanyDetailsAssert assertThat(CompanyDetails companyDetails) {
+        return new CompanyDetailsAssert(companyDetails);
     }
 }

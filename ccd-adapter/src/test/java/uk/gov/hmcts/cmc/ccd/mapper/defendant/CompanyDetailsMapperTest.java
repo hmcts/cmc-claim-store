@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,29 +11,29 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
-import uk.gov.hmcts.cmc.domain.models.party.Company;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class CompanyMapperTest {
+public class CompanyDetailsMapperTest {
 
     @Autowired
-    private CompanyMapper companyMapper;
+    private CompanyDetailsMapper companyDetailsMapper;
 
     @Test
     public void shouldMapCompanyToCCD() {
         //given
-        Company company = SampleParty.builder().company();
+        CompanyDetails companyDetails = SampleTheirDetails.builder().companyDetails();
 
         //when
-        CCDCompany ccdCompany = companyMapper.to(company);
+        CCDCompany ccdCompany = companyDetailsMapper.to(companyDetails);
 
         //then
-        assertThat(company).isEqualTo(ccdCompany);
+        assertThat(companyDetails).isEqualTo(ccdCompany);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class CompanyMapperTest {
             .organisationAddress(ccdAddress)
             .build();
         CCDCompany ccdCompany = CCDCompany.builder()
-            .name("Abc Ltd")
+            .name("My Company")
             .address(ccdAddress)
             .mobilePhone("07987654321")
             .correspondenceAddress(ccdAddress)
@@ -66,7 +66,7 @@ public class CompanyMapperTest {
             .build();
 
         //when
-        Company company = companyMapper.from(ccdCompany);
+        CompanyDetails company = companyDetailsMapper.from(ccdCompany);
 
         //then
         assertThat(company).isEqualTo(ccdCompany);
