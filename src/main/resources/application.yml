@@ -81,7 +81,7 @@ pdfService:
 
 feature_toggles:
   watermark_pdf: false
-  document_management: true
+  document_management: false
 
 feign:
   httpclient:

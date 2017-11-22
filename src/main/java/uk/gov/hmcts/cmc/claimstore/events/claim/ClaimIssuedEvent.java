@@ -39,8 +39,8 @@ public class ClaimIssuedEvent {
         return Optional.ofNullable(pin);
     }
 
-    public Optional<String> getSubmitterName() {
-        return Optional.ofNullable(submitterName);
+    public String getSubmitterName() {
+        return submitterName;
     }
 
     public String getAuthorisation() {

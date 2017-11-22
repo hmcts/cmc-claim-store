@@ -3,9 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentManagementSealedClaimHandler;
-import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -16,61 +13,62 @@ import java.util.Optional;
 public class DocumentManagementSealedClaimDocumentService implements SealedClaimDocumentService {
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
-    private final DocumentManagementSealedClaimHandler documentManagementSealedClaimHandler;
+
+    private final SealedClaimToDocumentStoreUploader sealedClaimToDocumentStoreUploader;
 
     @Autowired
     public DocumentManagementSealedClaimDocumentService(
         final ClaimService claimService,
         final DocumentManagementService documentManagementService,
-        final DocumentManagementSealedClaimHandler documentManagementSealedClaimHandler
+        final SealedClaimToDocumentStoreUploader sealedClaimToDocumentStoreUploader
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
-        this.documentManagementSealedClaimHandler = documentManagementSealedClaimHandler;
+        this.sealedClaimToDocumentStoreUploader = sealedClaimToDocumentStoreUploader;
     }
 
     @Override
-    public byte[] generateLegalSealedClaim(final String claimExternalId, final String authorisation) {
+    public byte[] generateLegalDocument(final String claimExternalId, final String authorisation) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation);
+        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation, null);
     }
 
     @Override
-    public byte[] generateCitizenSealedClaim(
+    public byte[] generateCitizenDocument(
         final String claimExternalId,
         final String authorisation,
         final String submitterEmail
     ) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation);
+        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation, submitterEmail);
     }
 
-    private byte[] downloadOrUploadAndGenerateLegalN1FormPdfDocument(final Claim claim, final String authorisation) {
-        final Optional<String> n1FormDocumentManagementPath = claim.getSealedClaimDocumentManagementSelfPath();
+    private byte[] downloadOrUploadAndGenerateLegalN1FormPdfDocument(
+        final Claim claim,
+        final String authorisation,
+        final String submitterEmail
+    ) {
+        final Optional<String> documentSelfPath = claim.getDocumentSelfPath();
 
-        if (n1FormDocumentManagementPath.isPresent()) {
-            return documentManagementService.downloadDocument(authorisation, n1FormDocumentManagementPath.get());
+        if (documentSelfPath.isPresent()) {
+            return documentManagementService.downloadDocument(authorisation, documentSelfPath.get());
         } else {
-            uploadClaim(claim, authorisation);
+            uploadClaim(claim, authorisation, submitterEmail);
 
             final Claim updatedClaim = claimService.getClaimByExternalId(claim.getExternalId());
 
-            final String documentSelfLink = updatedClaim.getSealedClaimDocumentManagementSelfPath()
+            final String documentSelfLink = updatedClaim.getDocumentSelfPath()
                 .orElseThrow(() -> new DocumentManagementException("failed linking documentManagement"));
 
             return documentManagementService.downloadDocument(authorisation, documentSelfLink);
         }
     }
 
-    private void uploadClaim(final Claim claim, final String authorisation) {
+    private void uploadClaim(final Claim claim, final String authorisation, final String submitterEmail) {
         if (claim.getClaimData().isClaimantRepresented()) {
-            documentManagementSealedClaimHandler.uploadRepresentativeSealedClaimToEvidenceStore(
-                new RepresentedClaimIssuedEvent(claim, null, authorisation)
-            );
+            sealedClaimToDocumentStoreUploader.uploadRepresentativeSealedClaim(authorisation, claim);
         } else {
-            documentManagementSealedClaimHandler.uploadCitizenSealedClaimToEvidenceStore(
-                new ClaimIssuedEvent(claim, null, null, authorisation)
-            );
+            sealedClaimToDocumentStoreUploader.uploadCitizenSealedClaim(authorisation, claim, submitterEmail);
         }
     }
 }

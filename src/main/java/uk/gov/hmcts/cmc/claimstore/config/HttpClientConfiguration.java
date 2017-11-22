@@ -9,7 +9,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.logging.httpcomponents.OutboundRequestIdSettingInterceptor;
@@ -20,6 +19,18 @@ public class HttpClientConfiguration {
 
     @Bean
     public Client getFeignHttpClient() {
+        return new ApacheHttpClient(getApacheHttpClient());
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        final CloseableHttpClient client = getApacheHttpClient();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+        return restTemplate;
+    }
+
+    private CloseableHttpClient getApacheHttpClient() {
         int timeout = 10000;
         RequestConfig config = RequestConfig.custom()
             .setConnectTimeout(timeout)
@@ -27,28 +38,7 @@ public class HttpClientConfiguration {
             .setSocketTimeout(timeout)
             .build();
 
-        return new ApacheHttpClient(HttpClientBuilder
-            .create()
-            .useSystemProperties()
-            .addInterceptorFirst(new OutboundRequestIdSettingInterceptor())
-            .addInterceptorFirst((HttpRequestInterceptor) new OutboundRequestLoggingInterceptor())
-            .addInterceptorLast((HttpResponseInterceptor) new OutboundRequestLoggingInterceptor())
-            .setDefaultRequestConfig(config)
-            .build());
-    }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(getClientHttpRequestFactory());
-
-        return restTemplate;
-    }
-
-    private ClientHttpRequestFactory getClientHttpRequestFactory() {
-        RequestConfig config = RequestConfig.custom().build();
-
-        CloseableHttpClient client = HttpClientBuilder
+        return HttpClientBuilder
             .create()
             .useSystemProperties()
             .addInterceptorFirst(new OutboundRequestIdSettingInterceptor())
@@ -56,7 +46,6 @@ public class HttpClientConfiguration {
             .addInterceptorLast((HttpResponseInterceptor) new OutboundRequestLoggingInterceptor())
             .setDefaultRequestConfig(config)
             .build();
-
-        return new HttpComponentsClientHttpRequestFactory(client);
     }
+
 }

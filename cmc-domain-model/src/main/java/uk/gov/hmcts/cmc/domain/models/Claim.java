@@ -35,7 +35,7 @@ public class Claim {
     private final LocalDateTime countyCourtJudgmentRequestedAt;
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
-    private final String sealedClaimDocumentManagementSelfPath;
+    private final String documentSelfPath;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -58,7 +58,7 @@ public class Claim {
         final LocalDateTime countyCourtJudgmentRequestedAt,
         final Settlement settlement,
         final LocalDateTime settlementReachedAt,
-        final String sealedClaimDocumentManagementSelfPath
+        final String documentSelfPath
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -79,7 +79,7 @@ public class Claim {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
-        this.sealedClaimDocumentManagementSelfPath = sealedClaimDocumentManagementSelfPath;
+        this.documentSelfPath = documentSelfPath;
     }
 
     public Long getId() {
@@ -158,8 +158,8 @@ public class Claim {
         return settlementReachedAt;
     }
 
-    public Optional<String> getSealedClaimDocumentManagementSelfPath() {
-        return Optional.ofNullable(sealedClaimDocumentManagementSelfPath);
+    public Optional<String> getDocumentSelfPath() {
+        return Optional.ofNullable(documentSelfPath);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class Claim {
             && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
             && Objects.equals(settlement, claim.settlement)
             && Objects.equals(settlementReachedAt, claim.settlementReachedAt)
-            && Objects.equals(sealedClaimDocumentManagementSelfPath, claim.sealedClaimDocumentManagementSelfPath);
+            && Objects.equals(documentSelfPath, claim.documentSelfPath);
     }
 
     @Override
@@ -199,7 +199,7 @@ public class Claim {
         return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber, claimData,
             createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail, respondedAt, response,
             defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt, settlement, settlementReachedAt,
-            sealedClaimDocumentManagementSelfPath
+            documentSelfPath
         );
     }
 

@@ -26,14 +26,14 @@ public class LegacySealedClaimDocumentService implements SealedClaimDocumentServ
     }
 
     @Override
-    public byte[] generateLegalSealedClaim(final String claimExternalId, final String authorisation) {
+    public byte[] generateLegalDocument(final String claimExternalId, final String authorisation) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
         return legalSealedClaimPdfService.createPdf(claim);
     }
 
     @Override
-    public byte[] generateCitizenSealedClaim(final String claimExternalId, final String authorisation,
-                                             final String submitterEmail) {
+    public byte[] generateCitizenDocument(final String claimExternalId, final String authorisation,
+                                          final String submitterEmail) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
         return citizenSealedClaimPdfService.createPdf(claim, submitterEmail);
     }

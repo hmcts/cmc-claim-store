@@ -11,19 +11,13 @@ public class ResourceLoader {
     private ResourceLoader() {
     }
 
-    public static UploadResponse documentManagementUploadResponse() {
-        final String response = new ResourceReader().read("/document-management-response.json");
+    public static UploadResponse successDocumentManagementUpload() {
+        final String response = new ResourceReader().read("/document-management-response.success.json");
         return jsonMapper.fromJson(response, UploadResponse.class);
     }
 
-
-    public static UploadResponse failedDocumentManagementUploadResponse() {
-        final String response = "{\n"
-            + "  \"_embedded\": {\n"
-            + "    \"documents\": []"
-            + "}"
-            + "}";
-
+    public static UploadResponse failedDocumentManagementUpload() {
+        final String response = new ResourceReader().read("/document-management-response.failure.json");
         return jsonMapper.fromJson(response, UploadResponse.class);
     }
 }

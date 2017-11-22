@@ -59,6 +59,7 @@ public class DocumentManagementService {
         final ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(authorisation,
             URI.create(documentMetadata.links.binary.href).getPath());
 
-        return ((ByteArrayResource) (responseEntity.getBody())).getByteArray();
+        final ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
+        return resource.getByteArray();
     }
 }

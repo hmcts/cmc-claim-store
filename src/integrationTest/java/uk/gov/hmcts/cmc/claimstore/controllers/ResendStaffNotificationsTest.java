@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.email.EmailData;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +28,11 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "feature_toggles.document_management=true"
+    }
+)
 public class ResendStaffNotificationsTest extends DocumentManagementBaseIntegrationTest {
 
     @Captor
@@ -152,6 +159,25 @@ public class ResendStaffNotificationsTest extends DocumentManagementBaseIntegrat
             "Mobile number: 07873727165"
         );
     }
+
+    @Test
+    public void shouldResendStaffNotificationWithDocumentStoreClaimOnClaimIssuedEvent() throws Exception {
+        final String event = "claim-issued";
+
+        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
+
+        final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
+        given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
+        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
+
+        makeRequest(claim.getReferenceNumber(), event)
+            .andExpect(status().isOk());
+
+        verify(documentUploadClientApi).upload(anyString(), any(List.class));
+        verify(documentMetadataDownloadApi).getDocumentMetadata(anyString(), any(String.class));
+        verify(documentDownloadClientApi).downloadBinary(anyString(), any(String.class));
+    }
+
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient

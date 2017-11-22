@@ -12,7 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successDocumentManagementUpload;
 
 public abstract class DocumentManagementBaseIntegrationTest extends BaseIntegrationTest {
     protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
@@ -27,10 +27,10 @@ public abstract class DocumentManagementBaseIntegrationTest extends BaseIntegrat
             .willReturn(new byte[]{1, 2, 3, 4});
 
         given(documentUploadClientApi.upload(anyString(), any(List.class)))
-            .willReturn(documentManagementUploadResponse());
+            .willReturn(successDocumentManagementUpload());
 
         given(documentMetadataDownloadApi.getDocumentMetadata(anyString(), anyString()))
-            .willReturn(documentManagementUploadResponse().getEmbedded().getDocuments().get(0));
+            .willReturn(successDocumentManagementUpload().getEmbedded().getDocuments().get(0));
 
         given(documentDownloadClientApi.downloadBinary(anyString(), anyString())).willReturn(responseEntity);
 

@@ -30,8 +30,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.APPLICATION_PDF;
 import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.FILES_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService.PDF_EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.documentManagementUploadResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.failedDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.failedDocumentManagementUpload;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successDocumentManagementUpload;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentManagementServiceTest {
@@ -60,7 +60,7 @@ public class DocumentManagementServiceTest {
     @Test
     public void shouldUploadSealedClaimForm() {
         //given
-        final UploadResponse uploadResponse = documentManagementUploadResponse();
+        final UploadResponse uploadResponse = successDocumentManagementUpload();
         final Document.Links links = getLinks(uploadResponse);
 
         final InMemoryMultipartFile file
@@ -86,7 +86,7 @@ public class DocumentManagementServiceTest {
         //given
         final String selfUri = SampleClaim.SEALED_CLAIM_DOCUMENT_MANAGEMENT_SELF_URL;
         final Claim claim = SampleClaim.builder().withSealedClaimDocumentManagementSelfPath(selfUri).build();
-        final Document document = documentManagementUploadResponse().getEmbedded().getDocuments().get(0);
+        final Document document = successDocumentManagementUpload().getEmbedded().getDocuments().get(0);
         final String binaryUri = URI.create(document.links.binary.href).getPath();
         final Resource resource = new ByteArrayResource(N_1_FORM_PDF);
 
@@ -94,7 +94,7 @@ public class DocumentManagementServiceTest {
         when(documentDownloadClientApi.downloadBinary(AUTHORISATION_TOKEN, binaryUri)).thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(resource);
 
-        final String selfPath = claim.getSealedClaimDocumentManagementSelfPath()
+        final String selfPath = claim.getDocumentSelfPath()
             .orElseThrow(IllegalArgumentException::new);
 
         //when
@@ -110,7 +110,7 @@ public class DocumentManagementServiceTest {
     @Test(expected = DocumentManagementException.class)
     public void shouldThrowWhenUploadSealedClaimFails() {
         //given
-        final UploadResponse uploadResponse = failedDocumentManagementUploadResponse();
+        final UploadResponse uploadResponse = failedDocumentManagementUpload();
 
         final InMemoryMultipartFile file
             = new InMemoryMultipartFile(FILES_NAME, ORIGINAL_FILE_NAME, APPLICATION_PDF, N_1_FORM_PDF);

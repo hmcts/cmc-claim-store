@@ -11,15 +11,16 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.SealedClaimToDocumentStoreUploader;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.events.DocumentManagementSealedClaimHandler.APPLICATION_PDF;
-import static uk.gov.hmcts.cmc.claimstore.events.DocumentManagementSealedClaimHandler.PDF_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.PIN;
+import static uk.gov.hmcts.cmc.claimstore.services.SealedClaimToDocumentStoreUploader.APPLICATION_PDF;
+import static uk.gov.hmcts.cmc.claimstore.services.SealedClaimToDocumentStoreUploader.PDF_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.SUBMITTER_NAME;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
@@ -43,10 +44,12 @@ public class DocumentManagementSealedClaimHandlerTest {
     @Before
     public void setup() {
         documentManagementSealedClaimHandler = new DocumentManagementSealedClaimHandler(
-            documentManagementService,
-            citizenSealedClaimPdfService,
-            legalSealedClaimPdfService,
-            claimService
+            new SealedClaimToDocumentStoreUploader(
+                documentManagementService,
+                claimService,
+                legalSealedClaimPdfService,
+                citizenSealedClaimPdfService
+            )
         );
 
         when(citizenSealedClaimPdfService.createPdf(CLAIM, CLAIMANT_EMAIL)).thenReturn(N1_FORM_PDF);
@@ -62,7 +65,7 @@ public class DocumentManagementSealedClaimHandlerTest {
         when(documentManagementService.uploadDocument(AUTHORISATION, originalFileName,
             N1_FORM_PDF, APPLICATION_PDF)).thenReturn(DOCUMENT_MANAGEMENT_SELF_PATH);
 
-        documentManagementSealedClaimHandler.uploadCitizenSealedClaimToEvidenceStore(claimIssuedEvent);
+        documentManagementSealedClaimHandler.uploadCitizenSealedClaimToDocumentStore(claimIssuedEvent);
 
         verify(citizenSealedClaimPdfService, once()).createPdf(CLAIM, CLAIMANT_EMAIL);
 
@@ -70,7 +73,7 @@ public class DocumentManagementSealedClaimHandlerTest {
             originalFileName, N1_FORM_PDF, APPLICATION_PDF);
 
         verify(claimService, once())
-            .linkSealedClaimDocumentManagementPath(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
+            .linkSealedClaimDocument(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
 
     }
 
@@ -85,7 +88,7 @@ public class DocumentManagementSealedClaimHandlerTest {
             = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         documentManagementSealedClaimHandler
-            .uploadRepresentativeSealedClaimToEvidenceStore(representedClaimIssuedEvent);
+            .uploadRepresentativeSealedClaimToDocumentStore(representedClaimIssuedEvent);
 
         verify(legalSealedClaimPdfService, once()).createPdf(CLAIM);
 
@@ -93,7 +96,7 @@ public class DocumentManagementSealedClaimHandlerTest {
             originalFileName, N1_FORM_PDF, APPLICATION_PDF);
 
         verify(claimService, once())
-            .linkSealedClaimDocumentManagementPath(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
+            .linkSealedClaimDocument(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
     }
 
 }

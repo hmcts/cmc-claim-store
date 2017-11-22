@@ -98,7 +98,7 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     private EmailAttachment sealedLegalClaimPdf(final Claim claim, final String authorisation) {
-        final byte[] generatedPdf = sealedClaimDocumentService.generateLegalSealedClaim(
+        final byte[] generatedPdf = sealedClaimDocumentService.generateLegalDocument(
             claim.getExternalId(), authorisation);
 
         return pdf(
@@ -108,7 +108,7 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     private EmailAttachment sealedClaimPdf(final Claim claim, final String submitterEmail, final String authorisation) {
-        byte[] generatedPdf = sealedClaimDocumentService.generateCitizenSealedClaim(claim.getExternalId(),
+        byte[] generatedPdf = sealedClaimDocumentService.generateCitizenDocument(claim.getExternalId(),
             authorisation, submitterEmail);
 
         return pdf(

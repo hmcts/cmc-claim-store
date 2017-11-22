@@ -5,10 +5,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,13 +32,9 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource(
-    properties = {
-        "feature_toggles.document_management=true"
-    }
-)
-public class SaveClaimTest extends DocumentManagementBaseIntegrationTest {
+public class SaveClaimUsingPdfServiceTest extends BaseIntegrationTest {
 
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
 
     @Captor
@@ -48,6 +42,9 @@ public class SaveClaimTest extends DocumentManagementBaseIntegrationTest {
 
     @Before
     public void setup() {
+        given(pdfServiceClient.generateFromHtml(any(), any()))
+            .willReturn(PDF_BYTES);
+
         given(userService.getUserDetails("token"))
             .willReturn(SampleUserDetails.builder().withUserId("1").withMail("claimant@email.com").build());
 
@@ -141,33 +138,6 @@ public class SaveClaimTest extends DocumentManagementBaseIntegrationTest {
         assertThat(emailData.getAttachments()).hasSize(1)
             .first().extracting(EmailAttachment::getFilename)
             .containsExactly(savedClaim.getReferenceNumber() + "-sealed-claim.pdf");
-    }
-
-    @Test
-    public void shouldUploadSealedClaimFormToDocumentStoreLegalClaimIssuedEvent() throws Exception {
-        ClaimData claimData = SampleClaimData.builder()
-            .withAmount(SampleAmountRange.validDefaults())
-            .build();
-
-        makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        verify(documentUploadClientApi).upload(anyString(), any(List.class));
-    }
-
-    @Test
-    public void shouldNotifyStaffWithDocumentStoreClaimOnLegalClaimIssuedEvent() throws Exception {
-        ClaimData claimData = SampleClaimData.builder()
-            .withAmount(SampleAmountRange.validDefaults())
-            .build();
-
-        makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        verify(documentMetadataDownloadApi).getDocumentMetadata(anyString(), any(String.class));
-        verify(documentDownloadClientApi).downloadBinary(anyString(), any(String.class));
     }
 
     private ResultActions makeRequest(ClaimData claimData) throws Exception {

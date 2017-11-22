@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -29,12 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource(
-    properties = {
-        "feature_toggles.document_management=false"
-    }
-)
-public class ResendStaffNotificationsUsingLegacyPdfServiceTest extends BaseIntegrationTest {
+public class ResendStaffNotificationsUsingPdfServiceTest extends BaseIntegrationTest {
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     @Captor
@@ -44,7 +38,6 @@ public class ResendStaffNotificationsUsingLegacyPdfServiceTest extends BaseInteg
     public void setup() {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(PDF_BYTES);
-
     }
 
     @Test
