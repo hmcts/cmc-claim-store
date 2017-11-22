@@ -2,10 +2,6 @@ plugins {
   id 'net.ltgt.apt' version '0.10'
 }
 
-repositories {
-  mavenCentral()
-}
-
 def springBootVersion = '1.5.7.RELEASE'
 
 def versions = [
