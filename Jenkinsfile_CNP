@@ -1,0 +1,12 @@
+#!groovy
+
+@Library("Infrastructure@feature/add-slack-integration")
+
+def product = "cmc"
+def component = "claim-store"
+
+withPipeline(type: "java", product: product, component: component) {
+  after('checkout') {
+    echo 'rhubarb-frontend checked out'
+  }
+}
