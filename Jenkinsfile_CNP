@@ -5,7 +5,7 @@
 def product = "cmc"
 def component = "claim-store"
 
-withPipeline(type: "java", product: product, component: component) {
+withPipeline(type: "java", product: product, component: component, slackChannel: '#cmc-tech-notification') {
   after('checkout') {
     echo 'rhubarb-frontend checked out'
   }
