@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -14,6 +15,8 @@ public class DocumentsService {
     private final DefendantResponseCopyService defendantResponseCopyService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
+    private final DefendantResponseReceiptService defendantResponseReceiptService;
+
 
     @Autowired
     public DocumentsService(
@@ -21,7 +24,8 @@ public class DocumentsService {
         final ClaimService claimService,
         final DefendantResponseCopyService defendantResponseCopyService,
         final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        final SettlementAgreementCopyService settlementAgreementCopyService
+        final SettlementAgreementCopyService settlementAgreementCopyService,
+        final DefendantResponseReceiptService defendantResponseReceiptService
     ) {
 
         this.sealedClaimDocumentService = sealedClaimDocumentService;
@@ -29,6 +33,7 @@ public class DocumentsService {
         this.defendantResponseCopyService = defendantResponseCopyService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
+        this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
     public byte[] generateDefendantResponseCopy(final String claimExternalId) {
@@ -48,5 +53,10 @@ public class DocumentsService {
     public byte[] generateSettlementAgreement(final String claimExternalId) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
         return settlementAgreementCopyService.createPdf(claim);
+    }
+
+    public byte[] generateDefendantResponseReceipt(final String claimExternalId) {
+        final Claim claim = claimService.getClaimByExternalId(claimExternalId);
+        return defendantResponseReceiptService.createPdf(claim);
     }
 }
