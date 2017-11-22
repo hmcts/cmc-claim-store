@@ -66,10 +66,6 @@ public class CountyCourtJudgmentService {
         return null != claim.getRespondedAt();
     }
 
-    private boolean isClaimSubmittedByUser(final Claim claim, final String submitterId) {
-        return claim.getSubmitterId().equals(submitterId);
-    }
-
     private boolean isCountyCourtJudgmentAlreadySubmitted(final Claim claim) {
         return claim.getCountyCourtJudgment() != null;
     }
