@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-  compile project(':cmc-domain-model')
+  compile project(':domain-model')
 }
