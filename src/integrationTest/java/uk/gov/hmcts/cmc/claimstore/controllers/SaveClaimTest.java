@@ -53,7 +53,7 @@ public class SaveClaimTest extends DocumentManagementBaseIntegrationTest {
 
 
     @Test
-    public void shouldFailWhenDocumentStoreFailsUploadWhenLegalClaimIssuedEvent() throws Exception {
+    public void shouldFailWhenDocumentStoreFailsUploadOnLegalClaimIssuedEvent() throws Exception {
         given(documentUploadClientApi.upload(anyString(), any(List.class)))
             .willReturn(failedDocumentManagementUpload());
 
@@ -63,7 +63,7 @@ public class SaveClaimTest extends DocumentManagementBaseIntegrationTest {
 
         makeRequest(claimData)
             .andExpect(status().isInternalServerError());
-        
+
         verify(documentUploadClientApi).upload(anyString(), any(List.class));
     }
 
