@@ -1,6 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
@@ -10,16 +16,16 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
+@SpringBootTest
+@ContextConfiguration(classes = CCDAdapterConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class CompanyMapperTest {
 
-    private AddressMapper addressMapper = new AddressMapper();
-    private ContactDetailsMapper contactDetailsMapper = new ContactDetailsMapper();
-    private RepresentativeMapper representativeMapper = new RepresentativeMapper(addressMapper, contactDetailsMapper);
-    private CompanyMapper companyMapper = new CompanyMapper(addressMapper, representativeMapper);
-
+    @Autowired
+    private CompanyMapper companyMapper;
 
     @Test
-    public void shouldMapOrganisationToCCD() {
+    public void shouldMapCompanyToCCD() {
         //given
         Company company = SampleParty.builder().company();
 
@@ -31,7 +37,7 @@ public class CompanyMapperTest {
     }
 
     @Test
-    public void sholdMapOrganisationFromCCD() {
+    public void sholdMapCompanyFromCCD() {
         //given
         final CCDAddress ccdAddress = CCDAddress.builder()
             .line1("line1")
@@ -51,7 +57,7 @@ public class CompanyMapperTest {
             .organisationAddress(ccdAddress)
             .build();
         CCDCompany ccdCompany = CCDCompany.builder()
-            .name("Individual")
+            .name("Abc Ltd")
             .address(ccdAddress)
             .mobilePhone("07987654321")
             .correspondenceAddress(ccdAddress)

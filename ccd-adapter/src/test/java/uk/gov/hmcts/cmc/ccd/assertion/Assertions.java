@@ -4,10 +4,20 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.amount.Amount;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 public class Assertions {
@@ -49,5 +59,45 @@ public class Assertions {
 
     public static CompanyAssert assertThat(Company company) {
         return new CompanyAssert(company);
+    }
+
+    public static PartyAssert assertThat(Party party) {
+        return new PartyAssert(party);
+    }
+
+    public static ClaimDataAssert assertThat(ClaimData claimData) {
+        return new ClaimDataAssert(claimData);
+    }
+
+    public static CompanyDetailsAssert assertThat(CompanyDetails companyDetails) {
+        return new CompanyDetailsAssert(companyDetails);
+    }
+
+    public static OrganisationDetailsAssert assertThat(OrganisationDetails organisationDetails) {
+        return new OrganisationDetailsAssert(organisationDetails);
+    }
+
+    public static IndividualDetailsAssert assertThat(IndividualDetails individualDetails) {
+        return new IndividualDetailsAssert(individualDetails);
+    }
+
+    public static SoleTraderDetailsAssert assertThat(SoleTraderDetails soleTraderDetails) {
+        return new SoleTraderDetailsAssert(soleTraderDetails);
+    }
+
+    public static AmountRangeAssert assertThat(AmountRange amountRange) {
+        return new AmountRangeAssert(amountRange);
+    }
+
+    public static AmountAssert assertThat(Amount amount) {
+        return new AmountAssert(amount);
+    }
+
+    public static StatementOfTruthAssert assertThat(StatementOfTruth statementOfTruth) {
+        return new StatementOfTruthAssert(statementOfTruth);
+    }
+
+    public static ClaimAssert assertThat(Claim claim) {
+        return new ClaimAssert(claim);
     }
 }

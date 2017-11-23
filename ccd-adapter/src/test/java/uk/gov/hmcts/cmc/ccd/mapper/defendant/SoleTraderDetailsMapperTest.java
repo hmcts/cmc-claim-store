@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,33 +11,33 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
-import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class SoleTraderMapperTest {
+public class SoleTraderDetailsMapperTest {
 
     @Autowired
-    private SoleTraderMapper soleTraderMapper;
+    private SoleTraderDetailsMapper soleTraderDetailsMapper;
 
     @Test
-    public void shouldMapSoleTraderToCCD() {
+    public void shouldMapSoleTraderDetailsToCCD() {
         //given
-        SoleTrader soleTrader = SampleParty.builder().soleTrader();
+        SoleTraderDetails soleTraderDetails = SampleTheirDetails.builder().soleTraderDetails();
 
         //when
-        CCDSoleTrader ccdSoleTrader = soleTraderMapper.to(soleTrader);
+        CCDSoleTrader ccdSoleTrader = soleTraderDetailsMapper.to(soleTraderDetails);
 
         //then
-        assertThat(soleTrader).isEqualTo(ccdSoleTrader);
+        assertThat(soleTraderDetails).isEqualTo(ccdSoleTrader);
     }
 
     @Test
-    public void sholdMapSoleTraderFromCCD() {
+    public void sholdMapSoleTraderDetailsFromCCD() {
         //given
         final CCDAddress ccdAddress = CCDAddress.builder()
             .line1("line1")
@@ -59,7 +59,7 @@ public class SoleTraderMapperTest {
         CCDSoleTrader ccdSoleTrader = CCDSoleTrader.builder()
             .title("Mr.")
             .name("Individual")
-            .mobilePhone("07987654321")
+            .email("my@email.com")
             .businessName("My Trade")
             .address(ccdAddress)
             .correspondenceAddress(ccdAddress)
@@ -67,10 +67,10 @@ public class SoleTraderMapperTest {
             .build();
 
         //when
-        SoleTrader soleTrader = soleTraderMapper.from(ccdSoleTrader);
+        SoleTraderDetails soleTraderDetails = soleTraderDetailsMapper.from(ccdSoleTrader);
 
         //then
-        assertThat(soleTrader).isEqualTo(ccdSoleTrader);
+        assertThat(soleTraderDetails).isEqualTo(ccdSoleTrader);
     }
 
 }
