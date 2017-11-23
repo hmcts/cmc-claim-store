@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRange;
@@ -41,6 +42,9 @@ public class AmountMapper implements Mapper<CCDAmount, Amount> {
             case RANGE:
                 CCDAmountRange ccdAmountRange = ccdAmount.getAmountRange();
                 return amountRangeMapper.from(ccdAmountRange);
+            case NOT_KNOWN:
+            case BREAK_DOWN:
+                throw new NotImplementedException("Mapper fro Amount unknown is not Implemented yet!");
             default:
                 throw new MappingException();
         }
