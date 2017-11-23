@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
+import java.util.stream.Collectors;
+
 @Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
@@ -13,14 +15,23 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
     private final PartyMapper partyMapper;
+    private final TheirDetailsMapper theirDetailsMapper;
+    private final AmountMapper amountMapper;
 
     @Autowired
-    public ClaimMapper(PersonalInjuryMapper personalInjuryMapper, HousingDisrepairMapper housingDisrepairMapper,
-                       StatementOfTruthMapper statementOfTruthMapper, PartyMapper partyMapper) {
+    public ClaimMapper(final PersonalInjuryMapper personalInjuryMapper,
+                       final HousingDisrepairMapper housingDisrepairMapper,
+                       final StatementOfTruthMapper statementOfTruthMapper,
+                       final PartyMapper partyMapper,
+                       final TheirDetailsMapper theirDetailsMapper,
+                       final AmountMapper amountMapper) {
+
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
         this.statementOfTruthMapper = statementOfTruthMapper;
         this.partyMapper = partyMapper;
+        this.theirDetailsMapper = theirDetailsMapper;
+        this.amountMapper = amountMapper;
     }
 
     @Override
@@ -40,10 +51,12 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         claimData.getHousingDisrepair()
             .ifPresent(housingDisrepair -> builder.housingDisrepair(housingDisrepairMapper.to(housingDisrepair)));
 
-        claimData.getClaimants().forEach(partyMapper::to);
+        builder.claimants(claimData.getClaimants().stream().map(partyMapper::to).collect(Collectors.toList()));
+        builder.defendants(claimData.getDefendants().stream().map(theirDetailsMapper::to).collect(Collectors.toList()));
 
         return builder
             .reason(claimData.getReason())
+            .amount(amountMapper.to(claimData.getAmount()))
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
             .externalId(claimData.getExternalId().toString())
             .build();

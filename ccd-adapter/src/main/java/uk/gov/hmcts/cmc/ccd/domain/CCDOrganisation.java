@@ -9,6 +9,7 @@ public class CCDOrganisation {
 
     private String name;
     private CCDAddress address;
+    private String email;
     private CCDAddress correspondenceAddress;
     private String mobilePhone;
     private CCDRepresentative representative;
