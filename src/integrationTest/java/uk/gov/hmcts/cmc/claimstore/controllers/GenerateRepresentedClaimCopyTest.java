@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -30,7 +31,7 @@ public class GenerateRepresentedClaimCopyTest extends DocumentManagementBaseInte
     private static final String AUTH_TOKEN = "Bearer authDataString";
 
     @Test
-    public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
+    public void shouldReturnPdfDocumentFromDocumentStoreIfEverythingIsFine() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder()
             .withAmount(SampleAmountRange.builder().build())
             .build());
@@ -40,30 +41,24 @@ public class GenerateRepresentedClaimCopyTest extends DocumentManagementBaseInte
             .andExpect(content().bytes(PDF_BYTES))
             .andReturn();
 
-        verify(documentUploadClientApi).upload(anyString(),any(List.class));
+        verify(documentUploadClientApi).upload(anyString(), any(List.class));
         verify(documentMetadataDownloadApi).getDocumentMetadata(anyString(), any(String.class));
         verify(documentDownloadClientApi).downloadBinary(anyString(), any(String.class));
     }
 
     @Test
-    public void shouldReturnNotFoundWhenClaimIsNotFound() throws Exception {
-        String nonExistingExternalId = "f5b92e36-fc9c-49e6-99f7-74d60aaa8da2";
-
-        makeRequest(nonExistingExternalId)
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
+    public void shouldReturnServerErrorWhenDocumentUploadFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder()
             .withAmount(SampleAmountRange.builder().build())
             .build());
 
-        given(pdfServiceClient.generateFromHtml(any(), any()))
-            .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
+        given(documentUploadClientApi.upload(anyString(), any(List.class)))
+            .willThrow(new DocumentManagementException("Something bad happened!"));
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isInternalServerError());
+
+        verify(documentUploadClientApi).upload(anyString(), any(List.class));
     }
 
     private ResultActions makeRequest(String externalId) throws Exception {
