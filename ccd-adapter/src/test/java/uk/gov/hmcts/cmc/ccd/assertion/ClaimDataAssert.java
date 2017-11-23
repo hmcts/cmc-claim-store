@@ -12,7 +12,7 @@ public class ClaimDataAssert extends AbstractAssert<ClaimDataAssert, ClaimData> 
 
     public ClaimDataAssert isEqualTo(CCDClaim ccdClaim) {
         isNotNull();
-        
+
         return this;
     }
 }

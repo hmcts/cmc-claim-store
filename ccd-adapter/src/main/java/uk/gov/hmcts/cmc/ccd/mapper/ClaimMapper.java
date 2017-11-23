@@ -13,14 +13,23 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
     private final PartyMapper partyMapper;
+    private final TheirDetailsMapper theirDetailsMapper;
+    private final AmountMapper amountMapper;
 
     @Autowired
-    public ClaimMapper(PersonalInjuryMapper personalInjuryMapper, HousingDisrepairMapper housingDisrepairMapper,
-                       StatementOfTruthMapper statementOfTruthMapper, PartyMapper partyMapper) {
+    public ClaimMapper(final PersonalInjuryMapper personalInjuryMapper,
+                       final HousingDisrepairMapper housingDisrepairMapper,
+                       final StatementOfTruthMapper statementOfTruthMapper,
+                       final PartyMapper partyMapper,
+                       final TheirDetailsMapper theirDetailsMapper,
+                       final AmountMapper amountMapper) {
+
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
         this.statementOfTruthMapper = statementOfTruthMapper;
         this.partyMapper = partyMapper;
+        this.theirDetailsMapper = theirDetailsMapper;
+        this.amountMapper = amountMapper;
     }
 
     @Override
@@ -41,9 +50,10 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .ifPresent(housingDisrepair -> builder.housingDisrepair(housingDisrepairMapper.to(housingDisrepair)));
 
         claimData.getClaimants().forEach(partyMapper::to);
-
+        claimData.getDefendants().forEach(theirDetailsMapper::to);
         return builder
             .reason(claimData.getReason())
+            .amount(amountMapper.to(claimData.getAmount()))
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
             .externalId(claimData.getExternalId().toString())
             .build();
