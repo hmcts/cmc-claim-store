@@ -79,31 +79,47 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
     public TheirDetails from(CCDParty ccdParty) {
         switch (ccdParty.getType()) {
             case COMPANY:
-                final CCDCompany ccdCompany = ccdParty.getCompany();
-                return new CompanyDetails(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
-                    ccdCompany.getEmail(), representativeMapper.from(ccdCompany.getRepresentative()),
-                    addressMapper.from(ccdCompany.getCorrespondenceAddress()), ccdCompany.getContactPerson());
+                return getCompany(ccdParty);
             case INDIVIDUAL:
-                final CCDIndividual ccdIndividual = ccdParty.getIndividual();
-                return new IndividualDetails(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
-                    ccdIndividual.getEmail(), representativeMapper.from(ccdIndividual.getRepresentative()),
-                    addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getTitle(),
-                    LocalDate.parse(ccdIndividual.getDateOfBirth(), ISO_DATE));
+                return getIndividual(ccdParty);
             case SOLE_TRADER:
-                final CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
-                return new SoleTraderDetails(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
-                    ccdSoleTrader.getEmail(), representativeMapper.from(ccdSoleTrader.getRepresentative()),
-                    addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getTitle(),
-                    ccdSoleTrader.getBusinessName());
+                return getSoleTrader(ccdParty);
             case ORGANISATION:
-                final CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
-                return new OrganisationDetails(ccdOrganisation.getName(),
-                    addressMapper.from(ccdOrganisation.getAddress()), ccdOrganisation.getEmail(),
-                    representativeMapper.from(ccdOrganisation.getRepresentative()),
-                    addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getContactPerson(),
-                    ccdOrganisation.getCompaniesHouseNumber());
+                return getOrganisation(ccdParty);
             default:
                 throw new MappingException();
         }
+    }
+
+    private TheirDetails getCompany(CCDParty ccdParty) {
+        final CCDCompany ccdCompany = ccdParty.getCompany();
+        return new CompanyDetails(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
+            ccdCompany.getEmail(), representativeMapper.from(ccdCompany.getRepresentative()),
+            addressMapper.from(ccdCompany.getCorrespondenceAddress()), ccdCompany.getContactPerson());
+    }
+
+    private TheirDetails getIndividual(CCDParty ccdParty) {
+        final CCDIndividual ccdIndividual = ccdParty.getIndividual();
+        return new IndividualDetails(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
+            ccdIndividual.getEmail(), representativeMapper.from(ccdIndividual.getRepresentative()),
+            addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getTitle(),
+            LocalDate.parse(ccdIndividual.getDateOfBirth(), ISO_DATE));
+    }
+
+    private TheirDetails getSoleTrader(CCDParty ccdParty) {
+        final CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
+        return new SoleTraderDetails(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
+            ccdSoleTrader.getEmail(), representativeMapper.from(ccdSoleTrader.getRepresentative()),
+            addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getTitle(),
+            ccdSoleTrader.getBusinessName());
+    }
+
+    private TheirDetails getOrganisation(CCDParty ccdParty) {
+        final CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
+        return new OrganisationDetails(ccdOrganisation.getName(),
+            addressMapper.from(ccdOrganisation.getAddress()), ccdOrganisation.getEmail(),
+            representativeMapper.from(ccdOrganisation.getRepresentative()),
+            addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getContactPerson(),
+            ccdOrganisation.getCompaniesHouseNumber());
     }
 }
