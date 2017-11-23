@@ -5,7 +5,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDIndividual;
 import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.CompanyDetailsMapper;
@@ -21,6 +20,10 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import java.time.LocalDate;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 
 @Component
 public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
@@ -52,19 +55,19 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
         final CCDParty.CCDPartyBuilder builder = CCDParty.builder();
 
         if (theirDetails instanceof IndividualDetails) {
-            builder.type(CCDPartyType.INDIVIDUAL);
+            builder.type(INDIVIDUAL);
             IndividualDetails individual = (IndividualDetails) theirDetails;
             builder.individual(individualDetailsMapper.to(individual));
         } else if (theirDetails instanceof CompanyDetails) {
-            builder.type(CCDPartyType.COMPANY);
+            builder.type(COMPANY);
             CompanyDetails company = (CompanyDetails) theirDetails;
             builder.company(companyDetailsMapper.to(company));
         } else if (theirDetails instanceof OrganisationDetails) {
-            builder.type(CCDPartyType.ORGANISATION);
+            builder.type(ORGANISATION);
             OrganisationDetails organisation = (OrganisationDetails) theirDetails;
             builder.organisation(organisationDetailsMapper.to(organisation));
         } else if (theirDetails instanceof SoleTraderDetails) {
-            builder.type(CCDPartyType.SOLE_TRADER);
+            builder.type(SOLE_TRADER);
             SoleTraderDetails soleTrader = (SoleTraderDetails) theirDetails;
             builder.soleTrader(soleTraderDetailsMapper.to(soleTrader));
         }

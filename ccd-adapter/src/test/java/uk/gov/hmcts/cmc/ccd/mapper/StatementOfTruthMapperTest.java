@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -28,9 +28,7 @@ public class StatementOfTruthMapperTest {
         //when
         CCDStatementOfTruth ccdStatementOfTruth = statementOfTruthMapper.to(statementOfTruth);
         //then
-        assertThat(ccdStatementOfTruth).isNotNull();
-        assertThat(ccdStatementOfTruth.getSignerName()).isEqualTo("name");
-        assertThat(ccdStatementOfTruth.getSignerRole()).isEqualTo("role");
+        assertThat(statementOfTruth).isEqualTo(ccdStatementOfTruth);
     }
 
     @Test
@@ -45,8 +43,6 @@ public class StatementOfTruthMapperTest {
         //when
         StatementOfTruth cmcStatementOfTruth = statementOfTruthMapper.from(statementOfTruth);
         //then
-        assertThat(cmcStatementOfTruth).isNotNull();
-        assertThat(cmcStatementOfTruth.getSignerName()).isEqualTo(statementOfTruth.getSignerName());
-        assertThat(cmcStatementOfTruth.getSignerRole()).isEqualTo(statementOfTruth.getSignerRole());
+        assertThat(cmcStatementOfTruth).isEqualTo(statementOfTruth);
     }
 }

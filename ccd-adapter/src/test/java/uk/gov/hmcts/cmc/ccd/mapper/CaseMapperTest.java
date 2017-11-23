@@ -7,29 +7,30 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ClaimMapperTest {
+public class CaseMapperTest {
 
     @Autowired
-    private ClaimMapper claimMapper;
+    private CaseMapper caseMapper;
 
     @Test
-    public void shouldMapClaimToCCD() {
+    public void shouldMapLegalClaimToCCD() {
         //given
-        ClaimData claimData = SampleClaimData.validDefaults();
+        Claim claim = SampleClaim.getDefaultForLegal();
 
         //when
-        CCDClaim ccdClaim = claimMapper.to(claimData);
+        CCDCase ccdCase = caseMapper.to(claim);
 
         //then
-        assertThat(claimData).isEqualTo(ccdClaim);
+        assertThat(claim).isEqualTo(ccdCase);
     }
+
 }

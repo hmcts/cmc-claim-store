@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
+import java.util.stream.Collectors;
+
 @Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
@@ -49,8 +51,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         claimData.getHousingDisrepair()
             .ifPresent(housingDisrepair -> builder.housingDisrepair(housingDisrepairMapper.to(housingDisrepair)));
 
-        claimData.getClaimants().forEach(partyMapper::to);
-        claimData.getDefendants().forEach(theirDetailsMapper::to);
+        builder.claimants(claimData.getClaimants().stream().map(partyMapper::to).collect(Collectors.toList()));
+        builder.defendants(claimData.getDefendants().stream().map(theirDetailsMapper::to).collect(Collectors.toList()));
+
         return builder
             .reason(claimData.getReason())
             .amount(amountMapper.to(claimData.getAmount()))

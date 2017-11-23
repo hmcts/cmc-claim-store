@@ -4,10 +4,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
@@ -89,5 +91,13 @@ public class Assertions {
 
     public static AmountAssert assertThat(Amount amount) {
         return new AmountAssert(amount);
+    }
+
+    public static StatementOfTruthAssert assertThat(StatementOfTruth statementOfTruth) {
+        return new StatementOfTruthAssert(statementOfTruth);
+    }
+
+    public static ClaimAssert assertThat(Claim claim) {
+        return new ClaimAssert(claim);
     }
 }
