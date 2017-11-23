@@ -21,17 +21,14 @@ public class AmountAssert extends AbstractAssert<AmountAssert, Amount> {
     public AmountAssert isEqualTo(CCDAmount ccdAmount) {
         isNotNull();
 
-        if (actual instanceof AmountRange) {
-            if (!Objects.equals(RANGE, ccdAmount.getType())) {
-                failWithMessage("Expected CCDAmount.type to be <%s> but was <%s>",
-                    ccdAmount.getType(), RANGE);
-            }
+        if (actual instanceof AmountRange && Objects.equals(RANGE, ccdAmount.getType())) {
+            failWithMessage("Expected CCDAmount.type to be <%s> but was <%s>",
+                ccdAmount.getType(), RANGE);
+
             assertThat((AmountRange) actual).isEqualTo(ccdAmount.getAmountRange());
-        } else if (actual instanceof NotKnown) {
-            if (!Objects.equals(NOT_KNOWN, ccdAmount.getType())) {
-                failWithMessage("Expected CCDAmount.type to be <%s> but was <%s>",
-                    ccdAmount.getType(), NOT_KNOWN);
-            }
+        } else if (actual instanceof NotKnown && !Objects.equals(NOT_KNOWN, ccdAmount.getType())) {
+            failWithMessage("Expected CCDAmount.type to be <%s> but was <%s>",
+                ccdAmount.getType(), NOT_KNOWN);
         }
 
         return this;
