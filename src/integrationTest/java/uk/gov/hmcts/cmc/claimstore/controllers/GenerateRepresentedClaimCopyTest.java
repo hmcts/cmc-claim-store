@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
 
 import java.util.List;
 
