@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.ResponseData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 
-public class DefendantDetailsContentProviderTest {
+public class PartyDetailsContentProviderTest {
 
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(2017, 7, 19);
 
@@ -59,7 +59,7 @@ public class DefendantDetailsContentProviderTest {
         ).build();
     }
 
-    private DefendantDetailsContentProvider provider = new DefendantDetailsContentProvider();
+    private PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendant() {
@@ -73,7 +73,7 @@ public class DefendantDetailsContentProviderTest {
 
     @Test
     public void nameShouldBeAsGivenByClaimantWhenNotAmended() {
-        DefendantDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
 
         assertThat(content.getNameAmended()).isFalse();
         assertThat(content.getFullName()).isEqualTo(defendant.getName());
@@ -82,7 +82,7 @@ public class DefendantDetailsContentProviderTest {
     @Test
     public void nameShouldBeAsGivenByDefendantWhenAmended() {
         ResponseData defendantResponse = amendedDetails();
-        DefendantDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
 
         assertThat(content.getNameAmended()).isTrue();
         assertThat(content.getFullName()).isEqualTo(
@@ -94,7 +94,7 @@ public class DefendantDetailsContentProviderTest {
 
     @Test
     public void addressShouldBeAsGivenByClaimantWhenNotAmended() {
-        DefendantDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
 
         assertThat(content.getAddressAmended()).isFalse();
         assertThat(content.getAddress()).isEqualTo(defendant.getAddress());
@@ -103,7 +103,7 @@ public class DefendantDetailsContentProviderTest {
     @Test
     public void addressShouldBeAsGivenByDefendantWhenAmended() {
         ResponseData defendantResponse = amendedDetails();
-        DefendantDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
 
         assertThat(content.getAddressAmended()).isTrue();
         assertThat(content.getAddress()).isEqualTo(defendantResponse
@@ -113,14 +113,14 @@ public class DefendantDetailsContentProviderTest {
 
     @Test
     public void shouldProvideDateOfBirth() {
-        DefendantDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
 
         assertThat(content.getDateOfBirth()).isEqualTo(formatDate(DATE_OF_BIRTH));
     }
 
     @Test
     public void shouldProvideCorrespondenceAddress() {
-        DefendantDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
 
         assertThat(content.getCorrespondenceAddress()).isEqualTo(correspondenceAddress);
     }

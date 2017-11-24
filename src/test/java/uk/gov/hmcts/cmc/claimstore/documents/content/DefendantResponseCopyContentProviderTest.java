@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -15,7 +15,7 @@ public class DefendantResponseCopyContentProviderTest {
     private Claim claim = SampleClaim.getWithDefaultResponse();
 
     private DefendantResponseCopyContentProvider provider = new DefendantResponseCopyContentProvider(
-        new DefendantDetailsContentProvider()
+        new PartyDetailsContentProvider()
     );
 
     @Test(expected = NullPointerException.class)
@@ -52,7 +52,7 @@ public class DefendantResponseCopyContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("defendant");
-        assertThat(content.get("defendant")).isInstanceOf(DefendantDetailsContent.class);
+        assertThat(content.get("defendant")).isInstanceOf(PartyDetailsContent.class);
     }
 
     @Test

@@ -1,25 +1,26 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.ResponseData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import static java.util.Objects.requireNonNull;
 
 @Component
-public class DefendantDetailsContentProvider {
+public class PartyDetailsContentProvider {
 
-    public DefendantDetailsContent createContent(
+    public PartyDetailsContent createContent(
         final TheirDetails providedByClaimant,
-        final ResponseData defendantResponse,
+        final Party party,
         final String defendantEmail
     ) {
         requireNonNull(providedByClaimant);
-        requireNonNull(defendantResponse);
-        return new DefendantDetailsContent(
+        requireNonNull(party);
+        return new PartyDetailsContent(
             providedByClaimant,
-            defendantResponse,
+            party,
             defendantEmail
         );
     }

@@ -14,10 +14,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 @Component
 public class DefendantResponseCopyContentProvider {
 
-    private final DefendantDetailsContentProvider defendantDetailsContentProvider;
+    private final PartyDetailsContentProvider partyDetailsContentProvider;
 
-    public DefendantResponseCopyContentProvider(final DefendantDetailsContentProvider defendantDetailsContentProvider) {
-        this.defendantDetailsContentProvider = defendantDetailsContentProvider;
+    public DefendantResponseCopyContentProvider(final PartyDetailsContentProvider partyDetailsContentProvider) {
+        this.partyDetailsContentProvider = partyDetailsContentProvider;
     }
 
     public Map<String, Object> createContent(final Claim claim) {
@@ -29,13 +29,18 @@ public class DefendantResponseCopyContentProvider {
         content.put("claimSubmittedOn", formatDate(claim.getCreatedAt()));
         content.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         content.put("claimantFullName", claim.getClaimData().getClaimant().getName());
-        content.put("defendant", defendantDetailsContentProvider.createContent(
+        content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getClaimData().getDefendant(),
-            defendantResponse,
+            defendantResponse.getDefendant(),
             claim.getDefendantEmail()
         ));
         content.put("responseDefence", defendantResponse.getDefence());
 
         return content;
     }
+
+
+
+//    ToDO:
+//    Create a claimant so that instances like claimant.businessName will work
 }

@@ -98,7 +98,7 @@
     </tr>
     <tr>
       <td colspan="2">
-        <p>{{ defendantFullName }}’s defence</p>
+        <p>{{ defendant.fullName }}’s defence</p>
       </td>
     </tr>
     <tr>
@@ -118,7 +118,7 @@
       <tr>
         <td>Name:</td>
         <td>
-          {{ claimantFullName }}
+          {{ claimant.fullName }}
         </td>
       </tr>
       {% if claimant.contactPerson is defined %}
@@ -140,13 +140,13 @@
       <tr>
         <td>Address:</td>
         <td>
-          {{ claimant.address.lineOne }}
+          {{ claimant.address.line1 }}
           <br/>
-          {% if claimant.address.lineTwo is not empty %}
-            {{ claimant.address.lineTwo }}
+          {% if claimant.address.line2 is not empty %}
+            {{ claimant.address.line2 }}
             <br/>
           {% endif %}
-          {{ claimant.address.townOrCity }}
+          {{ claimant.address.city }}
           <br/>
           {{ claimant.address.postcode }}
         </td>
@@ -170,7 +170,7 @@
       <tr>
         <td>Name:</td>
         <td>
-          {{ defendantFullName }}
+          {{ defendant.fullName }}
         </td>
       </tr>
       {% if defendant.contactPerson is defined %}
@@ -341,12 +341,12 @@
     <table>
       <tr>
         <td>Declaration:</td>
-        {% if defence.statementOfTruth is empty %}
+        {% if signerName is empty %}
           <td>
-            I {{ defendantFullName }} believe that the facts stated in this defence form are true.
+            I {{ defendant.fullName }} believe that the facts stated in this defence form are true.
           </td>
         {% endif %}
-        {% if defence.statementOfTruth is not empty %}
+        {% if signerName is not empty %}
           <td>
             The defendant believes that the facts stated in this defence form are true.
           </td>
@@ -358,23 +358,23 @@
       <tr>
         <td></td>
         <td>
-          {{ defendantFullName }}
+          {{ defendant.fullName }}
         </td>
       </tr>
       {% endif %}
-      {% if defence.statementOfTruth is not empty %}
+      {% if signerName is not empty %}
         <tr>
           <td>
            Name:
           </td>
-          <td>{{ defence.statementOfTruth.signerName }}</td>
+          <td>{{ signerName }}</td>
         </tr>
         <tr>
           <td>
             Organisation:
           </td>
-          {% if defendantFullName is not empty %}
-            <td>{{ defendantFullName }}</td>
+          {% if defendant.fullName is not empty %}
+            <td>{{ defendant.fullName }}</td>
           {% endif %}
           {% if defendant.businessName is not empty %}
             <td>{{ defendant.businessName }}</td>
@@ -384,7 +384,7 @@
           <td>
             Position held:
           </td>
-          <td>{{ defence.statementOfTruth.signerRole }}</td>
+          <td>{{ signerRole }}</td>
         </tr>
       {% endif %}
     </table>
@@ -404,7 +404,7 @@
       <tr>
         <td></td>
         <td>
-          Unless you’ve been asked not to, you can still contact {{ claimantFullName }} directly.
+          Unless you’ve been asked not to, you can still contact {{ claimant.fullName }} directly.
           If you can reach an agreement you may not have to go to a hearing.
         </td>
       </tr>
@@ -421,7 +421,7 @@
       <tr>
         <td></td>
         <td>
-          {% if defence.freeMediation == 'yes' %}
+          {% if freeMediation == 'yes' %}
             <p>You have asked to use the mediation service. We’ll contact the claimant to ask if they want to mediate.
               If they want to mediate then we’ll contact you to arrange a mediation appointment.</p>
           {% else %}
