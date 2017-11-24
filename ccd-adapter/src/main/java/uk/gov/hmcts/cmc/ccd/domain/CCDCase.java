@@ -7,6 +7,7 @@ import lombok.Value;
 @Builder
 public class CCDCase {
 
+    private Long id;
     private String referenceNumber;
     private String submitterId;
     private String submittedOn;

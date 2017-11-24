@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
@@ -21,6 +23,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
     public CCDCase to(Claim claim) {
 
         return CCDCase.builder()
+            .id(claim.getId())
             .externalId(claim.getExternalId())
             .referenceNumber(claim.getReferenceNumber())
             .submitterId(claim.getSubmitterId())
@@ -33,6 +36,23 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     @Override
     public Claim from(CCDCase ccdCase) {
-        throw new NotImplementedException("Not implemented yet!");
+        return new Claim(ccdCase.getId(),
+            ccdCase.getSubmitterId(),
+            null,
+            null,
+            ccdCase.getExternalId(),
+            ccdCase.getReferenceNumber(), claimMapper.from(ccdCase.getClaim()),
+            LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME),
+            LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE),
+            null,
+            false,
+            ccdCase.getSubmitterEmail(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
     }
 }
