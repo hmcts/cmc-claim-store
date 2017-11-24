@@ -94,7 +94,7 @@ public class DocumentManagementServiceTest {
         when(documentDownloadClientApi.downloadBinary(AUTHORISATION_TOKEN, binaryUri)).thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(resource);
 
-        final String selfPath = claim.getDocumentSelfPath()
+        final String selfPath = claim.getSealedClaimDocumentSelfPath()
             .orElseThrow(IllegalArgumentException::new);
 
         //when

@@ -30,7 +30,7 @@ public class DocumentManagementSealedClaimDocumentService implements SealedClaim
     @Override
     public byte[] generateLegalDocument(final String claimExternalId, final String authorisation) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation, null);
+        return downloadOrGenerateAndUploadLegalN1FormPdfDocument(claim, authorisation, null);
     }
 
     @Override
@@ -40,15 +40,15 @@ public class DocumentManagementSealedClaimDocumentService implements SealedClaim
         final String submitterEmail
     ) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
-        return downloadOrUploadAndGenerateLegalN1FormPdfDocument(claim, authorisation, submitterEmail);
+        return downloadOrGenerateAndUploadLegalN1FormPdfDocument(claim, authorisation, submitterEmail);
     }
 
-    private byte[] downloadOrUploadAndGenerateLegalN1FormPdfDocument(
+    private byte[] downloadOrGenerateAndUploadLegalN1FormPdfDocument(
         final Claim claim,
         final String authorisation,
         final String submitterEmail
     ) {
-        final Optional<String> documentSelfPath = claim.getDocumentSelfPath();
+        final Optional<String> documentSelfPath = claim.getSealedClaimDocumentSelfPath();
 
         if (documentSelfPath.isPresent()) {
             return documentManagementService.downloadDocument(authorisation, documentSelfPath.get());
@@ -57,7 +57,7 @@ public class DocumentManagementSealedClaimDocumentService implements SealedClaim
 
             final Claim updatedClaim = claimService.getClaimByExternalId(claim.getExternalId());
 
-            final String documentSelfLink = updatedClaim.getDocumentSelfPath()
+            final String documentSelfLink = updatedClaim.getSealedClaimDocumentSelfPath()
                 .orElseThrow(() -> new DocumentManagementException("failed linking documentManagement"));
 
             return documentManagementService.downloadDocument(authorisation, documentSelfLink);
