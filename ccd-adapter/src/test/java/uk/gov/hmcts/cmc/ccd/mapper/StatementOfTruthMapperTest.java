@@ -1,14 +1,24 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
+@SpringBootTest
+@ContextConfiguration(classes = CCDAdapterConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class StatementOfTruthMapperTest {
 
-    private StatementOfTruthMapper statementOfTruthMapper = new StatementOfTruthMapper();
+    @Autowired
+    private StatementOfTruthMapper statementOfTruthMapper;
 
     @Test
     public void shouldMapStatementOfTruthToCCD() {
@@ -18,9 +28,7 @@ public class StatementOfTruthMapperTest {
         //when
         CCDStatementOfTruth ccdStatementOfTruth = statementOfTruthMapper.to(statementOfTruth);
         //then
-        assertThat(ccdStatementOfTruth).isNotNull();
-        assertThat(ccdStatementOfTruth.getSignerName()).isEqualTo("name");
-        assertThat(ccdStatementOfTruth.getSignerRole()).isEqualTo("role");
+        assertThat(statementOfTruth).isEqualTo(ccdStatementOfTruth);
     }
 
     @Test
@@ -35,8 +43,6 @@ public class StatementOfTruthMapperTest {
         //when
         StatementOfTruth cmcStatementOfTruth = statementOfTruthMapper.from(statementOfTruth);
         //then
-        assertThat(cmcStatementOfTruth).isNotNull();
-        assertThat(cmcStatementOfTruth.getSignerName()).isEqualTo(statementOfTruth.getSignerName());
-        assertThat(cmcStatementOfTruth.getSignerRole()).isEqualTo(statementOfTruth.getSignerRole());
+        assertThat(cmcStatementOfTruth).isEqualTo(statementOfTruth);
     }
 }
