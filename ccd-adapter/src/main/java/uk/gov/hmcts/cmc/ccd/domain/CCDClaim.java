@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import lombok.Builder;
 import lombok.Value;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -17,8 +16,7 @@ public class CCDClaim {
     private BigInteger feeAmountInPennies;
     private String externalReferenceNumber;
     private String externalId;
-    private BigDecimal minAmount;
-    private BigDecimal maxAmount;
+    private CCDAmount amount;
     private String preferredCourt;
     private CCDPersonalInjury personalInjury;
     private CCDHousingDisrepair housingDisrepair;
