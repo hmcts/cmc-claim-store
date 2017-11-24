@@ -8,12 +8,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentManagementClaimIssuedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentManagementSealedClaimHandler;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.SealedClaimToDocumentStoreUploader;
 import uk.gov.service.notify.NotificationClientException;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
@@ -38,6 +41,8 @@ public class DocumentManagementSealedClaimHandlerTest {
     private CitizenSealedClaimPdfService citizenSealedClaimPdfService;
     @Mock
     private LegalSealedClaimPdfService legalSealedClaimPdfService;
+    @Mock
+    private DocumentManagementClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
 
     private DocumentManagementSealedClaimHandler documentManagementSealedClaimHandler;
 
@@ -49,7 +54,8 @@ public class DocumentManagementSealedClaimHandlerTest {
                 claimService,
                 legalSealedClaimPdfService,
                 citizenSealedClaimPdfService
-            )
+            ),
+            claimIssuedStaffNotificationHandler
         );
 
         when(citizenSealedClaimPdfService.createPdf(CLAIM, CLAIMANT_EMAIL)).thenReturn(N1_FORM_PDF);
@@ -75,6 +81,7 @@ public class DocumentManagementSealedClaimHandlerTest {
         verify(claimService, once())
             .linkSealedClaimDocument(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
 
+        verify(claimIssuedStaffNotificationHandler).onClaimIssued(eq(claimIssuedEvent));
     }
 
     @Test
@@ -97,6 +104,8 @@ public class DocumentManagementSealedClaimHandlerTest {
 
         verify(claimService, once())
             .linkSealedClaimDocument(CLAIM.getId(), DOCUMENT_MANAGEMENT_SELF_PATH);
+
+        verify(claimIssuedStaffNotificationHandler).onRepresentedClaimIssued(eq(representedClaimIssuedEvent));
     }
 
 }

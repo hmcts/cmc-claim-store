@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.claim.StaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -36,7 +36,7 @@ public class SupportController {
     private static final String CLAIM = "Claim ";
     private final ClaimService claimService;
     private final UserService userService;
-    private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
+    private final StaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
@@ -46,7 +46,7 @@ public class SupportController {
     public SupportController(
         final ClaimService claimService,
         final UserService userService,
-        final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
+        final StaffNotificationHandler claimIssuedStaffNotificationHandler,
         final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         final CCJStaffNotificationHandler ccjStaffNotificationHandler,
@@ -134,7 +134,6 @@ public class SupportController {
                 new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation)
             );
         }
-
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(final Claim claim) {

@@ -2,25 +2,23 @@ package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "false")
-public class ClaimIssuedStaffNotificationHandler implements StaffNotificationHandler {
+@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
+public class DocumentManagementClaimIssuedStaffNotificationHandler implements StaffNotificationHandler {
 
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
 
     @Autowired
-    public ClaimIssuedStaffNotificationHandler(
+    public DocumentManagementClaimIssuedStaffNotificationHandler(
         final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
     ) {
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
     }
 
-    @EventListener
     public void onClaimIssued(final ClaimIssuedEvent event) {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
@@ -30,7 +28,6 @@ public class ClaimIssuedStaffNotificationHandler implements StaffNotificationHan
         );
     }
 
-    @EventListener
     public void onRepresentedClaimIssued(final RepresentedClaimIssuedEvent event) {
         claimIssuedStaffNotificationService.notifyStaffClaimIssued(
             event.getClaim(),
