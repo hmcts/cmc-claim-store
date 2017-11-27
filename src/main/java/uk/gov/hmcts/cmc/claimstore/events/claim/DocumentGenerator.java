@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 
 import static java.lang.String.format;
 
@@ -34,7 +35,7 @@ public class DocumentGenerator {
 
     @EventListener
     public void generateForNonRepresentedClaim(final ClaimIssuedEvent event) {
-        PDF sealedClaim = new PDF(format("%s-sealed-claim", event.getClaim().getReferenceNumber()),
+        PDF sealedClaim = new PDF(DocumentNameUtils.buildSealedClaimFilename(event.getClaim().getReferenceNumber()),
             citizenSealedClaimPdfService.createPdf(event.getClaim(), event.getSubmitterEmail()));
         PDF defendantLetter = new PDF(format("%s-defendant-pin-letter", event.getClaim().getReferenceNumber()),
             defendantPinLetterPdfService.createPdf(event.getClaim(), event.getPin()

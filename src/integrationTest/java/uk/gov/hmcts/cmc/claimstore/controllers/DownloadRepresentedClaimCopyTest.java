@@ -2,8 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -15,19 +16,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
+@TestPropertySource(
+    properties = {
+        "feature_toggles.document_management=false"
+    }
+)
+public class DownloadRepresentedClaimCopyTest extends BaseDownloadDocumentTest {
 
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
-    private static final String AUTH_TOKEN = "Bearer authDataString";
+    public DownloadRepresentedClaimCopyTest() {
+        super("legalSealedClaim");
+    }
 
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder()
-            .withAmount(SampleAmountRange.builder().build())
-            .build());
-
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
+
+        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
@@ -45,21 +50,12 @@ public class GenerateRepresentedClaimCopyTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder()
-            .withAmount(SampleAmountRange.builder().build())
-            .build());
-
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
 
+        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
+
         makeRequest(claim.getExternalId())
             .andExpect(status().isInternalServerError());
-    }
-
-    private ResultActions makeRequest(String externalId) throws Exception {
-        return webClient
-            .perform(get("/documents/legalSealedClaim/" + externalId)
-                .header(HttpHeaders.AUTHORIZATION, AUTH_TOKEN)
-            );
     }
 }

@@ -1,15 +1,19 @@
-package uk.gov.hmcts.cmc.claimstore.services;
+package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Service
-public class DocumentsService {
+@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "false")
+public class AlwaysGenerateDocumentsService implements DocumentsService {
+
     private final ClaimService claimService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
     private final DefendantResponseCopyService defendantResponseCopyService;
@@ -17,7 +21,7 @@ public class DocumentsService {
     private final SettlementAgreementCopyService settlementAgreementCopyService;
 
     @Autowired
-    public DocumentsService(
+    public AlwaysGenerateDocumentsService(
         final ClaimService claimService,
         final LegalSealedClaimPdfService legalSealedClaimPdfService,
         final DefendantResponseCopyService defendantResponseCopyService,
@@ -31,23 +35,27 @@ public class DocumentsService {
         this.settlementAgreementCopyService = settlementAgreementCopyService;
     }
 
-    public byte[] generateDefendantResponseCopy(final String claimExternalId) {
-        return defendantResponseCopyService.createPdf(getClaimByExternalId(claimExternalId));
+    @Override
+    public byte[] getLegalSealedClaim(final String externalId, final String authorisation) {
+        return legalSealedClaimPdfService.createPdf(getClaimByExternalId(externalId));
     }
 
-    public byte[] generateLegalSealedClaim(final String claimExternalId) {
-        return legalSealedClaimPdfService.createPdf(getClaimByExternalId(claimExternalId));
+    @Override
+    public byte[] generateDefendantResponseCopy(final String externalId) {
+        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
-    public byte[] generateCountyCourtJudgement(final String claimExternalId) {
-        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(claimExternalId));
+    @Override
+    public byte[] generateCountyCourtJudgement(final String externalId) {
+        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId));
     }
 
-    public byte[] generateSettlementAgreement(final String claimExternalId) {
-        return settlementAgreementCopyService.createPdf(getClaimByExternalId(claimExternalId));
+    @Override
+    public byte[] generateSettlementAgreement(final String externalId) {
+        return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
-    private Claim getClaimByExternalId(String claimExternalId) {
-        return claimService.getClaimByExternalId(claimExternalId);
+    private Claim getClaimByExternalId(final String externalId) {
+        return claimService.getClaimByExternalId(externalId);
     }
 }

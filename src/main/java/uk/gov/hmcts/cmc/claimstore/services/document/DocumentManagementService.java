@@ -1,6 +1,7 @@
-package uk.gov.hmcts.cmc.claimstore.services;
+package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.net.URI;
 import static java.util.Collections.singletonList;
 
 @Service
+@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
 public class DocumentManagementService {
 
     private static final String FILES_NAME = "files";
