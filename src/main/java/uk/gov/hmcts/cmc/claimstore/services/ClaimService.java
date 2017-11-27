@@ -126,13 +126,11 @@ public class ClaimService {
                 externalId, submitterEmail);
         }
 
-        final Claim claim = getClaimById(issuedClaimId);
-
-        eventProducer.createClaimIssuedEvent(claim,
+        eventProducer.createClaimIssuedEvent(getClaimById(issuedClaimId),
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
             userDetails.getFullName(), authorisation);
 
-        return claim;
+        return getClaimById(issuedClaimId);
     }
 
     public Claim requestMoreTimeForResponse(final long claimId, final String authorisation) {
