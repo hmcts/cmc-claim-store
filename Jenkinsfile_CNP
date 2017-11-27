@@ -5,8 +5,16 @@
 def product = "cmc"
 def component = "claim-store"
 
-withPipeline(type: "java", product: product, component: component, slackChannel: '#cmc-tech-notification') {
+withPipeline("java", product, component) {
   after('checkout') {
     echo 'claim-store checked out'
+  }
+
+  onSuccess {
+    echo 'Success'
+  }
+
+  onFailure {
+    echo 'Failed'
   }
 }
