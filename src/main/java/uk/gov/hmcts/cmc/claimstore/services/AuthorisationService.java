@@ -13,7 +13,13 @@ public class AuthorisationService {
 
     public void assertIsSubmitterOnClaim(Claim claim, String userId) {
         if (!isSubmitterOnClaim(claim, userId)) {
-            throw new ForbiddenActionException("Provided user is not a submitter on this claim");
+            throw new ForbiddenActionException(
+                String.format(
+                    "Provided user %s is not a submitter on this claim (%s)",
+                    userId,
+                    claim.getSubmitterId()
+                )
+            );
         }
     }
 
@@ -23,7 +29,13 @@ public class AuthorisationService {
 
     public void assertIsDefendantOnClaim(Claim claim, String userId) {
         if (!isDefendantOnClaim(claim, userId)) {
-            throw new ForbiddenActionException("Provided user is not a defendant on this claim");
+            throw new ForbiddenActionException(
+                String.format(
+                    "Provided user %s is not a defendant on this claim (%s)",
+                    userId,
+                    claim.getDefendantId()
+                )
+            );
         }
     }
 
