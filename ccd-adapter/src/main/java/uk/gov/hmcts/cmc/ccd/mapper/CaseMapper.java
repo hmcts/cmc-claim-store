@@ -53,6 +53,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             null,
             null,
             null,
+            null,
             null);
     }
 }
