@@ -10,11 +10,13 @@ withPipeline("java", product, component) {
     echo 'claim-store checked out'
   }
 
-  onSuccess() {
+  onSuccess {
     echo '<<<<<< Success'
   }
 
-  onFailure() {
+  onFailure {
     echo '>>>>>> Failed'
   }
+
+  enableSlackNotifications('#cmc-tech-notifications')
 }
