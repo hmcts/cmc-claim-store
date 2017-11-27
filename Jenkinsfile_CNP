@@ -11,10 +11,10 @@ withPipeline("java", product, component) {
   }
 
   onSuccess() {
-    echo 'Success'
+    echo '<<<<<< Success'
   }
 
   onFailure() {
-    echo 'Failed'
+    echo '>>>>>> Failed'
   }
 }
