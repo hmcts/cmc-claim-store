@@ -12,6 +12,10 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyCompany;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyIndividual;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyOrganisation;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartySoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -64,6 +68,54 @@ public class PartyMapperTest {
 
         //when
         CCDParty ccdParty = partyMapper.to(party);
+
+        //then
+        assertThat(party).isEqualTo(ccdParty);
+    }
+
+    @Test
+    public void shouldMapIndividualFromCCD() {
+        //given
+        CCDParty ccdParty = getCCDPartyIndividual();
+
+        //when
+        Party party = partyMapper.from(ccdParty);
+
+        //then
+        assertThat(party).isEqualTo(ccdParty);
+    }
+
+    @Test
+    public void shouldMapCompanyFromCCD() {
+        //given
+        CCDParty ccdParty = getCCDPartyCompany();
+
+        //when
+        Party party = partyMapper.from(ccdParty);
+
+        //then
+        assertThat(party).isEqualTo(ccdParty);
+    }
+
+    @Test
+    public void shouldMapOrganisationFromCCD() {
+        //given
+        CCDParty ccdParty = getCCDPartyOrganisation();
+
+        //when
+        Party party = partyMapper.from(ccdParty);
+
+        //then
+        assertThat(party).isEqualTo(ccdParty);
+    }
+
+    @Test
+    public void shouldMapSoleTraderFromCCD() {
+        //given
+        CCDParty ccdParty = getCCDPartySoleTrader();
+
+        //when
+        Party party = partyMapper.from(ccdParty);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
