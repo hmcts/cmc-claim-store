@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.documents.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 
