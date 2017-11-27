@@ -49,24 +49,24 @@ public class ClaimIssuedStaffNotificationService {
     public void notifyStaffClaimIssued(
         final Claim claim,
         final String defendantPin,
-        final String submitterEmail
-    ) {
+        final String submitterEmail,
+        byte[] sealedClaim) {
         requireNonNull(claim);
         requireNonBlank(submitterEmail);
-        final EmailData emailData = prepareEmailData(claim, defendantPin, submitterEmail);
+        final EmailData emailData = prepareEmailData(claim, defendantPin, submitterEmail, sealedClaim);
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
     private EmailData prepareEmailData(
         final Claim claim,
         final String defendantPin,
-        final String submitterEmail
-    ) {
+        final String submitterEmail,
+        byte[] sealedClaim) {
         EmailContent emailContent = provider.createContent(wrapInMap(claim));
         return new EmailData(staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
-            getAttachments(claim, defendantPin, submitterEmail));
+            getAttachments(claim, defendantPin, submitterEmail, sealedClaim));
     }
 
     static Map<String, Object> wrapInMap(Claim claim) {
@@ -79,8 +79,8 @@ public class ClaimIssuedStaffNotificationService {
     private List<EmailAttachment> getAttachments(
         final Claim claim,
         final String defendantPin,
-        final String submitterEmail
-    ) {
+        final String submitterEmail,
+        byte[] sealedClaim) {
         final List<EmailAttachment> emailAttachments = new ArrayList<>();
 
         if (!claim.getClaimData().isClaimantRepresented()) {
@@ -88,18 +88,15 @@ public class ClaimIssuedStaffNotificationService {
             emailAttachments.add(sealedClaimPdf(claim, submitterEmail));
             emailAttachments.add(defendantPinLetterPdf(claim, pin));
         } else {
-            emailAttachments.add(sealedLegalClaimPdf(claim));
+            emailAttachments.add(sealedLegalClaimPdf(claim, sealedClaim));
         }
 
         return emailAttachments;
     }
 
-    private EmailAttachment sealedLegalClaimPdf(final Claim claim) {
-        final byte[] generatedPdf = sealedClaimDocumentService.generateLegalSealedClaim(
-            claim.getExternalId());
-
+    private EmailAttachment sealedLegalClaimPdf(final Claim claim, byte[] sealedClaim) {
         return pdf(
-            generatedPdf,
+            sealedClaim,
             format("%s-sealed-claim.pdf", claim.getReferenceNumber())
         );
     }

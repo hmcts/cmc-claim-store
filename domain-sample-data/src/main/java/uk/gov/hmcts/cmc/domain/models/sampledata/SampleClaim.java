@@ -47,6 +47,7 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
+    private String sealedClaimDocumentSelfPath = null;
 
     private SampleClaim() {
     }
@@ -91,6 +92,7 @@ public final class SampleClaim {
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
+            null,
             null,
             null,
             null,
@@ -147,7 +149,8 @@ public final class SampleClaim {
             countyCourtJudgment,
             countyCourtJudgmentRequestedAt,
             settlement,
-            settlementReachedAt);
+            settlementReachedAt,
+            sealedClaimDocumentSelfPath);
     }
 
     public SampleClaim withSubmitterId(String userId) {
@@ -242,6 +245,11 @@ public final class SampleClaim {
 
     public SampleClaim withSettlementReachedAt(final LocalDateTime settlementReachedAt) {
         this.settlementReachedAt = settlementReachedAt;
+        return this;
+    }
+
+    public SampleClaim withSealedClaimDocumentSelfPath(final String sealedClaimDocumentSelfPath) {
+        this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
         return this;
     }
 }

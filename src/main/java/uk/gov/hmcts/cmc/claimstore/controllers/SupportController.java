@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.claim.SealedClaimGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -36,6 +37,7 @@ public class SupportController {
     private static final String CLAIM = "Claim ";
     private final ClaimService claimService;
     private final UserService userService;
+    private final SealedClaimGenerator sealedClaimGenerator;
     private final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler;
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
@@ -46,6 +48,7 @@ public class SupportController {
     public SupportController(
         final ClaimService claimService,
         final UserService userService,
+        final SealedClaimGenerator sealedClaimGenerator,
         final ClaimIssuedStaffNotificationHandler claimIssuedStaffNotificationHandler,
         final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
@@ -54,6 +57,7 @@ public class SupportController {
     ) {
         this.claimService = claimService;
         this.userService = userService;
+        this.sealedClaimGenerator = sealedClaimGenerator;
         this.claimIssuedStaffNotificationHandler = claimIssuedStaffNotificationHandler;
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
@@ -130,7 +134,7 @@ public class SupportController {
         } else {
             final UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            claimIssuedStaffNotificationHandler.onRepresentedClaimIssued(
+            sealedClaimGenerator.generateForRepresentedClaim(
                 new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation)
             );
         }

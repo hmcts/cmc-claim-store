@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -22,16 +23,23 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "feature_toggles.document_management=false"
+    }
+)
 public class SaveClaimTest extends BaseIntegrationTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
@@ -137,6 +145,18 @@ public class SaveClaimTest extends BaseIntegrationTest {
         assertThat(emailData.getAttachments()).hasSize(1)
             .first().extracting(EmailAttachment::getFilename)
             .containsExactly(savedClaim.getReferenceNumber() + "-sealed-claim.pdf");
+    }
+
+    @Test
+    public void shouldNotUploadSealedRepresentedClaimIntoDocumentManagementService() throws Exception {
+        ClaimData claimData = SampleClaimData.builder()
+            .withAmount(SampleAmountRange.validDefaults())
+            .build();
+
+        makeRequest(claimData)
+            .andExpect(status().isOk());
+
+        verify(documentUploadClient, never()).upload(anyString(), anyList());
     }
 
     private ResultActions makeRequest(ClaimData claimData) throws Exception {
