@@ -2,42 +2,32 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.email.EmailAttachment;
-import uk.gov.hmcts.cmc.email.EmailData;
-import uk.gov.service.notify.NotificationClientException;
 
-import java.util.UUID;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.failedDocumentManagementUpload;
 
-public class SaveClaimTest extends BaseIntegrationTest {
-
-    private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
-
-    @Captor
-    private ArgumentCaptor<EmailData> emailDataArgument;
+@TestPropertySource(
+    properties = {
+        "feature_toggles.document_management=true"
+    }
+)
+public class SaveClaimTest extends DocumentManagementBaseIntegrationTest {
 
     @Before
     public void setup() {
@@ -46,97 +36,49 @@ public class SaveClaimTest extends BaseIntegrationTest {
 
         given(userService.generatePin("John Smith", "token"))
             .willReturn(new GeneratePinResponse("my-pin", "2"));
-
-        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
     }
 
     @Test
-    public void shouldReturnNewlyCreatedClaim() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimant();
-
-        MvcResult result = makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
-    }
-
-    @Test
-    public void shouldFailWhenDuplicateExternalId() throws Exception {
-        UUID externalId = UUID.randomUUID();
-
-        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId).build();
-        claimStore.saveClaim(claimData);
+    public void shouldUploadSealedClaimFormToDocumentStoreWhenLegalClaimIssuedEvent() throws Exception {
+        ClaimData claimData = SampleClaimData.builder()
+            .withAmount(SampleAmountRange.validDefaults())
+            .build();
 
         makeRequest(claimData)
-            .andExpect(status().isConflict());
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(documentUploadClientApi).upload(anyString(), any(List.class));
     }
 
-    @Test
-    public void shouldFailWhenStaffNotificationFails() throws Exception {
-        doThrow(new RuntimeException("Sending failed"))
-            .when(emailService).sendEmail(anyString(), any(EmailData.class));
 
-        makeRequest(SampleClaimData.submittedByClaimant())
+    @Test
+    public void shouldFailWhenDocumentStoreFailsUploadOnLegalClaimIssuedEvent() throws Exception {
+        given(documentUploadClientApi.upload(anyString(), any(List.class)))
+            .willReturn(failedDocumentManagementUpload());
+
+        ClaimData claimData = SampleClaimData.builder()
+            .withAmount(SampleAmountRange.validDefaults())
+            .build();
+
+        makeRequest(claimData)
             .andExpect(status().isInternalServerError());
+
+        verify(documentUploadClientApi).upload(anyString(), any(List.class));
     }
 
     @Test
-    public void shouldRetrySendNotifications() throws Exception {
-        given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
-            .willThrow(new NotificationClientException(new RuntimeException("invalid email1")))
-            .willThrow(new NotificationClientException(new RuntimeException("invalid email2")))
-            .willThrow(new NotificationClientException(new RuntimeException("invalid email3")));
-
-        makeRequest(SampleClaimData.submittedByClaimant())
-            .andExpect(status().isOk());
-
-        verify(notificationClient, atLeast(3))
-            .sendEmail(anyString(), anyString(), anyMap(), anyString());
-    }
-
-    @Test
-    public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
+    public void shouldNotifyStaffWithDocumentStoreClaimOnLegalClaimIssuedEvent() throws Exception {
         ClaimData claimData = SampleClaimData.builder()
             .withAmount(SampleAmountRange.validDefaults())
             .build();
 
-        given(notificationClient.sendEmail(any(), any(), any(), any())).willReturn(null);
-
-        MvcResult result = makeRequest(claimData)
+        makeRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
 
-        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
-
-        verify(notificationClient).sendEmail(eq(REPRESENTATIVE_EMAIL_TEMPLATE), anyString(),
-            anyMap(), eq("representative-issue-notification-" + savedClaim.getReferenceNumber()));
-    }
-
-    @Test
-    public void shouldSendStaffNotificationsForLegalClaimIssuedEvent() throws Exception {
-        ClaimData claimData = SampleClaimData.builder()
-            .withAmount(SampleAmountRange.validDefaults())
-            .build();
-
-        MvcResult result = makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
-
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
-
-        EmailData emailData = emailDataArgument.getValue();
-        assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailData.getSubject()).isEqualTo("Claim form " + savedClaim.getReferenceNumber());
-        assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
-        assertThat(emailData.getAttachments()).hasSize(1)
-            .first().extracting(EmailAttachment::getFilename)
-            .containsExactly(savedClaim.getReferenceNumber() + "-sealed-claim.pdf");
+        verify(documentMetadataDownloadApi).getDocumentMetadata(anyString(), any(String.class));
+        verify(documentDownloadClientApi).downloadBinary(anyString(), any(String.class));
     }
 
     private ResultActions makeRequest(ClaimData claimData) throws Exception {

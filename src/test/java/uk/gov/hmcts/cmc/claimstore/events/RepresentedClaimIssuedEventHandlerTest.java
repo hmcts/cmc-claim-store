@@ -55,9 +55,12 @@ public class RepresentedClaimIssuedEventHandlerTest {
 
         representativeConfirmationHandler.sendConfirmation(representedClaimIssuedEvent);
 
-        verify(claimIssuedNotificationService, once()).sendMail(CLAIM,
-            CLAIMANT_EMAIL, null, REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE,
-            "representative-issue-notification-" + representedClaimIssuedEvent.getClaim().getReferenceNumber(),
-            SUBMITTER_NAME);
+        verify(claimIssuedNotificationService, once())
+            .sendMail(CLAIM,
+                CLAIMANT_EMAIL,
+                null,
+                REPRESENTATIVE_CLAIM_ISSUED_TEMPLATE,
+                "representative-issue-notification-" + representedClaimIssuedEvent.getClaim().getReferenceNumber(),
+                SUBMITTER_NAME);
     }
 }

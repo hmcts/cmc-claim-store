@@ -1,78 +1,35 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.DocumentManagementBaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
-import uk.gov.hmcts.cmc.email.EmailData;
 
-import java.time.LocalDate;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.failedDocumentManagementUpload;
 
-public class ResendStaffNotificationsTest extends BaseIntegrationTest {
-
-    @Captor
-    private ArgumentCaptor<EmailData> emailDataArgument;
-
-    @Before
-    public void setup() {
-        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
+@TestPropertySource(
+    properties = {
+        "feature_toggles.document_management=true"
     }
+)
+public class ResendStaffNotificationsTest extends DocumentManagementBaseIntegrationTest {
 
     @Test
-    public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
-        final String nonExistingClaimReference = "something";
-        final String event = "claim-issue";
-
-        makeRequest(nonExistingClaimReference, event)
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void shouldRespond404WhenEventIsNotSupported() throws Exception {
-        final String nonExistingEvent = "some-event";
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-
-        makeRequest(claim.getReferenceNumber(), nonExistingEvent)
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
-        final String event = "claim-issued";
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.linkDefendant(claim.getId(), "2");
-
-        makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isConflict());
-
-        verify(emailService, never()).sendEmail(any(), any());
-    }
-
-    @Test
-    public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
+    public void shouldResendStaffNotificationWithDocumentStoreClaimOnClaimIssuedEvent() throws Exception {
         final String event = "claim-issued";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
@@ -84,81 +41,28 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());
 
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
-
-        EmailData emailData = emailDataArgument.getValue();
-        assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailData.getSubject()).isEqualTo("Claim " + claim.getReferenceNumber() + " issued");
-        assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
+        verify(documentUploadClientApi).upload(anyString(), any(List.class));
+        verify(documentMetadataDownloadApi).getDocumentMetadata(anyString(), any(String.class));
+        verify(documentDownloadClientApi).downloadBinary(anyString(), any(String.class));
     }
 
     @Test
-    public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
-        final String event = "more-time-requested";
+    public void shouldFailResendStaffNotificationWhenDocumentStoreFailsUpload() throws Exception {
+        given(documentUploadClientApi.upload(anyString(), any(List.class)))
+            .willReturn(failedDocumentManagementUpload());
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        final String event = "claim-issued";
 
-        makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isConflict());
+        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
 
-        verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
-    }
-
-    @Test
-    public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
-        final String event = "more-time-requested";
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
+        final GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
+        given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
+        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 
         makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isOk());
+            .andExpect(status().isInternalServerError());
 
-        verify(notificationClient).sendEmail(eq("staff-more-time-requested-template"), eq("recipient@example.com"),
-            any(), eq("more-time-requested-notification-to-staff-" + claim.getReferenceNumber()));
-    }
-
-    @Test
-    public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
-        final String event = "response-submitted";
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-
-        makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isConflict());
-
-        verify(emailService, never()).sendEmail(any(), any());
-    }
-
-    @Test
-    public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
-        final String event = "response-submitted";
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(
-            claim.getId(),
-            SampleResponseData
-                .builder()
-                .withResponseType(ResponseData.ResponseType.OWE_ALL_PAID_ALL)
-                .withMediation(null)
-                .build(),
-            DEFENDANT_ID,
-            "j.smith@example.com"
-        );
-
-        makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isOk());
-
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
-
-        assertThat(emailDataArgument.getValue().getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailDataArgument.getValue().getSubject())
-            .isEqualTo("Civil Money Claim defence submitted: John Rambo v John Smith " + claim.getReferenceNumber());
-        assertThat(emailDataArgument.getValue().getMessage()).contains(
-            "The defendant has submitted an already paid defence which is attached as a PDF",
-            "Email: j.smith@example.com",
-            "Mobile number: 07873727165"
-        );
+        verify(documentUploadClientApi).upload(anyString(), any(List.class));
     }
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {

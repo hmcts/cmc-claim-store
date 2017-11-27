@@ -7,9 +7,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
-import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 public class ClaimTest {
 
@@ -57,24 +55,6 @@ public class ClaimTest {
     }
 
     private static Claim customCreatedAt(final LocalDateTime createdAt) {
-        return new Claim(
-            1L,
-            "3",
-            "3",
-            "4",
-            "external-id",
-            "ref number",
-            null,
-            createdAt,
-            ISSUE_DATE,
-            RESPONSE_DEADLINE,
-            false,
-            "claimant@mail.com",
-            null,
-            null, null,
-            null,
-            null,
-            null,
-            null);
+        return SampleClaim.builder().withCreatedAt(createdAt).build();
     }
 }

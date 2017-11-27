@@ -182,4 +182,8 @@ public class ClaimService {
                                final ResponseData responseData) {
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData));
     }
+
+    public void linkSealedClaimDocument(final Long claimId, final String documentSelfPath) {
+        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+    }
 }

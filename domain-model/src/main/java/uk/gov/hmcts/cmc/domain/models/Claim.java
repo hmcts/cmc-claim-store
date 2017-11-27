@@ -35,6 +35,7 @@ public class Claim {
     private final LocalDateTime countyCourtJudgmentRequestedAt;
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
+    private final String sealedClaimDocumentSelfPath;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -56,7 +57,8 @@ public class Claim {
         final CountyCourtJudgment countyCourtJudgment,
         final LocalDateTime countyCourtJudgmentRequestedAt,
         final Settlement settlement,
-        final LocalDateTime settlementReachedAt
+        final LocalDateTime settlementReachedAt,
+        final String sealedClaimDocumentSelfPath
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -77,6 +79,7 @@ public class Claim {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
+        this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
     }
 
     public Long getId() {
@@ -155,6 +158,10 @@ public class Claim {
         return settlementReachedAt;
     }
 
+    public Optional<String> getSealedClaimDocumentSelfPath() {
+        return Optional.ofNullable(sealedClaimDocumentSelfPath);
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
@@ -183,15 +190,16 @@ public class Claim {
             && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
             && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
             && Objects.equals(settlement, claim.settlement)
-            && Objects.equals(settlementReachedAt, claim.settlementReachedAt);
+            && Objects.equals(settlementReachedAt, claim.settlementReachedAt)
+            && Objects.equals(sealedClaimDocumentSelfPath, claim.sealedClaimDocumentSelfPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
-            claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
-            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
-            settlement, settlementReachedAt
+        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber, claimData,
+            createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail, respondedAt, response,
+            defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt, settlement, settlementReachedAt,
+            sealedClaimDocumentSelfPath
         );
     }
 
@@ -199,5 +207,4 @@ public class Claim {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
 }

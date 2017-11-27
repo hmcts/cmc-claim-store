@@ -12,5 +12,4 @@ public class PDFServiceConfiguration {
     public PDFServiceClient pdfServiceClient(PDFServiceProperties properties) {
         return new PDFServiceClient(properties.getBaseUrl(), "v1");
     }
-
 }

@@ -49,24 +49,26 @@ public class ClaimIssuedStaffNotificationService {
     public void notifyStaffClaimIssued(
         final Claim claim,
         final String defendantPin,
-        final String submitterEmail
+        final String submitterEmail,
+        final String authorisation
     ) {
         requireNonNull(claim);
         requireNonBlank(submitterEmail);
-        final EmailData emailData = prepareEmailData(claim, defendantPin, submitterEmail);
+        final EmailData emailData = prepareEmailData(claim, defendantPin, submitterEmail, authorisation);
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
     private EmailData prepareEmailData(
         final Claim claim,
         final String defendantPin,
-        final String submitterEmail
+        final String submitterEmail,
+        final String authorisation
     ) {
         EmailContent emailContent = provider.createContent(wrapInMap(claim));
         return new EmailData(staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
-            getAttachments(claim, defendantPin, submitterEmail));
+            getAttachments(claim, defendantPin, submitterEmail, authorisation));
     }
 
     static Map<String, Object> wrapInMap(Claim claim) {
@@ -79,24 +81,25 @@ public class ClaimIssuedStaffNotificationService {
     private List<EmailAttachment> getAttachments(
         final Claim claim,
         final String defendantPin,
-        final String submitterEmail
+        final String submitterEmail,
+        final String authorisation
     ) {
         final List<EmailAttachment> emailAttachments = new ArrayList<>();
 
         if (!claim.getClaimData().isClaimantRepresented()) {
             String pin = Optional.ofNullable(defendantPin).orElseThrow(NullPointerException::new);
-            emailAttachments.add(sealedClaimPdf(claim, submitterEmail));
+            emailAttachments.add(sealedClaimPdf(claim, submitterEmail, authorisation));
             emailAttachments.add(defendantPinLetterPdf(claim, pin));
         } else {
-            emailAttachments.add(sealedLegalClaimPdf(claim));
+            emailAttachments.add(sealedLegalClaimPdf(claim, authorisation));
         }
 
         return emailAttachments;
     }
 
-    private EmailAttachment sealedLegalClaimPdf(final Claim claim) {
-        final byte[] generatedPdf = sealedClaimDocumentService.generateLegalSealedClaim(
-            claim.getExternalId());
+    private EmailAttachment sealedLegalClaimPdf(final Claim claim, final String authorisation) {
+        final byte[] generatedPdf = sealedClaimDocumentService.generateLegalDocument(
+            claim.getExternalId(), authorisation);
 
         return pdf(
             generatedPdf,
@@ -104,9 +107,9 @@ public class ClaimIssuedStaffNotificationService {
         );
     }
 
-    private EmailAttachment sealedClaimPdf(final Claim claim, final String submitterEmail) {
-        byte[] generatedPdf = sealedClaimDocumentService.generateCitizenSealedClaim(claim.getExternalId(),
-            submitterEmail);
+    private EmailAttachment sealedClaimPdf(final Claim claim, final String submitterEmail, final String authorisation) {
+        byte[] generatedPdf = sealedClaimDocumentService.generateCitizenDocument(claim.getExternalId(),
+            authorisation, submitterEmail);
 
         return pdf(
             generatedPdf,

@@ -36,8 +36,8 @@ public class DocumentsService {
         return defendantResponseCopyService.createPdf(claim);
     }
 
-    public byte[] generateLegalSealedClaim(final String claimExternalId) {
-        return sealedClaimDocumentService.generateLegalSealedClaim(claimExternalId);
+    public byte[] generateLegalSealedClaim(final String claimExternalId, final String authorisation) {
+        return sealedClaimDocumentService.generateLegalDocument(claimExternalId, authorisation);
     }
 
     public byte[] generateCountyCourtJudgement(final String claimExternalId) {
