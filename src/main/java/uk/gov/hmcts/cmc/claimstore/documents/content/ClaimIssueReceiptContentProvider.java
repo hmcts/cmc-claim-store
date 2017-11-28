@@ -25,7 +25,7 @@ public class ClaimIssueReceiptContentProvider {
     public ClaimIssueReceiptContentProvider(
         final ClaimantContentProvider claimantContentProvider,
         final PersonContentProvider personContentProvider,
-        final ClaimContentProvider claimContentProvider,
+        final ClaimContentProvider claimContentProvider)
     {
         this.claimantContentProvider = claimantContentProvider;
         this.personContentProvider = personContentProvider;
