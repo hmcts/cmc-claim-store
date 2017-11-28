@@ -40,8 +40,12 @@ public class DocumentManagementService {
         this.documentUploadClient = documentUploadClientApi;
     }
 
-    public String uploadDocument(final String authorisation, final String originalFileName,
-                                 final byte[] documentBytes, final String contentType) {
+    public String uploadDocument(
+        final String authorisation,
+        final String originalFileName,
+        final byte[] documentBytes,
+        final String contentType
+    ) {
         final MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
         final UploadResponse response = documentUploadClient.upload(authorisation, singletonList(file));
 

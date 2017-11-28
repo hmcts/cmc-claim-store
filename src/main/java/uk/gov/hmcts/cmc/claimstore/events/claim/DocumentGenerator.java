@@ -23,10 +23,12 @@ public class DocumentGenerator {
     private final ApplicationEventPublisher publisher;
 
     @Autowired
-    public DocumentGenerator(final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
-                             final DefendantPinLetterPdfService defendantPinLetterPdfService,
-                             final LegalSealedClaimPdfService legalSealedClaimPdfService,
-                             final ApplicationEventPublisher publisher) {
+    public DocumentGenerator(
+        final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
+        final DefendantPinLetterPdfService defendantPinLetterPdfService,
+        final LegalSealedClaimPdfService legalSealedClaimPdfService,
+        final ApplicationEventPublisher publisher
+    ) {
         this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
