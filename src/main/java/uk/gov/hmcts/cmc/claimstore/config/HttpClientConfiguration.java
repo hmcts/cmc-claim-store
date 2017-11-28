@@ -19,17 +19,17 @@ public class HttpClientConfiguration {
 
     @Bean
     public Client getFeignHttpClient() {
-        return new ApacheHttpClient(getApacheHttpClient());
+        return new ApacheHttpClient(getHttpClient());
     }
 
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(getApacheHttpClient()));
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(getHttpClient()));
         return restTemplate;
     }
 
-    private CloseableHttpClient getApacheHttpClient() {
+    private CloseableHttpClient getHttpClient() {
         int timeout = 10000;
         RequestConfig config = RequestConfig.custom()
             .setConnectTimeout(timeout)

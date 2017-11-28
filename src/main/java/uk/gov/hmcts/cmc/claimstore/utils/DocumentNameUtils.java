@@ -11,4 +11,12 @@ public class DocumentNameUtils {
         return format("%s-sealed-claim", number);
     }
 
+    public static boolean isSealedClaim(String filename) {
+        return filename.contains("sealed-claim");
+    }
+
+    public static String buildDefendantLetterFilename(String number) {
+        return format("%s-defendant-pin-letter", number);
+    }
+
 }

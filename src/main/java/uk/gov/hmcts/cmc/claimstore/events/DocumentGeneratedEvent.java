@@ -18,8 +18,8 @@ public class DocumentGeneratedEvent {
 
     public DocumentGeneratedEvent(final Claim claim, String authorization, final List<PDF> documents) {
         this.claim = claim;
-        this.documents = documents;
         this.authorization = authorization;
+        this.documents = documents;
     }
 
     public Claim getClaim() {

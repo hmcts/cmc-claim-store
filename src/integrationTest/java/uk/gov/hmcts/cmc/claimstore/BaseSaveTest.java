@@ -11,26 +11,28 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 public abstract class BaseSaveTest extends BaseIntegrationTest {
 
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
+    protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     @Before
     public void setup() {
         given(userService.getUserDetails(AUTHORISATION_TOKEN))
-            .willReturn(SampleUserDetails.builder().withUserId("1").withMail("claimant@email.com").build());
+            .willReturn(SampleUserDetails.builder().build());
 
         given(userService.generatePin("John Smith", AUTHORISATION_TOKEN))
             .willReturn(new GeneratePinResponse("my-pin", "2"));
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
+            .willReturn(PDF_BYTES);
     }
 
     protected ResultActions makeRequest(ClaimData claimData) throws Exception {
         return webClient
-            .perform(post("/claims/" + (Long) 123L)
+            .perform(post("/claims/" + USER_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(claimData))

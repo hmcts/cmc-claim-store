@@ -150,7 +150,8 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocumentSelfPath);
+            sealedClaimDocumentSelfPath
+        );
     }
 
     public SampleClaim withSubmitterId(String userId) {

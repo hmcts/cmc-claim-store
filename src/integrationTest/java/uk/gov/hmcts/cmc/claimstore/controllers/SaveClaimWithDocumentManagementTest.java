@@ -51,7 +51,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
         verify(documentUploadClient).upload(AUTHORISATION_TOKEN, newArrayList(new InMemoryMultipartFile("files",
             deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-sealed-claim.pdf",
-            "application/pdf", new byte[]{1, 2, 3, 4})
+            "application/pdf", PDF_BYTES)
         ));
     }
 

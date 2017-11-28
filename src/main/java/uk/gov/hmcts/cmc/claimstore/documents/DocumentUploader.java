@@ -8,6 +8,9 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
 
 @Component
 @ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
@@ -29,7 +32,7 @@ public class DocumentUploader {
             final String documentSelfPath = this.documentManagementService.uploadDocument(event.getAuthorisation(),
                 document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
 
-            if (document.getFilename().endsWith("sealed-claim.pdf")) {
+            if (isSealedClaim(document.getFilename())) {
                 claimService.linkSealedClaimDocument(event.getClaim().getId(), documentSelfPath);
             }
         });

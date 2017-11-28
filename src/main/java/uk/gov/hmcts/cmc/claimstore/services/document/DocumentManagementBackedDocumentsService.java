@@ -68,6 +68,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return claimService.getClaimByExternalId(externalId);
     }
 
+    @SuppressWarnings("squid:S3655")
     private byte[] downloadOrGenerateAndUpload(Claim claim, Supplier<byte[]> documentSupplier, String authorisation) {
         if (claim.getSealedClaimDocumentSelfPath().isPresent()) {
             String documentSelfPath = claim.getSealedClaimDocumentSelfPath().get();

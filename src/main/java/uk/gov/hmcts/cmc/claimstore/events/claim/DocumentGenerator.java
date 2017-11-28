@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFilename;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFilename;
 
 @Component
 public class DocumentGenerator {
@@ -35,11 +37,11 @@ public class DocumentGenerator {
 
     @EventListener
     public void generateForNonRepresentedClaim(final ClaimIssuedEvent event) {
-        PDF sealedClaim = new PDF(DocumentNameUtils.buildSealedClaimFilename(event.getClaim().getReferenceNumber()),
+        PDF sealedClaim = new PDF(buildSealedClaimFilename(event.getClaim().getReferenceNumber()),
             citizenSealedClaimPdfService.createPdf(event.getClaim(), event.getSubmitterEmail()));
-        PDF defendantLetter = new PDF(format("%s-defendant-pin-letter", event.getClaim().getReferenceNumber()),
+        PDF defendantLetter = new PDF(buildDefendantLetterFilename(event.getClaim().getReferenceNumber()),
             defendantPinLetterPdfService.createPdf(event.getClaim(), event.getPin()
-                .orElseThrow(RuntimeException::new)));
+                .orElseThrow(() -> new IllegalArgumentException("Defendant access PIN is missing"))));
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter));
@@ -47,7 +49,7 @@ public class DocumentGenerator {
 
     @EventListener
     public void generateForRepresentedClaim(final RepresentedClaimIssuedEvent event) {
-        PDF sealedClaim = new PDF(format("%s-sealed-claim", event.getClaim().getReferenceNumber()),
+        PDF sealedClaim = new PDF(buildSealedClaimFilename(event.getClaim().getReferenceNumber()),
             legalSealedClaimPdfService.createPdf(event.getClaim()));
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
