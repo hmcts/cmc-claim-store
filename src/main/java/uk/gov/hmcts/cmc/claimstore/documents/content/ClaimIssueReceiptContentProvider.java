@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,10 +48,10 @@ public class ClaimIssueReceiptContentProvider {
     private Map<String, Object> createContentForDefendant(final Claim claim) {
         Map<String, Object> result = new HashMap<>();
 
-        result.put("fullName", "full name def");
-        result.put("businessName", "bus name def");
+        result.put("fullName", claim.getClaimData().getDefendant().getName());
+        result.put("businessName", PartyUtils.getBusinessName(claim.getClaimData().getDefendant()));
         result.put("address", createContentForAddress(claim.getClaimData().getDefendant().getAddress()));
-        result.put("email", "def email");
+        result.put("email", claim.getClaimData().getDefendant().getEmail());
 
         return result;
 
@@ -59,15 +60,14 @@ public class ClaimIssueReceiptContentProvider {
     private Map<String, Object> createContentForClaim(final Claim claim) {
         Map<String, Object> result = new HashMap<>();
 
-        result.put("claimReferenceNumber", "000MC999");
-        result.put("claimantFullname", "Claimie McClaimant");
-        result.put("submittedDate", "27 November 2017 at 4:16pm");
+        result.put("claimReferenceNumber", claim.getReferenceNumber());
+        result.put("submittedDate", formatDate(claim.getCreatedAt()));
 
-        result.put("amount", "2844");
+        result.put("amount", claim.getClaimData().getAmount()); //TODO Talk to damian. Getting JSON BACK {rows=[{reason=Food, amount=1234}, {}, {}, {}]}
         result.put("interest", createContentForInterest(claim.getClaimData().getInterest()));
-        result.put("issueFee", "999");
-        result.put("totalAmountTillDateOfIssue", "the total");
-        result.put("reason", "the reason");
+        result.put("issueFee", claim.getClaimData().getFeesPaidInPound()); ///////////////////Todo
+        result.put("totalAmountTillDateOfIssue", claim.getClaimData().getFeeAmountInPennies()); ///////////////////Todo
+        result.put("reason", claim.getClaimData().getReason());
         result.put("statementOfTruth", createContentForStatementOfTruth(claim.getClaimData()));
 
         return result;
@@ -76,12 +76,12 @@ public class ClaimIssueReceiptContentProvider {
     private Map<String, Object> createContentForClaimant(final Claim claim) {
         Map<String, Object> result = new HashMap<>();
 
-        result.put("fullName", "full name");
-        result.put("contactPerson", "contact name ");
-        result.put("businessName", "Business Name");
+        result.put("fullName", claim.getClaimData().getClaimant().getName());
+        result.put("contactPerson", PartyUtils.getContactPerson(claim.getClaimData().getClaimant()));
+        result.put("businessName", PartyUtils.getBusinessName(claim.getClaimData().getClaimant()));
         result.put("address", createContentForAddress(claim.getClaimData().getClaimant().getAddress()));
-        result.put("correspondenceAddress", createContentForCorrespondenceAddress(claim.getClaimData().getClaimant().getCorrespondenceAddress()));
-        result.put("email", "emailAddress");
+        result.put("correspondenceAddress", claim.getClaimData().getClaimant().getCorrespondenceAddress());
+        result.put("email", claim.getSubmitterEmail()); //todo Get email for claimant
 
         return result;
 
@@ -103,8 +103,8 @@ public class ClaimIssueReceiptContentProvider {
     private Map<String, Object> createContentForInterest(Interest interest) {
         Map<String, Object> result = new HashMap<>();
 
-        result.put("rate", "3");
-        result.put("dateClaimedFrom", "4");
+        result.put("rate", interest.getRate());
+        result.put("dateClaimedFrom", interest.getType());
         result.put("accruedInterest", "5");
         result.put("dateClaimedFrom", "6");
         result.put("claimedAtDateOfSubmission", "7");
@@ -115,10 +115,10 @@ public class ClaimIssueReceiptContentProvider {
     private Map<String, Object> createContentForAddress(Address address) {
         Map<String, Object> result = new HashMap<>();
 
-        result.put("line1", "1 Address Lane");
-        result.put("line2", "Street Road");
-        result.put("city", "That City");
-        result.put("postcode", "SW1H 3LL");
+        result.put("line1", address.getLine1());
+        result.put("line2", address.getLine2());
+        result.put("city", address.getCity());
+        result.put("postcode", address.getPostcode());
 
         return result;
     }
