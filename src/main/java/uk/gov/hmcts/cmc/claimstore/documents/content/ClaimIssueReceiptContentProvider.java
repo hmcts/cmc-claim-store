@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
@@ -67,7 +68,7 @@ public class ClaimIssueReceiptContentProvider {
         result.put("issueFee", "999");
         result.put("totalAmountTillDateOfIssue", "the total");
         result.put("reason", "the reason");
-        result.put("statementOfTruth", createContentForStatementOfTruth(claim.getClaimData().getStatementOfTruth()));
+        result.put("statementOfTruth", createContentForStatementOfTruth(claim.getClaimData()));
 
         return result;
     }
@@ -86,13 +87,16 @@ public class ClaimIssueReceiptContentProvider {
 
     }
 
-    private Map<String, Object> createContentForStatementOfTruth(Optional<StatementOfTruth> statementOfTruth) {
-        Map<String, Object> result = new HashMap<>();
+    private Map<String, Object> createContentForStatementOfTruth(ClaimData claimData) {
+        Map<String, Object> result = null;
 
+        if (claimData.getStatementOfTruth().isPresent()) {
+            result = new HashMap<>();
 
-        result.put("signerName", statementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null));
-        result.put("signerRole", statementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null));
-
+            StatementOfTruth statementOfTruth = claimData.getStatementOfTruth().get();
+            result.put("signerName", statementOfTruth.getSignerName());
+            result.put("signerRole", statementOfTruth.getSignerRole());
+        }
         return result;
     }
 
