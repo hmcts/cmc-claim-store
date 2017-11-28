@@ -78,7 +78,7 @@ public class ClaimIssueReceiptContentProvider {
         result.put("fullName", "full name");
         result.put("contactPerson", "contact name ");
         result.put("businessName", "Business Name");
-        result.put("claimantAddress", createContentForAddress(claim.getClaimData().getClaimant().getAddress()));
+        result.put("address", createContentForAddress(claim.getClaimData().getClaimant().getAddress()));
         result.put("correspondenceAddress", createContentForCorrespondenceAddress(claim.getClaimData().getClaimant().getCorrespondenceAddress()));
         result.put("email", "emailAddress");
 
