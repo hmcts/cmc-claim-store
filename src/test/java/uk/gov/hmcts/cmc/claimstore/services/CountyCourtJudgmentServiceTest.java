@@ -33,6 +33,10 @@ public class CountyCourtJudgmentServiceTest {
 
     @Mock
     private ClaimService claimService;
+
+    @Mock
+    private AuthorisationService authorisationService;
+
     @Mock
     private EventProducer eventProducer;
 
@@ -41,6 +45,7 @@ public class CountyCourtJudgmentServiceTest {
 
         countyCourtJudgmentService = new CountyCourtJudgmentService(
             claimService,
+            authorisationService,
             eventProducer
         );
     }

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -37,14 +38,21 @@ public class DefendantResponseServiceTest {
 
     @Mock
     private EventProducer eventProducer;
+
     @Mock
     private UserService userService;
+
     @Mock
     private ClaimService claimService;
 
     @Before
     public void setup() {
-        responseService = new DefendantResponseService(eventProducer, claimService, userService);
+        responseService = new DefendantResponseService(
+            eventProducer,
+            claimService,
+            userService,
+            new AuthorisationService()
+        );
     }
 
     @Test
@@ -65,6 +73,16 @@ public class DefendantResponseServiceTest {
         verify(eventProducer, once())
             .createDefendantResponseEvent(eq(claim));
     }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void saveShouldThrowForbiddenActionWhenUserIsNotDefendant() {
+
+        when(claimService.getClaimById(eq(CLAIM_ID)))
+            .thenReturn(SampleClaim.getDefault());
+
+        responseService.save(CLAIM_ID, "23132", VALID_APP, AUTHORISATION);
+    }
+
 
     @Test(expected = ResponseAlreadySubmittedException.class)
     public void saveShouldThrowResponseAlreadySubmittedExceptionWhenResponseSubmitted() {
