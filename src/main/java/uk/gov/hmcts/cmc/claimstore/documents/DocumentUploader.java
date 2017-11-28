@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
-import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
 

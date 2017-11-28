@@ -77,9 +77,6 @@ staff-notifications:
   sender:
   recipient:
 
-pdfService:
-  baseUrl: ${PDF_SERVICE_URL:}
-
 feature_toggles:
   watermark_pdf: false
   document_management: false

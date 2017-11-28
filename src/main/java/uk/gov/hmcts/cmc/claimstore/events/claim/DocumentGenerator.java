@@ -10,9 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFilename;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFilename;
 
