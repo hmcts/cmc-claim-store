@@ -181,6 +181,10 @@ public class SampleClaimData {
     }
 
     public static ClaimData submittedByClaimant() {
+        return submittedByClaimantBuilder().build();
+    }
+
+    public static SampleClaimData submittedByClaimantBuilder() {
         return builder()
             .withFeeAccountNumber(null)
             .withStatementOfTruth(null)
@@ -192,8 +196,16 @@ public class SampleClaimData {
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
-                .individualDetails())
-            .build();
+                .individualDetails());
+    }
+
+    public static ClaimData submittedByLegalRepresentative() {
+        return submittedByLegalRepresentativeBuilder().build();
+    }
+
+    public static SampleClaimData submittedByLegalRepresentativeBuilder() {
+        return new SampleClaimData()
+            .withAmount(SampleAmountRange.validDefaults());
     }
 
     public static ClaimData noInterest() {
