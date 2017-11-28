@@ -10,7 +10,7 @@ public class PDFServiceConfiguration {
 
     @Bean
     public PDFServiceClient pdfServiceClient(PDFServiceProperties properties) {
-        return new PDFServiceClient(properties.getBaseUrl(), "v1");
+        return new PDFServiceClient(properties.getUrl(), "v1");
     }
 
 }

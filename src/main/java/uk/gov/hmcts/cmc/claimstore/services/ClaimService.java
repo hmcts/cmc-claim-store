@@ -126,13 +126,11 @@ public class ClaimService {
                 externalId, submitterEmail);
         }
 
-        final Claim claim = getClaimById(issuedClaimId);
-
-        eventProducer.createClaimIssuedEvent(claim,
+        eventProducer.createClaimIssuedEvent(getClaimById(issuedClaimId),
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
             userDetails.getFullName(), authorisation);
 
-        return claim;
+        return getClaimById(issuedClaimId);
     }
 
     public Claim requestMoreTimeForResponse(final long claimId, final String authorisation) {
@@ -174,12 +172,16 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
+    public void linkSealedClaimDocument(final Long claimId, final String documentSelfPath) {
+        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+    }
+
     public void saveCountyCourtJudgment(final long claimId, final CountyCourtJudgment countyCourtJudgment) {
         claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
     }
 
     public void saveDefendantResponse(final long claimId, final String defendantId, final String defendantEmail,
-                               final ResponseData responseData) {
+                                      final ResponseData responseData) {
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData));
     }
 }
