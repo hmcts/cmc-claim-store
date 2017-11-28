@@ -116,4 +116,10 @@ public class ClaimStore {
 
         return getClaim(claimId);
     }
+
+    public Claim linkSealedClaimDocumentSelfPath(long claimId, String documentSelfPath) {
+        this.claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+
+        return getClaim(claimId);
+    }
 }
