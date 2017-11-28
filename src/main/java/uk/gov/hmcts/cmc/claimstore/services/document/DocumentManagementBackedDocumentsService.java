@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.function.Supplier;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFilename;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
@@ -74,14 +74,12 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             String documentSelfPath = claim.getSealedClaimDocumentSelfPath().get();
             return documentManagementService.downloadDocument(authorisation, documentSelfPath);
         } else {
-            byte[] document = documentSupplier.get();
+            PDF document = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), documentSupplier.get());
 
-            String documentSelfPath = documentManagementService.uploadDocument(authorisation,
-                buildSealedClaimFilename(claim.getReferenceNumber()) + PDF.EXTENSION, document,
-                PDF.CONTENT_TYPE);
+            String documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
             claimService.linkSealedClaimDocument(claim.getId(), documentSelfPath);
 
-            return document;
+            return document.getBytes();
         }
     }
 }

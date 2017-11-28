@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFilename;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFilename;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Component
 public class DocumentGenerator {
@@ -37,9 +37,9 @@ public class DocumentGenerator {
 
     @EventListener
     public void generateForNonRepresentedClaim(final ClaimIssuedEvent event) {
-        PDF sealedClaim = new PDF(buildSealedClaimFilename(event.getClaim().getReferenceNumber()),
+        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             citizenSealedClaimPdfService.createPdf(event.getClaim(), event.getSubmitterEmail()));
-        PDF defendantLetter = new PDF(buildDefendantLetterFilename(event.getClaim().getReferenceNumber()),
+        PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
             defendantPinLetterPdfService.createPdf(event.getClaim(), event.getPin()
                 .orElseThrow(() -> new IllegalArgumentException("Defendant access PIN is missing"))));
 
@@ -49,7 +49,7 @@ public class DocumentGenerator {
 
     @EventListener
     public void generateForRepresentedClaim(final RepresentedClaimIssuedEvent event) {
-        PDF sealedClaim = new PDF(buildSealedClaimFilename(event.getClaim().getReferenceNumber()),
+        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             legalSealedClaimPdfService.createPdf(event.getClaim()));
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));

@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.document.DocumentMetadataDownloadClientApi;
@@ -38,6 +39,10 @@ public class DocumentManagementService {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
         this.documentUploadClient = documentUploadClientApi;
+    }
+
+    public String uploadDocument(final String authorisation, final PDF document) {
+        return uploadDocument(authorisation, document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
     }
 
     public String uploadDocument(
