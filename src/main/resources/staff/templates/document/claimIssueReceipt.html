@@ -93,7 +93,7 @@
     </tr>
     <tr>
       <td><h2><strong>Claim number: </strong></h2></td>
-      <td><h2 style="font-weight: normal"> {{ claim.claimReferenceNumber }}</h2></td>
+      <td><h2 style="font-weight: normal"> {{ claim.referenceNumber }}</h2></td>
     </tr>
     <tr>
       <td colspan="2">
@@ -101,7 +101,7 @@
       </td>
     </tr>
     <tr>
-      <td colspan="2"><p><strong>Submitted on: </strong> {{ claim.submittedDate }}</p></td>
+      <td colspan="2"><p><strong>Submitted on: </strong> {{ claim.submittedOn }}</p></td>
     </tr>
   </table>
 </header>
@@ -233,7 +233,7 @@
       <tr>
         <td>Claim amount:</td>
         <td>
-          {{ claim.amount }}
+          {{ claim.claimAmount }}
         </td>
       </tr>
       {% if claim.interest is defined %}
@@ -280,13 +280,13 @@
       <tr>
         <td>Claim fee:</td>
         <td>
-          {{ claim.issueFee }}
+          {{ claim.feeAmount }}
         </td>
       </tr>
       <tr>
         <td><strong>Total claim amount:</strong></td>
         <td>
-          <strong>{{ claim.totalAmountTillDateOfIssue }}</strong>
+          <strong>{{ claim.claimTotalAmount }}</strong>
         </td>
       </tr>
     </table>
