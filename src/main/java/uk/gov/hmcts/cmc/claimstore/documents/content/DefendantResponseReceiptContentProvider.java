@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
+//import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ResponseData;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+//import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MoreTimeRequested.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Component
@@ -28,6 +30,14 @@ public class DefendantResponseReceiptContentProvider {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
         this.claimContentProvider = claimContentProvider;
     }
+//    private void sendNotificationToDefendant(final MoreTimeRequestedEvent event) {
+//        notificationService.sendMail(
+//            event.getDefendantEmail(),
+//            notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
+//            prepareNotificationParameters(event),
+//            referenceForDefendant(event.getClaim().getReferenceNumber())
+//        );
+//    }
 
     public Map<String, Object> createContent(final Claim claim) {
         requireNonNull(claim);
@@ -55,12 +65,14 @@ public class DefendantResponseReceiptContentProvider {
         ));
 
         content.put("responseDefence", defendantResponse.getDefence());
+        content.put("responseDashboardUrl", "https://localhost:3010");
 
         Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getStatementOfTruth();
         content.put("signerName", optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null));
         content.put("signerRole", optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null));content.put("signerRole", optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null));
 
         content.put("freeMediation", defendantResponse.getFreeMediation().orElse(ResponseData.FreeMediationOption.NO).name().toLowerCase());
+       /* content.put("frontendBaseUrl", notificationsProperties.getFrontendBaseUrl());*/
 
         return content;
     }

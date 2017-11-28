@@ -94,11 +94,11 @@
     </tr>
     <tr>
       <td><h2><strong>Claim number: </strong></h2></td>
-      <td><h2 style="font-weight: normal"> {{ claimReferenceNumber }}</h2></td>
+      <td><h2 style="font-weight: normal"> {{ claim.ReferenceNumber }}</h2></td>
     </tr>
     <tr>
       <td><p><strong>Claimant name: </strong></p></td>
-      <td><p>{{ claimant.fullName }}</p></td>
+      <td><p>{{ claimantFullName }}</p></td>
     </tr>
     <tr>
       <td><p><strong>Claim submitted on: </strong></p></td>
@@ -241,12 +241,12 @@
     <table>
       <tr>
         <td>Declaration:</td>
-        {% if signerName is empty %}
+        {% if defendant.signerName is empty %}
         <td>
           I, {{ defendant.fullName }}, believe that the facts stated in this defence form are true.
         </td>
         {% endif %}
-        {% if signerName is not empty %}
+        {% if defendant.signerName is not empty %}
         <td>
           The Defendant believes that the facts stated in this claim are true.
         </td>
@@ -254,7 +254,7 @@
 
       </tr>
 
-      {% if signerName is empty %}
+      {% if defendant.signerName is empty %}
       <tr>
         <td></td>
         <td>
@@ -262,12 +262,12 @@
         </td>
       </tr>
       {% endif %}
-      {% if signerName is not empty %}
+      {% if defendant.signerName is not empty %}
       <tr>
         <td>
           Name:
         </td>
-        <td>{{ signerName }}</td>
+        <td>{{ defendant.signerName }}</td>
       </tr>
       <tr>
         <td>
@@ -284,7 +284,7 @@
         <td>
           Position held:
         </td>
-        <td>{{ signerRole }}</td>
+        <td>{{ defendant.signerRole }}</td>
       </tr>
       {% endif %}
 

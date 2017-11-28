@@ -94,7 +94,7 @@
     </tr>
     <tr>
       <td><h2><strong>Claim number: </strong></h2></td>
-      <td><h2 style="font-weight: normal"> {{ claimReferenceNumber }}</h2></td>
+      <td><h2 style="font-weight: normal"> {{ claim.referenceNumber }}</h2></td>
     </tr>
     <tr>
       <td colspan="2">
@@ -441,13 +441,13 @@
   </div>
   <div class="section-body">
     <ul>
-      <li>Go to <a href="{{ responseDashboardUrl }}">{{ responseDashboardUrl }}</a></li>
+      <li>Go to <a href="{{ responseDashboardUrl }}">/first-contact/start   </a></li>
+      <li>Go to {{ frontendBaseURL }}/first-contact/start</li>
       <li>Enter your your email address</li>
       <li>Enter your password</li>
     </ul>
   </div>
 </div>
-
 <p>
   This document sets out the claim issued against you and your response to the claim.
   This information will be shared with the claimant.

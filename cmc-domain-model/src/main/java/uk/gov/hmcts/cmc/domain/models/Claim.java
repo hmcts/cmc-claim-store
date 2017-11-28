@@ -50,6 +50,7 @@ public class Claim {
         final LocalDate responseDeadline,
         final boolean moreTimeRequested,
         final String submitterEmail,
+
         final LocalDateTime respondedAt,
         final ResponseData response,
         final String defendantEmail,

@@ -2,10 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Service
@@ -16,7 +18,7 @@ public class DocumentsService {
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
-
+    private final ClaimIssueReceiptService claimIssueReceiptService;
 
     @Autowired
     public DocumentsService(
@@ -25,7 +27,8 @@ public class DocumentsService {
         final DefendantResponseCopyService defendantResponseCopyService,
         final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         final SettlementAgreementCopyService settlementAgreementCopyService,
-        final DefendantResponseReceiptService defendantResponseReceiptService
+        final DefendantResponseReceiptService defendantResponseReceiptService,
+        final ClaimIssueReceiptService claimIssueReceiptService
     ) {
 
         this.sealedClaimDocumentService = sealedClaimDocumentService;
@@ -34,6 +37,7 @@ public class DocumentsService {
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
+        this.claimIssueReceiptService = claimIssueReceiptService;
     }
 
     public byte[] generateDefendantResponseCopy(final String claimExternalId) {
@@ -57,6 +61,14 @@ public class DocumentsService {
 
     public byte[] generateDefendantResponseReceipt(final String claimExternalId) {
         final Claim claim = claimService.getClaimByExternalId(claimExternalId);
+        if (claim.getRespondedAt() == null){
+            throw new NotFoundException("There is no record of a response for claim" + claimExternalId);
+        }
         return defendantResponseReceiptService.createPdf(claim);
+    }
+
+    public byte[] generateClaimIssueReceipt(final String claimExternalId) {
+        final Claim claim = claimService.getClaimByExternalId(claimExternalId);
+        return claimIssueReceiptService.createPdf(claim);
     }
 }

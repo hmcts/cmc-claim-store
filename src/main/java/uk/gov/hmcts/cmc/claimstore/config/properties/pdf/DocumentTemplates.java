@@ -17,6 +17,10 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/defendantResponseReceipt.html");
     }
 
+    public byte[] getClaimIssueReceipt() {
+        return readBytes("/staff/templates/document/claimIssueReceipt.html");
+    }
+
     public byte[] getSealedClaim() {
         return readBytes("/staff/templates/document/sealedClaim.html");
     }
