@@ -34,6 +34,24 @@ public class ClaimMapperTest {
         assertThat(claimData).isEqualTo(ccdClaim);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenMissingClaimantsFromCMCClaim() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().withClaimants(null).build();
+
+        //when
+        claimMapper.to(claimData);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenMissingDefendantsFromCMCClaim() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().withDefendants(null).build();
+
+        //when
+        claimMapper.to(claimData);
+    }
+
     @Test
     public void shouldMapClaimFromCCD() {
         //given
