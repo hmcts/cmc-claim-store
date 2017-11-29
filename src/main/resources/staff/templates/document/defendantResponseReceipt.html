@@ -278,7 +278,7 @@
       <tr>
         <td>Claim amount:</td>
         <td>
-          {{ claim.amount }}
+          {{ claim.claimAmount }}
         </td>
       </tr>
       {% if claim.interest is defined %}
@@ -320,13 +320,13 @@
       <tr>
         <td>Claim fee:</td>
         <td>
-          {{ claim.issueFee }}
+          {{ claim.feeAmount }}
         </td>
       </tr>
       <tr>
         <td><strong>Total claim amount:</strong></td>
         <td>
-          <strong>{{ claim.totalAmountTillDateOfIssue }}</strong>
+          <strong>{{ claim.claimTotalAmount }}</strong>
         </td>
       </tr>
     </table>
@@ -441,8 +441,7 @@
   </div>
   <div class="section-body">
     <ul>
-      <li>Go to <a href="{{ responseDashboardUrl }}">/first-contact/start   </a></li>
-      <li>Go to {{ frontendBaseURL }}/first-contact/start</li>
+      <li>Go to <a href="{{ responseDashboardUrl }}">{{ responseDashboardUrl }}</a></li>
       <li>Enter your your email address</li>
       <li>Enter your password</li>
     </ul>
