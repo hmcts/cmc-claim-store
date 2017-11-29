@@ -29,6 +29,11 @@ spring:
   mail:
     default-encoding: UTF-8
     test-connection: true
+  http:
+    multipart:
+      enabled: true
+      max-file-size: 4000000KB
+      max-request-size: 4000000KB
 
 idam:
   api:
@@ -72,11 +77,9 @@ staff-notifications:
   sender:
   recipient:
 
-pdfService:
-  baseUrl: ${PDF_SERVICE_URL:}
-
 feature_toggles:
   watermark_pdf: false
+  document_management: false
 
 feign:
   httpclient:

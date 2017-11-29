@@ -9,18 +9,18 @@ import javax.validation.constraints.NotNull;
 
 @Component
 @Validated
-@ConfigurationProperties(prefix = "pdfService")
+@ConfigurationProperties(prefix = "pdf_service")
 public class PDFServiceProperties {
 
     @NotNull
-    private URI baseUrl;
+    private URI url;
 
-    public URI getBaseUrl() {
-        return baseUrl;
+    public URI getUrl() {
+        return url;
     }
 
-    public void setBaseUrl(URI baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setUrl(URI url) {
+        this.url = url;
     }
 
 }
