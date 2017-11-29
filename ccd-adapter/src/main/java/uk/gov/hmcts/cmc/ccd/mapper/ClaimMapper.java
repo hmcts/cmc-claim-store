@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Override
     public CCDClaim to(ClaimData claimData) {
+        Objects.requireNonNull(claimData, "claimData must not be null");
         final CCDClaim.CCDClaimBuilder builder = CCDClaim.builder();
         claimData.getFeeCode().ifPresent(builder::feeCode);
         claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
@@ -67,6 +69,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Override
     public ClaimData from(CCDClaim ccdClaim) {
+        Objects.requireNonNull(ccdClaim, "ccdClaim must not be null");
 
         List<Party> claimants = ccdClaim.getClaimants()
             .stream()
