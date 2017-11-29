@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.offers;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.hmcts.cmc.domain.models.constraints.FutureDate;
+import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
 
 import java.time.LocalDate;
 import java.util.Objects;

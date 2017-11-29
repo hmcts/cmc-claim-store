@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.legalrep;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
-import uk.gov.hmcts.cmc.domain.models.constraints.PhoneNumber;
+import uk.gov.hmcts.cmc.domain.constraints.PhoneNumber;
 
 import java.util.Objects;
 import java.util.Optional;
