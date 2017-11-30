@@ -1,13 +1,13 @@
-package uk.gov.hmcts.cmc.domain.models.constraints;
+package uk.gov.hmcts.cmc.domain.constraints;
 
 import java.time.LocalDate;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class DateNotInTheFutureConstraintValidator implements ConstraintValidator<DateNotInTheFuture, LocalDate> {
+public class DateNotInThePastConstraintValidator implements ConstraintValidator<DateNotInThePast, LocalDate> {
 
     @Override
-    public void initialize(DateNotInTheFuture dateNotInTheFuture) {
+    public void initialize(DateNotInThePast dateNotInThePast) {
         // NO-OP
     }
 
@@ -18,6 +18,6 @@ public class DateNotInTheFutureConstraintValidator implements ConstraintValidato
             return true;
         }
 
-        return !localDate.isAfter(LocalDate.now());
+        return !localDate.isBefore(LocalDate.now());
     }
 }

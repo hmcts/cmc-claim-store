@@ -1,5 +1,5 @@
 
-package uk.gov.hmcts.cmc.domain.models.constraints;
+package uk.gov.hmcts.cmc.domain.constraints;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

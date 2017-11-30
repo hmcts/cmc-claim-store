@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.constraints;
+package uk.gov.hmcts.cmc.domain.constraints;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,13 +9,17 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = DateNotInThePastConstraintValidator.class)
+@Constraint(validatedBy = AgeRangeConstraintValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DateNotInThePast {
-    String message() default "is in the past";
+public @interface AgeRangeValidator {
+    String message() default "Age must be between {minYears} and {maxYears}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    int minYears() default 18;
+
+    int maxYears() default 150;
 }
