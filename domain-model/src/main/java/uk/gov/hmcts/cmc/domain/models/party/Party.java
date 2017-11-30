@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.hmcts.cmc.domain.constraints.MobilePhoneNumber;
 import uk.gov.hmcts.cmc.domain.models.Address;
-import uk.gov.hmcts.cmc.domain.models.constraints.MobilePhoneNumber;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.constraints;
+package uk.gov.hmcts.cmc.domain.constraints;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
