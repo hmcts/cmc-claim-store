@@ -3,8 +3,10 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -21,8 +23,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
+    private final ClaimIssueReceiptService claimIssueReceiptService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
     private final DefendantResponseCopyService defendantResponseCopyService;
+    private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
 
@@ -30,17 +34,26 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public DocumentManagementBackedDocumentsService(
         final ClaimService claimService,
         final DocumentManagementService documentManagementService,
+        final ClaimIssueReceiptService claimIssueReceiptService,
         final LegalSealedClaimPdfService legalSealedClaimPdfService,
         final DefendantResponseCopyService defendantResponseCopyService,
+        final DefendantResponseReceiptService defendantResponseReceiptService,
         final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         final SettlementAgreementCopyService settlementAgreementCopyService
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
+        this.claimIssueReceiptService = claimIssueReceiptService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
         this.defendantResponseCopyService = defendantResponseCopyService;
+        this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
+    }
+
+    @Override
+    public byte[] generateClaimIssueReceipt(String externalId) {
+        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override
@@ -52,6 +65,11 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] generateDefendantResponseCopy(final String externalId) {
         return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
+    }
+
+    @Override
+    public byte[] generateDefendantResponseReceipt(String externalId) {
+        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override
