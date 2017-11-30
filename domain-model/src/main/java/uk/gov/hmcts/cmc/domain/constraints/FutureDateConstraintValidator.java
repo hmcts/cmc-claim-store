@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.constraints;
+package uk.gov.hmcts.cmc.domain.constraints;
 
 import java.time.LocalDate;
 import javax.validation.ConstraintValidator;
