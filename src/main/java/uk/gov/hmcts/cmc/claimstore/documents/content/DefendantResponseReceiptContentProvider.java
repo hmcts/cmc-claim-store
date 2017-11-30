@@ -52,7 +52,7 @@ public class DefendantResponseReceiptContentProvider {
         ));
         Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getStatementOfTruth();
         content.put("signerName", optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null));
-        content.put("signerRole", optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null));content.put("signerRole", optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null));
+        content.put("signerRole", optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null));
         content.put("responseDefence", defendantResponse.getDefence());
         content.put("freeMediation", defendantResponse.getFreeMediation().orElse(ResponseData.FreeMediationOption.NO).name().toLowerCase());
         content.put("responseDashboardUrl", notificationsProperties.getFrontendBaseUrl());
