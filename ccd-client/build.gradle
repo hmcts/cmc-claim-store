@@ -10,6 +10,7 @@ def versions = [
 ]
 
 dependencies {
+  compile project(':ccd-adapter')
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
 
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson

@@ -14,15 +14,13 @@ import uk.gov.hmcts.cmc.ccd.client.model.StartEventResponse;
 @Service
 public class StartCase {
 
-    @Autowired
     private final RestTemplate restTemplate;
-
-    @Autowired
     private final HttpHeadersFactory headersFactory;
 
     @Value("${ccd.caseDataStore.baseUrl}")
     private String ccdUrl;
 
+    @Autowired
     public StartCase(final RestTemplate restTemplate, final HttpHeadersFactory httpHeadersFactory) {
         this.restTemplate = restTemplate;
         this.headersFactory = httpHeadersFactory;

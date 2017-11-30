@@ -15,16 +15,13 @@ import uk.gov.hmcts.cmc.ccd.client.model.EventRequestData;
 @Service
 public class SubmitCase {
 
-    @Autowired
     private final RestTemplate restTemplate;
-
-    @Autowired
     private final HttpHeadersFactory headersFactory;
 
     @Value("${ccd.caseDataStore.baseUrl}")
     private String ccdUrl;
 
-
+    @Autowired
     public SubmitCase(final RestTemplate restTemplate, final HttpHeadersFactory httpHeadersFactory) {
         this.restTemplate = restTemplate;
         this.headersFactory = httpHeadersFactory;
