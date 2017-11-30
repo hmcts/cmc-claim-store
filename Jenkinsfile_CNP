@@ -6,5 +6,5 @@ def product = "cmc"
 def component = "claim-store"
 
 withPipeline("java", product, component) {
-  enableSlackNotifications('#cmc-tech-notifications')
+  enableSlackNotifications('#cmc-tech-cnp')
 }
