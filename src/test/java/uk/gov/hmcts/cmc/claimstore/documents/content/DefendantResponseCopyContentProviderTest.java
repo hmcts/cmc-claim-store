@@ -2,12 +2,17 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import java.time.Clock;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class DefendantResponseCopyContentProviderTest {
@@ -15,8 +20,9 @@ public class DefendantResponseCopyContentProviderTest {
     private Claim claim = SampleClaim.getWithDefaultResponse();
 
     private DefendantResponseCopyContentProvider provider = new DefendantResponseCopyContentProvider(
-        new PartyDetailsContentProvider()
-    );
+        new PartyDetailsContentProvider(),
+        new ClaimContentProvider(new InterestContentProvider(new InterestCalculationService(Clock.systemDefaultZone()))
+        ));
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
