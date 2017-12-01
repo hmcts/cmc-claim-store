@@ -39,7 +39,7 @@ public class StartCaseTest {
     }
 
     @Test
-    public void exchange() throws Exception {
+    public void testExchangeReturnsStartEvent() throws Exception {
         when(headersFactory.getHttpHeader()).thenReturn(httpHeaders);
         ResponseEntity<StartEventResponse> responseEntity = Mockito.mock(ResponseEntity.class);
         HttpEntity<String> httpEntity = Mockito.mock(HttpEntity.class);
