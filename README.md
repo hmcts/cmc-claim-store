@@ -118,7 +118,21 @@ For the versions available, see the tags on this repository.
 
 ## Troubleshooting
 
-### JsonMappingException when running tests in your IDE
+### IDE Settings
+
+#### Project Lombok Plugin
+When building the project in your IDE (eclipse or IntelliJ), Lombok plugin will be required to compile. 
+
+For IntelliJ IDEA, please add the Lombok IntelliJ plugin:
+* Go to `File > Settings > Plugins`
+* Click on `Browse repositories...`
+* Search for `Lombok Plugin`
+* Click on `Install plugin`
+* Restart IntelliJ IDEA
+
+Plugin setup for other IDE's are available on [https://projectlombok.org/setup/overview]
+
+#### JsonMappingException when running tests in your IDE
 Add the `-parameters` setting to your compiler arguments in your IDE (Make sure you recompile your code after)
 This is because we use a feature of jackson for automatically deserialising based on the constructor
 For more info see: https://github.com/FasterXML/jackson-modules-java8/blob/a0d102fa0aea5c2fc327250868e1c1f6d523856d/parameter-names/README.md
