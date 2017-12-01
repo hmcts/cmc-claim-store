@@ -28,7 +28,7 @@ public class StartCase {
 
     public StartEventResponse exchange(final EventRequestData eventRequestData) {
 
-        final HttpEntity<String> httpEntity = new HttpEntity<String>(headersFactory.getHttpHeader());
+        final HttpEntity<String> httpEntity = new HttpEntity<>(headersFactory.getHttpHeader());
 
         final String startCaseCreationUrl = ccdUrl + "/citizens/" + eventRequestData.getUserId()
             + "/jurisdictions/" + eventRequestData.getJurisdictionId()

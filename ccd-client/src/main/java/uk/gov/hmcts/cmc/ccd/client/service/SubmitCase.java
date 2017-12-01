@@ -29,7 +29,7 @@ public class SubmitCase {
 
     public CaseDetails submit(final EventRequestData eventRequestData, final CaseDataContent caseDataContent) {
 
-        final HttpEntity<?> httpEntity = new HttpEntity<Object>(caseDataContent, headersFactory.getHttpHeader());
+        final HttpEntity<?> httpEntity = new HttpEntity<>(caseDataContent, headersFactory.getHttpHeader());
 
         final String submitCaseUrl = ccdUrl
             + "/citizens/" + eventRequestData.getUserId()
