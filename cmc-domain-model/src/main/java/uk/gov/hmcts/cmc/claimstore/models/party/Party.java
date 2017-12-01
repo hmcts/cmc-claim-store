@@ -30,7 +30,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = Individual.class, name = "individual"),
         @JsonSubTypes.Type(value = SoleTrader.class, name = "soleTrader"),
         @JsonSubTypes.Type(value = Company.class, name = "company"),
-        @JsonSubTypes.Type(value = Organisation.class, name = "organisation")
+        @JsonSubTypes.Type(value = Organisation.class, name = "organisation"),
+        @JsonSubTypes.Type(value = Claimant.class, name = "claimant")
     }
 )
 public abstract class Party implements NamedParty {
