@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@feature/add-retrying-to-healthcheck")
+@Library("Infrastructure@feature/retry-for-healthcheck")
 
 def product = "cmc"
 def component = "claim-store"
