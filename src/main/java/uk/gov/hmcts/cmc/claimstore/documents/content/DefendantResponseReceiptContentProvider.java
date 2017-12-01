@@ -32,7 +32,6 @@ public class DefendantResponseReceiptContentProvider {
         this.notificationsProperties = notificationsProperties;
     }
 
-
     public Map<String, Object> createContent(final Claim claim) {
         requireNonNull(claim);
         ResponseData defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);

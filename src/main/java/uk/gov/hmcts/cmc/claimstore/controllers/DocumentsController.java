@@ -104,7 +104,7 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> defendantResponseReceipt(
         @ApiParam("Claim external id")
-        @PathVariable("claimExternalId") @NotBlank String claimExternalId
+        @PathVariable("externalId") @NotBlank String claimExternalId
     ) {
         final byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(claimExternalId);
 
@@ -121,7 +121,7 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> claimIssueReceipt(
         @ApiParam("Claim external id")
-        @PathVariable("claimExternalId") @NotBlank String claimExternalId
+        @PathVariable("externalId") @NotBlank String claimExternalId
     ) {
         final byte[] pdfDocument = documentsService.generateClaimIssueReceipt(claimExternalId);
 

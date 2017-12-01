@@ -18,16 +18,16 @@ public class ClaimIssueReceiptService {
 
     @Autowired
     public ClaimIssueReceiptService(
-        ClaimIssueReceiptContentProvider contentProvider,
-        DocumentTemplates documentTemplates,
-        PDFServiceClient pdfServiceClient
+        final ClaimIssueReceiptContentProvider contentProvider,
+        final DocumentTemplates documentTemplates,
+        final PDFServiceClient pdfServiceClient
     ) {
         this.contentProvider = contentProvider;
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    public byte[] createPdf(Claim claim) {
+    public byte[] createPdf(final Claim claim) {
         requireNonNull(claim);
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getClaimIssueReceipt(),

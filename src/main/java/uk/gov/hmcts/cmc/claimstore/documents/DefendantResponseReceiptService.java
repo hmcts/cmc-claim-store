@@ -18,16 +18,16 @@ public class DefendantResponseReceiptService {
 
     @Autowired
     public DefendantResponseReceiptService(
-        DefendantResponseReceiptContentProvider contentProvider,
-        DocumentTemplates documentTemplates,
-        PDFServiceClient pdfServiceClient
+        final DefendantResponseReceiptContentProvider contentProvider,
+        final DocumentTemplates documentTemplates,
+        final PDFServiceClient pdfServiceClient
     ) {
         this.contentProvider = contentProvider;
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    public byte[] createPdf(Claim claim) {
+    public byte[] createPdf(final Claim claim) {
         requireNonNull(claim);
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getDefendantResponseReceipt(),
