@@ -14,14 +14,17 @@ import java.time.LocalDate;
 public class CountyCourtJudgmentService {
 
     private final ClaimService claimService;
+    private final AuthorisationService authorisationService;
     private final EventProducer eventProducer;
 
     @Autowired
     public CountyCourtJudgmentService(
         final ClaimService claimService,
+        final AuthorisationService authorisationService,
         final EventProducer eventProducer
     ) {
         this.claimService = claimService;
+        this.authorisationService = authorisationService;
         this.eventProducer = eventProducer;
     }
 
@@ -30,9 +33,7 @@ public class CountyCourtJudgmentService {
 
         Claim claim = claimService.getClaimById(claimId);
 
-        if (!isClaimSubmittedByUser(claim, submitterId)) {
-            throw new ForbiddenActionException("Claim " + claimId + " does not belong to user" + submitterId);
-        }
+        authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
         if (isResponseAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("Response for the claim " + claimId + " was submitted");
@@ -63,10 +64,6 @@ public class CountyCourtJudgmentService {
 
     private boolean isResponseAlreadySubmitted(final Claim claim) {
         return null != claim.getRespondedAt();
-    }
-
-    private boolean isClaimSubmittedByUser(final Claim claim, final String submitterId) {
-        return claim.getSubmitterId().equals(submitterId);
     }
 
     private boolean isCountyCourtJudgmentAlreadySubmitted(final Claim claim) {

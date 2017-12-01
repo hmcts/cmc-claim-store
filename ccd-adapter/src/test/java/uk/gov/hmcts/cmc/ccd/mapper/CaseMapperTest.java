@@ -11,7 +11,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import java.util.UUID;
+
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaim;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -33,4 +36,51 @@ public class CaseMapperTest {
         assertThat(claim).isEqualTo(ccdCase);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenMissingClaimDataFromClaim() {
+        //given
+        Claim claim = SampleClaim.builder().withClaimData(null).build();
+
+        //when
+        caseMapper.to(claim);
+    }
+
+    @Test
+    public void shouldMapLegalClaimFromCCD() {
+        //given
+        CCDCase ccdCase = CCDCase.builder()
+            .id(1L)
+            .submittedOn("2017-11-01T10:15:30")
+            .issuedOn("2017-11-15")
+            .submitterEmail("my@email.com")
+            .submitterId("123")
+            .referenceNumber("ref no")
+            .externalId(UUID.randomUUID().toString())
+            .claim(getCCDClaim())
+            .build();
+
+        //when
+        Claim claim = caseMapper.from(ccdCase);
+
+        //then
+        assertThat(claim).isEqualTo(ccdCase);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenMissingClaimDataFromCCDCase() {
+        //given
+        CCDCase ccdCase = CCDCase.builder()
+            .id(1L)
+            .submittedOn("2017-11-01T10:15:30")
+            .issuedOn("2017-11-15")
+            .submitterEmail("my@email.com")
+            .submitterId("123")
+            .referenceNumber("ref no")
+            .externalId(UUID.randomUUID().toString())
+            .claim(null)
+            .build();
+
+        //when
+        caseMapper.from(ccdCase);
+    }
 }

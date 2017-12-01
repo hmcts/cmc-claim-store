@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
+import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
@@ -28,6 +29,36 @@ public class ClaimMapperTest {
 
         //when
         CCDClaim ccdClaim = claimMapper.to(claimData);
+
+        //then
+        assertThat(claimData).isEqualTo(ccdClaim);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenMissingClaimantsFromCMCClaim() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().withClaimants(null).build();
+
+        //when
+        claimMapper.to(claimData);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionWhenMissingDefendantsFromCMCClaim() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().withDefendants(null).build();
+
+        //when
+        claimMapper.to(claimData);
+    }
+
+    @Test
+    public void shouldMapClaimFromCCD() {
+        //given
+        CCDClaim ccdClaim = SampleData.getCCDClaim();
+
+        //when
+        ClaimData claimData = claimMapper.from(ccdClaim);
 
         //then
         assertThat(claimData).isEqualTo(ccdClaim);

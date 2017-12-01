@@ -14,14 +14,17 @@ public class DefendantResponseService {
     private final EventProducer eventProducer;
     private final ClaimService claimService;
     private final UserService userService;
+    private final AuthorisationService authorisationService;
 
     public DefendantResponseService(
         final EventProducer eventProducer,
         final ClaimService claimService,
-        final UserService userService) {
+        final UserService userService,
+        final AuthorisationService authorisationService) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
+        this.authorisationService = authorisationService;
     }
 
     @Transactional
@@ -32,6 +35,8 @@ public class DefendantResponseService {
         final String authorization
     ) {
         final Claim claim = claimService.getClaimById(claimId);
+
+        authorisationService.assertIsDefendantOnClaim(claim, defendantId);
 
         if (isResponseAlreadySubmitted(claim)) {
             throw new ResponseAlreadySubmittedException(claimId);
@@ -56,6 +61,6 @@ public class DefendantResponseService {
     }
 
     private boolean isCCJAlreadyRequested(final Claim claim) {
-        return null != claim.getCountyCourtJudgmentRequestedAt();
+        return claim.getCountyCourtJudgmentRequestedAt() != null;
     }
 }
