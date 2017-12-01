@@ -1,0 +1,10 @@
+#!groovy
+
+@Library("Infrastructure@feature/add-retrying-to-healthcheck")
+
+def product = "cmc"
+def component = "claim-store"
+
+withPipeline("java", product, component) {
+  enableSlackNotifications('#cmc-tech-cnp')
+}
