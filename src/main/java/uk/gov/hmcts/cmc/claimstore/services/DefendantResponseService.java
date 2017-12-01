@@ -5,31 +5,26 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
 
 @Service
 public class DefendantResponseService {
 
-    private final ClaimRepository claimRepository;
-    private final JsonMapper jsonMapper;
     private final EventProducer eventProducer;
     private final ClaimService claimService;
     private final UserService userService;
+    private final AuthorisationService authorisationService;
 
     public DefendantResponseService(
-        final ClaimRepository claimRepository,
-        final JsonMapper jsonMapper,
         final EventProducer eventProducer,
         final ClaimService claimService,
-        final UserService userService) {
-        this.claimRepository = claimRepository;
-        this.jsonMapper = jsonMapper;
+        final UserService userService,
+        final AuthorisationService authorisationService) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
+        this.authorisationService = authorisationService;
     }
 
     @Transactional
@@ -41,6 +36,8 @@ public class DefendantResponseService {
     ) {
         final Claim claim = claimService.getClaimById(claimId);
 
+        authorisationService.assertIsDefendantOnClaim(claim, defendantId);
+
         if (isResponseAlreadySubmitted(claim)) {
             throw new ResponseAlreadySubmittedException(claimId);
         }
@@ -50,9 +47,7 @@ public class DefendantResponseService {
         }
 
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        claimRepository.saveDefendantResponse(
-            claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData)
-        );
+        claimService.saveDefendantResponse(claimId, defendantId, defendantEmail, responseData);
 
         final Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
 
@@ -66,6 +61,6 @@ public class DefendantResponseService {
     }
 
     private boolean isCCJAlreadyRequested(final Claim claim) {
-        return null != claim.getCountyCourtJudgmentRequestedAt();
+        return claim.getCountyCourtJudgmentRequestedAt() != null;
     }
 }

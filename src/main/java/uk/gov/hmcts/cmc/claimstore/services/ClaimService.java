@@ -11,11 +11,13 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineExce
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -124,13 +126,11 @@ public class ClaimService {
                 externalId, submitterEmail);
         }
 
-        final Claim claim = getClaimById(issuedClaimId);
-
-        eventProducer.createClaimIssuedEvent(claim,
+        eventProducer.createClaimIssuedEvent(getClaimById(issuedClaimId),
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            userDetails.getFullName());
+            userDetails.getFullName(), authorisation);
 
-        return claim;
+        return getClaimById(issuedClaimId);
     }
 
     public Claim requestMoreTimeForResponse(final long claimId, final String authorisation) {
@@ -166,5 +166,22 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
 
         claimRepository.linkDefendant(claim.getId(), defendantId);
+    }
+
+    public void linkLetterHolder(final Long claimId, final String userId) {
+        claimRepository.linkLetterHolder(claimId, userId);
+    }
+
+    public void linkSealedClaimDocument(final Long claimId, final String documentSelfPath) {
+        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+    }
+
+    public void saveCountyCourtJudgment(final long claimId, final CountyCourtJudgment countyCourtJudgment) {
+        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
+    }
+
+    public void saveDefendantResponse(final long claimId, final String defendantId, final String defendantEmail,
+                                      final ResponseData responseData) {
+        claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(responseData));
     }
 }

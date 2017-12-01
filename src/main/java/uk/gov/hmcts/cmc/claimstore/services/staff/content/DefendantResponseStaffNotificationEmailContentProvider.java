@@ -14,26 +14,25 @@ public class DefendantResponseStaffNotificationEmailContentProvider
     implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
-    private final StaffEmailTemplates staffEmailTemplates;
+    private final StaffEmailTemplates emailTemplates;
 
     @Autowired
     public DefendantResponseStaffNotificationEmailContentProvider(final TemplateService templateService,
-                                                                  final StaffEmailTemplates staffEmailTemplates) {
+                                                                  final StaffEmailTemplates emailTemplates) {
         this.templateService = templateService;
-        this.staffEmailTemplates = staffEmailTemplates;
+        this.emailTemplates = emailTemplates;
     }
 
     @Override
     public EmailContent createContent(final Map<String, Object> input) {
         return new EmailContent(
-            evaluateTemplate(staffEmailTemplates.getDefendantResponseEmailSubject(), input),
-            evaluateTemplate(staffEmailTemplates.getDefendantResponseEmailBody(), input)
+            evaluateTemplate(emailTemplates.getDefendantResponseEmailSubject(), input),
+            evaluateTemplate(emailTemplates.getDefendantResponseEmailBody(), input)
         );
     }
 
-    private String evaluateTemplate(final String template, final Map<String, Object> input) {
-        return templateService.evaluate(template, input);
+    @Override
+    public TemplateService getTemplateService() {
+        return templateService;
     }
-
-
 }

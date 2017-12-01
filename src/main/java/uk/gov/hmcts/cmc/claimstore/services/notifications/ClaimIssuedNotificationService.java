@@ -9,12 +9,12 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.party.NamedParty;
-import uk.gov.hmcts.cmc.claimstore.models.party.TitledParty;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
+import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -52,7 +52,7 @@ public class ClaimIssuedNotificationService {
     public void sendMail(
         final Claim claim,
         final String targetEmail,
-        final Optional<String> pin,
+        final String pin,
         final String emailTemplateId,
         final String reference,
         final String submitterName
@@ -70,7 +70,7 @@ public class ClaimIssuedNotificationService {
         final NotificationException exception,
         final Claim claim,
         final String targetEmail,
-        final Optional<String> pin,
+        final String pin,
         final String emailTemplateId,
         final String reference,
         final String submitterName
@@ -83,7 +83,7 @@ public class ClaimIssuedNotificationService {
         logger.info(errorMessage, exception);
     }
 
-    private Map<String, String> aggregateParams(final Claim claim, final Optional<String> pin,
+    private Map<String, String> aggregateParams(final Claim claim, final String pin,
                                                 final String submitterName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -101,7 +101,7 @@ public class ClaimIssuedNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
         parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPound().toString());
-        pin.ifPresent(p -> parameters.put(PIN, p));
+        Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
     }
 

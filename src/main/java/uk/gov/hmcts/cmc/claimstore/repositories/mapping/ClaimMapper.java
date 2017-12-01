@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.models.offers.Settlement;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +39,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableCountyCourtJudgment(result.getString("county_court_judgment")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at")),
             toNullableSettlement(result.getString("settlement")),
-            toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at"))
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
+            result.getString("sealed_claim_document_management_self_path")
         );
     }
 

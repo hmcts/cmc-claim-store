@@ -1,0 +1,5 @@
+{% if claimantRepresented %}
+Claim form {{ claimReferenceNumber }}
+{% else %}
+Claim {{ claimReferenceNumber }} issued
+{% endif %}

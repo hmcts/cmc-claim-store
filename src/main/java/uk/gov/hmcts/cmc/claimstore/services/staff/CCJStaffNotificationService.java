@@ -3,15 +3,14 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RequestSubmittedNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,23 +27,20 @@ public class CCJStaffNotificationService {
 
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
-    private final PDFServiceClient pdfServiceClient;
     private final RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider;
-    private final ContentProvider contentProvider;
+    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
 
     @Autowired
     public CCJStaffNotificationService(
         final EmailService emailService,
         final StaffEmailProperties staffEmailProperties,
-        final PDFServiceClient pdfServiceClient,
         final RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
-        final ContentProvider contentProvider
+        final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
-        this.pdfServiceClient = pdfServiceClient;
         this.ccjRequestSubmittedEmailContentProvider = ccjRequestSubmittedEmailContentProvider;
-        this.contentProvider = contentProvider;
+        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
     }
 
     public void notifyStaffCCJRequestSubmitted(final Claim claim) {
@@ -75,10 +71,7 @@ public class CCJStaffNotificationService {
     }
 
     private EmailAttachment generateCountyCourtJudgmentPdf(final Claim claim) {
-        byte[] generatedPdf = pdfServiceClient.generateFromHtml(
-            staffEmailProperties.getEmailTemplates().getCountyCourtJudgmentDetails(),
-            contentProvider.createContent(claim)
-        );
+        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
 
         return pdf(
             generatedPdf,

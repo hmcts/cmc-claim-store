@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.PersonContent;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.Clock;
 import java.util.Map;

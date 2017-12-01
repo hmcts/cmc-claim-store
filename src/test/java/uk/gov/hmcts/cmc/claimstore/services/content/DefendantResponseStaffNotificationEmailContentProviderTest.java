@@ -4,14 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;
@@ -92,7 +92,17 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     @Test
     public void shouldUsePaidAllDefenceTextIfPaidAllDefenceSelected() {
-        EmailContent content = service.createContent(wrapInMap(SampleClaim.getWithDefaultResponse(), DEFENDANT_EMAIL));
+        EmailContent content = service.createContent(
+            wrapInMap(
+                SampleClaim.builder()
+                    .withResponse(
+                        SampleResponseData
+                            .builder()
+                            .withResponseType(ResponseData.ResponseType.OWE_ALL_PAID_ALL)
+                            .withMediation(null)
+                            .build()
+                    ).build(),
+                DEFENDANT_EMAIL));
         assertThat(content.getBody())
             .contains("The defendant has submitted an already paid defence which is attached as a PDF.")
             .contains("You need to ask the claimant if they want to proceed with the claim.")
@@ -142,9 +152,18 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     }
 
     @Test
-    public void shouldNowShowQuestionnaireTextIfMediationNotRequestedAndIsPaidall() {
+    public void shouldNotShowQuestionnaireTextIfMediationNotRequestedAndIsPaidAll() {
         EmailContent content = service.createContent(
-            wrapInMap(SampleClaim.getWithDefaultResponse(), DEFENDANT_EMAIL)
+            wrapInMap(
+                SampleClaim.builder()
+                    .withResponse(
+                        SampleResponseData.builder()
+                            .withResponseType(ResponseData.ResponseType.OWE_ALL_PAID_ALL)
+                            .withMediation(null)
+                            .build()
+                    ).build(),
+                DEFENDANT_EMAIL
+            )
         );
         assertThat(content.getBody())
             .doesNotContain("You must progress to the directions questionnaire procedure.");

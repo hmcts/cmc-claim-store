@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseCopyContentProvider;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
 import static org.mockito.Mockito.verify;
@@ -18,7 +18,7 @@ public class DefendantResponseCopyServiceTest {
     @Mock
     private DefendantResponseCopyContentProvider contentProvider;
     @Mock
-    private StaffEmailTemplates emailTemplates;
+    private DocumentTemplates documentTemplates;
     @Mock
     private PDFServiceClient pdfServiceClient;
 
@@ -29,7 +29,7 @@ public class DefendantResponseCopyServiceTest {
 
     @Before
     public void beforeEachTest() {
-        service = new DefendantResponseCopyService(contentProvider, emailTemplates, pdfServiceClient);
+        service = new DefendantResponseCopyService(contentProvider, documentTemplates, pdfServiceClient);
     }
 
     @Test(expected = NullPointerException.class)
@@ -41,7 +41,7 @@ public class DefendantResponseCopyServiceTest {
     public void shouldUseCorrectTemplateToCreateTheDocument() {
         service.createPdf(claim);
 
-        verify(emailTemplates).getDefendantResponseCopy();
+        verify(documentTemplates).getDefendantResponseCopy();
     }
 
 }

@@ -4,15 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,6 +25,9 @@ public class ClaimStore {
 
     @Autowired
     private ClaimRepository claimRepository;
+
+    @Autowired
+    private OffersRepository offersRepository;
 
     @Autowired
     private JsonMapper jsonMapper;
@@ -35,7 +41,7 @@ public class ClaimStore {
     }
 
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
-        logger.info("Saving claim: " + claimData.getExternalId());
+        logger.info(String.format("Saving claim: %s", claimData.getExternalId()));
 
         Long claimId = this.claimRepository.saveSubmittedByClaimant(
             jsonMapper.toJson(claimData),
@@ -59,7 +65,7 @@ public class ClaimStore {
     }
 
     public Claim saveResponse(long claimId, ResponseData responseData, String defendantId, String defendantEmail) {
-        logger.info("Saving response data with claim : " + claimId);
+        logger.info(String.format("Saving response data with claim : %d", claimId));
 
         this.claimRepository.saveDefendantResponse(
             claimId,
@@ -74,7 +80,7 @@ public class ClaimStore {
     }
 
     public Claim saveCountyCourtJudgement(long claimId, CountyCourtJudgment ccj) {
-        logger.info("Saving county court judgement with claim : " + claimId);
+        logger.info(String.format("Saving county court judgement with claim : %d", claimId));
 
         this.claimRepository.saveCountyCourtJudgment(
             claimId,
@@ -82,6 +88,37 @@ public class ClaimStore {
         );
 
         logger.info("Saved county court judgement");
+
+        return getClaim(claimId);
+    }
+
+    public Claim makeOffer(long claimId, Settlement settlement) {
+        logger.info(String.format("Saving offer with claim : %d", claimId));
+
+        this.offersRepository.updateSettlement(
+            claimId,
+            jsonMapper.toJson(settlement)
+        );
+
+        logger.info("Saved offer");
+
+        return getClaim(claimId);
+    }
+
+    public Claim acceptOffer(long claimId, Settlement settlement) {
+        this.offersRepository.acceptOffer(
+            claimId,
+            jsonMapper.toJson(settlement),
+            LocalDateTime.now()
+        );
+
+        logger.info("Accepted offer");
+
+        return getClaim(claimId);
+    }
+
+    public Claim linkSealedClaimDocumentSelfPath(long claimId, String documentSelfPath) {
+        this.claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
 
         return getClaim(claimId);
     }

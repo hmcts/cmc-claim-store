@@ -7,12 +7,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,11 +58,16 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
+        claimStore.saveResponse(claim.getId(), SampleResponseData.validDefaults(), DEFENDANT_ID,
+            SampleClaim.DEFENDANT_EMAIL);
         prepareDefendantOffer();
     }
 
     @Test
     public void shouldAcceptExistingOfferAndReturn201Status() throws Exception {
+        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .willReturn(new byte[]{1, 2, 3, 4});
+
         postRequestTo("accept")
             .andExpect(status().isCreated());
 
@@ -83,6 +90,9 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
     @Test
     public void shouldAcceptOfferAndSendNotifications() throws Exception {
+        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .willReturn(new byte[]{1, 2, 3, 4});
+
         runTestAndVerifyNotificationsAreSentWhenEverythingIsOkForResponse("accept");
     }
 

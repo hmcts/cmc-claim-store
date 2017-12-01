@@ -6,8 +6,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import org.skife.jdbi.v2.sqlobject.customizers.SingleValueResult;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.ClaimMapper;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -124,6 +124,15 @@ public interface ClaimRepository {
     Integer linkLetterHolder(
         @Bind("claimId") final Long claimId,
         @Bind("letterHolderId") final String letterHolderId
+    );
+
+    @SqlUpdate(
+        "UPDATE claim SET sealed_claim_document_management_self_path = :documentSelfPath"
+            + " WHERE id = :claimId"
+    )
+    Integer linkSealedClaimDocument(
+        @Bind("claimId") final Long claimId,
+        @Bind("documentSelfPath") final String documentSelfPath
     );
 
     @SqlUpdate(

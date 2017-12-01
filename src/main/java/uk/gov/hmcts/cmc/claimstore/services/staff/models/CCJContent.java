@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;

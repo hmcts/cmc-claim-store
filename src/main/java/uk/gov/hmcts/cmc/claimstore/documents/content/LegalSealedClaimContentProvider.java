@@ -3,9 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
-import uk.gov.hmcts.cmc.claimstore.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.util.HashMap;
 import java.util.Map;

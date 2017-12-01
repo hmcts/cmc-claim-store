@@ -9,9 +9,12 @@ import java.nio.charset.Charset;
 
 @Component
 public class StaffEmailTemplates {
+    public String getClaimIssuedEmailBody() {
+        return readString("/staff/templates/email/claimIssued/body.txt");
+    }
 
-    public byte[] getDefendantResponseCopy() {
-        return readBytes("/staff/templates/document/defendantResponseCopy.html");
+    public String getClaimIssuedEmailSubject() {
+        return readString("/staff/templates/email/claimIssued/subject.txt");
     }
 
     public String getDefendantResponseEmailBody() {
@@ -30,28 +33,12 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt");
     }
 
-    public byte[] getSealedClaim() {
-        return readBytes("/staff/templates/document/sealedClaim.html");
+    public String getSettlementAgreementEmailBody() {
+        return readString("/staff/templates/email/settlementAgreement/body.txt");
     }
 
-    public byte[] getDefendantPinLetter() {
-        return readBytes("/staff/templates/document/defendantPinLetter.html");
-    }
-
-    public byte[] getLegalSealedClaim() {
-        return readBytes("/staff/templates/document/legalSealedClaim.html");
-    }
-
-    public byte[] getCountyCourtJudgmentDetails() {
-        return readBytes("/staff/templates/document/countyCourtJudgmentDetails.html");
-    }
-
-    private byte[] readBytes(final String resourcePath) {
-        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
-            return IOUtils.toByteArray(inputStream);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+    public String getSettlementAgreementEmailSubject() {
+        return readString("/staff/templates/email/settlementAgreement/subject.txt");
     }
 
     private String readString(final String resourcePath) {
@@ -61,4 +48,11 @@ public class StaffEmailTemplates {
         );
     }
 
+    private byte[] readBytes(final String resourcePath) {
+        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
+            return IOUtils.toByteArray(inputStream);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

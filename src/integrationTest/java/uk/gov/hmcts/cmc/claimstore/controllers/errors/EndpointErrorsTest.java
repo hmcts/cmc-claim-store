@@ -9,10 +9,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
 @ActiveProfiles("test")
 public class EndpointErrorsTest extends MockSpringTest {
@@ -158,14 +159,13 @@ public class EndpointErrorsTest extends MockSpringTest {
     @Test
     public void saveResponseShouldFailWhenDefendantResponseFailedStoring() throws Exception {
         long claimId = 1L;
-        String defendantId = "2";
 
         given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.getDefault()));
         willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyLong(), anyString(), anyString(),
             anyString());
 
         webClient
-            .perform(post("/responses/claim/" + claimId + "/defendant/" + defendantId)
+            .perform(post("/responses/claim/" + claimId + "/defendant/" + DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
                 .content(jsonMapper.toJson(SampleResponseData.validDefaults()))

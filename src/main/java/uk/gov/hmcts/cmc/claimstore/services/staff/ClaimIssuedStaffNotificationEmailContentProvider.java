@@ -1,26 +1,37 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
 
-import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
+import java.util.Map;
 
 @Component
-public class ClaimIssuedStaffNotificationEmailContentProvider implements EmailContentProvider<Claim> {
+public class ClaimIssuedStaffNotificationEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
+
+    private final StaffEmailTemplates staffEmailTemplates;
+    private final TemplateService templateService;
+
+    public ClaimIssuedStaffNotificationEmailContentProvider(
+        final StaffEmailTemplates staffEmailTemplates,
+        final TemplateService templateService
+    ) {
+        this.staffEmailTemplates = staffEmailTemplates;
+        this.templateService = templateService;
+    }
 
     @Override
-    public EmailContent createContent(final Claim claim) {
-        requireNonBlank(claim.getReferenceNumber());
-
+    public EmailContent createContent(final Map<String, Object> claim) {
         return new EmailContent(
-            claim.getClaimData().isClaimantRepresented()
-                ? format("Claim form %s", claim.getReferenceNumber())
-                : format("Claim %s issued", claim.getReferenceNumber()),
-            "Please find attached claim."
+            evaluateTemplate(staffEmailTemplates.getClaimIssuedEmailSubject(), claim),
+            staffEmailTemplates.getClaimIssuedEmailBody().trim()
         );
     }
 
+    @Override
+    public TemplateService getTemplateService() {
+        return templateService;
+    }
 }

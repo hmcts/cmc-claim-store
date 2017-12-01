@@ -2,8 +2,16 @@ package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
+import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import java.time.LocalDate;
 
@@ -15,11 +23,13 @@ public class EventProducer {
         this.publisher = publisher;
     }
 
-    public void createClaimIssuedEvent(final Claim claim, final String pin, final String submitterName) {
+    public void createClaimIssuedEvent(final Claim claim, final String pin,
+                                       final String submitterName, final String authorisation) {
+
         if (claim.getClaimData().isClaimantRepresented()) {
-            publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName));
+            publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName, authorisation));
         } else {
-            publisher.publishEvent(new ClaimIssuedEvent(claim, pin, submitterName));
+            publisher.publishEvent(new ClaimIssuedEvent(claim, pin, submitterName, authorisation));
         }
     }
 

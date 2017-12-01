@@ -6,17 +6,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.CLAIM_ID;
-import static uk.gov.hmcts.cmc.claimstore.models.sampledata.SampleClaim.DEFENDANT_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseControllerTest {

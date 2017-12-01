@@ -11,17 +11,17 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotificationException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.ResponseData;
-import uk.gov.hmcts.cmc.claimstore.models.party.Company;
-import uk.gov.hmcts.cmc.claimstore.models.party.Individual;
-import uk.gov.hmcts.cmc.claimstore.models.party.Organisation;
-import uk.gov.hmcts.cmc.claimstore.models.party.Party;
-import uk.gov.hmcts.cmc.claimstore.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.claimstore.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.party.Company;
+import uk.gov.hmcts.cmc.domain.models.party.Individual;
+import uk.gov.hmcts.cmc.domain.models.party.Organisation;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -130,7 +130,10 @@ public class DefendantResponseNotificationService {
     }
 
     private Map<String, String> aggregateParams(final Claim claim, final ResponseData responseData) {
-        boolean isFreeMediationRequested = responseData.getFreeMediation().equals(ResponseData.FreeMediationOption.YES);
+        boolean isFreeMediationApplicable = responseData.getFreeMediation().isPresent();
+        boolean isFreeMediationRequested = responseData.getFreeMediation()
+            .orElse(ResponseData.FreeMediationOption.NO).equals(ResponseData.FreeMediationOption.YES);
+
         LocalDate decisionDeadline = freeMediationDecisionDateCalculator.calculateDecisionDate(LocalDate.now());
 
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
@@ -140,8 +143,10 @@ public class DefendantResponseNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put(MEDIATION_DECISION_DEADLINE, formatDate(decisionDeadline));
-        parameters.put(FREE_MEDIATION_REQUESTED, isFreeMediationRequested ? "yes" : "");
-        parameters.put(FREE_MEDIATION_NOT_REQUESTED, !isFreeMediationRequested ? "yes" : "");
+        parameters.put(FREE_MEDIATION_REQUESTED, isFreeMediationApplicable && isFreeMediationRequested ? "yes" : "");
+        parameters.put(
+            FREE_MEDIATION_NOT_REQUESTED, isFreeMediationApplicable && !isFreeMediationRequested ? "yes" : ""
+        );
         parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
 

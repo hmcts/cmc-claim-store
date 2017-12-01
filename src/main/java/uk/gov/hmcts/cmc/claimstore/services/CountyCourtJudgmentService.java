@@ -3,56 +3,37 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
 import java.time.LocalDate;
-
-import static java.util.Objects.requireNonNull;
 
 @Component
 public class CountyCourtJudgmentService {
 
-    private final ClaimRepository claimRepository;
-    private final JsonMapper jsonMapper;
+    private final ClaimService claimService;
+    private final AuthorisationService authorisationService;
     private final EventProducer eventProducer;
-    private final PDFServiceClient pdfServiceClient;
-    private final StaffEmailTemplates emailTemplates;
-    private final ContentProvider contentProvider;
 
     @Autowired
     public CountyCourtJudgmentService(
-        ClaimRepository claimRepository,
-        JsonMapper jsonMapper,
-        EventProducer eventProducer,
-        PDFServiceClient pdfServiceClient,
-        StaffEmailTemplates emailTemplates,
-        ContentProvider contentProvider
+        final ClaimService claimService,
+        final AuthorisationService authorisationService,
+        final EventProducer eventProducer
     ) {
-        this.claimRepository = claimRepository;
-        this.jsonMapper = jsonMapper;
+        this.claimService = claimService;
+        this.authorisationService = authorisationService;
         this.eventProducer = eventProducer;
-        this.pdfServiceClient = pdfServiceClient;
-        this.emailTemplates = emailTemplates;
-        this.contentProvider = contentProvider;
     }
 
     @Transactional
     public Claim save(final String submitterId, final CountyCourtJudgment countyCourtJudgment, final long claimId) {
 
-        Claim claim = getClaim(claimId);
+        Claim claim = claimService.getClaimById(claimId);
 
-        if (!isClaimSubmittedByUser(claim, submitterId)) {
-            throw new ForbiddenActionException("Claim " + claimId + " does not belong to user" + submitterId);
-        }
+        authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
         if (isResponseAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("Response for the claim " + claimId + " was submitted");
@@ -68,9 +49,9 @@ public class CountyCourtJudgmentService {
             );
         }
 
-        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
+        claimService.saveCountyCourtJudgment(claimId, countyCourtJudgment);
 
-        Claim claimWithCCJ = getClaim(claimId);
+        Claim claimWithCCJ = claimService.getClaimById(claimId);
 
         eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ);
 
@@ -85,24 +66,7 @@ public class CountyCourtJudgmentService {
         return null != claim.getRespondedAt();
     }
 
-    private boolean isClaimSubmittedByUser(final Claim claim, final String submitterId) {
-        return claim.getSubmitterId().equals(submitterId);
-    }
-
     private boolean isCountyCourtJudgmentAlreadySubmitted(final Claim claim) {
         return claim.getCountyCourtJudgment() != null;
-    }
-
-    private Claim getClaim(final long claimId) {
-        return claimRepository.getById(claimId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
-    }
-
-    public byte[] createPdf(Claim claim) {
-        requireNonNull(claim);
-        return pdfServiceClient.generateFromHtml(
-            emailTemplates.getCountyCourtJudgmentDetails(),
-            this.contentProvider.createContent(claim)
-        );
     }
 }

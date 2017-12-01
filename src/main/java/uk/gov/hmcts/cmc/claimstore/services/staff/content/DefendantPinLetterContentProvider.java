@@ -2,10 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.models.Claim;
-import uk.gov.hmcts.cmc.claimstore.models.Interest;
-import uk.gov.hmcts.cmc.claimstore.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
