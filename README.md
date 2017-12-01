@@ -2,14 +2,14 @@
 
 [![codecov](https://codecov.io/gh/hmcts/cmc-claim-store/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/cmc-claim-store)
 
-This is the backend service for Civil Money Claims. 
-The service provides a set of RESTful endpoints for the CMC frontend application. 
+This is the backend service for Civil Money Claims.  
+The service provides a set of RESTful endpoints for the CMC frontend application.  
 The two main responsibilities of this application are:
  - data access layer for the CMC service,
  - executing business logic of the CMC service e.g. calculating response deadline. 
 
-Internally state is persisted to a relational database. 
-The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service. 
+Internally state is persisted to a relational database.  
+The service also delegates some responsibilities to other RESTful services e.g. idam-api or pdf-service.
 
 ## Getting started
 
@@ -55,7 +55,7 @@ If you want your code to become available to other Docker projects (e.g. for loc
 docker-compose build
 ```
 
-The above will build both the application and database images. 
+The above will build both the application and database images.  
 If you want to build only one of them just specify the name assigned in docker compose file, e.g.:
 
 ```bash
@@ -91,7 +91,7 @@ docker-compose exec claim-store-api psql -U postgres -d claimstore
 API documentation is provided with Swagger:
  - `http://localhost:4400/swagger-ui.html` - UI to interact with the API resources
 
-NOTE: Swagger scans classes in the `uk.gov.hmcts.cmc.claimstore.controllers` package.  
+NOTE: Swagger scans classes in the `uk.gov.hmcts.cmc.claimstore.controllers` package.
 
 ## Developing
 
@@ -133,10 +133,10 @@ For IntelliJ IDEA, please add the Lombok IntelliJ plugin:
 Plugin setup for other IDE's are available on [https://projectlombok.org/setup/overview]
 
 #### JsonMappingException when running tests in your IDE
-Add the `-parameters` setting to your compiler arguments in your IDE (Make sure you recompile your code after)
-This is because we use a feature of jackson for automatically deserialising based on the constructor
+Add the `-parameters` setting to your compiler arguments in your IDE (Make sure you recompile your code after).  
+This is because we use a feature of jackson for automatically deserialising based on the constructor.  
 For more info see: https://github.com/FasterXML/jackson-modules-java8/blob/a0d102fa0aea5c2fc327250868e1c1f6d523856d/parameter-names/README.md
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
