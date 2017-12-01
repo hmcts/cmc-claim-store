@@ -54,9 +54,7 @@ public class SaveCaseInCCD {
             });
 
         } catch (IOException e) {
-            throw new InvalidCaseDataException(
-                String.format("Failed to serialize '%s' to JSON", ccdCase.getClass().getSimpleName()), e
-            );
+            throw new InvalidCaseDataException("Failed to serialize to JSON", e);
         }
     }
 
