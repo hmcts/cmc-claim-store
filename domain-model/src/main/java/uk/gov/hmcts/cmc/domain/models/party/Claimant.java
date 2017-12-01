@@ -1,8 +1,8 @@
-package uk.gov.hmcts.cmc.claimstore.models.party;
+package uk.gov.hmcts.cmc.domain.models.party;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import uk.gov.hmcts.cmc.claimstore.models.Address;
-import uk.gov.hmcts.cmc.claimstore.models.legalrep.Representative;
+import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.util.Objects;
 
