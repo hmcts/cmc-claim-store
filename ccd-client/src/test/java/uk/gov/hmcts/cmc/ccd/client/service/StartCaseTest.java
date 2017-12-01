@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.cmc.ccd.client.header.HttpHeadersFactory;
 import uk.gov.hmcts.cmc.ccd.client.model.EventRequestData;
@@ -52,6 +53,25 @@ public class StartCaseTest {
         StartEventResponse startEventResponse = startCase.exchange(eventRequestData);
 
         Assert.assertNotNull(startEventResponse);
+
+        Mockito.verify(headersFactory).getHttpHeader();
+        Mockito.verify(restTemplate).exchange(Mockito.anyString(),
+            eq(HttpMethod.GET),
+            eq(httpEntity),
+            eq(StartEventResponse.class));
+    }
+
+    @Test(expected = RestClientException.class)
+    public void testExchangeReturnsException() throws Exception {
+        when(headersFactory.getHttpHeader()).thenReturn(httpHeaders);
+        HttpEntity<String> httpEntity = Mockito.mock(HttpEntity.class);
+
+        when(restTemplate.exchange(Mockito.anyString(),
+            eq(HttpMethod.GET),
+            eq(httpEntity),
+            eq(StartEventResponse.class) )).thenThrow(RestClientException.class);
+
+        StartEventResponse startEventResponse = startCase.exchange(eventRequestData);
 
         Mockito.verify(headersFactory).getHttpHeader();
         Mockito.verify(restTemplate).exchange(Mockito.anyString(),
