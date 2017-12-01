@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.constraints;
+package uk.gov.hmcts.cmc.domain.constraints;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,13 +9,19 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = ClaimantAmountConstraintValidator.class)
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ClaimantAmount {
-    String message() default "Claimant Amount is inValid";
+@Target({ ElementType.METHOD, ElementType.FIELD })
+@Constraint(validatedBy = MinTotalAmountValidator.class)
+public @interface MinTotalAmount {
+
+    String value();
+
+    boolean inclusive() default true;
+
+    String message() default "Total value of at least {value} is required";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
 }
