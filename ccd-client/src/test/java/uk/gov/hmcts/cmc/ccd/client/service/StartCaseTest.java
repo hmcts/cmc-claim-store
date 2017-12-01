@@ -52,18 +52,11 @@ public class StartCaseTest {
         StartEventResponse startEventResponse = startCase.exchange(eventRequestData);
 
         Assert.assertNotNull(startEventResponse);
+
         Mockito.verify(headersFactory).getHttpHeader();
         Mockito.verify(restTemplate).exchange(Mockito.anyString(),
             eq(HttpMethod.GET),
             eq(httpEntity),
             eq(StartEventResponse.class));
-
     }
-
-    private EventRequestData getEventRequestData() {
-        EventRequestData eventRequestData = new EventRequestData();
-
-        return null;
-    }
-
 }
