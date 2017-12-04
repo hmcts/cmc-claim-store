@@ -16,14 +16,17 @@ public class StartCase {
 
     private final RestTemplate restTemplate;
     private final HttpHeadersFactory headersFactory;
-
-    @Value("${ccd.caseDataStore.baseUrl}")
-    private String ccdUrl;
+    private final String ccdUrl;
 
     @Autowired
-    public StartCase(final RestTemplate restTemplate, final HttpHeadersFactory httpHeadersFactory) {
+    public StartCase(
+        final RestTemplate restTemplate,
+        final HttpHeadersFactory httpHeadersFactory,
+        @Value("${ccd.caseDataStore.baseUrl}") final String ccdUrl
+    ) {
         this.restTemplate = restTemplate;
         this.headersFactory = httpHeadersFactory;
+        this.ccdUrl = ccdUrl;
     }
 
     public StartEventResponse exchange(final EventRequestData eventRequestData) {

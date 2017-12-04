@@ -11,7 +11,7 @@ import java.util.Map;
 @Builder
 public class CaseDataContent {
     private Event event;
-    private Map<String, JsonNode> data;
+    private JsonNode data;
     @JsonProperty("security_classification")
     private Map<String, JsonNode> securityClassification;
     @JsonProperty("event_token")

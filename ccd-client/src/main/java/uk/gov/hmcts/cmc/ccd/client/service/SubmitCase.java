@@ -17,14 +17,18 @@ public class SubmitCase {
 
     private final RestTemplate restTemplate;
     private final HttpHeadersFactory headersFactory;
-
-    @Value("${ccd.caseDataStore.baseUrl}")
-    private String ccdUrl;
+    private final String ccdUrl;
 
     @Autowired
-    public SubmitCase(final RestTemplate restTemplate, final HttpHeadersFactory httpHeadersFactory) {
+    public SubmitCase(
+        final RestTemplate restTemplate,
+        final HttpHeadersFactory httpHeadersFactory,
+        @Value("${ccd.caseDataStore.baseUrl}") final String ccdUrl
+    ) {
+
         this.restTemplate = restTemplate;
         this.headersFactory = httpHeadersFactory;
+        this.ccdUrl = ccdUrl;
     }
 
     public CaseDetails submit(final EventRequestData eventRequestData, final CaseDataContent caseDataContent) {

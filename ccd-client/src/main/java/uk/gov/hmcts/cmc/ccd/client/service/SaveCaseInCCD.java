@@ -14,8 +14,6 @@ import uk.gov.hmcts.cmc.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class SaveCaseInCCD {
@@ -31,7 +29,7 @@ public class SaveCaseInCCD {
 
     public CaseDetails save(final EventRequestData eventRequestData, final CCDCase ccdCase) {
 
-        Map<String, JsonNode> data = toJson(ccdCase);
+        JsonNode data = toJson(ccdCase);
 
         StartEventResponse startEventResponse = this.startCase.exchange(eventRequestData);
         CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -46,11 +44,11 @@ public class SaveCaseInCCD {
         return this.submitCase.submit(eventRequestData, caseDataContent);
     }
 
-    public Map<String, JsonNode> toJson(CCDCase ccdCase) {
+    private JsonNode toJson(CCDCase ccdCase) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode dataNode = objectMapper.readTree(objectMapper.writeValueAsString(ccdCase));
-            return objectMapper.convertValue(dataNode, new TypeReference<HashMap<String, JsonNode>>() {
+            return objectMapper.convertValue(dataNode, new TypeReference<JsonNode>() {
             });
 
         } catch (IOException e) {
