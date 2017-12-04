@@ -30,10 +30,10 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = SoleTrader.class, name = "soleTrader"),
         @JsonSubTypes.Type(value = Company.class, name = "company"),
         @JsonSubTypes.Type(value = Organisation.class, name = "organisation"),
-        @JsonSubTypes.Type(value = Claimant.class, name = "claimant")
+        @JsonSubTypes.Type(value = Party.class, name = "party")
     }
 )
-public abstract class Party implements NamedParty {
+public class Party implements NamedParty {
 
     @NotBlank
     @Size(max = 255, message = "may not be longer than {max} characters")
