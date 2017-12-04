@@ -45,7 +45,7 @@ public class SaveCaseService {
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
             eventRequestData.getEventId(),
-            eventRequestData.getIgnoreWarning().toString()
+            eventRequestData.isIgnoreWarning()
         );
 
         StartEventResponse startEventResponse = responseEntity.getBody();
@@ -67,7 +67,7 @@ public class SaveCaseService {
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
             eventRequestData.getEventId(),
-            eventRequestData.getIgnoreWarning().toString(),
+            eventRequestData.isIgnoreWarning(),
             caseDataContent
         ).getBody();
     }

@@ -22,7 +22,7 @@ public interface SubmitCaseApi {
                                        @PathVariable("jurisdiction-id") String jurisdictionId,
                                        @PathVariable("case-type-id") String caseTypeId,
                                        @PathVariable("event-id") String eventId,
-                                       @RequestParam("ignore-warning") String ignoreWarning,
+                                       @RequestParam("ignore-warning") boolean ignoreWarning,
                                        @RequestBody CaseDataContent caseDataContent
     );
 

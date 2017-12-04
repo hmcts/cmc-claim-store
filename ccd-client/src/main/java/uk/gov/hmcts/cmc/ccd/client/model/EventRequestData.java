@@ -11,5 +11,5 @@ public class EventRequestData {
     private String jurisdictionId;
     private String caseTypeId;
     private String eventId;
-    private Boolean ignoreWarning;
+    private boolean ignoreWarning;
 }
