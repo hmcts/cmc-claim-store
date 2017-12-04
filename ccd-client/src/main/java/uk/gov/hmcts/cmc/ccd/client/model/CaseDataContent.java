@@ -17,5 +17,5 @@ public class CaseDataContent {
     @JsonProperty("event_token")
     private String eventToken;
     @JsonProperty("ignore_warning")
-    private Boolean ignoreWarning;
+    private boolean ignoreWarning;
 }
