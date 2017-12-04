@@ -25,11 +25,11 @@ public class HttpHeadersFactory {
 
     public HttpHeaders getHttpHeader() {
         HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", authorizationHeader);
+        headers.add("ServiceAuthorization", serviceAuthorizationHeader);
         MediaType contentType = new MediaType(
             MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8")
         );
-        headers.add("Authorization", authorizationHeader);
-        headers.add("ServiceAuthorization", serviceAuthorizationHeader);
         headers.setContentType(contentType);
         return headers;
     }
