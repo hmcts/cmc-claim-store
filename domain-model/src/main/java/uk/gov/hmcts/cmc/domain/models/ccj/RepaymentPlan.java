@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.ccj;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.models.constraints.DateNotInThePast;
-import uk.gov.hmcts.cmc.domain.models.constraints.Money;
+import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

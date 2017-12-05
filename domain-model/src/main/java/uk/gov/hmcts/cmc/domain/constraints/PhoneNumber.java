@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.constraints;
+package uk.gov.hmcts.cmc.domain.constraints;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,16 +9,12 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
+@Constraint(validatedBy = PhoneNumberConstraintValidator.class)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD })
-@Constraint(validatedBy = MinTotalAmountValidator.class)
-public @interface MinTotalAmount {
+public @interface PhoneNumber {
 
-    String value();
-
-    boolean inclusive() default true;
-
-    String message() default "Total value of at least {value} is required";
+    String message() default "must be a valid UK phone number";
 
     Class<?>[] groups() default {};
 
