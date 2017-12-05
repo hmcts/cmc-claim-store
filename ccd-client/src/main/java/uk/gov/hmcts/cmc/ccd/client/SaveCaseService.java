@@ -24,17 +24,22 @@ public class SaveCaseService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public SaveCaseService(final StartCaseApi startCaseApi,
-                           final SubmitCaseApi submitCaseApi,
-                           final ObjectMapper objectMapper
+    public SaveCaseService(
+        final StartCaseApi startCaseApi,
+        final SubmitCaseApi submitCaseApi,
+        final ObjectMapper objectMapper
     ) {
         this.startCaseApi = startCaseApi;
         this.submitCaseApi = submitCaseApi;
         this.objectMapper = objectMapper;
     }
 
-    public CaseDetails save(final String authorisation, final String serviceAuthorisation,
-                            final EventRequestData eventRequestData, final CCDCase ccdCase) {
+    public CaseDetails save(
+        final String authorisation,
+        final String serviceAuthorisation,
+        final EventRequestData eventRequestData,
+        final CCDCase ccdCase
+    ) {
 
         JsonNode data = toJson(ccdCase);
 
@@ -66,7 +71,7 @@ public class SaveCaseService {
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
-            eventRequestData.getEventId(),
+            startEventResponse.getCaseDetails().getId().toString(),
             eventRequestData.isIgnoreWarning(),
             caseDataContent
         ).getBody();

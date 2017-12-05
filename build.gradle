@@ -81,6 +81,7 @@ dependencies {
 
   compile project(':email-client')
   compile project(':domain-model')
+  compile project(':ccd-client')
   compile project(':domain-sample-data')
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
