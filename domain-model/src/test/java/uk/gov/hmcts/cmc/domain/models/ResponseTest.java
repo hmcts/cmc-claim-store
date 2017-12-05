@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.util.Set;
@@ -13,16 +13,16 @@ import javax.validation.ValidatorFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
-public class ResponseDataTest {
+public class ResponseTest {
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private final Validator validator = factory.getValidator();
 
     @Test
     public void shouldHaveNoValidationMessagesWhenResponseDataIsValid() {
         //given
-        ResponseData responseData = SampleResponseData.validDefaults();
+        Response responseData = SampleResponse.validDefaults();
         //when
-        Set<ConstraintViolation<ResponseData>> response = validator.validate(responseData);
+        Set<ConstraintViolation<Response>> response = validator.validate(responseData);
         //then
         assertThat(response).isEmpty();
     }
@@ -30,13 +30,13 @@ public class ResponseDataTest {
     @Test
     public void shouldHaveValidationMessagesWhenResponseDataElementsAreInValid() {
         //given
-        ResponseData responseData = SampleResponseData.builder()
+        Response response = SampleResponse.builder()
             .withDefence(null)
             .withResponseType(null)
             .build();
 
         //when
-        Set<String> errors = validate(responseData);
+        Set<String> errors = validate(response);
 
         //then
         assertThat(errors)
@@ -51,13 +51,13 @@ public class ResponseDataTest {
     @Test
     public void shouldHaveValidationMessagesWhenDefenceDataElementIsEmpty() {
         //given
-        ResponseData responseData = SampleResponseData.builder()
+        Response response = SampleResponse.builder()
             .withDefence("")
             .withResponseType(null)
             .build();
 
         //when
-        Set<String> errors = validate(responseData);
+        Set<String> errors = validate(response);
 
         //then
         assertThat(errors)
@@ -73,11 +73,11 @@ public class ResponseDataTest {
         //given
         final String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
-        ResponseData responseData = SampleResponseData.builder()
+        Response response = SampleResponse.builder()
             .withDefence(defence).withResponseType(null).build();
 
         //when
-        Set<String> errors = validate(responseData);
+        Set<String> errors = validate(response);
 
         //then
         assertThat(errors)

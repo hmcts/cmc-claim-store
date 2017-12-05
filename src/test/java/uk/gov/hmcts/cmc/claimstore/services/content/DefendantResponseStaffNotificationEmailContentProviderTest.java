@@ -8,10 +8,10 @@ import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;
@@ -58,7 +58,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldDisplayAppropriateMessageWhenMobileNumberIsNotGiven() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponseData.builder()
+            SampleResponse.builder()
                 .withDefendantDetails(
                     SampleParty.builder()
                         .withMobilePhone(null)
@@ -76,8 +76,8 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldUseFullDefenceTextIfFullDefenceSelected() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponseData.builder()
-                .withResponseType(ResponseData.ResponseType.OWE_NONE)
+            SampleResponse.builder()
+                .withResponseType(Response.ResponseType.OWE_NONE)
                 .build())
             .build();
 
@@ -96,9 +96,9 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
             wrapInMap(
                 SampleClaim.builder()
                     .withResponse(
-                        SampleResponseData
+                        SampleResponse
                             .builder()
-                            .withResponseType(ResponseData.ResponseType.OWE_ALL_PAID_ALL)
+                            .withResponseType(Response.ResponseType.OWE_ALL_PAID_ALL)
                             .withMediation(null)
                             .build()
                     ).build(),
@@ -122,8 +122,8 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldUseAlternativeTextIfFreeMediationIsNotRequested() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponseData.builder()
-                .withMediation(ResponseData.FreeMediationOption.NO)
+            SampleResponse.builder()
+                .withMediation(Response.FreeMediationOption.NO)
                 .build())
             .build();
 
@@ -138,9 +138,9 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldShowQuestionnaireTextIfMediationNotRequestedAndIsFullDefence() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponseData.builder()
-                .withResponseType(ResponseData.ResponseType.OWE_NONE)
-                .withMediation(ResponseData.FreeMediationOption.NO)
+            SampleResponse.builder()
+                .withResponseType(Response.ResponseType.OWE_NONE)
+                .withMediation(Response.FreeMediationOption.NO)
                 .build())
             .build();
 
@@ -157,8 +157,8 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
             wrapInMap(
                 SampleClaim.builder()
                     .withResponse(
-                        SampleResponseData.builder()
-                            .withResponseType(ResponseData.ResponseType.OWE_ALL_PAID_ALL)
+                        SampleResponse.builder()
+                            .withResponseType(Response.ResponseType.OWE_ALL_PAID_ALL)
                             .withMediation(null)
                             .build()
                     ).build(),
