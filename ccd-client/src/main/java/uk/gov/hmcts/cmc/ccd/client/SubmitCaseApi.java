@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.ccd.client.model.CaseDetails;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-@FeignClient(name = "core-case-data-api", url = "${core_case_data_api.url}")
+@FeignClient(name = "core-case-data-api", url = "${core_case_data.api.url}")
 public interface SubmitCaseApi {
 
     String SUBMIT_CASE_URI = "/citizens/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseTypeId}"
