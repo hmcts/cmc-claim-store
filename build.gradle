@@ -177,12 +177,18 @@ jacocoTestReport {
 }
 
 project.tasks['sonarqube'].dependsOn test, apiTest
-project.tasks['check'].dependsOn apiTest
+check.dependsOn apiTest
+checkstyleMain.shouldRunAfter(compileJava)
+test.shouldRunAfter(checkstyleTest)
+apiTest.shouldRunAfter(checkstyleIntegrationTest)
+apiTest.shouldRunAfter(test)
+
 sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
+    property "sonar.exclusions", "**/ccd/domain/**,**/cmc/domain/models/**"
   }
 }
 
