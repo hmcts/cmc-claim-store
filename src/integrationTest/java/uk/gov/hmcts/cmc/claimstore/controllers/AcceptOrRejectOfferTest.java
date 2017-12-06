@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDate;
@@ -58,7 +58,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        claimStore.saveResponse(claim.getId(), SampleResponseData.validDefaults(), DEFENDANT_ID,
+        claimStore.saveResponse(claim.getId(), SampleResponse.validDefaults(), DEFENDANT_ID,
             SampleClaim.DEFENDANT_EMAIL);
         prepareDefendantOffer();
     }

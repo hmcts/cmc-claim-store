@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -51,7 +51,7 @@ public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
         claim = SampleClaim
             .builder()
             .withSettlementReachedAt(LocalDateTime.now())
-            .withResponse(SampleResponseData.validDefaults())
+            .withResponse(SampleResponse.validDefaults())
             .withSettlement(settlement)
             .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
