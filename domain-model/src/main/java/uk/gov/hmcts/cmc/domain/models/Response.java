@@ -19,7 +19,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class ResponseData {
+public class Response {
 
     public enum ResponseType {
         OWE_ALL_PAID_ALL,
@@ -64,12 +64,12 @@ public class ResponseData {
     @Valid
     private final StatementOfTruth statementOfTruth;
 
-    public ResponseData(final ResponseType type,
-                        final String defence,
-                        final FreeMediationOption freeMediation,
-                        final MoreTimeNeededOption moreTimeNeeded,
-                        final Party defendant,
-                        final StatementOfTruth statementOfTruth) {
+    public Response(final ResponseType type,
+                    final String defence,
+                    final FreeMediationOption freeMediation,
+                    final MoreTimeNeededOption moreTimeNeeded,
+                    final Party defendant,
+                    final StatementOfTruth statementOfTruth) {
         this.type = type;
         this.defence = defence;
         this.freeMediation = freeMediation;
@@ -113,7 +113,7 @@ public class ResponseData {
             return false;
         }
 
-        final ResponseData that = (ResponseData) other;
+        final Response that = (Response) other;
         return Objects.equals(type, that.type)
             && Objects.equals(defence, that.defence)
             && Objects.equals(freeMediation, that.freeMediation)

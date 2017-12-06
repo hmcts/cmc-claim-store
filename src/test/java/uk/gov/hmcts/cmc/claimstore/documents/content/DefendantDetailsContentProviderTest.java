@@ -3,11 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.Address;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
@@ -28,8 +28,8 @@ public class DefendantDetailsContentProviderTest {
         .withPostcode("BB 127NQ")
         .build();
 
-    private ResponseData notAmendedDetails() {
-        return SampleResponseData.builder().withDefendantDetails(
+    private Response notAmendedDetails() {
+        return SampleResponse.builder().withDefendantDetails(
             SampleParty.builder()
                 .withName(defendant.getName())
                 .withAddress(defendant.getAddress())
@@ -41,8 +41,8 @@ public class DefendantDetailsContentProviderTest {
         ).build();
     }
 
-    private ResponseData amendedDetails() {
-        return SampleResponseData.builder().withDefendantDetails(
+    private Response amendedDetails() {
+        return SampleResponse.builder().withDefendantDetails(
             SampleParty.builder()
                 .withName("John Doe")
                 .withAddress(
@@ -81,7 +81,7 @@ public class DefendantDetailsContentProviderTest {
 
     @Test
     public void nameShouldBeAsGivenByDefendantWhenAmended() {
-        ResponseData defendantResponse = amendedDetails();
+        Response defendantResponse = amendedDetails();
         DefendantDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
 
         assertThat(content.getNameAmended()).isTrue();
@@ -102,7 +102,7 @@ public class DefendantDetailsContentProviderTest {
 
     @Test
     public void addressShouldBeAsGivenByDefendantWhenAmended() {
-        ResponseData defendantResponse = amendedDetails();
+        Response defendantResponse = amendedDetails();
         DefendantDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
 
         assertThat(content.getAddressAmended()).isTrue();

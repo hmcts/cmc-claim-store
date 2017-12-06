@@ -6,14 +6,14 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
@@ -126,21 +126,21 @@ public class JsonMapperTest {
         final String input = new ResourceReader().read("/defendant-response.json");
 
         //when
-        final ResponseData output = processor.fromJson(input, ResponseData.class);
+        final Response output = processor.fromJson(input, Response.class);
 
         //then
-        final ResponseData expected = SampleResponseData.validDefaults();
+        final Response expected = SampleResponse.validDefaults();
         assertThat(output).isEqualTo(expected);
     }
 
     @Test(expected = InvalidApplicationException.class)
     public void shouldThrowExceptionOnInvalidJson() {
-        processor.fromJson("{asads:", ResponseData.class);
+        processor.fromJson("{asads:", Response.class);
     }
 
     @Test(expected = InvalidApplicationException.class)
     public void shouldThrowExceptionOnInvalidJsonWithTypeReference() {
-        processor.fromJson("{asads:", new TypeReference<List<ResponseData>>() {
+        processor.fromJson("{asads:", new TypeReference<List<Response>>() {
         });
     }
 
