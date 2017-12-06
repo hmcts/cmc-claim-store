@@ -14,15 +14,15 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @FeignClient(name = "core-case-data-api", url = "${core_case_data.api.url}")
 public interface StartCaseApi {
 
-    String START_CASE_URI = "/citizens/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseTypeId}/"
-        + "event-triggers/{eventId}/token";
-
-    @RequestMapping(method = RequestMethod.GET, value = START_CASE_URI)
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = "/citizens/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseType}/event-triggers/{eventId}/token"
+    )
     ResponseEntity<StartEventResponse> start(@RequestHeader(AUTHORIZATION) String authorisation,
                                              @RequestHeader("ServiceAuthorisation") String serviceAuthorisation,
                                              @PathVariable String userId,
                                              @PathVariable String jurisdictionId,
-                                             @PathVariable String caseTypeId,
+                                             @PathVariable String caseType,
                                              @PathVariable String eventId,
                                              @RequestParam("ignore-warning") boolean ignoreWarning
     );
