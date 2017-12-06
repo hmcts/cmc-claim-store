@@ -26,6 +26,6 @@ public class CaseDetails {
     private Integer securityLevel;
     @JsonProperty("case_data")
     private Map<String, JsonNode> data;
-    @JsonProperty("security_classifications")
-    private Map<String, JsonNode> securityClassifications;
+    @JsonProperty("security_classification")
+    private Classification securityClassification;
 }
