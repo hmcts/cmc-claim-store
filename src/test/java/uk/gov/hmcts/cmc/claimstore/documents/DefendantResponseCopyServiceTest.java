@@ -29,17 +29,17 @@ public class DefendantResponseCopyServiceTest {
 
     @Before
     public void beforeEachTest() {
-        service = new DefendantResponseCopyService(contentProvider, documentTemplates, pdfServiceClient);
+        service = new DefendantResponseCopyService(contentProvider, pdfServiceClient);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.createPdf(null);
+        service.createPdf(null, documentTemplates.getDefendantResponseCopy());
     }
 
     @Test
     public void shouldUseCorrectTemplateToCreateTheDocument() {
-        service.createPdf(claim);
+        service.createPdf(claim, documentTemplates.getDefendantResponseCopy());
 
         verify(documentTemplates).getDefendantResponseCopy();
     }

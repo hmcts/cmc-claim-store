@@ -13,26 +13,19 @@ import static java.util.Objects.requireNonNull;
 public class DefendantResponseCopyService {
 
     private final DefendantResponseCopyContentProvider contentProvider;
-    private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
 
     @Autowired
     public DefendantResponseCopyService(
         final DefendantResponseCopyContentProvider contentProvider,
-        final DocumentTemplates documentTemplates,
         final PDFServiceClient pdfServiceClient
     ) {
         this.contentProvider = contentProvider;
-        this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    public byte[] createPdf(final Claim claim) {
+    public byte[] createPdf(final Claim claim, final byte[] template) {
         requireNonNull(claim);
-        return pdfServiceClient.generateFromHtml(
-            documentTemplates.getDefendantResponseCopy(),
-            contentProvider.createContent(claim)
-        );
+        return pdfServiceClient.generateFromHtml(template, contentProvider.createContent(claim));
     }
-
 }

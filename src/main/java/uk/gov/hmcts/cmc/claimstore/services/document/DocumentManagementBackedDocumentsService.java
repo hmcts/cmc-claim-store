@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
@@ -29,6 +30,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
+    private final DocumentTemplates documentTemplates;
 
     @Autowired
     public DocumentManagementBackedDocumentsService(
@@ -39,8 +41,9 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         final DefendantResponseCopyService defendantResponseCopyService,
         final DefendantResponseReceiptService defendantResponseReceiptService,
         final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        final SettlementAgreementCopyService settlementAgreementCopyService
-    ) {
+        final SettlementAgreementCopyService settlementAgreementCopyService,
+        final DocumentTemplates documentTemplates)
+    {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.claimIssueReceiptService = claimIssueReceiptService;
@@ -49,6 +52,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
+        this.documentTemplates = documentTemplates;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateDefendantResponseCopy(final String externalId) {
-        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
+        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId), documentTemplates.getDefendantResponseCopy());
     }
 
     @Override
