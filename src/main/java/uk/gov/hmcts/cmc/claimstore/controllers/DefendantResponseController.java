@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -36,11 +36,11 @@ public class DefendantResponseController {
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new defendant response")
     public Claim save(
-        @Valid @NotNull @RequestBody final ResponseData responseData,
+        @Valid @NotNull @RequestBody final Response response,
         @PathVariable("defendantId") final String defendantId,
         @PathVariable("claimId") final Long claimId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorization
     ) {
-        return defendantResponseService.save(claimId, defendantId, responseData, authorization);
+        return defendantResponseService.save(claimId, defendantId, response, authorization);
     }
 }
