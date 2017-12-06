@@ -7,7 +7,11 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @SuppressWarnings({"HideUtilityClassConstructor", "squid:S1118"}) // Spring needs a constructor, its not a utility class
-@EnableFeignClients(basePackages = {"uk.gov.hmcts.cmc.claimstore", "uk.gov.hmcts.document"})
+@EnableFeignClients(basePackages =
+    {"uk.gov.hmcts.cmc.claimstore",
+        "uk.gov.hmcts.document",
+        "uk.gov.hmcts.reform.authorisation"
+    })
 public class ClaimStoreApplication {
 
     public static final String BASE_PACKAGE_NAME = ClaimStoreApplication.class.getPackage().getName();
@@ -16,4 +20,3 @@ public class ClaimStoreApplication {
         SpringApplication.run(ClaimStoreApplication.class, args);
     }
 }
-
