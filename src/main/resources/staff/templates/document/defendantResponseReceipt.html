@@ -192,13 +192,13 @@
       <tr>
         <td>Address:</td>
         <td>
-          {{ defendant.address.lineOne }}
+          {{ defendant.address.line1 }}
           <br/>
-          {% if defendant.address.lineTwo is not empty %}
-            {{ defendant.address.lineTwo }}
+          {% if defendant.address.line2 is not empty %}
+            {{ defendant.address.line2 }}
             <br/>
           {% endif %}
-          {{ defendant.address.townOrCity }}
+          {{ defendant.address.city }}
           <br/>
           {{ defendant.address.postcode }}
         </td>
@@ -207,13 +207,13 @@
       <tr>
         <td>Correspondence address:</td>
         <td>
-          {{ defendant.correspondenceAddress.lineOne }}
+          {{ defendant.correspondenceAddress.line1 }}
           <br/>
-          {% if defendant.correspondenceAddress.lineTwo is not empty %}
-            {{ defendant.correspondenceAddress.lineTwo }}
+          {% if defendant.correspondenceAddress.line2 is not empty %}
+            {{ defendant.correspondenceAddress.line2 }}
             <br/>
           {% endif %}
-          {{ defendant.correspondenceAddress.townOrCity }}
+          {{ defendant.correspondenceAddress.city }}
           <br/>
           {{ defendant.correspondenceAddress.postcode }}
         </td>
