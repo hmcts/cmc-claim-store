@@ -58,7 +58,7 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
 
     @Override
     public byte[] generateDefendantResponseCopy(final String externalId) {
-        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId),documentTemplates.getDefendantResponseCopy());
+        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override

@@ -70,6 +70,7 @@ public final class SampleClaim {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
             .withResponse(responseData)
+            .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .build();
     }

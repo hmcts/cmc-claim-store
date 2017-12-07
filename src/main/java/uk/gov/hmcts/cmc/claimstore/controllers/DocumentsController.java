@@ -99,14 +99,14 @@ public class DocumentsController {
 
     @ApiOperation("Returns a Defendant Response receipt for a given claim external id")
     @GetMapping(
-        value = "/defendantResponseReceipt/{claimExternalId}",
+        value = "/defendantResponseReceipt/{externalId}",
         produces = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<ByteArrayResource> defendantResponseReceipt(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String claimExternalId
+        @PathVariable("externalId") @NotBlank String externalId
     ) {
-        final byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(claimExternalId);
+        final byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(externalId);
 
         return ResponseEntity
             .ok()
@@ -116,14 +116,14 @@ public class DocumentsController {
 
     @ApiOperation("Returns a Claim Issue receipt for a given claim external id")
     @GetMapping(
-        value = "/claimIssueReceipt/{claimExternalId}",
+        value = "/claimIssueReceipt/{externalId}",
         produces = MediaType.APPLICATION_PDF_VALUE
     )
     public ResponseEntity<ByteArrayResource> claimIssueReceipt(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String claimExternalId
+        @PathVariable("externalId") @NotBlank String externalId
     ) {
-        final byte[] pdfDocument = documentsService.generateClaimIssueReceipt(claimExternalId);
+        final byte[] pdfDocument = documentsService.generateClaimIssueReceipt(externalId);
 
         return ResponseEntity
             .ok()

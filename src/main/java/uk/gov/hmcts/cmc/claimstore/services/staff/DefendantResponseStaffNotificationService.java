@@ -35,8 +35,7 @@ public class DefendantResponseStaffNotificationService {
         final StaffEmailProperties emailProperties,
         final DefendantResponseStaffNotificationEmailContentProvider emailContentProvider,
         final DefendantResponseCopyService defendantResponseCopyService,
-        final DocumentTemplates documentTemplates)
-    {
+        final DocumentTemplates documentTemplates) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
@@ -51,7 +50,7 @@ public class DefendantResponseStaffNotificationService {
         EmailContent emailContent = emailContentProvider.createContent(
             wrapInMap(claim, defendantEmail)
         );
-        byte[] defendantResponseCopy = defendantResponseCopyService.createPdf(claim, documentTemplates.getDefendantResponseCopy());
+        byte[] defendantResponseCopy = defendantResponseCopyService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(

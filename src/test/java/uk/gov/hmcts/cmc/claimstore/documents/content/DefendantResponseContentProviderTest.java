@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -12,17 +14,21 @@ import java.time.Clock;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
-public class DefendantResponseCopyContentProviderTest {
+public class DefendantResponseContentProviderTest {
 
     private Claim claim = SampleClaim.getWithDefaultResponse();
 
-    private DefendantResponseCopyContentProvider provider = new DefendantResponseCopyContentProvider(
+    private DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
         new PartyDetailsContentProvider(),
-        new ClaimContentProvider(new InterestContentProvider(new InterestCalculationService(Clock.systemDefaultZone()))
-        ));
+        new ClaimContentProvider(
+            new InterestContentProvider(
+                new InterestCalculationService(Clock.systemDefaultZone())
+            )
+        ),
+        new NotificationsProperties()
+    );
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
@@ -33,24 +39,25 @@ public class DefendantResponseCopyContentProviderTest {
     public void shouldProvideClaimReferenceNumber() {
         Map<String, Object> content = provider.createContent(claim);
 
-        assertThat(content).containsEntry("claimReferenceNumber", claim.getReferenceNumber());
+        assertThat(((ClaimContent) content.get("claim")).getReferenceNumber())
+            .isEqualTo(claim.getReferenceNumber());
+
     }
 
     @Test
     public void shouldProvideClaimSubmittedOn() {
         Map<String, Object> content = provider.createContent(claim);
 
-        assertThat(content).containsEntry("claimSubmittedOn", formatDate(claim.getCreatedAt()));
+        assertThat(((ClaimContent) content.get("claim")).getIssuedOn())
+            .isEqualTo(formatDate(claim.getIssuedOn()));
     }
 
     @Test
     public void shouldProvideClaimantFullName() {
         Map<String, Object> content = provider.createContent(claim);
 
-        assertThat(content).containsEntry(
-            "claimantFullName",
-            claim.getClaimData().getClaimant().getName()
-        );
+        assertThat(((ClaimContent) content.get("claim")).getSignerName())
+            .isEqualTo(claim.getClaimData().getClaimant().getName());
     }
 
     @Test

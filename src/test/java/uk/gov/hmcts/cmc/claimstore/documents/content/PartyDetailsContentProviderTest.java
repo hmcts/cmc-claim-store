@@ -3,11 +3,10 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.Address;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.time.LocalDate;
@@ -28,35 +27,31 @@ public class PartyDetailsContentProviderTest {
         .withPostcode("BB 127NQ")
         .build();
 
-    private ResponseData notAmendedDetails() {
-        return SampleResponseData.builder().withDefendantDetails(
-            SampleParty.builder()
-                .withName(defendant.getName())
-                .withAddress(defendant.getAddress())
-                .withCorrespondenceAddress(correspondenceAddress)
-                .withDateOfBirth(
-                    DATE_OF_BIRTH
-                )
-                .individual()
-        ).build();
+    private Individual notAmendedDetails() {
+        return SampleParty.builder()
+            .withName(defendant.getName())
+            .withAddress(defendant.getAddress())
+            .withCorrespondenceAddress(correspondenceAddress)
+            .withDateOfBirth(
+                DATE_OF_BIRTH
+            )
+            .individual();
     }
 
-    private ResponseData amendedDetails() {
-        return SampleResponseData.builder().withDefendantDetails(
-            SampleParty.builder()
-                .withName("John Doe")
-                .withAddress(
-                    SampleAddress.builder()
-                        .withLine1("Somewhere")
-                        .withCity("Manchester")
-                        .withPostcode("BB12 7NQ")
-                        .build()
-                )
-                .withDateOfBirth(
-                    DATE_OF_BIRTH
-                )
-                .individual()
-        ).build();
+    private Individual amendedDetails() {
+        return SampleParty.builder()
+            .withName("John Doe")
+            .withAddress(
+                SampleAddress.builder()
+                    .withLine1("Somewhere")
+                    .withCity("Manchester")
+                    .withPostcode("BB12 7NQ")
+                    .build()
+            )
+            .withDateOfBirth(
+                DATE_OF_BIRTH
+            )
+            .individual();
     }
 
     private PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
@@ -81,15 +76,11 @@ public class PartyDetailsContentProviderTest {
 
     @Test
     public void nameShouldBeAsGivenByDefendantWhenAmended() {
-        ResponseData defendantResponse = amendedDetails();
-        PartyDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
+        Individual party = amendedDetails();
+        PartyDetailsContent content = provider.createContent(defendant, party, DEFENDANT_EMAIL);
 
         assertThat(content.getNameAmended()).isTrue();
-        assertThat(content.getFullName()).isEqualTo(
-            defendantResponse
-                .getDefendant()
-                .getName()
-        );
+        assertThat(content.getFullName()).isEqualTo(party.getName());
     }
 
     @Test
@@ -102,13 +93,11 @@ public class PartyDetailsContentProviderTest {
 
     @Test
     public void addressShouldBeAsGivenByDefendantWhenAmended() {
-        ResponseData defendantResponse = amendedDetails();
-        PartyDetailsContent content = provider.createContent(defendant, defendantResponse, DEFENDANT_EMAIL);
+        Individual party = amendedDetails();
+        PartyDetailsContent content = provider.createContent(defendant, party, DEFENDANT_EMAIL);
 
         assertThat(content.getAddressAmended()).isTrue();
-        assertThat(content.getAddress()).isEqualTo(defendantResponse
-            .getDefendant()
-            .getAddress());
+        assertThat(content.getAddress()).isEqualTo(party.getAddress());
     }
 
     @Test

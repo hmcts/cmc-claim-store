@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 

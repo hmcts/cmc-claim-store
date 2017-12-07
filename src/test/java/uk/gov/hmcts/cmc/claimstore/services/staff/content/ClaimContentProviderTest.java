@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;

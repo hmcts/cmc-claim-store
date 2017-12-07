@@ -1,7 +1,9 @@
-package uk.gov.hmcts.cmc.claimstore.services.staff.content;
+package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.PersonContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
