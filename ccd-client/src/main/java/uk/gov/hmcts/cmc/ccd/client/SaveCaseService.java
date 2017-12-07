@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.ccd.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.io.IOException;
 
 @Service
 public class SaveCaseService {
+    Logger logger = LoggerFactory.getLogger(SaveCaseService.class);
 
     private StartCaseApi startCaseApi;
     private SubmitCaseApi submitCaseApi;
@@ -79,10 +82,11 @@ public class SaveCaseService {
 
     private JsonNode toJson(CCDCase ccdCase) {
         try {
+            logger.info(ccdCase.toString());
             JsonNode dataNode = objectMapper.readTree(objectMapper.writeValueAsString(ccdCase));
-            return objectMapper.convertValue(dataNode, new TypeReference<Object>() {
-            });
+            logger.info(dataNode.toString());
 
+            return objectMapper.convertValue(dataNode, JsonNode.class);
         } catch (IOException e) {
             throw new InvalidCaseDataException("Failed to serialize to JSON", e);
         }

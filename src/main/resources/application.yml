@@ -38,6 +38,11 @@ spring:
 idam:
   api:
     url: "http://localhost:8080"
+  s2s-auth:
+    url: "http://localhost:4552"
+    totp_secret: "AAAAAAAAAAAAAAAA"
+    microservice: "cmc_claim_store"
+    tokenTimeToLiveInSeconds: 14400
 
 bankHolidays:
   api:
@@ -80,7 +85,7 @@ staff-notifications:
 feature_toggles:
   watermark_pdf: false
   document_management: false
-  core_case_data: false
+  core_case_data: true
 
 feign:
   httpclient:
