@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
@@ -34,7 +35,12 @@ public class DefendantResponseCopyContentProvider {
             defendantResponse,
             claim.getDefendantEmail()
         ));
-        content.put("responseDefence", defendantResponse.getDefence());
+
+        content.put("responseDefence",
+            defendantResponse instanceof FullDefenceResponse
+                ? ((FullDefenceResponse) defendantResponse).getDefence()
+                : ""
+        );
 
         return content;
     }
