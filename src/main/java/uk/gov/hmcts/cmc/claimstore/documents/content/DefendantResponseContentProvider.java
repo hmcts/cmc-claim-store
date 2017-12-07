@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
@@ -34,7 +34,7 @@ public class DefendantResponseContentProvider {
 
     public Map<String, Object> createContent(final Claim claim) {
         requireNonNull(claim);
-        ResponseData defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         Map<String, Object> content = new HashMap<>();
         Optional<StatementOfTruth> optionalStatementOfTruth = defendantResponse.getStatementOfTruth();
@@ -45,7 +45,7 @@ public class DefendantResponseContentProvider {
         content.put("defenceSubmittedOn", formatDateTime(claim.getRespondedAt()));
         content.put("responseDefence", defendantResponse.getDefence());
         content.put("freeMediation", defendantResponse.getFreeMediation()
-            .orElse(ResponseData.FreeMediationOption.NO)
+            .orElse(Response.FreeMediationOption.NO)
             .name()
             .toLowerCase());
         content.put("responseDashboardUrl", notificationsProperties.getFrontendBaseUrl());
