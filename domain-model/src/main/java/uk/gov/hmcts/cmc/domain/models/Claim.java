@@ -29,7 +29,7 @@ public class Claim {
     private final boolean moreTimeRequested;
     private final String submitterEmail;
     private final LocalDateTime respondedAt;
-    private final ResponseData response;
+    private final Response response;
     private final String defendantEmail;
     private final CountyCourtJudgment countyCourtJudgment;
     private final LocalDateTime countyCourtJudgmentRequestedAt;
@@ -52,7 +52,7 @@ public class Claim {
         final boolean moreTimeRequested,
         final String submitterEmail,
         final LocalDateTime respondedAt,
-        final ResponseData response,
+        final Response response,
         final String defendantEmail,
         final CountyCourtJudgment countyCourtJudgment,
         final LocalDateTime countyCourtJudgmentRequestedAt,
@@ -134,7 +134,7 @@ public class Claim {
         return respondedAt;
     }
 
-    public Optional<ResponseData> getResponse() {
+    public Optional<Response> getResponse() {
         return Optional.ofNullable(response);
     }
 

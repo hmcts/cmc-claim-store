@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -60,18 +60,18 @@ public class ClaimStore {
         return getClaim(claimId);
     }
 
-    public Claim saveResponse(long claimId, ResponseData responseData) {
-        return saveResponse(claimId, responseData, "1", SampleClaim.DEFENDANT_EMAIL);
+    public Claim saveResponse(long claimId, Response response) {
+        return saveResponse(claimId, response, "1", SampleClaim.DEFENDANT_EMAIL);
     }
 
-    public Claim saveResponse(long claimId, ResponseData responseData, String defendantId, String defendantEmail) {
+    public Claim saveResponse(long claimId, Response response, String defendantId, String defendantEmail) {
         logger.info(String.format("Saving response data with claim : %d", claimId));
 
         this.claimRepository.saveDefendantResponse(
             claimId,
             defendantId,
             defendantEmail,
-            jsonMapper.toJson(responseData)
+            jsonMapper.toJson(response)
         );
 
         logger.info("Saved response data");

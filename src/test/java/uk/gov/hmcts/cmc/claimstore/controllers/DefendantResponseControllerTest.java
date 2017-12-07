@@ -8,9 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +35,7 @@ public class DefendantResponseControllerTest {
     @Test
     public void shouldSaveResponseInRepository() throws JsonProcessingException {
         //given
-        final ResponseData input = SampleResponseData.builder()
+        final Response input = SampleResponse.builder()
             .build();
 
         Claim sampleClaim = SampleClaim.getWithDefaultResponse();
