@@ -26,9 +26,8 @@ public class ClaimIssueReceiptService {
         this.claimContentProvider = claimContentProvider;
     }
 
-    public byte[] createPdf(final Claim claim, final String submitterEmail) {
+    public byte[] createPdf(final Claim claim, String submitterEmail) {
         requireNonNull(claim);
-        requireNonNull(submitterEmail);
 
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getClaimIssueReceipt(),

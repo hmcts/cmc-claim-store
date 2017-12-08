@@ -121,9 +121,11 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> claimIssueReceipt(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String externalId
+        @PathVariable("externalId") @NotBlank String externalId,
+        @ApiParam("Claim submitter email")
+        @PathVariable("submitterEmail") @NotBlank String submitterEmail
     ) {
-        final byte[] pdfDocument = documentsService.generateClaimIssueReceipt(externalId);
+        final byte[] pdfDocument = documentsService.generateClaimIssueReceipt(externalId, submitterEmail);
 
         return ResponseEntity
             .ok()

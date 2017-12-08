@@ -14,7 +14,6 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
-import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 
 @Component
 public class ClaimContentProvider {
@@ -36,7 +35,6 @@ public class ClaimContentProvider {
 
     public Map<String, Object> createContent(final Claim claim, final String submitterEmail) {
         requireNonNull(claim);
-        requireNonBlank(submitterEmail);
 
         Map<String, Object> map = new HashMap<>();
 

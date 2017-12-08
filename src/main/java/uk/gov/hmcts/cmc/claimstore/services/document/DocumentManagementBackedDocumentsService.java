@@ -51,8 +51,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] generateClaimIssueReceipt(String externalId) {
-        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateClaimIssueReceipt(String externalId, String submitterEmail) {
+        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId), submitterEmail);
     }
 
     @Override
