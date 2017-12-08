@@ -24,7 +24,6 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
-    private final DocumentTemplates documentTemplates;
 
     @Autowired
     public AlwaysGenerateDocumentsService(
@@ -34,8 +33,7 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
         final DefendantResponseCopyService defendantResponseCopyService,
         final DefendantResponseReceiptService defendantResponseReceiptService,
         final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        final SettlementAgreementCopyService settlementAgreementCopyService,
-        final DocumentTemplates documentTemplates) {
+        final SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
@@ -43,7 +41,6 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
-        this.documentTemplates = documentTemplates;
     }
 
     @Override

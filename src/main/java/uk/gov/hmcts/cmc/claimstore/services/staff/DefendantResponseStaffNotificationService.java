@@ -27,20 +27,17 @@ public class DefendantResponseStaffNotificationService {
     private final StaffEmailProperties emailProperties;
     private final DefendantResponseStaffNotificationEmailContentProvider emailContentProvider;
     private final DefendantResponseCopyService defendantResponseCopyService;
-    private final DocumentTemplates documentTemplates;
 
     @Autowired
     public DefendantResponseStaffNotificationService(
         final EmailService emailService,
         final StaffEmailProperties emailProperties,
         final DefendantResponseStaffNotificationEmailContentProvider emailContentProvider,
-        final DefendantResponseCopyService defendantResponseCopyService,
-        final DocumentTemplates documentTemplates) {
+        final DefendantResponseCopyService defendantResponseCopyService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
         this.defendantResponseCopyService = defendantResponseCopyService;
-        this.documentTemplates = documentTemplates;
     }
 
     public void notifyStaffDefenceSubmittedFor(
