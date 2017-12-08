@@ -41,7 +41,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             null,
             null,
             ccdCase.getExternalId(),
-            ccdCase.getReferenceNumber(), claimMapper.from(ccdCase.getClaim()),
+            ccdCase.getReferenceNumber(), claimMapper.from(ccdCase.getClaimData()),
             LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME),
             LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE),
             null,
