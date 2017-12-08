@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
@@ -22,7 +22,7 @@ public class DefendantResponseContentProviderTest {
 
     private DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
         new PartyDetailsContentProvider(),
-        new ClaimContentProvider(
+        new ClaimDataContentProvider(
             new InterestContentProvider(
                 new InterestCalculationService(Clock.systemDefaultZone())
             )

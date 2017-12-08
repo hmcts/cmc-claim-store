@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SealedClaimContentProviderTest {
+public class SealedClaimDataContentProviderTest {
 
     private static final String EMAIL = "address@domain.com";
 
@@ -26,7 +26,7 @@ public class SealedClaimContentProviderTest {
             new PersonContentProvider()
         ),
         new PersonContentProvider(),
-        new ClaimContentProvider(
+        new ClaimDataContentProvider(
             new InterestContentProvider(
                 new InterestCalculationService(Clock.systemDefaultZone())
             )

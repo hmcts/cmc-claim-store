@@ -14,11 +14,11 @@ public class DocumentTemplates {
     }
 
     public byte[] getDefendantResponseReceipt() {
-        return readBytes("/staff/templates/document/defendantResponseReceipt.html");
+        return readBytes("/citizen/templates/document/defendantResponseReceipt.html");
     }
 
     public byte[] getClaimIssueReceipt() {
-        return readBytes("/staff/templates/document/claimIssueReceipt.html");
+        return readBytes("/citizen/templates/document/claimIssueReceipt.html");
     }
 
     public byte[] getSealedClaim() {

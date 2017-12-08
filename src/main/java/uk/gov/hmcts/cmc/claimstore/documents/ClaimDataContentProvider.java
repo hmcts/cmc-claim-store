@@ -23,12 +23,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
-public class ClaimContentProvider {
+public class ClaimDataContentProvider {
 
     private final InterestContentProvider interestContentProvider;
 
     @Autowired
-    public ClaimContentProvider(InterestContentProvider interestContentProvider) {
+    public ClaimDataContentProvider(InterestContentProvider interestContentProvider) {
         this.interestContentProvider = interestContentProvider;
     }
 

@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
+
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
@@ -20,17 +21,17 @@ public class SealedClaimContentProvider {
 
     private final ClaimantContentProvider claimantContentProvider;
     private final PersonContentProvider personContentProvider;
-    private final ClaimContentProvider claimContentProvider;
+    private final ClaimDataContentProvider claimDataContentProvider;
 
     @Autowired
     public SealedClaimContentProvider(
         final ClaimantContentProvider claimantContentProvider,
         final PersonContentProvider personContentProvider,
-        final ClaimContentProvider claimContentProvider
+        final ClaimDataContentProvider claimDataContentProvider
     ) {
         this.claimantContentProvider = claimantContentProvider;
         this.personContentProvider = personContentProvider;
-        this.claimContentProvider = claimContentProvider;
+        this.claimDataContentProvider = claimDataContentProvider;
     }
 
     public Map<String, Object> createContent(final Claim claim, final String submitterEmail) {
@@ -56,7 +57,7 @@ public class SealedClaimContentProvider {
             PartyUtils.getBusinessName(defendant).orElse(null))
         );
 
-        map.put("claim", claimContentProvider.createContent(claim));
+        map.put("claim", claimDataContentProvider.createContent(claim));
         map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
 
         return map;

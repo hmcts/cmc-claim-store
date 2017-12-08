@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -20,15 +20,15 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 public class DefendantResponseContentProvider {
 
     private final PartyDetailsContentProvider partyDetailsContentProvider;
-    private final ClaimContentProvider claimContentProvider;
+    private final ClaimDataContentProvider claimDataContentProvider;
     private final NotificationsProperties notificationsProperties;
 
     public DefendantResponseContentProvider(
         final PartyDetailsContentProvider partyDetailsContentProvider,
-        final ClaimContentProvider claimContentProvider,
+        final ClaimDataContentProvider claimDataContentProvider,
         final NotificationsProperties notificationsProperties) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
-        this.claimContentProvider = claimContentProvider;
+        this.claimDataContentProvider = claimDataContentProvider;
         this.notificationsProperties = notificationsProperties;
     }
 
@@ -41,7 +41,7 @@ public class DefendantResponseContentProvider {
         content.put("signerName", optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null));
         content.put("signerRole", optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null));
 
-        content.put("claim", claimContentProvider.createContent(claim));
+        content.put("claim", claimDataContentProvider.createContent(claim));
         content.put("defenceSubmittedOn", formatDateTime(claim.getRespondedAt()));
         content.put("responseDefence", defendantResponse.getDefence());
         content.put("freeMediation", defendantResponse.getFreeMediation()
