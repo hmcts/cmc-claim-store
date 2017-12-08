@@ -67,32 +67,32 @@ public class PartyUtilsTest {
     @Test
     public void getDefendantContactPersonReturnsContactPerson() {
         CompanyDetails companyDetails = SampleTheirDetails.builder().companyDetails();
-        assertThat(PartyUtils.getDefendantContactPerson(companyDetails))
+        assertThat(PartyUtils.getContactPerson(companyDetails))
             .isEqualTo(companyDetails.getContactPerson());
 
         OrganisationDetails organisationDetails = SampleTheirDetails.builder().organisationDetails();
-        assertThat(PartyUtils.getDefendantContactPerson(organisationDetails))
+        assertThat(PartyUtils.getContactPerson(organisationDetails))
             .isEqualTo(organisationDetails.getContactPerson());
     }
 
     @Test
     public void getDefendantContactPersonReturnsEmptyOptionalWhenNotCompanyType() {
         IndividualDetails defendant = SampleTheirDetails.builder().individualDetails();
-        assertThat(PartyUtils.getDefendantContactPerson(defendant))
+        assertThat(PartyUtils.getContactPerson(defendant))
             .isEqualTo(Optional.empty());
     }
 
     @Test
     public void getDefendantBusinessName() {
         SoleTraderDetails defendant = SampleTheirDetails.builder().soleTraderDetails();
-        assertThat(PartyUtils.getDefendantBusinessName(defendant))
+        assertThat(PartyUtils.getBusinessName(defendant))
             .isEqualTo(defendant.getBusinessName());
     }
 
     @Test
     public void getDefendantBusinessNameReturnsEmptyOptionalWhenNotSoleTraderType() {
         IndividualDetails defendant = SampleTheirDetails.builder().individualDetails();
-        assertThat(PartyUtils.getDefendantBusinessName(defendant))
+        assertThat(PartyUtils.getBusinessName(defendant))
             .isEqualTo(Optional.empty());
     }
 
