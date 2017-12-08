@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.domain.models.Address;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
@@ -29,7 +29,7 @@ public class DefendantDetailsContent {
 
     public DefendantDetailsContent(
         final TheirDetails providedByClaimant,
-        final ResponseData defendantResponse,
+        final Response defendantResponse,
         final String defendantEmail
     ) {
         final Party defendant = defendantResponse.getDefendant();
@@ -50,7 +50,7 @@ public class DefendantDetailsContent {
         this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
     }
 
-    private Address correspondenceAddress(final ResponseData defendantResponse) {
+    private Address correspondenceAddress(final Response defendantResponse) {
         return defendantResponse.getDefendant().getCorrespondenceAddress().orElse(null);
     }
 

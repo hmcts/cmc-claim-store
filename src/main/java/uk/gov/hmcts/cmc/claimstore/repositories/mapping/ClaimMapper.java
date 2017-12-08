@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.sql.ResultSet;
@@ -48,8 +48,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         return jsonMapper.fromJson(input, ClaimData.class);
     }
 
-    private ResponseData toNullableResponseData(final String input) {
-        return toNullableEntity(input, ResponseData.class);
+    private Response toNullableResponseData(final String input) {
+        return toNullableEntity(input, Response.class);
     }
 
     private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {
