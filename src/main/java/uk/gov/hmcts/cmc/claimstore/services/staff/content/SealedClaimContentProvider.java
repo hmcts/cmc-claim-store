@@ -50,8 +50,8 @@ public class SealedClaimContentProvider {
             defendant.getAddress(),
             null,
             defendant.getEmail().orElse(null),
-            PartyUtils.getDefendantContactPerson(defendant).orElse(null),
-            PartyUtils.getDefendantBusinessName(defendant).orElse(null))
+            PartyUtils.getContactPerson(defendant).orElse(null),
+            PartyUtils.getBusinessName(defendant).orElse(null))
         );
 
         map.put("claim", claimContentProvider.createContent(claim));
