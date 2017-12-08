@@ -19,6 +19,8 @@ public class PartyDetailsContentProviderTest {
 
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(2017, 7, 19);
 
+    private PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
+
     private TheirDetails defendant = SampleTheirDetails.builder()
         .individualDetails();
 
@@ -53,8 +55,6 @@ public class PartyDetailsContentProviderTest {
             )
             .individual();
     }
-
-    private PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendant() {

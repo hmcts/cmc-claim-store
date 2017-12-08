@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
-import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
@@ -21,7 +21,7 @@ public class SealedClaimDataContentProviderTest {
 
     private Claim claim = SampleClaim.getDefault();
 
-    private SealedClaimContentProvider provider = new SealedClaimContentProvider(
+    private ClaimContentProvider provider = new ClaimContentProvider(
         new ClaimantContentProvider(
             new PersonContentProvider()
         ),

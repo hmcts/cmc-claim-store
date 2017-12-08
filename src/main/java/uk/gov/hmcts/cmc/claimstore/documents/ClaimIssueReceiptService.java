@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.documents.content.ClaimIssueReceiptContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
@@ -12,26 +11,28 @@ import static java.util.Objects.requireNonNull;
 @Service
 public class ClaimIssueReceiptService {
 
-    private final ClaimIssueReceiptContentProvider contentProvider;
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
+    private final ClaimContentProvider claimContentProvider;
 
     @Autowired
     public ClaimIssueReceiptService(
-        final ClaimIssueReceiptContentProvider contentProvider,
         final DocumentTemplates documentTemplates,
-        final PDFServiceClient pdfServiceClient
+        final PDFServiceClient pdfServiceClient,
+        final ClaimContentProvider claimContentProvider
     ) {
-        this.contentProvider = contentProvider;
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
+        this.claimContentProvider = claimContentProvider;
     }
 
-    public byte[] createPdf(final Claim claim) {
+    public byte[] createPdf(final Claim claim, final String submitterEmail) {
         requireNonNull(claim);
+        requireNonNull(submitterEmail);
+
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getClaimIssueReceipt(),
-            contentProvider.createContent(claim)
+            claimContentProvider.createContent(claim, submitterEmail)
         );
     }
 

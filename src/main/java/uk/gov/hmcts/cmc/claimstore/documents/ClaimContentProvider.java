@@ -17,14 +17,14 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 
 @Component
-public class SealedClaimContentProvider {
+public class ClaimContentProvider {
 
     private final ClaimantContentProvider claimantContentProvider;
     private final PersonContentProvider personContentProvider;
     private final ClaimDataContentProvider claimDataContentProvider;
 
     @Autowired
-    public SealedClaimContentProvider(
+    public ClaimContentProvider(
         final ClaimantContentProvider claimantContentProvider,
         final PersonContentProvider personContentProvider,
         final ClaimDataContentProvider claimDataContentProvider

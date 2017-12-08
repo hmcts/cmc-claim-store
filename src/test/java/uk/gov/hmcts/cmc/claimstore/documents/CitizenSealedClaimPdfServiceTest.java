@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 public class CitizenSealedClaimPdfServiceTest {
 
     @Mock
-    private SealedClaimContentProvider contentProvider;
+    private ClaimContentProvider contentProvider;
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock

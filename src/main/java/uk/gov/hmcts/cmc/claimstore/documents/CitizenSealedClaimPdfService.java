@@ -13,17 +13,17 @@ public class CitizenSealedClaimPdfService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
-    private final SealedClaimContentProvider sealedClaimContentProvider;
+    private final ClaimContentProvider claimContentProvider;
 
     @Autowired
     public CitizenSealedClaimPdfService(
         final DocumentTemplates documentTemplates,
         final PDFServiceClient pdfServiceClient,
-        final SealedClaimContentProvider sealedClaimContentProvider
+        final ClaimContentProvider claimContentProvider
     ) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
-        this.sealedClaimContentProvider = sealedClaimContentProvider;
+        this.claimContentProvider = claimContentProvider;
     }
 
     public byte[] createPdf(final Claim claim, final String submitterEmail) {
@@ -32,7 +32,7 @@ public class CitizenSealedClaimPdfService {
 
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getSealedClaim(),
-            sealedClaimContentProvider.createContent(claim, submitterEmail)
+            claimContentProvider.createContent(claim, submitterEmail)
         );
     }
 }
