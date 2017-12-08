@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@feature/retry-for-healthcheck")
+@Library("Infrastructure@private-ase")
 
 def product = "cmc"
 def component = "claim-store"
