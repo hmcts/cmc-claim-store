@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class SaveCaseService {
@@ -52,8 +52,7 @@ public class SaveCaseService {
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
-            eventRequestData.getEventId(),
-            eventRequestData.isIgnoreWarning()
+            eventRequestData.getEventId()
         );
 
         StartEventResponse startEventResponse = responseEntity.getBody();
@@ -74,7 +73,6 @@ public class SaveCaseService {
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
-            startEventResponse.getCaseDetails().getId().toString(),
             eventRequestData.isIgnoreWarning(),
             caseDataContent
         ).getBody();

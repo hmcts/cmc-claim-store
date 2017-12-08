@@ -33,6 +33,6 @@ public class UserService {
     }
 
     public String generateServiceAuthToken() {
-        return cachedServiceAuthTokenGenerator.generate();
+        return "Bearer " + cachedServiceAuthTokenGenerator.generate();
     }
 }

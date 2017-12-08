@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.client.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 @Data
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CaseDetails {
     private Long id;
     private String jurisdiction;

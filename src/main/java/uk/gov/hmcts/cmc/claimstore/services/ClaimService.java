@@ -95,7 +95,6 @@ public class ClaimService {
     @Transactional
     public Claim saveClaim(final String submitterId, final ClaimData claimData, final String authorisation) {
         final String externalId = claimData.getExternalId().toString();
-        final String authToken = userService.generateServiceAuthToken();
 
         claimRepository.getClaimByExternalId(externalId).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());

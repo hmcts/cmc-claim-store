@@ -18,14 +18,13 @@ public interface SubmitCaseApi {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/citizens/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseType}/cases/{caseId}/events"
+        value = "/citizens/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseType}/cases"
     )
     ResponseEntity<CaseDetails> submit(@RequestHeader(AUTHORIZATION) String authorisation,
-                                       @RequestHeader("ServiceAuthorisation") String serviceAuthorisation,
+                                       @RequestHeader("ServiceAuthorization") String serviceAuthorisation,
                                        @PathVariable String userId,
                                        @PathVariable String jurisdictionId,
                                        @PathVariable String caseType,
-                                       @PathVariable String caseId,
                                        @RequestParam("ignore-warning") boolean ignoreWarning,
                                        @RequestBody CaseDataContent caseDataContent
     );
