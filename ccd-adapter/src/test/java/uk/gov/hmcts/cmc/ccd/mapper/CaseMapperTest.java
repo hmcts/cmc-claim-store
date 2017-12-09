@@ -56,7 +56,7 @@ public class CaseMapperTest {
             .submitterId("123")
             .referenceNumber("ref no")
             .externalId(UUID.randomUUID().toString())
-            .claim(getCCDClaim())
+            .claimData(getCCDClaim())
             .build();
 
         //when
@@ -77,7 +77,7 @@ public class CaseMapperTest {
             .submitterId("123")
             .referenceNumber("ref no")
             .externalId(UUID.randomUUID().toString())
-            .claim(null)
+            .claimData(null)
             .build();
 
         //when
