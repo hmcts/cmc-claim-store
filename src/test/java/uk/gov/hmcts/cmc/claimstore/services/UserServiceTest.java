@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.reform.authorisation.generators.CachedServiceAuthTokenGenerator;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -24,11 +24,11 @@ public class UserServiceTest {
     private IdamApi idamApi;
 
     @Mock
-    private CachedServiceAuthTokenGenerator cachedServiceAuthTokenGenerator;
+    private AuthTokenGenerator authTokenGenerator;
 
     @Before
     public void setup() {
-        userService = new UserService(idamApi, cachedServiceAuthTokenGenerator);
+        userService = new UserService(idamApi, authTokenGenerator);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class UserServiceTest {
     @Test
     public void shouldGenerateServiceToken() {
         //given
-        when(cachedServiceAuthTokenGenerator.generate()).thenReturn(BEARER_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(BEARER_TOKEN);
 
         //when
         String output = userService.generateServiceAuthToken();
@@ -60,6 +60,6 @@ public class UserServiceTest {
         assertThat(output).isNotNull().isEqualTo(BEARER_TOKEN);
 
         //verify
-        verify(cachedServiceAuthTokenGenerator).generate();
+        verify(authTokenGenerator).generate();
     }
 }
