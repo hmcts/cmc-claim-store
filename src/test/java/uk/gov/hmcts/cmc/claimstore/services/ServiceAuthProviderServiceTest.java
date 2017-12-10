@@ -12,16 +12,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceAuthorizationTokenServiceTest {
+public class ServiceAuthProviderServiceTest {
     private static final String BEARER_TOKEN = "bearer Token";
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
-    private ServiceAuthorizationTokenService serviceAuthorizationTokenService;
+    private ServiceAuthProviderService serviceAuthProviderService;
 
     @Before
     public void setup() {
-        serviceAuthorizationTokenService = new ServiceAuthorizationTokenService(authTokenGenerator);
+        serviceAuthProviderService = new ServiceAuthProviderService(authTokenGenerator);
     }
 
     @Test
@@ -30,7 +30,7 @@ public class ServiceAuthorizationTokenServiceTest {
         when(authTokenGenerator.generate()).thenReturn(BEARER_TOKEN);
 
         //when
-        String output = serviceAuthorizationTokenService.getToken();
+        String output = serviceAuthProviderService.getToken();
 
         //then
         assertThat(output).isNotNull().isEqualTo(BEARER_TOKEN);
