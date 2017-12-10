@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,8 @@ import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 public class ServiceTokenGeneratorConfiguration {
 
     @Bean
-    public AuthTokenGenerator serviceAuthTokenGenerator(
+    @ConditionalOnMissingBean(name = "authTokenGenerator")
+    public AuthTokenGenerator authTokenGenerator(
             @Value("${idam.s2s-auth.totp_secret}") final String secret,
             @Value("${idam.s2s-auth.microservice}") final String microService,
             final ServiceAuthorisationApi serviceAuthorisationApi
@@ -26,8 +28,9 @@ public class ServiceTokenGeneratorConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = "cachedServiceAuthTokenGenerator")
     public AuthTokenGenerator cachedServiceAuthTokenGenerator(
-            @Qualifier("serviceAuthTokenGenerator") final AuthTokenGenerator serviceAuthTokenGenerator,
+            @Qualifier("authTokenGenerator") final AuthTokenGenerator serviceAuthTokenGenerator,
             @Value("${idam.s2s-auth.tokenTimeToLiveInSeconds:14400}") final int ttl) {
         return new CachedServiceAuthTokenGenerator(serviceAuthTokenGenerator, ttl);
     }
