@@ -1,14 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.authorisation.generators.CachedServiceAuthTokenGenerator;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 @Component
 public class UserService {
@@ -34,7 +32,7 @@ public class UserService {
         );
     }
 
-    public String generateServiceAuthToken(){
+    public String generateServiceAuthToken() {
         return cachedServiceAuthTokenGenerator.generate();
     }
 }
