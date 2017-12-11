@@ -26,9 +26,8 @@ public class CitizenSealedClaimPdfService {
         this.claimContentProvider = claimContentProvider;
     }
 
-    public byte[] createPdf(final Claim claim, final String submitterEmail) {
+    public byte[] createPdf(final Claim claim) {
         requireNonNull(claim);
-        requireNonNull(submitterEmail);
 
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getSealedClaim(),

@@ -19,7 +19,8 @@ public class DefendantResponseCopyService {
     @Autowired
     public DefendantResponseCopyService(
         final DefendantResponseContentProvider contentProvider,
-        DocumentTemplates documentTemplates, final PDFServiceClient pdfServiceClient
+        final DocumentTemplates documentTemplates,
+        final PDFServiceClient pdfServiceClient
     ) {
         this.contentProvider = contentProvider;
         this.documentTemplates = documentTemplates;

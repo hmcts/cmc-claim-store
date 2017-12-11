@@ -33,17 +33,12 @@ public class CitizenSealedClaimPdfServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.createPdf(null, "submitter@email.com");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullSubmitterEmail() {
-        service.createPdf(claim, null);
+        service.createPdf(null);
     }
 
     @Test
     public void shouldUseCorrectTemplateToCreateTheDocument() {
-        service.createPdf(claim, "submitter@email.com");
+        service.createPdf(claim);
         verify(documentTemplates).getSealedClaim();
     }
 
