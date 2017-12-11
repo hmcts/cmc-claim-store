@@ -3,11 +3,14 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -15,6 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
+    public static final String COLLECTION_KEY_NAME = "value";
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
@@ -56,8 +60,13 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         claimData.getHousingDisrepair()
             .ifPresent(housingDisrepair -> builder.housingDisrepair(housingDisrepairMapper.to(housingDisrepair)));
 
-        builder.claimants(claimData.getClaimants().stream().map(partyMapper::to).collect(Collectors.toList()));
-        builder.defendants(claimData.getDefendants().stream().map(theirDetailsMapper::to).collect(Collectors.toList()));
+        builder.claimants(claimData.getClaimants().stream().map(partyMapper::to)
+            .map(this::mapToValue)
+            .collect(Collectors.toList()));
+
+        builder.defendants(claimData.getDefendants().stream().map(theirDetailsMapper::to)
+            .map(this::mapToValue)
+            .collect(Collectors.toList()));
 
         return builder
             .reason(claimData.getReason())
@@ -67,16 +76,23 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .build();
     }
 
+    private Map<String, CCDParty> mapToValue(final CCDParty ccdParty) {
+        return Collections.singletonMap(COLLECTION_KEY_NAME, ccdParty);
+    }
+
     @Override
     public ClaimData from(CCDClaim ccdClaim) {
         Objects.requireNonNull(ccdClaim, "ccdClaim must not be null");
 
         List<Party> claimants = ccdClaim.getClaimants()
             .stream()
+            .map(this::valueFromMap)
             .map(partyMapper::from)
             .collect(Collectors.toList());
+
         List<TheirDetails> defendants = ccdClaim.getDefendants()
             .stream()
+            .map(this::valueFromMap)
             .map(theirDetailsMapper::from)
             .collect(Collectors.toList());
 
@@ -97,5 +113,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             ccdClaim.getExternalReferenceNumber(),
             ccdClaim.getPreferredCourt(),
             ccdClaim.getFeeCode());
+    }
+
+    private CCDParty valueFromMap(final Map<String, CCDParty> value) {
+        return value.get(COLLECTION_KEY_NAME);
     }
 }

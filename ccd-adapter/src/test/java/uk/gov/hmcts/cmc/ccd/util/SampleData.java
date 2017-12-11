@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
@@ -137,8 +138,8 @@ public class SampleData {
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .claimants(asList(getCCDPartyIndividual()))
-            .defendants(asList(getCCDPartyIndividual()))
+            .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
             .build();
     }
 
