@@ -18,7 +18,7 @@ public interface SubmitCaseApi {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/citizens/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseType}/cases"
+        value = "/caseworkers/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseType}/cases"
     )
     ResponseEntity<CaseDetails> submit(@RequestHeader(AUTHORIZATION) String authorisation,
                                        @RequestHeader("ServiceAuthorization") String serviceAuthorisation,

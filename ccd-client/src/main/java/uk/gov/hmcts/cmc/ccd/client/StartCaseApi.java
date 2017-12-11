@@ -15,7 +15,7 @@ public interface StartCaseApi {
 
     @RequestMapping(
         method = RequestMethod.GET,
-        value = "/citizens/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseType}/event-triggers/{eventId}/token",
+        value = "/caseworkers/{userId}/jurisdictions/{jurisdictionId}/case-types/{caseType}/event-triggers/{eventId}/token",
         headers = "Content-Type=application/json"
     )
     ResponseEntity<StartEventResponse> start(@RequestHeader(AUTHORIZATION) String authorisation,
