@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.DefendantDetailsContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.util.Map;
@@ -60,7 +61,9 @@ public class DefendantResponseCopyContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content)
-            .containsEntry("responseDefence", claim.getResponse().orElseThrow(IllegalStateException::new).getDefence());
+            .containsEntry("responseDefence",
+                ((FullDefenceResponse) claim.getResponse().orElseThrow(IllegalStateException::new)).getDefence()
+            );
     }
 
 }
