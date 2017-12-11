@@ -29,7 +29,7 @@ public class DefendantDetailsContentProviderTest {
         .build();
 
     private Response notAmendedDetails() {
-        return SampleResponse.builder().withDefendantDetails(
+        return SampleResponse.FullDefence.builder().withDefendantDetails(
             SampleParty.builder()
                 .withName(defendant.getName())
                 .withAddress(defendant.getAddress())
@@ -42,7 +42,7 @@ public class DefendantDetailsContentProviderTest {
     }
 
     private Response amendedDetails() {
-        return SampleResponse.builder().withDefendantDetails(
+        return SampleResponse.FullDefence.builder().withDefendantDetails(
             SampleParty.builder()
                 .withName("John Doe")
                 .withAddress(
