@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
@@ -42,7 +43,11 @@ public class DefendantResponseContentProvider {
 
         content.put("claim", claimDataContentProvider.createContent(claim));
         content.put("defenceSubmittedOn", formatDateTime(claim.getRespondedAt()));
-        content.put("responseDefence", defendantResponse.getDefence());
+        content.put("responseDefence",
+            defendantResponse instanceof FullDefenceResponse
+                ? ((FullDefenceResponse) defendantResponse).getDefence()
+                : ""
+        );
         content.put("freeMediation", defendantResponse.getFreeMediation()
             .orElse(Response.FreeMediationOption.NO)
             .name()
