@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.client.SaveCaseService;
 import uk.gov.hmcts.cmc.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.cmc.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -18,12 +17,12 @@ public class CoreCaseDataService {
     private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String EVENT_ID = "submitClaimEvent";
 
-    private final SaveCaseService saveCaseService;
+    private final SaveCoreCaseDataService saveCoreCaseDataService;
     private final CaseMapper caseMapper;
 
     @Autowired
-    public CoreCaseDataService(final SaveCaseService saveCaseService, final CaseMapper caseMapper) {
-        this.saveCaseService = saveCaseService;
+    public CoreCaseDataService(final SaveCoreCaseDataService saveCoreCaseDataService, final CaseMapper caseMapper) {
+        this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.caseMapper = caseMapper;
     }
 
@@ -37,6 +36,6 @@ public class CoreCaseDataService {
             .ignoreWarning(true)
             .build();
 
-        return saveCaseService.save(authorisation, serviceAuthorisation, eventRequestData, ccdCase);
+        return saveCoreCaseDataService.save(authorisation, serviceAuthorisation, eventRequestData, ccdCase);
     }
 }

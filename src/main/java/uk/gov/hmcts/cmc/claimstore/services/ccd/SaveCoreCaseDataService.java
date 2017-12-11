@@ -1,12 +1,15 @@
-package uk.gov.hmcts.cmc.ccd.client;
+package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.client.StartCaseApi;
+import uk.gov.hmcts.cmc.ccd.client.SubmitCaseApi;
 import uk.gov.hmcts.cmc.ccd.client.exception.InvalidCaseDataException;
 import uk.gov.hmcts.cmc.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.cmc.ccd.client.model.CaseDetails;
@@ -16,18 +19,18 @@ import uk.gov.hmcts.cmc.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Service
-public class SaveCaseService {
-    Logger logger = LoggerFactory.getLogger(SaveCaseService.class);
+@ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
+public class SaveCoreCaseDataService {
+    Logger logger = LoggerFactory.getLogger(SaveCoreCaseDataService.class);
 
     private StartCaseApi startCaseApi;
     private SubmitCaseApi submitCaseApi;
     private ObjectMapper objectMapper;
 
     @Autowired
-    public SaveCaseService(
+    public SaveCoreCaseDataService(
         final StartCaseApi startCaseApi,
         final SubmitCaseApi submitCaseApi,
         final ObjectMapper objectMapper
