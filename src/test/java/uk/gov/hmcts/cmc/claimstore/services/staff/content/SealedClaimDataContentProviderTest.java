@@ -17,8 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SealedClaimDataContentProviderTest {
 
-    private static final String EMAIL = "address@domain.com";
-
     private Claim claim = SampleClaim.getDefault();
 
     private ClaimContentProvider provider = new ClaimContentProvider(
@@ -35,22 +33,12 @@ public class SealedClaimDataContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerForNullClaim() {
-        provider.createContent(null, EMAIL);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerForNullEmail() {
-        provider.createContent(claim, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentForEmptyEmail() {
-        provider.createContent(claim, "");
+        provider.createContent(null);
     }
 
     @Test
     public void shouldProvideClaimantContent() {
-        Map<String, Object> content = provider.createContent(claim, EMAIL);
+        Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("claimant");
         assertThat(content.get("claimant")).isInstanceOf(ClaimantContent.class);
@@ -58,7 +46,7 @@ public class SealedClaimDataContentProviderTest {
 
     @Test
     public void shouldProvideDefendantContent() {
-        Map<String, Object> content = provider.createContent(claim, EMAIL);
+        Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("defendant");
         assertThat(content.get("defendant")).isInstanceOf(PersonContent.class);
@@ -66,7 +54,7 @@ public class SealedClaimDataContentProviderTest {
 
     @Test
     public void shouldProvideClaimContent() {
-        Map<String, Object> content = provider.createContent(claim, EMAIL);
+        Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("claim");
         assertThat(content.get("claim")).isInstanceOf(ClaimContent.class);

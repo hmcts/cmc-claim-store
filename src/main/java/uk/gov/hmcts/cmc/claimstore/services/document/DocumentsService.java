@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 public interface DocumentsService {
-    byte[] generateClaimIssueReceipt(String externalId, String submitterEmail);
+    byte[] generateClaimIssueReceipt(String externalId);
 
     byte[] getLegalSealedClaim(String externalId, String authorisation);
 

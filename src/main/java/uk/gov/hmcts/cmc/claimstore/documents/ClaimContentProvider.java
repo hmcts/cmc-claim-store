@@ -33,14 +33,14 @@ public class ClaimContentProvider {
         this.claimDataContentProvider = claimDataContentProvider;
     }
 
-    public Map<String, Object> createContent(final Claim claim, final String submitterEmail) {
+    public Map<String, Object> createContent(final Claim claim) {
         requireNonNull(claim);
 
         Map<String, Object> map = new HashMap<>();
 
         map.put("claimant", claimantContentProvider.createContent(
             claim.getClaimData().getClaimant(),
-            submitterEmail)
+            claim.getSubmitterEmail())
         );
 
         TheirDetails defendant = claim.getClaimData().getDefendant();

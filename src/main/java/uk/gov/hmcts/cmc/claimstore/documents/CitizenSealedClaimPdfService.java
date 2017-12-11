@@ -32,7 +32,7 @@ public class CitizenSealedClaimPdfService {
 
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getSealedClaim(),
-            claimContentProvider.createContent(claim, submitterEmail)
+            claimContentProvider.createContent(claim)
         );
     }
 }
