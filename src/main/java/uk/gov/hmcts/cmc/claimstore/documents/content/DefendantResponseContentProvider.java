@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
 
@@ -56,11 +55,9 @@ public class DefendantResponseContentProvider {
             claim.getDefendantEmail()
         ));
         content.put("claimant", partyDetailsContentProvider.createContent(
-            claim.getClaimData().getDefendant(),
             claim.getClaimData().getClaimant(),
             claim.getSubmitterEmail()
         ));
-        content.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         return content;
     }
 }
