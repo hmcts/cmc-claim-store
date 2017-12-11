@@ -17,18 +17,14 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
-    public static final String BEARER_TOKEN = "bearer Token";
     private UserService userService;
 
     @Mock
     private IdamApi idamApi;
 
-    @Mock
-    private CachedServiceAuthTokenGenerator cachedServiceAuthTokenGenerator;
-
     @Before
     public void setup() {
-        userService = new UserService(idamApi, cachedServiceAuthTokenGenerator);
+        userService = new UserService(idamApi);
     }
 
     @Test
@@ -46,20 +42,5 @@ public class UserServiceTest {
 
         //verify
         verify(idamApi).retrieveUserDetails(authorisationToken);
-    }
-
-    @Test
-    public void shouldGenerateServiceToken() {
-        //given
-        when(cachedServiceAuthTokenGenerator.generate()).thenReturn(BEARER_TOKEN);
-
-        //when
-        String output = userService.generateServiceAuthToken();
-
-        //then
-        assertThat(output).isNotNull().isEqualTo(BEARER_TOKEN);
-
-        //verify
-        verify(cachedServiceAuthTokenGenerator).generate();
     }
 }
