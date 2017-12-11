@@ -245,7 +245,11 @@
           {% endif %}
           <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
           <td>
-            {{ defendant.title}} {{ defendant.name }}
+            {% if defendant.businessName is not empty %}
+              {{ defendant.name }} trading as {{ defendant.businessName }}
+            {% else %}
+              {{ defendant.title}} {{ defendant.name }}
+            {% endif %}
             <br/>
             {{ defendant.address.line1 }}
             <br/>
@@ -290,7 +294,11 @@
                 {{ defendant.representative.organisationContactDetails.email }}
               {% endif %}
             {% elseif defendant.serviceAddress is defined %}
-              {{ defendant.title}} {{ defendant.name }}
+              {% if defendant.businessName is not empty %}
+                {{ defendant.name }} trading as {{ defendant.businessName }}
+              {% else %}
+                {{ defendant.title}} {{ defendant.name }}
+              {% endif %}
               <br/>
               {{ defendant.serviceAddress.line1 }}
               <br/>
@@ -302,7 +310,11 @@
               <br/>
               {{ defendant.serviceAddress.postcode }}
             {% else %}
-              {{ defendant.title}} {{ defendant.name }}
+              {% if defendant.businessName is not empty %}
+                {{ defendant.name }} trading as {{ defendant.businessName }}
+              {% else %}
+                {{ defendant.title}} {{ defendant.name }}
+              {% endif %}
               <br/>
               {{ defendant.address.line1 }}
               <br/>
@@ -496,7 +508,11 @@
         {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
         <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
         <td>
-          {{ defendant.title }} {{ defendant.name }}
+          {% if defendant.businessName is not empty %}
+            {{ defendant.name }} trading as {{ defendant.businessName }}
+          {% else %}
+            {{ defendant.title}} {{ defendant.name }}
+          {% endif %}
           <br/>
           {{ defendant.address.line1 }}
           <br/>
@@ -541,7 +557,11 @@
               Email: {{ defendant.representative.organisationContactDetails.email }}
             {% endif %}
           {% elseif defendant.serviceAddress is defined %}
-            {{ defendant.title}} {{ defendant.name }}
+            {% if defendant.businessName is not empty %}
+              {{ defendant.name }} trading as {{ defendant.businessName }}
+            {% else %}
+              {{ defendant.title}} {{ defendant.name }}
+            {% endif %}
             <br/>
             {{ defendant.serviceAddress.line1 }}
             <br/>
@@ -553,7 +573,11 @@
             <br/>
             {{ defendant.serviceAddress.postcode }}
           {% else %}
-            {{ defendant.title}} {{ defendant.name }}
+            {% if defendant.businessName is not empty %}
+              {{ defendant.name }} trading as {{ defendant.businessName }}
+            {% else %}
+              {{ defendant.title}} {{ defendant.name }}
+            {% endif %}
             <br/>
             {{ defendant.address.line1 }}
             <br/>
