@@ -26,7 +26,8 @@ public class DefendantResponseContentProvider {
     public DefendantResponseContentProvider(
         final PartyDetailsContentProvider partyDetailsContentProvider,
         final ClaimDataContentProvider claimDataContentProvider,
-        final NotificationsProperties notificationsProperties) {
+        final NotificationsProperties notificationsProperties
+    ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
         this.claimDataContentProvider = claimDataContentProvider;
         this.notificationsProperties = notificationsProperties;

@@ -66,10 +66,10 @@ public final class SampleClaim {
         return getWithResponse(SampleResponse.validDefaults());
     }
 
-    public static Claim getWithResponse(final Response responseData) {
+    public static Claim getWithResponse(final Response response) {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
-            .withResponse(responseData)
+            .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .build();
@@ -230,8 +230,8 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withResponse(final Response responseData) {
-        this.response = responseData;
+    public SampleClaim withResponse(final Response response) {
+        this.response = response;
         return this;
     }
 
@@ -255,3 +255,4 @@ public final class SampleClaim {
         return this;
     }
 }
+

@@ -32,7 +32,8 @@ public class PartyDetailsContentProvider {
             PartyUtils.getBusinessName(party).orElse(null),
             PartyUtils.getContactPerson(party).orElse(null),
             party.getAddress(),
-            false, party.getCorrespondenceAddress().orElse(null),
+            false,
+            party.getCorrespondenceAddress().orElse(null),
             defendantDateOfBirth(party).orElse(null),
             partyEmail
         );
