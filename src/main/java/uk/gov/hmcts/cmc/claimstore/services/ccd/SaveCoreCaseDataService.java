@@ -2,14 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.client.StartCaseApi;
-import uk.gov.hmcts.cmc.ccd.client.SubmitCaseApi;
+import uk.gov.hmcts.cmc.ccd.client.StartForCaseworkerApi;
+import uk.gov.hmcts.cmc.ccd.client.SubmitForCaseworkerApi;
 import uk.gov.hmcts.cmc.ccd.client.exception.InvalidCaseDataException;
 import uk.gov.hmcts.cmc.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.cmc.ccd.client.model.CaseDetails;
@@ -23,20 +21,19 @@ import java.io.IOException;
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
 public class SaveCoreCaseDataService {
-    Logger logger = LoggerFactory.getLogger(SaveCoreCaseDataService.class);
 
-    private StartCaseApi startCaseApi;
-    private SubmitCaseApi submitCaseApi;
+    private StartForCaseworkerApi startForCaseworkerApi;
+    private SubmitForCaseworkerApi submitForCaseworkerApi;
     private ObjectMapper objectMapper;
 
     @Autowired
     public SaveCoreCaseDataService(
-        final StartCaseApi startCaseApi,
-        final SubmitCaseApi submitCaseApi,
+        final StartForCaseworkerApi startForCaseworkerApi,
+        final SubmitForCaseworkerApi submitForCaseworkerApi,
         final ObjectMapper objectMapper
     ) {
-        this.startCaseApi = startCaseApi;
-        this.submitCaseApi = submitCaseApi;
+        this.startForCaseworkerApi = startForCaseworkerApi;
+        this.submitForCaseworkerApi = submitForCaseworkerApi;
         this.objectMapper = objectMapper;
     }
 
@@ -49,7 +46,7 @@ public class SaveCoreCaseDataService {
 
         JsonNode data = toJson(ccdCase);
 
-        ResponseEntity<StartEventResponse> responseEntity = this.startCaseApi.start(
+        ResponseEntity<StartEventResponse> responseEntity = this.startForCaseworkerApi.start(
             authorisation,
             serviceAuthorisation,
             eventRequestData.getUserId(),
@@ -70,7 +67,7 @@ public class SaveCoreCaseDataService {
             .data(data)
             .build();
 
-        return this.submitCaseApi.submit(
+        return this.submitForCaseworkerApi.submit(
             authorisation,
             serviceAuthorisation,
             eventRequestData.getUserId(),
@@ -83,10 +80,7 @@ public class SaveCoreCaseDataService {
 
     private JsonNode toJson(CCDCase ccdCase) {
         try {
-            logger.info(ccdCase.toString());
             JsonNode dataNode = objectMapper.readTree(objectMapper.writeValueAsString(ccdCase));
-            logger.info(dataNode.toString());
-
             return objectMapper.convertValue(dataNode, JsonNode.class);
         } catch (IOException e) {
             throw new InvalidCaseDataException("Failed to serialize to JSON", e);

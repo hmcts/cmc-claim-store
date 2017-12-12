@@ -24,7 +24,7 @@ public class CoreCaseDataUploader {
     }
 
     @EventListener
-    public void saveClaimInCCD(RepresentedClaimIssuedEvent event) {
+    public void saveClaim(RepresentedClaimIssuedEvent event) {
         final Claim claim = event.getClaim();
         coreCaseDataService.save(event.getAuthorisation(), authTokenGenerator.generate(), claim);
     }

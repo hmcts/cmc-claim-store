@@ -81,7 +81,7 @@ dependencies {
 
   compile project(':email-client')
   compile project(':domain-model')
-  compile project(':ccd-client')
+  compile project(':ccd-adapter')
   compile project(':domain-sample-data')
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
@@ -125,6 +125,7 @@ dependencies {
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.0'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '1.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '1.0.0'
 
   testCompile project(':domain-sample-data')
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
