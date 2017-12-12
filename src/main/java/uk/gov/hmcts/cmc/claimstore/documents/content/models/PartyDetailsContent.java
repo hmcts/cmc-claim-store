@@ -15,6 +15,7 @@ public class PartyDetailsContent {
     private final String dateOfBirth;
     private final String email;
 
+    @SuppressWarnings("squid:S00107") // Number of method parameters
     public PartyDetailsContent(
         String type,
         String fullName,

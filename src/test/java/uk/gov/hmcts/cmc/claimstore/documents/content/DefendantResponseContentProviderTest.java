@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.Clock;
@@ -73,7 +74,9 @@ public class DefendantResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content)
-            .containsEntry("responseDefence", claim.getResponse().orElseThrow(IllegalStateException::new).getDefence());
+            .containsEntry("responseDefence",
+                ((FullDefenceResponse) claim.getResponse().orElseThrow(IllegalStateException::new)).getDefence()
+            );
     }
 
 }

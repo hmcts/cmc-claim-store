@@ -1,5 +1,6 @@
 {
-  "response": "OWE_NONE",
+  "responseType": "FULL_DEFENCE",
+  "defenceType": "DISPUTE",
   "defence": "defence string",
   "freeMediation": "yes",
   "moreTimeNeeded": "yes",

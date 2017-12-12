@@ -35,7 +35,6 @@ public class SettlementAgreementPDFContentProvider {
         content.put("claim", claim);
         content.put("claimant", claim.getClaimData().getClaimant());
         content.put("defendant", partyDetailsContentProvider.createContent(
-            claim.getClaimData().getDefendant(),
             claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant(),
             claim.getDefendantEmail()
         ));

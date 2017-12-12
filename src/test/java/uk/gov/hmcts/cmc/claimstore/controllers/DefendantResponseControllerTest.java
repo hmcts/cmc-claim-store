@@ -35,7 +35,7 @@ public class DefendantResponseControllerTest {
     @Test
     public void shouldSaveResponseInRepository() throws JsonProcessingException {
         //given
-        final Response input = SampleResponse.builder()
+        final Response input = SampleResponse.FullDefence.builder()
             .build();
 
         Claim sampleClaim = SampleClaim.getWithDefaultResponse();

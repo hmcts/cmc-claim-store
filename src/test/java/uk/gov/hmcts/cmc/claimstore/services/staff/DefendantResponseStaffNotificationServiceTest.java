@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -47,9 +47,9 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
     public void beforeEachTest() {
         claim = SampleClaim.builder()
             .withResponse(
-                SampleResponse
+                SampleResponse.FullDefence
                     .builder()
-                    .withResponseType(Response.ResponseType.OWE_ALL_PAID_ALL)
+                    .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
                     .withMediation(null)
                     .build()
             )

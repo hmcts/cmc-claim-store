@@ -16,48 +16,14 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 public class PartyDetailsContentProvider {
 
     /**
-     * Returns party details content provided by defendant and tracks whether name or address has been changed.
+     * Returns party details content provided by the party.
      *
-     * @param providedByClaimant other party details
-     * @param providedByDefendant party details
-     * @param partyEmail party email address
-     * @return content
-     */
-    public PartyDetailsContent createContent(
-        final TheirDetails providedByClaimant,
-        final Party providedByDefendant,
-        final String partyEmail
-    ) {
-        requireNonNull(providedByClaimant);
-        requireNonNull(providedByDefendant);
-
-        boolean nameAmended = !providedByClaimant.getName().equals(providedByDefendant.getName());
-        boolean addressAmended = !providedByClaimant.getAddress().equals(providedByDefendant.getAddress());
-
-        return new PartyDetailsContent(
-            PartyUtils.getType(providedByDefendant),
-            providedByDefendant.getName(),
-            nameAmended,
-            PartyUtils.getBusinessName(providedByDefendant).orElse(null),
-            PartyUtils.getContactPerson(providedByDefendant).orElse(null),
-            providedByDefendant.getAddress(),
-            addressAmended,
-            providedByDefendant.getCorrespondenceAddress().orElse(null),
-            defendantDateOfBirth(providedByDefendant).orElse(null),
-            partyEmail
-        );
-    }
-
-    /**
-     * Returns party details content out of the party instance.
-     *
-     * @param party - party details
+     * @param party      - party details
      * @param partyEmail - party email address
-     * @return content
+     * @return party details content
      */
     public PartyDetailsContent createContent(Party party, String partyEmail) {
         requireNonNull(party);
-        requireNonNull(partyEmail);
 
         return new PartyDetailsContent(
             PartyUtils.getType(party),
@@ -69,6 +35,38 @@ public class PartyDetailsContentProvider {
             false, party.getCorrespondenceAddress().orElse(null),
             defendantDateOfBirth(party).orElse(null),
             partyEmail
+        );
+    }
+
+    /**
+     * Returns party details content provided by the party and tracks whether name or address has been changed.
+     *
+     * @param oppositeParty opposite party details (e.g. the claimant provides the defendant details or the defendant
+     *                      provides claimant details)
+     * @param ownParty      own party details (e.g. the claimant provides claimant details or the defendant provides
+     *                      defendant details)
+     * @param ownPartyEmail own party email address (e.g. the claimant provides claimant email or defendant provides
+     *                      defendant email)
+     * @return party details content
+     */
+    public PartyDetailsContent createContent(TheirDetails oppositeParty, Party ownParty, String ownPartyEmail) {
+        requireNonNull(oppositeParty);
+        requireNonNull(ownParty);
+
+        boolean nameAmended = !oppositeParty.getName().equals(ownParty.getName());
+        boolean addressAmended = !oppositeParty.getAddress().equals(ownParty.getAddress());
+
+        return new PartyDetailsContent(
+            PartyUtils.getType(ownParty),
+            ownParty.getName(),
+            nameAmended,
+            PartyUtils.getBusinessName(ownParty).orElse(null),
+            PartyUtils.getContactPerson(ownParty).orElse(null),
+            ownParty.getAddress(),
+            addressAmended,
+            ownParty.getCorrespondenceAddress().orElse(null),
+            defendantDateOfBirth(ownParty).orElse(null),
+            ownPartyEmail
         );
     }
 

@@ -31,6 +31,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final SettlementAgreementCopyService settlementAgreementCopyService;
 
     @Autowired
+    @SuppressWarnings("squid:S00107") // Number of method parameters
     public DocumentManagementBackedDocumentsService(
         final ClaimService claimService,
         final DocumentManagementService documentManagementService,
