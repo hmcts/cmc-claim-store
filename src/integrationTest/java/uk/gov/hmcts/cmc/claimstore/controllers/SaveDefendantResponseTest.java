@@ -104,7 +104,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldFailForEmptyDefence() throws Exception {
         long anyClaimId = 500;
         String anyDefendantId = "500";
-        Response response = SampleResponse.builder()
+        Response response = SampleResponse.FullDefence.builder()
             .withDefence("")
             .build();
 
