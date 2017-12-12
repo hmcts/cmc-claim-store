@@ -1,4 +1,4 @@
-{% if response.type == 'OWE_NONE' %}
+{% if response.defenceType == 'DISPUTE' %}
 The defendant has submitted a full defence which is attached as a PDF.
 
 {% if response.freeMediation.orElse('NO') == 'YES' %}
@@ -7,7 +7,7 @@ The defendant has asked to use the mediation service, you must contact the claim
 The defendant has chosen not to use the free mediation service.
 {% endif %}
 You must progress to the directions questionnaire procedure.
-{% elseif response.type == 'OWE_ALL_PAID_ALL' %}
+{% elseif response.defenceType == 'ALREADY_PAID' %}
 The defendant has submitted an already paid defence which is attached as a PDF.
 
 You need to ask the claimant if they want to proceed with the claim.
