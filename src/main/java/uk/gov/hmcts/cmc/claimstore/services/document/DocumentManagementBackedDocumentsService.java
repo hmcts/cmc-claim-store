@@ -32,7 +32,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Autowired
     @SuppressWarnings("squid:S00107")
-    // Allow more method parameters - Content providers are formatted values and aren't worth splitting into multiple models.
+    // Content providers are formatted values and aren't worth splitting into multiple models.
     public DocumentManagementBackedDocumentsService(
         final ClaimService claimService,
         final DocumentManagementService documentManagementService,
