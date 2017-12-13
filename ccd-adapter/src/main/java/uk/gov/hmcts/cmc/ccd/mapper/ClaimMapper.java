@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
-    public static final String COLLECTION_KEY_NAME = "value";
+    private static final String COLLECTION_KEY_NAME = "value";
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
