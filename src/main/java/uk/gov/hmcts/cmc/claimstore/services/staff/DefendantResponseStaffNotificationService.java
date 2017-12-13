@@ -32,8 +32,7 @@ public class DefendantResponseStaffNotificationService {
         final EmailService emailService,
         final StaffEmailProperties emailProperties,
         final DefendantResponseStaffNotificationEmailContentProvider emailContentProvider,
-        final DefendantResponseCopyService defendantResponseCopyService
-    ) {
+        final DefendantResponseCopyService defendantResponseCopyService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;

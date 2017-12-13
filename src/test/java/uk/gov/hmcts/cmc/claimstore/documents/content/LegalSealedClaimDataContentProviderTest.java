@@ -14,7 +14,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LegalSealedClaimContentProviderTest {
+public class LegalSealedClaimDataContentProviderTest {
     @Mock
     private StatementOfValueProvider statementOfValueProvider;
 
