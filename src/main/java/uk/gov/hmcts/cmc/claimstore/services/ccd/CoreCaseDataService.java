@@ -26,7 +26,7 @@ public class CoreCaseDataService {
         this.caseMapper = caseMapper;
     }
 
-    public CaseDetails save(final String authorisation, final String serviceAuthorisation, final Claim claim) {
+    public CaseDetails save(final String authorisation, final Claim claim) {
         final CCDCase ccdCase = caseMapper.to(claim);
         final EventRequestData eventRequestData = EventRequestData.builder()
             .userId(claim.getSubmitterId())
@@ -36,6 +36,6 @@ public class CoreCaseDataService {
             .ignoreWarning(true)
             .build();
 
-        return saveCoreCaseDataService.save(authorisation, serviceAuthorisation, eventRequestData, ccdCase);
+        return saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
     }
 }

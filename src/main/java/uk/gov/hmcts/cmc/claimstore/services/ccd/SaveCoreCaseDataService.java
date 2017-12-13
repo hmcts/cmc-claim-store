@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.client.model.Event;
 import uk.gov.hmcts.cmc.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.cmc.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.io.IOException;
 
@@ -22,33 +23,34 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
 public class SaveCoreCaseDataService {
 
-    private StartForCaseworkerApi startForCaseworkerApi;
-    private SubmitForCaseworkerApi submitForCaseworkerApi;
-    private ObjectMapper objectMapper;
+    private final StartForCaseworkerApi startForCaseworkerApi;
+    private final SubmitForCaseworkerApi submitForCaseworkerApi;
+    private final ObjectMapper objectMapper;
+    private final AuthTokenGenerator authTokenGenerator;
+
 
     @Autowired
     public SaveCoreCaseDataService(
         final StartForCaseworkerApi startForCaseworkerApi,
         final SubmitForCaseworkerApi submitForCaseworkerApi,
-        final ObjectMapper objectMapper
+        final ObjectMapper objectMapper,
+        final AuthTokenGenerator authTokenGenerator
     ) {
         this.startForCaseworkerApi = startForCaseworkerApi;
         this.submitForCaseworkerApi = submitForCaseworkerApi;
         this.objectMapper = objectMapper;
+        this.authTokenGenerator = authTokenGenerator;
     }
 
     public CaseDetails save(
         final String authorisation,
-        final String serviceAuthorisation,
         final EventRequestData eventRequestData,
         final CCDCase ccdCase
     ) {
 
-        JsonNode data = toJson(ccdCase);
-
         ResponseEntity<StartEventResponse> responseEntity = this.startForCaseworkerApi.start(
             authorisation,
-            serviceAuthorisation,
+            this.authTokenGenerator.generate(),
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
@@ -64,12 +66,12 @@ public class SaveCoreCaseDataService {
                 .summary("CMC case submission event")
                 .description("Submitting CMC case with token " + startEventResponse.getToken())
                 .build())
-            .data(data)
+            .data(toJson(ccdCase))
             .build();
 
         return this.submitForCaseworkerApi.submit(
             authorisation,
-            serviceAuthorisation,
+            this.authTokenGenerator.generate(),
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
