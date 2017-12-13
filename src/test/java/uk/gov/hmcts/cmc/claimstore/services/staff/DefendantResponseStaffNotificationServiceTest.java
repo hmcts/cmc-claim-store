@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +52,9 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
                     .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
                     .withMediation(null)
                     .build()
-            ).build();
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }

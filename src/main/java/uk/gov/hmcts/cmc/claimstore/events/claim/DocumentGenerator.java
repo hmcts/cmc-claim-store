@@ -38,7 +38,7 @@ public class DocumentGenerator {
     @EventListener
     public void generateForNonRepresentedClaim(final ClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            citizenSealedClaimPdfService.createPdf(event.getClaim(), event.getSubmitterEmail()));
+            citizenSealedClaimPdfService.createPdf(event.getClaim()));
         PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
             defendantPinLetterPdfService.createPdf(event.getClaim(), event.getPin()
                 .orElseThrow(() -> new IllegalArgumentException("Defendant access PIN is missing"))));

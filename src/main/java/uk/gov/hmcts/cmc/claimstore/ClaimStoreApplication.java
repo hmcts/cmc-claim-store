@@ -16,4 +16,3 @@ public class ClaimStoreApplication {
         SpringApplication.run(ClaimStoreApplication.class, args);
     }
 }
-
