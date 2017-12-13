@@ -6,7 +6,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
@@ -21,7 +20,6 @@ public class CoreCaseDataUploader {
 
     @EventListener
     public void saveClaim(RepresentedClaimIssuedEvent event) {
-        final Claim claim = event.getClaim();
-        coreCaseDataService.save(event.getAuthorisation(), claim);
+        coreCaseDataService.save(event.getAuthorisation(), event.getClaim());
     }
 }
