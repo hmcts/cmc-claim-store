@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantDetailsContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.PartyDetailsContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 
@@ -15,12 +15,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 @Component
 public class SettlementAgreementPDFContentProvider {
 
-    private final DefendantDetailsContentProvider defendantDetailsContentProvider;
+    private final PartyDetailsContentProvider partyDetailsContentProvider;
 
     public SettlementAgreementPDFContentProvider(
-        final DefendantDetailsContentProvider defendantDetailsContentProvider
+        final PartyDetailsContentProvider partyDetailsContentProvider
     ) {
-        this.defendantDetailsContentProvider = defendantDetailsContentProvider;
+        this.partyDetailsContentProvider = partyDetailsContentProvider;
     }
 
     public Map<String, Object> createContent(final Claim claim) {
@@ -34,9 +34,8 @@ public class SettlementAgreementPDFContentProvider {
         content.put("acceptedOfferCompletionDate", formatDate(acceptedOffer.getCompletionDate()));
         content.put("claim", claim);
         content.put("claimant", claim.getClaimData().getClaimant());
-        content.put("defendant", defendantDetailsContentProvider.createContent(
-            claim.getClaimData().getDefendant(),
-            claim.getResponse().orElseThrow(IllegalStateException::new),
+        content.put("defendant", partyDetailsContentProvider.createContent(
+            claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant(),
             claim.getDefendantEmail()
         ));
         return content;
