@@ -97,4 +97,37 @@ public class DocumentsController {
             .body(new ByteArrayResource(pdfDocument));
     }
 
+    @ApiOperation("Returns a Defendant Response receipt for a given claim external id")
+    @GetMapping(
+        value = "/defendantResponseReceipt/{externalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> defendantResponseReceipt(
+        @ApiParam("Claim external id")
+        @PathVariable("externalId") @NotBlank String externalId
+    ) {
+        final byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(externalId);
+
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
+
+    @ApiOperation("Returns a Claim Issue receipt for a given claim external id")
+    @GetMapping(
+        value = "/claimIssueReceipt/{externalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> claimIssueReceipt(
+        @ApiParam("Claim external id")
+        @PathVariable("externalId") @NotBlank String externalId
+    ) {
+        final byte[] pdfDocument = documentsService.generateClaimIssueReceipt(externalId);
+
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
 }

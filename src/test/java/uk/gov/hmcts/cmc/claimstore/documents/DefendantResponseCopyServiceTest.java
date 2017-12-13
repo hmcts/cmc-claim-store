@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseCopyContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.DefendantResponseContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 public class DefendantResponseCopyServiceTest {
 
     @Mock
-    private DefendantResponseCopyContentProvider contentProvider;
+    private DefendantResponseContentProvider contentProvider;
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock

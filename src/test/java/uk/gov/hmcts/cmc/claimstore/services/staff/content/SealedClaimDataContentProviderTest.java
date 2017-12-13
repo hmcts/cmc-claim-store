@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
@@ -13,18 +15,16 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SealedClaimContentProviderTest {
-
-    private static final String EMAIL = "address@domain.com";
+public class SealedClaimDataContentProviderTest {
 
     private Claim claim = SampleClaim.getDefault();
 
-    private SealedClaimContentProvider provider = new SealedClaimContentProvider(
+    private ClaimContentProvider provider = new ClaimContentProvider(
         new ClaimantContentProvider(
             new PersonContentProvider()
         ),
         new PersonContentProvider(),
-        new ClaimContentProvider(
+        new ClaimDataContentProvider(
             new InterestContentProvider(
                 new InterestCalculationService(Clock.systemDefaultZone())
             )
@@ -33,22 +33,12 @@ public class SealedClaimContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerForNullClaim() {
-        provider.createContent(null, EMAIL);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerForNullEmail() {
-        provider.createContent(claim, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentForEmptyEmail() {
-        provider.createContent(claim, "");
+        provider.createContent(null);
     }
 
     @Test
     public void shouldProvideClaimantContent() {
-        Map<String, Object> content = provider.createContent(claim, EMAIL);
+        Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("claimant");
         assertThat(content.get("claimant")).isInstanceOf(ClaimantContent.class);
@@ -56,7 +46,7 @@ public class SealedClaimContentProviderTest {
 
     @Test
     public void shouldProvideDefendantContent() {
-        Map<String, Object> content = provider.createContent(claim, EMAIL);
+        Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("defendant");
         assertThat(content.get("defendant")).isInstanceOf(PersonContent.class);
@@ -64,7 +54,7 @@ public class SealedClaimContentProviderTest {
 
     @Test
     public void shouldProvideClaimContent() {
-        Map<String, Object> content = provider.createContent(claim, EMAIL);
+        Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("claim");
         assertThat(content.get("claim")).isInstanceOf(ClaimContent.class);
