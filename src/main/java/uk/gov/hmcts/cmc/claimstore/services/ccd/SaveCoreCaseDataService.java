@@ -6,16 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.client.StartForCaseworkerApi;
-import uk.gov.hmcts.cmc.ccd.client.SubmitForCaseworkerApi;
-import uk.gov.hmcts.cmc.ccd.client.exception.InvalidCaseDataException;
-import uk.gov.hmcts.cmc.ccd.client.model.CaseDataContent;
-import uk.gov.hmcts.cmc.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.cmc.ccd.client.model.Event;
-import uk.gov.hmcts.cmc.ccd.client.model.EventRequestData;
-import uk.gov.hmcts.cmc.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.exception.InvalidCaseDataException;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.io.IOException;
 
@@ -23,21 +22,19 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
 public class SaveCoreCaseDataService {
 
-    private final StartForCaseworkerApi startForCaseworkerApi;
-    private final SubmitForCaseworkerApi submitForCaseworkerApi;
+
+    private final CoreCaseDataApi coreCaseDataApi;
     private final ObjectMapper objectMapper;
     private final AuthTokenGenerator authTokenGenerator;
 
 
     @Autowired
     public SaveCoreCaseDataService(
-        final StartForCaseworkerApi startForCaseworkerApi,
-        final SubmitForCaseworkerApi submitForCaseworkerApi,
+        final CoreCaseDataApi coreCaseDataApi,
         final ObjectMapper objectMapper,
         final AuthTokenGenerator authTokenGenerator
     ) {
-        this.startForCaseworkerApi = startForCaseworkerApi;
-        this.submitForCaseworkerApi = submitForCaseworkerApi;
+        this.coreCaseDataApi = coreCaseDataApi;
         this.objectMapper = objectMapper;
         this.authTokenGenerator = authTokenGenerator;
     }
@@ -48,7 +45,7 @@ public class SaveCoreCaseDataService {
         final CCDCase ccdCase
     ) {
 
-        ResponseEntity<StartEventResponse> responseEntity = this.startForCaseworkerApi.start(
+        ResponseEntity<StartEventResponse> responseEntity = this.coreCaseDataApi.start(
             authorisation,
             this.authTokenGenerator.generate(),
             eventRequestData.getUserId(),
@@ -69,7 +66,7 @@ public class SaveCoreCaseDataService {
             .data(toJson(ccdCase))
             .build();
 
-        return this.submitForCaseworkerApi.submit(
+        return this.coreCaseDataApi.submit(
             authorisation,
             this.authTokenGenerator.generate(),
             eventRequestData.getUserId(),

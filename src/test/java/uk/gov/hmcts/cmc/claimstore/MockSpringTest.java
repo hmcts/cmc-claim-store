@@ -17,8 +17,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
-import uk.gov.hmcts.cmc.ccd.client.StartForCaseworkerApi;
-import uk.gov.hmcts.cmc.ccd.client.SubmitForCaseworkerApi;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -27,6 +25,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
@@ -70,10 +69,7 @@ public abstract class MockSpringTest {
     protected DocumentUploadClientApi documentUploadClient;
 
     @MockBean
-    protected StartForCaseworkerApi startForCaseworkerApi;
-
-    @MockBean
-    protected SubmitForCaseworkerApi submitForCaseworkerApi;
+    protected CoreCaseDataApi coreCaseDataApi;
 
     @TestConfiguration
     @Profile("unit-tests")
