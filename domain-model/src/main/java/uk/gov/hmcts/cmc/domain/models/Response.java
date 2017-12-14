@@ -21,7 +21,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "responseType")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = FullDefenceResponse.class, name = "FULL_DEFENCE")
+    @JsonSubTypes.Type(value = FullDefenceResponse.class, name = "FULL_DEFENCE"),
+    @JsonSubTypes.Type(value = PartAdmissionResponse.class, name = "PART_ADMISSION")
 })
 public abstract class Response {
 
