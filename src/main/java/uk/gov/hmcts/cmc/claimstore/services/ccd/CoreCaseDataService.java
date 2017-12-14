@@ -39,7 +39,7 @@ public class CoreCaseDataService {
                 .build();
 
             return saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
-        } catch (Throwable exception) {
+        } catch (Exception exception) {
             throw new CoreCaseDataStoreException("Failed storing claim in CCD store for claim "
                 + claim.getReferenceNumber(), exception);
         }
