@@ -155,6 +155,10 @@ timestamps {
         archiveArtifacts 'build/reports/**/*.html'
         notifyBuildFailure channel: channel
         throw err
+      } finally {
+        step([$class: 'InfluxDbPublisher',
+               customProjectName: 'CMC Claimstore,
+               target: 'Jenkins Data'])
       }
     }
     milestone()
