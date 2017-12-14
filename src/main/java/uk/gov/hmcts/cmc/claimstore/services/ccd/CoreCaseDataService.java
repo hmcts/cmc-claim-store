@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
@@ -29,16 +30,21 @@ public class CoreCaseDataService {
         this.caseMapper = caseMapper;
     }
 
-    public CaseDetails save(final String authorisation, final Claim claim) {
-        final CCDCase ccdCase = caseMapper.to(claim);
-        final EventRequestData eventRequestData = EventRequestData.builder()
-            .userId(claim.getSubmitterId())
-            .jurisdictionId(JURISDICTION_ID)
-            .caseTypeId(CASE_TYPE_ID)
-            .eventId(EVENT_ID)
-            .ignoreWarning(true)
-            .build();
+    public CaseDetails save(final String authorisation, final Claim claim) throws CoreCaseDataStoreException {
+        try {
+            final CCDCase ccdCase = caseMapper.to(claim);
+            final EventRequestData eventRequestData = EventRequestData.builder()
+                .userId(claim.getSubmitterId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(EVENT_ID)
+                .ignoreWarning(true)
+                .build();
 
-        return saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
+            return saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
+        } catch (Throwable exception) {
+            throw new CoreCaseDataStoreException("Failed storing claim in CCD store for claim "
+                + claim.getReferenceNumber(), exception);
+        }
     }
 }
