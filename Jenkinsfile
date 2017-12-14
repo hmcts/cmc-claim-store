@@ -157,7 +157,7 @@ timestamps {
         throw err
       } finally {
         step([$class: 'InfluxDbPublisher',
-               customProjectName: 'CMC Claimstore,
+               customProjectName: 'CMC Claimstore',
                target: 'Jenkins Data'])
       }
     }
