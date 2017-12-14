@@ -30,7 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "feature_toggles.document_management=false"
+        "feature_toggles.document_management=false",
+        "feature_toggles.core_case_data=false"
     }
 )
 public class SaveClaimTest extends BaseSaveTest {
@@ -138,6 +139,15 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(emailData.getAttachments()).hasSize(1)
             .first().extracting(EmailAttachment::getFilename)
             .containsExactly(savedClaim.getReferenceNumber() + "-sealed-claim.pdf");
+    }
+
+    @Test
+    public void shouldNotMakeCallToStoreInCoreCaseDataStoreWhenTogglesOff() throws Exception {
+        makeRequest(SampleClaimData.submittedByLegalRepresentative())
+            .andExpect(status().isOk());
+
+        verify(coreCaseDataApi, never())
+            .start(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test

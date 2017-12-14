@@ -48,7 +48,7 @@ public class SaveCoreCaseDataService {
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
             eventRequestData.getEventId()
-        ).getBody();
+        );
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -68,7 +68,7 @@ public class SaveCoreCaseDataService {
             eventRequestData.getCaseTypeId(),
             eventRequestData.isIgnoreWarning(),
             caseDataContent
-        ).getBody();
+        );
     }
 
     private JsonNode toJson(CCDCase ccdCase) {
