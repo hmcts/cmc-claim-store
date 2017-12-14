@@ -7,11 +7,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
-
-import java.util.Optional;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
@@ -34,8 +33,7 @@ public class CoreCaseDataService {
         this.caseMapper = caseMapper;
     }
 
-    public Optional<CaseDetails> save(final String authorisation, final Claim claim) {
-        CaseDetails caseDetails = null;
+    public CaseDetails save(final String authorisation, final Claim claim) {
         try {
             final CCDCase ccdCase = caseMapper.to(claim);
             final EventRequestData eventRequestData = EventRequestData.builder()
@@ -46,10 +44,10 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            caseDetails = saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
+            return saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
         } catch (Exception exception) {
-            logger.error("Failed storing claim in CCD store for claim " + claim.getReferenceNumber(), exception);
+            throw new CoreCaseDataStoreException("Failed storing claim in CCD store for claim "
+                + claim.getReferenceNumber(), exception);
         }
-        return Optional.ofNullable(caseDetails);
     }
 }
