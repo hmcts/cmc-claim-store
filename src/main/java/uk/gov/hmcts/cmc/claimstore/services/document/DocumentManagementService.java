@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
-import uk.gov.hmcts.document.DocumentDownloadClientApi;
-import uk.gov.hmcts.document.DocumentMetadataDownloadClientApi;
-import uk.gov.hmcts.document.DocumentUploadClientApi;
-import uk.gov.hmcts.document.domain.Document;
-import uk.gov.hmcts.document.domain.UploadResponse;
-import uk.gov.hmcts.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
+import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
+import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.document.domain.UploadResponse;
+import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
 
