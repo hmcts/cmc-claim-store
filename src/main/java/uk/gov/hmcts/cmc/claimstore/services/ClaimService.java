@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
@@ -92,7 +93,7 @@ public class ClaimService {
         return claimRepository.getByDefendantId(id);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = CoreCaseDataStoreException.class)
     public Claim saveClaim(final String submitterId, final ClaimData claimData, final String authorisation) {
         final String externalId = claimData.getExternalId().toString();
 
