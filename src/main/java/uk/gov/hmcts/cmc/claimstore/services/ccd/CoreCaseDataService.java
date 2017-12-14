@@ -41,7 +41,9 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            return saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
+            final CaseDetails save = saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
+
+            return save;
         } catch (Throwable exception) {
             throw new CoreCaseDataStoreException("Failed storing claim in CCD store for claim "
                 + claim.getReferenceNumber(), exception);

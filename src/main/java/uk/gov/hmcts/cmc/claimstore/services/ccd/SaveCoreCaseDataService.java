@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ import java.io.IOException;
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
 public class SaveCoreCaseDataService {
+    Logger logger = LoggerFactory.getLogger(SaveCoreCaseDataService.class);
 
 
     private final CoreCaseDataApi coreCaseDataApi;
@@ -45,16 +49,14 @@ public class SaveCoreCaseDataService {
         final CCDCase ccdCase
     ) {
 
-        ResponseEntity<StartEventResponse> responseEntity = this.coreCaseDataApi.start(
+        StartEventResponse startEventResponse = this.coreCaseDataApi.start(
             authorisation,
             this.authTokenGenerator.generate(),
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
             eventRequestData.getEventId()
-        );
-
-        StartEventResponse startEventResponse = responseEntity.getBody();
+        ).getBody();
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -65,6 +67,7 @@ public class SaveCoreCaseDataService {
                 .build())
             .data(toJson(ccdCase))
             .build();
+
 
         return this.coreCaseDataApi.submit(
             authorisation,
