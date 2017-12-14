@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -129,10 +129,10 @@ public class DefendantResponseNotificationService {
         return parameters.build();
     }
 
-    private Map<String, String> aggregateParams(final Claim claim, final ResponseData responseData) {
-        boolean isFreeMediationApplicable = responseData.getFreeMediation().isPresent();
-        boolean isFreeMediationRequested = responseData.getFreeMediation()
-            .orElse(ResponseData.FreeMediationOption.NO).equals(ResponseData.FreeMediationOption.YES);
+    private Map<String, String> aggregateParams(final Claim claim, final Response response) {
+        boolean isFreeMediationApplicable = response.getFreeMediation().isPresent();
+        boolean isFreeMediationRequested = response.getFreeMediation()
+            .orElse(Response.FreeMediationOption.NO).equals(Response.FreeMediationOption.YES);
 
         LocalDate decisionDeadline = freeMediationDecisionDateCalculator.calculateDecisionDate(LocalDate.now());
 

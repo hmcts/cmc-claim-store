@@ -30,7 +30,7 @@ public class ClaimIssuedCitizenActionsHandler {
 
         claimIssuedNotificationService.sendMail(
             claim,
-            event.getSubmitterEmail(),
+            claim.getSubmitterEmail(),
             null,
             getEmailTemplates().getClaimantClaimIssued(),
             "claimant-issue-notification-" + claim.getReferenceNumber(),

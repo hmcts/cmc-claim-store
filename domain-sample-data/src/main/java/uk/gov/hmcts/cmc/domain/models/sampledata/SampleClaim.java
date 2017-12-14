@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.time.LocalDate;
@@ -43,7 +43,7 @@ public final class SampleClaim {
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
     private ClaimData claimData = SampleClaimData.validDefaults();
-    private ResponseData response;
+    private Response response;
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
@@ -63,13 +63,14 @@ public final class SampleClaim {
     }
 
     public static Claim getWithDefaultResponse() {
-        return getWithResponse(SampleResponseData.validDefaults());
+        return getWithResponse(SampleResponse.validDefaults());
     }
 
-    public static Claim getWithResponse(final ResponseData responseData) {
+    public static Claim getWithResponse(final Response response) {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
-            .withResponse(responseData)
+            .withResponse(response)
+            .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .build();
     }
@@ -229,8 +230,8 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withResponse(final ResponseData responseData) {
-        this.response = responseData;
+    public SampleClaim withResponse(final Response response) {
+        this.response = response;
         return this;
     }
 
@@ -254,3 +255,4 @@ public final class SampleClaim {
         return this;
     }
 }
+

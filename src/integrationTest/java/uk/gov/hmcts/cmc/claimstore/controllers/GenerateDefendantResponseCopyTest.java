@@ -5,7 +5,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -21,7 +21,7 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponseData.builder().build());
+        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
@@ -43,7 +43,7 @@ public class GenerateDefendantResponseCopyTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponseData.builder().build());
+        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));

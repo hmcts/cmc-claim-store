@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 
 @Service
 public class DefendantResponseService {
@@ -31,7 +31,7 @@ public class DefendantResponseService {
     public Claim save(
         final long claimId,
         final String defendantId,
-        final ResponseData responseData,
+        final Response response,
         final String authorization
     ) {
         final Claim claim = claimService.getClaimById(claimId);
@@ -47,7 +47,7 @@ public class DefendantResponseService {
         }
 
         final String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        claimService.saveDefendantResponse(claimId, defendantId, defendantEmail, responseData);
+        claimService.saveDefendantResponse(claimId, defendantId, defendantEmail, response);
 
         final Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
 

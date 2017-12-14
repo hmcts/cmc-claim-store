@@ -12,9 +12,9 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ResponseData;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -48,25 +48,25 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldReturnNewlyCreatedDefendantResponse() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        ResponseData responseData = SampleResponseData.validDefaults();
+        Response response = SampleResponse.validDefaults();
 
-        final MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, responseData)
+        final MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk())
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getResponse, Claim::getRespondedAt)
             .doesNotContainNull()
-            .contains(Optional.of(responseData));
+            .contains(Optional.of(response));
     }
 
     @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        ResponseData responseData = SampleResponseData.validDefaults();
+        Response response = SampleResponse.validDefaults();
 
-        makeRequest(claim.getId(), DEFENDANT_ID, responseData)
+        makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk());
 
         verify(staffActionsHandler).onDefendantResponseSubmitted(defendantResponseEventArgument.capture());
@@ -79,9 +79,9 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        ResponseData responseData = SampleResponseData.validDefaults();
+        Response response = SampleResponse.validDefaults();
 
-        makeRequest(claim.getId(), DEFENDANT_ID, responseData)
+        makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk());
 
         verify(notificationClient, times(2))
@@ -92,11 +92,11 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldReturnInternalServerErrorWhenStaffNotificationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        ResponseData responseData = SampleResponseData.validDefaults();
+        Response response = SampleResponse.validDefaults();
 
         doThrow(new RuntimeException()).when(staffActionsHandler).onDefendantResponseSubmitted(any());
 
-        makeRequest(claim.getId(), DEFENDANT_ID, responseData)
+        makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isInternalServerError());
     }
 
@@ -104,11 +104,11 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldFailForEmptyDefence() throws Exception {
         long anyClaimId = 500;
         String anyDefendantId = "500";
-        ResponseData responseData = SampleResponseData.builder()
+        Response response = SampleResponse.FullDefence.builder()
             .withDefence("")
             .build();
 
-        final MvcResult result = makeRequest(anyClaimId, anyDefendantId, responseData)
+        final MvcResult result = makeRequest(anyClaimId, anyDefendantId, response)
             .andExpect(status().isBadRequest())
             .andReturn();
 
@@ -117,12 +117,12 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .contains("defence : may not be empty");
     }
 
-    private ResultActions makeRequest(long claimId, String defendantId, ResponseData responseData) throws Exception {
+    private ResultActions makeRequest(long claimId, String defendantId, Response response) throws Exception {
         return webClient
             .perform(post("/responses/claim/" + claimId + "/defendant/" + defendantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
-                .content(jsonMapper.toJson(responseData))
+                .content(jsonMapper.toJson(response))
             );
     }
 }

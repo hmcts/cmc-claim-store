@@ -9,14 +9,14 @@ import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class CitizenSealedClaimPdfService {
+public class ClaimIssueReceiptService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
     private final ClaimContentProvider claimContentProvider;
 
     @Autowired
-    public CitizenSealedClaimPdfService(
+    public ClaimIssueReceiptService(
         final DocumentTemplates documentTemplates,
         final PDFServiceClient pdfServiceClient,
         final ClaimContentProvider claimContentProvider
@@ -30,8 +30,9 @@ public class CitizenSealedClaimPdfService {
         requireNonNull(claim);
 
         return pdfServiceClient.generateFromHtml(
-            documentTemplates.getSealedClaim(),
+            documentTemplates.getClaimIssueReceipt(),
             claimContentProvider.createContent(claim)
         );
     }
+
 }
