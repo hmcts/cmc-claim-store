@@ -1,13 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -24,13 +20,10 @@ import java.io.IOException;
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
 public class SaveCoreCaseDataService {
-    Logger logger = LoggerFactory.getLogger(SaveCoreCaseDataService.class);
-
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final ObjectMapper objectMapper;
     private final AuthTokenGenerator authTokenGenerator;
-
 
     @Autowired
     public SaveCoreCaseDataService(
@@ -48,7 +41,6 @@ public class SaveCoreCaseDataService {
         final EventRequestData eventRequestData,
         final CCDCase ccdCase
     ) {
-
         StartEventResponse startEventResponse = this.coreCaseDataApi.start(
             authorisation,
             this.authTokenGenerator.generate(),
@@ -67,7 +59,6 @@ public class SaveCoreCaseDataService {
                 .build())
             .data(toJson(ccdCase))
             .build();
-
 
         return this.coreCaseDataApi.submit(
             authorisation,
@@ -88,5 +79,4 @@ public class SaveCoreCaseDataService {
             throw new InvalidCaseDataException("Failed to serialize to JSON", e);
         }
     }
-
 }
