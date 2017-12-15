@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.util.Optional;
 
