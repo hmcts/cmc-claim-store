@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
-public class RepaymentPlanContentProvider {
+public final class RepaymentPlanContentProvider {
 
     private RepaymentPlanContentProvider() {
         // Utils class no constructing

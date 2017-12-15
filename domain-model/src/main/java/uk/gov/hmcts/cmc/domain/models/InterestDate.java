@@ -24,13 +24,13 @@ public class InterestDate {
     }
 
     @NotNull
-    private InterestDateType type;
+    private final InterestDateType type;
 
     @JsonUnwrapped
     @DateNotInTheFuture
-    private LocalDate date;
+    private final LocalDate date;
 
-    private String reason;
+    private final String reason;
 
     public InterestDate(InterestDateType type, LocalDate date, String reason) {
         this.type = type;

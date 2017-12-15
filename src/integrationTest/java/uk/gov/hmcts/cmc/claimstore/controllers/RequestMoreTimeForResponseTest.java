@@ -30,12 +30,12 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     private static final String AUTH_TOKEN = "it's me!";
     private static final String DEFENDANT_ID = "100";
 
-    private static UserDetails USER_DETAILS = SampleUserDetails.builder()
+    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withUserId(DEFENDANT_ID)
         .withMail("defendant@example.com")
         .build();
 
-    private static UserDetails OTHER_USER_DETAILS = SampleUserDetails.builder()
+    private static final UserDetails OTHER_USER_DETAILS = SampleUserDetails.builder()
         .withUserId(SUBMITTER_ID)
         .withMail("submitter@example.com")
         .build();

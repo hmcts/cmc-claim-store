@@ -17,7 +17,7 @@ import java.time.LocalDate;
 
 @Component
 public class EventProducer {
-    private ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
 
     public EventProducer(ApplicationEventPublisher publisher) {
         this.publisher = publisher;

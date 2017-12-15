@@ -14,7 +14,7 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class ContentProvider {
 
-    private InterestCalculationService interestCalculationService;
+    private final InterestCalculationService interestCalculationService;
 
     @Autowired
     public ContentProvider(InterestCalculationService interestCalculationService) {

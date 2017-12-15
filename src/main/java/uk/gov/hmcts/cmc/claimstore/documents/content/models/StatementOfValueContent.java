@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 public class StatementOfValueContent {
 
-    private String personalInjury;
-    private String housingDisrepair;
-    private String claimValue;
+    private final String personalInjury;
+    private final String housingDisrepair;
+    private final String claimValue;
 
     public StatementOfValueContent(String personalInjury, String housingDisrepair, String claimValue) {
         this.personalInjury = personalInjury;

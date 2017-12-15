@@ -20,7 +20,7 @@ public class SettlementTest {
     private PartyStatement partyStatement;
 
     private Settlement settlement;
-    private static Offer offer = SampleOffer.validDefaults();
+    private static final Offer offer = SampleOffer.validDefaults();
 
     @Before
     public void beforeEachTest() {
