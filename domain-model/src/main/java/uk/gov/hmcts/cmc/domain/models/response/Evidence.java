@@ -8,13 +8,13 @@ import javax.validation.constraints.NotNull;
 public class Evidence {
     @Valid
     @NotNull
-    private final List<EvidenceRow> rows;
+    private final List<EvidenceItem> rows;
 
-    public Evidence(final List<EvidenceRow> rows) {
+    public Evidence(final List<EvidenceItem> rows) {
         this.rows = rows;
     }
 
-    public List<EvidenceRow> getRows() {
+    public List<EvidenceItem> getRows() {
         return rows;
     }
 

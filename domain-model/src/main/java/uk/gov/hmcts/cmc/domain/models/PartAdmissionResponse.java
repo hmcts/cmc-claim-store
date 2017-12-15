@@ -2,15 +2,15 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.response.Evidence;
+import uk.gov.hmcts.cmc.domain.models.response.EvidenceItem;
 import uk.gov.hmcts.cmc.domain.models.response.HowMuchOwed;
-import uk.gov.hmcts.cmc.domain.models.response.Timeline;
+import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
+import java.util.List;
 import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -27,18 +27,20 @@ public class PartAdmissionResponse extends Response {
         PAID_WHAT_BELIEVED_WAS_OWED
     }
 
+    @Valid
+    @NotNull
+    private final List<EvidenceItem> evidenceItems;
+
+    @Valid
+    @NotNull
+    private final List<TimelineEvent> timelineEvents;
+
     @NotNull
     private final PartAdmissionType partAdmissionType;
 
     @Valid
-    private final Evidence evidence;
-
-    @Valid
     @NotNull
     private final HowMuchOwed howMuchOwed;
-
-    @Valid
-    private final Timeline timeline;
 
     @Valid
     private final DefendantPaymentPlan defendantPaymentPlan;
@@ -57,16 +59,17 @@ public class PartAdmissionResponse extends Response {
         final MoreTimeNeededOption moreTimeNeeded,
         final Party defendant,
         final StatementOfTruth statementOfTruth,
-        final Evidence evidence,
+        final List<EvidenceItem> evidenceItems,
         final HowMuchOwed howMuchOwed,
-        final Timeline timeline,
+        final List<TimelineEvent> timelineEvents,
         final DefendantPaymentPlan defendantPaymentPlan,
         final String impactOfDispute,
-        final PartAdmissionType partAdmissionType) {
+        final PartAdmissionType partAdmissionType)
+    {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
-        this.evidence = evidence;
+        this.evidenceItems = evidenceItems;
         this.howMuchOwed = howMuchOwed;
-        this.timeline = timeline;
+        this.timelineEvents = timelineEvents;
         this.defendantPaymentPlan = defendantPaymentPlan;
         this.impactOfDispute = impactOfDispute;
         this.partAdmissionType = partAdmissionType;
@@ -90,16 +93,16 @@ public class PartAdmissionResponse extends Response {
 
         final PartAdmissionResponse that = (PartAdmissionResponse) other;
         return super.equals(that)
-            && Objects.equals(evidence, that.evidence)
+            && Objects.equals(evidenceItems, that.evidenceItems)
             && Objects.equals(howMuchOwed, that.howMuchOwed)
-            && Objects.equals(timeline, that.timeline)
+            && Objects.equals(timelineEvents, that.timelineEvents)
             && Objects.equals(partAdmissionType, that.partAdmissionType)
             && Objects.equals(defendantPaymentPlan, that.defendantPaymentPlan);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(evidence, howMuchOwed, timeline, defendantPaymentPlan, partAdmissionType);
+        return Objects.hash(evidenceItems, howMuchOwed, timelineEvents, defendantPaymentPlan, partAdmissionType);
     }
 
     @Override

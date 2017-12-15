@@ -15,11 +15,11 @@ public class HowMuchOwed {
 
     @NotBlank
     @Size(max = 255, message = "must be at most {max} characters")
-    private final String text;
+    private final String explanation;
 
-    public HowMuchOwed(BigDecimal amount, String text) {
+    public HowMuchOwed(BigDecimal amount, String explanation) {
         this.amount = amount;
-        this.text = text;
+        this.explanation = explanation;
     }
 
     public BigDecimal getAmount() {
@@ -27,7 +27,7 @@ public class HowMuchOwed {
     }
 
     public String getText() {
-        return text;
+        return explanation;
     }
 
     @Override
@@ -41,12 +41,12 @@ public class HowMuchOwed {
 
         HowMuchOwed that = (HowMuchOwed) obj;
 
-        return Objects.equals(this.amount, that.text) && Objects.equals(this.amount, that.text);
+        return Objects.equals(this.amount, that.explanation) && Objects.equals(this.amount, that.explanation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(amount, text);
+        return Objects.hash(amount, explanation);
     }
 
 }

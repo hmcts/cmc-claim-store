@@ -9,13 +9,13 @@ public class Timeline {
 
     @Valid
     @NotNull
-    private final List<TimeLineRow> rows;
+    private final List<TimelineEvent> rows;
 
-    public Timeline(final List<TimeLineRow> rows) {
+    public Timeline(final List<TimelineEvent> rows) {
         this.rows = rows;
     }
 
-    public List<TimeLineRow> getRows() {
+    public List<TimelineEvent> getRows() {
         return rows;
     }
 
@@ -27,7 +27,7 @@ public class Timeline {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        TimeLineRow that = (TimeLineRow) other;
+        TimelineEvent that = (TimelineEvent) other;
         return Objects.equals(rows, that);
     }
 

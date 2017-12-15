@@ -36,21 +36,21 @@ public class DefendantPaymentPlan {
 
     @NotNull
     @Size(max = 255, message = "must be at most {max} characters")
-    private final String explaination;
+    private final String explanation;
 
     public DefendantPaymentPlan(
         final BigDecimal firstPayment,
         final BigDecimal instalmentAmount,
         final LocalDate firstPaymentDate,
         final PaymentSchedule paymentSchedule,
-        final String explaination
+        final String explanation
     ) {
 
         this.firstPayment = firstPayment;
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
         this.paymentSchedule = paymentSchedule;
-        this.explaination = explaination;
+        this.explanation = explanation;
     }
 
     public BigDecimal getFirstPayment() {
@@ -70,7 +70,7 @@ public class DefendantPaymentPlan {
     }
 
     public String getExplanation() {
-        return explaination;
+        return explanation;
     }
 
     @Override
@@ -88,12 +88,12 @@ public class DefendantPaymentPlan {
             && Objects.equals(instalmentAmount, that.instalmentAmount)
             && Objects.equals(firstPaymentDate, that.firstPaymentDate)
             && Objects.equals(paymentSchedule, that.paymentSchedule)
-            && Objects.equals(explaination, that.explaination);
+            && Objects.equals(explanation, that.explanation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule, explaination);
+        return Objects.hash(firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule, explanation);
     }
 
     @Override

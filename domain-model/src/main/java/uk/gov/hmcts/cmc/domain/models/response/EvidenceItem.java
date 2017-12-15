@@ -4,19 +4,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Objects;
 
+
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-public class TimeLineRow {
-    private final String date;
+public class EvidenceItem {
+    private final EvidenceType type;
 
     private final String description;
 
-    public TimeLineRow(final String date, final String description) {
-        this.date = date;
+    public EvidenceItem(final EvidenceType type, final String description) {
+        this.type = type;
         this.description = description;
     }
 
-    public String getDate() {
-        return date;
+    public EvidenceType getType() {
+        return type;
     }
 
     public String getDescription() {
@@ -31,13 +32,13 @@ public class TimeLineRow {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        TimeLineRow timeLineRow = (TimeLineRow) other;
-        return Objects.equals(date, timeLineRow.date)
-            && Objects.equals(description, timeLineRow.description);
+        EvidenceItem evidenceItem = (EvidenceItem) other;
+        return Objects.equals(type, evidenceItem.type)
+            && Objects.equals(description, evidenceItem.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(date, description);
+        return Objects.hash(type, description);
     }
 }
