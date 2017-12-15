@@ -42,5 +42,4 @@ public class UserServiceTest {
         //verify
         verify(idamApi).retrieveUserDetails(authorisationToken);
     }
-
 }

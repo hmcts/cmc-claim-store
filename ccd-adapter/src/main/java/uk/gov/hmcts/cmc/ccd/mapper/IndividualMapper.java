@@ -33,9 +33,12 @@ public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
         individual.getRepresentative()
             .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
 
+        if (individual.getDateOfBirth() != null) {
+            builder.dateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE));
+        }
+
         return builder
             .name(individual.getName())
-            .dateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE))
             .address(addressMapper.to(individual.getAddress()))
             .build();
     }
