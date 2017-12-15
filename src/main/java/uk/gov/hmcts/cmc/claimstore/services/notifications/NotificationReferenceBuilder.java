@@ -22,7 +22,7 @@ public class NotificationReferenceBuilder {
 
     public static class MoreTimeRequested {
 
-        public static String TEMPLATE = "more-time-requested-notification-to-%s-%s";
+        public static final String TEMPLATE = "more-time-requested-notification-to-%s-%s";
 
         private MoreTimeRequested() {
             // do not instantiate
@@ -35,7 +35,7 @@ public class NotificationReferenceBuilder {
 
     public static class ResponseSubmitted {
 
-        public static String TEMPLATE = "%s-response-notification-%s";
+        public static final String TEMPLATE = "%s-response-notification-%s";
 
         private ResponseSubmitted() {
             // do not instantiate
@@ -52,7 +52,7 @@ public class NotificationReferenceBuilder {
 
     public static class CCJRequested {
 
-        public static String TEMPLATE = "%s-ccj-requested-notification-%s";
+        public static final String TEMPLATE = "%s-ccj-requested-notification-%s";
 
         private CCJRequested() {
             // do not instantiate
@@ -65,7 +65,7 @@ public class NotificationReferenceBuilder {
 
     public static class OfferMade {
 
-        public static String TEMPLATE = "%s-offer-made-notification-%s";
+        public static final String TEMPLATE = "%s-offer-made-notification-%s";
 
         private OfferMade() {
             // do not instantiate
@@ -82,7 +82,7 @@ public class NotificationReferenceBuilder {
 
     public static class OfferAccepted {
 
-        public static String TEMPLATE = "to-%s-offer-accepted-by-claimant-notification-%s";
+        public static final String TEMPLATE = "to-%s-offer-accepted-by-claimant-notification-%s";
 
         private OfferAccepted() {
             // do not instantiate
@@ -99,7 +99,7 @@ public class NotificationReferenceBuilder {
 
     public static class OfferRejected {
 
-        public static String TEMPLATE = "to-%s-offer-rejected-by-claimant-notification-%s";
+        public static final String TEMPLATE = "to-%s-offer-rejected-by-claimant-notification-%s";
 
         private OfferRejected() {
             // do not instantiate
