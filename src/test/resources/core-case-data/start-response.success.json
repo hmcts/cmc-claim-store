@@ -1,0 +1,16 @@
+{
+  "case_details": {
+    "id": null,
+    "jurisdiction": "CMC",
+    "case_type_id": "MoneyClaimCase",
+    "created_date": null,
+    "last_modified": null,
+    "state": null,
+    "locked_by_user_id": null,
+    "security_level": null,
+    "case_data": {},
+    "security_classification": null
+  },
+  "event_id": "submitClaimEvent",
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJvdmMyNHFmb2h0ZWs0ZzlsODMzM2cwY3VyMSIsInN1YiI6IjE5IiwiaWF0IjoxNTEzMjUwOTk4LCJldmVudC1pZCI6InN1Ym1pdENsYWltRXZlbnQiLCJjYXNlLXR5cGUtaWQiOiJNb25leUNsYWltQ2FzZSIsImp1cmlzZGljdGlvbi1pZCI6IkNNQyIsImNhc2UtdmVyc2lvbiI6ImJmMjFhOWU4ZmJjNWEzODQ2ZmIwNWI0ZmEwODU5ZTA5MTdiMjIwMmYifQ.wZCq1zHAZq5b-IK7SPIsBThude6DisovSxfME5CTkt4"
+}

@@ -14,6 +14,6 @@ public class CCDCase {
     private String externalId;
     private String issuedOn;
     private String submitterEmail;
-    private CCDClaim claim;
+    private CCDClaim claimData;
 
 }
