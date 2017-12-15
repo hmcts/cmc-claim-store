@@ -1,20 +1,23 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.hibernate.validator.constraints.NotBlank;
-
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 import java.math.BigDecimal;
 import java.util.Objects;
-
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 
 public class HowMuchOwed {
 
-    @NotBlank
+    @NotNull
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
-    @NotBlank
-    @Size(max = 255, message = "must be at most {max} characters")
+    @NotBlank(message = "Explanation should not be empty")
+    @Size(max = 255, message = "Explanation should not be longer than {max} characters")
     private final String explanation;
 
     public HowMuchOwed(BigDecimal amount, String explanation) {
