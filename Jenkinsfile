@@ -24,7 +24,7 @@ def channel = '#cmc-tech-notification'
 timestamps {
   milestone()
   lock(resource: "claim-store-${env.BRANCH_NAME}", inversePrecedence: true) {
-    node('slave') {
+    node {
       try {
         def version
         def claimStoreVersion
