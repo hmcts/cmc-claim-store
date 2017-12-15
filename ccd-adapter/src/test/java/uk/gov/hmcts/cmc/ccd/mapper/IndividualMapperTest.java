@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.hmcts.cmc.ccd.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDIndividual;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
@@ -46,5 +47,15 @@ public class IndividualMapperTest {
         assertThat(individual).isEqualTo(ccdIndividual);
     }
 
+    @Test
+    public void shouldNotMapIndividualDOBToCCDWhenNull() {
+        //given
+        Individual individual = SampleParty.builder().withDateOfBirth(null).individual();
 
+        //when
+        CCDIndividual ccdIndividual = individualMapper.to(individual);
+
+        //then
+        assertThat(individual).isEqualTo(ccdIndividual);
+    }
 }
