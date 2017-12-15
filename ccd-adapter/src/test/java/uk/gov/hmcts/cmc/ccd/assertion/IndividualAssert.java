@@ -31,12 +31,14 @@ public class IndividualAssert extends AbstractAssert<IndividualAssert, Individua
                 ccdIndividual.getMobilePhone(), actual.getMobilePhone().orElse(null));
         }
 
-        final String dateOfBirth = actual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE);
-        if (!Objects.equals(dateOfBirth, ccdIndividual.getDateOfBirth())) {
-            failWithMessage("Expected CCDIndividual.dateOfBirth to be <%s> but was <%s>",
-                ccdIndividual.getDateOfBirth(), dateOfBirth);
+        if (actual.getDateOfBirth() != null) {
+            final String dateOfBirth = actual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE);
+            if (!Objects.equals(dateOfBirth, ccdIndividual.getDateOfBirth())) {
+                failWithMessage("Expected CCDIndividual.dateOfBirth to be <%s> but was <%s>",
+                    ccdIndividual.getDateOfBirth(), dateOfBirth);
+            }
         }
-
+        
         assertThat(ccdIndividual.getAddress()).isEqualTo(actual.getAddress());
         actual.getCorrespondenceAddress()
             .ifPresent(address -> assertThat(ccdIndividual.getCorrespondenceAddress())
