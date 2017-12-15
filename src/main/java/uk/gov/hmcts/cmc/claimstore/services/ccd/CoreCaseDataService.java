@@ -30,7 +30,7 @@ public class CoreCaseDataService {
         this.caseMapper = caseMapper;
     }
 
-    public CaseDetails save(final String authorisation, final Claim claim) {
+    public CaseDetails save(String authorisation, Claim claim) {
         try {
             final CCDCase ccdCase = caseMapper.to(claim);
             final EventRequestData eventRequestData = EventRequestData.builder()

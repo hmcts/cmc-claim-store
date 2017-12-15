@@ -76,7 +76,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .build();
     }
 
-    private Map<String, CCDParty> mapToValue(final CCDParty ccdParty) {
+    private Map<String, CCDParty> mapToValue(CCDParty ccdParty) {
         return Collections.singletonMap(COLLECTION_KEY_NAME, ccdParty);
     }
 
@@ -115,7 +115,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             ccdClaim.getFeeCode());
     }
 
-    private CCDParty valueFromMap(final Map<String, CCDParty> value) {
+    private CCDParty valueFromMap(Map<String, CCDParty> value) {
         return value.get(COLLECTION_KEY_NAME);
     }
 }
