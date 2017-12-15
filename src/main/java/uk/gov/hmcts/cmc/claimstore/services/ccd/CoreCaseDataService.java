@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
 public class CoreCaseDataService {
-    private final Logger logger = LoggerFactory.getLogger(CoreCaseDataService.class);
 
     private static final String JURISDICTION_ID = "CMC";
     private static final String CASE_TYPE_ID = "MoneyClaimCase";

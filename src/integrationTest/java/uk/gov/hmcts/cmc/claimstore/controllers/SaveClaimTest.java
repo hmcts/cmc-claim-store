@@ -142,7 +142,7 @@ public class SaveClaimTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldNotMakeCallToStoreInCoreCaseDataStoreWhenTogglesOff() throws Exception {
+    public void shouldNotMakeCallToStoreInCoreCaseDataStoreWhenToggledOff() throws Exception {
         makeRequest(SampleClaimData.submittedByLegalRepresentative())
             .andExpect(status().isOk());
 
