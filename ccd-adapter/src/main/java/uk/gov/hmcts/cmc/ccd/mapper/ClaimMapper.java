@@ -23,12 +23,12 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final AmountMapper amountMapper;
 
     @Autowired
-    public ClaimMapper(final PersonalInjuryMapper personalInjuryMapper,
-                       final HousingDisrepairMapper housingDisrepairMapper,
-                       final StatementOfTruthMapper statementOfTruthMapper,
-                       final PartyMapper partyMapper,
-                       final TheirDetailsMapper theirDetailsMapper,
-                       final AmountMapper amountMapper) {
+    public ClaimMapper(PersonalInjuryMapper personalInjuryMapper,
+                       HousingDisrepairMapper housingDisrepairMapper,
+                       StatementOfTruthMapper statementOfTruthMapper,
+                       PartyMapper partyMapper,
+                       TheirDetailsMapper theirDetailsMapper,
+                       AmountMapper amountMapper) {
 
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
@@ -41,7 +41,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     @Override
     public CCDClaim to(ClaimData claimData) {
         Objects.requireNonNull(claimData, "claimData must not be null");
-        final CCDClaim.CCDClaimBuilder builder = CCDClaim.builder();
+        CCDClaim.CCDClaimBuilder builder = CCDClaim.builder();
         claimData.getFeeCode().ifPresent(builder::feeCode);
         claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
         claimData.getExternalReferenceNumber().ifPresent(builder::externalReferenceNumber);

@@ -13,12 +13,12 @@ import static org.apache.commons.lang3.Validate.notEmpty;
 @Component
 public class SettlementAgreementEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
 
-    private final TemplateService templateService;
-    private final StaffEmailTemplates staffEmailTemplates;
+    private TemplateService templateService;
+    private StaffEmailTemplates staffEmailTemplates;
 
     public SettlementAgreementEmailContentProvider(
-        final TemplateService templateService,
-        final StaffEmailTemplates staffEmailTemplates
+        TemplateService templateService,
+        StaffEmailTemplates staffEmailTemplates
     ) {
         this.templateService = templateService;
         this.staffEmailTemplates = staffEmailTemplates;

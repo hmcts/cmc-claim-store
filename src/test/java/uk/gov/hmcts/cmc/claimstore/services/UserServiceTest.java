@@ -29,8 +29,8 @@ public class UserServiceTest {
     @Test
     public void shouldGetUserDetails() {
         //given
-        final String authorisationToken = "Open sesame!";
-        final UserDetails userDetails = SampleUserDetails.getDefault();
+        String authorisationToken = "Open sesame!";
+        UserDetails userDetails = SampleUserDetails.getDefault();
         when(idamApi.retrieveUserDetails(authorisationToken)).thenReturn(userDetails);
 
         //when

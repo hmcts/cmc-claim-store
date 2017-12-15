@@ -34,13 +34,13 @@ public class StatementOfValueProvider {
         + "an order for the landlord to carry out work. ";
 
 
-    public StatementOfValueContent create(final Claim claim) {
+    public StatementOfValueContent create(Claim claim) {
 
         StringBuilder personalInjuryContent = new StringBuilder();
         StringBuilder housingDisprepairContent = new StringBuilder();
         StringBuilder claimValueContent = new StringBuilder();
 
-        final Optional<PersonalInjury> personalInjuryOptional = claim.getClaimData().getPersonalInjury();
+        Optional<PersonalInjury> personalInjuryOptional = claim.getClaimData().getPersonalInjury();
         personalInjuryOptional.ifPresent(personalInjury -> personalInjuryContent.append(PERSONAL_INJURY)
             .append(String.format(PERSONAL_INJURY_DAMAGES,
                 personalInjury.getGeneralDamages().getDisplayValue()))
@@ -65,10 +65,10 @@ public class StatementOfValueProvider {
         if (claimValue instanceof NotKnown) {
             claimValueContent.append(CAN_NOT_STATE);
         } else if (claimValue instanceof AmountRange) {
-            final AmountRange amountRange = (AmountRange) claimValue;
-            final Optional<BigDecimal> lowerValueOptional = amountRange.getLowerValue();
+            AmountRange amountRange = (AmountRange) claimValue;
+            Optional<BigDecimal> lowerValueOptional = amountRange.getLowerValue();
             if (lowerValueOptional.isPresent()) {
-                final BigDecimal lowerValue = lowerValueOptional.get();
+                BigDecimal lowerValue = lowerValueOptional.get();
                 claimValueContent.append(
                     String.format(RECOVER_UP_TO + WORTH_MORE_THAN,
                         formatMoney(amountRange.getHigherValue()),

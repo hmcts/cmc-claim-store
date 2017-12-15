@@ -71,7 +71,7 @@ public class ResponseTest {
     @Test
     public void shouldHaveValidationMessagesWhenDefenceExceedsSizeLimit() {
         //given
-        final String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
+        String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
         Response response = SampleResponse.FullDefence.builder()
             .withDefence(defence)

@@ -20,7 +20,7 @@ public class IssueDateCalculator {
     private WorkingDayIndicator workingDayIndicator;
 
     public IssueDateCalculator(WorkingDayIndicator workingDayIndicator,
-                               @Value("${dateCalculations.endOfBusinessDayHour}") final int endOfBusinessDayHour) {
+                               @Value("${dateCalculations.endOfBusinessDayHour}") int endOfBusinessDayHour) {
         this.workingDayIndicator = workingDayIndicator;
         this.endOfBusinessDayHour = endOfBusinessDayHour;
     }

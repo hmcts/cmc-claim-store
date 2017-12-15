@@ -36,12 +36,12 @@ public class ClaimService {
 
     @Autowired
     public ClaimService(
-        final ClaimRepository claimRepository,
-        final UserService userService,
-        final JsonMapper jsonMapper,
-        final IssueDateCalculator issueDateCalculator,
-        final ResponseDeadlineCalculator responseDeadlineCalculator,
-        final EventProducer eventProducer) {
+        ClaimRepository claimRepository,
+        UserService userService,
+        JsonMapper jsonMapper,
+        IssueDateCalculator issueDateCalculator,
+        ResponseDeadlineCalculator responseDeadlineCalculator,
+        EventProducer eventProducer) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
@@ -50,70 +50,70 @@ public class ClaimService {
         this.eventProducer = eventProducer;
     }
 
-    public Claim getClaimById(final long claimId) {
+    public Claim getClaimById(long claimId) {
         return claimRepository
             .getById(claimId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
 
-    public List<Claim> getClaimBySubmitterId(final String submitterId) {
+    public List<Claim> getClaimBySubmitterId(String submitterId) {
         return claimRepository.getBySubmitterId(submitterId);
     }
 
-    public Claim getClaimByLetterHolderId(final String id) {
+    public Claim getClaimByLetterHolderId(String id) {
         return claimRepository
             .getByLetterHolderId(id)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
 
-    public Claim getClaimByExternalId(final String externalId) {
+    public Claim getClaimByExternalId(String externalId) {
         return claimRepository
             .getClaimByExternalId(externalId)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
-    public Optional<Claim> getClaimByReference(final String reference, final String authorisation) {
-        final String submitterId = userService.getUserDetails(authorisation).getId();
+    public Optional<Claim> getClaimByReference(String reference, String authorisation) {
+        String submitterId = userService.getUserDetails(authorisation).getId();
         return claimRepository
             .getByClaimReferenceAndSubmitter(reference, submitterId);
     }
 
-    public Optional<Claim> getClaimByReference(final String reference) {
+    public Optional<Claim> getClaimByReference(String reference) {
         return claimRepository
             .getByClaimReferenceNumber(reference);
     }
 
-    public List<Claim> getClaimByExternalReference(final String externalReference, final String authorisation) {
-        final String submitterId = userService.getUserDetails(authorisation).getId();
+    public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
+        String submitterId = userService.getUserDetails(authorisation).getId();
         return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 
-    public List<Claim> getClaimByDefendantId(final String id) {
+    public List<Claim> getClaimByDefendantId(String id) {
         return claimRepository.getByDefendantId(id);
     }
 
     @Transactional
-    public Claim saveClaim(final String submitterId, final ClaimData claimData, final String authorisation) {
-        final String externalId = claimData.getExternalId().toString();
+    public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
+        String externalId = claimData.getExternalId().toString();
 
         claimRepository.getClaimByExternalId(externalId).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
         });
 
-        final LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
+        LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
 
         if (!claimData.isClaimantRepresented()) {
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 
-        final Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
-        final LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
-        final LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        final UserDetails userDetails = userService.getUserDetails(authorisation);
-        final String submitterEmail = userDetails.getEmail();
+        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
+        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        String submitterEmail = userDetails.getEmail();
 
-        final String claimDataString = jsonMapper.toJson(claimData);
+        String claimDataString = jsonMapper.toJson(claimData);
 
         long issuedClaimId;
 
@@ -133,8 +133,8 @@ public class ClaimService {
         return getClaimById(issuedClaimId);
     }
 
-    public Claim requestMoreTimeForResponse(final long claimId, final String authorisation) {
-        final UserDetails defendant = userService.getUserDetails(authorisation);
+    public Claim requestMoreTimeForResponse(long claimId, String authorisation) {
+        UserDetails defendant = userService.getUserDetails(authorisation);
         Claim claim = getClaimById(claimId);
 
         if (!claim.getDefendantId()
@@ -162,26 +162,26 @@ public class ClaimService {
     }
 
     public void linkDefendantToClaim(Long claimId, String defendantId) {
-        final Claim claim = claimRepository.getById(claimId)
+        Claim claim = claimRepository.getById(claimId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
 
         claimRepository.linkDefendant(claim.getId(), defendantId);
     }
 
-    public void linkLetterHolder(final Long claimId, final String userId) {
+    public void linkLetterHolder(Long claimId, String userId) {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void linkSealedClaimDocument(final Long claimId, final String documentSelfPath) {
+    public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
         claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
     }
 
-    public void saveCountyCourtJudgment(final long claimId, final CountyCourtJudgment countyCourtJudgment) {
+    public void saveCountyCourtJudgment(long claimId, CountyCourtJudgment countyCourtJudgment) {
         claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
     }
 
-    public void saveDefendantResponse(final long claimId, final String defendantId, final String defendantEmail,
-                                      final Response response) {
+    public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail,
+                                      Response response) {
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
     }
 }

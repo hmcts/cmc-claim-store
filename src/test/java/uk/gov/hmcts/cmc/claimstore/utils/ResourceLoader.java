@@ -12,12 +12,12 @@ public class ResourceLoader {
     }
 
     public static UploadResponse successfulDocumentManagementUploadResponse() {
-        final String response = new ResourceReader().read("/document-management/response.success.json");
+        String response = new ResourceReader().read("/document-management/response.success.json");
         return jsonMapper.fromJson(response, UploadResponse.class);
     }
 
     public static UploadResponse unsuccessfulDocumentManagementUploadResponse() {
-        final String response = new ResourceReader().read("/document-management/response.failure.json");
+        String response = new ResourceReader().read("/document-management/response.failure.json");
         return jsonMapper.fromJson(response, UploadResponse.class);
     }
 }

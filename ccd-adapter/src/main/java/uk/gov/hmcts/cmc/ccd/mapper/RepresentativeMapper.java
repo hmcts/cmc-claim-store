@@ -16,7 +16,7 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
     private final ContactDetailsMapper contactDetailsMapper;
 
     @Autowired
-    public RepresentativeMapper(final AddressMapper addressMapper, final ContactDetailsMapper contactDetailsMapper) {
+    public RepresentativeMapper(AddressMapper addressMapper, ContactDetailsMapper contactDetailsMapper) {
         this.addressMapper = addressMapper;
         this.contactDetailsMapper = contactDetailsMapper;
     }
@@ -24,7 +24,7 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
     @Override
     public CCDRepresentative to(Representative representative) {
 
-        final CCDRepresentative.CCDRepresentativeBuilder builder = CCDRepresentative.builder();
+        CCDRepresentative.CCDRepresentativeBuilder builder = CCDRepresentative.builder();
         representative.getOrganisationContactDetails()
             .ifPresent(organisationContactDetails -> builder.organisationContactDetails(
                 contactDetailsMapper.to(organisationContactDetails))
@@ -38,9 +38,9 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
 
     @Override
     public Representative from(CCDRepresentative representative) {
-        final Optional<CCDContactDetails> organisationContactDetailsOptional =
+        Optional<CCDContactDetails> organisationContactDetailsOptional =
             representative.getOrganisationContactDetails();
-        final ContactDetails organisationContactDetails =
+        ContactDetails organisationContactDetails =
             organisationContactDetailsOptional
                 .isPresent() ? contactDetailsMapper.from(organisationContactDetailsOptional.get()) : null;
 

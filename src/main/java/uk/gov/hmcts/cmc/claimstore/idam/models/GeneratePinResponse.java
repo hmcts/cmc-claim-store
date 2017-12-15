@@ -9,7 +9,7 @@ public class GeneratePinResponse {
     private final String pin;
     private final String userId;
 
-    public GeneratePinResponse(@JsonProperty("pin") final String pin, @JsonProperty("userId") final String userId) {
+    public GeneratePinResponse(@JsonProperty("pin") String pin, @JsonProperty("userId") String userId) {
         this.pin = pin;
         this.userId = userId;
     }

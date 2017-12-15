@@ -17,16 +17,16 @@ public class ClaimIssuedCitizenActionsHandler {
 
     @Autowired
     public ClaimIssuedCitizenActionsHandler(
-        final ClaimIssuedNotificationService claimIssuedNotificationService,
-        final NotificationsProperties notificationsProperties
+        ClaimIssuedNotificationService claimIssuedNotificationService,
+        NotificationsProperties notificationsProperties
     ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
     }
 
     @EventListener
-    public void sendClaimantNotification(final ClaimIssuedEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendClaimantNotification(ClaimIssuedEvent event) {
+        Claim claim = event.getClaim();
 
         claimIssuedNotificationService.sendMail(
             claim,
@@ -39,8 +39,8 @@ public class ClaimIssuedCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendDefendantNotification(final ClaimIssuedEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendDefendantNotification(ClaimIssuedEvent event) {
+        Claim claim = event.getClaim();
 
         if (!claim.getClaimData().isClaimantRepresented()) {
             claim.getClaimData().getDefendant().getEmail()
@@ -57,7 +57,7 @@ public class ClaimIssuedCitizenActionsHandler {
     }
 
     private EmailTemplates getEmailTemplates() {
-        final NotificationTemplates templates = notificationsProperties.getTemplates();
+        NotificationTemplates templates = notificationsProperties.getTemplates();
         return templates.getEmail();
     }
 }

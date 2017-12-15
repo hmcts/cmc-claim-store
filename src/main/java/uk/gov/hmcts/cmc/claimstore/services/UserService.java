@@ -11,15 +11,15 @@ public class UserService {
 
     private IdamApi idamApi;
 
-    public UserService(final IdamApi idamApi) {
+    public UserService(IdamApi idamApi) {
         this.idamApi = idamApi;
     }
 
-    public UserDetails getUserDetails(final String authorisation) {
+    public UserDetails getUserDetails(String authorisation) {
         return idamApi.retrieveUserDetails(authorisation);
     }
 
-    public GeneratePinResponse generatePin(final String name, final String authorisation) {
+    public GeneratePinResponse generatePin(String name, String authorisation) {
         return idamApi.generatePin(
             new GeneratePinRequest(name),
             authorisation.replace("Bearer: ", "")

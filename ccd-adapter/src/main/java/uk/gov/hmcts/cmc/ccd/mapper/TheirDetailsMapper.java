@@ -35,12 +35,12 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
 
-    public TheirDetailsMapper(final IndividualDetailsMapper individualDetailsMapper,
-                              final CompanyDetailsMapper companyDetailsMapper,
-                              final OrganisationDetailsMapper organisationDetailsMapper,
-                              final SoleTraderDetailsMapper soleTraderDetailsMapper,
-                              final AddressMapper addressMapper,
-                              final RepresentativeMapper representativeMapper) {
+    public TheirDetailsMapper(IndividualDetailsMapper individualDetailsMapper,
+                              CompanyDetailsMapper companyDetailsMapper,
+                              OrganisationDetailsMapper organisationDetailsMapper,
+                              SoleTraderDetailsMapper soleTraderDetailsMapper,
+                              AddressMapper addressMapper,
+                              RepresentativeMapper representativeMapper) {
 
         this.individualDetailsMapper = individualDetailsMapper;
         this.companyDetailsMapper = companyDetailsMapper;
@@ -52,7 +52,7 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
 
     @Override
     public CCDParty to(TheirDetails theirDetails) {
-        final CCDParty.CCDPartyBuilder builder = CCDParty.builder();
+        CCDParty.CCDPartyBuilder builder = CCDParty.builder();
 
         if (theirDetails instanceof IndividualDetails) {
             builder.type(INDIVIDUAL);
@@ -92,14 +92,14 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
     }
 
     private TheirDetails getCompany(CCDParty ccdParty) {
-        final CCDCompany ccdCompany = ccdParty.getCompany();
+        CCDCompany ccdCompany = ccdParty.getCompany();
         return new CompanyDetails(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
             ccdCompany.getEmail(), representativeMapper.from(ccdCompany.getRepresentative()),
             addressMapper.from(ccdCompany.getCorrespondenceAddress()), ccdCompany.getContactPerson());
     }
 
     private TheirDetails getIndividual(CCDParty ccdParty) {
-        final CCDIndividual ccdIndividual = ccdParty.getIndividual();
+        CCDIndividual ccdIndividual = ccdParty.getIndividual();
         return new IndividualDetails(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
             ccdIndividual.getEmail(), representativeMapper.from(ccdIndividual.getRepresentative()),
             addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getTitle(),
@@ -107,7 +107,7 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
     }
 
     private TheirDetails getSoleTrader(CCDParty ccdParty) {
-        final CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
+        CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
         return new SoleTraderDetails(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
             ccdSoleTrader.getEmail(), representativeMapper.from(ccdSoleTrader.getRepresentative()),
             addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getTitle(),
@@ -115,7 +115,7 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
     }
 
     private TheirDetails getOrganisation(CCDParty ccdParty) {
-        final CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
+        CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
         return new OrganisationDetails(ccdOrganisation.getName(),
             addressMapper.from(ccdOrganisation.getAddress()), ccdOrganisation.getEmail(),
             representativeMapper.from(ccdOrganisation.getRepresentative()),

@@ -14,10 +14,10 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class ContentProvider {
 
-    private final InterestCalculationService interestCalculationService;
+    private InterestCalculationService interestCalculationService;
 
     @Autowired
-    public ContentProvider(final InterestCalculationService interestCalculationService) {
+    public ContentProvider(InterestCalculationService interestCalculationService) {
         this.interestCalculationService = interestCalculationService;
     }
 

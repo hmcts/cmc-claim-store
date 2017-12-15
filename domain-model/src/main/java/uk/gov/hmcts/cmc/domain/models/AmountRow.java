@@ -17,7 +17,7 @@ public class AmountRow {
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
-    public AmountRow(final String reason, final BigDecimal amount) {
+    public AmountRow(String reason, BigDecimal amount) {
         this.reason = reason;
         this.amount = amount;
     }

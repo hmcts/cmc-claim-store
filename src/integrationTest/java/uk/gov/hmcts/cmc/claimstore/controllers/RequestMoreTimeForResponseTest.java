@@ -30,12 +30,12 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     private static final String AUTH_TOKEN = "it's me!";
     private static final String DEFENDANT_ID = "100";
 
-    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
+    private static UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withUserId(DEFENDANT_ID)
         .withMail("defendant@example.com")
         .build();
 
-    private static final UserDetails OTHER_USER_DETAILS = SampleUserDetails.builder()
+    private static UserDetails OTHER_USER_DETAILS = SampleUserDetails.builder()
         .withUserId(SUBMITTER_ID)
         .withMail("submitter@example.com")
         .build();
@@ -143,11 +143,11 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .andExpect(status().isBadRequest());
     }
 
-    private ResultActions makeRequest(final long claimId) throws Exception {
+    private ResultActions makeRequest(long claimId) throws Exception {
         return makeRequest(claimId, Maps.newHashMap(HttpHeaders.AUTHORIZATION, AUTH_TOKEN));
     }
 
-    private ResultActions makeRequest(final long claimId, Map<String, String> headers) throws Exception {
+    private ResultActions makeRequest(long claimId, Map<String, String> headers) throws Exception {
         MockHttpServletRequestBuilder builder = post("/claims/" + claimId + "/request-more-time");
 
         for (Map.Entry<String, String> header : headers.entrySet()) {

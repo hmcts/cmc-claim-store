@@ -66,7 +66,7 @@ public class PublicHolidaysCollectionTest {
         return expResponse;
     }
 
-    private static BankHolidays.Division.EventDate createItem(final String date) {
+    private static BankHolidays.Division.EventDate createItem(String date) {
         BankHolidays.Division.EventDate item = new BankHolidays.Division.EventDate();
         item.date = date;
 

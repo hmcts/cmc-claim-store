@@ -15,11 +15,11 @@ public class JsonMapper {
 
     private ObjectMapper objectMapper;
 
-    public JsonMapper(final ObjectMapper objectMapper) {
+    public JsonMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    public String toJson(final Object input) {
+    public String toJson(Object input) {
         try {
             return objectMapper.writeValueAsString(input);
         } catch (JsonProcessingException e) {
@@ -29,7 +29,7 @@ public class JsonMapper {
         }
     }
 
-    public <T> T fromJson(final String value, final Class<T> clazz) {
+    public <T> T fromJson(String value, Class<T> clazz) {
         try {
             return objectMapper.readValue(value, clazz);
         } catch (IOException e) {
@@ -39,7 +39,7 @@ public class JsonMapper {
         }
     }
 
-    public <T> T fromJson(final String value, final TypeReference<T> typeReference) {
+    public <T> T fromJson(String value, TypeReference<T> typeReference) {
         try {
             return objectMapper.readValue(value, typeReference);
         } catch (IOException e) {
