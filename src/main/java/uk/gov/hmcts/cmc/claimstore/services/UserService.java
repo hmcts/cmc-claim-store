@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
@@ -11,6 +12,7 @@ public class UserService {
 
     private IdamApi idamApi;
 
+    @Autowired
     public UserService(final IdamApi idamApi) {
         this.idamApi = idamApi;
     }
