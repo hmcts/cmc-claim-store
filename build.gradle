@@ -124,7 +124,7 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.0'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '1.0.3'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.0.6'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.0.7'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '1.0.6'
 
   testCompile project(':domain-sample-data')
