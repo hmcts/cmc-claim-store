@@ -1,24 +1,21 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class InterestAmount {
 
-    public static final int FACTOR = 100;
+    private BigDecimal amount;
 
-    private double amount;
-
-    public InterestAmount(double amount) {
-        this.setAmount(amount);
+    public InterestAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
-    public double getAmount() {
-        return amount;
+    public BigDecimal getAmount() {
+        return amount.setScale(2, RoundingMode.HALF_UP);
     }
 
-    public void setAmount(double amount) {
-        this.amount = (double) Math.round(amount * FACTOR) / FACTOR;
-    }
-
-    public static InterestAmount valueOf(final double amount) {
-        return new InterestAmount(amount);
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 }

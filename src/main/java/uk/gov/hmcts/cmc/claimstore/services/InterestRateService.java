@@ -1,42 +1,42 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.domain.models.InterestAmount;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Component
 public class InterestRateService {
 
-    public InterestAmount calculateRate(LocalDate fromDate, LocalDate toDate, double rate, double amount) {
+    public BigDecimal calculateRate(LocalDate fromDate, LocalDate toDate, BigDecimal rate, BigDecimal amount) {
         validateNumberIsNonNegative(rate);
         validateNumberIsNonNegative(amount);
 
-        final double noOfDays = calculateNumberOfDays(fromDate, toDate);
+        long noOfDays = calculateNumberOfDays(fromDate, toDate);
 
-        return InterestAmount.valueOf((amount * noOfDays * rate) / (365 * 100));
+        return BigDecimal.valueOf((amount.doubleValue() * noOfDays * rate.doubleValue()) / (365 * 100));
     }
 
-    private double calculateNumberOfDays(final LocalDate fromDate, final LocalDate toDate) {
+    private long calculateNumberOfDays(LocalDate fromDate, LocalDate toDate) {
         validatePeriod(fromDate, toDate);
         return fromDate.until(toDate, ChronoUnit.DAYS);
     }
 
     private void validatePeriod(LocalDate fromDate, LocalDate toDate) {
         if (fromDate == null || toDate == null) {
-            throw new IllegalArgumentException("fromDateDate or toDateDate is null");
+            throw new BadRequestException("fromDateDate or toDateDate is null");
         }
 
         if (fromDate.isAfter(toDate)) {
-            throw new IllegalStateException("fromDateDate must not be after toDateDate");
+            throw new BadRequestException("fromDateDate must not be after toDateDate");
         }
     }
 
-    private void validateNumberIsNonNegative(final double value) {
-        if (value < 0) {
-            throw new IllegalArgumentException("value must be >= 0");
+    private void validateNumberIsNonNegative(BigDecimal value) {
+        if (value.signum() == -1) {
+            throw new BadRequestException("value must be >= 0");
         }
     }
-
 }

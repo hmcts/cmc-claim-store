@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.InterestRateService;
 import uk.gov.hmcts.cmc.domain.models.InterestAmount;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Api
@@ -33,9 +34,9 @@ public class InterestRatesController {
     public InterestAmount calculateInterest(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("from_date") LocalDate from,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("to_date") LocalDate to,
-        @RequestParam("rate") double rate,
-        @RequestParam("amount") double amount
+        @RequestParam("rate") BigDecimal rate,
+        @RequestParam("amount") BigDecimal amount
     ) {
-        return interestRateService.calculateRate(from, to, rate, amount);
+        return new InterestAmount(interestRateService.calculateRate(from, to, rate, amount));
     }
 }

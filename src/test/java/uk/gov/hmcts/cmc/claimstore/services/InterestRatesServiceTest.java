@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,6 +17,7 @@ public class InterestRatesServiceTest {
 
     private static final LocalDate VALID_FROM = LocalDate.now();
     private static final LocalDate VALID_TO = VALID_FROM.plusDays(10);
+    private static final BigDecimal ZERO = BigDecimal.valueOf(0.0);
 
     private InterestRateService interestRateService;
 
@@ -25,54 +28,61 @@ public class InterestRatesServiceTest {
 
     @Test
     public void calculateRateShouldReturn0WhenRateIs0() {
-        final double amount = 1;
-        assertThat(interestRateService.calculateRate(VALID_FROM, VALID_TO, 0, amount).getAmount()).isEqualTo(0);
+        final BigDecimal amount = BigDecimal.ONE;
+        assertThat(interestRateService.calculateRate(VALID_FROM, VALID_TO, BigDecimal.ZERO, amount)).isEqualTo(ZERO);
     }
 
     @Test
     public void calculateRateShouldReturn0WhenAmountIs0() {
-        final double rate = 1;
-        assertThat(interestRateService.calculateRate(VALID_FROM, VALID_TO, rate, 0).getAmount()).isEqualTo(0);
+        final BigDecimal rate = BigDecimal.ONE;
+        assertThat(interestRateService.calculateRate(VALID_FROM, VALID_TO, rate, BigDecimal.ZERO))
+            .isEqualTo(ZERO);
     }
 
     @Test
     public void calculateRateShouldReturn0WhenNumberOfDaysIs0() {
         final LocalDate now = LocalDate.now();
-        assertThat(interestRateService.calculateRate(now, now, 1, 1).getAmount()).isEqualTo(0);
+        assertThat(interestRateService.calculateRate(now, now, BigDecimal.ONE, BigDecimal.ONE)).isEqualTo(ZERO);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void calculateRateShouldThrowExceptionWhenDateFromIsNull() {
-        interestRateService.calculateRate(null, VALID_TO, 1, 1);
+        interestRateService.calculateRate(null, VALID_TO, BigDecimal.ONE, BigDecimal.ONE);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void calculateRateShouldThrowExceptionWhenDateToIsNull() {
-        interestRateService.calculateRate(VALID_FROM, null, 1, 1);
+        interestRateService.calculateRate(VALID_FROM, null, BigDecimal.ONE, BigDecimal.ONE);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void calculateRateShouldThrowExceptionWhenDateToIsBeforeDateFrom() {
         final LocalDate now = LocalDate.now();
-        interestRateService.calculateRate(now.plusDays(1), now.minusDays(1), 1, 1);
+        interestRateService.calculateRate(now.plusDays(1), now.minusDays(1), BigDecimal.ONE, BigDecimal.ONE);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void calculateRateShouldThrowExceptionWhenRateIsNegative() {
-        interestRateService.calculateRate(VALID_FROM, VALID_TO, -1, 1);
+        interestRateService.calculateRate(VALID_FROM, VALID_TO, BigDecimal.valueOf(-1), BigDecimal.ONE);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void calculateRateShouldThrowExceptionWhenAmountIsNegative() {
-        interestRateService.calculateRate(VALID_FROM, VALID_TO, 1, -1);
+        interestRateService.calculateRate(VALID_FROM, VALID_TO, BigDecimal.ONE, BigDecimal.valueOf(-1));
     }
 
     @Test
     public void calculateRateShouldReturnValue() {
         LocalDate today = LocalDate.now();
+
         assertThat(
-            interestRateService.calculateRate(today, today.plusDays(6), 30, 8000).getAmount()
-        ).isEqualTo(39.45);
+            interestRateService.calculateRate(
+                today,
+                today.plusDays(6),
+                BigDecimal.valueOf(30),
+                BigDecimal.valueOf(8000)
+            ).setScale(2, RoundingMode.HALF_UP)
+        ).isEqualTo(BigDecimal.valueOf(39.45));
     }
 }
 
