@@ -18,12 +18,12 @@ public class SettlementAgreementPDFContentProvider {
     private final PartyDetailsContentProvider partyDetailsContentProvider;
 
     public SettlementAgreementPDFContentProvider(
-        final PartyDetailsContentProvider partyDetailsContentProvider
+        PartyDetailsContentProvider partyDetailsContentProvider
     ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
     }
 
-    public Map<String, Object> createContent(final Claim claim) {
+    public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
 
         Offer acceptedOffer = claim.getSettlement().orElseThrow(IllegalArgumentException::new)

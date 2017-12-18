@@ -17,7 +17,7 @@ public class AmountBreakDown implements Amount {
     @MinTotalAmount("0.01")
     private final List<AmountRow> rows;
 
-    public AmountBreakDown(final List<AmountRow> rows) {
+    public AmountBreakDown(List<AmountRow> rows) {
         this.rows = rows;
     }
 

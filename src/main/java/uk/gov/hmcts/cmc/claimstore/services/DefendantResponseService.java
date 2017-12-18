@@ -17,10 +17,10 @@ public class DefendantResponseService {
     private final AuthorisationService authorisationService;
 
     public DefendantResponseService(
-        final EventProducer eventProducer,
-        final ClaimService claimService,
-        final UserService userService,
-        final AuthorisationService authorisationService) {
+        EventProducer eventProducer,
+        ClaimService claimService,
+        UserService userService,
+        AuthorisationService authorisationService) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
@@ -29,12 +29,12 @@ public class DefendantResponseService {
 
     @Transactional
     public Claim save(
-        final long claimId,
-        final String defendantId,
-        final Response response,
-        final String authorization
+        long claimId,
+        String defendantId,
+        Response response,
+        String authorization
     ) {
-        final Claim claim = claimService.getClaimById(claimId);
+        Claim claim = claimService.getClaimById(claimId);
 
         authorisationService.assertIsDefendantOnClaim(claim, defendantId);
 
@@ -46,21 +46,21 @@ public class DefendantResponseService {
             throw new CountyCourtJudgmentAlreadyRequestedException(claimId);
         }
 
-        final String defendantEmail = userService.getUserDetails(authorization).getEmail();
+        String defendantEmail = userService.getUserDetails(authorization).getEmail();
         claimService.saveDefendantResponse(claimId, defendantId, defendantEmail, response);
 
-        final Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
+        Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 
         return claimAfterSavingResponse;
     }
 
-    private boolean isResponseAlreadySubmitted(final Claim claim) {
+    private boolean isResponseAlreadySubmitted(Claim claim) {
         return null != claim.getRespondedAt();
     }
 
-    private boolean isCCJAlreadyRequested(final Claim claim) {
+    private boolean isCCJAlreadyRequested(Claim claim) {
         return claim.getCountyCourtJudgmentRequestedAt() != null;
     }
 }

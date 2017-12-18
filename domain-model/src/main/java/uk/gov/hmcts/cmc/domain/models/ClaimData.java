@@ -93,22 +93,22 @@ public class ClaimData {
 
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
-        final UUID externalId,
-        final List<Party> claimants,
-        final List<TheirDetails> defendants,
-        final Payment payment,
-        final Amount amount,
-        final BigInteger feeAmountInPennies,
-        final Interest interest,
-        final InterestDate interestDate,
-        final PersonalInjury personalInjury,
-        final HousingDisrepair housingDisrepair,
-        final String reason,
-        final StatementOfTruth statementOfTruth,
-        final String feeAccountNumber,
-        final String externalReferenceNumber,
-        final String preferredCourt,
-        final String feeCode) {
+        UUID externalId,
+        List<Party> claimants,
+        List<TheirDetails> defendants,
+        Payment payment,
+        Amount amount,
+        BigInteger feeAmountInPennies,
+        Interest interest,
+        InterestDate interestDate,
+        PersonalInjury personalInjury,
+        HousingDisrepair housingDisrepair,
+        String reason,
+        StatementOfTruth statementOfTruth,
+        String feeAccountNumber,
+        String externalReferenceNumber,
+        String preferredCourt,
+        String feeCode) {
 
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;

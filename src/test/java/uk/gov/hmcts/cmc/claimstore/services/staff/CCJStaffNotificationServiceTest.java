@@ -25,10 +25,10 @@ import static org.mockito.Mockito.when;
 
 public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+
     @Autowired
     private CCJStaffNotificationService service;
-
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Captor
     private ArgumentCaptor<String> senderArgument;

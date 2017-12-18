@@ -17,7 +17,7 @@ public class ContentProvider {
     private final InterestCalculationService interestCalculationService;
 
     @Autowired
-    public ContentProvider(final InterestCalculationService interestCalculationService) {
+    public ContentProvider(InterestCalculationService interestCalculationService) {
         this.interestCalculationService = interestCalculationService;
     }
 

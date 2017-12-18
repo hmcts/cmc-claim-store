@@ -19,12 +19,12 @@ public class PartyDetailsContentProviderTest {
 
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(2017, 7, 19);
 
-    private PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
+    private final PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
 
-    private TheirDetails defendant = SampleTheirDetails.builder()
+    private final TheirDetails defendant = SampleTheirDetails.builder()
         .individualDetails();
 
-    private Address correspondenceAddress = SampleAddress.builder()
+    private final Address correspondenceAddress = SampleAddress.builder()
         .withLine1("Correspondence Road 1")
         .withPostcode("BB 127NQ")
         .build();

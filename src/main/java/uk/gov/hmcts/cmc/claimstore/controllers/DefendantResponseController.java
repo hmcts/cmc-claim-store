@@ -27,7 +27,7 @@ public class DefendantResponseController {
     private final DefendantResponseService defendantResponseService;
 
     @Autowired
-    public DefendantResponseController(final DefendantResponseService defendantResponseService) {
+    public DefendantResponseController(DefendantResponseService defendantResponseService) {
         this.defendantResponseService = defendantResponseService;
     }
 
@@ -36,10 +36,10 @@ public class DefendantResponseController {
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new defendant response")
     public Claim save(
-        @Valid @NotNull @RequestBody final Response response,
-        @PathVariable("defendantId") final String defendantId,
-        @PathVariable("claimId") final Long claimId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorization
+        @Valid @NotNull @RequestBody Response response,
+        @PathVariable("defendantId") String defendantId,
+        @PathVariable("claimId") Long claimId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     ) {
         return defendantResponseService.save(claimId, defendantId, response, authorization);
     }

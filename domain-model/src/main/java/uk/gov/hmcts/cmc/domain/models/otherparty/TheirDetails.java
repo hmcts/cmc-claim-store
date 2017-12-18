@@ -53,11 +53,11 @@ public abstract class TheirDetails implements NamedParty {
     private final Address serviceAddress;
 
     public TheirDetails(
-        final String name,
-        final Address address,
-        final String email,
-        final Representative representative,
-        final Address serviceAddress
+        String name,
+        Address address,
+        String email,
+        Representative representative,
+        Address serviceAddress
     ) {
         this.name = name;
         this.address = address;

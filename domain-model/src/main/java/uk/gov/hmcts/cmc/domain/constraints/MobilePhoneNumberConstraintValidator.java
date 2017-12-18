@@ -6,12 +6,12 @@ import javax.validation.ConstraintValidatorContext;
 public class MobilePhoneNumberConstraintValidator implements ConstraintValidator<MobilePhoneNumber, String> {
 
     @Override
-    public void initialize(final MobilePhoneNumber validator) {
+    public void initialize(MobilePhoneNumber validator) {
         // NO-OP
     }
 
     @Override
-    public boolean isValid(final String value, final ConstraintValidatorContext cxt) {
+    public boolean isValid(String value, ConstraintValidatorContext cxt) {
         if (value == null) {
             return true;
         }

@@ -12,11 +12,11 @@ public class DocumentGeneratedEvent {
     private final String authorization;
     private final List<PDF> documents;
 
-    public DocumentGeneratedEvent(final Claim claim, String authorization, PDF... documents) {
+    public DocumentGeneratedEvent(Claim claim, String authorization, PDF... documents) {
         this(claim, authorization, newArrayList(documents));
     }
 
-    public DocumentGeneratedEvent(final Claim claim, String authorization, final List<PDF> documents) {
+    public DocumentGeneratedEvent(Claim claim, String authorization, List<PDF> documents) {
         this.claim = claim;
         this.authorization = authorization;
         this.documents = documents;

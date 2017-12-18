@@ -26,7 +26,7 @@ public abstract class OfferRespondedEvent {
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -35,7 +35,7 @@ public abstract class OfferRespondedEvent {
             return false;
         }
 
-        final OfferRespondedEvent that = (OfferRespondedEvent) other;
+        OfferRespondedEvent that = (OfferRespondedEvent) other;
         return Objects.equals(claim, that.claim) && Objects.equals(party, that.party);
     }
 

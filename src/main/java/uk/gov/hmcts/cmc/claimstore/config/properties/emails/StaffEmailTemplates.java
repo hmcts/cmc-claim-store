@@ -41,14 +41,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/settlementAgreement/subject.txt");
     }
 
-    private String readString(final String resourcePath) {
+    private String readString(String resourcePath) {
         return new String(
             readBytes(resourcePath),
             Charset.forName("UTF-8")
         );
     }
 
-    private byte[] readBytes(final String resourcePath) {
+    private byte[] readBytes(String resourcePath) {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {

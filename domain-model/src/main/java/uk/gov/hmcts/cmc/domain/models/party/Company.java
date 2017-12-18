@@ -13,12 +13,12 @@ public class Company extends Party {
     private final String contactPerson;
 
     public Company(
-        final String name,
-        final Address address,
-        final Address correspondenceAddress,
-        final String mobilePhone,
-        final Representative representative,
-        final String contactPerson
+        String name,
+        Address address,
+        Address correspondenceAddress,
+        String mobilePhone,
+        Representative representative,
+        String contactPerson
     ) {
         super(name, address, correspondenceAddress, mobilePhone, representative);
         this.contactPerson = contactPerson;

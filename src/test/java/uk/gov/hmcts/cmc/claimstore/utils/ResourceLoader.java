@@ -14,22 +14,22 @@ public class ResourceLoader {
     }
 
     public static UploadResponse successfulDocumentManagementUploadResponse() {
-        final String response = new ResourceReader().read("/document-management/response.success.json");
+        String response = new ResourceReader().read("/document-management/response.success.json");
         return jsonMapper.fromJson(response, UploadResponse.class);
     }
 
     public static UploadResponse unsuccessfulDocumentManagementUploadResponse() {
-        final String response = new ResourceReader().read("/document-management/response.failure.json");
+        String response = new ResourceReader().read("/document-management/response.failure.json");
         return jsonMapper.fromJson(response, UploadResponse.class);
     }
 
     public static StartEventResponse successfulCoreCaseDataStoreStartResponse() {
-        final String response = new ResourceReader().read("/core-case-data/start-response.success.json");
+        String response = new ResourceReader().read("/core-case-data/start-response.success.json");
         return jsonMapper.fromJson(response, StartEventResponse.class);
     }
 
     public static CaseDetails successfulCoreCaseDataStoreSubmitResponse() {
-        final String response = new ResourceReader().read("/core-case-data/submit-response.success.json");
+        String response = new ResourceReader().read("/core-case-data/submit-response.success.json");
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 }

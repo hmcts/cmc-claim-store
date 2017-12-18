@@ -14,13 +14,13 @@ public class OrganisationDetails extends TheirDetails {
     private final String companiesHouseNumber;
 
     public OrganisationDetails(
-        final String name,
-        final Address address,
-        final String email,
-        final Representative representative,
-        final Address serviceAddress,
-        final String contactPerson,
-        final String companiesHouseNumber
+        String name,
+        Address address,
+        String email,
+        Representative representative,
+        Address serviceAddress,
+        String contactPerson,
+        String companiesHouseNumber
     ) {
         super(name, address, email, representative, serviceAddress);
         this.contactPerson = contactPerson;

@@ -17,7 +17,7 @@ public class CoreCaseDataUploader {
     private final CoreCaseDataService coreCaseDataService;
 
     @Autowired
-    public CoreCaseDataUploader(final CoreCaseDataService coreCaseDataService) {
+    public CoreCaseDataUploader(CoreCaseDataService coreCaseDataService) {
         this.coreCaseDataService = coreCaseDataService;
     }
 

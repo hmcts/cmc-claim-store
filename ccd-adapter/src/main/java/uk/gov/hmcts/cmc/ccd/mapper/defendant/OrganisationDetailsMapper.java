@@ -15,8 +15,8 @@ public class OrganisationDetailsMapper implements Mapper<CCDOrganisation, Organi
     private final RepresentativeMapper representativeMapper;
 
     @Autowired
-    public OrganisationDetailsMapper(final AddressMapper addressMapper,
-                                     final RepresentativeMapper representativeMapper) {
+    public OrganisationDetailsMapper(AddressMapper addressMapper,
+                                     RepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
     }
@@ -24,7 +24,7 @@ public class OrganisationDetailsMapper implements Mapper<CCDOrganisation, Organi
     @Override
     public CCDOrganisation to(OrganisationDetails organisation) {
 
-        final CCDOrganisation.CCDOrganisationBuilder builder = CCDOrganisation.builder();
+        CCDOrganisation.CCDOrganisationBuilder builder = CCDOrganisation.builder();
         organisation.getServiceAddress()
             .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
         organisation.getRepresentative()

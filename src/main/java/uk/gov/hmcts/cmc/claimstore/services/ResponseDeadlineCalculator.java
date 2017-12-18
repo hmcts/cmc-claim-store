@@ -18,9 +18,9 @@ public class ResponseDeadlineCalculator {
 
     public ResponseDeadlineCalculator(
         WorkingDayIndicator workingDayIndicator,
-        @Value("${dateCalculations.serviceDays}") final int serviceDays,
-        @Value("${dateCalculations.responseDays}") final int timeForResponseInDays,
-        @Value("${dateCalculations.requestedAdditionalTimeInDays}") final int requestedAdditionalTimeInDays) {
+        @Value("${dateCalculations.serviceDays}") int serviceDays,
+        @Value("${dateCalculations.responseDays}") int timeForResponseInDays,
+        @Value("${dateCalculations.requestedAdditionalTimeInDays}") int requestedAdditionalTimeInDays) {
 
         this.workingDayIndicator = workingDayIndicator;
         this.serviceDays = serviceDays;
@@ -45,7 +45,7 @@ public class ResponseDeadlineCalculator {
         );
     }
 
-    private LocalDate calculateFirstWorkingDayAfterOffset(final LocalDate date, final int offset) {
+    private LocalDate calculateFirstWorkingDayAfterOffset(LocalDate date, int offset) {
         LocalDate result = date.plusDays(offset);
 
         while (!workingDayIndicator.isWorkingDay(result)) {

@@ -36,9 +36,9 @@ public class SampleData {
     }
 
     public static CCDIndividual getCCDIndividual() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
 
         return CCDIndividual.builder()
             .title("Mr.")
@@ -69,9 +69,9 @@ public class SampleData {
     }
 
     public static CCDCompany getCCDCompany() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
         return CCDCompany.builder()
             .name("Abc Ltd")
             .address(ccdAddress)
@@ -165,9 +165,9 @@ public class SampleData {
     }
 
     public static CCDOrganisation getCCDOrganisation() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
         return CCDOrganisation.builder()
             .name("Xyz & Co")
             .address(ccdAddress)
@@ -180,9 +180,9 @@ public class SampleData {
     }
 
     public static CCDSoleTrader getCCDSoleTrader() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
         return CCDSoleTrader.builder()
             .title("Mr.")
             .name("Individual")

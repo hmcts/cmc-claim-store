@@ -34,14 +34,14 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @SuppressWarnings("squid:S00107")
     // Content providers are formatted values and aren't worth splitting into multiple models.
     public DocumentManagementBackedDocumentsService(
-        final ClaimService claimService,
-        final DocumentManagementService documentManagementService,
-        final ClaimIssueReceiptService claimIssueReceiptService,
-        final LegalSealedClaimPdfService legalSealedClaimPdfService,
-        final DefendantResponseCopyService defendantResponseCopyService,
-        final DefendantResponseReceiptService defendantResponseReceiptService,
-        final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        final SettlementAgreementCopyService settlementAgreementCopyService) {
+        ClaimService claimService,
+        DocumentManagementService documentManagementService,
+        ClaimIssueReceiptService claimIssueReceiptService,
+        LegalSealedClaimPdfService legalSealedClaimPdfService,
+        DefendantResponseCopyService defendantResponseCopyService,
+        DefendantResponseReceiptService defendantResponseReceiptService,
+        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
+        SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.claimIssueReceiptService = claimIssueReceiptService;
@@ -58,13 +58,13 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] getLegalSealedClaim(final String externalId, final String authorisation) {
+    public byte[] getLegalSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId);
         return downloadOrGenerateAndUpload(claim, () -> legalSealedClaimPdfService.createPdf(claim), authorisation);
     }
 
     @Override
-    public byte[] generateDefendantResponseCopy(final String externalId) {
+    public byte[] generateDefendantResponseCopy(String externalId) {
         return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
@@ -74,16 +74,16 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] generateCountyCourtJudgement(final String externalId) {
+    public byte[] generateCountyCourtJudgement(String externalId) {
         return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override
-    public byte[] generateSettlementAgreement(final String externalId) {
+    public byte[] generateSettlementAgreement(String externalId) {
         return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
-    private Claim getClaimByExternalId(final String externalId) {
+    private Claim getClaimByExternalId(String externalId) {
         return claimService.getClaimByExternalId(externalId);
     }
 

@@ -21,17 +21,17 @@ public class OfferMadeNotificationService {
 
     @Autowired
     public OfferMadeNotificationService(
-        final NotificationClient notificationClient
+        NotificationClient notificationClient
     ) {
         this.notificationClient = notificationClient;
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendNotificationEmail(
-        final String targetEmail,
-        final String emailTemplate,
-        final Map<String, String> parameters,
-        final String reference
+        String targetEmail,
+        String emailTemplate,
+        Map<String, String> parameters,
+        String reference
     ) {
         try {
             notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
@@ -42,13 +42,13 @@ public class OfferMadeNotificationService {
 
     @Recover
     public void logNotificationFailure(
-        final NotificationException exception,
-        final String targetEmail,
-        final String emailTemplate,
-        final Map<String, String> parameters,
-        final String reference
+        NotificationException exception,
+        String targetEmail,
+        String emailTemplate,
+        Map<String, String> parameters,
+        String reference
     ) {
-        final String errorMessage = String.format(
+        String errorMessage = String.format(
             "Failure: failed to send notification ( %s to %s ) due to %s",
             reference, targetEmail, exception.getMessage()
         );
