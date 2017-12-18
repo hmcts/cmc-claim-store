@@ -17,7 +17,7 @@ public class IssueDateCalculator {
      */
     private final int endOfBusinessDayHour;
 
-    private WorkingDayIndicator workingDayIndicator;
+    private final WorkingDayIndicator workingDayIndicator;
 
     public IssueDateCalculator(WorkingDayIndicator workingDayIndicator,
                                @Value("${dateCalculations.endOfBusinessDayHour}") int endOfBusinessDayHour) {

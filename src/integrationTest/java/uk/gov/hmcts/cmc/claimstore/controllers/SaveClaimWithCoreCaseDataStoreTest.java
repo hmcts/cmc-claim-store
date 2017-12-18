@@ -35,7 +35,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
     public void shouldStoreNonRepresentedClaimIntoCCDStore() throws Exception {
-        final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
         given(coreCaseDataApi.start(
             eq(AUTHORISATION_TOKEN),
@@ -91,7 +91,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
-        final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
         given(coreCaseDataApi.start(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -115,7 +115,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToSubmitEvent() throws Exception {
-        final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
         given(coreCaseDataApi.start(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -150,7 +150,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
     public void shouldIssueClaimEvenWhenS2STokenGenerationFails() throws Exception {
-        final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
         given(serviceAuthorisationApi.serviceToken(anyString(), anyString())).willThrow(FeignException.class);
 

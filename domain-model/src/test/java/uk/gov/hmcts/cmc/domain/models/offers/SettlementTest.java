@@ -16,11 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SettlementTest {
 
     private static final String COUNTER_OFFER = "Get me a new roof instead";
+    private static final Offer offer = SampleOffer.validDefaults();
+
     @Mock
     private PartyStatement partyStatement;
 
     private Settlement settlement;
-    private static final Offer offer = SampleOffer.validDefaults();
 
     @Before
     public void beforeEachTest() {

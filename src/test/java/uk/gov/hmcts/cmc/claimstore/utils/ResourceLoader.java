@@ -24,12 +24,12 @@ public class ResourceLoader {
     }
 
     public static StartEventResponse successfulCoreCaseDataStoreStartResponse() {
-        final String response = new ResourceReader().read("/core-case-data/start-response.success.json");
+        String response = new ResourceReader().read("/core-case-data/start-response.success.json");
         return jsonMapper.fromJson(response, StartEventResponse.class);
     }
 
     public static CaseDetails successfulCoreCaseDataStoreSubmitResponse() {
-        final String response = new ResourceReader().read("/core-case-data/submit-response.success.json");
+        String response = new ResourceReader().read("/core-case-data/submit-response.success.json");
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 }

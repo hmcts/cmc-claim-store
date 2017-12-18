@@ -13,7 +13,7 @@ public class JsonMapper {
     private static final String SERIALISATION_ERROR_MESSAGE = "Failed to serialize '%s' to JSON";
     private static final String DESERIALISATION_ERROR_MESSAGE = "Failed to deserialize '%s' from JSON";
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public JsonMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
