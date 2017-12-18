@@ -49,7 +49,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
         }
 
-        assertThat(actual.getClaimData()).isEqualTo(ccdCase.getClaim());
+        assertThat(actual.getClaimData()).isEqualTo(ccdCase.getClaimData());
 
         return this;
     }

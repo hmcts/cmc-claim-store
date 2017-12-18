@@ -24,7 +24,7 @@ def channel = '#cmc-tech-notification'
 timestamps {
   milestone()
   lock(resource: "claim-store-${env.BRANCH_NAME}", inversePrecedence: true) {
-    node {
+    node('slave') {
       try {
         def version
         def claimStoreVersion
@@ -155,6 +155,10 @@ timestamps {
         archiveArtifacts 'build/reports/**/*.html'
         notifyBuildFailure channel: channel
         throw err
+      } finally {
+        step([$class: 'InfluxDbPublisher',
+               customProjectName: 'CMC Claimstore',
+               target: 'Jenkins Data'])
       }
     }
     milestone()
