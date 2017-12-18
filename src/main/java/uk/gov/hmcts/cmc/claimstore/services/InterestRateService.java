@@ -11,8 +11,8 @@ import java.time.temporal.ChronoUnit;
 public class InterestRateService {
 
     public BigDecimal calculateRate(LocalDate fromDate, LocalDate toDate, BigDecimal rate, BigDecimal amount) {
-        validateNumberIsNonNegative(rate);
-        validateNumberIsNonNegative(amount);
+        validateVarIsNonNegativeBigDecimal(rate);
+        validateVarIsNonNegativeBigDecimal(amount);
 
         long noOfDays = calculateNumberOfDays(fromDate, toDate);
 
@@ -34,8 +34,8 @@ public class InterestRateService {
         }
     }
 
-    private void validateNumberIsNonNegative(BigDecimal value) {
-        if (value.signum() == -1) {
+    private void validateVarIsNonNegativeBigDecimal(BigDecimal value) {
+        if (value == null || value.signum() == -1) {
             throw new BadRequestException("value must be >= 0");
         }
     }
