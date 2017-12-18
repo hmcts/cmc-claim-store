@@ -78,7 +78,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
     }
 
     protected List<EvidenceItem> evidenceItems = SampleEvidence.builder().build().getRows();
-    protected HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder().build();
+    protected HowMuchOwed howMuchOwed = SampleHowMuchOwed.validDefaults();
     protected List<TimelineEvent> timelineEvents = SampleTimeLine.builder().build().getRows();
     protected DefendantPaymentPlan defendantPaymentPlan = SampleDefendantPaymentPlan.builder().build();
     protected PartAdmissionResponse.PartAdmissionType partAdmissionType = PartAdmissionResponse.PartAdmissionType.AMOUNT_TOO_HIGH;

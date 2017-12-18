@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.assertj.core.util.Compatibility;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,6 +50,23 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         Response response = SampleResponse.validDefaults();
+
+        final MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getResponse, Claim::getRespondedAt)
+            .doesNotContainNull()
+            .contains(Optional.of(response));
+    }
+
+    @Test
+    public void shouldReturnNewlyCreatedPartialDefendantResponse() throws Exception {
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
+        claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
+        Response response = SampleResponse.validPartAdmissionDefaults();
+        System.out.println(response);
 
         final MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk())

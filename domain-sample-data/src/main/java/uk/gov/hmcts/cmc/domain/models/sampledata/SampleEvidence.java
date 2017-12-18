@@ -11,7 +11,7 @@ import static java.util.Arrays.asList;
 public class SampleEvidence {
 
     private List<EvidenceItem> rows = asList(
-        new EvidenceItem(EvidenceType.CONTRACTS_AND_AGREEMENTS, "cmy evidence")
+        new EvidenceItem(EvidenceType.CONTRACTS_AND_AGREEMENTS, "my evidence")
     );
 
     public SampleEvidence clearRows() {

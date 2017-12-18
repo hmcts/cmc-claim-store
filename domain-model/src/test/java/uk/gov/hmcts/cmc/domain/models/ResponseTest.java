@@ -28,6 +28,16 @@ public class ResponseTest {
     }
 
     @Test
+    public void shouldHaveNoValidationMessagesWhenPartialResponseDataIsValid() {
+        //given
+        Response responseData = SampleResponse.validPartAdmissionDefaults();
+        //when
+        Set<ConstraintViolation<Response>> response = validator.validate(responseData);
+        //then
+        assertThat(response).isEmpty();
+    }
+
+    @Test
     public void shouldHaveValidationMessagesWhenResponseDataElementsAreInValid() {
         //given
         Response response = SampleResponse.FullDefence.builder()
