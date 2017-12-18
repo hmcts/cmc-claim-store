@@ -11,7 +11,7 @@ public class OfferMadeEvent {
 
     private final Claim claim;
 
-    public OfferMadeEvent(final Claim claim) {
+    public OfferMadeEvent(Claim claim) {
         this.claim = claim;
     }
 
@@ -20,7 +20,7 @@ public class OfferMadeEvent {
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -29,7 +29,7 @@ public class OfferMadeEvent {
             return false;
         }
 
-        final OfferMadeEvent that = (OfferMadeEvent) other;
+        OfferMadeEvent that = (OfferMadeEvent) other;
         return Objects.equals(claim, that.claim);
     }
 

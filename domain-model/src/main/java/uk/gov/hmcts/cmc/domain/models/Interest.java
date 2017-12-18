@@ -30,9 +30,9 @@ public class Interest {
 
     private final String reason;
 
-    public Interest(final InterestType type,
-                    final BigDecimal rate,
-                    final String reason) {
+    public Interest(InterestType type,
+                    BigDecimal rate,
+                    String reason) {
         this.type = type;
         this.rate = rate;
         this.reason = reason;

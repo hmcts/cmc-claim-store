@@ -22,15 +22,15 @@ public class EmailService {
     private final JavaMailSender sender;
 
     @Autowired
-    public EmailService(final JavaMailSender sender) {
+    public EmailService(JavaMailSender sender) {
         this.sender = sender;
     }
 
     @Retryable(value = EmailSendFailedException.class, backoff = @Backoff(delay = 100, maxDelay = 500))
-    public void sendEmail(final String from, final EmailData emailData) {
+    public void sendEmail(String from, EmailData emailData) {
         try {
-            final MimeMessage message = sender.createMimeMessage();
-            final MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+            MimeMessage message = sender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
 
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(emailData.getTo());
@@ -50,8 +50,8 @@ public class EmailService {
     }
 
     @Recover
-    public void logSendMessageWithAttachmentFailure(final RuntimeException exception, final EmailData emailData) {
-        final String errorMessage = String.format(
+    public void logSendMessageWithAttachmentFailure(RuntimeException exception, EmailData emailData) {
+        String errorMessage = String.format(
             "sendEmail failure:  failed to send email with details: %s due to %s",
             emailData.toString(), exception.getMessage()
         );

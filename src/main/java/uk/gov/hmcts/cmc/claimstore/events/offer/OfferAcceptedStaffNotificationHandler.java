@@ -17,7 +17,7 @@ public class OfferAcceptedStaffNotificationHandler {
     }
 
     @EventListener
-    public void onOfferAccepted(final OfferAcceptedEvent event) {
+    public void onOfferAccepted(OfferAcceptedEvent event) {
         notificationService.notifyOfferAccepted(
             event.getClaim()
         );

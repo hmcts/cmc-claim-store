@@ -28,7 +28,7 @@ public class AgeRangeConstraintValidator implements ConstraintValidator<AgeRange
         return years >= minYears && years <= maxYears;
     }
 
-    private long getAge(final LocalDate localDate) {
+    private long getAge(LocalDate localDate) {
         return ChronoUnit.YEARS.between(localDate, LocalDate.now());
     }
 }

@@ -26,13 +26,13 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
 
     @Autowired
     public AlwaysGenerateDocumentsService(
-        final ClaimService claimService,
-        final ClaimIssueReceiptService claimIssueReceiptService,
-        final LegalSealedClaimPdfService legalSealedClaimPdfService,
-        final DefendantResponseCopyService defendantResponseCopyService,
-        final DefendantResponseReceiptService defendantResponseReceiptService,
-        final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        final SettlementAgreementCopyService settlementAgreementCopyService) {
+        ClaimService claimService,
+        ClaimIssueReceiptService claimIssueReceiptService,
+        LegalSealedClaimPdfService legalSealedClaimPdfService,
+        DefendantResponseCopyService defendantResponseCopyService,
+        DefendantResponseReceiptService defendantResponseReceiptService,
+        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
+        SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
@@ -48,12 +48,12 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public byte[] getLegalSealedClaim(final String externalId, final String authorisation) {
+    public byte[] getLegalSealedClaim(String externalId, String authorisation) {
         return legalSealedClaimPdfService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override
-    public byte[] generateDefendantResponseCopy(final String externalId) {
+    public byte[] generateDefendantResponseCopy(String externalId) {
         return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
@@ -63,16 +63,16 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public byte[] generateCountyCourtJudgement(final String externalId) {
+    public byte[] generateCountyCourtJudgement(String externalId) {
         return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override
-    public byte[] generateSettlementAgreement(final String externalId) {
+    public byte[] generateSettlementAgreement(String externalId) {
         return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
-    private Claim getClaimByExternalId(final String externalId) {
+    private Claim getClaimByExternalId(String externalId) {
         return claimService.getClaimByExternalId(externalId);
     }
 }

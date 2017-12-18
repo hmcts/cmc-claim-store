@@ -81,7 +81,7 @@ public class EventProducerTest {
     @Test
     public void shouldCreateDefendantResponseEvent() throws Exception {
         //given
-        final DefendantResponseEvent expectedEvent
+        DefendantResponseEvent expectedEvent
             = new DefendantResponseEvent(CLAIM);
 
         //when
@@ -95,7 +95,7 @@ public class EventProducerTest {
     public void shouldCreateMoreTimeForResponseRequestEvent() throws Exception {
 
         //given
-        final MoreTimeRequestedEvent expectedEvent
+        MoreTimeRequestedEvent expectedEvent
             = new MoreTimeRequestedEvent(CLAIM, NEW_RESPONSE_DEADLINE, DEFENDANT_EMAIL);
 
         //when

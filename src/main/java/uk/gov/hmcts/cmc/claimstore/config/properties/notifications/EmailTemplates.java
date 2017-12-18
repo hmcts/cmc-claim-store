@@ -122,7 +122,7 @@ public class EmailTemplates {
         return representativeClaimIssued;
     }
 
-    public void setRepresentativeClaimIssued(final String representativeClaimIssued) {
+    public void setRepresentativeClaimIssued(String representativeClaimIssued) {
         this.representativeClaimIssued = representativeClaimIssued;
     }
 

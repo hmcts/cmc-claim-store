@@ -20,7 +20,7 @@ public class SampleMoreTimeRequestedEvent {
         return new MoreTimeRequestedEvent(CLAIM, NEW_RESPONSE_DEADLINE, DEFENDANT_EMAIL);
     }
 
-    public static String getReference(final String toWhom, final String claimReferenceNumber) {
+    public static String getReference(String toWhom, String claimReferenceNumber) {
         return String.format("more-time-requested-notification-to-%s-%s", toWhom, claimReferenceNumber);
     }
 }

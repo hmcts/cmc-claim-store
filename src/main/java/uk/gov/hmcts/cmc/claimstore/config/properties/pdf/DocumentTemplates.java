@@ -41,7 +41,7 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/settlementAgreement.html");
     }
 
-    private byte[] readBytes(final String resourcePath) {
+    private byte[] readBytes(String resourcePath) {
         try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {

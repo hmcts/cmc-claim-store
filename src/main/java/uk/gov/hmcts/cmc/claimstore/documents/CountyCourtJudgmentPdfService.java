@@ -18,16 +18,16 @@ public class CountyCourtJudgmentPdfService {
 
     @Autowired
     public CountyCourtJudgmentPdfService(
-        final DocumentTemplates documentTemplates,
-        final PDFServiceClient pdfServiceClient,
-        final ContentProvider contentProvider
+        DocumentTemplates documentTemplates,
+        PDFServiceClient pdfServiceClient,
+        ContentProvider contentProvider
     ) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
         this.contentProvider = contentProvider;
     }
 
-    public byte[] createPdf(final Claim claim) {
+    public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
 
         return pdfServiceClient.generateFromHtml(

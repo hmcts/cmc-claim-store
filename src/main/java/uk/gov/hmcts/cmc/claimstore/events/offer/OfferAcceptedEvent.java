@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 public class OfferAcceptedEvent extends OfferRespondedEvent {
 
-    public OfferAcceptedEvent(final Claim claim, final MadeBy party) {
+    public OfferAcceptedEvent(Claim claim, MadeBy party) {
         this.claim = claim;
         this.party = party;
     }

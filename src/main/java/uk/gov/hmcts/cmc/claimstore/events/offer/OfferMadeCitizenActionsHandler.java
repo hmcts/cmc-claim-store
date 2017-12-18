@@ -28,9 +28,9 @@ public class OfferMadeCitizenActionsHandler {
 
     @Autowired
     public OfferMadeCitizenActionsHandler(
-        final OfferMadeNotificationService offerMadeNotificationService,
-        final OfferResponseDeadlineCalculator offerResponseDeadlineCalculator,
-        final NotificationsProperties notificationsProperties
+        OfferMadeNotificationService offerMadeNotificationService,
+        OfferResponseDeadlineCalculator offerResponseDeadlineCalculator,
+        NotificationsProperties notificationsProperties
     ) {
         this.offerMadeNotificationService = offerMadeNotificationService;
         this.offerResponseDeadlineCalculator = offerResponseDeadlineCalculator;
@@ -38,8 +38,8 @@ public class OfferMadeCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendClaimantNotification(final OfferMadeEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendClaimantNotification(OfferMadeEvent event) {
+        Claim claim = event.getClaim();
 
         offerMadeNotificationService.sendNotificationEmail(
             claim.getSubmitterEmail(),
@@ -50,8 +50,8 @@ public class OfferMadeCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendDefendantNotification(final OfferMadeEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendDefendantNotification(OfferMadeEvent event) {
+        Claim claim = event.getClaim();
 
         offerMadeNotificationService.sendNotificationEmail(
             claim.getDefendantEmail(),
@@ -61,7 +61,7 @@ public class OfferMadeCitizenActionsHandler {
         );
     }
 
-    private Map<String, String> aggregateParams(final Claim claim) {
+    private Map<String, String> aggregateParams(Claim claim) {
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

@@ -17,16 +17,16 @@ public class CitizenSealedClaimPdfService {
 
     @Autowired
     public CitizenSealedClaimPdfService(
-        final DocumentTemplates documentTemplates,
-        final PDFServiceClient pdfServiceClient,
-        final ClaimContentProvider claimContentProvider
+        DocumentTemplates documentTemplates,
+        PDFServiceClient pdfServiceClient,
+        ClaimContentProvider claimContentProvider
     ) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
         this.claimContentProvider = claimContentProvider;
     }
 
-    public byte[] createPdf(final Claim claim) {
+    public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
 
         return pdfServiceClient.generateFromHtml(

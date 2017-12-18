@@ -143,11 +143,11 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .andExpect(status().isBadRequest());
     }
 
-    private ResultActions makeRequest(final long claimId) throws Exception {
+    private ResultActions makeRequest(long claimId) throws Exception {
         return makeRequest(claimId, Maps.newHashMap(HttpHeaders.AUTHORIZATION, AUTH_TOKEN));
     }
 
-    private ResultActions makeRequest(final long claimId, Map<String, String> headers) throws Exception {
+    private ResultActions makeRequest(long claimId, Map<String, String> headers) throws Exception {
         MockHttpServletRequestBuilder builder = post("/claims/" + claimId + "/request-more-time");
 
         for (Map.Entry<String, String> header : headers.entrySet()) {

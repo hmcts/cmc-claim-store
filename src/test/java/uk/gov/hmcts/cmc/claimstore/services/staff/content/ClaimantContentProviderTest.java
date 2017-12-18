@@ -11,7 +11,7 @@ public class ClaimantContentProviderTest {
 
     private static final String EMAIL = "claimant@domain.com";
 
-    private Individual claimant = SampleParty.builder().individual();
+    private final Individual claimant = SampleParty.builder().individual();
 
     private ClaimantContentProvider provider = new ClaimantContentProvider(
         new PersonContentProvider()

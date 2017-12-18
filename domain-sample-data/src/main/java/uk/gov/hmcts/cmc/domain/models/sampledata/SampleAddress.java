@@ -17,22 +17,22 @@ public class SampleAddress {
         return builder().build();
     }
 
-    public SampleAddress withLine1(final String line1) {
+    public SampleAddress withLine1(String line1) {
         this.line1 = line1;
         return this;
     }
 
-    public SampleAddress withLine2(final String line2) {
+    public SampleAddress withLine2(String line2) {
         this.line2 = line2;
         return this;
     }
 
-    public SampleAddress withCity(final String city) {
+    public SampleAddress withCity(String city) {
         this.city = city;
         return this;
     }
 
-    public SampleAddress withPostcode(final String postcode) {
+    public SampleAddress withPostcode(String postcode) {
         this.postcode = postcode;
         return this;
     }

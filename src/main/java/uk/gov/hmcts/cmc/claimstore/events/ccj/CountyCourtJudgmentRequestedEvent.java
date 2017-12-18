@@ -11,7 +11,7 @@ public class CountyCourtJudgmentRequestedEvent {
 
     private final Claim claim;
 
-    public CountyCourtJudgmentRequestedEvent(final Claim claim) {
+    public CountyCourtJudgmentRequestedEvent(Claim claim) {
         this.claim = claim;
     }
 
@@ -20,7 +20,7 @@ public class CountyCourtJudgmentRequestedEvent {
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -29,7 +29,7 @@ public class CountyCourtJudgmentRequestedEvent {
             return false;
         }
 
-        final CountyCourtJudgmentRequestedEvent that = (CountyCourtJudgmentRequestedEvent) other;
+        CountyCourtJudgmentRequestedEvent that = (CountyCourtJudgmentRequestedEvent) other;
         return Objects.equals(claim, that.claim);
     }
 

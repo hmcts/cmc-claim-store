@@ -19,13 +19,13 @@ public class IndividualDetails extends TheirDetails implements TitledParty {
     private final LocalDate dateOfBirth;
 
     public IndividualDetails(
-        final String name,
-        final Address address,
-        final String email,
-        final Representative representative,
-        final Address serviceAddress,
-        final String title,
-        final LocalDate dateOfBirth
+        String name,
+        Address address,
+        String email,
+        Representative representative,
+        Address serviceAddress,
+        String title,
+        LocalDate dateOfBirth
     ) {
         super(name, address, email, representative, serviceAddress);
         this.title = title;

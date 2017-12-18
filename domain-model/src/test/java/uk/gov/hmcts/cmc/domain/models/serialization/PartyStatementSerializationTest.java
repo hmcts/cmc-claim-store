@@ -49,8 +49,8 @@ public class PartyStatementSerializationTest {
         assertThat(other.getOffer().isPresent()).isEqualTo(false);
     }
 
-    private static PartyStatement jsonToModel(final String path) throws IOException {
-        final String json = new ResourceReader().read(path);
+    private static PartyStatement jsonToModel(String path) throws IOException {
+        String json = new ResourceReader().read(path);
         return mapper.readValue(json, PartyStatement.class);
     }
 }

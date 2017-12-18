@@ -50,7 +50,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
     @Test
     public void sendNotificationsSendsNotificationsToRepresentative() throws NotificationClientException {
 
-        final RepresentedClaimIssuedEvent representedClaimIssuedEvent
+        RepresentedClaimIssuedEvent representedClaimIssuedEvent
             = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         representativeConfirmationHandler.sendConfirmation(representedClaimIssuedEvent);
