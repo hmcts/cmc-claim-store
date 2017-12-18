@@ -102,7 +102,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
     }
 
     private void runTestAndVerifyNotificationsAreSentWhenEverythingIsOkForResponse(
-        final String action
+        String action
     ) throws Exception {
         given(notificationClient.sendEmail(any(), any(), any(), any()))
             .willReturn(null);
@@ -126,7 +126,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
             );
     }
 
-    private ResultActions postRequestTo(final String endpoint) throws Exception {
+    private ResultActions postRequestTo(String endpoint) throws Exception {
         return webClient
             .perform(
                 post(format("/claims/%d/offers/%s/%s", claim.getId(), MadeBy.CLAIMANT.name(), endpoint))

@@ -41,8 +41,8 @@ public class ClaimIssuedNotificationService {
 
     @Autowired
     public ClaimIssuedNotificationService(
-        final NotificationClient notificationClient,
-        final NotificationsProperties notificationsProperties
+        NotificationClient notificationClient,
+        NotificationsProperties notificationsProperties
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
@@ -50,14 +50,14 @@ public class ClaimIssuedNotificationService {
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(
-        final Claim claim,
-        final String targetEmail,
-        final String pin,
-        final String emailTemplateId,
-        final String reference,
-        final String submitterName
+        Claim claim,
+        String targetEmail,
+        String pin,
+        String emailTemplateId,
+        String reference,
+        String submitterName
     ) {
-        final Map<String, String> parameters = aggregateParams(claim, pin, submitterName);
+        Map<String, String> parameters = aggregateParams(claim, pin, submitterName);
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {
@@ -67,15 +67,15 @@ public class ClaimIssuedNotificationService {
 
     @Recover
     public void logNotificationFailure(
-        final NotificationException exception,
-        final Claim claim,
-        final String targetEmail,
-        final String pin,
-        final String emailTemplateId,
-        final String reference,
-        final String submitterName
+        NotificationException exception,
+        Claim claim,
+        String targetEmail,
+        String pin,
+        String emailTemplateId,
+        String reference,
+        String submitterName
     ) {
-        final String errorMessage = "Failure: "
+        String errorMessage = "Failure: "
             + " failed to send notification (" + reference
             + " to " + targetEmail + ") "
             + " due to " + exception.getMessage();
@@ -83,8 +83,8 @@ public class ClaimIssuedNotificationService {
         logger.info(errorMessage, exception);
     }
 
-    private Map<String, String> aggregateParams(final Claim claim, final String pin,
-                                                final String submitterName) {
+    private Map<String, String> aggregateParams(Claim claim, String pin,
+                                                String submitterName) {
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
 
@@ -105,8 +105,8 @@ public class ClaimIssuedNotificationService {
         return parameters.build();
     }
 
-    private String getNameWithTitle(final NamedParty party) {
-        final StringBuilder title = new StringBuilder();
+    private String getNameWithTitle(NamedParty party) {
+        StringBuilder title = new StringBuilder();
         if (party instanceof TitledParty) {
             ((TitledParty) party).getTitle().ifPresent(t -> title.append(t).append(" "));
         }

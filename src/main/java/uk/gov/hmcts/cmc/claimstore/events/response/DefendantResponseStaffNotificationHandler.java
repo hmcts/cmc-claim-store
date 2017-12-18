@@ -17,7 +17,7 @@ public class DefendantResponseStaffNotificationHandler {
     }
 
     @EventListener
-    public void onDefendantResponseSubmitted(final DefendantResponseEvent event) {
+    public void onDefendantResponseSubmitted(DefendantResponseEvent event) {
         defendantResponseStaffNotificationService.notifyStaffDefenceSubmittedFor(
             event.getClaim(),
             event.getUserEmail()

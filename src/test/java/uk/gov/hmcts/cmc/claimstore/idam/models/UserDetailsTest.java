@@ -11,10 +11,10 @@ public class UserDetailsTest {
     @Test
     public void shouldReturnFullNameWhenBothArePresent() throws Exception {
         //given
-        final UserDetails userDetails = SampleUserDetails.builder().build();
+        UserDetails userDetails = SampleUserDetails.builder().build();
 
         //when
-        final String fullName = userDetails.getFullName();
+        String fullName = userDetails.getFullName();
 
         //then
         assertThat(fullName).isEqualTo(SUBMITTER_FORENAME + " " + SUBMITTER_SURNAME);
@@ -23,10 +23,10 @@ public class UserDetailsTest {
     @Test
     public void shouldReturnForNameWhenSurnameIsMissing() throws Exception {
         //given
-        final UserDetails userDetails = SampleUserDetails.builder().withSurname(null).build();
+        UserDetails userDetails = SampleUserDetails.builder().withSurname(null).build();
 
         //when
-        final String fullName = userDetails.getFullName();
+        String fullName = userDetails.getFullName();
 
         //then
         assertThat(fullName).isEqualTo(SUBMITTER_FORENAME);

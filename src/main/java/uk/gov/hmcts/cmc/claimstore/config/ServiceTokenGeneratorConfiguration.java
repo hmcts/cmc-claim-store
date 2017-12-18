@@ -15,12 +15,12 @@ public class ServiceTokenGeneratorConfiguration {
 
     @Bean
     public AuthTokenGenerator authTokenGenerator(
-        @Value("${idam.s2s-auth.totp_secret}") final String secret,
-        @Value("${idam.s2s-auth.microservice}") final String microService,
-        @Value("${idam.s2s-auth.tokenTimeToLiveInSeconds:14400}") final int ttl,
-        final ServiceAuthorisationApi serviceAuthorisationApi) {
+        @Value("${idam.s2s-auth.totp_secret}") String secret,
+        @Value("${idam.s2s-auth.microservice}") String microService,
+        @Value("${idam.s2s-auth.tokenTimeToLiveInSeconds:14400}") int ttl,
+        ServiceAuthorisationApi serviceAuthorisationApi) {
 
-        final AuthTokenGenerator serviceAuthTokenGenerator
+        AuthTokenGenerator serviceAuthTokenGenerator
             = new ServiceAuthTokenGenerator(secret, microService, serviceAuthorisationApi);
 
         return new CachedServiceAuthTokenGenerator(serviceAuthTokenGenerator, ttl);

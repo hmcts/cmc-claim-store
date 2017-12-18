@@ -11,12 +11,12 @@ public class CCJStaffNotificationHandler {
     private final CCJStaffNotificationService ccjStaffNotificationService;
 
     @Autowired
-    public CCJStaffNotificationHandler(final CCJStaffNotificationService ccjStaffNotificationService) {
+    public CCJStaffNotificationHandler(CCJStaffNotificationService ccjStaffNotificationService) {
         this.ccjStaffNotificationService = ccjStaffNotificationService;
     }
 
     @EventListener
-    public void onDefaultJudgmentRequestSubmitted(final CountyCourtJudgmentRequestedEvent event) {
+    public void onDefaultJudgmentRequestSubmitted(CountyCourtJudgmentRequestedEvent event) {
         this.ccjStaffNotificationService.notifyStaffCCJRequestSubmitted(
             event.getClaim()
         );

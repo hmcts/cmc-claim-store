@@ -15,7 +15,7 @@ public class CompanyDetailsMapper implements Mapper<CCDCompany, CompanyDetails> 
     private final RepresentativeMapper representativeMapper;
 
     @Autowired
-    public CompanyDetailsMapper(final AddressMapper addressMapper, final RepresentativeMapper representativeMapper) {
+    public CompanyDetailsMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
     }
@@ -23,7 +23,7 @@ public class CompanyDetailsMapper implements Mapper<CCDCompany, CompanyDetails> 
     @Override
     public CCDCompany to(CompanyDetails company) {
 
-        final CCDCompany.CCDCompanyBuilder builder = CCDCompany.builder();
+        CCDCompany.CCDCompanyBuilder builder = CCDCompany.builder();
         company.getContactPerson().ifPresent(builder::contactPerson);
         company.getEmail().ifPresent(builder::email);
 

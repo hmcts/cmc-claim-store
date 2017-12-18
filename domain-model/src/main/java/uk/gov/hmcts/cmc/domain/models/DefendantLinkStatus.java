@@ -10,7 +10,7 @@ public class DefendantLinkStatus {
 
     private final boolean linked;
 
-    public DefendantLinkStatus(final boolean linked) {
+    public DefendantLinkStatus(boolean linked) {
         this.linked = linked;
     }
 

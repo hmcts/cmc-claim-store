@@ -24,16 +24,16 @@ public class DefendantResponseContentProvider {
     private final NotificationsProperties notificationsProperties;
 
     public DefendantResponseContentProvider(
-        final PartyDetailsContentProvider partyDetailsContentProvider,
-        final ClaimDataContentProvider claimDataContentProvider,
-        final NotificationsProperties notificationsProperties
+        PartyDetailsContentProvider partyDetailsContentProvider,
+        ClaimDataContentProvider claimDataContentProvider,
+        NotificationsProperties notificationsProperties
     ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
         this.claimDataContentProvider = claimDataContentProvider;
         this.notificationsProperties = notificationsProperties;
     }
 
-    public Map<String, Object> createContent(final Claim claim) {
+    public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
         Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
 

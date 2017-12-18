@@ -12,14 +12,14 @@ public class CCJRequestedCitizenActionsHandler {
 
     @Autowired
     public CCJRequestedCitizenActionsHandler(
-        final CCJRequestedNotificationService ccjRequestedNotificationService
+        CCJRequestedNotificationService ccjRequestedNotificationService
     ) {
         this.ccjRequestedNotificationService = ccjRequestedNotificationService;
     }
 
     @EventListener
-    public void sendClaimantNotification(final CountyCourtJudgmentRequestedEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendClaimantNotification(CountyCourtJudgmentRequestedEvent event) {
+        Claim claim = event.getClaim();
 
         ccjRequestedNotificationService.notifyClaimant(claim);
     }

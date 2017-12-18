@@ -13,10 +13,10 @@ public class EmailData {
 
     private final List<EmailAttachment> attachments;
 
-    public EmailData(final String to,
-                     final String subject,
-                     final String message,
-                     final List<EmailAttachment> attachments) {
+    public EmailData(String to,
+                     String subject,
+                     String message,
+                     List<EmailAttachment> attachments) {
 
         this.to = to;
         this.subject = subject;

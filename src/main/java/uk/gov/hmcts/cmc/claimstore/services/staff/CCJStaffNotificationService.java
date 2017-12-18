@@ -32,10 +32,10 @@ public class CCJStaffNotificationService {
 
     @Autowired
     public CCJStaffNotificationService(
-        final EmailService emailService,
-        final StaffEmailProperties staffEmailProperties,
-        final RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
-        final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService
+        EmailService emailService,
+        StaffEmailProperties staffEmailProperties,
+        RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
+        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
@@ -43,12 +43,12 @@ public class CCJStaffNotificationService {
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
     }
 
-    public void notifyStaffCCJRequestSubmitted(final Claim claim) {
+    public void notifyStaffCCJRequestSubmitted(Claim claim) {
         requireNonNull(claim);
         emailService.sendEmail(staffEmailProperties.getSender(), prepareEmailData(claim));
     }
 
-    private EmailData prepareEmailData(final Claim claim) {
+    private EmailData prepareEmailData(Claim claim) {
         Map<String, Object> map = createParameterMap(claim);
 
         EmailContent emailContent = ccjRequestSubmittedEmailContentProvider.createContent(map);
@@ -60,7 +60,7 @@ public class CCJStaffNotificationService {
         );
     }
 
-    private Map<String, Object> createParameterMap(final Claim claim) {
+    private Map<String, Object> createParameterMap(Claim claim) {
         Map<String, Object> map = new HashMap<>();
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
@@ -70,7 +70,7 @@ public class CCJStaffNotificationService {
         return map;
     }
 
-    private EmailAttachment generateCountyCourtJudgmentPdf(final Claim claim) {
+    private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
         byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
 
         return pdf(

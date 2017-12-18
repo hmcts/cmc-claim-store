@@ -20,7 +20,7 @@ public class BeanValidator {
         return getMessages(factory.getValidator().validate(bean));
     }
 
-    private static <T> Set<String> getMessages(final Set<ConstraintViolation<T>> response) {
+    private static <T> Set<String> getMessages(Set<ConstraintViolation<T>> response) {
         return response.stream()
             .map(BeanValidator::prepareMessage)
             .collect(Collectors.toSet());

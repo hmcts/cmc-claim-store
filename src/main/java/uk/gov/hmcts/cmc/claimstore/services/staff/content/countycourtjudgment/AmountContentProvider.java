@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatPercent;
 
 public class AmountContentProvider {
 
-    private InterestCalculationService interestCalculationService;
+    private final InterestCalculationService interestCalculationService;
 
     public AmountContentProvider(InterestCalculationService interestCalculationService) {
         this.interestCalculationService = interestCalculationService;
@@ -74,10 +74,10 @@ public class AmountContentProvider {
     }
 
     private static BigDecimal getInterestAmount(
-        final InterestCalculationService interestCalculationService,
-        final Claim claim,
-        final LocalDate toDate,
-        final BigDecimal claimAmount
+        InterestCalculationService interestCalculationService,
+        Claim claim,
+        LocalDate toDate,
+        BigDecimal claimAmount
     ) {
         if (!claim.getClaimData().getInterest().getType()
             .equals(InterestType.NO_INTEREST)) {
@@ -91,7 +91,7 @@ public class AmountContentProvider {
         return BigDecimal.ZERO;
     }
 
-    private static LocalDate getInterestFromDate(final Claim claim) {
+    private static LocalDate getInterestFromDate(Claim claim) {
         if (claim.getClaimData().getInterestDate().getType().equals(InterestDate.InterestDateType.CUSTOM)) {
             InterestDate interestDate = claim.getClaimData().getInterestDate();
             return interestDate.getDate();
