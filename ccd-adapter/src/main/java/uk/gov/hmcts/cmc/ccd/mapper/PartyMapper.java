@@ -29,12 +29,12 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
     private final RepresentativeMapper representativeMapper;
 
     @Autowired
-    public PartyMapper(final IndividualMapper individualMapper,
-                       final CompanyMapper companyMapper,
-                       final OrganisationMapper organisationMapper,
-                       final SoleTraderMapper soleTraderMapper,
-                       final AddressMapper addressMapper,
-                       final RepresentativeMapper representativeMapper) {
+    public PartyMapper(IndividualMapper individualMapper,
+                       CompanyMapper companyMapper,
+                       OrganisationMapper organisationMapper,
+                       SoleTraderMapper soleTraderMapper,
+                       AddressMapper addressMapper,
+                       RepresentativeMapper representativeMapper) {
 
         this.individualMapper = individualMapper;
         this.companyMapper = companyMapper;
@@ -46,7 +46,7 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
 
     @Override
     public CCDParty to(Party party) {
-        final CCDParty.CCDPartyBuilder builder = CCDParty.builder();
+        CCDParty.CCDPartyBuilder builder = CCDParty.builder();
 
         if (party instanceof Individual) {
             builder.type(CCDPartyType.INDIVIDUAL);
@@ -73,25 +73,25 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
     public Party from(CCDParty ccdParty) {
         switch (ccdParty.getType()) {
             case COMPANY:
-                final CCDCompany ccdCompany = ccdParty.getCompany();
+                CCDCompany ccdCompany = ccdParty.getCompany();
                 return new Company(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
                     addressMapper.from(ccdCompany.getCorrespondenceAddress()),
                     ccdCompany.getMobilePhone(), representativeMapper.from(ccdCompany.getRepresentative()),
                     ccdCompany.getContactPerson());
             case INDIVIDUAL:
-                final CCDIndividual ccdIndividual = ccdParty.getIndividual();
+                CCDIndividual ccdIndividual = ccdParty.getIndividual();
                 return new Individual(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
                     addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getMobilePhone(),
                     representativeMapper.from(ccdIndividual.getRepresentative()), ccdIndividual.getTitle(),
                     LocalDate.parse(ccdIndividual.getDateOfBirth(), DateTimeFormatter.ISO_DATE));
             case SOLE_TRADER:
-                final CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
+                CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
                 return new SoleTrader(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
                     addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getMobilePhone(),
                     representativeMapper.from(ccdSoleTrader.getRepresentative()), ccdSoleTrader.getTitle(),
                     ccdSoleTrader.getBusinessName());
             case ORGANISATION:
-                final CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
+                CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
                 return new Organisation(ccdOrganisation.getName(), addressMapper.from(ccdOrganisation.getAddress()),
                     addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getMobilePhone(),
                     representativeMapper.from(ccdOrganisation.getRepresentative()), ccdOrganisation.getContactPerson(),

@@ -29,10 +29,10 @@ public class OfferAcceptedStaffNotificationService {
 
     @Autowired
     public OfferAcceptedStaffNotificationService(
-        final EmailService emailService,
-        final StaffEmailProperties emailProperties,
-        final SettlementAgreementEmailContentProvider emailContentProvider,
-        final SettlementAgreementCopyService copyService
+        EmailService emailService,
+        StaffEmailProperties emailProperties,
+        SettlementAgreementEmailContentProvider emailContentProvider,
+        SettlementAgreementCopyService copyService
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;

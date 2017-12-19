@@ -39,7 +39,7 @@ public class ClaimControllerTest {
     @Test
     public void shouldSaveClaimInRepository() throws JsonProcessingException {
         //given
-        final ClaimData input = SampleClaimData.validDefaults();
+        ClaimData input = SampleClaimData.validDefaults();
         when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION))).thenReturn(CLAIM);
 
         //when
@@ -55,7 +55,7 @@ public class ClaimControllerTest {
         when(claimService.getClaimBySubmitterId(eq(USER_ID))).thenReturn(Collections.singletonList(CLAIM));
 
         //when
-        final List<Claim> output = claimController.getBySubmitterId(USER_ID);
+        List<Claim> output = claimController.getBySubmitterId(USER_ID);
 
         //then
         assertThat(output.get(0)).isEqualTo(CLAIM);

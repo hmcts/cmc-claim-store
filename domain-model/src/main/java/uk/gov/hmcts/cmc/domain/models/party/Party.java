@@ -52,11 +52,11 @@ public abstract class Party implements NamedParty {
     private final Representative representative;
 
     public Party(
-        final String name,
-        final Address address,
-        final Address correspondenceAddress,
-        final String mobilePhone,
-        final Representative representative
+        String name,
+        Address address,
+        Address correspondenceAddress,
+        String mobilePhone,
+        Representative representative
     ) {
         this.name = name;
         this.address = address;

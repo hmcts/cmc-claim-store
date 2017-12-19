@@ -66,7 +66,7 @@ public final class SampleClaim {
         return getWithResponse(SampleResponse.validDefaults());
     }
 
-    public static Claim getWithResponse(final Response response) {
+    public static Claim getWithResponse(Response response) {
         return builder()
             .withClaimData(SampleClaimData.validDefaults())
             .withResponse(response)
@@ -230,27 +230,27 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withResponse(final Response response) {
+    public SampleClaim withResponse(Response response) {
         this.response = response;
         return this;
     }
 
-    public SampleClaim withDefendantEmail(final String defendantEmail) {
+    public SampleClaim withDefendantEmail(String defendantEmail) {
         this.defendantEmail = defendantEmail;
         return this;
     }
 
-    public SampleClaim withSettlement(final Settlement settlement) {
+    public SampleClaim withSettlement(Settlement settlement) {
         this.settlement = settlement;
         return this;
     }
 
-    public SampleClaim withSettlementReachedAt(final LocalDateTime settlementReachedAt) {
+    public SampleClaim withSettlementReachedAt(LocalDateTime settlementReachedAt) {
         this.settlementReachedAt = settlementReachedAt;
         return this;
     }
 
-    public SampleClaim withSealedClaimDocumentSelfPath(final String sealedClaimDocumentSelfPath) {
+    public SampleClaim withSealedClaimDocumentSelfPath(String sealedClaimDocumentSelfPath) {
         this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
         return this;
     }

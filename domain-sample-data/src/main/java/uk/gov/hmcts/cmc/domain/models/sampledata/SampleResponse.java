@@ -15,12 +15,12 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return new FullDefence();
         }
 
-        public FullDefence withDefenceType(final FullDefenceResponse.DefenceType defenceType) {
+        public FullDefence withDefenceType(FullDefenceResponse.DefenceType defenceType) {
             this.defenceType = defenceType;
             return this;
         }
 
-        public FullDefence withDefence(final String defence) {
+        public FullDefence withDefence(String defence) {
             this.defence = defence;
             return this;
         }
@@ -42,17 +42,17 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         return FullDefence.builder().build();
     }
 
-    public T withMediation(final Response.FreeMediationOption freeMediationOption) {
+    public T withMediation(Response.FreeMediationOption freeMediationOption) {
         this.freeMediationOption = freeMediationOption;
         return (T)this;
     }
 
-    public T withDefendantDetails(final Party sampleDefendantDetails) {
+    public T withDefendantDetails(Party sampleDefendantDetails) {
         this.defendantDetails = sampleDefendantDetails;
         return (T)this;
     }
 
-    public T withStatementOfTruth(final String signerName, final String signerRole) {
+    public T withStatementOfTruth(String signerName, String signerRole) {
         this.statementOfTruth = new StatementOfTruth(signerName,signerRole);
         return (T)this;
     }

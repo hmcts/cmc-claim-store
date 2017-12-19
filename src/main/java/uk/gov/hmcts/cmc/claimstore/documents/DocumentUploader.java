@@ -19,8 +19,8 @@ public class DocumentUploader {
     private final ClaimService claimService;
 
     @Autowired
-    public DocumentUploader(final DocumentManagementService documentManagementService,
-                            final ClaimService claimService) {
+    public DocumentUploader(DocumentManagementService documentManagementService,
+                            ClaimService claimService) {
         this.documentManagementService = documentManagementService;
         this.claimService = claimService;
     }
@@ -28,7 +28,7 @@ public class DocumentUploader {
     @EventListener
     public void uploadIntoDocumentManagementStore(DocumentGeneratedEvent event) {
         event.getDocuments().forEach(document -> {
-            final String documentSelfPath = this.documentManagementService.uploadDocument(event.getAuthorisation(),
+            String documentSelfPath = this.documentManagementService.uploadDocument(event.getAuthorisation(),
                 document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
 
             if (isSealedClaim(document.getFilename())) {

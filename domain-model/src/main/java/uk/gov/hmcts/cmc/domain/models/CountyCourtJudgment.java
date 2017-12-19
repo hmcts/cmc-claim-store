@@ -44,12 +44,12 @@ public class CountyCourtJudgment {
     private final StatementOfTruth statementOfTruth;
 
     public CountyCourtJudgment(
-        final LocalDate defendantDateOfBirth,
-        final PaymentOption paymentOption,
-        final BigDecimal paidAmount,
-        final RepaymentPlan repaymentPlan,
-        final LocalDate payBySetDate,
-        final StatementOfTruth statementOfTruth
+        LocalDate defendantDateOfBirth,
+        PaymentOption paymentOption,
+        BigDecimal paidAmount,
+        RepaymentPlan repaymentPlan,
+        LocalDate payBySetDate,
+        StatementOfTruth statementOfTruth
     ) {
         this.defendantDateOfBirth = defendantDateOfBirth;
         this.paymentOption = paymentOption;

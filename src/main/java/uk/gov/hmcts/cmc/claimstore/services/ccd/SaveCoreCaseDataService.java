@@ -28,9 +28,9 @@ public class SaveCoreCaseDataService {
 
     @Autowired
     public SaveCoreCaseDataService(
-        final CoreCaseDataApi coreCaseDataApi,
-        final ObjectMapper objectMapper,
-        final AuthTokenGenerator authTokenGenerator
+        CoreCaseDataApi coreCaseDataApi,
+        ObjectMapper objectMapper,
+        AuthTokenGenerator authTokenGenerator
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.objectMapper = objectMapper;
@@ -38,9 +38,9 @@ public class SaveCoreCaseDataService {
     }
 
     public CaseDetails save(
-        final String authorisation,
-        final EventRequestData eventRequestData,
-        final CCDCase ccdCase
+        String authorisation,
+        EventRequestData eventRequestData,
+        CCDCase ccdCase
     ) {
         StartEventResponse startEventResponse = this.coreCaseDataApi.start(
             authorisation,

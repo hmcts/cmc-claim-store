@@ -8,7 +8,7 @@ public class DefendantResponseEvent {
     private final String userEmail;
     private final Claim claim;
 
-    public DefendantResponseEvent(final Claim claim) {
+    public DefendantResponseEvent(Claim claim) {
         this.userEmail = claim.getDefendantEmail();
         this.claim = claim;
     }

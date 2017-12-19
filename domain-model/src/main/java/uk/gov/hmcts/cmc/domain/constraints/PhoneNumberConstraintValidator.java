@@ -23,7 +23,7 @@ public class PhoneNumberConstraintValidator implements ConstraintValidator<Phone
             && isWithInLengthLimit(normalized);
     }
 
-    private boolean isWithInLengthLimit(final String normalized) {
+    private boolean isWithInLengthLimit(String normalized) {
         return normalized.length() == 10 || normalized.length() == 9 || normalized.length() == 7;
     }
 

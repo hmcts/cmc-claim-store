@@ -38,32 +38,32 @@ public class ClaimController {
     private final ClaimService claimService;
 
     @Autowired
-    public ClaimController(final ClaimService claimService) {
+    public ClaimController(ClaimService claimService) {
         this.claimService = claimService;
     }
 
     @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
-    public List<Claim> getBySubmitterId(@PathVariable("submitterId") final String submitterId) {
+    public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId) {
         return claimService.getClaimBySubmitterId(submitterId);
     }
 
     @GetMapping("/letter/{letterHolderId}")
     @ApiOperation("Fetch user claim for given letter holder id")
-    public Claim getByLetterHolderId(@PathVariable("letterHolderId") final String letterHolderId) {
+    public Claim getByLetterHolderId(@PathVariable("letterHolderId") String letterHolderId) {
         return claimService.getClaimByLetterHolderId(letterHolderId);
     }
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}")
     @ApiOperation("Fetch claim for given external id")
-    public Claim getByExternalId(@PathVariable("externalId") final String externalId) {
+    public Claim getByExternalId(@PathVariable("externalId") String externalId) {
         return claimService.getClaimByExternalId(externalId);
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
     @ApiOperation("Fetch claim for given claim reference")
-    public Claim getByClaimReference(@PathVariable("claimReference") final String claimReference,
-                                     @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+    public Claim getByClaimReference(@PathVariable("claimReference") String claimReference,
+                                     @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
 
         return claimService.getClaimByReference(claimReference, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
@@ -72,44 +72,44 @@ public class ClaimController {
     @GetMapping("/representative/{externalReference}")
     @ApiOperation("Fetch user claims for given external reference number")
     public List<Claim> getClaimByExternalReference(
-        @PathVariable("externalReference") final String externalReference,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+        @PathVariable("externalReference") String externalReference,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
 
         return claimService.getClaimByExternalReference(externalReference, authorisation);
     }
 
     @GetMapping("/defendant/{defendantId}")
     @ApiOperation("Fetch claims linked to given defendant id")
-    public List<Claim> getByDefendantId(@PathVariable("defendantId") final String defendantId) {
+    public List<Claim> getByDefendantId(@PathVariable("defendantId") String defendantId) {
         return claimService.getClaimByDefendantId(defendantId);
     }
 
     @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new claim")
-    public Claim save(@Valid @NotNull @RequestBody final ClaimData claimData,
-                      @PathVariable("submitterId") final String submitterId,
-                      @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+    public Claim save(@Valid @NotNull @RequestBody ClaimData claimData,
+                      @PathVariable("submitterId") String submitterId,
+                      @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.saveClaim(submitterId, claimData, authorisation);
     }
 
     @PutMapping("/{claimId:\\d+}/defendant/{defendantId}")
     @ApiOperation("Links defendant to existing claim")
-    public Claim linkDefendantToClaim(@PathVariable("claimId") final Long claimId,
-                                      @PathVariable("defendantId") final String defendantId) {
+    public Claim linkDefendantToClaim(@PathVariable("claimId") Long claimId,
+                                      @PathVariable("defendantId") String defendantId) {
         claimService.linkDefendantToClaim(claimId, defendantId);
         return claimService.getClaimById(claimId);
     }
 
     @PostMapping(value = "/{claimId:\\d+}/request-more-time")
     @ApiOperation("Updates response deadline. Can be called only once per each claim")
-    public Claim requestMoreTimeToRespond(@PathVariable("claimId") final Long claimId,
-                                          @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation) {
+    public Claim requestMoreTimeToRespond(@PathVariable("claimId") Long claimId,
+                                          @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.requestMoreTimeForResponse(claimId, authorisation);
     }
 
     @GetMapping("/{caseReference}/defendant-link-status")
     @ApiOperation("Check whether a claim is linked to a defendant")
-    public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") final String caseReference) {
+    public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
         Boolean linked = claimService.getClaimByReference(caseReference)
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();

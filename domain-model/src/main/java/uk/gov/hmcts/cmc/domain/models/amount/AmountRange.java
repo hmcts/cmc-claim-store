@@ -22,7 +22,7 @@ public class AmountRange implements Amount {
     @DecimalMin(value = "0.01")
     private final BigDecimal higherValue;
 
-    public AmountRange(final BigDecimal lowerValue, final BigDecimal higherValue) {
+    public AmountRange(BigDecimal lowerValue, BigDecimal higherValue) {
         this.lowerValue = lowerValue;
         this.higherValue = higherValue;
     }
@@ -36,14 +36,14 @@ public class AmountRange implements Amount {
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final AmountRange that = (AmountRange) obj;
+        AmountRange that = (AmountRange) obj;
         return Objects.equals(lowerValue, that.lowerValue)
             && Objects.equals(higherValue, that.higherValue);
     }

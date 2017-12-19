@@ -17,14 +17,14 @@ public class DefendantResponseStaffNotificationEmailContentProvider
     private final StaffEmailTemplates emailTemplates;
 
     @Autowired
-    public DefendantResponseStaffNotificationEmailContentProvider(final TemplateService templateService,
-                                                                  final StaffEmailTemplates emailTemplates) {
+    public DefendantResponseStaffNotificationEmailContentProvider(TemplateService templateService,
+                                                                  StaffEmailTemplates emailTemplates) {
         this.templateService = templateService;
         this.emailTemplates = emailTemplates;
     }
 
     @Override
-    public EmailContent createContent(final Map<String, Object> input) {
+    public EmailContent createContent(Map<String, Object> input) {
         return new EmailContent(
             evaluateTemplate(emailTemplates.getDefendantResponseEmailSubject(), input),
             evaluateTemplate(emailTemplates.getDefendantResponseEmailBody(), input)

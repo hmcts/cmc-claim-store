@@ -29,9 +29,9 @@ public class ClaimIssuedStaffNotificationService {
 
     @Autowired
     public ClaimIssuedStaffNotificationService(
-        final EmailService emailService,
-        final StaffEmailProperties staffEmailProperties,
-        final ClaimIssuedStaffNotificationEmailContentProvider provider
+        EmailService emailService,
+        StaffEmailProperties staffEmailProperties,
+        ClaimIssuedStaffNotificationEmailContentProvider provider
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
@@ -39,16 +39,16 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     @EventListener
-    public void notifyStaffOfClaimIssue(final DocumentGeneratedEvent event) {
+    public void notifyStaffOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
-        final EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
+        EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
     private EmailData prepareEmailData(
-        final Claim claim,
-        final List<PDF> documents) {
+        Claim claim,
+        List<PDF> documents) {
         EmailContent content = provider.createContent(wrapInMap(claim));
         List<EmailAttachment> attachments = documents.stream()
             .map(document -> pdf(document.getBytes(), document.getFilename()))

@@ -57,7 +57,7 @@ public interface ClaimRepository {
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
-    Optional<Claim> getById(@Bind("id") final Long id);
+    Optional<Claim> getById(@Bind("id") Long id);
 
     @GetGeneratedKeys
     @SqlUpdate("INSERT INTO claim ( "
@@ -79,12 +79,12 @@ public interface ClaimRepository {
         + "next_legal_rep_reference_number()"
         + ")")
     Long saveRepresented(
-        @Bind("claim") final String claim,
-        @Bind("submitterId") final String submitterId,
-        @Bind("issuedOn") final LocalDate issuedOn,
-        @Bind("responseDeadline") final LocalDate responseDeadline,
-        @Bind("externalId") final String externalId,
-        @Bind("submitterEmail") final String submitterEmail
+        @Bind("claim") String claim,
+        @Bind("submitterId") String submitterId,
+        @Bind("issuedOn") LocalDate issuedOn,
+        @Bind("responseDeadline") LocalDate responseDeadline,
+        @Bind("externalId") String externalId,
+        @Bind("submitterEmail") String submitterEmail
     );
 
     @GetGeneratedKeys
@@ -109,21 +109,21 @@ public interface ClaimRepository {
         + "next_reference_number()"
         + ")")
     Long saveSubmittedByClaimant(
-        @Bind("claim") final String claim,
-        @Bind("submitterId") final String submitterId,
-        @Bind("letterHolderId") final String letterHolderId,
-        @Bind("issuedOn") final LocalDate issuedOn,
-        @Bind("responseDeadline") final LocalDate responseDeadline,
-        @Bind("externalId") final String externalId,
-        @Bind("submitterEmail") final String submitterEmail
+        @Bind("claim") String claim,
+        @Bind("submitterId") String submitterId,
+        @Bind("letterHolderId") String letterHolderId,
+        @Bind("issuedOn") LocalDate issuedOn,
+        @Bind("responseDeadline") LocalDate responseDeadline,
+        @Bind("externalId") String externalId,
+        @Bind("submitterEmail") String submitterEmail
     );
 
     @SqlUpdate(
         "UPDATE claim SET letter_holder_id = :letterHolderId WHERE id = :claimId"
     )
     Integer linkLetterHolder(
-        @Bind("claimId") final Long claimId,
-        @Bind("letterHolderId") final String letterHolderId
+        @Bind("claimId") Long claimId,
+        @Bind("letterHolderId") String letterHolderId
     );
 
     @SqlUpdate(
@@ -131,16 +131,16 @@ public interface ClaimRepository {
             + " WHERE id = :claimId"
     )
     Integer linkSealedClaimDocument(
-        @Bind("claimId") final Long claimId,
-        @Bind("documentSelfPath") final String documentSelfPath
+        @Bind("claimId") Long claimId,
+        @Bind("documentSelfPath") String documentSelfPath
     );
 
     @SqlUpdate(
         "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
     )
     Integer linkDefendant(
-        @Bind("claimId") final Long claimId,
-        @Bind("defendantId") final String defendantId
+        @Bind("claimId") Long claimId,
+        @Bind("defendantId") String defendantId
     );
 
     @SqlUpdate(
@@ -148,8 +148,8 @@ public interface ClaimRepository {
             + "WHERE id = :claimId AND more_time_requested = FALSE"
     )
     void requestMoreTime(
-        @Bind("claimId") final Long claimId,
-        @Bind("responseDeadline") final LocalDate responseDeadline
+        @Bind("claimId") Long claimId,
+        @Bind("responseDeadline") LocalDate responseDeadline
     );
 
     @SqlUpdate(
@@ -161,10 +161,10 @@ public interface ClaimRepository {
             + "WHERE id = :claimId"
     )
     void saveDefendantResponse(
-        @Bind("claimId") final Long claimId,
-        @Bind("defendantId") final String defendantId,
-        @Bind("defendantEmail") final String defendantEmail,
-        @Bind("response") final String response
+        @Bind("claimId") Long claimId,
+        @Bind("defendantId") String defendantId,
+        @Bind("defendantEmail") String defendantEmail,
+        @Bind("response") String response
     );
 
     @SqlUpdate("UPDATE claim SET "
@@ -173,7 +173,7 @@ public interface ClaimRepository {
         + "WHERE"
         + " id = :claimId")
     void saveCountyCourtJudgment(
-        @Bind("claimId") final long claimId,
-        @Bind("countyCourtJudgmentData") final String countyCourtJudgmentData
+        @Bind("claimId") long claimId,
+        @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
     );
 }

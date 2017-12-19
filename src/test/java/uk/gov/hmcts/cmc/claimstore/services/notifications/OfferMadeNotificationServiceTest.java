@@ -20,10 +20,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class OfferMadeNotificationServiceTest extends BaseNotificationServiceTest {
 
-    private OfferMadeNotificationService service;
     private static final String REFERENCE = "reference";
     private static final String TEMPLATE_ID = "templateId";
     private static final Map<String, String> PARAMETERS = new HashMap<>();
+
+    private OfferMadeNotificationService service;
 
     @Before
     public void beforeEachTest() {

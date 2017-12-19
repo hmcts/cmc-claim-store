@@ -27,10 +27,10 @@ import static org.mockito.Mockito.when;
 
 public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
 
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+
     @Autowired
     private OfferAcceptedStaffNotificationService service;
-
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
