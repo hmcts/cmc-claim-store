@@ -14,8 +14,4 @@ public class InterestAmount {
     public BigDecimal getAmount() {
         return amount.setScale(2, RoundingMode.HALF_UP);
     }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 }
