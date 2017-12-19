@@ -11,12 +11,12 @@ public class FreeMediationDecisionDateCalculator {
     private int freeMediationTimeForDecisionInDays;
 
     public FreeMediationDecisionDateCalculator(
-        @Value("${dateCalculations.freeMediationTimeForDecisionInDays}") final int freeMediationTimeForDecisionInDays) {
+        @Value("${dateCalculations.freeMediationTimeForDecisionInDays}") int freeMediationTimeForDecisionInDays) {
 
         this.freeMediationTimeForDecisionInDays = freeMediationTimeForDecisionInDays;
     }
 
-    public LocalDate calculateDecisionDate(final LocalDate responseSubmissionDate) {
+    public LocalDate calculateDecisionDate(LocalDate responseSubmissionDate) {
         return responseSubmissionDate.plusDays(freeMediationTimeForDecisionInDays);
     }
 }

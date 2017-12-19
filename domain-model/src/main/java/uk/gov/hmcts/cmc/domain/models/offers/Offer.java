@@ -17,11 +17,11 @@ public class Offer {
 
     @NotBlank
     @Size(max = CONTENT_LENGTH_LIMIT, message = "may not be longer than {max} characters")
-    private String content;
+    private final String content;
 
     @NotNull
     @FutureDate
-    private LocalDate completionDate;
+    private final LocalDate completionDate;
 
     public Offer(String content, LocalDate completionDate) {
         this.content = content;

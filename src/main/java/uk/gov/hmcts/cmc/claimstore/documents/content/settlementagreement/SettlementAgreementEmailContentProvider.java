@@ -17,8 +17,8 @@ public class SettlementAgreementEmailContentProvider implements EmailContentProv
     private final StaffEmailTemplates staffEmailTemplates;
 
     public SettlementAgreementEmailContentProvider(
-        final TemplateService templateService,
-        final StaffEmailTemplates staffEmailTemplates
+        TemplateService templateService,
+        StaffEmailTemplates staffEmailTemplates
     ) {
         this.templateService = templateService;
         this.staffEmailTemplates = staffEmailTemplates;

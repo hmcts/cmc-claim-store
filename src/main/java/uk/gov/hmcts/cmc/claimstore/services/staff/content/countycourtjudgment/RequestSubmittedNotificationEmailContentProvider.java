@@ -17,15 +17,15 @@ public class RequestSubmittedNotificationEmailContentProvider implements EmailCo
     private final StaffEmailTemplates emailTemplates;
 
     public RequestSubmittedNotificationEmailContentProvider(
-        final TemplateService templateService,
-        final StaffEmailTemplates emailTemplates
+        TemplateService templateService,
+        StaffEmailTemplates emailTemplates
     ) {
         this.templateService = templateService;
         this.emailTemplates = emailTemplates;
     }
 
     @Override
-    public EmailContent createContent(final Map<String, Object> input) {
+    public EmailContent createContent(Map<String, Object> input) {
         notEmpty(input);
 
         return new EmailContent(

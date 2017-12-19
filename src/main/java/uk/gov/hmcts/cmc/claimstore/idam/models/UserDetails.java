@@ -15,10 +15,10 @@ public class UserDetails {
     private final String forename;
     private final String surname;
 
-    public UserDetails(@JsonProperty("id") final String id,
-                       @JsonProperty("email") final String email,
-                       @JsonProperty("forename") final String forename,
-                       @JsonProperty("surname") final String surname
+    public UserDetails(@JsonProperty("id") String id,
+                       @JsonProperty("email") String email,
+                       @JsonProperty("forename") String forename,
+                       @JsonProperty("surname") String surname
     ) {
         this.id = id;
         this.email = email;

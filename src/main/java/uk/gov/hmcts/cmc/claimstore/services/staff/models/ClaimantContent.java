@@ -5,13 +5,13 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 public class ClaimantContent extends PersonContent {
 
     public ClaimantContent(
-        final String cliamantType,
-        final String fullName,
-        final Address address,
-        final Address correspondenceAddress,
-        final String email,
-        final String contactPerson,
-        final String businessName
+        String cliamantType,
+        String fullName,
+        Address address,
+        Address correspondenceAddress,
+        String email,
+        String contactPerson,
+        String businessName
     ) {
         super(cliamantType, fullName, address, correspondenceAddress, email, contactPerson, businessName);
     }

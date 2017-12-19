@@ -23,17 +23,17 @@ public class CoreCaseDataService {
 
     @Autowired
     public CoreCaseDataService(
-        final SaveCoreCaseDataService saveCoreCaseDataService,
-        final CaseMapper caseMapper
+        SaveCoreCaseDataService saveCoreCaseDataService,
+        CaseMapper caseMapper
     ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.caseMapper = caseMapper;
     }
 
-    public CaseDetails save(final String authorisation, final Claim claim) {
+    public CaseDetails save(String authorisation, Claim claim) {
         try {
-            final CCDCase ccdCase = caseMapper.to(claim);
-            final EventRequestData eventRequestData = EventRequestData.builder()
+            CCDCase ccdCase = caseMapper.to(claim);
+            EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(claim.getSubmitterId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)

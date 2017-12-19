@@ -11,7 +11,7 @@ public class EmailAttachment {
     private final String contentType;
     private final String filename;
 
-    public EmailAttachment(final InputStreamSource data, final String contentType, final String filename) {
+    public EmailAttachment(InputStreamSource data, String contentType, String filename) {
         requireNonNull(data);
         requireNonNull(contentType);
         requireNonNull(filename);

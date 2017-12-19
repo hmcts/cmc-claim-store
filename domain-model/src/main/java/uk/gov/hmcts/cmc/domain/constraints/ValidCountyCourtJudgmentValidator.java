@@ -24,9 +24,9 @@ public class ValidCountyCourtJudgmentValidator
             return true;
         }
 
-        final PaymentOption type = ccj.getPaymentOption();
-        final boolean payByDateIsPopulated = ccj.getPayBySetDate().isPresent();
-        final boolean repaymentPlanIsPopulated = ccj.getRepaymentPlan().isPresent();
+        PaymentOption type = ccj.getPaymentOption();
+        boolean payByDateIsPopulated = ccj.getPayBySetDate().isPresent();
+        boolean repaymentPlanIsPopulated = ccj.getRepaymentPlan().isPresent();
 
         boolean isValidImmediately = type.equals(IMMEDIATELY) && !payByDateIsPopulated && !repaymentPlanIsPopulated;
         boolean isValidFull = type.equals(FULL_BY_SPECIFIED_DATE) && payByDateIsPopulated && !repaymentPlanIsPopulated;

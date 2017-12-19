@@ -24,16 +24,16 @@ public class OfferRespondedCitizenActionsHandler {
 
     @Autowired
     public OfferRespondedCitizenActionsHandler(
-        final OfferMadeNotificationService offerMadeNotificationService,
-        final NotificationsProperties notificationsProperties
+        OfferMadeNotificationService offerMadeNotificationService,
+        NotificationsProperties notificationsProperties
     ) {
         this.offerMadeNotificationService = offerMadeNotificationService;
         this.notificationsProperties = notificationsProperties;
     }
 
     @EventListener
-    public void sendNotificationToClaimantOnOfferAcceptedByClaimant(final OfferAcceptedEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendNotificationToClaimantOnOfferAcceptedByClaimant(OfferAcceptedEvent event) {
+        Claim claim = event.getClaim();
 
         offerMadeNotificationService.sendNotificationEmail(
             claim.getSubmitterEmail(),
@@ -44,8 +44,8 @@ public class OfferRespondedCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendNotificationToDefendantOnOfferAcceptedByClaimant(final OfferAcceptedEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendNotificationToDefendantOnOfferAcceptedByClaimant(OfferAcceptedEvent event) {
+        Claim claim = event.getClaim();
 
         offerMadeNotificationService.sendNotificationEmail(
             claim.getDefendantEmail(),
@@ -56,8 +56,8 @@ public class OfferRespondedCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendNotificationToClaimantOnOfferRejectedByClaimant(final OfferRejectedEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendNotificationToClaimantOnOfferRejectedByClaimant(OfferRejectedEvent event) {
+        Claim claim = event.getClaim();
 
         offerMadeNotificationService.sendNotificationEmail(
             claim.getSubmitterEmail(),
@@ -68,8 +68,8 @@ public class OfferRespondedCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendNotificationToDefendantOnOfferRejectedByClaimant(final OfferRejectedEvent event) {
-        final Claim claim = event.getClaim();
+    public void sendNotificationToDefendantOnOfferRejectedByClaimant(OfferRejectedEvent event) {
+        Claim claim = event.getClaim();
 
         offerMadeNotificationService.sendNotificationEmail(
             claim.getDefendantEmail(),
@@ -79,7 +79,7 @@ public class OfferRespondedCitizenActionsHandler {
         );
     }
 
-    private Map<String, String> aggregateParams(final Claim claim) {
+    private Map<String, String> aggregateParams(Claim claim) {
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

@@ -31,15 +31,15 @@ public class CCJRequestedNotificationService {
 
     @Autowired
     public CCJRequestedNotificationService(
-        final NotificationClient notificationClient,
-        final NotificationsProperties notificationsProperties
+        NotificationClient notificationClient,
+        NotificationsProperties notificationsProperties
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
     }
 
-    public void notifyClaimant(final Claim claim) {
-        final Map<String, String> parameters = aggregateParams(claim);
+    public void notifyClaimant(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
         sendNotificationEmail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantCCJRequested(),
@@ -50,10 +50,10 @@ public class CCJRequestedNotificationService {
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendNotificationEmail(
-        final String targetEmail,
-        final String emailTemplate,
-        final Map<String, String> parameters,
-        final String reference
+        String targetEmail,
+        String emailTemplate,
+        Map<String, String> parameters,
+        String reference
     ) {
         try {
             notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
@@ -64,13 +64,13 @@ public class CCJRequestedNotificationService {
 
     @Recover
     public void logNotificationFailure(
-        final NotificationException exception,
-        final Claim claim,
-        final String targetEmail,
-        final String emailTemplate,
-        final String reference
+        NotificationException exception,
+        Claim claim,
+        String targetEmail,
+        String emailTemplate,
+        String reference
     ) {
-        final String errorMessage = String.format(
+        String errorMessage = String.format(
             "Failure: failed to send notification ( %s to %s ) due to %s",
             reference, targetEmail, exception.getMessage()
         );
@@ -78,7 +78,7 @@ public class CCJRequestedNotificationService {
         logger.info(errorMessage, exception);
     }
 
-    private Map<String, String> aggregateParams(final Claim claim) {
+    private Map<String, String> aggregateParams(Claim claim) {
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

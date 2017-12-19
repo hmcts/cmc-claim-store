@@ -15,7 +15,7 @@ public class RepresentedClaimIssuedEvent {
     private final String representativeEmail;
     private final String authorisation;
 
-    public RepresentedClaimIssuedEvent(Claim claim, final String submitterName, final String authorisation) {
+    public RepresentedClaimIssuedEvent(Claim claim, String submitterName, String authorisation) {
         this.claim = claim;
         this.representativeName = submitterName;
         this.representativeEmail = claim.getSubmitterEmail();
@@ -39,7 +39,7 @@ public class RepresentedClaimIssuedEvent {
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -48,7 +48,7 @@ public class RepresentedClaimIssuedEvent {
             return false;
         }
 
-        final RepresentedClaimIssuedEvent that = (RepresentedClaimIssuedEvent) obj;
+        RepresentedClaimIssuedEvent that = (RepresentedClaimIssuedEvent) obj;
 
         return Objects.equals(claim, that.claim)
             && Objects.equals(representativeName, that.representativeName)

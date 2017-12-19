@@ -18,9 +18,9 @@ public class LegalSealedClaimPdfService {
 
     @Autowired
     public LegalSealedClaimPdfService(
-        final DocumentTemplates documentTemplates,
-        final PDFServiceClient pdfServiceClient,
-        final LegalSealedClaimContentProvider legalSealedClaimContentProvider
+        DocumentTemplates documentTemplates,
+        PDFServiceClient pdfServiceClient,
+        LegalSealedClaimContentProvider legalSealedClaimContentProvider
     ) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
