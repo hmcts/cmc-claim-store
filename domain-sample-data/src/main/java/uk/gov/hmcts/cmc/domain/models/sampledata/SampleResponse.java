@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
@@ -18,8 +19,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         private PartAdmissionResponse.PartAdmissionType partAdmissionType =
             PartAdmissionResponse.PartAdmissionType.AMOUNT_TOO_HIGH;
         private HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder().build();
-        private List<EvidenceItem> evidenceItems = SampleEvidence.builder().build().getRows();
-        private List<TimelineEvent> timelineEvents = SampleTimeLine.builder().build().getRows();
+        private ImmutableList<EvidenceItem> evidenceItems = SampleEvidence.builder().build().getRows();
+        private ImmutableList<TimelineEvent> timelineEvents = SampleTimeLine.builder().build().getRows();
         private DefendantPaymentPlan defendantPaymentPlan = SampleDefendantPaymentPlan.builder().build();
         private String impactOfDispute = "This dispute really upset me";
 
@@ -35,8 +36,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public PartAdmission withPartAdmission(final Response.FreeMediationOption freeMediation,
                                                final Response.MoreTimeNeededOption moreTimeNeeded,
                                                final Party defendant, final StatementOfTruth statementOfTruth,
-                                               final List<EvidenceItem> evidenceItems,
-                                               final HowMuchOwed howMuchOwed, final List<TimelineEvent> timelineEvents,
+                                               final ImmutableList<EvidenceItem> evidenceItems,
+                                               final HowMuchOwed howMuchOwed, final ImmutableList<TimelineEvent> timelineEvents,
                                                final DefendantPaymentPlan defendantPaymentPlan,
                                                final String impactOfDispute,
                                                final PartAdmissionResponse.PartAdmissionType partAdmissionType) {

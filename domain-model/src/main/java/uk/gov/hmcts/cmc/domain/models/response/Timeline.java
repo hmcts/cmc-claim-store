@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.Valid;
@@ -9,13 +10,13 @@ public class Timeline {
 
     @Valid
     @NotNull
-    private final List<TimelineEvent> rows;
+    private final ImmutableList<TimelineEvent> rows;
 
-    public Timeline(final List<TimelineEvent> rows) {
+    public Timeline(final ImmutableList<TimelineEvent> rows) {
         this.rows = rows;
     }
 
-    public List<TimelineEvent> getRows() {
+    public ImmutableList<TimelineEvent> getRows() {
         return rows;
     }
 

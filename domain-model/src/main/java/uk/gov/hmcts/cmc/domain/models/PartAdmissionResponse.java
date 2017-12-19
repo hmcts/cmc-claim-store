@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -29,11 +30,11 @@ public class PartAdmissionResponse extends Response {
 
     @Valid
     @NotNull
-    private final List<EvidenceItem> evidenceItems;
+    private final ImmutableList<EvidenceItem> evidence;
 
     @Valid
     @NotNull
-    private final List<TimelineEvent> timelineEvents;
+    private final ImmutableList<TimelineEvent> timeline;
 
     @NotNull
     private final PartAdmissionType partAdmissionType;
@@ -49,37 +50,32 @@ public class PartAdmissionResponse extends Response {
     @Size(max = 99000)
     private final String impactOfDispute;
 
-    public PartAdmissionType getPartialAdmissionType() {
-        return partAdmissionType;
-    }
-
-
     public PartAdmissionResponse(
-        final FreeMediationOption freeMediation,
-        final MoreTimeNeededOption moreTimeNeeded,
-        final Party defendant,
-        final StatementOfTruth statementOfTruth,
-        final List<EvidenceItem> evidenceItems,
-        final HowMuchOwed howMuchOwed,
-        final List<TimelineEvent> timelineEvents,
-        final DefendantPaymentPlan defendantPaymentPlan,
-        final String impactOfDispute,
-        final PartAdmissionType partAdmissionType) {
+        FreeMediationOption freeMediation,
+        MoreTimeNeededOption moreTimeNeeded,
+        Party defendant,
+        StatementOfTruth statementOfTruth,
+        ImmutableList<EvidenceItem> evidence,
+        HowMuchOwed howMuchOwed,
+        ImmutableList<TimelineEvent> timeline,
+        DefendantPaymentPlan defendantPaymentPlan,
+        String impactOfDispute,
+        PartAdmissionType partAdmissionType) {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
-        this.evidenceItems = evidenceItems;
+        this.evidence = evidence;
         this.howMuchOwed = howMuchOwed;
-        this.timelineEvents = timelineEvents;
+        this.timeline = timeline;
         this.defendantPaymentPlan = defendantPaymentPlan;
         this.impactOfDispute = impactOfDispute;
         this.partAdmissionType = partAdmissionType;
     }
 
-    public List<EvidenceItem> getEvidenceItems() {
-        return evidenceItems;
+    public ImmutableList<EvidenceItem> getEvidence() {
+        return evidence;
     }
 
-    public List<TimelineEvent> getTimelineEvents() {
-        return timelineEvents;
+    public ImmutableList<TimelineEvent> getTimeline() {
+        return timeline;
     }
 
     public PartAdmissionType getPartAdmissionType() {
@@ -98,6 +94,10 @@ public class PartAdmissionResponse extends Response {
         return impactOfDispute;
     }
 
+    public PartAdmissionType getPartialAdmissionType() {
+        return partAdmissionType;
+    }
+
 
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
@@ -112,9 +112,9 @@ public class PartAdmissionResponse extends Response {
 
         final PartAdmissionResponse that = (PartAdmissionResponse) other;
         return super.equals(that)
-            && Objects.equals(evidenceItems, that.evidenceItems)
+            && Objects.equals(evidence, that.evidence)
             && Objects.equals(howMuchOwed, that.howMuchOwed)
-            && Objects.equals(timelineEvents, that.timelineEvents)
+            && Objects.equals(timeline, that.timeline)
             && Objects.equals(defendantPaymentPlan, that.defendantPaymentPlan)
             && Objects.equals(impactOfDispute, that.impactOfDispute)
             && Objects.equals(partAdmissionType, that.partAdmissionType);
@@ -122,7 +122,7 @@ public class PartAdmissionResponse extends Response {
 
     @Override
     public int hashCode() {
-        return Objects.hash(evidenceItems, howMuchOwed, timelineEvents,
+        return Objects.hash(super.hashCode(), evidence, howMuchOwed, timeline,
             defendantPaymentPlan, impactOfDispute, partAdmissionType);
     }
 

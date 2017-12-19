@@ -1,30 +1,27 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.domain.models.response.Evidence;
 import uk.gov.hmcts.cmc.domain.models.response.EvidenceItem;
 import uk.gov.hmcts.cmc.domain.models.response.EvidenceType;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Arrays.asList;
 
 public class SampleEvidence {
 
-    private List<EvidenceItem> rows = asList(
+    private ImmutableList<EvidenceItem> rows = ImmutableList.of(
         new EvidenceItem(EvidenceType.CONTRACTS_AND_AGREEMENTS, "my evidence")
     );
 
-    public SampleEvidence clearRows() {
-        this.rows = new ArrayList<>();
+    public SampleEvidence withoutRows() {
+        this.rows = ImmutableList.of();
         return this;
     }
 
-    public SampleEvidence withRows(List<EvidenceItem> rows) {
+    public SampleEvidence withRows(ImmutableList<EvidenceItem> rows) {
         this.rows = rows;
         return this;
     }
 
-    public SampleEvidence addRow(EvidenceItem row) {
+    public SampleEvidence withRow(EvidenceItem row) {
         rows.add(row);
         return this;
     }

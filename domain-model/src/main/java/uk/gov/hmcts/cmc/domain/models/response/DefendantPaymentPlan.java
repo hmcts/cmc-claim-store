@@ -39,11 +39,11 @@ public class DefendantPaymentPlan {
     private final String explanation;
 
     public DefendantPaymentPlan(
-        final BigDecimal firstPayment,
-        final BigDecimal instalmentAmount,
-        final LocalDate firstPaymentDate,
-        final PaymentSchedule paymentSchedule,
-        final String explanation
+        BigDecimal firstPayment,
+        BigDecimal instalmentAmount,
+        LocalDate firstPaymentDate,
+        PaymentSchedule paymentSchedule,
+        String explanation
     ) {
 
         this.firstPayment = firstPayment;
@@ -82,8 +82,7 @@ public class DefendantPaymentPlan {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan that =
-            (uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan) other;
+        DefendantPaymentPlan that = (DefendantPaymentPlan) other;
         return Objects.equals(firstPayment, that.firstPayment)
             && Objects.equals(instalmentAmount, that.instalmentAmount)
             && Objects.equals(firstPaymentDate, that.firstPaymentDate)

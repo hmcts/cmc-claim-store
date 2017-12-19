@@ -1,31 +1,22 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.domain.models.response.Timeline;
 import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Arrays.asList;
-
 public class SampleTimeLine {
 
-    private List<TimelineEvent> rows = asList(
+    private ImmutableList<TimelineEvent> rows = ImmutableList.of(
         new TimelineEvent("20th May 2017", "something happened")
     );
 
-    public SampleTimeLine clearRows() {
-        this.rows = new ArrayList<>();
+    public SampleTimeLine withoutRows() {
+        this.rows = ImmutableList.of();
         return this;
     }
 
-    public SampleTimeLine withRows(List<TimelineEvent> rows) {
+    public SampleTimeLine withRows(ImmutableList<TimelineEvent> rows) {
         this.rows = rows;
-        return this;
-    }
-
-    public SampleTimeLine addRow(TimelineEvent row) {
-        rows.add(row);
         return this;
     }
 
