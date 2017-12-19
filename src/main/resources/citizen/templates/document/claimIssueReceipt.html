@@ -252,20 +252,20 @@
       <tr>
         <td>Accrued interest:</td>
         <td>
-          Interest will accrue at the daily rate of {{ claim.interest.accruedInterest }} up to the date of judgment
+          Interest will accrue at the daily rate of {{ claim.interest.dailyAmount }} up to the date of judgment
         </td>
       </tr>
       <tr>
         <td>Date interest is claimed from:</td>
         <td>
-          {{ claim.interest.dateClaimedFrom }}
+          {{ claim.interest.fromDate }}
         </td>
       </tr>
-      {% if claim.interest.claimedAtDateOfSubmission is defined %}
+      {% if claim.interest.customFromDate %}
       <tr>
         <td>Total interest claimed to the date of submission:</td>
         <td>
-          {{ claim.interest.claimedAtDateOfSubmission }}
+          {{ claim.interest.amount }}
         </td>
       </tr>
       {% endif %}
