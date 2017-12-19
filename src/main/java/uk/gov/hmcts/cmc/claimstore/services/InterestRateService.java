@@ -20,7 +20,7 @@ public class InterestRateService {
         return amount
             .multiply(rate)
             .multiply(BigDecimal.valueOf(noOfDays))
-            .divide(BigDecimal.valueOf(365 * 100), 2, RoundingMode.HALF_UP);
+            .divide(BigDecimal.valueOf(36500L), 2, RoundingMode.HALF_UP);
     }
 
     private long calculateNumberOfDays(LocalDate fromDate, LocalDate toDate) {
