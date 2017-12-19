@@ -75,6 +75,26 @@ public class PartAdmissionResponse extends Response {
         this.partAdmissionType = partAdmissionType;
     }
 
+    public List<EvidenceItem> getEvidenceItems() {
+        return evidenceItems;
+    }
+
+    public List<TimelineEvent> getTimelineEvents() {
+        return timelineEvents;
+    }
+
+    public PartAdmissionType getPartAdmissionType() {
+        return partAdmissionType;
+    }
+
+    public DefendantPaymentPlan getDefendantPaymentPlan() {
+        return defendantPaymentPlan;
+    }
+
+    public HowMuchOwed getHowMuchOwed() {
+        return howMuchOwed;
+    }
+
     public String getImpactOfDispute() {
         return impactOfDispute;
     }
@@ -96,13 +116,14 @@ public class PartAdmissionResponse extends Response {
             && Objects.equals(evidenceItems, that.evidenceItems)
             && Objects.equals(howMuchOwed, that.howMuchOwed)
             && Objects.equals(timelineEvents, that.timelineEvents)
-            && Objects.equals(partAdmissionType, that.partAdmissionType)
-            && Objects.equals(defendantPaymentPlan, that.defendantPaymentPlan);
+            && Objects.equals(defendantPaymentPlan, that.defendantPaymentPlan)
+            && Objects.equals(impactOfDispute, that.impactOfDispute)
+            && Objects.equals(partAdmissionType, that.partAdmissionType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(evidenceItems, howMuchOwed, timelineEvents, defendantPaymentPlan, partAdmissionType);
+        return Objects.hash(evidenceItems, howMuchOwed, timelineEvents, defendantPaymentPlan, impactOfDispute, partAdmissionType);
     }
 
     @Override

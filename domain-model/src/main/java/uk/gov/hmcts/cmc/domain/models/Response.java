@@ -100,7 +100,7 @@ public abstract class Response {
 
     @Override
     public int hashCode() {
-        return Objects.hash(freeMediation, moreTimeNeeded, defendant);
+        return Objects.hash(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
     }
 
     @Override

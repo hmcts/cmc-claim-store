@@ -29,7 +29,7 @@ public class HowMuchOwed {
         return amount;
     }
 
-    public String getText() {
+    public String getExplanation() {
         return explanation;
     }
 
@@ -44,7 +44,8 @@ public class HowMuchOwed {
 
         HowMuchOwed that = (HowMuchOwed) obj;
 
-        return Objects.equals(this.amount, that.explanation) && Objects.equals(this.amount, that.explanation);
+        return Objects.equals(this.amount, that.amount)
+            && Objects.equals(this.explanation, that.explanation);
     }
 
     @Override

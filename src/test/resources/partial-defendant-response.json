@@ -1,0 +1,53 @@
+{
+  "responseType": "PART_ADMISSION",
+  "partAdmissionType" : "AMOUNT_TOO_HIGH",
+  "freeMediation": "yes",
+  "moreTimeNeeded": "yes",
+  "evidenceItems": [
+  {
+  "type": "CONTRACTS_AND_AGREEMENTS",
+  "description": "my evidence"
+  }
+  ],
+  "timelineEvents": [
+    {
+      "date": "20th May 2017",
+      "description": "something happened"
+    }
+  ],
+
+  "defendant": {
+    "type": "individual",
+    "title": "Dr.",
+    "name": "John Rambo",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "correspondenceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "dateOfBirth": "1968-01-02",
+    "mobilePhone": "07873727165",
+    "email": "test@example.com"
+  },
+  "impactOfDispute": "This dispute really upset me",
+  "howMuchOwed": {
+    "amount": "100",
+    "explanation": "I don't owe the amount"
+  },
+  "defendantPaymentOption": "INSTALMENTS",
+  "paidAmount": 0,
+  "defendantPaymentPlan": {
+    "firstPayment": 100,
+    "instalmentAmount": 100,
+    "firstPaymentDate": "2100-10-10",
+    "paymentSchedule": "EACH_WEEK",
+    "explanation": "My explanation"
+  }
+}

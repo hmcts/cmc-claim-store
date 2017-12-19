@@ -6,6 +6,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
@@ -130,6 +131,19 @@ public class JsonMapperTest {
 
         //then
         final Response expected = SampleResponse.validDefaults();
+        assertThat(output).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldProcessDependantPartialResponseFromJson() throws Exception {
+        //given
+        final String input = new ResourceReader().read("/partial-defendant-response.json");
+
+        //when
+        final PartAdmissionResponse output = processor.fromJson(input, PartAdmissionResponse.class);
+
+        //then
+        final PartAdmissionResponse expected = SampleResponse.validPartAdmissionDefaults();
         assertThat(output).isEqualTo(expected);
     }
 

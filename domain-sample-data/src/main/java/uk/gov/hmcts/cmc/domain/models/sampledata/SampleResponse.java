@@ -14,8 +14,13 @@ import java.util.List;
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static class PartAdmission extends SampleResponse<PartAdmission> {
+
         private PartAdmissionResponse.PartAdmissionType partAdmissionType = PartAdmissionResponse.PartAdmissionType.AMOUNT_TOO_HIGH;
-        private String impactOfDispute = "Really upset me";
+        private HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder().build();
+        private List<EvidenceItem> evidenceItems = SampleEvidence.builder().build().getRows();
+        private List<TimelineEvent> timelineEvents = SampleTimeLine.builder().build().getRows();
+        private DefendantPaymentPlan defendantPaymentPlan = SampleDefendantPaymentPlan.builder().build();
+        private String impactOfDispute = "This dispute really upset me";
 
         public static PartAdmission builder() {
             return new PartAdmission();
@@ -51,6 +56,10 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         }
     }
 
+    public static PartAdmissionResponse validPartAdmissionDefaults() {
+        return PartAdmission.builder().build();
+    }
+
     public static class FullDefence extends SampleResponse<FullDefence> {
         private FullDefenceResponse.DefenceType defenceType = FullDefenceResponse.DefenceType.DISPUTE;
         private String defence = "defence string";
@@ -77,12 +86,6 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         }
     }
 
-    protected List<EvidenceItem> evidenceItems = SampleEvidence.builder().build().getRows();
-    protected HowMuchOwed howMuchOwed = SampleHowMuchOwed.validDefaults();
-    protected List<TimelineEvent> timelineEvents = SampleTimeLine.builder().build().getRows();
-    protected DefendantPaymentPlan defendantPaymentPlan = SampleDefendantPaymentPlan.builder().build();
-    protected PartAdmissionResponse.PartAdmissionType partAdmissionType = PartAdmissionResponse.PartAdmissionType.AMOUNT_TOO_HIGH;
-
     protected Response.FreeMediationOption freeMediationOption = Response.FreeMediationOption.YES;
     protected Response.MoreTimeNeededOption moreTimeNeededOption = Response.MoreTimeNeededOption.YES;
     protected Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
@@ -90,10 +93,6 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static FullDefenceResponse validDefaults() {
         return FullDefence.builder().build();
-    }
-
-    public static PartAdmissionResponse validPartAdmissionDefaults() {
-        return PartAdmission.builder().build();
     }
 
     public T withMediation(final Response.FreeMediationOption freeMediationOption) {

@@ -38,6 +38,31 @@ public class ResponseTest {
     }
 
     @Test
+    public void shouldHaveValidationMessagesWhenPartialResponseDataElementsAreInValid() {
+        //given
+        Response response = SampleResponse.PartAdmission.builder()
+            .withPartAdmissionType(null)
+            .withPartAdmission(null, null, null, null, null,
+                null, null, null, null, null)
+            .build();
+
+        //when
+        Set<String> errors = validate(response);
+
+        //then
+        assertThat(errors)
+            .hasSize(6)
+            .contains(
+                "evidenceItems : may not be null",
+                "impactOfDispute : may not be empty",
+                "timelineEvents : may not be null",
+                "howMuchOwed : may not be null",
+                "partAdmissionType : may not be null",
+                "defendant : may not be null"
+            );
+    }
+
+    @Test
     public void shouldHaveValidationMessagesWhenResponseDataElementsAreInValid() {
         //given
         Response response = SampleResponse.FullDefence.builder()
