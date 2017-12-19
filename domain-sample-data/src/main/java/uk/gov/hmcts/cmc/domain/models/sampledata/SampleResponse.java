@@ -15,7 +15,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static class PartAdmission extends SampleResponse<PartAdmission> {
 
-        private PartAdmissionResponse.PartAdmissionType partAdmissionType = PartAdmissionResponse.PartAdmissionType.AMOUNT_TOO_HIGH;
+        private PartAdmissionResponse.PartAdmissionType partAdmissionType =
+            PartAdmissionResponse.PartAdmissionType.AMOUNT_TOO_HIGH;
         private HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder().build();
         private List<EvidenceItem> evidenceItems = SampleEvidence.builder().build().getRows();
         private List<TimelineEvent> timelineEvents = SampleTimeLine.builder().build().getRows();
@@ -31,10 +32,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
-        public PartAdmission withPartAdmission(final Response.FreeMediationOption freeMediation, final Response.MoreTimeNeededOption moreTimeNeeded,
-                                               final Party defendant, final StatementOfTruth statementOfTruth, final List<EvidenceItem> evidenceItems,
-                                               final HowMuchOwed howMuchOwed, final List<TimelineEvent> timelineEvents, final DefendantPaymentPlan defendantPaymentPlan,
-                                               final String impactOfDispute, final PartAdmissionResponse.PartAdmissionType partAdmissionType) {
+        public PartAdmission withPartAdmission(final Response.FreeMediationOption freeMediation,
+                                               final Response.MoreTimeNeededOption moreTimeNeeded,
+                                               final Party defendant, final StatementOfTruth statementOfTruth,
+                                               final List<EvidenceItem> evidenceItems,
+                                               final HowMuchOwed howMuchOwed, final List<TimelineEvent> timelineEvents,
+                                               final DefendantPaymentPlan defendantPaymentPlan,
+                                               final String impactOfDispute,
+                                               final PartAdmissionResponse.PartAdmissionType partAdmissionType) {
             this.freeMediationOption = freeMediation;
             this.moreTimeNeededOption = moreTimeNeeded;
             this.defendantDetails = defendant;

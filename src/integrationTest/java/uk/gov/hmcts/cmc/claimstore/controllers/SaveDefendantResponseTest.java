@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.assertj.core.util.Compatibility;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

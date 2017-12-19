@@ -64,8 +64,7 @@ public class PartAdmissionResponse extends Response {
         final List<TimelineEvent> timelineEvents,
         final DefendantPaymentPlan defendantPaymentPlan,
         final String impactOfDispute,
-        final PartAdmissionType partAdmissionType)
-    {
+        final PartAdmissionType partAdmissionType) {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.evidenceItems = evidenceItems;
         this.howMuchOwed = howMuchOwed;
@@ -123,7 +122,8 @@ public class PartAdmissionResponse extends Response {
 
     @Override
     public int hashCode() {
-        return Objects.hash(evidenceItems, howMuchOwed, timelineEvents, defendantPaymentPlan, impactOfDispute, partAdmissionType);
+        return Objects.hash(evidenceItems, howMuchOwed, timelineEvents,
+            defendantPaymentPlan, impactOfDispute, partAdmissionType);
     }
 
     @Override

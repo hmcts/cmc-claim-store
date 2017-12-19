@@ -1,7 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.response.Timeline;
+import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 

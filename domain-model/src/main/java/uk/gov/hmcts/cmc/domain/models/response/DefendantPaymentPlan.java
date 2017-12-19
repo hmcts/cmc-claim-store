@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
+import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
