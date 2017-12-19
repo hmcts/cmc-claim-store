@@ -22,7 +22,7 @@ public class CalculateInterestAmountTest extends BaseSaveTest {
             .andReturn();
 
         InterestAmount obj = deserializeObjectFrom(result, InterestAmount.class);
-        assertThat(obj.getAmount()).isEqualTo(BigDecimal.valueOf(39.43));
+        assertThat(obj.getAmount()).isEqualTo(BigDecimal.valueOf(39.45));
     }
 
     @Test
