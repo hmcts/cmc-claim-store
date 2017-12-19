@@ -36,7 +36,7 @@ public class IntegrationTestSupportController {
     @GetMapping("/claims/{claimReferenceNumber}")
     @ApiOperation("Fetch user claim for given reference number")
     public Claim getByClaimReferenceNumber(
-        @PathVariable("claimReferenceNumber") final String claimReferenceNumber
+        @PathVariable("claimReferenceNumber") String claimReferenceNumber
     ) {
         return claimRepository.getByClaimReferenceNumber(claimReferenceNumber)
             .orElseThrow(() -> new NotFoundException("Claim not found by ref no: " + claimReferenceNumber));
@@ -45,8 +45,8 @@ public class IntegrationTestSupportController {
     @PutMapping("/claims/{claimReferenceNumber}/response-deadline/{newDeadline}")
     @ApiOperation("Manipulate the respond by date of a claim")
     public Claim updateRespondByDate(
-        @PathVariable("claimReferenceNumber") final String claimReferenceNumber,
-        @PathVariable("newDeadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate newDeadline
+        @PathVariable("claimReferenceNumber") String claimReferenceNumber,
+        @PathVariable("newDeadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newDeadline
     ) {
         Claim claim = getByClaimReferenceNumber(claimReferenceNumber);
 

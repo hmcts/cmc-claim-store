@@ -24,10 +24,10 @@ public class DefendantPinLetterContentProviderTest {
     private static final String DEFENDANT_PIN = "dsf4dd2";
     private static final String FRONTEND_BASE_URL = "https://moneyclaim.hmcts.net";
 
+    private final Claim claim = SampleClaim.getDefault();
+
     @Mock
     private NotificationsProperties notificationsProperties;
-
-    private Claim claim = SampleClaim.getDefault();
 
     private DefendantPinLetterContentProvider provider;
 

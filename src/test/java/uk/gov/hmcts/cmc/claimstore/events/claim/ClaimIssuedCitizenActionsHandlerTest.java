@@ -55,7 +55,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     @Test
     public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
 
-        final ClaimIssuedEvent claimIssuedEvent
+        ClaimIssuedEvent claimIssuedEvent
             = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
@@ -82,7 +82,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     @Test(expected = IllegalArgumentException.class)
     public void sendFailSendingNotificationToDefendantWhenPinIsMissing() throws NotificationClientException {
 
-        final ClaimIssuedEvent claimIssuedEvent
+        ClaimIssuedEvent claimIssuedEvent
             = new ClaimIssuedEvent(CLAIM, null, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);

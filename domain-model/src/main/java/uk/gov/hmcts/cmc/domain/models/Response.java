@@ -53,10 +53,10 @@ public abstract class Response {
     private final StatementOfTruth statementOfTruth;
 
     public Response(
-            final FreeMediationOption freeMediation,
-            final MoreTimeNeededOption moreTimeNeeded,
-            final Party defendant,
-            final StatementOfTruth statementOfTruth
+            FreeMediationOption freeMediation,
+            MoreTimeNeededOption moreTimeNeeded,
+            Party defendant,
+            StatementOfTruth statementOfTruth
     ) {
         this.freeMediation = freeMediation;
         this.moreTimeNeeded = moreTimeNeeded;
@@ -82,7 +82,7 @@ public abstract class Response {
 
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -91,7 +91,7 @@ public abstract class Response {
             return false;
         }
 
-        final Response that = (Response) other;
+        Response that = (Response) other;
         return Objects.equals(freeMediation, that.freeMediation)
             && Objects.equals(moreTimeNeeded, that.moreTimeNeeded)
             && Objects.equals(defendant, that.defendant)

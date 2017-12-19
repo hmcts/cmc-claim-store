@@ -15,22 +15,22 @@ public class ContactDetailsAssert extends AbstractAssert<ContactDetailsAssert, C
     public ContactDetailsAssert isEqualTo(CCDContactDetails ccdContactDetails) {
         isNotNull();
 
-        final String phoneActual = actual.getPhone().orElse(null);
-        final String phone = ccdContactDetails.getPhone().orElse(null);
+        String phoneActual = actual.getPhone().orElse(null);
+        String phone = ccdContactDetails.getPhone().orElse(null);
         if (!Objects.equals(phoneActual, phone)) {
             failWithMessage("Expected ContactDetails.phone to be <%s> but was <%s>",
                 phone, phoneActual);
         }
 
-        final String emailActual = actual.getEmail().orElse(null);
-        final String email = ccdContactDetails.getEmail().orElse(null);
+        String emailActual = actual.getEmail().orElse(null);
+        String email = ccdContactDetails.getEmail().orElse(null);
         if (!Objects.equals(emailActual, email)) {
             failWithMessage("Expected ContactDetails.email to be <%s> but was <%s>",
                 email, emailActual);
         }
 
-        final String dxAddressActual = actual.getDxAddress().orElse(null);
-        final String dxAddress = ccdContactDetails.getDxAddress().orElse(null);
+        String dxAddressActual = actual.getDxAddress().orElse(null);
+        String dxAddress = ccdContactDetails.getDxAddress().orElse(null);
         if (!Objects.equals(dxAddressActual, dxAddress)) {
             failWithMessage("Expected ContactDetails.dxAddress to be <%s> but was <%s>",
                 dxAddress, dxAddressActual);

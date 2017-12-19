@@ -12,7 +12,7 @@ public class PaymentState {
     @NotNull
     private final boolean finished;
 
-    public PaymentState(final String status, final boolean finished) {
+    public PaymentState(String status, boolean finished) {
         this.status = status;
         this.finished = finished;
     }
@@ -26,14 +26,14 @@ public class PaymentState {
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        final PaymentState that = (PaymentState) other;
+        PaymentState that = (PaymentState) other;
         return finished == that.finished
             && Objects.equals(status, that.status);
     }

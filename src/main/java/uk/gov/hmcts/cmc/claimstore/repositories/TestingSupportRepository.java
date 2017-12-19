@@ -17,7 +17,7 @@ public interface TestingSupportRepository {
             + "WHERE id = :claimId"
     )
     void updateResponseDeadline(
-        @Bind("claimId") final Long claimId,
-        @Bind("responseDeadline") final LocalDate responseDeadline
+        @Bind("claimId") Long claimId,
+        @Bind("responseDeadline") LocalDate responseDeadline
     );
 }

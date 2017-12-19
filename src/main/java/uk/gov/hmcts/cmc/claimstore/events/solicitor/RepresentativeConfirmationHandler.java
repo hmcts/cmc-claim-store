@@ -15,8 +15,8 @@ public class RepresentativeConfirmationHandler {
     private final NotificationsProperties notificationsProperties;
 
     public RepresentativeConfirmationHandler(
-        final ClaimIssuedNotificationService claimIssuedNotificationService,
-        final NotificationsProperties notificationsProperties
+        ClaimIssuedNotificationService claimIssuedNotificationService,
+        NotificationsProperties notificationsProperties
     ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
@@ -24,7 +24,7 @@ public class RepresentativeConfirmationHandler {
 
     @EventListener
     public void sendConfirmation(RepresentedClaimIssuedEvent event) {
-        final Claim claim = event.getClaim();
+        Claim claim = event.getClaim();
 
         claimIssuedNotificationService.sendMail(
             claim,
@@ -36,7 +36,7 @@ public class RepresentativeConfirmationHandler {
     }
 
     private EmailTemplates getEmailTemplates() {
-        final NotificationTemplates templates = notificationsProperties.getTemplates();
+        NotificationTemplates templates = notificationsProperties.getTemplates();
         return templates.getEmail();
     }
 }

@@ -19,7 +19,7 @@ public class IndividualDetailsMapper implements Mapper<CCDIndividual, Individual
     private final RepresentativeMapper representativeMapper;
 
     @Autowired
-    public IndividualDetailsMapper(final AddressMapper addressMapper, final RepresentativeMapper representativeMapper) {
+    public IndividualDetailsMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
     }
@@ -27,7 +27,7 @@ public class IndividualDetailsMapper implements Mapper<CCDIndividual, Individual
     @Override
     public CCDIndividual to(IndividualDetails individual) {
 
-        final CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
+        CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
         individual.getTitle().ifPresent(builder::title);
         individual.getEmail().ifPresent(builder::email);
 

@@ -19,16 +19,16 @@ public class MoreTimeRequestedNotificationService {
     private final NotificationClient notificationClient;
 
     @Autowired
-    public MoreTimeRequestedNotificationService(final NotificationClient notificationClient) {
+    public MoreTimeRequestedNotificationService(NotificationClient notificationClient) {
         this.notificationClient = notificationClient;
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(
-        final String targetEmail,
-        final String emailTemplateId,
-        final Map<String, String> parameters,
-        final String reference
+        String targetEmail,
+        String emailTemplateId,
+        Map<String, String> parameters,
+        String reference
     ) {
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
@@ -39,13 +39,13 @@ public class MoreTimeRequestedNotificationService {
 
     @Recover
     public void logNotificationFailure(
-        final NotificationException exception,
-        final String targetEmail,
-        final String emailTemplateId,
-        final Map<String, String> parameters,
-        final String reference
+        NotificationException exception,
+        String targetEmail,
+        String emailTemplateId,
+        Map<String, String> parameters,
+        String reference
     ) {
-        final String errorMessage = String.format(
+        String errorMessage = String.format(
             "Failure: failed to send notification (%s to %s) due to %s",
             reference,
             targetEmail,

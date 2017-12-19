@@ -8,7 +8,7 @@ public enum CCDPartyType {
 
     private String value;
 
-    CCDPartyType(final String value) {
+    CCDPartyType(String value) {
         this.value = value;
     }
 

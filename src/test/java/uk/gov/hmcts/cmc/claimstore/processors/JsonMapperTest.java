@@ -33,7 +33,7 @@ public class JsonMapperTest {
     @Test
     public void shouldProcessClaimDataToJson() throws Exception {
         //given
-        final ClaimData input = SampleClaimData.builder()
+        ClaimData input = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterestDate(SampleInterestDate.builder()
                 .withDate(LocalDate.of(2015, 2, 2))
@@ -54,23 +54,23 @@ public class JsonMapperTest {
             .build();
 
         //when
-        final String output = processor.toJson(input);
+        String output = processor.toJson(input);
 
         //then
-        final String expected = new ResourceReader().read("/claim-application.json");
+        String expected = new ResourceReader().read("/claim-application.json");
         JSONAssert.assertEquals(expected, output, STRICT);
     }
 
     @Test
     public void shouldProcessFromJson() throws Exception {
         //given
-        final String input = new ResourceReader().read("/claim-application.json");
+        String input = new ResourceReader().read("/claim-application.json");
 
         //when
-        final ClaimData output = processor.fromJson(input, ClaimData.class);
+        ClaimData output = processor.fromJson(input, ClaimData.class);
 
         //then
-        final ClaimData expected = SampleClaimData.builder()
+        ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterestDate(SampleInterestDate.builder()
                 .withDate(LocalDate.of(2015, 2, 2))
@@ -95,13 +95,13 @@ public class JsonMapperTest {
     @Test
     public void shouldProcessLegalClaimFromJson() throws Exception {
         //given
-        final String input = new ResourceReader().read("/legal-claim-application.json");
+        String input = new ResourceReader().read("/legal-claim-application.json");
 
         //when
-        final ClaimData output = processor.fromJson(input, ClaimData.class);
+        ClaimData output = processor.fromJson(input, ClaimData.class);
 
         //then
-        final ClaimData expected = SampleClaimData.builder()
+        ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterestDate(
                 SampleInterestDate.builder()
@@ -124,13 +124,13 @@ public class JsonMapperTest {
     @Test
     public void shouldProcessDependantResponseFromJson() throws Exception {
         //given
-        final String input = new ResourceReader().read("/defendant-response.json");
+        String input = new ResourceReader().read("/defendant-response.json");
 
         //when
-        final Response output = processor.fromJson(input, Response.class);
+        Response output = processor.fromJson(input, Response.class);
 
         //then
-        final Response expected = SampleResponse.validDefaults();
+        Response expected = SampleResponse.validDefaults();
         assertThat(output).isEqualTo(expected);
     }
 

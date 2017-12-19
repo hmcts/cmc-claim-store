@@ -17,22 +17,22 @@ public final class SampleUserDetails {
         return new SampleUserDetails();
     }
 
-    public SampleUserDetails withMail(final String userEmail) {
+    public SampleUserDetails withMail(String userEmail) {
         this.userEmail = userEmail;
         return this;
     }
 
-    public SampleUserDetails withUserId(final String userId) {
+    public SampleUserDetails withUserId(String userId) {
         this.userId = userId;
         return this;
     }
 
-    public SampleUserDetails withForename(final String forename) {
+    public SampleUserDetails withForename(String forename) {
         this.forename = forename;
         return this;
     }
 
-    public SampleUserDetails withSurname(final String surname) {
+    public SampleUserDetails withSurname(String surname) {
         this.surname = surname;
         return this;
     }

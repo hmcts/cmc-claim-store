@@ -15,7 +15,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     private final ClaimMapper claimMapper;
 
-    public CaseMapper(final ClaimMapper claimMapper) {
+    public CaseMapper(ClaimMapper claimMapper) {
         this.claimMapper = claimMapper;
     }
 

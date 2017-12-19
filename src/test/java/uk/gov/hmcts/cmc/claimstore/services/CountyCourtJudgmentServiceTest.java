@@ -75,7 +75,7 @@ public class CountyCourtJudgmentServiceTest {
     @Test(expected = ForbiddenActionException.class)
     public void saveThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {
 
-        final String differentUser = "34234234";
+        String differentUser = "34234234";
 
         Claim claim = SampleClaim.getDefault();
 

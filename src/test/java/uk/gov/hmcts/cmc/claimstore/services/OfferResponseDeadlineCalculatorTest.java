@@ -34,7 +34,7 @@ public class OfferResponseDeadlineCalculatorTest {
 
         when(publicHolidaysCollection.getPublicHolidays()).thenReturn(new TreeSet<>());
 
-        final WorkingDayIndicator workingDayIndicator = new WorkingDayIndicator(publicHolidaysCollection);
+        WorkingDayIndicator workingDayIndicator = new WorkingDayIndicator(publicHolidaysCollection);
 
         calculator = new OfferResponseDeadlineCalculator(
             workingDayIndicator, DAYS_FOR_RESPONSE, END_OF_BUSINESS_DAY

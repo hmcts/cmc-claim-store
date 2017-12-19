@@ -13,9 +13,9 @@ public class NotificationReferenceBuilder {
     }
 
     private static String reference(
-        final String template,
-        final String toWhom,
-        final String claimReferenceNumber
+        String template,
+        String toWhom,
+        String claimReferenceNumber
     ) {
         return String.format(template, toWhom, claimReferenceNumber);
     }
@@ -28,7 +28,7 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForDefendant(final String claimReferenceNumber) {
+        public static String referenceForDefendant(String claimReferenceNumber) {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }
@@ -41,11 +41,11 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(final String claimReferenceNumber) {
+        public static String referenceForClaimant(String claimReferenceNumber) {
             return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
         }
 
-        public static String referenceForDefendant(final String claimReferenceNumber) {
+        public static String referenceForDefendant(String claimReferenceNumber) {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }
@@ -58,7 +58,7 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(final String claimReferenceNumber) {
+        public static String referenceForClaimant(String claimReferenceNumber) {
             return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
         }
     }
@@ -71,11 +71,11 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(final String claimReferenceNumber) {
+        public static String referenceForClaimant(String claimReferenceNumber) {
             return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
         }
 
-        public static String referenceForDefendant(final String claimReferenceNumber) {
+        public static String referenceForDefendant(String claimReferenceNumber) {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }
@@ -88,11 +88,11 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(final String claimReferenceNumber) {
+        public static String referenceForClaimant(String claimReferenceNumber) {
             return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
         }
 
-        public static String referenceForDefendant(final String claimReferenceNumber) {
+        public static String referenceForDefendant(String claimReferenceNumber) {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }
@@ -105,11 +105,11 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(final String claimReferenceNumber) {
+        public static String referenceForClaimant(String claimReferenceNumber) {
             return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
         }
 
-        public static String referenceForDefendant(final String claimReferenceNumber) {
+        public static String referenceForDefendant(String claimReferenceNumber) {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }

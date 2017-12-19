@@ -19,9 +19,9 @@ public class CountyCourtJudgmentService {
 
     @Autowired
     public CountyCourtJudgmentService(
-        final ClaimService claimService,
-        final AuthorisationService authorisationService,
-        final EventProducer eventProducer
+        ClaimService claimService,
+        AuthorisationService authorisationService,
+        EventProducer eventProducer
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
@@ -29,7 +29,7 @@ public class CountyCourtJudgmentService {
     }
 
     @Transactional
-    public Claim save(final String submitterId, final CountyCourtJudgment countyCourtJudgment, final long claimId) {
+    public Claim save(String submitterId, CountyCourtJudgment countyCourtJudgment, long claimId) {
 
         Claim claim = claimService.getClaimById(claimId);
 
@@ -58,15 +58,15 @@ public class CountyCourtJudgmentService {
         return claimWithCCJ;
     }
 
-    private boolean canCountyCourtJudgmentBeRequestedYet(final Claim claim) {
+    private boolean canCountyCourtJudgmentBeRequestedYet(Claim claim) {
         return LocalDate.now().isAfter(claim.getResponseDeadline());
     }
 
-    private boolean isResponseAlreadySubmitted(final Claim claim) {
+    private boolean isResponseAlreadySubmitted(Claim claim) {
         return null != claim.getRespondedAt();
     }
 
-    private boolean isCountyCourtJudgmentAlreadySubmitted(final Claim claim) {
+    private boolean isCountyCourtJudgmentAlreadySubmitted(Claim claim) {
         return claim.getCountyCourtJudgment() != null;
     }
 }

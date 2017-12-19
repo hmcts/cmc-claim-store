@@ -69,7 +69,7 @@ public class OffersService {
         eventProducer.createOfferRejectedEvent(claim, party);
     }
 
-    private void assertSettlementIsNotReached(final Claim claim) {
+    private void assertSettlementIsNotReached(Claim claim) {
         if (claim.getSettlementReachedAt() != null) {
             throw new ConflictException(format("Settlement for claim %d has been already reached", claim.getId()));
         }

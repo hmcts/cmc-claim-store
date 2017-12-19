@@ -44,13 +44,13 @@ public class SupportController {
 
     @Autowired
     public SupportController(
-        final ClaimService claimService,
-        final UserService userService,
-        final DocumentGenerator documentGenerator,
-        final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
-        final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
-        final CCJStaffNotificationHandler ccjStaffNotificationHandler,
-        final OfferAcceptedStaffNotificationHandler offerAcceptedStaffNotificationHandler
+        ClaimService claimService,
+        UserService userService,
+        DocumentGenerator documentGenerator,
+        MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
+        DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
+        CCJStaffNotificationHandler ccjStaffNotificationHandler,
+        OfferAcceptedStaffNotificationHandler offerAcceptedStaffNotificationHandler
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -64,9 +64,9 @@ public class SupportController {
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
     @ApiOperation("Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
-        @PathVariable("referenceNumber") final String referenceNumber,
-        @PathVariable("event") final String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) final String authorisation
+        @PathVariable("referenceNumber") String referenceNumber,
+        @PathVariable("event") String event,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
     ) throws ServletRequestBindingException {
 
         Claim claim = claimService.getClaimByReference(referenceNumber)
@@ -93,7 +93,7 @@ public class SupportController {
         }
     }
 
-    private void validateAuthorisationPresentWhenRequired(final String authorisation)
+    private void validateAuthorisationPresentWhenRequired(String authorisation)
         throws ServletRequestBindingException {
         if (StringUtils.isBlank(authorisation)) {
             throw new ServletRequestBindingException(
@@ -102,13 +102,13 @@ public class SupportController {
         }
     }
 
-    private void resendStaffNotificationCCJRequestSubmitted(final Claim claim) {
+    private void resendStaffNotificationCCJRequestSubmitted(Claim claim) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
             new CountyCourtJudgmentRequestedEvent(claim)
         );
     }
 
-    private void resendStaffNotificationsOnClaimIssued(final Claim claim, final String authorisation)
+    private void resendStaffNotificationsOnClaimIssued(Claim claim, String authorisation)
         throws ServletRequestBindingException {
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
@@ -122,13 +122,13 @@ public class SupportController {
 
             claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
 
-            final String fullName = userService.getUserDetails(authorisation).getFullName();
+            String fullName = userService.getUserDetails(authorisation).getFullName();
 
             documentGenerator.generateForNonRepresentedClaim(
                 new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );
         } else {
-            final UserDetails userDetails = userService.getUserDetails(authorisation);
+            UserDetails userDetails = userService.getUserDetails(authorisation);
 
             documentGenerator.generateForRepresentedClaim(
                 new RepresentedClaimIssuedEvent(claim, userDetails.getFullName(), authorisation)
@@ -137,7 +137,7 @@ public class SupportController {
 
     }
 
-    private void resendStaffNotificationOnMoreTimeRequested(final Claim claim) {
+    private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
         if (!claim.isMoreTimeRequested()) {
             throw new ConflictException("More time has not been requested yet - cannot send notification");
         }
@@ -147,19 +147,19 @@ public class SupportController {
         moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
-    private void resendStaffNotificationOnDefendantResponseSubmitted(final Claim claim) {
+    private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim) {
         if (!claim.getResponse().isPresent()) {
             throw new ConflictException(CLAIM + claim.getId() + " does not have associated response");
         }
-        final DefendantResponseEvent event = new DefendantResponseEvent(claim);
+        DefendantResponseEvent event = new DefendantResponseEvent(claim);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
     }
 
-    private void resendStaffNotificationOnOfferAccepted(final Claim claim) {
+    private void resendStaffNotificationOnOfferAccepted(Claim claim) {
         if (claim.getSettlementReachedAt() == null) {
             throw new ConflictException(CLAIM + claim.getId() + " does not have a settlement");
         }
-        final OfferAcceptedEvent event = new OfferAcceptedEvent(claim, null);
+        OfferAcceptedEvent event = new OfferAcceptedEvent(claim, null);
         offerAcceptedStaffNotificationHandler.onOfferAccepted(event);
     }
 
