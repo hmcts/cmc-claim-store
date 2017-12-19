@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.services.InterestRateService;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.domain.models.InterestAmount;
 
 import java.math.BigDecimal;
@@ -22,11 +22,11 @@ import java.time.LocalDate;
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class InterestRatesController {
 
-    private final InterestRateService interestRateService;
+    private final InterestCalculationService interestCalculationService;
 
     @Autowired
-    public InterestRatesController(InterestRateService interestRateService) {
-        this.interestRateService = interestRateService;
+    public InterestRatesController(InterestCalculationService interestCalculationService) {
+        this.interestCalculationService = interestCalculationService;
     }
 
     @GetMapping("/calculate")
@@ -37,6 +37,6 @@ public class InterestRatesController {
         @RequestParam("rate") BigDecimal rate,
         @RequestParam("amount") BigDecimal amount
     ) {
-        return new InterestAmount(interestRateService.calculateRate(from, to, rate, amount));
+        return new InterestAmount(interestCalculationService.calculateInterest(amount, rate, from, to));
     }
 }
