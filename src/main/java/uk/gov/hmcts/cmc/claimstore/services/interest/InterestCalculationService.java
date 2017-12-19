@@ -19,7 +19,7 @@ public class InterestCalculationService {
     private static final int TO_FULL_PENNIES = 2;
 
     private static final BigDecimal HUNDRED = valueOf(100);
-    private static final BigDecimal NUMBER_OF_DAYS_IN_YEAR = new BigDecimal("365.242199");
+    private static final BigDecimal NUMBER_OF_DAYS_IN_YEAR = new BigDecimal(365L);
 
     private final Clock clock;
 
