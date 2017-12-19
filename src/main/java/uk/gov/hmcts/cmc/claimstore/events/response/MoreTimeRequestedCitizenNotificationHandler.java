@@ -24,20 +24,20 @@ public class MoreTimeRequestedCitizenNotificationHandler {
 
     @Autowired
     public MoreTimeRequestedCitizenNotificationHandler(
-        final MoreTimeRequestedNotificationService notificationService,
-        final NotificationsProperties notificationsProperties
+        MoreTimeRequestedNotificationService notificationService,
+        NotificationsProperties notificationsProperties
     ) {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
     }
 
     @EventListener
-    void sendNotifications(final MoreTimeRequestedEvent event) {
+    void sendNotifications(MoreTimeRequestedEvent event) {
         sendNotificationToClaimant(event);
         sendNotificationToDefendant(event);
     }
 
-    private void sendNotificationToDefendant(final MoreTimeRequestedEvent event) {
+    private void sendNotificationToDefendant(MoreTimeRequestedEvent event) {
         notificationService.sendMail(
             event.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
@@ -46,7 +46,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         );
     }
 
-    private void sendNotificationToClaimant(final MoreTimeRequestedEvent event) {
+    private void sendNotificationToClaimant(MoreTimeRequestedEvent event) {
         notificationService.sendMail(
             event.getClaim().getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantMoreTimeRequested(),
@@ -55,7 +55,7 @@ public class MoreTimeRequestedCitizenNotificationHandler {
         );
     }
 
-    private Map<String, String> prepareNotificationParameters(final MoreTimeRequestedEvent event) {
+    private Map<String, String> prepareNotificationParameters(MoreTimeRequestedEvent event) {
 
         Claim claim = event.getClaim();
 

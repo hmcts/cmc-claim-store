@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.domain.exceptions;
 
 public class NotificationException extends RuntimeException {
 
-    public NotificationException(final String message) {
+    public NotificationException(String message) {
         super(message);
     }
 
-    public NotificationException(final Exception cause) {
+    public NotificationException(Exception cause) {
         super(cause);
     }
 }

@@ -13,13 +13,13 @@ public class PersonContent {
     private final String businessName;
 
     public PersonContent(
-        final String partyType,
-        final String fullName,
-        final Address address,
-        final Address correspondenceAddress,
-        final String email,
-        final String contactPerson,
-        final String businessName
+        String partyType,
+        String fullName,
+        Address address,
+        Address correspondenceAddress,
+        String email,
+        String contactPerson,
+        String businessName
     ) {
         this.partyType = partyType;
         this.fullName = fullName;

@@ -25,7 +25,7 @@ public class PartyUtils {
         // utility class, no instances
     }
 
-    public static String getType(final Party party) {
+    public static String getType(Party party) {
         if (party instanceof Individual) {
             return INDIVIDUAL;
         } else if (party instanceof SoleTrader) {
@@ -39,7 +39,7 @@ public class PartyUtils {
         }
     }
 
-    public static String getType(final TheirDetails party) {
+    public static String getType(TheirDetails party) {
         if (party instanceof IndividualDetails) {
             return INDIVIDUAL;
         } else if (party instanceof SoleTraderDetails) {
@@ -53,7 +53,7 @@ public class PartyUtils {
         }
     }
 
-    public static Optional<String> getContactPerson(final Party party) {
+    public static Optional<String> getContactPerson(Party party) {
         if (party instanceof Company) {
             return ((Company) party).getContactPerson();
         } else if (party instanceof Organisation) {
@@ -62,7 +62,7 @@ public class PartyUtils {
         return Optional.empty();
     }
 
-    public static Optional<String> getContactPerson(final TheirDetails party) {
+    public static Optional<String> getContactPerson(TheirDetails party) {
         if (party instanceof CompanyDetails)  {
             return ((CompanyDetails) party).getContactPerson();
         } else if (party instanceof OrganisationDetails) {
@@ -71,14 +71,14 @@ public class PartyUtils {
         return Optional.empty();
     }
 
-    public static Optional<String> getBusinessName(final Party party) {
+    public static Optional<String> getBusinessName(Party party) {
         if (party instanceof SoleTrader) {
             return ((SoleTrader) party).getBusinessName();
         }
         return Optional.empty();
     }
 
-    public static Optional<String> getBusinessName(final TheirDetails party) {
+    public static Optional<String> getBusinessName(TheirDetails party) {
         if (party instanceof SoleTraderDetails) {
             return ((SoleTraderDetails) party).getBusinessName();
         }

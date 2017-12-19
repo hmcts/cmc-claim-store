@@ -46,5 +46,15 @@ public class IndividualMapperTest {
         assertThat(individual).isEqualTo(ccdIndividual);
     }
 
+    @Test
+    public void shouldNotMapIndividualDOBToCCDWhenNull() {
+        //given
+        Individual individual = SampleParty.builder().withDateOfBirth(null).individual();
 
+        //when
+        CCDIndividual ccdIndividual = individualMapper.to(individual);
+
+        //then
+        assertThat(individual).isEqualTo(ccdIndividual);
+    }
 }

@@ -13,7 +13,7 @@ import uk.gov.service.notify.NotificationClient;
 public class NotificationsConfiguration {
 
     @Bean
-    public NotificationClient notificationClient(final NotificationsProperties notificationsProperties) {
+    public NotificationClient notificationClient(NotificationsProperties notificationsProperties) {
         return new NotificationClient(notificationsProperties.getGovNotifyApiKey());
     }
 

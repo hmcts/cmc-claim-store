@@ -14,7 +14,7 @@ public class AmountRangeTest {
     @Test
     public void shouldBeSuccessfulValidationForValidAmountDetails() {
         //given
-        final AmountRange amountRow = SampleAmountRange.validDefaults();
+        AmountRange amountRow = SampleAmountRange.validDefaults();
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -24,7 +24,7 @@ public class AmountRangeTest {
     @Test
     public void shouldBeSuccessfulValidationForMaximumValue() {
         //given
-        final AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(9999999.99))
+        AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(9999999.99))
             .withLowerValue(valueOf(9999999.99)).build();
 
         //when
@@ -36,7 +36,7 @@ public class AmountRangeTest {
     @Test
     public void shouldBeSuccessfulValidationForMinimum() {
         //given
-        final AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(0.01))
+        AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(0.01))
             .withLowerValue(valueOf(0.01)).build();
 
         //when
@@ -48,7 +48,7 @@ public class AmountRangeTest {
     @Test
     public void shouldHaveErrorsForValueHigherThanMaximum() {
         //given
-        final AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(10000000)).build();
+        AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(10000000)).build();
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -58,14 +58,14 @@ public class AmountRangeTest {
     @Test
     public void shouldHaveErrorsForValueLowerThanMinimum() {
         //given
-        final AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(0))
+        AmountRange amountRow = SampleAmountRange.builder().withHigherValue(valueOf(0))
             .withLowerValue(valueOf(0)).build();
 
         //when
         Set<String> errors = validate(amountRow);
         //then
 
-        final String[] expectedErroMessages = {"higherValue : must be greater than or equal to 0.01",
+        String[] expectedErroMessages = {"higherValue : must be greater than or equal to 0.01",
             "lowerValue : must be greater than or equal to 0.01"};
 
         assertThat(errors).containsExactly(expectedErroMessages);

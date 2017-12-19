@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.exceptions;
 
 public class DocumentManagementException extends RuntimeException {
-    public DocumentManagementException(final String message) {
+    public DocumentManagementException(String message) {
         super(message);
     }
 }

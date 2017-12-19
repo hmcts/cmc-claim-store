@@ -10,7 +10,7 @@ public class ContactDetailsMapper implements Mapper<CCDContactDetails, ContactDe
     @Override
     public CCDContactDetails to(ContactDetails contactDetails) {
 
-        final CCDContactDetails.CCDContactDetailsBuilder builder = CCDContactDetails.builder();
+        CCDContactDetails.CCDContactDetailsBuilder builder = CCDContactDetails.builder();
         contactDetails.getEmail().ifPresent(builder::email);
         contactDetails.getPhone().ifPresent(builder::phone);
         contactDetails.getDxAddress().ifPresent(builder::dxAddress);

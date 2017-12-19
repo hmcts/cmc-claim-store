@@ -285,7 +285,7 @@
       <tr>
         <td>Interest rate:</td>
         <td>
-          {{ claim.interest.rate }}% a year
+          {{ claim.interest.rate }} a year
         </td>
       </tr>
       <tr>
@@ -297,19 +297,17 @@
       <tr>
         <td>Date interest is claimed from:</td>
         <td>
-          {{ claim.interest.dateClaimedFrom }}
+          {{ claim.interest.fromDate }}
         </td>
       </tr>
-      {% if claim.interest.claimedAtDateOfSubmission is defined %}
+      {% if claim.interest.customFromDate %}
       <tr>
         <td>Total interest claimed to the date of submission:</td>
         <td>
-          {{ claim.interest.claimedAtDateOfSubmission }}
+          {{ claim.interest.amount }}
         </td>
       </tr>
       {% endif %}
-      {% endif %}
-      {% if claim.interest is defined %}
       <tr>
         <td>Accrued interest:</td>
         <td>

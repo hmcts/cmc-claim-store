@@ -15,7 +15,7 @@ public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
     private final RepresentativeMapper representativeMapper;
 
     @Autowired
-    public IndividualMapper(final AddressMapper addressMapper, final RepresentativeMapper representativeMapper) {
+    public IndividualMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
     }
@@ -23,7 +23,7 @@ public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
     @Override
     public CCDIndividual to(Individual individual) {
 
-        final CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
+        CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
         individual.getTitle().ifPresent(builder::title);
         individual.getMobilePhone().ifPresent(builder::mobilePhone);
 
@@ -33,9 +33,12 @@ public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
         individual.getRepresentative()
             .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
 
+        if (individual.getDateOfBirth() != null) {
+            builder.dateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE));
+        }
+
         return builder
             .name(individual.getName())
-            .dateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE))
             .address(addressMapper.to(individual.getAddress()))
             .build();
     }

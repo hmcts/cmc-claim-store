@@ -15,10 +15,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseCitizenNotificationsHandlerTest {
-    private DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
     private static final DefendantResponseEvent RESPONSE_EVENT = new DefendantResponseEvent(
         SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE
     );
+
+    private DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
 
     @Mock
     private DefendantResponseNotificationService defendantResponseNotificationService;
