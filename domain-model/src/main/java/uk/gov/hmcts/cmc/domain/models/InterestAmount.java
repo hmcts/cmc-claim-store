@@ -8,10 +8,12 @@ public class InterestAmount {
     private BigDecimal amount;
 
     public InterestAmount(BigDecimal amount) {
-        this.amount = amount;
+        if (amount != null) {
+            this.amount = amount.setScale(2, RoundingMode.HALF_UP);
+        }
     }
 
     public BigDecimal getAmount() {
-        return amount.setScale(2, RoundingMode.HALF_UP);
+        return amount;
     }
 }
