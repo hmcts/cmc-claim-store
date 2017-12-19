@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -16,7 +17,10 @@ public class InterestRateService {
 
         long noOfDays = calculateNumberOfDays(fromDate, toDate);
 
-        return BigDecimal.valueOf((amount.doubleValue() * noOfDays * rate.doubleValue()) / (365 * 100));
+        return amount
+            .multiply(rate)
+            .multiply(BigDecimal.valueOf(noOfDays))
+            .divide(BigDecimal.valueOf(365 * 100), 2, RoundingMode.HALF_UP);
     }
 
     private long calculateNumberOfDays(LocalDate fromDate, LocalDate toDate) {
@@ -26,11 +30,11 @@ public class InterestRateService {
 
     private void validatePeriod(LocalDate fromDate, LocalDate toDate) {
         if (fromDate == null || toDate == null) {
-            throw new BadRequestException("fromDateDate or toDateDate is null");
+            throw new BadRequestException("fromDate or toDate is null");
         }
 
         if (fromDate.isAfter(toDate)) {
-            throw new BadRequestException("fromDateDate must not be after toDateDate");
+            throw new BadRequestException("fromDate must not be after toDate");
         }
     }
 

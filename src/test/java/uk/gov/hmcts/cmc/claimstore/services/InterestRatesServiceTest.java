@@ -17,7 +17,7 @@ public class InterestRatesServiceTest {
 
     private static final LocalDate VALID_FROM = LocalDate.now();
     private static final LocalDate VALID_TO = VALID_FROM.plusDays(10);
-    private static final BigDecimal ZERO = BigDecimal.valueOf(0.0);
+    private static final BigDecimal ZERO = BigDecimal.valueOf(0).setScale(2, RoundingMode.HALF_UP);
 
     private InterestRateService interestRateService;
 
@@ -85,4 +85,3 @@ public class InterestRatesServiceTest {
         ).isEqualTo(BigDecimal.valueOf(39.45));
     }
 }
-
