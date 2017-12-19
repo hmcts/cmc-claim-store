@@ -32,7 +32,7 @@ public class IndividualAssert extends AbstractAssert<IndividualAssert, Individua
         }
 
         if (actual.getDateOfBirth() != null) {
-            final String dateOfBirth = actual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE);
+            String dateOfBirth = actual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE);
             if (!Objects.equals(dateOfBirth, ccdIndividual.getDateOfBirth())) {
                 failWithMessage("Expected CCDIndividual.dateOfBirth to be <%s> but was <%s>",
                     ccdIndividual.getDateOfBirth(), dateOfBirth);

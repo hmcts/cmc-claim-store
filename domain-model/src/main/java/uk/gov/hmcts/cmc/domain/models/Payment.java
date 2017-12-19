@@ -28,12 +28,12 @@ public class Payment {
     @Valid
     private final PaymentState state;
 
-    public Payment(final String id,
-                   final BigDecimal amount,
-                   final String reference,
-                   final String description,
-                   final String dateCreated,
-                   final PaymentState state) {
+    public Payment(String id,
+                   BigDecimal amount,
+                   String reference,
+                   String description,
+                   String dateCreated,
+                   PaymentState state) {
         this.id = id;
         this.amount = amount;
         this.reference = reference;
@@ -73,14 +73,14 @@ public class Payment {
 
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        final Payment payment = (Payment) other;
+        Payment payment = (Payment) other;
         return Objects.equals(id, payment.id)
             && Objects.equals(amount, payment.amount)
             && Objects.equals(reference, payment.reference)

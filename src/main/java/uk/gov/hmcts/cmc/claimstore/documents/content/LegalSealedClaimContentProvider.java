@@ -21,13 +21,13 @@ public class LegalSealedClaimContentProvider {
     private final boolean watermarkPdf;
 
     @Autowired
-    public LegalSealedClaimContentProvider(final StatementOfValueProvider statementOfValueProvider,
-        @Value("${feature_toggles.watermark_pdf}") final boolean watermarkPdf) {
+    public LegalSealedClaimContentProvider(StatementOfValueProvider statementOfValueProvider,
+        @Value("${feature_toggles.watermark_pdf}") boolean watermarkPdf) {
         this.statementOfValueProvider = statementOfValueProvider;
         this.watermarkPdf = watermarkPdf;
     }
 
-    public Map<String, Object> createContent(final Claim claim) {
+    public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
 
         Map<String, Object> content = new HashMap<>();
@@ -42,13 +42,13 @@ public class LegalSealedClaimContentProvider {
         content.put("claimSummary", claim.getClaimData().getReason());
         content.put("externalReferenceNumber", claim.getClaimData().getExternalReferenceNumber());
 
-        final Representative legalRepresentative = claim.getClaimData().getClaimants().stream()
+        Representative legalRepresentative = claim.getClaimData().getClaimants().stream()
             .findFirst().orElseThrow(IllegalArgumentException::new)
             .getRepresentative().orElseThrow(IllegalArgumentException::new);
 
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
         content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPound()));
-        final StatementOfTruth statementOfTruth = claim.getClaimData()
+        StatementOfTruth statementOfTruth = claim.getClaimData()
             .getStatementOfTruth()
             .orElseThrow(IllegalArgumentException::new);
         content.put("signerName", statementOfTruth.getSignerName());

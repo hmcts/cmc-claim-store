@@ -15,12 +15,12 @@ public class DefendantResponseCitizenNotificationsHandler {
 
     @Autowired
     public DefendantResponseCitizenNotificationsHandler(
-        final DefendantResponseNotificationService defendantResponseNotificationService) {
+        DefendantResponseNotificationService defendantResponseNotificationService) {
         this.defendantResponseNotificationService = defendantResponseNotificationService;
     }
 
     @EventListener
-    public void notifyDefendantResponse(final DefendantResponseEvent event) {
+    public void notifyDefendantResponse(DefendantResponseEvent event) {
         defendantResponseNotificationService.notifyDefendant(
             event.getClaim(),
             event.getUserEmail(),
@@ -29,7 +29,7 @@ public class DefendantResponseCitizenNotificationsHandler {
     }
 
     @EventListener
-    public void notifyClaimantResponse(final DefendantResponseEvent event) {
+    public void notifyClaimantResponse(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
 
         defendantResponseNotificationService.notifyClaimant(

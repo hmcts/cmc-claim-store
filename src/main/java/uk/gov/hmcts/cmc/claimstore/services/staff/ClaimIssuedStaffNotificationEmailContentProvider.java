@@ -15,15 +15,15 @@ public class ClaimIssuedStaffNotificationEmailContentProvider implements EmailCo
     private final TemplateService templateService;
 
     public ClaimIssuedStaffNotificationEmailContentProvider(
-        final StaffEmailTemplates staffEmailTemplates,
-        final TemplateService templateService
+        StaffEmailTemplates staffEmailTemplates,
+        TemplateService templateService
     ) {
         this.staffEmailTemplates = staffEmailTemplates;
         this.templateService = templateService;
     }
 
     @Override
-    public EmailContent createContent(final Map<String, Object> claim) {
+    public EmailContent createContent(Map<String, Object> claim) {
         return new EmailContent(
             evaluateTemplate(staffEmailTemplates.getClaimIssuedEmailSubject(), claim),
             staffEmailTemplates.getClaimIssuedEmailBody().trim()

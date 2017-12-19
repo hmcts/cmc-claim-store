@@ -12,10 +12,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ResourceReader {
 
-    public String read(final String input) {
+    public String read(String input) {
         try {
-            final URL resource = getClass().getResource(input);
-            final URI url = resource.toURI();
+            URL resource = getClass().getResource(input);
+            URI url = resource.toURI();
             return new String(Files.readAllBytes(Paths.get(url)), UTF_8);
         } catch (NoSuchFileException e) {
             throw new RuntimeException("no file found with the link '" + input + "'", e);

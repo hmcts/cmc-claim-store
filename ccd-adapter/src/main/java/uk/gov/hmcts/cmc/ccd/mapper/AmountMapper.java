@@ -15,9 +15,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 @Component
 public class AmountMapper implements Mapper<CCDAmount, Amount> {
 
-    private AmountRangeMapper amountRangeMapper;
+    private final AmountRangeMapper amountRangeMapper;
 
-    public AmountMapper(final AmountRangeMapper amountRangeMapper) {
+    public AmountMapper(AmountRangeMapper amountRangeMapper) {
         this.amountRangeMapper = amountRangeMapper;
     }
 

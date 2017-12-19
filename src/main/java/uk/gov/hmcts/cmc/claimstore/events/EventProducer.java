@@ -19,12 +19,12 @@ import java.time.LocalDate;
 public class EventProducer {
     private final ApplicationEventPublisher publisher;
 
-    public EventProducer(final ApplicationEventPublisher publisher) {
+    public EventProducer(ApplicationEventPublisher publisher) {
         this.publisher = publisher;
     }
 
-    public void createClaimIssuedEvent(final Claim claim, final String pin,
-                                       final String submitterName, final String authorisation) {
+    public void createClaimIssuedEvent(Claim claim, String pin,
+                                       String submitterName, String authorisation) {
 
         if (claim.getClaimData().isClaimantRepresented()) {
             publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName, authorisation));
@@ -33,28 +33,28 @@ public class EventProducer {
         }
     }
 
-    public void createDefendantResponseEvent(final Claim claim) {
+    public void createDefendantResponseEvent(Claim claim) {
         publisher.publishEvent(new DefendantResponseEvent(claim));
     }
 
     public void createMoreTimeForResponseRequestedEvent(
-        final Claim claim, final LocalDate newResponseDeadline, final String defendantEmail) {
+        Claim claim, LocalDate newResponseDeadline, String defendantEmail) {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentRequestedEvent(final Claim claim) {
+    public void createCountyCourtJudgmentRequestedEvent(Claim claim) {
         publisher.publishEvent(new CountyCourtJudgmentRequestedEvent(claim));
     }
 
-    public void createOfferMadeEvent(final Claim claim) {
+    public void createOfferMadeEvent(Claim claim) {
         publisher.publishEvent(new OfferMadeEvent(claim));
     }
 
-    public void createOfferAcceptedEvent(final Claim claim, final MadeBy party) {
+    public void createOfferAcceptedEvent(Claim claim, MadeBy party) {
         publisher.publishEvent(new OfferAcceptedEvent(claim, party));
     }
 
-    public void createOfferRejectedEvent(final Claim claim, final MadeBy party) {
+    public void createOfferRejectedEvent(Claim claim, MadeBy party) {
         publisher.publishEvent(new OfferRejectedEvent(claim, party));
     }
 }

@@ -25,9 +25,9 @@ public class MoreTimeRequestedStaffNotificationHandler {
 
     @Autowired
     public MoreTimeRequestedStaffNotificationHandler(
-        final MoreTimeRequestedNotificationService notificationService,
-        final NotificationsProperties notificationsProperties,
-        final StaffEmailProperties staffEmailProperties
+        MoreTimeRequestedNotificationService notificationService,
+        NotificationsProperties notificationsProperties,
+        StaffEmailProperties staffEmailProperties
     ) {
 
         this.notificationService = notificationService;
@@ -36,7 +36,7 @@ public class MoreTimeRequestedStaffNotificationHandler {
     }
 
     @EventListener
-    public void sendNotifications(final MoreTimeRequestedEvent event) {
+    public void sendNotifications(MoreTimeRequestedEvent event) {
         notificationService.sendMail(
             staffEmailProperties.getRecipient(),
             notificationsProperties.getTemplates().getEmail().getStaffMoreTimeRequested(),
@@ -45,7 +45,7 @@ public class MoreTimeRequestedStaffNotificationHandler {
         );
     }
 
-    private Map<String, String> prepareNotificationParameters(final MoreTimeRequestedEvent event) {
+    private Map<String, String> prepareNotificationParameters(MoreTimeRequestedEvent event) {
 
         Claim claim = event.getClaim();
 

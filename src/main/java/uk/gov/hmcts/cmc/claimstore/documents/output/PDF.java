@@ -9,7 +9,7 @@ public class PDF {
     private final String fileBaseName;
     private final byte[] bytes;
 
-    public PDF(final String fileBaseName, final byte[] bytes) {
+    public PDF(String fileBaseName, byte[] bytes) {
         this.fileBaseName = fileBaseName;
         this.bytes = bytes;
     }

@@ -31,7 +31,7 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithAmountRange() throws Exception {
         //given
-        final Claim claim = buildClaimModel(
+        Claim claim = buildClaimModel(
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
@@ -40,7 +40,7 @@ public class StatementOfValueProviderTest {
                 ).build());
 
         //when
-        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+        StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
         //then
         assertThat(statementOfValueContent.getClaimValue()).contains("100.50");
@@ -50,7 +50,7 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithAmountRangeWithoutLowerValue() throws Exception {
         //given
-        final Claim claim = buildClaimModel(
+        Claim claim = buildClaimModel(
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
@@ -60,7 +60,7 @@ public class StatementOfValueProviderTest {
                 ).build());
 
         //when
-        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+        StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
         //then
         assertThat(statementOfValueContent.getClaimValue()).contains(String.format(RECOVER_UP_TO, "£100.50"));
@@ -71,10 +71,10 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithAmountNotKnown() throws Exception {
         //given
-        final Claim claim = buildClaimModel(SampleClaimData.builder().withAmount(new NotKnown()).build());
+        Claim claim = buildClaimModel(SampleClaimData.builder().withAmount(new NotKnown()).build());
 
         //when
-        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+        StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
         //then
         assertThat(statementOfValueContent.getClaimValue()).contains(CAN_NOT_STATE);
@@ -83,7 +83,7 @@ public class StatementOfValueProviderTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowErrorForInvalidAmountType() throws Exception {
         //given
-        final Claim claim = SampleClaim.builder().build();
+        Claim claim = SampleClaim.builder().build();
 
         //when
         statementOfValueProvider.create(claim);
@@ -93,7 +93,7 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithPersonalInjury() throws Exception {
         //given
-        final Claim claim = buildClaimModel(
+        Claim claim = buildClaimModel(
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
@@ -104,10 +104,10 @@ public class StatementOfValueProviderTest {
                 .withHousingDisrepair(null)
                 .build());
 
-        final String expected = String.format(PERSONAL_INJURY_DAMAGES, MORE_THAN_THOUSAND_POUNDS.getDisplayValue());
+        String expected = String.format(PERSONAL_INJURY_DAMAGES, MORE_THAN_THOUSAND_POUNDS.getDisplayValue());
 
         //when
-        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+        StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
         //then
         assertThat(statementOfValueContent.getPersonalInjury()).contains(PERSONAL_INJURY);
@@ -117,7 +117,7 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithHousingDisrepair() throws Exception {
         //given
-        final Claim claim = buildClaimModel(
+        Claim claim = buildClaimModel(
             SampleClaimData.builder()
                 .withPersonalInjury(null)
                 .withAmount(SampleAmountRange.builder()
@@ -127,7 +127,7 @@ public class StatementOfValueProviderTest {
                 ).build());
 
         //when
-        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+        StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
         //then
         assertThat(statementOfValueContent.getHousingDisrepair()).contains(HOUSING_DISREPAIR);
@@ -136,7 +136,7 @@ public class StatementOfValueProviderTest {
     @Test
     public void shouldCreateContentWithHousingDisrepairAndPersonalInjury() throws Exception {
         //given
-        final Claim claim = buildClaimModel(
+        Claim claim = buildClaimModel(
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
@@ -146,7 +146,7 @@ public class StatementOfValueProviderTest {
                 ).build());
 
         //when
-        final StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
+        StatementOfValueContent statementOfValueContent = statementOfValueProvider.create(claim);
 
         //then
         assertThat(statementOfValueContent.getHousingDisrepair()).contains(ALSO_HOUSING_DISREPAIR);

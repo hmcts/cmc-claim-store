@@ -14,7 +14,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class Settlement {
 
     private static final String NO_STATEMENTS_MADE = "No statements have yet been made during that settlement";
-    private List<PartyStatement> partyStatements = new ArrayList<>();
+    private final List<PartyStatement> partyStatements = new ArrayList<>();
 
     public void makeOffer(Offer offer, MadeBy party) {
         assertOfferCanBeMadeBy(party);

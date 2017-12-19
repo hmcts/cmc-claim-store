@@ -24,16 +24,16 @@ public class ClaimContentProvider {
 
     @Autowired
     public ClaimContentProvider(
-        final ClaimantContentProvider claimantContentProvider,
-        final PersonContentProvider personContentProvider,
-        final ClaimDataContentProvider claimDataContentProvider
+        ClaimantContentProvider claimantContentProvider,
+        PersonContentProvider personContentProvider,
+        ClaimDataContentProvider claimDataContentProvider
     ) {
         this.claimantContentProvider = claimantContentProvider;
         this.personContentProvider = personContentProvider;
         this.claimDataContentProvider = claimDataContentProvider;
     }
 
-    public Map<String, Object> createContent(final Claim claim) {
+    public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
 
         Map<String, Object> map = new HashMap<>();
