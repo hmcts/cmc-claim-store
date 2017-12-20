@@ -74,7 +74,7 @@ public class DefendantPinLetterContentProviderTest {
     public void shouldProvideClaimAmount() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        assertThat(content).containsEntry("claimTotalAmount", "£80.88");
+        assertThat(content).containsEntry("claimTotalAmount", "£80.89");
     }
 
     @Test

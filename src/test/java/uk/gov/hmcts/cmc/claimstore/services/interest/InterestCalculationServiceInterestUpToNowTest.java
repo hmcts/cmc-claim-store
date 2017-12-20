@@ -53,7 +53,7 @@ public class InterestCalculationServiceInterestUpToNowTest {
         BigDecimal calculated = service.calculateInterestUpToNow(
             MORE_POUNDS, SEVENTY_FIVE_PERCENT_INTEREST, FIVE_HUNDRED_DAYS_AGO
         );
-        assertThat(calculated).isEqualByComparingTo("12674.81");
+        assertThat(calculated).isEqualByComparingTo("12683.22");
     }
 
     @Test
