@@ -1,12 +1,19 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.validator.constraints.NotBlank;
 import java.util.Objects;
+import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class TimelineEvent {
+
+    @NotBlank
+    @Size(max = 25)
     private final String date;
 
+    @NotBlank
+    @Size(max = 99000)
     private final String description;
 
     public TimelineEvent(final String date, final String description) {
