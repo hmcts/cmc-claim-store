@@ -17,17 +17,17 @@ public class InterestCalculationServiceTest {
     private InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldIllegalArgumentExceptionWhenAmountIsNegative() {
+    public void shouldThrowIllegalArgumentExceptionWhenAmountIsNegative() {
         service.calculateInterest(NEGATIVE, BigDecimal.ONE, START_DATE, START_DATE.plusDays(1));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldIllegalArgumentExceptionWhenInterestRateIsNegative() {
+    public void shouldThrowIllegalArgumentExceptionWhenInterestRateIsNegative() {
         service.calculateInterest(BigDecimal.ONE, NEGATIVE, START_DATE, START_DATE.plusDays(1));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldIllegalArgumentExceptionWhenStartDateIsAfterEndDate() {
+    public void shouldThrowIllegalArgumentExceptionWhenStartDateIsAfterEndDate() {
         service.calculateInterest(BigDecimal.ONE, BigDecimal.ONE, START_DATE, START_DATE.minusDays(1));
     }
 
