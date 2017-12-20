@@ -3,13 +3,13 @@
   "partAdmissionType" : "AMOUNT_TOO_HIGH",
   "freeMediation": "yes",
   "moreTimeNeeded": "yes",
-  "evidenceItems": [
+  "evidence": [
   {
   "type": "CONTRACTS_AND_AGREEMENTS",
   "description": "my evidence"
   }
   ],
-  "timelineEvents": [
+  "timeline": [
     {
       "date": "20th May 2017",
       "description": "something happened"

@@ -16,7 +16,7 @@ public class HowMuchOwed {
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
-    @NotBlank(message = "Explanation should not be empty")
+    @NotBlank()
     @Size(max = 255, message = "Explanation should not be longer than {max} characters")
     private final String explanation;
 

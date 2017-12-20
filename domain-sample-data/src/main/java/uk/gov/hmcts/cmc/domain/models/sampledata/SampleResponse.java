@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.EvidenceItem;
 import uk.gov.hmcts.cmc.domain.models.response.HowMuchOwed;
 import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
-import java.util.List;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
@@ -37,7 +36,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                                                final Response.MoreTimeNeededOption moreTimeNeeded,
                                                final Party defendant, final StatementOfTruth statementOfTruth,
                                                final ImmutableList<EvidenceItem> evidenceItems,
-                                               final HowMuchOwed howMuchOwed, final ImmutableList<TimelineEvent> timelineEvents,
+                                               final HowMuchOwed howMuchOwed,
+                                               final ImmutableList<TimelineEvent> timelineEvents,
                                                final DefendantPaymentPlan defendantPaymentPlan,
                                                final String impactOfDispute,
                                                final PartAdmissionResponse.PartAdmissionType partAdmissionType) {

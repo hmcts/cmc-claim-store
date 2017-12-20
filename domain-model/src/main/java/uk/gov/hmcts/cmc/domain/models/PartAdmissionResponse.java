@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.EvidenceItem;
 import uk.gov.hmcts.cmc.domain.models.response.HowMuchOwed;
 import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
-import java.util.List;
 import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

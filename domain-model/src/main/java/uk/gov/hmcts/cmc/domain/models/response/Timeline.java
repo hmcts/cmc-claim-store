@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.google.common.collect.ImmutableList;
-import java.util.List;
 import java.util.Objects;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

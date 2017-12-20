@@ -53,12 +53,12 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(6)
             .contains(
-                "evidenceItems : may not be null",
                 "impactOfDispute : may not be empty",
-                "timelineEvents : may not be null",
+                "timeline : may not be null",
                 "howMuchOwed : may not be null",
-                "partAdmissionType : may not be null",
-                "defendant : may not be null"
+                "evidence : may not be null",
+                "defendant : may not be null",
+                "partAdmissionType : may not be null"
             );
     }
 

@@ -32,7 +32,7 @@ public class HowMuchOwedTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("explanation : Explanation should not be empty");
+            .contains("explanation : may not be empty");
     }
 
     @Test

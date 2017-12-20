@@ -35,7 +35,7 @@ public class DefendantPaymentPlan {
     private final PaymentSchedule paymentSchedule;
 
     @NotNull
-    @Size(max = 255, message = "must be at most {max} characters")
+    @Size
     private final String explanation;
 
     public DefendantPaymentPlan(
