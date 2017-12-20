@@ -17,6 +17,7 @@ dependencies {
   compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: versions.jackson
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
+  compile group: 'com.google.guava', name: 'guava', version: '23.0'
 
   testCompile project(':domain-sample-data')
   testCompile group: 'junit', name: 'junit', version: '4.12'
