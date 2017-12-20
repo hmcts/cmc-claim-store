@@ -40,8 +40,8 @@ public class InterestRatesController {
     ) {
         try {
             return new InterestAmount(interestCalculationService.calculateInterest(amount, rate, from, to));
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException(e.getMessage());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 }
