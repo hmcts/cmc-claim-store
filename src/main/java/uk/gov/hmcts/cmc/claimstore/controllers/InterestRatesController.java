@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.InterestAmount;
 
 import java.math.BigDecimal;
@@ -37,6 +38,10 @@ public class InterestRatesController {
         @RequestParam("rate") BigDecimal rate,
         @RequestParam("amount") BigDecimal amount
     ) {
-        return new InterestAmount(interestCalculationService.calculateInterest(amount, rate, from, to));
+        try {
+            return new InterestAmount(interestCalculationService.calculateInterest(amount, rate, from, to));
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(e.getMessage());
+        }
     }
 }

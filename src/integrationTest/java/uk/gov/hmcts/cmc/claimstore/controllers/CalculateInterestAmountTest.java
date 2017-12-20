@@ -26,33 +26,28 @@ public class CalculateInterestAmountTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenDateFromIsEmpty() throws Exception {
-        makeRequest("", "2010-10-10", 30, 8000).andExpect(status()
-            .isInternalServerError());
+    public void shouldReturnInternalErrorWhenDateFromIsEmpty() throws Exception {
+        makeRequest("", "2010-10-10", 30, 8000).andExpect(status().isInternalServerError());
     }
 
     @Test
-    public void shouldReturnBadRequestWhenDateToIsEmpty() throws Exception {
-        makeRequest("2010-10-10", "", 30, 8000).andExpect(status()
-            .isInternalServerError());
+    public void shouldReturnInternalErrorWhenDateToIsEmpty() throws Exception {
+        makeRequest("2010-10-10", "", 30, 8000).andExpect(status().isInternalServerError());
     }
 
     @Test
     public void shouldReturnBadRequestWhenDateToIsBeforeDateFrom() throws Exception {
-        makeRequest("2010-10-10", "2010-01-01", 30, 8000).andExpect(status()
-            .isInternalServerError());
+        makeRequest("2010-10-10", "2010-01-01", 30, 8000).andExpect(status().isBadRequest());
     }
 
     @Test
     public void shouldReturnBadRequestWhenRateIsNegative() throws Exception {
-        makeRequest("2010-10-10", "2010-01-01", -1, 8000).andExpect(status()
-            .isInternalServerError());
+        makeRequest("2010-10-10", "2010-01-01", -1, 8000).andExpect(status().isBadRequest());
     }
 
     @Test
     public void shouldReturnBadRequestWhenAmountIsNegative() throws Exception {
-        makeRequest("2010-10-10", "2010-01-01", 30, -1).andExpect(status()
-            .isInternalServerError());
+        makeRequest("2010-10-10", "2010-01-01", 30, -1).andExpect(status().isBadRequest());
     }
 
     private ResultActions makeRequest(String fromDate, String toDate, double rate, double amount) throws Exception {

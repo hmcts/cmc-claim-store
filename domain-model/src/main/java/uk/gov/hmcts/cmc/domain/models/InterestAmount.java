@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class InterestAmount {
 
-    private BigDecimal amount;
+    private final BigDecimal amount;
 
     public InterestAmount(BigDecimal amount) {
         this.amount = amount;
