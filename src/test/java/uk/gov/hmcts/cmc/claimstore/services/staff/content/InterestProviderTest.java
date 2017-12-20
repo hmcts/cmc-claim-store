@@ -105,7 +105,7 @@ public class InterestProviderTest {
     public void shouldProvideAmountUpToNow() {
         InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, submittedOn);
 
-        assertThat(content.getAmount()).isEqualTo("£0.88");
+        assertThat(content.getAmount()).isEqualTo("£0.89");
     }
 
     private InterestDate hundredOneDaysAgo() {
@@ -119,7 +119,7 @@ public class InterestProviderTest {
     public void shouldProvideAmountUpToNowRealValue() {
         InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, submittedOn);
 
-        assertThat(content.getAmountRealValue()).isEqualByComparingTo("0.88");
+        assertThat(content.getAmountRealValue()).isEqualByComparingTo("0.89");
     }
 
     @Test

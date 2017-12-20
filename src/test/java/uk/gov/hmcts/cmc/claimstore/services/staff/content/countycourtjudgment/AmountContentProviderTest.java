@@ -33,7 +33,7 @@ public class AmountContentProviderTest {
             .build();
 
         assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
-            .isEqualTo("£80.88");
+            .isEqualTo("£80.89");
     }
 
     @Test
@@ -52,7 +52,7 @@ public class AmountContentProviderTest {
             .build();
 
         assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
-            .isEqualTo("£70.88");
+            .isEqualTo("£70.89");
     }
 
     @Test
