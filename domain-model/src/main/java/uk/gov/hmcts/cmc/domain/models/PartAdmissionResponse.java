@@ -96,8 +96,7 @@ public class PartAdmissionResponse extends Response {
     public PartAdmissionType getPartialAdmissionType() {
         return partAdmissionType;
     }
-
-
+    
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(final Object other) {
