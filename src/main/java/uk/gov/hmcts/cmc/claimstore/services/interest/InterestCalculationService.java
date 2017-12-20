@@ -19,7 +19,7 @@ public class InterestCalculationService {
     private static final int TO_FULL_PENNIES = 2;
 
     private static final BigDecimal HUNDRED = valueOf(100);
-    private static final BigDecimal NUMBER_OF_DAYS_IN_YEAR = new BigDecimal("365.242199");
+    private static final BigDecimal NUMBER_OF_DAYS_IN_YEAR = new BigDecimal(365L);
 
     private final Clock clock;
 
@@ -38,9 +38,6 @@ public class InterestCalculationService {
     }
 
     public BigDecimal calculateInterestUpToNow(BigDecimal claimAmount, BigDecimal interestRate, LocalDate fromDate) {
-        requireNonNull(claimAmount);
-        requireNonNull(interestRate);
-        requireNonNull(fromDate);
         return calculateInterest(claimAmount, interestRate, fromDate, LocalDate.now(clock));
     }
 
@@ -50,8 +47,8 @@ public class InterestCalculationService {
         LocalDate fromDate,
         LocalDate toDate
     ) {
-        requireNonNull(claimAmount);
-        requireNonNull(interestRate);
+        requireNonNegative(claimAmount);
+        requireNonNegative(interestRate);
         requireNonNull(fromDate);
         requireNonNull(toDate);
         return claimAmount
@@ -66,10 +63,23 @@ public class InterestCalculationService {
     }
 
     private BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
+        requireValidOrderOfDates(startDate, endDate);
         return valueOf(Duration.between(
             startDate.atStartOfDay(),
             endDate.atStartOfDay()
         ).toDays());
     }
 
+    private void requireValidOrderOfDates(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("StartDate cannot be after endDate");
+        }
+    }
+
+    private void requireNonNegative(BigDecimal value) {
+        requireNonNull(value);
+        if (value.signum() == -1) {
+            throw new IllegalArgumentException("Expected non-negative number");
+        }
+    }
 }
