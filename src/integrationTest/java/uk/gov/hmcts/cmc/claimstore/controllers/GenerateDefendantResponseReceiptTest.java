@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
+import uk.gov.hmcts.reform.pdf.service.client.exception.PDFServiceClientException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
