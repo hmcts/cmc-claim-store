@@ -57,7 +57,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
 
-        given(serviceAuthorisationApi.serviceToken(anyString(), anyString())).willReturn(SERVICE_TOKEN);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
         MvcResult result = makeRequest(claimData)
             .andExpect(status().isOk())
@@ -102,7 +102,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willThrow(FeignException.class);
 
-        given(serviceAuthorisationApi.serviceToken(anyString(), anyString())).willReturn(SERVICE_TOKEN);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
         MvcResult result = makeRequest(claimData)
             .andExpect(status().isOk())
@@ -137,7 +137,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willThrow(FeignException.class);
 
-        given(serviceAuthorisationApi.serviceToken(anyString(), anyString())).willReturn(SERVICE_TOKEN);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
         MvcResult result = makeRequest(claimData)
             .andExpect(status().isOk())
