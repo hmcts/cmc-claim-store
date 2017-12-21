@@ -23,11 +23,12 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
 import javax.sql.DataSource;
@@ -59,6 +60,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected PDFServiceClient pdfServiceClient;
+
+    @MockBean
+    protected AuthTokenGenerator authTokenGenerator;
 
     @MockBean
     protected DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
