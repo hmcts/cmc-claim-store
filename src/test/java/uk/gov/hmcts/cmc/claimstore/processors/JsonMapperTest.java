@@ -137,13 +137,13 @@ public class JsonMapperTest {
     @Test
     public void shouldProcessDefendantPartialResponseFromJson() throws Exception {
         //given
-        final String input = new ResourceReader().read("/partial-defendant-response.json");
+        String input = new ResourceReader().read("/partial-defendant-response.json");
 
         //when
-        final PartAdmissionResponse output = processor.fromJson(input, PartAdmissionResponse.class);
+        PartAdmissionResponse output = processor.fromJson(input, PartAdmissionResponse.class);
 
         //then
-        final PartAdmissionResponse expected = SampleResponse.validPartAdmissionDefaults();
+        PartAdmissionResponse expected = SampleResponse.validPartAdmissionDefaults();
         assertThat(output).isEqualTo(expected);
     }
 

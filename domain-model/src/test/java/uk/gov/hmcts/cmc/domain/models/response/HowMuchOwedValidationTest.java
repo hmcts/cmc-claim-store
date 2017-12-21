@@ -9,55 +9,54 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
-public class HowMuchOwedTest {
+public class HowMuchOwedValidationTest {
 
     @Test
-    public void shouldBeSuccessfulValidationForHowMuchOwed() {
+    public void passesForValidSample() {
         //given
         HowMuchOwed howMuchOwed = SampleHowMuchOwed.validDefaults();
         //when
         Set<String> response = validate(howMuchOwed);
         //then
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
-    public void shouldBeInvalidForNullExplanation() {
+    public void failsWhenExplanationEmpty() {
         //given
         HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder()
-            .withExplanation(null)
+            .withExplanation("")
             .build();
         //when
         Set<String> errors = validate(howMuchOwed);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("explanation : may not be empty");
+            .containsExactly("explanation : may not be empty");
     }
 
     @Test
-    public void shouldBeInvalidForTooLongExplanation() {
+    public void failsWhenExplanationTooLong() {
         //given
         HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder()
-            .withExplanation(StringUtils.repeat("a", 300))
+            .withExplanation(StringUtils.repeat("a", 256))
             .build();
         //when
         Set<String> errors = validate(howMuchOwed);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("explanation : Explanation should not be longer than 255 characters");
+            .containsExactly("explanation : Explanation should not be longer than 255 characters");
     }
 
     @Test
-    public void shouldReturnValidationMessageWhenAmountHasValueLessThanMinimum() {
+    public void failsWhenAmountIsZero() {
         //given
-        HowMuchOwed howMuchOwed = new HowMuchOwed(new BigDecimal("0.00"), "explanation");
+        HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder()
+            .withAmount(BigDecimal.ZERO)
+            .build();
         //when
         Set<String> errors = validate(howMuchOwed);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("amount : must be greater than or equal to 0.01");
+            .containsExactly("amount : must be greater than or equal to 0.01");
     }
 }

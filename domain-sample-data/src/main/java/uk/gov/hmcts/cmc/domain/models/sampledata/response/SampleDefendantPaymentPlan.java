@@ -50,5 +50,4 @@ public class SampleDefendantPaymentPlan {
         return new DefendantPaymentPlan(firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule, explanation);
     }
 
-
 }

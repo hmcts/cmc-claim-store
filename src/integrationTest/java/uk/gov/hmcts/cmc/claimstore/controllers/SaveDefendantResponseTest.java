@@ -67,7 +67,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         Response response = SampleResponse.validPartAdmissionDefaults();
 
-        final MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
+        MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk())
             .andReturn();
 

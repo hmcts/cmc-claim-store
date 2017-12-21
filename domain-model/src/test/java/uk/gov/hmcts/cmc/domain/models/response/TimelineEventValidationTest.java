@@ -8,20 +8,20 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
-public class TimelineEventTest {
+public class TimelineEventValidationTest {
 
     @Test
-    public void shouldBeSuccessfulValidationForTimeLineRow() {
+    public void passesForValidSample() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.validDefaults();
         //when
         Set<String> response = validate(timelineEvent);
         //then
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
     }
 
     @Test
-    public void shouldBeInvalidForNullExplanation() {
+    public void failsWhenDescriptionEmpty() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.builder()
             .withDescription(null)
@@ -30,35 +30,32 @@ public class TimelineEventTest {
         Set<String> errors = validate(timelineEvent);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("description : may not be empty");
+            .containsExactly("description : may not be empty");
     }
 
     @Test
-    public void shouldBeInvalidForTooLongExplanation() {
+    public void failsWhenDescriptionTooLong() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.builder()
-            .withDescription(StringUtils.repeat("a", 990000))
+            .withDescription(StringUtils.repeat("a", 99001))
             .build();
         //when
         Set<String> errors = validate(timelineEvent);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("description : size must be between 0 and 99000");
+            .containsExactly("description : size must be between 0 and 99000");
     }
 
     @Test
-    public void shouldBeInvalidForTooLongDate() {
+    public void failsWhenDateTooLong() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.builder()
-            .withDate(StringUtils.repeat("a", 100))
+            .withDate(StringUtils.repeat("a", 26))
             .build();
         //when
         Set<String> errors = validate(timelineEvent);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("date : size must be between 0 and 25");
+            .containsExactly("date : size must be between 0 and 25");
     }
 }
