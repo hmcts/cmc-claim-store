@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
@@ -61,6 +62,13 @@ public class DefendantResponseNotificationService {
     }
 
     public void notifyDefendant(Claim claim, String defendantEmail, String reference) {
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("No response in claim after response submitted"));
+
+        if (!(response instanceof FullDefenceResponse)) {
+            return;
+        }
+
         Map<String, String> parameters = aggregateParams(claim);
 
         String template = getDefendantResponseIssuedEmailTemplate(claim.getClaimData().getClaimant());
@@ -77,12 +85,15 @@ public class DefendantResponseNotificationService {
         }
     }
 
-    public void notifyClaimant(
-        Claim claim,
-        String reference
-    ) {
-        Map<String, String> parameters = aggregateParams(claim, claim.getResponse()
-            .orElseThrow(IllegalStateException::new));
+    public void notifyClaimant(Claim claim, String reference) {
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("No response in claim after response submitted"));
+
+        if (!(response instanceof FullDefenceResponse)) {
+            return;
+        }
+
+        Map<String, String> parameters = aggregateParams(claim, response);
         notify(claim.getSubmitterEmail(), getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
     }
 
