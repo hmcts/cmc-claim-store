@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static org.mockito.Mockito.verify;
 

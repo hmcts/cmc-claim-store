@@ -44,7 +44,6 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
-    tokenTimeToLiveInSeconds: 14400
 
 bankHolidays:
   api:
