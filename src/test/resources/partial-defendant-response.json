@@ -4,15 +4,15 @@
   "freeMediation": "yes",
   "moreTimeNeeded": "yes",
   "evidence": [
-  {
-  "type": "CONTRACTS_AND_AGREEMENTS",
-  "description": "my evidence"
-  }
+    {
+      "type": "PHOTO",
+      "description": "Photo of the claimant not lending me any money"
+    }
   ],
   "timeline": [
     {
       "date": "20th May 2017",
-      "description": "something happened"
+      "description": "Something happened"
     }
   ],
 

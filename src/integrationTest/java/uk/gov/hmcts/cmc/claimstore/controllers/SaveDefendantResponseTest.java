@@ -14,7 +14,8 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotific
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleFullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleResponse;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -120,7 +121,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldFailForEmptyDefence() throws Exception {
         long anyClaimId = 500;
         String anyDefendantId = "500";
-        Response response = SampleResponse.FullDefence.builder()
+        Response response = SampleFullDefenceResponse.builder()
             .withDefence("")
             .build();
 

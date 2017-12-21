@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.sampledata;
+package uk.gov.hmcts.cmc.domain.models.sampledata.response;
 
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
@@ -15,6 +15,10 @@ public class SampleDefendantPaymentPlan {
 
     public static SampleDefendantPaymentPlan builder() {
         return new SampleDefendantPaymentPlan();
+    }
+
+    public static DefendantPaymentPlan validDefaults() {
+        return builder().build();
     }
 
     public SampleDefendantPaymentPlan withFirstPayment(BigDecimal firstPayment) {

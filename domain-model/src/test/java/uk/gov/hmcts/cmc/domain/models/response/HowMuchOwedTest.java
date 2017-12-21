@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHowMuchOwed;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleHowMuchOwed;
 import java.math.BigDecimal;
 import java.util.Set;
 

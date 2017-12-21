@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantPaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleDefendantPaymentPlan;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;

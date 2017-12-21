@@ -1,17 +1,19 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
+
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class EvidenceItem {
     private final EvidenceType type;
-
     private final String description;
 
-    public EvidenceItem(final EvidenceType type, final String description) {
+    public EvidenceItem(EvidenceType type, String description) {
         this.type = type;
         this.description = description;
     }
@@ -41,4 +43,10 @@ public class EvidenceItem {
     public int hashCode() {
         return Objects.hash(type, description);
     }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
 }

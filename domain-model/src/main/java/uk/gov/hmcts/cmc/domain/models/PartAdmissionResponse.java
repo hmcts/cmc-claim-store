@@ -27,6 +27,9 @@ public class PartAdmissionResponse extends Response {
         PAID_WHAT_BELIEVED_WAS_OWED
     }
 
+    @NotNull
+    private final PartAdmissionType partAdmissionType;
+
     @Valid
     @NotNull
     private final ImmutableList<EvidenceItem> evidence;
@@ -34,9 +37,6 @@ public class PartAdmissionResponse extends Response {
     @Valid
     @NotNull
     private final ImmutableList<TimelineEvent> timeline;
-
-    @NotNull
-    private final PartAdmissionType partAdmissionType;
 
     @Valid
     @NotNull
@@ -54,19 +54,28 @@ public class PartAdmissionResponse extends Response {
         MoreTimeNeededOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
-        ImmutableList<EvidenceItem> evidence,
+        PartAdmissionType partAdmissionType,
         HowMuchOwed howMuchOwed,
+        ImmutableList<EvidenceItem> evidence,
         ImmutableList<TimelineEvent> timeline,
         DefendantPaymentPlan defendantPaymentPlan,
-        String impactOfDispute,
-        PartAdmissionType partAdmissionType) {
+        String impactOfDispute
+    ) {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
-        this.evidence = evidence;
+        this.partAdmissionType = partAdmissionType;
         this.howMuchOwed = howMuchOwed;
+        this.evidence = evidence;
         this.timeline = timeline;
         this.defendantPaymentPlan = defendantPaymentPlan;
         this.impactOfDispute = impactOfDispute;
-        this.partAdmissionType = partAdmissionType;
+    }
+
+    public PartAdmissionType getPartAdmissionType() {
+        return partAdmissionType;
+    }
+
+    public HowMuchOwed getHowMuchOwed() {
+        return howMuchOwed;
     }
 
     public ImmutableList<EvidenceItem> getEvidence() {
@@ -77,26 +86,14 @@ public class PartAdmissionResponse extends Response {
         return timeline;
     }
 
-    public PartAdmissionType getPartAdmissionType() {
-        return partAdmissionType;
-    }
-
     public DefendantPaymentPlan getDefendantPaymentPlan() {
         return defendantPaymentPlan;
-    }
-
-    public HowMuchOwed getHowMuchOwed() {
-        return howMuchOwed;
     }
 
     public String getImpactOfDispute() {
         return impactOfDispute;
     }
 
-    public PartAdmissionType getPartialAdmissionType() {
-        return partAdmissionType;
-    }
-    
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(final Object other) {
@@ -110,18 +107,24 @@ public class PartAdmissionResponse extends Response {
 
         final PartAdmissionResponse that = (PartAdmissionResponse) other;
         return super.equals(that)
-            && Objects.equals(evidence, that.evidence)
+            && Objects.equals(partAdmissionType, that.partAdmissionType)
             && Objects.equals(howMuchOwed, that.howMuchOwed)
+            && Objects.equals(evidence, that.evidence)
             && Objects.equals(timeline, that.timeline)
             && Objects.equals(defendantPaymentPlan, that.defendantPaymentPlan)
-            && Objects.equals(impactOfDispute, that.impactOfDispute)
-            && Objects.equals(partAdmissionType, that.partAdmissionType);
+            && Objects.equals(impactOfDispute, that.impactOfDispute);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), evidence, howMuchOwed, timeline,
-            defendantPaymentPlan, impactOfDispute, partAdmissionType);
+        return Objects.hash(super.hashCode(),
+            partAdmissionType,
+            howMuchOwed,
+            evidence,
+            timeline,
+            defendantPaymentPlan,
+            impactOfDispute
+        );
     }
 
     @Override

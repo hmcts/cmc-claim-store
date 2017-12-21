@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeLineEvent;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleTimelineEvent;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +13,7 @@ public class TimelineEventTest {
     @Test
     public void shouldBeSuccessfulValidationForTimeLineRow() {
         //given
-        TimelineEvent timelineEvent = SampleTimeLineEvent.validDefaults();
+        TimelineEvent timelineEvent = SampleTimelineEvent.validDefaults();
         //when
         Set<String> response = validate(timelineEvent);
         //then
@@ -23,8 +23,8 @@ public class TimelineEventTest {
     @Test
     public void shouldBeInvalidForNullExplanation() {
         //given
-        TimelineEvent timelineEvent = SampleTimeLineEvent.builder()
-            .withExplanation(null)
+        TimelineEvent timelineEvent = SampleTimelineEvent.builder()
+            .withDescription(null)
             .build();
         //when
         Set<String> errors = validate(timelineEvent);
@@ -37,8 +37,8 @@ public class TimelineEventTest {
     @Test
     public void shouldBeInvalidForTooLongExplanation() {
         //given
-        TimelineEvent timelineEvent = SampleTimeLineEvent.builder()
-            .withExplanation(StringUtils.repeat("a", 990000))
+        TimelineEvent timelineEvent = SampleTimelineEvent.builder()
+            .withDescription(StringUtils.repeat("a", 990000))
             .build();
         //when
         Set<String> errors = validate(timelineEvent);
@@ -51,7 +51,7 @@ public class TimelineEventTest {
     @Test
     public void shouldBeInvalidForTooLongDate() {
         //given
-        TimelineEvent timelineEvent = SampleTimeLineEvent.builder()
+        TimelineEvent timelineEvent = SampleTimelineEvent.builder()
             .withDate(StringUtils.repeat("a", 100))
             .build();
         //when
