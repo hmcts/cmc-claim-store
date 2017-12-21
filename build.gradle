@@ -112,7 +112,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: '1.4.0'
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '4.1.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '5.0.0'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
 
