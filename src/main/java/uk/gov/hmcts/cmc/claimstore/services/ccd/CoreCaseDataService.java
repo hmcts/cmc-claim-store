@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CoreCaseDataService {
 
     private static final String JURISDICTION_ID = "CMC";

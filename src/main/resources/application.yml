@@ -86,7 +86,6 @@ staff-notifications:
 feature_toggles:
   watermark_pdf: false
   document_management: false
-  core_case_data: false
 
 feign:
   httpclient:
