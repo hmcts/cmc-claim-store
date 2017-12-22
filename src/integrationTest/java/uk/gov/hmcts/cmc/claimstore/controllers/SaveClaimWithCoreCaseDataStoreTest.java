@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import feign.FeignException;
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -19,11 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
-@TestPropertySource(
-    properties = {
-        "feature_toggles.core_case_data=true"
-    }
-)
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     private static final String SERVICE_TOKEN = "S2S token";

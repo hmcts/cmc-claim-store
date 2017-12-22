@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
     properties = {
         "feature_toggles.document_management=false",
-        "feature_toggles.core_case_data=false"
+        "core_case_data.api.url=false"
     }
 )
 public class SaveClaimTest extends BaseSaveTest {
