@@ -10,8 +10,7 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 @EnableFeignClients(basePackages =
     {"uk.gov.hmcts.cmc.claimstore",
         "uk.gov.hmcts.reform.document",
-        "uk.gov.hmcts.reform.authorisation",
-        "uk.gov.hmcts.reform.ccd"
+        "uk.gov.hmcts.reform.authorisation"
     })
 public class ClaimStoreApplication {
 

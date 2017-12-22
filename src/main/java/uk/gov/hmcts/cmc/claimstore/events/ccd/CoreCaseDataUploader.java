@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CoreCaseDataUploader {
     private final Logger logger = LoggerFactory.getLogger(CoreCaseDataUploader.class);
     private final CoreCaseDataService coreCaseDataService;
