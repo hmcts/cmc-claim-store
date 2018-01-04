@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.DefendantResponseService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleFullDefenceResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +35,7 @@ public class DefendantResponseControllerTest {
     @Test
     public void shouldSaveResponseInRepository() throws JsonProcessingException {
         //given
-        Response input = SampleResponse.FullDefence.builder()
+        Response input = SampleFullDefenceResponse.builder()
             .build();
 
         Claim sampleClaim = SampleClaim.getWithDefaultResponse();

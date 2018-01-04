@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleFullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.util.Set;
@@ -38,12 +40,15 @@ public class ResponseTest {
     }
 
     @Test
-    public void shouldHaveValidationMessagesWhenPartialResponseDataElementsAreInValid() {
+    public void shouldHaveValidationMessagesWhenPartialResponseDataElementsAreInvalid() {
         //given
-        Response response = SampleResponse.PartAdmission.builder()
+        Response response = SamplePartAdmissionResponse.builder()
             .withPartAdmissionType(null)
-            .withPartAdmission(null, null, null, null, null,
-                null, null, null, null, null)
+            .withThatMuchOwed(null)
+            .withEvidence(null)
+            .withTimeline(null)
+            .withDefendantPaymentPlan(null)
+            .withImpactOfDispute("")
             .build();
 
         //when
@@ -51,21 +56,19 @@ public class ResponseTest {
 
         //then
         assertThat(errors)
-            .hasSize(6)
-            .contains(
-                "impactOfDispute : may not be empty",
-                "timeline : may not be null",
+            .containsExactlyInAnyOrder(
+                "partAdmissionType : may not be null",
                 "howMuchOwed : may not be null",
+                "timeline : may not be null",
                 "evidence : may not be null",
-                "defendant : may not be null",
-                "partAdmissionType : may not be null"
+                "impactOfDispute : may not be empty"
             );
     }
 
     @Test
     public void shouldHaveValidationMessagesWhenResponseDataElementsAreInValid() {
         //given
-        Response response = SampleResponse.FullDefence.builder()
+        Response response = SampleFullDefenceResponse.builder()
             .withDefence(null)
             .withDefenceType(null)
             .build();
@@ -86,7 +89,7 @@ public class ResponseTest {
     @Test
     public void shouldHaveValidationMessagesWhenDefenceDataElementIsEmpty() {
         //given
-        Response response = SampleResponse.FullDefence.builder()
+        Response response = SampleFullDefenceResponse.builder()
             .withDefence("")
             .withDefenceType(null)
             .build();
@@ -108,7 +111,7 @@ public class ResponseTest {
         //given
         String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
-        Response response = SampleResponse.FullDefence.builder()
+        Response response = SampleFullDefenceResponse.builder()
             .withDefence(defence)
             .withDefenceType(null)
             .build();

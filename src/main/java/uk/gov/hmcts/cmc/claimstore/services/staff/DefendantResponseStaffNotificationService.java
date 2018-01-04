@@ -7,6 +7,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
@@ -43,6 +45,13 @@ public class DefendantResponseStaffNotificationService {
         Claim claim,
         String defendantEmail
     ) {
+        Response response = claim.getResponse()
+            .orElseThrow(() -> new IllegalStateException("No response in claim after response submitted"));
+
+        if (!(response instanceof FullDefenceResponse)) {
+            return;
+        }
+
         EmailContent emailContent = emailContentProvider.createContent(
             wrapInMap(claim, defendantEmail)
         );

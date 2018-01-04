@@ -1,9 +1,13 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 
 public class EvidenceItem {
@@ -44,4 +48,10 @@ public class EvidenceItem {
     public int hashCode() {
         return Objects.hash(type, description);
     }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
 }

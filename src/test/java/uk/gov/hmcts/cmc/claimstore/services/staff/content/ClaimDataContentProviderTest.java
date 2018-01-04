@@ -76,7 +76,7 @@ public class ClaimDataContentProviderTest {
     public void shouldProvideTotalAmount() {
         ClaimContent claimContent = provider.createContent(claim);
 
-        assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.88");
+        assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.89");
     }
 
     @Test

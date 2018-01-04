@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.sampledata;
+package uk.gov.hmcts.cmc.domain.models.sampledata.response;
 
 import uk.gov.hmcts.cmc.domain.models.response.HowMuchOwed;
 import java.math.BigDecimal;

@@ -14,8 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.math.BigDecimal;
@@ -122,7 +122,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessDependantResponseFromJson() throws Exception {
+    public void shouldProcessDefendantResponseFromJson() throws Exception {
         //given
         String input = new ResourceReader().read("/defendant-response.json");
 
@@ -135,15 +135,15 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessDependantPartialResponseFromJson() throws Exception {
+    public void shouldProcessDefendantPartialResponseFromJson() throws Exception {
         //given
-        final String input = new ResourceReader().read("/partial-defendant-response.json");
+        String input = new ResourceReader().read("/partial-defendant-response.json");
 
         //when
-        final PartAdmissionResponse output = processor.fromJson(input, PartAdmissionResponse.class);
+        PartAdmissionResponse output = processor.fromJson(input, PartAdmissionResponse.class);
 
         //then
-        final PartAdmissionResponse expected = SampleResponse.validPartAdmissionDefaults();
+        PartAdmissionResponse expected = SampleResponse.validPartAdmissionDefaults();
         assertThat(output).isEqualTo(expected);
     }
 

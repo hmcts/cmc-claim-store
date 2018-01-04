@@ -37,7 +37,7 @@ public class DefendantPaymentPlan {
     private final PaymentSchedule paymentSchedule;
 
     @NotNull
-    @Size
+    @Size(max = 99000)
     private final String explanation;
 
     public DefendantPaymentPlan(
@@ -47,7 +47,6 @@ public class DefendantPaymentPlan {
         PaymentSchedule paymentSchedule,
         String explanation
     ) {
-
         this.firstPayment = firstPayment;
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
@@ -101,5 +100,5 @@ public class DefendantPaymentPlan {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-}
 
+}
