@@ -17,7 +17,7 @@ public class HowMuchOwed {
     private final BigDecimal amount;
 
     @NotBlank()
-    @Size(max = 255, message = "Explanation should not be longer than {max} characters")
+    @Size(max = 99000)
     private final String explanation;
 
     public HowMuchOwed(BigDecimal amount, String explanation) {

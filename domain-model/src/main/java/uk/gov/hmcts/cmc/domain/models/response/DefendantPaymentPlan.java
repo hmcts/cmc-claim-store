@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
@@ -31,6 +32,7 @@ public class DefendantPaymentPlan {
     @DateNotInThePast
     private final LocalDate firstPaymentDate;
 
+    @NotBlank
     @NotNull
     private final PaymentSchedule paymentSchedule;
 

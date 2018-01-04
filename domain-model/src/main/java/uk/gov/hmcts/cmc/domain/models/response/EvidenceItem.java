@@ -1,17 +1,20 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
+import org.hibernate.validator.constraints.NotBlank;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class EvidenceItem {
+    @NotNull
     private final EvidenceType type;
 
+    @NotBlank
+    @Size(max = 99000)
     private final String description;
 
-    public EvidenceItem(final EvidenceType type, final String description) {
+    public EvidenceItem(EvidenceType type, String description) {
         this.type = type;
         this.description = description;
     }
@@ -32,9 +35,9 @@ public class EvidenceItem {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        EvidenceItem evidenceItem = (EvidenceItem) other;
-        return Objects.equals(type, evidenceItem.type)
-            && Objects.equals(description, evidenceItem.description);
+        EvidenceItem that = (EvidenceItem) other;
+        return Objects.equals(type, that.type)
+            && Objects.equals(description, that.description);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.validator.constraints.NotBlank;
 import java.util.Objects;
 import javax.validation.constraints.Size;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class TimelineEvent {
 
     @NotBlank
@@ -16,7 +14,7 @@ public class TimelineEvent {
     @Size(max = 99000)
     private final String description;
 
-    public TimelineEvent(final String date, final String description) {
+    public TimelineEvent(String date, String description) {
         this.date = date;
         this.description = description;
     }
@@ -37,9 +35,9 @@ public class TimelineEvent {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        TimelineEvent timelineEvent = (TimelineEvent) other;
-        return Objects.equals(date, timelineEvent.date)
-            && Objects.equals(description, timelineEvent.description);
+        TimelineEvent that = (TimelineEvent) other;
+        return Objects.equals(date, that.date)
+            && Objects.equals(description, that.description);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
@@ -19,7 +17,6 @@ import javax.validation.constraints.Size;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class PartAdmissionResponse extends Response {
 
     public enum PartAdmissionType {
@@ -45,7 +42,6 @@ public class PartAdmissionResponse extends Response {
     @Valid
     private final DefendantPaymentPlan defendantPaymentPlan;
 
-    @NotBlank
     @Size(max = 99000)
     private final String impactOfDispute;
 
@@ -96,7 +92,7 @@ public class PartAdmissionResponse extends Response {
     public PartAdmissionType getPartialAdmissionType() {
         return partAdmissionType;
     }
-    
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(final Object other) {
