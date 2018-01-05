@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.exception.InvalidCaseDataException;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Classification;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
@@ -19,7 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.io.IOException;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "core_case_data", havingValue = "true")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class SaveCoreCaseDataService {
 
     private final CoreCaseDataApi coreCaseDataApi;
@@ -53,7 +52,6 @@ public class SaveCoreCaseDataService {
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
-            .securityClassification(Classification.RESTRICTED)
             .event(Event.builder()
                 .id(startEventResponse.getEventId())
                 .summary("CMC case submission event")
