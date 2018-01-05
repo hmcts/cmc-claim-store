@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
+@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
