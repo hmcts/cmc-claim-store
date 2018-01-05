@@ -15,12 +15,12 @@ public class SampleTimelineEvent {
         return builder().build();
     }
 
-    public SampleTimelineEvent withDate(final String date) {
+    public SampleTimelineEvent withDate(String date) {
         this.date = date;
         return this;
     }
 
-    public SampleTimelineEvent withDescription(final String description) {
+    public SampleTimelineEvent withDescription(String description) {
         this.description = description;
         return this;
     }

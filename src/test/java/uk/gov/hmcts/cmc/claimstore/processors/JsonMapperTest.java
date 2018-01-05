@@ -130,7 +130,7 @@ public class JsonMapperTest {
         Response output = processor.fromJson(input, Response.class);
 
         //then
-        Response expected = SampleResponse.validDefaults();
+        Response expected = SampleResponse.validDefence();
         assertThat(output).isEqualTo(expected);
     }
 

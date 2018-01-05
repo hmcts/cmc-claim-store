@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -8,6 +7,8 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.EvidenceItem;
 import uk.gov.hmcts.cmc.domain.models.response.HowMuchOwed;
+import uk.gov.hmcts.cmc.domain.models.response.HowMuchPaid;
+import uk.gov.hmcts.cmc.domain.models.response.PayBySetDate;
 import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
 import java.util.Objects;
 import javax.validation.Valid;
@@ -16,7 +17,6 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class PartAdmissionResponse extends Response {
 
     public enum PartAdmissionType {
@@ -40,6 +40,13 @@ public class PartAdmissionResponse extends Response {
     private final HowMuchOwed howMuchOwed;
 
     @Valid
+    @NotNull
+    private final HowMuchPaid howMuchPaid;
+
+    @NotNull
+    private final PayBySetDate payBySetDate;
+
+    @Valid
     private final DefendantPaymentPlan defendantPaymentPlan;
 
     @Size(max = 99000)
@@ -52,6 +59,8 @@ public class PartAdmissionResponse extends Response {
         StatementOfTruth statementOfTruth,
         PartAdmissionType partAdmissionType,
         HowMuchOwed howMuchOwed,
+        HowMuchPaid howMuchPaid,
+        PayBySetDate payBySetDate,
         ImmutableList<EvidenceItem> evidence,
         ImmutableList<TimelineEvent> timeline,
         DefendantPaymentPlan defendantPaymentPlan,
@@ -60,6 +69,8 @@ public class PartAdmissionResponse extends Response {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.partAdmissionType = partAdmissionType;
         this.howMuchOwed = howMuchOwed;
+        this.howMuchPaid = howMuchPaid;
+        this.payBySetDate = payBySetDate;
         this.evidence = evidence;
         this.timeline = timeline;
         this.defendantPaymentPlan = defendantPaymentPlan;
@@ -72,6 +83,14 @@ public class PartAdmissionResponse extends Response {
 
     public HowMuchOwed getHowMuchOwed() {
         return howMuchOwed;
+    }
+
+    public HowMuchPaid getHowMuchPaid() {
+        return howMuchPaid;
+    }
+
+    public PayBySetDate getPayBySetDate() {
+        return payBySetDate;
     }
 
     public ImmutableList<EvidenceItem> getEvidence() {
@@ -109,6 +128,8 @@ public class PartAdmissionResponse extends Response {
         return super.equals(that)
             && Objects.equals(partAdmissionType, that.partAdmissionType)
             && Objects.equals(howMuchOwed, that.howMuchOwed)
+            && Objects.equals(howMuchPaid, that.howMuchPaid)
+            && Objects.equals(payBySetDate, that.payBySetDate)
             && Objects.equals(evidence, that.evidence)
             && Objects.equals(timeline, that.timeline)
             && Objects.equals(defendantPaymentPlan, that.defendantPaymentPlan)
@@ -120,6 +141,8 @@ public class PartAdmissionResponse extends Response {
         return Objects.hash(super.hashCode(),
             partAdmissionType,
             howMuchOwed,
+            howMuchPaid,
+            payBySetDate,
             evidence,
             timeline,
             defendantPaymentPlan,

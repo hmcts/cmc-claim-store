@@ -51,7 +51,7 @@ public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
         claim = SampleClaim
             .builder()
             .withSettlementReachedAt(LocalDateTime.now())
-            .withResponse(SampleResponse.validDefaults())
+            .withResponse(SampleResponse.validDefence())
             .withSettlement(settlement)
             .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))

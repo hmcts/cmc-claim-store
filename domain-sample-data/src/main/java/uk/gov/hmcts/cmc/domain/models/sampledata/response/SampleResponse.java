@@ -17,8 +17,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
     protected Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
     protected StatementOfTruth statementOfTruth;
 
-    public static Response validDefaults() {
-        return SampleFullDefenceResponse.validDefaults();
+    public static Response validDefence() {
+        return SampleFullDefenceResponse.validDefence();
     }
 
     public T withMediation(Response.FreeMediationOption freeMediationOption) {

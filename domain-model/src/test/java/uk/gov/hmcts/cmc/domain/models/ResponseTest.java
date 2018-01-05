@@ -20,9 +20,9 @@ public class ResponseTest {
     private final Validator validator = factory.getValidator();
 
     @Test
-    public void shouldHaveNoValidationMessagesWhenResponseDataIsValid() {
+    public void shouldHaveNoValidationMessagesWhenFullAdmissionDataIsValid() {
         //given
-        Response responseData = SampleResponse.validDefaults();
+        Response responseData = SampleResponse.validDefence();
         //when
         Set<ConstraintViolation<Response>> response = validator.validate(responseData);
         //then
@@ -30,7 +30,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void shouldHaveNoValidationMessagesWhenPartialResponseDataIsValid() {
+    public void shouldHaveNoValidationMessagesWhenPartAdmissionDataIsValid() {
         //given
         Response responseData = SampleResponse.validPartAdmissionDefaults();
         //when
@@ -57,11 +57,10 @@ public class ResponseTest {
         //then
         assertThat(errors)
             .containsExactlyInAnyOrder(
-                "partAdmissionType : may not be null",
-                "howMuchOwed : may not be null",
                 "timeline : may not be null",
+                "howMuchOwed : may not be null",
                 "evidence : may not be null",
-                "impactOfDispute : may not be empty"
+                "partAdmissionType : may not be null"
             );
     }
 

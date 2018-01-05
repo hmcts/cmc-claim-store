@@ -49,7 +49,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldReturnNewlyCreatedDefendantResponse() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        Response response = SampleResponse.validDefaults();
+        Response response = SampleResponse.validDefence();
 
         MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk())
@@ -62,7 +62,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNewlyCreatedPartialDefendantResponse() throws Exception {
+    public void shouldReturnClaimWithNewlyCreatedPartAdmission() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         Response response = SampleResponse.validPartAdmissionDefaults();
@@ -81,7 +81,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        Response response = SampleResponse.validDefaults();
+        Response response = SampleResponse.validDefence();
 
         makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk());
@@ -96,7 +96,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        Response response = SampleResponse.validDefaults();
+        Response response = SampleResponse.validDefence();
 
         makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk());
@@ -109,7 +109,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldReturnInternalServerErrorWhenStaffNotificationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        Response response = SampleResponse.validDefaults();
+        Response response = SampleResponse.validDefence();
 
         doThrow(new RuntimeException()).when(staffActionsHandler).onDefendantResponseSubmitted(any());
 

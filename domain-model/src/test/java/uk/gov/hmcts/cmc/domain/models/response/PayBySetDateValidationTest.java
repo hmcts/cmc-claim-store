@@ -2,21 +2,21 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleHowMuchOwed;
-import java.math.BigDecimal;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePayBySetDate;
+import java.time.LocalDate;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 
-public class HowMuchOwedValidationTest {
+public class PayBySetDateValidationTest {
 
     @Test
     public void shouldPassForValidSample() {
         //given
-        HowMuchOwed howMuchOwed = SampleHowMuchOwed.validDefaults();
+        PayBySetDate payBySetDate = SamplePayBySetDate.validDefaults();
         //when
-        Set<String> response = validate(howMuchOwed);
+        Set<String> response = validate(payBySetDate);
         //then
         assertThat(response).isEmpty();
     }
@@ -24,11 +24,11 @@ public class HowMuchOwedValidationTest {
     @Test
     public void shouldFailWhenExplanationEmpty() {
         //given
-        HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder()
+        PayBySetDate payBySetDate = SamplePayBySetDate.builder()
             .withExplanation("")
             .build();
         //when
-        Set<String> errors = validate(howMuchOwed);
+        Set<String> errors = validate(payBySetDate);
         //then
         assertThat(errors)
             .containsExactly("explanation : may not be empty");
@@ -37,26 +37,26 @@ public class HowMuchOwedValidationTest {
     @Test
     public void shouldFailWhenExplanationTooLong() {
         //given
-        HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder()
+        PayBySetDate payBySetDate = SamplePayBySetDate.builder()
             .withExplanation(StringUtils.repeat("a", 99001))
             .build();
         //when
-        Set<String> errors = validate(howMuchOwed);
+        Set<String> errors = validate(payBySetDate);
         //then
         assertThat(errors)
             .containsExactly("explanation : size must be between 0 and 99000");
     }
 
     @Test
-    public void shouldFailWhenAmountIsZero() {
+    public void shouldFailWhenDateIsInThePast() {
         //given
-        HowMuchOwed howMuchOwed = SampleHowMuchOwed.builder()
-            .withAmount(BigDecimal.ZERO)
+        PayBySetDate payBySetDate = SamplePayBySetDate.builder()
+            .withPastDate(LocalDate.now().minusDays(2))
             .build();
         //when
-        Set<String> errors = validate(howMuchOwed);
+        Set<String> errors = validate(payBySetDate);
         //then
         assertThat(errors)
-            .containsExactly("amount : must be greater than or equal to 0.01");
+            .containsExactly("paymentDate : is in the past");
     }
 }

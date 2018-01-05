@@ -17,12 +17,12 @@ public class SampleHowMuchOwed {
         return builder().build();
     }
 
-    public SampleHowMuchOwed withExplanation(final String explanation) {
+    public SampleHowMuchOwed withExplanation(String explanation) {
         this.explanation = explanation;
         return this;
     }
 
-    public SampleHowMuchOwed withAmount(final BigDecimal amount) {
+    public SampleHowMuchOwed withAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }

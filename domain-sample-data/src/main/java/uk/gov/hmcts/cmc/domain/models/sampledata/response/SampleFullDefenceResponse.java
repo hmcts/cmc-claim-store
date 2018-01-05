@@ -10,7 +10,7 @@ public class SampleFullDefenceResponse extends SampleResponse<SampleFullDefenceR
         return new SampleFullDefenceResponse();
     }
 
-    public static FullDefenceResponse validDefaults() {
+    public static FullDefenceResponse validDefence() {
         return builder().build();
     }
 

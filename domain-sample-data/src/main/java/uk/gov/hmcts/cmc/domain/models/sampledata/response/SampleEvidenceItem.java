@@ -20,7 +20,7 @@ public class SampleEvidenceItem {
         return this;
     }
 
-    public SampleEvidenceItem withDescription(final String description) {
+    public SampleEvidenceItem withDescription(String description) {
         this.description = description;
         return this;
     }

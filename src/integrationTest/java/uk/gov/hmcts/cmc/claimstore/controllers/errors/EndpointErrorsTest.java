@@ -168,7 +168,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .perform(post("/responses/claim/" + claimId + "/defendant/" + DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
-                .content(jsonMapper.toJson(SampleResponse.validDefaults()))
+                .content(jsonMapper.toJson(SampleResponse.validDefence()))
             )
             .andExpect(status().isInternalServerError());
     }

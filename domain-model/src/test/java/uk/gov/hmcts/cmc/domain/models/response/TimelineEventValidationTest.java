@@ -11,7 +11,7 @@ import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
 public class TimelineEventValidationTest {
 
     @Test
-    public void passesForValidSample() {
+    public void shouldPassForValidSample() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.validDefaults();
         //when
@@ -21,10 +21,10 @@ public class TimelineEventValidationTest {
     }
 
     @Test
-    public void failsWhenDescriptionEmpty() {
+    public void shouldFailWhenDescriptionEmpty() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.builder()
-            .withDescription(null)
+            .withDescription("")
             .build();
         //when
         Set<String> errors = validate(timelineEvent);
@@ -34,7 +34,22 @@ public class TimelineEventValidationTest {
     }
 
     @Test
-    public void failsWhenDescriptionTooLong() {
+    public void shouldFailWhenDescriptionIsNull() {
+        //given
+        TimelineEvent timelineEvent = SampleTimelineEvent.builder()
+            .withDescription(null)
+            .build();
+        //when
+        Set<String> errors = validate(timelineEvent);
+        //then
+        assertThat(errors)
+            .containsExactly(
+                "description : may not be null",
+                "description : may not be empty");
+    }
+
+    @Test
+    public void shouldFailWhenDescriptionTooLong() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.builder()
             .withDescription(StringUtils.repeat("a", 99001))
@@ -47,7 +62,7 @@ public class TimelineEventValidationTest {
     }
 
     @Test
-    public void failsWhenDateTooLong() {
+    public void shouldFailWhenDateTooLong() {
         //given
         TimelineEvent timelineEvent = SampleTimelineEvent.builder()
             .withDate(StringUtils.repeat("a", 26))
