@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -48,6 +49,8 @@ public final class SampleClaim {
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
     private String sealedClaimDocumentSelfPath = null;
+    private BigDecimal totalAmountTillToday;
+    private BigDecimal totalAmountTillDateOfIssue;
 
     private SampleClaim() {
     }
@@ -93,6 +96,8 @@ public final class SampleClaim {
             RESPONSE_DEADLINE,
             NOT_REQUESTED_FOR_MORE_TIME,
             SUBMITTER_EMAIL,
+            null,
+            null,
             null,
             null,
             null,
@@ -151,7 +156,9 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocumentSelfPath
+            sealedClaimDocumentSelfPath,
+            totalAmountTillToday,
+            totalAmountTillDateOfIssue
         );
     }
 
@@ -252,6 +259,16 @@ public final class SampleClaim {
 
     public SampleClaim withSealedClaimDocumentSelfPath(String sealedClaimDocumentSelfPath) {
         this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
+        return this;
+    }
+
+    public SampleClaim withTotalAmountTillToday(BigDecimal totalAmountTillToday) {
+        this.totalAmountTillToday = totalAmountTillToday;
+        return this;
+    }
+
+    public SampleClaim withTotalAmountTillDateOfIssue(BigDecimal totalAmountTillDateOfIssue) {
+        this.totalAmountTillDateOfIssue = totalAmountTillDateOfIssue;
         return this;
     }
 }

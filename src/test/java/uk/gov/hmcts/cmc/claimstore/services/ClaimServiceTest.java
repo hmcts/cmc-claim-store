@@ -14,12 +14,16 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -75,10 +79,14 @@ public class ClaimServiceTest {
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
     private EventProducer eventProducer;
+    @Mock
+    private InterestCalculationService interestCalculationService;
 
     @Before
     public void setup() {
         when(userService.getUserDetails(eq(VALID_DEFENDANT_TOKEN))).thenReturn(validDefendant);
+        when(interestCalculationService.calculateInterestUpToNow(any(), any(), any())).thenReturn(BigDecimal.ONE);
+        when(interestCalculationService.calculateInterest(any(), any(), any(), any())).thenReturn(BigDecimal.ONE);
 
         claimService = new ClaimService(
             claimRepository,
@@ -86,7 +94,8 @@ public class ClaimServiceTest {
             mapper,
             issueDateCalculator,
             responseDeadlineCalculator,
-            eventProducer
+            eventProducer,
+            interestCalculationService
         );
     }
 
@@ -238,52 +247,38 @@ public class ClaimServiceTest {
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
-        return new Claim(
-            CLAIM_ID,
-            USER_ID,
-            letterHolderId,
-            DEFENDANT_ID,
-            EXTERNAL_ID,
-            REFERENCE_NUMBER,
-            claimData,
-            NOW_IN_LOCAL_ZONE,
-            ISSUE_DATE,
-            RESPONSE_DEADLINE,
-            NOT_REQUESTED_FOR_MORE_TIME,
-            SUBMITTER_EMAIL,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
+        return SampleClaim.builder()
+            .withClaimId(CLAIM_ID)
+            .withSubmitterId(USER_ID)
+            .withLetterHolderId(letterHolderId)
+            .withDefendantId(DEFENDANT_ID)
+            .withExternalId(EXTERNAL_ID)
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withClaimData(claimData)
+            .withCreatedAt(NOW_IN_LOCAL_ZONE)
+            .withIssuedOn(ISSUE_DATE)
+            .withResponseDeadline(RESPONSE_DEADLINE)
+            .withMoreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
+            .withSubmitterEmail(SUBMITTER_EMAIL)
+            .withTotalAmountTillToday(BigDecimal.valueOf(81).setScale(2, RoundingMode.HALF_UP))
+            .withTotalAmountTillDateOfIssue(BigDecimal.valueOf(81).setScale(2, RoundingMode.HALF_UP))
+            .build();
     }
 
     private static Claim createClaimModel(LocalDate responseDeadline, boolean moreTimeAlreadyRequested) {
-        return new Claim(
-            CLAIM_ID,
-            USER_ID,
-            LETTER_HOLDER_ID,
-            DEFENDANT_ID,
-            EXTERNAL_ID,
-            REFERENCE_NUMBER,
-            VALID_APP,
-            NOW_IN_LOCAL_ZONE,
-            ISSUE_DATE,
-            responseDeadline,
-            moreTimeAlreadyRequested,
-            SUBMITTER_EMAIL,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
+        return SampleClaim.builder()
+            .withClaimId(CLAIM_ID)
+            .withSubmitterId(USER_ID)
+            .withLetterHolderId(LETTER_HOLDER_ID)
+            .withDefendantId(DEFENDANT_ID)
+            .withExternalId(EXTERNAL_ID)
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withClaimData(VALID_APP)
+            .withCreatedAt(NOW_IN_LOCAL_ZONE)
+            .withIssuedOn(ISSUE_DATE)
+            .withResponseDeadline(responseDeadline)
+            .withMoreTimeRequested(moreTimeAlreadyRequested)
+            .withSubmitterEmail(SUBMITTER_EMAIL)
+            .build();
     }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -36,6 +37,8 @@ public class Claim {
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
     private final String sealedClaimDocumentSelfPath;
+    private final BigDecimal totalAmountTillToday;
+    private final BigDecimal totalAmountTillDateOfIssue;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -58,7 +61,9 @@ public class Claim {
         LocalDateTime countyCourtJudgmentRequestedAt,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
-        String sealedClaimDocumentSelfPath
+        String sealedClaimDocumentSelfPath,
+        BigDecimal totalAmountTillToday,
+        BigDecimal totalAmountTillDateOfIssue
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -80,6 +85,8 @@ public class Claim {
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
         this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
+        this.totalAmountTillToday = totalAmountTillToday;
+        this.totalAmountTillDateOfIssue = totalAmountTillDateOfIssue;
     }
 
     public Long getId() {
@@ -162,6 +169,14 @@ public class Claim {
         return Optional.ofNullable(sealedClaimDocumentSelfPath);
     }
 
+    public BigDecimal getTotalAmountTillToday() {
+        return totalAmountTillToday;
+    }
+
+    public BigDecimal getTotalAmountTillDateOfIssue() {
+        return totalAmountTillDateOfIssue;
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
@@ -191,7 +206,36 @@ public class Claim {
             && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
             && Objects.equals(settlement, claim.settlement)
             && Objects.equals(settlementReachedAt, claim.settlementReachedAt)
-            && Objects.equals(sealedClaimDocumentSelfPath, claim.sealedClaimDocumentSelfPath);
+            && Objects.equals(sealedClaimDocumentSelfPath, claim.sealedClaimDocumentSelfPath)
+            && Objects.equals(totalAmountTillToday, claim.totalAmountTillToday)
+            && Objects.equals(totalAmountTillDateOfIssue, claim.totalAmountTillDateOfIssue);
+    }
+
+    public Claim copy(BigDecimal totalAmountTillToday, BigDecimal totalAmountTillDateOfIssue) {
+        return new Claim(
+            id,
+            submitterId,
+            letterHolderId,
+            defendantId,
+            externalId,
+            referenceNumber,
+            claimData,
+            createdAt,
+            issuedOn,
+            responseDeadline,
+            moreTimeRequested,
+            submitterEmail,
+            respondedAt,
+            response,
+            defendantEmail,
+            countyCourtJudgment,
+            countyCourtJudgmentRequestedAt,
+            settlement,
+            settlementReachedAt,
+            sealedClaimDocumentSelfPath,
+            totalAmountTillToday,
+            totalAmountTillDateOfIssue
+        );
     }
 
     @Override
@@ -199,7 +243,8 @@ public class Claim {
         return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
             claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
             respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
-            settlement, settlementReachedAt, sealedClaimDocumentSelfPath
+            settlement, settlementReachedAt, sealedClaimDocumentSelfPath, totalAmountTillToday,
+            totalAmountTillDateOfIssue
         );
     }
 
