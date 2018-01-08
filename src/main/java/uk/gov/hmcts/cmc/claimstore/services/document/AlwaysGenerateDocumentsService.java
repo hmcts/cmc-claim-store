@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "false")
+@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url", havingValue = "false")
 public class AlwaysGenerateDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;

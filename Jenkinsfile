@@ -156,9 +156,9 @@ timestamps {
         notifyBuildFailure channel: channel
         throw err
       } finally {
-        step([$class: 'InfluxDbPublisher',
-               customProjectName: 'CMC Claimstore',
-               target: 'Jenkins Data'])
+//        step([$class: 'InfluxDbPublisher',
+//               customProjectName: 'CMC Claimstore',
+//               target: 'Jenkins Data'])
       }
     }
     milestone()

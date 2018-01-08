@@ -21,7 +21,7 @@ import java.net.URI;
 import static java.util.Collections.singletonList;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
+@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url")
 public class DocumentManagementService {
 
     private static final String FILES_NAME = "files";
