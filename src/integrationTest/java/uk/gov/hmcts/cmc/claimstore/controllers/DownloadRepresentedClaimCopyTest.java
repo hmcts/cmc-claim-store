@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "feature_toggles.document_management=false"
+        "document_management.api_gateway.url=false"
     }
 )
 public class DownloadRepresentedClaimCopyTest extends BaseDownloadDocumentTest {
