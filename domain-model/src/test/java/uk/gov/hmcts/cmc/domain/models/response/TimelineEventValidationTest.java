@@ -43,9 +43,7 @@ public class TimelineEventValidationTest {
         Set<String> errors = validate(timelineEvent);
         //then
         assertThat(errors)
-            .containsExactly(
-                "description : may not be null",
-                "description : may not be empty");
+            .containsExactly("description : may not be empty");
     }
 
     @Test

@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.response;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
