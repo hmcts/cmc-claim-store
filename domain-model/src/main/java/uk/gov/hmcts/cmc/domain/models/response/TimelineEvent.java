@@ -15,7 +15,6 @@ public class TimelineEvent {
     private final String date;
 
     @NotBlank
-    @NotNull
     @Size(max = 99000)
     private final String description;
 

@@ -11,12 +11,12 @@ import javax.validation.constraints.Size;
 
 public class HowMuchOwed {
 
-    @NotNull
     @Money
+    @NotNull
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
-    @NotBlank()
+    @NotBlank
     @Size(max = 99000)
     private final String explanation;
 

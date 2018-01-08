@@ -13,7 +13,7 @@ public class PayBySetDate {
     @DateNotInThePast
     private final LocalDate paymentDate;
 
-    @NotBlank()
+    @NotBlank
     @Size(max = 99000)
     private final String explanation;
 

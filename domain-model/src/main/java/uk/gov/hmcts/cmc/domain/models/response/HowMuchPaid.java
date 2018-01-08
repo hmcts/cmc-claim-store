@@ -12,8 +12,8 @@ import javax.validation.constraints.Size;
 
 public class HowMuchPaid {
 
-    @NotNull
     @Money
+    @NotNull
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
@@ -21,7 +21,7 @@ public class HowMuchPaid {
     @DateNotInTheFuture
     private final LocalDate pastDate;
 
-    @NotBlank()
+    @NotBlank
     @Size(max = 99000)
     private final String explanation;
 
