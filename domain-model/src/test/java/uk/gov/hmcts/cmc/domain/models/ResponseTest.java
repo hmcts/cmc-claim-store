@@ -40,11 +40,13 @@ public class ResponseTest {
     }
 
     @Test
-    public void shouldHaveValidationMessagesWhenPartialResponseDataElementsAreInvalid() {
+    public void shouldHaveValidationMessagesWhenPartAdmissionDataElementsAreInvalid() {
         //given
         Response response = SamplePartAdmissionResponse.builder()
             .withPartAdmissionType(null)
             .withThatMuchOwed(null)
+            .withThatMuchPaid(null)
+            .withPayBySetDate(null)
             .withEvidence(null)
             .withTimeline(null)
             .withDefendantPaymentPlan(null)
@@ -58,14 +60,16 @@ public class ResponseTest {
         assertThat(errors)
             .containsExactlyInAnyOrder(
                 "timeline : may not be null",
+                "howMuchPaid : may not be null",
                 "howMuchOwed : may not be null",
                 "evidence : may not be null",
-                "partAdmissionType : may not be null"
+                "partAdmissionType : may not be null",
+                "payBySetDate : may not be null"
             );
     }
 
     @Test
-    public void shouldHaveValidationMessagesWhenResponseDataElementsAreInValid() {
+    public void shouldHaveValidationMessagesWhenFullAdmissionDataElementsAreInValid() {
         //given
         Response response = SampleFullDefenceResponse.builder()
             .withDefence(null)
@@ -86,7 +90,7 @@ public class ResponseTest {
 
 
     @Test
-    public void shouldHaveValidationMessagesWhenDefenceDataElementIsEmpty() {
+    public void shouldHaveValidationMessagesWhenFullAdmissionDataElementIsEmpty() {
         //given
         Response response = SampleFullDefenceResponse.builder()
             .withDefence("")
@@ -106,7 +110,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void shouldHaveValidationMessagesWhenDefenceExceedsSizeLimit() {
+    public void shouldHaveValidationMessagesWhenFullAdmissionDataExceedsSizeLimit() {
         //given
         String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
 

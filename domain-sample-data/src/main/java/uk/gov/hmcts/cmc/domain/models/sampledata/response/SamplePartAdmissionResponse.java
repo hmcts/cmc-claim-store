@@ -40,6 +40,16 @@ public class SamplePartAdmissionResponse extends SampleResponse<SamplePartAdmiss
         return this;
     }
 
+    public SamplePartAdmissionResponse withThatMuchPaid(HowMuchPaid howMuchPaid) {
+        this.howMuchPaid = howMuchPaid;
+        return this;
+    }
+
+    public SamplePartAdmissionResponse withPayBySetDate(PayBySetDate payBySetDate) {
+        this.payBySetDate = payBySetDate;
+        return this;
+    }
+
     public SamplePartAdmissionResponse withEvidence(ImmutableList<EvidenceItem> evidence) {
         this.evidence = evidence;
         return this;
