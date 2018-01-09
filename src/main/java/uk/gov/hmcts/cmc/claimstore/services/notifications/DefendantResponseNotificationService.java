@@ -51,23 +51,23 @@ public class DefendantResponseNotificationService {
 
     @Autowired
     public DefendantResponseNotificationService(
-        final NotificationClient notificationClient,
-        final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
-        final NotificationsProperties notificationsProperties
+        NotificationClient notificationClient,
+        FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
+        NotificationsProperties notificationsProperties
     ) {
         this.notificationClient = notificationClient;
         this.freeMediationDecisionDateCalculator = freeMediationDecisionDateCalculator;
         this.notificationsProperties = notificationsProperties;
     }
 
-    public void notifyDefendant(final Claim claim, final String defendantEmail, final String reference) {
-        final Map<String, String> parameters = aggregateParams(claim);
+    public void notifyDefendant(Claim claim, String defendantEmail, String reference) {
+        Map<String, String> parameters = aggregateParams(claim);
 
         String template = getDefendantResponseIssuedEmailTemplate(claim.getClaimData().getClaimant());
         notify(defendantEmail, template, parameters, reference);
     }
 
-    private String getDefendantResponseIssuedEmailTemplate(final Party party) {
+    private String getDefendantResponseIssuedEmailTemplate(Party party) {
         if (party instanceof Individual || party instanceof SoleTrader) {
             return getEmailTemplates().getDefendantResponseIssuedToIndividual();
         } else if (party instanceof Company || party instanceof Organisation) {
@@ -78,20 +78,20 @@ public class DefendantResponseNotificationService {
     }
 
     public void notifyClaimant(
-        final Claim claim,
-        final String reference
+        Claim claim,
+        String reference
     ) {
-        final Map<String, String> parameters = aggregateParams(claim, claim.getResponse()
+        Map<String, String> parameters = aggregateParams(claim, claim.getResponse()
             .orElseThrow(IllegalStateException::new));
         notify(claim.getSubmitterEmail(), getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void notify(
-        final String targetEmail,
-        final String emailTemplate,
-        final Map<String, String> parameters,
-        final String reference
+        String targetEmail,
+        String emailTemplate,
+        Map<String, String> parameters,
+        String reference
     ) {
 
         try {
@@ -103,13 +103,13 @@ public class DefendantResponseNotificationService {
 
     @Recover
     public void logNotificationFailure(
-        final NotificationException exception,
-        final Claim claim,
-        final String targetEmail,
-        final String emailTemplate,
-        final String reference
+        NotificationException exception,
+        Claim claim,
+        String targetEmail,
+        String emailTemplate,
+        String reference
     ) {
-        final String errorMessage = String.format(
+        String errorMessage = String.format(
             "Failure: failed to send notification ( %s to %s ) due to %s",
             reference, targetEmail, exception.getMessage()
         );
@@ -117,7 +117,7 @@ public class DefendantResponseNotificationService {
         logger.info(errorMessage, exception);
     }
 
-    private Map<String, String> aggregateParams(final Claim claim) {
+    private Map<String, String> aggregateParams(Claim claim) {
 
         ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
@@ -129,7 +129,7 @@ public class DefendantResponseNotificationService {
         return parameters.build();
     }
 
-    private Map<String, String> aggregateParams(final Claim claim, final Response response) {
+    private Map<String, String> aggregateParams(Claim claim, Response response) {
         boolean isFreeMediationApplicable = response.getFreeMediation().isPresent();
         boolean isFreeMediationRequested = response.getFreeMediation()
             .orElse(Response.FreeMediationOption.NO).equals(Response.FreeMediationOption.YES);
@@ -154,7 +154,7 @@ public class DefendantResponseNotificationService {
     }
 
     private EmailTemplates getEmailTemplates() {
-        final NotificationTemplates templates = notificationsProperties.getTemplates();
+        NotificationTemplates templates = notificationsProperties.getTemplates();
         return templates.getEmail();
     }
 }

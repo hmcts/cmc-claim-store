@@ -25,62 +25,62 @@ public class PartyUtils {
         // utility class, no instances
     }
 
-    public static String getType(final Party claimant) {
-        if (claimant instanceof Individual) {
+    public static String getType(Party party) {
+        if (party instanceof Individual) {
             return INDIVIDUAL;
-        } else if (claimant instanceof SoleTrader) {
+        } else if (party instanceof SoleTrader) {
             return SOLE_TRADER_OR_SELF_EMPLOYED_PERSON;
-        } else if (claimant instanceof Company) {
+        } else if (party instanceof Company) {
             return ON_BEHALF_OF_A_COMPANY;
-        } else if (claimant instanceof Organisation) {
+        } else if (party instanceof Organisation) {
             return ON_BEHALF_OF_AN_ORGANISATION;
         } else {
             throw new NotificationException("Claimant type is missing.");
         }
     }
 
-    public static String getType(final TheirDetails defendant) {
-        if (defendant instanceof IndividualDetails) {
+    public static String getType(TheirDetails party) {
+        if (party instanceof IndividualDetails) {
             return INDIVIDUAL;
-        } else if (defendant instanceof SoleTraderDetails) {
+        } else if (party instanceof SoleTraderDetails) {
             return SOLE_TRADER_OR_SELF_EMPLOYED_PERSON;
-        } else if (defendant instanceof CompanyDetails) {
+        } else if (party instanceof CompanyDetails) {
             return ON_BEHALF_OF_A_COMPANY;
-        } else if (defendant instanceof OrganisationDetails) {
+        } else if (party instanceof OrganisationDetails) {
             return ON_BEHALF_OF_AN_ORGANISATION;
         } else {
             throw new NotificationException("Defendant type is missing.");
         }
     }
 
-    public static Optional<String> getDefendantContactPerson(final TheirDetails defendant) {
-        if (defendant instanceof CompanyDetails)  {
-            return ((CompanyDetails) defendant).getContactPerson();
-        } else if (defendant instanceof OrganisationDetails) {
-            return ((OrganisationDetails) defendant).getContactPerson();
+    public static Optional<String> getContactPerson(Party party) {
+        if (party instanceof Company) {
+            return ((Company) party).getContactPerson();
+        } else if (party instanceof Organisation) {
+            return ((Organisation) party).getContactPerson();
         }
         return Optional.empty();
     }
 
-    public static Optional<String> getDefendantBusinessName(final TheirDetails defendant) {
-        if (defendant instanceof SoleTraderDetails) {
-            return ((SoleTraderDetails) defendant).getBusinessName();
+    public static Optional<String> getContactPerson(TheirDetails party) {
+        if (party instanceof CompanyDetails)  {
+            return ((CompanyDetails) party).getContactPerson();
+        } else if (party instanceof OrganisationDetails) {
+            return ((OrganisationDetails) party).getContactPerson();
         }
         return Optional.empty();
     }
 
-    public static Optional<String> getContactPerson(final Party claimant) {
-        if (claimant instanceof Company) {
-            return ((Company) claimant).getContactPerson();
-        } else if (claimant instanceof Organisation) {
-            return ((Organisation) claimant).getContactPerson();
+    public static Optional<String> getBusinessName(Party party) {
+        if (party instanceof SoleTrader) {
+            return ((SoleTrader) party).getBusinessName();
         }
         return Optional.empty();
     }
 
-    public static Optional<String> getBusinessName(final Party claimant) {
-        if (claimant instanceof SoleTrader) {
-            return ((SoleTrader) claimant).getBusinessName();
+    public static Optional<String> getBusinessName(TheirDetails party) {
+        if (party instanceof SoleTraderDetails) {
+            return ((SoleTraderDetails) party).getBusinessName();
         }
         return Optional.empty();
     }

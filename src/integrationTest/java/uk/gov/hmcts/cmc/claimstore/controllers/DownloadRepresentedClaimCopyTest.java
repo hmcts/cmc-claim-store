@@ -5,7 +5,7 @@ import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
+import uk.gov.hmcts.reform.pdf.service.client.exception.PDFServiceClientException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "feature_toggles.document_management=false"
+        "document_management.api_gateway.url=false"
     }
 )
 public class DownloadRepresentedClaimCopyTest extends BaseDownloadDocumentTest {

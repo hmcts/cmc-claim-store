@@ -34,10 +34,16 @@ spring:
       enabled: true
       max-file-size: 4000000KB
       max-request-size: 4000000KB
+  jackson:
+    default-property-inclusion: non_null
 
 idam:
   api:
     url: "http://localhost:8080"
+  s2s-auth:
+    url: "http://localhost:4552"
+    totp_secret: "AAAAAAAAAAAAAAAA"
+    microservice: "cmc_claim_store"
 
 bankHolidays:
   api:
@@ -79,7 +85,6 @@ staff-notifications:
 
 feature_toggles:
   watermark_pdf: false
-  document_management: false
 
 feign:
   httpclient:

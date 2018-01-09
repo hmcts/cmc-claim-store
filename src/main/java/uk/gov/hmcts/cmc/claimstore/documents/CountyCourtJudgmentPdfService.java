@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
 
@@ -18,16 +18,16 @@ public class CountyCourtJudgmentPdfService {
 
     @Autowired
     public CountyCourtJudgmentPdfService(
-        final DocumentTemplates documentTemplates,
-        final PDFServiceClient pdfServiceClient,
-        final ContentProvider contentProvider
+        DocumentTemplates documentTemplates,
+        PDFServiceClient pdfServiceClient,
+        ContentProvider contentProvider
     ) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
         this.contentProvider = contentProvider;
     }
 
-    public byte[] createPdf(final Claim claim) {
+    public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
 
         return pdfServiceClient.generateFromHtml(

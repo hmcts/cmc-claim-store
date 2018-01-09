@@ -30,9 +30,9 @@ public class ResponseTest {
     @Test
     public void shouldHaveValidationMessagesWhenResponseDataElementsAreInValid() {
         //given
-        Response response = SampleResponse.builder()
+        Response response = SampleResponse.FullDefence.builder()
             .withDefence(null)
-            .withResponseType(null)
+            .withDefenceType(null)
             .build();
 
         //when
@@ -42,7 +42,7 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(2)
             .contains(
-                "type : may not be null",
+                "defenceType : may not be null",
                 "defence : may not be empty"
             );
     }
@@ -51,9 +51,9 @@ public class ResponseTest {
     @Test
     public void shouldHaveValidationMessagesWhenDefenceDataElementIsEmpty() {
         //given
-        Response response = SampleResponse.builder()
+        Response response = SampleResponse.FullDefence.builder()
             .withDefence("")
-            .withResponseType(null)
+            .withDefenceType(null)
             .build();
 
         //when
@@ -63,18 +63,20 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(2)
             .contains(
-                "type : may not be null",
-                "defence : may not be empty"
+                "defence : may not be empty",
+                "defenceType : may not be null"
             );
     }
 
     @Test
     public void shouldHaveValidationMessagesWhenDefenceExceedsSizeLimit() {
         //given
-        final String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
+        String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
-        Response response = SampleResponse.builder()
-            .withDefence(defence).withResponseType(null).build();
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefence(defence)
+            .withDefenceType(null)
+            .build();
 
         //when
         Set<String> errors = validate(response);
@@ -84,7 +86,7 @@ public class ResponseTest {
             .hasSize(2)
             .contains(
                 "defence : size must be between 0 and 99000",
-                "type : may not be null"
+                "defenceType : may not be null"
             );
     }
 }

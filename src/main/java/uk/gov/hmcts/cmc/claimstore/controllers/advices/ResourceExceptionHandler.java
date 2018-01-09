@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.Optional;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
-    private static Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
     private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE = "duplicate key value violates unique constraint";
 
     @ExceptionHandler(value = Exception.class)
@@ -43,11 +44,11 @@ public class ResourceExceptionHandler {
     public ResponseEntity<Object> unableToExecuteStatement(UnableToExecuteStatementException exception) {
         logger.error(exception.getMessage(), exception);
 
-        final Optional<Throwable> cause = Optional.ofNullable(Throwables.getRootCause(exception))
+        Optional<Throwable> cause = Optional.ofNullable(Throwables.getRootCause(exception))
             .filter(c -> c != exception);
 
-        final Optional<String> exceptionName = cause.map(c -> c.getClass().getName());
-        final Optional<String> message = cause.map(Throwable::getMessage);
+        Optional<String> exceptionName = cause.map(c -> c.getClass().getName());
+        Optional<String> message = cause.map(Throwable::getMessage);
 
         if (exceptionName.isPresent() && exceptionName.get().contains(PSQLException.class.getName())
             && message.isPresent() && message.get().contains(UNIQUE_CONSTRAINT_MESSAGE)) {
@@ -101,7 +102,7 @@ public class ResourceExceptionHandler {
     public ResponseEntity<Object> validatedMethod(MethodArgumentNotValidException exception) {
         logger.error(exception.getMessage(), exception);
 
-        final BindingResult result = exception.getBindingResult();
+        BindingResult result = exception.getBindingResult();
         StringBuilder builder = new StringBuilder();
         List<FieldError> errors = result.getFieldErrors();
 
@@ -138,4 +139,9 @@ public class ResourceExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<String> badRequestException(BadRequestException exception) {
+        logger.debug(exception.getMessage(), exception);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -3,9 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.SealedClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,26 +13,25 @@ public class CitizenSealedClaimPdfService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
-    private final SealedClaimContentProvider sealedClaimContentProvider;
+    private final ClaimContentProvider claimContentProvider;
 
     @Autowired
     public CitizenSealedClaimPdfService(
-        final DocumentTemplates documentTemplates,
-        final PDFServiceClient pdfServiceClient,
-        final SealedClaimContentProvider sealedClaimContentProvider
+        DocumentTemplates documentTemplates,
+        PDFServiceClient pdfServiceClient,
+        ClaimContentProvider claimContentProvider
     ) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
-        this.sealedClaimContentProvider = sealedClaimContentProvider;
+        this.claimContentProvider = claimContentProvider;
     }
 
-    public byte[] createPdf(final Claim claim, final String submitterEmail) {
+    public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
-        requireNonNull(submitterEmail);
 
         return pdfServiceClient.generateFromHtml(
             documentTemplates.getSealedClaim(),
-            sealedClaimContentProvider.createContent(claim, submitterEmail)
+            claimContentProvider.createContent(claim)
         );
     }
 }

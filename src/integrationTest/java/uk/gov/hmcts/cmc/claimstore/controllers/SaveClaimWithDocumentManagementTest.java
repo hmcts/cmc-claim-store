@@ -1,13 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.document.utils.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.util.Optional;
 
@@ -24,11 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 
-@TestPropertySource(
-    properties = {
-        "feature_toggles.document_management=true"
-    }
-)
 public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test

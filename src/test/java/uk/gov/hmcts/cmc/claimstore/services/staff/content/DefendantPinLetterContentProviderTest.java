@@ -24,10 +24,10 @@ public class DefendantPinLetterContentProviderTest {
     private static final String DEFENDANT_PIN = "dsf4dd2";
     private static final String FRONTEND_BASE_URL = "https://moneyclaim.hmcts.net";
 
+    private final Claim claim = SampleClaim.getDefault();
+
     @Mock
     private NotificationsProperties notificationsProperties;
-
-    private Claim claim = SampleClaim.getDefault();
 
     private DefendantPinLetterContentProvider provider;
 
@@ -74,7 +74,7 @@ public class DefendantPinLetterContentProviderTest {
     public void shouldProvideClaimAmount() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        assertThat(content).containsEntry("claimTotalAmount", "£80.88");
+        assertThat(content).containsEntry("claimTotalAmount", "£80.89");
     }
 
     @Test

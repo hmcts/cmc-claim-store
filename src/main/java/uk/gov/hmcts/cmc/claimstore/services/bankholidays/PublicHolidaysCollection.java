@@ -24,7 +24,7 @@ public class PublicHolidaysCollection {
     private Set<LocalDate> retrieveAllPublicHolidays() {
         BankHolidays value = bankHolidaysApi.retrieveAll();
 
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(BankHolidays.Division.EventDate.FORMAT);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(BankHolidays.Division.EventDate.FORMAT);
 
         return value.englandAndWales.events.stream()
             .map(item -> LocalDate.parse(item.date, formatter))

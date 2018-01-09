@@ -3,8 +3,10 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -16,55 +18,72 @@ import java.util.function.Supplier;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
+@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
+    private final ClaimIssueReceiptService claimIssueReceiptService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
     private final DefendantResponseCopyService defendantResponseCopyService;
+    private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
 
     @Autowired
+    @SuppressWarnings("squid:S00107")
+    // Content providers are formatted values and aren't worth splitting into multiple models.
     public DocumentManagementBackedDocumentsService(
-        final ClaimService claimService,
-        final DocumentManagementService documentManagementService,
-        final LegalSealedClaimPdfService legalSealedClaimPdfService,
-        final DefendantResponseCopyService defendantResponseCopyService,
-        final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        final SettlementAgreementCopyService settlementAgreementCopyService
-    ) {
+        ClaimService claimService,
+        DocumentManagementService documentManagementService,
+        ClaimIssueReceiptService claimIssueReceiptService,
+        LegalSealedClaimPdfService legalSealedClaimPdfService,
+        DefendantResponseCopyService defendantResponseCopyService,
+        DefendantResponseReceiptService defendantResponseReceiptService,
+        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
+        SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
+        this.claimIssueReceiptService = claimIssueReceiptService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
         this.defendantResponseCopyService = defendantResponseCopyService;
+        this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
     }
 
     @Override
-    public byte[] getLegalSealedClaim(final String externalId, final String authorisation) {
+    public byte[] generateClaimIssueReceipt(String externalId) {
+        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId));
+    }
+
+    @Override
+    public byte[] getLegalSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId);
         return downloadOrGenerateAndUpload(claim, () -> legalSealedClaimPdfService.createPdf(claim), authorisation);
     }
 
     @Override
-    public byte[] generateDefendantResponseCopy(final String externalId) {
+    public byte[] generateDefendantResponseCopy(String externalId) {
         return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override
-    public byte[] generateCountyCourtJudgement(final String externalId) {
+    public byte[] generateDefendantResponseReceipt(String externalId) {
+        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId));
+    }
+
+    @Override
+    public byte[] generateCountyCourtJudgement(String externalId) {
         return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId));
     }
 
     @Override
-    public byte[] generateSettlementAgreement(final String externalId) {
+    public byte[] generateSettlementAgreement(String externalId) {
         return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId));
     }
 
-    private Claim getClaimByExternalId(final String externalId) {
+    private Claim getClaimByExternalId(String externalId) {
         return claimService.getClaimByExternalId(externalId);
     }
 

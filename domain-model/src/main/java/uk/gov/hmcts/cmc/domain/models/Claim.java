@@ -39,26 +39,26 @@ public class Claim {
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
-        final Long id,
-        final String submitterId,
-        final String letterHolderId,
-        final String defendantId,
-        final String externalId,
-        final String referenceNumber,
-        final ClaimData claimData,
-        final LocalDateTime createdAt,
-        final LocalDate issuedOn,
-        final LocalDate responseDeadline,
-        final boolean moreTimeRequested,
-        final String submitterEmail,
-        final LocalDateTime respondedAt,
-        final Response response,
-        final String defendantEmail,
-        final CountyCourtJudgment countyCourtJudgment,
-        final LocalDateTime countyCourtJudgmentRequestedAt,
-        final Settlement settlement,
-        final LocalDateTime settlementReachedAt,
-        final String sealedClaimDocumentSelfPath
+        Long id,
+        String submitterId,
+        String letterHolderId,
+        String defendantId,
+        String externalId,
+        String referenceNumber,
+        ClaimData claimData,
+        LocalDateTime createdAt,
+        LocalDate issuedOn,
+        LocalDate responseDeadline,
+        boolean moreTimeRequested,
+        String submitterEmail,
+        LocalDateTime respondedAt,
+        Response response,
+        String defendantEmail,
+        CountyCourtJudgment countyCourtJudgment,
+        LocalDateTime countyCourtJudgmentRequestedAt,
+        Settlement settlement,
+        LocalDateTime settlementReachedAt,
+        String sealedClaimDocumentSelfPath
     ) {
         this.id = id;
         this.submitterId = submitterId;

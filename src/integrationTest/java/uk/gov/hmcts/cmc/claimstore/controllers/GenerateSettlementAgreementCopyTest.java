@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.exception.PDFServiceClientException;
+import uk.gov.hmcts.reform.pdf.service.client.exception.PDFServiceClientException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -25,7 +25,7 @@ public class GenerateSettlementAgreementCopyTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponse.builder().build());
+        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
 
         Settlement settlement = new Settlement();
         Offer offer = SampleOffer.validDefaults();
@@ -57,7 +57,7 @@ public class GenerateSettlementAgreementCopyTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponse.builder().build());
+        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));

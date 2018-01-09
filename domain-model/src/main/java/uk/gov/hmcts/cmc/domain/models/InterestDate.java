@@ -56,14 +56,14 @@ public class InterestDate {
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        final InterestDate that = (InterestDate) other;
+        InterestDate that = (InterestDate) other;
         return Objects.equals(type, that.type)
             && Objects.equals(date, that.date)
             && Objects.equals(reason, that.reason);

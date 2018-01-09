@@ -1,0 +1,123 @@
+{
+  "id": 1513250998636210,
+  "jurisdiction": "CMC",
+  "case_type_id": "MoneyClaimCase",
+  "created_date": "2017-12-14T11:29:58.625",
+  "last_modified": "2017-12-14T11:29:58.625",
+  "state": "claimIssued",
+  "locked_by_user_id": null,
+  "security_level": null,
+  "case_data": {
+    "submitterEmail": "submitter@hmcts.net",
+    "issuedOn": "2017-12-14",
+    "id": 12,
+    "claimData": {
+      "reason": "reason",
+      "feeCode": "X0012",
+      "feeAccountNumber": "PBA1234567",
+      "feeAmountInPennies": 4000,
+      "externalReferenceNumber": "CLAIM234324",
+      "externalId": "20d29a70-431b-4859-94f5-bff709b58bbf",
+      "amount": {
+        "type": "RANGE",
+        "amountRange": {
+          "lowerValue": 123.56,
+          "higherValue": 123.56
+        }
+      },
+      "preferredCourt": "LONDON COUNTY COUNCIL",
+      "personalInjury": {
+        "generalDamages": "MORE_THAN_THOUSAND_POUNDS"
+      },
+      "housingDisrepair": {
+        "costOfRepairsDamages": "MORE_THAN_THOUSAND_POUNDS",
+        "otherDamages": "MORE_THAN_THOUSAND_POUNDS"
+      },
+      "statementOfTruth": {
+        "signerName": "John Rambo",
+        "signerRole": "Director"
+      },
+      "claimants": [{
+        "value": {
+          "type": "INDIVIDUAL",
+          "individual": {
+            "title": "Dr.",
+            "name": "John Rambo",
+            "mobilePhone": "07873727165",
+            "address": {
+              "line1": "52",
+              "line2": "Down Street",
+              "city": "Manchester",
+              "postcode": "DF1 3LJ"
+            },
+            "correspondenceAddress": {
+              "line1": "52",
+              "line2": "Down Street",
+              "city": "Manchester",
+              "postcode": "DF1 3LJ"
+            },
+            "dateOfBirth": "1968-01-02",
+            "representative": {
+              "organisationName": "Trading ltd",
+              "organisationAddress": {
+                "line1": "52",
+                "line2": "Down Street",
+                "city": "Manchester",
+                "postcode": "DF1 3LJ"
+              },
+              "organisationContactDetails": {
+                "phone": "7873738547",
+                "email": "representative@example.org",
+                "dxAddress": "DX123456"
+              }
+            }
+          }
+        },
+        "id": null
+      }],
+      "defendants": [{
+        "value": {
+          "type": "INDIVIDUAL",
+          "individual": {
+            "title": "Dr.",
+            "name": "John Smith",
+            "email": "j.smith@example.com",
+            "address": {
+              "line1": "52",
+              "line2": "Down Street",
+              "city": "Manchester",
+              "postcode": "DF1 3LJ"
+            },
+            "correspondenceAddress": {
+              "line1": "52",
+              "line2": "Down Street",
+              "city": "Manchester",
+              "postcode": "DF1 3LJ"
+            },
+            "representative": {
+              "organisationName": "Trading ltd",
+              "organisationAddress": {
+                "line1": "52",
+                "line2": "Down Street",
+                "city": "Manchester",
+                "postcode": "DF1 3LJ"
+              },
+              "organisationContactDetails": {
+                "phone": "7873738547",
+                "email": "representative@example.org",
+                "dxAddress": "DX123456"
+              }
+            }
+          }
+        },
+        "id": null
+      }]
+    },
+    "externalId": "20d29a70-431b-4859-94f5-bff709b58bbf",
+    "submittedOn": "2017-12-14T11:29:58.01145",
+    "submitterId": "19",
+    "referenceNumber": "000LR012"
+  },
+  "security_classification": "PUBLIC"
+}
+

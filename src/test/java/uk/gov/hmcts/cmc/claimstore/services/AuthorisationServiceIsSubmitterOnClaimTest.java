@@ -11,7 +11,7 @@ public class AuthorisationServiceIsSubmitterOnClaimTest {
 
     private static final String USER_ID = "123456789";
 
-    private AuthorisationService authorisationService = new AuthorisationService();
+    private final AuthorisationService authorisationService = new AuthorisationService();
 
     @Test
     public void shouldReturnTrueIfUserIsSubmitterOnTheClaim() {

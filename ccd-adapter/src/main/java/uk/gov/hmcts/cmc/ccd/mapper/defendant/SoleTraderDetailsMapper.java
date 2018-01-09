@@ -15,7 +15,7 @@ public class SoleTraderDetailsMapper implements Mapper<CCDSoleTrader, SoleTrader
     private final RepresentativeMapper representativeMapper;
 
     @Autowired
-    public SoleTraderDetailsMapper(final AddressMapper addressMapper, final RepresentativeMapper representativeMapper) {
+    public SoleTraderDetailsMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
     }
@@ -23,7 +23,7 @@ public class SoleTraderDetailsMapper implements Mapper<CCDSoleTrader, SoleTrader
     @Override
     public CCDSoleTrader to(SoleTraderDetails soleTrader) {
 
-        final CCDSoleTrader.CCDSoleTraderBuilder builder = CCDSoleTrader.builder();
+        CCDSoleTrader.CCDSoleTraderBuilder builder = CCDSoleTrader.builder();
         soleTrader.getTitle().ifPresent(builder::title);
         soleTrader.getEmail().ifPresent(builder::email);
         soleTrader.getBusinessName().ifPresent(builder::businessName);

@@ -32,10 +32,10 @@ public class RepaymentPlan {
     private final PaymentSchedule paymentSchedule;
 
     public RepaymentPlan(
-        final BigDecimal firstPayment,
-        final BigDecimal instalmentAmount,
-        final LocalDate firstPaymentDate,
-        final PaymentSchedule paymentSchedule
+        BigDecimal firstPayment,
+        BigDecimal instalmentAmount,
+        LocalDate firstPaymentDate,
+        PaymentSchedule paymentSchedule
     ) {
 
         this.firstPayment = firstPayment;

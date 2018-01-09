@@ -149,7 +149,7 @@ public class ClaimServiceTest {
 
         ClaimData app = SampleClaimData.validDefaults();
         String jsonApp = new ResourceReader().read("/claim-application.json");
-        final String authorisationToken = "Open sesame!";
+        String authorisationToken = "Open sesame!";
 
         when(userService.getUserDetails(eq(authorisationToken))).thenReturn(claimantDetails);
         when(mapper.toJson(eq(app))).thenReturn(jsonApp);
@@ -177,8 +177,8 @@ public class ClaimServiceTest {
 
     @Test(expected = ConflictException.class)
     public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
-        final ClaimData app = SampleClaimData.validDefaults();
-        final String authorisationToken = "Open same!";
+        ClaimData app = SampleClaimData.validDefaults();
+        String authorisationToken = "Open same!";
         when(claimRepository.getClaimByExternalId(any())).thenReturn(Optional.of(claim));
 
         claimService.saveClaim(USER_ID, app, authorisationToken);

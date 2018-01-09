@@ -31,7 +31,7 @@ public class CountyCourtJudgmentController {
 
     @Autowired
     public CountyCourtJudgmentController(
-        final CountyCourtJudgmentService countyCourtJudgmentService, final UserService userService) {
+        CountyCourtJudgmentService countyCourtJudgmentService, UserService userService) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.userService = userService;
     }
@@ -39,11 +39,11 @@ public class CountyCourtJudgmentController {
     @PostMapping("/{claimId:\\d+}/county-court-judgment")
     @ApiOperation("Save County Court Judgment")
     public Claim save(
-        @PathVariable("claimId") final Long claimId,
-        @NotNull @RequestBody @Valid final CountyCourtJudgment countyCourtJudgment,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
+        @PathVariable("claimId") Long claimId,
+        @NotNull @RequestBody @Valid CountyCourtJudgment countyCourtJudgment,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        final String submitterId = userService.getUserDetails(authorisation).getId();
+        String submitterId = userService.getUserDetails(authorisation).getId();
         return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, claimId);
     }
 }

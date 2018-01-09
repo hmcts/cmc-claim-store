@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantPinLetterContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
 
@@ -18,16 +18,16 @@ public class DefendantPinLetterPdfService {
 
     @Autowired
     public DefendantPinLetterPdfService(
-        final DocumentTemplates documentTemplates,
-        final PDFServiceClient pdfServiceClient,
-        final DefendantPinLetterContentProvider defendantPinLetterContentProvider
+        DocumentTemplates documentTemplates,
+        PDFServiceClient pdfServiceClient,
+        DefendantPinLetterContentProvider defendantPinLetterContentProvider
     ) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
         this.defendantPinLetterContentProvider = defendantPinLetterContentProvider;
     }
 
-    public byte[] createPdf(final Claim claim, final String defendantPin) {
+    public byte[] createPdf(Claim claim, String defendantPin) {
         requireNonNull(claim);
         requireNonNull(defendantPin);
 

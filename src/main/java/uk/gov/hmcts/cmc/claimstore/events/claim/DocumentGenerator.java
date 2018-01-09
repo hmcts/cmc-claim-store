@@ -24,10 +24,10 @@ public class DocumentGenerator {
 
     @Autowired
     public DocumentGenerator(
-        final CitizenSealedClaimPdfService citizenSealedClaimPdfService,
-        final DefendantPinLetterPdfService defendantPinLetterPdfService,
-        final LegalSealedClaimPdfService legalSealedClaimPdfService,
-        final ApplicationEventPublisher publisher
+        CitizenSealedClaimPdfService citizenSealedClaimPdfService,
+        DefendantPinLetterPdfService defendantPinLetterPdfService,
+        LegalSealedClaimPdfService legalSealedClaimPdfService,
+        ApplicationEventPublisher publisher
     ) {
         this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
@@ -36,9 +36,9 @@ public class DocumentGenerator {
     }
 
     @EventListener
-    public void generateForNonRepresentedClaim(final ClaimIssuedEvent event) {
+    public void generateForNonRepresentedClaim(ClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            citizenSealedClaimPdfService.createPdf(event.getClaim(), event.getSubmitterEmail()));
+            citizenSealedClaimPdfService.createPdf(event.getClaim()));
         PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
             defendantPinLetterPdfService.createPdf(event.getClaim(), event.getPin()
                 .orElseThrow(() -> new IllegalArgumentException("Defendant access PIN is missing"))));
@@ -48,7 +48,7 @@ public class DocumentGenerator {
     }
 
     @EventListener
-    public void generateForRepresentedClaim(final RepresentedClaimIssuedEvent event) {
+    public void generateForRepresentedClaim(RepresentedClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             legalSealedClaimPdfService.createPdf(event.getClaim()));
 

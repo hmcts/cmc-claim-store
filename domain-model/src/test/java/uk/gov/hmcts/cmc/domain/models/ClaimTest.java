@@ -56,7 +56,7 @@ public class ClaimTest {
         return customCreatedAt(NOW_IN_LOCAL_ZONE);
     }
 
-    private static Claim customCreatedAt(final LocalDateTime createdAt) {
+    private static Claim customCreatedAt(LocalDateTime createdAt) {
         return new Claim(
             1L,
             "3",

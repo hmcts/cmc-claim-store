@@ -38,12 +38,12 @@ public class RepresentativeMapperTest {
     @Test
     public void shouldMapRepresentativeToCMC() {
         //given
-        final CCDContactDetails contactDetails = CCDContactDetails.builder()
+        CCDContactDetails contactDetails = CCDContactDetails.builder()
             .phone("07987654321")
             .email(",my@email.com")
             .dxAddress("dx123")
             .build();
-        final CCDAddress address = CCDAddress.builder()
+        CCDAddress address = CCDAddress.builder()
             .line1("line 1")
             .line2("line 2")
             .city("city")

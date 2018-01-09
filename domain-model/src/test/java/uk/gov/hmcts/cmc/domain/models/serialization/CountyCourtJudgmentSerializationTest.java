@@ -36,8 +36,8 @@ public class CountyCourtJudgmentSerializationTest {
         assertThat(expected).isEqualTo(other);
     }
 
-    private static CountyCourtJudgment jsonToModel(final String path) throws IOException {
-        final String json = new ResourceReader().read(path);
+    private static CountyCourtJudgment jsonToModel(String path) throws IOException {
+        String json = new ResourceReader().read(path);
         return mapper.readValue(json, CountyCourtJudgment.class);
     }
 }

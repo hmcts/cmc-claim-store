@@ -44,15 +44,15 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         );
     }
 
-    private ClaimData toClaimData(final String input) {
+    private ClaimData toClaimData(String input) {
         return jsonMapper.fromJson(input, ClaimData.class);
     }
 
-    private Response toNullableResponseData(final String input) {
+    private Response toNullableResponseData(String input) {
         return toNullableEntity(input, Response.class);
     }
 
-    private CountyCourtJudgment toNullableCountyCourtJudgment(final String input) {
+    private CountyCourtJudgment toNullableCountyCourtJudgment(String input) {
         return toNullableEntity(input, CountyCourtJudgment.class);
     }
 

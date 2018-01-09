@@ -37,7 +37,7 @@ public class SoleTraderMapperTest {
     @Test
     public void sholdMapSoleTraderFromCCD() {
         //given
-        final CCDSoleTrader ccdSoleTrader = getCCDSoleTrader();
+        CCDSoleTrader ccdSoleTrader = getCCDSoleTrader();
 
         //when
         SoleTrader soleTrader = soleTraderMapper.from(ccdSoleTrader);

@@ -1,54 +1,61 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
-public class SampleResponse {
+public abstract class SampleResponse<T extends SampleResponse<T>> {
 
-    private Response.ResponseType responseType = Response.ResponseType.OWE_NONE;
-    private Response.FreeMediationOption freeMediationOption = Response.FreeMediationOption.YES;
-    private Response.MoreTimeNeededOption moreTimeNeededOption = Response.MoreTimeNeededOption.YES;
-    private String defence = "defence string";
-    private Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
-    private StatementOfTruth statementOfTruth;
+    public static class FullDefence extends SampleResponse<FullDefence> {
+        private FullDefenceResponse.DefenceType defenceType = FullDefenceResponse.DefenceType.DISPUTE;
+        private String defence = "defence string";
 
-    public static SampleResponse builder() {
-        return new SampleResponse();
+        public static FullDefence builder() {
+            return new FullDefence();
+        }
+
+        public FullDefence withDefenceType(FullDefenceResponse.DefenceType defenceType) {
+            this.defenceType = defenceType;
+            return this;
+        }
+
+        public FullDefence withDefence(String defence) {
+            this.defence = defence;
+            return this;
+        }
+
+        public FullDefenceResponse build() {
+            return new FullDefenceResponse(
+                freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,
+                defenceType, defence
+            );
+        }
     }
 
-    public static Response validDefaults() {
-        return builder().build();
+    protected Response.FreeMediationOption freeMediationOption = Response.FreeMediationOption.YES;
+    protected Response.MoreTimeNeededOption moreTimeNeededOption = Response.MoreTimeNeededOption.YES;
+    protected Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
+    protected StatementOfTruth statementOfTruth;
+
+    public static FullDefenceResponse validDefaults() {
+        return FullDefence.builder().build();
     }
 
-    public SampleResponse withResponseType(final Response.ResponseType responseType) {
-        this.responseType = responseType;
-        return this;
-    }
-
-    public SampleResponse withMediation(final Response.FreeMediationOption freeMediationOption) {
+    public T withMediation(Response.FreeMediationOption freeMediationOption) {
         this.freeMediationOption = freeMediationOption;
-        return this;
+        return (T)this;
     }
 
-    public SampleResponse withDefence(final String defence) {
-        this.defence = defence;
-        return this;
-    }
-
-    public SampleResponse withDefendantDetails(final Party sampleDefendantDetails) {
+    public T withDefendantDetails(Party sampleDefendantDetails) {
         this.defendantDetails = sampleDefendantDetails;
-        return this;
+        return (T)this;
     }
 
-    public Response build() {
-        return new Response(
-            responseType, defence, freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth
-        );
-    }
-
-    public SampleResponse withStatementOfTruth(final String signerName, final String signerRole) {
+    public T withStatementOfTruth(String signerName, String signerRole) {
         this.statementOfTruth = new StatementOfTruth(signerName,signerRole);
-        return this;
+        return (T)this;
     }
+
+    public abstract Response build();
 }

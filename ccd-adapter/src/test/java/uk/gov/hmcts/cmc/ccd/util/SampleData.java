@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
@@ -35,9 +36,9 @@ public class SampleData {
     }
 
     public static CCDIndividual getCCDIndividual() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
 
         return CCDIndividual.builder()
             .title("Mr.")
@@ -68,9 +69,9 @@ public class SampleData {
     }
 
     public static CCDCompany getCCDCompany() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
         return CCDCompany.builder()
             .name("Abc Ltd")
             .address(ccdAddress)
@@ -137,8 +138,8 @@ public class SampleData {
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .claimants(asList(getCCDPartyIndividual()))
-            .defendants(asList(getCCDPartyIndividual()))
+            .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
             .build();
     }
 
@@ -164,9 +165,9 @@ public class SampleData {
     }
 
     public static CCDOrganisation getCCDOrganisation() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
         return CCDOrganisation.builder()
             .name("Xyz & Co")
             .address(ccdAddress)
@@ -179,9 +180,9 @@ public class SampleData {
     }
 
     public static CCDSoleTrader getCCDSoleTrader() {
-        final CCDAddress ccdAddress = getCCDAddress();
-        final CCDContactDetails ccdContactDetails = getCCDContactDetails();
-        final CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
+        CCDAddress ccdAddress = getCCDAddress();
+        CCDContactDetails ccdContactDetails = getCCDContactDetails();
+        CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
         return CCDSoleTrader.builder()
             .title("Mr.")
             .name("Individual")

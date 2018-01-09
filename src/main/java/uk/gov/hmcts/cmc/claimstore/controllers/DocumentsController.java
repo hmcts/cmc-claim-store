@@ -24,7 +24,7 @@ public class DocumentsController {
     private final DocumentsService documentsService;
 
     @Autowired
-    public DocumentsController(final DocumentsService documentsService) {
+    public DocumentsController(DocumentsService documentsService) {
         this.documentsService = documentsService;
     }
 
@@ -37,7 +37,7 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("externalId") @NotBlank String externalId
     ) {
-        final byte[] pdfDocument = documentsService.generateDefendantResponseCopy(externalId);
+        byte[] pdfDocument = documentsService.generateDefendantResponseCopy(externalId);
 
         return ResponseEntity
             .ok()
@@ -53,9 +53,9 @@ public class DocumentsController {
     public ResponseEntity<ByteArrayResource> legalSealedClaim(
         @ApiParam("Claim external id")
         @PathVariable("externalId") @NotBlank String externalId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        final byte[] pdfDocument = documentsService.getLegalSealedClaim(externalId, authorisation);
+        byte[] pdfDocument = documentsService.getLegalSealedClaim(externalId, authorisation);
 
         return ResponseEntity
             .ok()
@@ -72,7 +72,7 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("externalId") @NotBlank String externalId
     ) {
-        final byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId);
+        byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId);
 
         return ResponseEntity
             .ok()
@@ -89,7 +89,7 @@ public class DocumentsController {
         @ApiParam("Claim external id")
         @PathVariable("externalId") @NotBlank String externalId
     ) {
-        final byte[] pdfDocument = documentsService.generateSettlementAgreement(externalId);
+        byte[] pdfDocument = documentsService.generateSettlementAgreement(externalId);
 
         return ResponseEntity
             .ok()
@@ -97,4 +97,37 @@ public class DocumentsController {
             .body(new ByteArrayResource(pdfDocument));
     }
 
+    @ApiOperation("Returns a Defendant Response receipt for a given claim external id")
+    @GetMapping(
+        value = "/defendantResponseReceipt/{externalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> defendantResponseReceipt(
+        @ApiParam("Claim external id")
+        @PathVariable("externalId") @NotBlank String externalId
+    ) {
+        byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(externalId);
+
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
+
+    @ApiOperation("Returns a Claim Issue receipt for a given claim external id")
+    @GetMapping(
+        value = "/claimIssueReceipt/{externalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> claimIssueReceipt(
+        @ApiParam("Claim external id")
+        @PathVariable("externalId") @NotBlank String externalId
+    ) {
+        byte[] pdfDocument = documentsService.generateClaimIssueReceipt(externalId);
+
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
 }

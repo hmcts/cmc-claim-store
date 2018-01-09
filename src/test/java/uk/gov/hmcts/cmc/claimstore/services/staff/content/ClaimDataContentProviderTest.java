@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,11 +15,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 
-public class ClaimContentProviderTest {
+public class ClaimDataContentProviderTest {
 
     private Claim claim = SampleClaim.getDefault();
 
-    private ClaimContentProvider provider = new ClaimContentProvider(
+    private ClaimDataContentProvider provider = new ClaimDataContentProvider(
         new InterestContentProvider(
             new InterestCalculationService(Clock.systemDefaultZone())
         )
@@ -75,7 +76,7 @@ public class ClaimContentProviderTest {
     public void shouldProvideTotalAmount() {
         ClaimContent claimContent = provider.createContent(claim);
 
-        assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.88");
+        assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.89");
     }
 
     @Test

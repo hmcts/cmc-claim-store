@@ -6,9 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.SealedClaimContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.cmc.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static org.mockito.Mockito.verify;
 
@@ -16,7 +15,7 @@ import static org.mockito.Mockito.verify;
 public class CitizenSealedClaimPdfServiceTest {
 
     @Mock
-    private SealedClaimContentProvider contentProvider;
+    private ClaimContentProvider contentProvider;
     @Mock
     private DocumentTemplates documentTemplates;
     @Mock
@@ -34,17 +33,12 @@ public class CitizenSealedClaimPdfServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.createPdf(null, "submitter@email.com");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullSubmitterEmail() {
-        service.createPdf(claim, null);
+        service.createPdf(null);
     }
 
     @Test
     public void shouldUseCorrectTemplateToCreateTheDocument() {
-        service.createPdf(claim, "submitter@email.com");
+        service.createPdf(claim);
         verify(documentTemplates).getSealedClaim();
     }
 

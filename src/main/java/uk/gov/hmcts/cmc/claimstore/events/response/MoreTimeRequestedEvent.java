@@ -10,7 +10,7 @@ public class MoreTimeRequestedEvent {
     private final LocalDate newResponseDeadline;
     private final String defendantEmail;
 
-    public MoreTimeRequestedEvent(final Claim claim, final LocalDate newResponseDeadline, final String defendantEmail) {
+    public MoreTimeRequestedEvent(Claim claim, LocalDate newResponseDeadline, String defendantEmail) {
         this.claim = claim;
         this.newResponseDeadline = newResponseDeadline;
         this.defendantEmail = defendantEmail;
@@ -29,7 +29,7 @@ public class MoreTimeRequestedEvent {
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -38,7 +38,7 @@ public class MoreTimeRequestedEvent {
             return false;
         }
 
-        final MoreTimeRequestedEvent that = (MoreTimeRequestedEvent) other;
+        MoreTimeRequestedEvent that = (MoreTimeRequestedEvent) other;
         return Objects.equals(claim, that.claim)
             && Objects.equals(newResponseDeadline, that.newResponseDeadline)
             && Objects.equals(defendantEmail, that.defendantEmail);

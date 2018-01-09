@@ -50,7 +50,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         Response response = SampleResponse.validDefaults();
 
-        final MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
+        MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -104,11 +104,11 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldFailForEmptyDefence() throws Exception {
         long anyClaimId = 500;
         String anyDefendantId = "500";
-        Response response = SampleResponse.builder()
+        Response response = SampleResponse.FullDefence.builder()
             .withDefence("")
             .build();
 
-        final MvcResult result = makeRequest(anyClaimId, anyDefendantId, response)
+        MvcResult result = makeRequest(anyClaimId, anyDefendantId, response)
             .andExpect(status().isBadRequest())
             .andReturn();
 

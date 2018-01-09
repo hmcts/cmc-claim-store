@@ -9,7 +9,7 @@ public class AmountRangeMapper implements Mapper<CCDAmountRange, AmountRange> {
 
     @Override
     public CCDAmountRange to(AmountRange amountRange) {
-        final CCDAmountRange.CCDAmountRangeBuilder builder = CCDAmountRange.builder();
+        CCDAmountRange.CCDAmountRangeBuilder builder = CCDAmountRange.builder();
         amountRange.getLowerValue().ifPresent(builder::lowerValue);
         return builder.higherValue(amountRange.getHigherValue()).build();
     }
