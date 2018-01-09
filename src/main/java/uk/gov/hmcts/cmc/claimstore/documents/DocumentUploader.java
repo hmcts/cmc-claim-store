@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "true")
+@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url")
 public class DocumentUploader {
 
     private final DocumentManagementService documentManagementService;
