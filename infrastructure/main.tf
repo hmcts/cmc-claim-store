@@ -3,7 +3,7 @@ resource "random_string" "database_password" {
   special = true
 }
 
-resource "azurerm_key_vault_secret" "database-password" {
+resource "azurerm_key_vault_secret" "database_password" {
   name      = "database-password"
   value     = "${random_string.database_password.result}"
   vault_uri = "${var.vault_uri}"
@@ -27,7 +27,7 @@ module "claim-store-api" {
     CLAIM_STORE_DB_PORT = "${module.claim-store-database.postgresql_listen_port}"
     POSTGRES_DATABASE = "${module.claim-store-database.postgresql_database}"
     CLAIM_STORE_DB_USERNAME = "${module.claim-store-database.user_name}"
-    CLAIM_STORE_DB_PASSWORD = "${azurerm_key_vault_secret.database-password.value}"
+    CLAIM_STORE_DB_PASSWORD = "${azurerm_key_vault_secret.database_password.value}"
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
