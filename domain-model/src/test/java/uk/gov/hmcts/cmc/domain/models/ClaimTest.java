@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
@@ -54,13 +55,14 @@ public class ClaimTest {
     }
 
     @Test
-    public void copyCreatesNewInstanceOfClaim() {
+    public void populateTotalAmountTillFields() {
         Claim claim1 = SampleClaim.getDefault();
-        Claim claim2 = claim1.copy(BigDecimal.ONE, BigDecimal.ZERO);
+        Claim claim2 = new Claim(claim1, BigDecimal.ONE, BigDecimal.ZERO);
 
         assertThat(claim1).isNotEqualTo(claim2);
-        assertThat(claim1.getTotalAmountTillDateOfIssue()).isNotEqualTo(claim2.getTotalAmountTillDateOfIssue());
-        assertThat(claim1.getTotalAmountTillToday()).isNotEqualTo(claim2.getTotalAmountTillToday());
+        assertThat(claim2.getTotalAmountTillToday()).isEqualTo(Optional.of(BigDecimal.ONE));
+        assertThat(claim2.getTotalAmountTillDateOfIssue()).isEqualTo(Optional.of(BigDecimal.ZERO));
+
 
         assertThat(claim1.getId()).isEqualTo(claim2.getId());
         assertThat(claim1.getClaimData()).isEqualTo(claim2.getClaimData());
