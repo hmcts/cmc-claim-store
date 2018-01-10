@@ -1,7 +1,11 @@
+resource "random_string" "database_password" {
+  length = 32
+  special = true
+}
 
 resource "azurerm_key_vault_secret" "database_password" {
-  name = "temp-database-password"
-  value = "Somevalue!1"
+  name = "database-password"
+  value = "${random_string.database_password.result}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
