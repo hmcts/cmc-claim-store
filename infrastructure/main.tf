@@ -66,7 +66,7 @@ module "claim-store-database" {
 
 module "key-vault" {
   source = "git@github.com:contino/moj-module-key-vault?ref=master"
-  product = "${var.product}"
+  product = "${var.product}-${var.microservice}"
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
   object_id = "${var.client_id}"
