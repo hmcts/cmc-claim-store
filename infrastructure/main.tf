@@ -4,7 +4,7 @@ resource "random_string" "database_password" {
 }
 
 resource "azurerm_key_vault_secret" "database_password" {
-  name = "database_password"
+  name = "database-password"
   value = "${random_string.database_password.result}"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
