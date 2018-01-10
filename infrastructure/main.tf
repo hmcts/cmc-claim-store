@@ -1,3 +1,14 @@
+resource "random_string" "database_password" {
+  length = 32
+  special = true
+}
+
+resource "azurerm_key_vault_secret" "database_password" {
+  name      = "database-password"
+  value     = "${random_string.database_password.result}"
+  vault_uri = "${var.vault_uri}"
+}
+
 module "claim-store-api" {
   source = "git@github.com:contino/moj-module-webapp.git"
   product = "${var.product}-${var.microservice}"
@@ -16,7 +27,7 @@ module "claim-store-api" {
     CLAIM_STORE_DB_PORT = "${module.claim-store-database.postgresql_listen_port}"
     POSTGRES_DATABASE = "${module.claim-store-database.postgresql_database}"
     CLAIM_STORE_DB_USERNAME = "${module.claim-store-database.user_name}"
-    CLAIM_STORE_DB_PASSWORD = "${var.database-password}"
+    CLAIM_STORE_DB_PASSWORD = "${azurerm_key_vault_secret.database_password.value}"
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
@@ -49,6 +60,6 @@ module "claim-store-database" {
   location = "West Europe"
   env = "${var.env}"
   postgresql_user = "claimstore"
-  postgresql_password = "${var.database-password}"
+  postgresql_password = "${azurerm_key_vault_secret.database-password.value}"
   postgresql_database = "${var.database-name}"
 }

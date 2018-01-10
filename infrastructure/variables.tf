@@ -36,9 +36,9 @@ variable "database-name" {
   default = "postgres"
 }
 
-variable "ssenv" {
-  type = "string"
-  default = "prd"
-}
-
 variable "ilbIp"{}
+
+variable "vault_uri" {
+  type    = "string"
+  description = "the vault uri for the application"
+}
