@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -14,31 +16,34 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonIgnoreProperties(value = {"totalAmountTillToday", "totalAmountTillDateOfIssue"}, allowGetters = true)
 public class Claim {
 
-    private final Long id;
-    private final String submitterId;
-    private final String letterHolderId;
-    private final String defendantId;
-    private final String externalId;
-    private final String referenceNumber;
+    private Long id;
+    private String submitterId;
+    private String letterHolderId;
+    private String defendantId;
+    private String externalId;
+    private String referenceNumber;
     @JsonProperty("claim")
-    private final ClaimData claimData;
-    private final LocalDateTime createdAt;
-    private final LocalDate issuedOn;
-    private final LocalDate responseDeadline;
-    private final boolean moreTimeRequested;
-    private final String submitterEmail;
-    private final LocalDateTime respondedAt;
-    private final Response response;
-    private final String defendantEmail;
-    private final CountyCourtJudgment countyCourtJudgment;
-    private final LocalDateTime countyCourtJudgmentRequestedAt;
-    private final Settlement settlement;
-    private final LocalDateTime settlementReachedAt;
-    private final String sealedClaimDocumentSelfPath;
-    private final BigDecimal totalAmountTillToday;
-    private final BigDecimal totalAmountTillDateOfIssue;
+    private ClaimData claimData;
+    private LocalDateTime createdAt;
+    private LocalDate issuedOn;
+    private LocalDate responseDeadline;
+    private boolean moreTimeRequested;
+    private String submitterEmail;
+    private LocalDateTime respondedAt;
+    private Response response;
+    private String defendantEmail;
+    private CountyCourtJudgment countyCourtJudgment;
+    private LocalDateTime countyCourtJudgmentRequestedAt;
+    private Settlement settlement;
+    private LocalDateTime settlementReachedAt;
+    private String sealedClaimDocumentSelfPath;
+    private BigDecimal totalAmountTillToday;
+    private BigDecimal totalAmountTillDateOfIssue;
+
+    public Claim() {}
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -61,9 +66,7 @@ public class Claim {
         LocalDateTime countyCourtJudgmentRequestedAt,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
-        String sealedClaimDocumentSelfPath,
-        BigDecimal totalAmountTillToday,
-        BigDecimal totalAmountTillDateOfIssue
+        String sealedClaimDocumentSelfPath
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -85,6 +88,34 @@ public class Claim {
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
         this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
+
+        this.totalAmountTillToday = null;
+        this.totalAmountTillDateOfIssue = null;
+    }
+
+    public Claim(Claim claim, BigDecimal totalAmountTillToday, BigDecimal totalAmountTillDateOfIssue) {
+        this(
+            claim.id,
+            claim.submitterId,
+            claim.letterHolderId,
+            claim.defendantId,
+            claim.externalId,
+            claim.referenceNumber,
+            claim.claimData,
+            claim.createdAt,
+            claim.issuedOn,
+            claim.responseDeadline,
+            claim.moreTimeRequested,
+            claim.submitterEmail,
+            claim.respondedAt,
+            claim.response,
+            claim.defendantEmail,
+            claim.countyCourtJudgment,
+            claim.countyCourtJudgmentRequestedAt,
+            claim.settlement,
+            claim.settlementReachedAt,
+            claim.sealedClaimDocumentSelfPath);
+
         this.totalAmountTillToday = totalAmountTillToday;
         this.totalAmountTillDateOfIssue = totalAmountTillDateOfIssue;
     }
@@ -169,12 +200,12 @@ public class Claim {
         return Optional.ofNullable(sealedClaimDocumentSelfPath);
     }
 
-    public BigDecimal getTotalAmountTillToday() {
-        return totalAmountTillToday;
+    public Optional<BigDecimal> getTotalAmountTillToday() {
+        return Optional.of(totalAmountTillToday);
     }
 
-    public BigDecimal getTotalAmountTillDateOfIssue() {
-        return totalAmountTillDateOfIssue;
+    public Optional<BigDecimal> getTotalAmountTillDateOfIssue() {
+        return Optional.of(totalAmountTillDateOfIssue);
     }
 
     @Override
@@ -211,33 +242,6 @@ public class Claim {
             && Objects.equals(totalAmountTillDateOfIssue, claim.totalAmountTillDateOfIssue);
     }
 
-    public Claim copy(BigDecimal totalAmountTillToday, BigDecimal totalAmountTillDateOfIssue) {
-        return new Claim(
-            id,
-            submitterId,
-            letterHolderId,
-            defendantId,
-            externalId,
-            referenceNumber,
-            claimData,
-            createdAt,
-            issuedOn,
-            responseDeadline,
-            moreTimeRequested,
-            submitterEmail,
-            respondedAt,
-            response,
-            defendantEmail,
-            countyCourtJudgment,
-            countyCourtJudgmentRequestedAt,
-            settlement,
-            settlementReachedAt,
-            sealedClaimDocumentSelfPath,
-            totalAmountTillToday,
-            totalAmountTillDateOfIssue
-        );
-    }
-
     @Override
     public int hashCode() {
         return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
@@ -252,5 +256,4 @@ public class Claim {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
 }

@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.services.interest.ClaimInterestService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -37,6 +38,9 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @MockBean
     private DefendantResponseStaffNotificationHandler staffActionsHandler;
 
+    @MockBean
+    private ClaimInterestService claimInterestService;
+
     @Captor
     private ArgumentCaptor<DefendantResponseEvent> defendantResponseEventArgument;
 
@@ -61,7 +65,6 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .contains(Optional.of(response));
     }
 
-    @Ignore
     @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
@@ -73,7 +76,8 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         verify(staffActionsHandler).onDefendantResponseSubmitted(defendantResponseEventArgument.capture());
 
-        Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
+        Claim updatedClaim = claimRepository.getById(claim.getId())
+            .orElseThrow(RuntimeException::new);
         assertThat(defendantResponseEventArgument.getValue().getClaim()).isEqualTo(updatedClaim);
     }
 

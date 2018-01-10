@@ -41,9 +41,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at")),
             toNullableSettlement(result.getString("settlement")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
-            result.getString("sealed_claim_document_management_self_path"),
-            null,
-            null
+            result.getString("sealed_claim_document_management_self_path")
         );
     }
 

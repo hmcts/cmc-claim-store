@@ -103,8 +103,6 @@ public final class SampleClaim {
             null,
             null,
             null,
-            null,
-            null,
             null
         );
     }
@@ -136,7 +134,7 @@ public final class SampleClaim {
     }
 
     public Claim build() {
-        return new Claim(
+        Claim result = new Claim(
             claimId,
             submitterId,
             letterHolderId,
@@ -156,10 +154,14 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocumentSelfPath,
-            totalAmountTillToday,
-            totalAmountTillDateOfIssue
+            sealedClaimDocumentSelfPath
         );
+
+        if (totalAmountTillDateOfIssue != null || totalAmountTillToday != null) {
+            return new Claim(result, totalAmountTillToday, totalAmountTillDateOfIssue);
+        }
+
+        return result;
     }
 
     public SampleClaim withSubmitterId(String userId) {

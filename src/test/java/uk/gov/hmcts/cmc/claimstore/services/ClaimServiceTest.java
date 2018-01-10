@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.claimstore.services.interest.ClaimInterestService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -80,13 +80,12 @@ public class ClaimServiceTest {
     @Mock
     private EventProducer eventProducer;
     @Mock
-    private InterestCalculationService interestCalculationService;
+    private ClaimInterestService claimInterestService;
 
     @Before
     public void setup() {
         when(userService.getUserDetails(eq(VALID_DEFENDANT_TOKEN))).thenReturn(validDefendant);
-        when(interestCalculationService.calculateInterestUpToNow(any(), any(), any())).thenReturn(BigDecimal.ONE);
-        when(interestCalculationService.calculateInterest(any(), any(), any(), any())).thenReturn(BigDecimal.ONE);
+        when(claimInterestService.calculateAndPopulateTotalAmount(any())).thenReturn(claim);
 
         claimService = new ClaimService(
             claimRepository,
@@ -95,7 +94,7 @@ public class ClaimServiceTest {
             issueDateCalculator,
             responseDeadlineCalculator,
             eventProducer,
-            interestCalculationService
+            claimInterestService
         );
     }
 
@@ -121,13 +120,12 @@ public class ClaimServiceTest {
     @Test
     public void getClaimByLetterHolderIdShouldCallRepositoryWhenValidClaimIsReturned() {
 
-        String letterHolderId = "1";
-        Claim claim = createClaimModel(VALID_APP, letterHolderId);
+        Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
         Optional<Claim> result = Optional.of(claim);
 
-        when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
+        when(claimRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID))).thenReturn(result);
 
-        Claim claimApplication = claimService.getClaimByLetterHolderId(letterHolderId);
+        Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID);
         assertThat(claimApplication).isEqualTo(claim);
     }
 
@@ -233,6 +231,7 @@ public class ClaimServiceTest {
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(claimInterestService.calculateAndPopulateTotalAmount(eq(claim))).thenReturn(claim);
 
         claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
     }
@@ -242,6 +241,7 @@ public class ClaimServiceTest {
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(claimInterestService.calculateAndPopulateTotalAmount(eq(claim))).thenReturn(claim);
 
         claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
     }
