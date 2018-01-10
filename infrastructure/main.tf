@@ -4,7 +4,7 @@ resource "random_string" "database_password" {
 }
 
 resource "azurerm_key_vault_secret" "database_password" {
-  name      = "database-password"
+  name      = "database_password"
   value     = "${random_string.database_password.result}"
   vault_uri = "${var.vault_uri}"
 }
@@ -60,6 +60,6 @@ module "claim-store-database" {
   location = "West Europe"
   env = "${var.env}"
   postgresql_user = "claimstore"
-  postgresql_password = "${azurerm_key_vault_secret.database-password.value}"
+  postgresql_password = "${azurerm_key_vault_secret.database_password.value}"
   postgresql_database = "${var.database-name}"
 }
