@@ -4,9 +4,9 @@ resource "random_string" "database_password" {
 }
 
 resource "azurerm_key_vault_secret" "database_password" {
-  name      = "database_password"
-  value     = "${random_string.database_password.result}"
-  vault_uri = "${var.vault_uri}"
+  name = "database_password"
+  value = "${random_string.database_password.result}"
+  vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 module "claim-store-api" {
@@ -43,14 +43,14 @@ module "claim-store-api" {
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "${var.document-management-url}"
 
     // mail
-    SPRING_MAIL_HOST = "tbd"
+    SPRING_MAIL_HOST = "mail.reform.hmcts.net"
     SPRING_MAIL_PORT = "25"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE = "true"
-    SPRING_MAIL_TEST_CONNECTION = "false" // TODO: remove after we get a mail gateway to use
+    SPRING_MAIL_TEST_CONNECTION = "false"
 
     // staff notifications
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
-    STAFF_NOTIFICATIONS_RECIPIENT = "noreply@reform.hmcts.net" // TODO how to bring in per environment config, consul?
+    STAFF_NOTIFICATIONS_RECIPIENT = "noreply@reform.hmcts.net"
   }
 }
 
@@ -62,4 +62,12 @@ module "claim-store-database" {
   postgresql_user = "claimstore"
   postgresql_password = "${azurerm_key_vault_secret.database_password.value}"
   postgresql_database = "${var.database-name}"
+}
+
+module "key-vault" {
+  source = "git@github.com:contino/moj-module-key-vault?ref=master"
+  vault_name = "${var.product}-${var.component}"
+  env = "${var.env}"
+  tenant_id = "${var.tenant_id}"
+  object_id = "${var.client_id}"
 }
