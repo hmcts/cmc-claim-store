@@ -67,7 +67,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void totalTillTodayShouldReturnClaimAmountPlusFeeWhenNoInterestWhenNoInterest() {
+    public void totalTillTodayShouldReturnClaimAmountPlusFeeWhenNoInterest() {
         Claim claimNoInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
@@ -82,7 +82,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void totalTillDateOfIssueShouldReturnClaimAmountPlusFeeWhenNoInterestWhenNoInterest() {
+    public void totalTillDateOfIssueShouldReturnClaimAmountPlusFeeWhenNoInterest() {
         Claim claimNoInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
