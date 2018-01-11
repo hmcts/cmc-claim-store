@@ -26,7 +26,7 @@ public class GovNotifyHealthIndicator implements HealthIndicator {
             client.getNotifications(null, null, "fake_ref", null);
             return Health.up().build();
         } catch (Exception exc) {
-            LOGGER.error("Error on pdf service healthcheck", exc);
+            LOGGER.error("Error on GOV Notify service healthcheck", exc);
             return Health.down(exc).build();
         }
     }
