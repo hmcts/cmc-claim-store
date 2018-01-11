@@ -74,6 +74,7 @@ public class ClaimService {
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
+
         return claimRepository
             .getByClaimReferenceAndSubmitter(reference, submitterId);
     }
@@ -126,9 +127,12 @@ public class ClaimService {
                 externalId, submitterEmail);
         }
 
-        eventProducer.createClaimIssuedEvent(getClaimById(issuedClaimId),
+        eventProducer.createClaimIssuedEvent(
+            getClaimById(issuedClaimId),
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            userDetails.getFullName(), authorisation);
+            userDetails.getFullName(),
+            authorisation
+        );
 
         return getClaimById(issuedClaimId);
     }
@@ -146,8 +150,7 @@ public class ClaimService {
             throw new MoreTimeAlreadyRequestedException("You have already requested more time");
         }
 
-        if (LocalDate.now()
-            .isAfter(claim.getResponseDeadline())) {
+        if (LocalDate.now().isAfter(claim.getResponseDeadline())) {
             throw new MoreTimeRequestedAfterDeadlineException("You must not request more time after deadline");
         }
 
@@ -180,8 +183,7 @@ public class ClaimService {
         claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
     }
 
-    public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail,
-                                      Response response) {
+    public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
     }
 }
