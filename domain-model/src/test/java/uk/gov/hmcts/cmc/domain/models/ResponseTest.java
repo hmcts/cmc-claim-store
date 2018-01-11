@@ -43,9 +43,7 @@ public class ResponseTest {
     public void shouldHaveValidationMessagesWhenPartAdmissionDataElementsAreInvalid() {
         //given
         Response response = SamplePartAdmissionResponse.builder()
-            .withPartAdmissionType(null)
             .withThatMuchOwed(null)
-            .withThatMuchPaid(null)
             .withPayBySetDate(null)
             .withEvidence(null)
             .withTimeline(null)
@@ -60,10 +58,8 @@ public class ResponseTest {
         assertThat(errors)
             .containsExactlyInAnyOrder(
                 "timeline : may not be null",
-                "howMuchPaid : may not be null",
                 "howMuchOwed : may not be null",
                 "evidence : may not be null",
-                "partAdmissionType : may not be null",
                 "payBySetDate : may not be null"
             );
     }

@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantPaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.EvidenceItem;
 import uk.gov.hmcts.cmc.domain.models.response.HowMuchOwed;
-import uk.gov.hmcts.cmc.domain.models.response.HowMuchPaid;
 import uk.gov.hmcts.cmc.domain.models.response.PayBySetDate;
 import uk.gov.hmcts.cmc.domain.models.response.TimelineEvent;
 import java.util.Objects;
@@ -21,7 +20,6 @@ public class PartAdmissionResponse extends Response {
 
     public enum PartAdmissionType {
         AMOUNT_TOO_HIGH,
-        PAID_WHAT_BELIEVED_WAS_OWED
     }
 
     @NotNull
@@ -39,10 +37,6 @@ public class PartAdmissionResponse extends Response {
     @NotNull
     private final HowMuchOwed howMuchOwed;
 
-    @Valid
-    @NotNull
-    private final HowMuchPaid howMuchPaid;
-
     @NotNull
     private final PayBySetDate payBySetDate;
 
@@ -59,7 +53,6 @@ public class PartAdmissionResponse extends Response {
         StatementOfTruth statementOfTruth,
         PartAdmissionType partAdmissionType,
         HowMuchOwed howMuchOwed,
-        HowMuchPaid howMuchPaid,
         PayBySetDate payBySetDate,
         ImmutableList<EvidenceItem> evidence,
         ImmutableList<TimelineEvent> timeline,
@@ -69,7 +62,6 @@ public class PartAdmissionResponse extends Response {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.partAdmissionType = partAdmissionType;
         this.howMuchOwed = howMuchOwed;
-        this.howMuchPaid = howMuchPaid;
         this.payBySetDate = payBySetDate;
         this.evidence = evidence;
         this.timeline = timeline;
@@ -83,10 +75,6 @@ public class PartAdmissionResponse extends Response {
 
     public HowMuchOwed getHowMuchOwed() {
         return howMuchOwed;
-    }
-
-    public HowMuchPaid getHowMuchPaid() {
-        return howMuchPaid;
     }
 
     public PayBySetDate getPayBySetDate() {
@@ -128,7 +116,6 @@ public class PartAdmissionResponse extends Response {
         return super.equals(that)
             && Objects.equals(partAdmissionType, that.partAdmissionType)
             && Objects.equals(howMuchOwed, that.howMuchOwed)
-            && Objects.equals(howMuchPaid, that.howMuchPaid)
             && Objects.equals(payBySetDate, that.payBySetDate)
             && Objects.equals(evidence, that.evidence)
             && Objects.equals(timeline, that.timeline)
@@ -141,7 +128,6 @@ public class PartAdmissionResponse extends Response {
         return Objects.hash(super.hashCode(),
             partAdmissionType,
             howMuchOwed,
-            howMuchPaid,
             payBySetDate,
             evidence,
             timeline,
