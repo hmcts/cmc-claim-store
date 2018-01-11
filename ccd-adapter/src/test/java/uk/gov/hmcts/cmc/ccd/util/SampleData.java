@@ -41,7 +41,6 @@ public class SampleData {
         CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
 
         return CCDIndividual.builder()
-            .title("Mr.")
             .name("Individual")
             .mobilePhone("07987654321")
             .dateOfBirth("1950-01-01")
