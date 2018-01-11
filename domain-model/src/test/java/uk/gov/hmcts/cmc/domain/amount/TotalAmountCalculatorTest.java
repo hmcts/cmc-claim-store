@@ -28,7 +28,7 @@ public class TotalAmountCalculatorTest {
         assertThat(
             TotalAmountCalculator.calculateInterest(
                 ZERO,
-                new BigDecimal(1000),
+                new BigDecimal("1000"),
                 TODAY.minusDays(1000),
                 TODAY
             )
@@ -37,7 +37,7 @@ public class TotalAmountCalculatorTest {
 
     @Test
     public void calculateInterestShouldReturn0WhenInterestIs0() {
-        BigDecimal amount = new BigDecimal(1000);
+        BigDecimal amount = new BigDecimal("1000");
         assertThat(
             TotalAmountCalculator.calculateInterest(
                 amount,
@@ -50,15 +50,15 @@ public class TotalAmountCalculatorTest {
 
     @Test
     public void calculateInterestShouldReturnCalculatedValidValue() {
-        BigDecimal amount = new BigDecimal(1000);
+        BigDecimal amount = new BigDecimal("1000");
         assertThat(
             TotalAmountCalculator.calculateInterest(
                 amount,
-                new BigDecimal(8),
+                new BigDecimal("8"),
                 TODAY.minusDays(1000),
                 TODAY
             )
-        ).isEqualTo(format(new BigDecimal(219.18)));
+        ).isEqualTo(format(new BigDecimal("219.18")));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void totalTillTodayShouldReturnClaimAmountPlusFeeWhenNoInterestWhenNoIntrest() {
+    public void totalTillTodayShouldReturnClaimAmountPlusFeeWhenNoInterestWhenNoInterest() {
         Claim claimNoInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
@@ -78,11 +78,11 @@ public class TotalAmountCalculatorTest {
             ).build();
 
         assertThat(TotalAmountCalculator.totalTillToday(claimNoInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal(60))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
     }
 
     @Test
-    public void totalTillDateOfIssueShouldReturnClaimAmountPlusWhenNoInterestWhenNoIntrest() {
+    public void totalTillDateOfIssueShouldReturnClaimAmountPlusFeeWhenNoInterestWhenNoInterest() {
         Claim claimNoInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
@@ -93,24 +93,7 @@ public class TotalAmountCalculatorTest {
             ).build();
 
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claimNoInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal(60))));
-    }
-
-    @Test
-    public void totalTillTodayShouldReturnCalculatedTotalAmountPlusInterestWhenStandardInterest() {
-
-        Claim claimNoInterest = SampleClaim.builder()
-            .withClaimData(
-                SampleClaimData.builder()
-                    .withAmount(SampleAmountBreakdown.validDefaults())
-                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
-                    .withInterest(SampleInterest.standard())
-                    .withInterestDate(SampleInterestDate.validDefaults())
-                    .build()
-            ).build();
-
-        assertThat(TotalAmountCalculator.totalTillDateOfIssue(claimNoInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal(60.89))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
     }
 
     @Test
@@ -127,7 +110,7 @@ public class TotalAmountCalculatorTest {
             ).build();
 
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claimNoInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal(60))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
     }
 
     @Test
