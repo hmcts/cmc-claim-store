@@ -1,12 +1,19 @@
-resource "random_string" "database_password" {
-  length = 32
-  special = true
+//provider "vault" {
+//  # It is strongly recommended to configure this provider through the
+//  # environment variables described above, so that each user can have
+//  # separate credentials set in the environment.
+//  #
+//  # This will default to using $VAULT_ADDR
+//  # But can be set explicitly
+//  address = "https://vault.reform.hmcsts.net:6200"
+//}
+
+data "vault_generic_secret" "notify_api_key" {
+  path = "secret/dev/cmc/notify_api_key"
 }
 
-resource "azurerm_key_vault_secret" "database_password" {
-  name = "database-password"
-  value = "${random_string.database_password.result}"
-  vault_uri = "${module.key-vault.key_vault_uri}"
+data "vault_generic_secret" "s2s_secret" {
+  path = "secret/test/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore"
 }
 
 module "claim-store-api" {
@@ -27,47 +34,40 @@ module "claim-store-api" {
     CLAIM_STORE_DB_PORT = "${module.claim-store-database.postgresql_listen_port}"
     POSTGRES_DATABASE = "${module.claim-store-database.postgresql_database}"
     CLAIM_STORE_DB_USERNAME = "${module.claim-store-database.user_name}"
-    CLAIM_STORE_DB_PASSWORD = "${azurerm_key_vault_secret.database_password.value}"
+    CLAIM_STORE_DB_PASSWORD = "${module.claim-store-database.password}"
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
     // idam
-    IDAM_API_URL = "https://unknown-url.reform.hmcts.net"
+    IDAM_API_URL = "${var.idam-api-url}"
+    IDAM_S2S_AUTH_URL = "${var.s2s-url}"
+    IDAM_S2S_AUTH_TOTP_SECRET = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
     // notify
-    GOV_NOTIFY_API_KEY = "tbd"
+    GOV_NOTIFY_API_KEY = "${data.vault_generic_secret.notify_api_key.data["value"]}"
 
     // urls
-    FRONTEND_BASE_URL = "https://unknown-url.reform.hmts.net"
+    FRONTEND_BASE_URL = "${var.frontend-url}"
     PDF_SERVICE_URL = "${var.pdf-service-url}"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "${var.document-management-url}"
+    CORE_CASE_DATA_API_URL = "${var.ccd-url}"
 
     // mail
-    SPRING_MAIL_HOST = "mail.reform.hmcts.net"
+    SPRING_MAIL_HOST = "${var.mail-host}"
     SPRING_MAIL_PORT = "25"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE = "true"
-    SPRING_MAIL_TEST_CONNECTION = "false"
 
     // staff notifications
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
-    STAFF_NOTIFICATIONS_RECIPIENT = "noreply@reform.hmcts.net"
+    STAFF_NOTIFICATIONS_RECIPIENT = "civilmoneyclaims+cnp@gmail.com"
   }
 }
 
 module "claim-store-database" {
-  source = "git@github.com:contino/moj-module-postgres?ref=master"
+  source = "git@github.com:contino/moj-module-postgres?ref=random-password"
   product = "${var.product}-ase"
   location = "West Europe"
   env = "${var.env}"
   postgresql_user = "claimstore"
-  postgresql_password = "${azurerm_key_vault_secret.database_password.value}"
   postgresql_database = "${var.database-name}"
-}
-
-module "key-vault" {
-  source = "git@github.com:contino/moj-module-key-vault?ref=liamfoneill-Fix-Resource-Group"
-  product = "${var.product}-${var.microservice}"
-  env = "${var.env}"
-  tenant_id = "${var.tenant_id}"
-  object_id = "${var.client_id}"
 }
