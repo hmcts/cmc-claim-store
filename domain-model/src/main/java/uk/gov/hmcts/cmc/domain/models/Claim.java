@@ -16,6 +16,9 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+/**
+ * Create these fields in JSON when serialize Java object, ignore them when deserialize
+ */
 @JsonIgnoreProperties(value = {"totalAmountTillToday", "totalAmountTillDateOfIssue"}, allowGetters = true)
 public class Claim {
 
