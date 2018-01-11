@@ -57,25 +57,18 @@ public class ClaimTest {
     }
 
     private static Claim customCreatedAt(LocalDateTime createdAt) {
-        return new Claim(
-            1L,
-            "3",
-            "3",
-            "4",
-            "external-id",
-            "ref number",
-            null,
-            createdAt,
-            ISSUE_DATE,
-            RESPONSE_DEADLINE,
-            false,
-            "claimant@mail.com",
-            null,
-            null, null,
-            null,
-            null,
-            null,
-            null,
-            null);
+        return SampleClaim.builder()
+            .withClaimId(1L)
+            .withSubmitterId("3")
+            .withLetterHolderId("3")
+            .withDefendantId("4")
+            .withExternalId("external-id")
+            .withReferenceNumber("ref number")
+            .withCreatedAt(createdAt)
+            .withIssuedOn(ISSUE_DATE)
+            .withResponseDeadline(RESPONSE_DEADLINE)
+            .withMoreTimeRequested(false)
+            .withSubmitterEmail("claimant@mail.com")
+            .build();
     }
 }
