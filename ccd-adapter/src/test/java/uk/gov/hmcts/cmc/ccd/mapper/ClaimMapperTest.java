@@ -25,7 +25,7 @@ public class ClaimMapperTest {
     @Test
     public void shouldMapClaimToCCD() {
         //given
-        ClaimData claimData = SampleClaimData.validDefaults();
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
         //when
         CCDClaim ccdClaim = claimMapper.to(claimData);

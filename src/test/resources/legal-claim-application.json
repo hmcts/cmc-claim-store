@@ -1,9 +1,8 @@
 {
   "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
   "claimants": [{
-    "type": "individual",
-    "title": "Dr.",
-    "name": "John Rambo",
+    "type": "party",
+    "name": "Dr. John Rambo",
     "address": {
       "line1": "52",
       "line2": "Down Street",

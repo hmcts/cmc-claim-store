@@ -26,7 +26,7 @@ public class AmountContentProviderTest {
     @Test
     public void calculateWithNoPaidAmount() {
         Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.validDefaults())
+            .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(SampleCountyCourtJudgment.builder()
                 .withPaidAmount(null).build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
@@ -45,7 +45,7 @@ public class AmountContentProviderTest {
     @Test
     public void calculate() {
         Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.validDefaults())
+            .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(SampleCountyCourtJudgment.builder()
                 .withPaidAmount(BigDecimal.valueOf(10)).build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
