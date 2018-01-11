@@ -65,7 +65,7 @@ module "claim-store-database" {
 }
 
 module "key-vault" {
-  source = "git@github.com:contino/moj-module-key-vault?ref=master"
+  source = "git@github.com:contino/moj-module-key-vault?ref=liamfoneill-Fix-Resource-Group"
   product = "${var.product}-${var.microservice}"
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
