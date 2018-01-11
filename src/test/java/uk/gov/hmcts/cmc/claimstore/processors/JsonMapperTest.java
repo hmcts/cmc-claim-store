@@ -102,6 +102,7 @@ public class JsonMapperTest {
         //then
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
+            .withClaimant(SampleParty.builder().withName("Dr. John Rambo").party())
             .withInterestDate(
                 SampleInterestDate.builder()
                     .withDate(LocalDate.of(2015, 2, 2))

@@ -205,6 +205,7 @@ public class SampleClaimData {
 
     public static SampleClaimData submittedByLegalRepresentativeBuilder() {
         return new SampleClaimData()
+            .withClaimant(SampleParty.builder().party())
             .withAmount(SampleAmountRange.validDefaults());
     }
 

@@ -39,7 +39,7 @@ public class ClaimControllerTest {
     @Test
     public void shouldSaveClaimInRepository() throws JsonProcessingException {
         //given
-        ClaimData input = SampleClaimData.validDefaults();
+        ClaimData input = SampleClaimData.submittedByClaimant();
         when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION))).thenReturn(CLAIM);
 
         //when

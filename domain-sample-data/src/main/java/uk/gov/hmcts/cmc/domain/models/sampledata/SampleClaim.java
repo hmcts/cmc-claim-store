@@ -76,7 +76,7 @@ public final class SampleClaim {
     }
 
     public static Claim getDefaultForLegal() {
-        return builder().build();
+        return builder().withClaimData(SampleClaimData.submittedByLegalRepresentative()).build();
     }
 
     public static Claim claim(ClaimData claimData, String referenceNumber) {

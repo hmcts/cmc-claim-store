@@ -81,7 +81,7 @@ public class SampleParty {
     }
 
     public Party party() {
-        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, title, dateOfBirth);
+        return new Party(name, address, correspondenceAddress, mobilePhone, representative);
     }
 
     public Individual individual() {
