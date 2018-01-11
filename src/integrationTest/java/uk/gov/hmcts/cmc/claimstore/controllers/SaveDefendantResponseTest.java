@@ -71,8 +71,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         verify(staffActionsHandler).onDefendantResponseSubmitted(defendantResponseEventArgument.capture());
 
-        Claim updatedClaim = claimRepository.getById(claim.getId())
-            .orElseThrow(RuntimeException::new);
+        Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
         assertThat(defendantResponseEventArgument.getValue().getClaim()).isEqualTo(updatedClaim);
     }
 

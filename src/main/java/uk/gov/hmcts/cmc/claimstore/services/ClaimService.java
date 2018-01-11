@@ -80,7 +80,6 @@ public class ClaimService {
     }
 
     public Optional<Claim> getClaimByReference(String reference) {
-
         return claimRepository
             .getByClaimReferenceNumber(reference);
     }

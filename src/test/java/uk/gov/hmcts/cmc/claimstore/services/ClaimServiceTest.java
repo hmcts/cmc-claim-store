@@ -21,8 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -253,8 +251,6 @@ public class ClaimServiceTest {
             .withResponseDeadline(RESPONSE_DEADLINE)
             .withMoreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
             .withSubmitterEmail(SUBMITTER_EMAIL)
-            .withTotalAmountTillToday(BigDecimal.valueOf(81).setScale(2, RoundingMode.HALF_UP))
-            .withTotalAmountTillDateOfIssue(BigDecimal.valueOf(81).setScale(2, RoundingMode.HALF_UP))
             .build();
     }
 
