@@ -3,11 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.services.interest;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class InterestCalculationServiceTest {
 
@@ -18,25 +15,6 @@ public class InterestCalculationServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionWhenAmountIsNegative() {
-        service.calculateInterest(NEGATIVE, BigDecimal.ONE, START_DATE, START_DATE.plusDays(1));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionWhenInterestRateIsNegative() {
-        service.calculateInterest(BigDecimal.ONE, NEGATIVE, START_DATE, START_DATE.plusDays(1));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionWhenStartDateIsAfterEndDate() {
-        service.calculateInterest(BigDecimal.ONE, BigDecimal.ONE, START_DATE, START_DATE.minusDays(1));
-    }
-
-    @Test
-    public void shouldReturnValidValueRoundedTo2DecimalDigits() {
-        BigDecimal claimAmount = new BigDecimal(8000L);
-        BigDecimal interestRate = new BigDecimal(30L);
-        BigDecimal result = service.calculateInterest(claimAmount, interestRate, START_DATE, START_DATE.plusDays(6));
-
-        assertThat(result).isEqualTo(BigDecimal.valueOf(39.45).setScale(2, RoundingMode.HALF_UP));
+        service.calculateDailyAmountFor(NEGATIVE, NEGATIVE);
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.services.interest.ClaimInterestService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -36,9 +35,6 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @MockBean
     private DefendantResponseStaffNotificationHandler staffActionsHandler;
-
-    @MockBean
-    private ClaimInterestService claimInterestService;
 
     @Captor
     private ArgumentCaptor<DefendantResponseEvent> defendantResponseEventArgument;

@@ -134,7 +134,7 @@ public final class SampleClaim {
     }
 
     public Claim build() {
-        Claim result = new Claim(
+        return new Claim(
             claimId,
             submitterId,
             letterHolderId,
@@ -156,12 +156,6 @@ public final class SampleClaim {
             settlementReachedAt,
             sealedClaimDocumentSelfPath
         );
-
-        if (totalAmountTillDateOfIssue != null || totalAmountTillToday != null) {
-            return new Claim(result, totalAmountTillToday, totalAmountTillDateOfIssue);
-        }
-
-        return result;
     }
 
     public SampleClaim withSubmitterId(String userId) {

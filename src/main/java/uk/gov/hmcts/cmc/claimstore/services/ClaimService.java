@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.interest.ClaimInterestService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -24,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class ClaimService {
@@ -35,7 +33,6 @@ public class ClaimService {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
-    private final ClaimInterestService claimInterestService;
 
     @Autowired
     public ClaimService(
@@ -44,40 +41,34 @@ public class ClaimService {
         JsonMapper jsonMapper,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
-        EventProducer eventProducer,
-        ClaimInterestService claimInterestService) {
+        EventProducer eventProducer) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
-        this.claimInterestService = claimInterestService;
     }
 
     public Claim getClaimById(long claimId) {
         return claimRepository
             .getById(claimId)
-            .map(claimInterestService::calculateAndPopulateTotalAmount)
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId) {
-        return claimRepository.getBySubmitterId(submitterId).stream()
-            .map(claimInterestService::calculateAndPopulateTotalAmount).collect(Collectors.toList());
+        return claimRepository.getBySubmitterId(submitterId);
     }
 
     public Claim getClaimByLetterHolderId(String id) {
         return claimRepository
             .getByLetterHolderId(id)
-            .map(claimInterestService::calculateAndPopulateTotalAmount)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
 
     public Claim getClaimByExternalId(String externalId) {
         return claimRepository
             .getClaimByExternalId(externalId)
-            .map(claimInterestService::calculateAndPopulateTotalAmount)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
@@ -85,21 +76,18 @@ public class ClaimService {
         String submitterId = userService.getUserDetails(authorisation).getId();
 
         return claimRepository
-            .getByClaimReferenceAndSubmitter(reference, submitterId)
-            .map(claimInterestService::calculateAndPopulateTotalAmount);
+            .getByClaimReferenceAndSubmitter(reference, submitterId);
     }
 
     public Optional<Claim> getClaimByReference(String reference) {
 
         return claimRepository
-            .getByClaimReferenceNumber(reference)
-            .map(claimInterestService::calculateAndPopulateTotalAmount);
+            .getByClaimReferenceNumber(reference);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return claimRepository.getByExternalReference(externalReference, submitterId)
-            .stream().map(claimInterestService::calculateAndPopulateTotalAmount).collect(Collectors.toList());
+        return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 
     public List<Claim> getClaimByDefendantId(String id) {

@@ -3,10 +3,8 @@ package uk.gov.hmcts.cmc.domain.models;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
@@ -52,36 +50,6 @@ public class ClaimTest {
         Claim claim1 = customCreatedAt(NOW_IN_LOCAL_ZONE.plusNanos(1));
         Claim claim2 = customCreatedAt(NOW_IN_LOCAL_ZONE);
         assertThat(claim1).isNotEqualTo(claim2);
-    }
-
-    @Test
-    public void populateTotalAmountTillFields() {
-        Claim claim1 = SampleClaim.getDefault();
-        Claim claim2 = new Claim(claim1, BigDecimal.ONE, BigDecimal.ZERO);
-
-        assertThat(claim1).isNotEqualTo(claim2);
-        assertThat(claim2.getTotalAmountTillToday()).isEqualTo(Optional.of(BigDecimal.ONE));
-        assertThat(claim2.getTotalAmountTillDateOfIssue()).isEqualTo(Optional.of(BigDecimal.ZERO));
-
-
-        assertThat(claim1.getId()).isEqualTo(claim2.getId());
-        assertThat(claim1.getClaimData()).isEqualTo(claim2.getClaimData());
-        assertThat(claim1.getCountyCourtJudgment()).isEqualTo(claim2.getCountyCourtJudgment());
-        assertThat(claim1.getCountyCourtJudgmentRequestedAt()).isEqualTo(claim2.getCountyCourtJudgmentRequestedAt());
-        assertThat(claim1.getCreatedAt()).isEqualTo(claim2.getCreatedAt());
-        assertThat(claim1.getDefendantEmail()).isEqualTo(claim2.getDefendantEmail());
-        assertThat(claim1.getDefendantId()).isEqualTo(claim2.getDefendantId());
-        assertThat(claim1.getExternalId()).isEqualTo(claim2.getExternalId());
-        assertThat(claim1.getIssuedOn()).isEqualTo(claim2.getIssuedOn());
-        assertThat(claim1.getLetterHolderId()).isEqualTo(claim2.getLetterHolderId());
-        assertThat(claim1.getReferenceNumber()).isEqualTo(claim2.getReferenceNumber());
-        assertThat(claim1.getRespondedAt()).isEqualTo(claim2.getRespondedAt());
-        assertThat(claim1.getResponseDeadline()).isEqualTo(claim2.getResponseDeadline());
-        assertThat(claim1.getResponse()).isEqualTo(claim2.getResponse());
-        assertThat(claim1.getSettlementReachedAt()).isEqualTo(claim2.getSettlementReachedAt());
-        assertThat(claim1.getSettlement()).isEqualTo(claim2.getSettlement());
-        assertThat(claim1.getSubmitterEmail()).isEqualTo(claim2.getSubmitterEmail());
-        assertThat(claim1.getSubmitterId()).isEqualTo(claim2.getSubmitterId());
     }
 
     private static Claim customValues() {

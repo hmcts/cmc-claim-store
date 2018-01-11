@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.interest.ClaimInterestService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -79,13 +78,10 @@ public class ClaimServiceTest {
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
     private EventProducer eventProducer;
-    @Mock
-    private ClaimInterestService claimInterestService;
 
     @Before
     public void setup() {
         when(userService.getUserDetails(eq(VALID_DEFENDANT_TOKEN))).thenReturn(validDefendant);
-        when(claimInterestService.calculateAndPopulateTotalAmount(any())).thenReturn(claim);
 
         claimService = new ClaimService(
             claimRepository,
@@ -93,8 +89,7 @@ public class ClaimServiceTest {
             mapper,
             issueDateCalculator,
             responseDeadlineCalculator,
-            eventProducer,
-            claimInterestService
+            eventProducer
         );
     }
 
@@ -231,7 +226,6 @@ public class ClaimServiceTest {
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
-        when(claimInterestService.calculateAndPopulateTotalAmount(eq(claim))).thenReturn(claim);
 
         claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
     }
@@ -241,7 +235,6 @@ public class ClaimServiceTest {
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
         when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
-        when(claimInterestService.calculateAndPopulateTotalAmount(eq(claim))).thenReturn(claim);
 
         claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
     }
