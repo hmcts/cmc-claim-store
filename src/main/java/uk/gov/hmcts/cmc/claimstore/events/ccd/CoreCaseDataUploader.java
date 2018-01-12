@@ -37,7 +37,6 @@ public class CoreCaseDataUploader {
             coreCaseDataService.save(event.getAuthorisation(), event.getClaim());
         } catch (CoreCaseDataStoreException ex) {
             logger.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex.getMessage(), ex);
         }
     }
 }
