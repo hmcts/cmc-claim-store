@@ -92,3 +92,7 @@ SELECT merge_title_and_name('defendants');
 
 -- Remove title from defendants
 SELECT remove_title_from_individuals('defendants');
+
+-- DROP functions
+DROP FUNCTION merge_title_and_name(varchar);
+DROP FUNCTION remove_title_from_individuals(varchar);
