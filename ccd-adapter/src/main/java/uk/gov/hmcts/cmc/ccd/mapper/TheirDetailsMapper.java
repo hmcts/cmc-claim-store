@@ -102,7 +102,7 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
         CCDIndividual ccdIndividual = ccdParty.getIndividual();
         return new IndividualDetails(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
             ccdIndividual.getEmail(), representativeMapper.from(ccdIndividual.getRepresentative()),
-            addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getTitle(),
+            addressMapper.from(ccdIndividual.getCorrespondenceAddress()),
             LocalDate.parse(ccdIndividual.getDateOfBirth(), ISO_DATE));
     }
 

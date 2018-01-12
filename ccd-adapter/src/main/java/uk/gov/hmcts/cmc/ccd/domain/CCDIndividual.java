@@ -7,7 +7,6 @@ import lombok.Value;
 @Builder
 public class CCDIndividual {
 
-    private String title;
     private String name;
     private String email;
     private String mobilePhone;
