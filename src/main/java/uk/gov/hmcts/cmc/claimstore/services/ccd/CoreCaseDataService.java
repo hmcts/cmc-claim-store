@@ -43,8 +43,8 @@ public class CoreCaseDataService {
 
             return saveCoreCaseDataService.save(authorisation, eventRequestData, ccdCase);
         } catch (Exception exception) {
-            throw new CoreCaseDataStoreException("Failed storing claim in CCD store for claim "
-                + claim.getReferenceNumber(), exception);
+            throw new CoreCaseDataStoreException(String
+                .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
         }
     }
 }
