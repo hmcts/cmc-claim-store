@@ -1,12 +1,12 @@
-//provider "vault" {
+provider "vault" {
 //  # It is strongly recommended to configure this provider through the
 //  # environment variables described above, so that each user can have
 //  # separate credentials set in the environment.
 //  #
 //  # This will default to using $VAULT_ADDR
 //  # But can be set explicitly
-//  address = "https://vault.reform.hmcsts.net:6200"
-//}
+  address = "https://vault.reform.hmcsts.net:6200"
+}
 
 data "vault_generic_secret" "notify_api_key" {
   path = "secret/dev/cmc/notify_api_key"
