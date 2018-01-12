@@ -34,7 +34,7 @@ module "claim-store-api" {
     CLAIM_STORE_DB_PORT = "${module.claim-store-database.postgresql_listen_port}"
     POSTGRES_DATABASE = "${module.claim-store-database.postgresql_database}"
     CLAIM_STORE_DB_USERNAME = "${module.claim-store-database.user_name}"
-    CLAIM_STORE_DB_PASSWORD = "${module.claim-store-database.password}"
+    CLAIM_STORE_DB_PASSWORD = "${module.claim-store-database.postgresql_password}"
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
