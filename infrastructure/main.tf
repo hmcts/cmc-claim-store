@@ -5,7 +5,7 @@ provider "vault" {
 //  #
 //  # This will default to using $VAULT_ADDR
 //  # But can be set explicitly
-  address = "https://vault.reform.hmcsts.net:6200"
+  address = "https://vault.reform.hmcts.net:6200"
 }
 
 data "vault_generic_secret" "notify_api_key" {
