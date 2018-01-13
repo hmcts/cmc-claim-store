@@ -82,7 +82,7 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
                 CCDIndividual ccdIndividual = ccdParty.getIndividual();
                 return new Individual(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
                     addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getMobilePhone(),
-                    representativeMapper.from(ccdIndividual.getRepresentative()), ccdIndividual.getTitle(),
+                    representativeMapper.from(ccdIndividual.getRepresentative()),
                     LocalDate.parse(ccdIndividual.getDateOfBirth(), DateTimeFormatter.ISO_DATE));
             case SOLE_TRADER:
                 CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
