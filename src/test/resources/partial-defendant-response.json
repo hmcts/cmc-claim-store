@@ -41,17 +41,10 @@
     "amount": "100",
     "explanation": "I don't owe the amount"
   },
-  "howMuchPaid": {
-    "amount": "100",
-    "pastDate": "2016-10-10",
-    "explanation": "The amount paid"
-  },
   "payBySetDate": {
     "paymentDate": "2019-10-10",
     "explanation": "The amount to be paid"
   },
-  "defendantPaymentOption": "INSTALMENTS",
-  "paidAmount": 0,
   "defendantPaymentPlan": {
     "firstPayment": 100,
     "instalmentAmount": 100,
