@@ -13,7 +13,7 @@ variable "location" {
 variable "env" {}
 
 variable "pdf-service-url" {
-  default = "https://devpdfservicelb.moneyclaim.reform.hmcts.net:5500"
+  default = "https://devpdfservicelb.moneyclaim.reform.hmcts.net:4301"
 }
 
 variable "document-management-url" {
