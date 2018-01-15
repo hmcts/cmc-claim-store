@@ -159,7 +159,7 @@
         {% endif %}
         <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
         <td>
-          {{ claimant.title }} {{ claimant.name }}
+          {{ claimant.name }}
           <br/>
 
           {{ claimant.address.line1 }}
@@ -248,7 +248,7 @@
             {% if defendant.businessName is not empty %}
               {{ defendant.name }} trading as {{ defendant.businessName }}
             {% else %}
-              {{ defendant.title}} {{ defendant.name }}
+              {{ defendant.name }}
             {% endif %}
             <br/>
             {{ defendant.address.line1 }}
@@ -297,7 +297,7 @@
               {% if defendant.businessName is not empty %}
                 {{ defendant.name }} trading as {{ defendant.businessName }}
               {% else %}
-                {{ defendant.title}} {{ defendant.name }}
+                {{ defendant.name }}
               {% endif %}
               <br/>
               {{ defendant.serviceAddress.line1 }}
@@ -313,7 +313,7 @@
               {% if defendant.businessName is not empty %}
                 {{ defendant.name }} trading as {{ defendant.businessName }}
               {% else %}
-                {{ defendant.title}} {{ defendant.name }}
+                {{ defendant.name }}
               {% endif %}
               <br/>
               {{ defendant.address.line1 }}
@@ -446,7 +446,7 @@
         {% set claimantHeading = 'Claimant ' + (loop.index +1) %}
         <td class="two-per-row"><h4>{{ claimantHeading }}</h4></td>
         <td>
-          {{ claimant.title }} {{ claimant.name }}
+          {{ claimant.name }}
           <br/>
 
           {{ claimant.address.line1 }}
@@ -511,7 +511,7 @@
           {% if defendant.businessName is not empty %}
             {{ defendant.name }} trading as {{ defendant.businessName }}
           {% else %}
-            {{ defendant.title}} {{ defendant.name }}
+            {{ defendant.name }}
           {% endif %}
           <br/>
           {{ defendant.address.line1 }}
@@ -560,7 +560,7 @@
             {% if defendant.businessName is not empty %}
               {{ defendant.name }} trading as {{ defendant.businessName }}
             {% else %}
-              {{ defendant.title}} {{ defendant.name }}
+              {{ defendant.name }}
             {% endif %}
             <br/>
             {{ defendant.serviceAddress.line1 }}
@@ -576,7 +576,7 @@
             {% if defendant.businessName is not empty %}
               {{ defendant.name }} trading as {{ defendant.businessName }}
             {% else %}
-              {{ defendant.title}} {{ defendant.name }}
+              {{ defendant.name }}
             {% endif %}
             <br/>
             {{ defendant.address.line1 }}

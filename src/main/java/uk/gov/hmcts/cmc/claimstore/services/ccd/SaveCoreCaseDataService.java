@@ -39,16 +39,11 @@ public class SaveCoreCaseDataService {
     public CaseDetails save(
         String authorisation,
         EventRequestData eventRequestData,
-        CCDCase ccdCase
+        CCDCase ccdCase,
+        boolean represented
     ) {
-        StartEventResponse startEventResponse = this.coreCaseDataApi.start(
-            authorisation,
-            this.authTokenGenerator.generate(),
-            eventRequestData.getUserId(),
-            eventRequestData.getJurisdictionId(),
-            eventRequestData.getCaseTypeId(),
-            eventRequestData.getEventId()
-        );
+
+        StartEventResponse startEventResponse = start(authorisation, eventRequestData, represented);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -60,15 +55,57 @@ public class SaveCoreCaseDataService {
             .data(toJson(ccdCase))
             .build();
 
-        return this.coreCaseDataApi.submit(
-            authorisation,
-            this.authTokenGenerator.generate(),
-            eventRequestData.getUserId(),
-            eventRequestData.getJurisdictionId(),
-            eventRequestData.getCaseTypeId(),
-            eventRequestData.isIgnoreWarning(),
-            caseDataContent
-        );
+        return submit(authorisation, eventRequestData, caseDataContent, represented);
+    }
+
+    private CaseDetails submit(
+        String authorisation,
+        EventRequestData eventRequestData,
+        CaseDataContent caseDataContent,
+        boolean represented
+    ) {
+        if (represented) {
+            return this.coreCaseDataApi.submitForCaseworker(
+                authorisation,
+                this.authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                eventRequestData.isIgnoreWarning(),
+                caseDataContent
+            );
+        } else {
+            return this.coreCaseDataApi.submitForCitizen(
+                authorisation,
+                this.authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                eventRequestData.isIgnoreWarning(),
+                caseDataContent
+            );
+        }
+    }
+
+    private StartEventResponse start(String authorisation, EventRequestData eventRequestData, boolean represented) {
+        if (represented) {
+            return this.coreCaseDataApi.startForCaseworker(
+                authorisation,
+                this.authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                eventRequestData.getEventId()
+            );
+        } else {
+            return this.coreCaseDataApi.startForCitizen(
+                authorisation,
+                this.authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                eventRequestData.getEventId());
+        }
     }
 
     private JsonNode toJson(CCDCase ccdCase) {

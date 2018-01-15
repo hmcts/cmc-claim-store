@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedStaffNotificationHandler;
@@ -125,7 +125,7 @@ public class SupportController {
             String fullName = userService.getUserDetails(authorisation).getFullName();
 
             documentGenerator.generateForNonRepresentedClaim(
-                new ClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
+                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );
         } else {
             UserDetails userDetails = userService.getUserDetails(authorisation);

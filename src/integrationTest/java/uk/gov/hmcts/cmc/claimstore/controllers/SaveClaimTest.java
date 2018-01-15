@@ -147,7 +147,7 @@ public class SaveClaimTest extends BaseSaveTest {
             .andExpect(status().isOk());
 
         verify(coreCaseDataApi, never())
-            .start(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+            .startForCaseworker(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test

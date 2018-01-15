@@ -28,7 +28,6 @@ public class IndividualDetailsMapper implements Mapper<CCDIndividual, Individual
     public CCDIndividual to(IndividualDetails individual) {
 
         CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
-        individual.getTitle().ifPresent(builder::title);
         individual.getEmail().ifPresent(builder::email);
 
         individual.getServiceAddress()
@@ -53,7 +52,6 @@ public class IndividualDetailsMapper implements Mapper<CCDIndividual, Individual
             individual.getEmail(),
             representativeMapper.from(individual.getRepresentative()),
             addressMapper.from(individual.getCorrespondenceAddress()),
-            individual.getTitle(),
             LocalDate.parse(individual.getDateOfBirth(), ISO_DATE)
         );
     }

@@ -19,8 +19,6 @@ public class IndividualDetailsAssert extends AbstractAssert<IndividualDetailsAss
     public IndividualDetailsAssert isEqualTo(CCDIndividual ccdIndividual) {
         isNotNull();
 
-        actual.getTitle().ifPresent(title -> assertThat(ccdIndividual.getTitle()).isEqualTo(title));
-
         if (!Objects.equals(actual.getName(), ccdIndividual.getName())) {
             failWithMessage("Expected CCDIndividual.name to be <%s> but was <%s>",
                 ccdIndividual.getName(), actual.getName());
