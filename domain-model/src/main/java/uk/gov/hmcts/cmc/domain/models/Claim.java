@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,6 +16,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonIgnoreProperties(value = {"totalAmountTillToday", "totalAmountTillDateOfIssue"}, allowGetters = true)
 public class Claim {
 
     private final Long id;
@@ -160,6 +164,14 @@ public class Claim {
 
     public Optional<String> getSealedClaimDocumentSelfPath() {
         return Optional.ofNullable(sealedClaimDocumentSelfPath);
+    }
+
+    public Optional<BigDecimal> getTotalAmountTillToday() {
+        return TotalAmountCalculator.totalTillToday(this);
+    }
+
+    public Optional<BigDecimal> getTotalAmountTillDateOfIssue() {
+        return TotalAmountCalculator.totalTillDateOfIssue(this);
     }
 
     @Override
