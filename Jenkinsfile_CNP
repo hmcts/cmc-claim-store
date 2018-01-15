@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@feature/test-deployment-creds")
+@Library("Infrastructure@feature/fast")
 
 def product = "cmc"
 def component = "claim-store"
