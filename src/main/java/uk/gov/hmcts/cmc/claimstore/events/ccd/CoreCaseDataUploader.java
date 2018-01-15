@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 
@@ -22,7 +22,7 @@ public class CoreCaseDataUploader {
     }
 
     @TransactionalEventListener
-    public void saveClaim(RepresentedClaimIssuedEvent event) {
+    public void saveClaim(ClaimIssuedEvent event) {
         try {
             coreCaseDataService.save(event.getAuthorisation(), event.getClaim());
         } catch (CoreCaseDataStoreException ex) {

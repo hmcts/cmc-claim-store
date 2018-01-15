@@ -20,6 +20,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
 
     @Override
     public Claim map(int index, ResultSet result, StatementContext ctx) throws SQLException {
+
         return new Claim(
             result.getLong("id"),
             result.getString("submitter_id"),

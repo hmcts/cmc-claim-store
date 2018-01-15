@@ -36,7 +36,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     @Override
     public Claim from(CCDCase ccdCase) {
-        return new Claim(ccdCase.getId(),
+        return new Claim(
+            ccdCase.getId(),
             ccdCase.getSubmitterId(),
             null,
             null,
@@ -55,6 +56,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             null,
             null,
             null,
-            null);
+            null
+        );
     }
 }

@@ -55,8 +55,8 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     @Test
     public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
 
-        ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
+        CitizenClaimIssuedEvent claimIssuedEvent
+            = new CitizenClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
@@ -82,8 +82,8 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     @Test(expected = IllegalArgumentException.class)
     public void sendFailSendingNotificationToDefendantWhenPinIsMissing() throws NotificationClientException {
 
-        ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(CLAIM, null, SUBMITTER_NAME, AUTHORISATION);
+        CitizenClaimIssuedEvent claimIssuedEvent
+            = new CitizenClaimIssuedEvent(CLAIM, null, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
     }
@@ -93,8 +93,8 @@ public class ClaimIssuedCitizenActionsHandlerTest {
 
         Claim claimNoDefendantEmail = getClaimWithNoDefendantEmail();
 
-        ClaimIssuedEvent claimIssuedEvent
-            = new ClaimIssuedEvent(claimNoDefendantEmail, PIN, SUBMITTER_NAME, AUTHORISATION);
+        CitizenClaimIssuedEvent claimIssuedEvent
+            = new CitizenClaimIssuedEvent(claimNoDefendantEmail, PIN, SUBMITTER_NAME, AUTHORISATION);
 
         claimIssuedCitizenActionsHandler.sendClaimantNotification(claimIssuedEvent);
         claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);

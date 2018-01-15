@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
-import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -83,10 +82,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_CLAIM_ISSUED_TEMPLATE), anyString(), templateParameters.capture(), anyString());
 
-        String name = ((TitledParty) claim.getClaimData().getClaimant()).getTitle()
-            .orElseThrow(IllegalArgumentException::new)
-            + " "
-            + claim.getClaimData().getClaimant().getName();
+        String name = claim.getClaimData().getClaimant().getName();
 
         assertThat(templateParameters.getValue())
             .containsEntry(NotificationTemplateParameters.CLAIMANT_NAME, name);
