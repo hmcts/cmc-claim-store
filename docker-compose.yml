@@ -25,6 +25,8 @@ services:
       - REFORM_SERVICE_NAME
       - REFORM_TEAM
       - REFORM_ENVIRONMENT
+      - CORE_CASE_DATA_API_URL
+      - DOCUMENT_MANAGEMENT_API_GATEWAY_URL
     volumes:
       - ./build/install/claim-store:/opt/app/
     ports:
