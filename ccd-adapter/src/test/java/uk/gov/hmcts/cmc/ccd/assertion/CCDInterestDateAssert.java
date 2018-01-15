@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
-import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.util.Objects;
