@@ -35,7 +35,7 @@ spring:
       max-file-size: 4000000KB
       max-request-size: 4000000KB
   jackson:
-    default-property-inclusion: non_null
+    default-property-inclusion: non_absent
 
 idam:
   api:

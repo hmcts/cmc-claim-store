@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleFullDefenceResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;
@@ -59,7 +59,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldDisplayAppropriateMessageWhenMobileNumberIsNotGiven() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponse.FullDefence.builder()
+            SampleFullDefenceResponse.builder()
                 .withDefendantDetails(
                     SampleParty.builder()
                         .withMobilePhone(null)
@@ -77,7 +77,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldUseFullDefenceTextIfFullDefenceSelected() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponse.FullDefence.builder()
+            SampleFullDefenceResponse.builder()
                 .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
                 .build())
             .build();
@@ -97,7 +97,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
             wrapInMap(
                 SampleClaim.builder()
                     .withResponse(
-                        SampleResponse.FullDefence
+                        SampleFullDefenceResponse
                             .builder()
                             .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
                             .withMediation(null)
@@ -123,7 +123,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldUseAlternativeTextIfFreeMediationIsNotRequested() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponse.FullDefence.builder()
+            SampleFullDefenceResponse.builder()
                 .withMediation(Response.FreeMediationOption.NO)
                 .build())
             .build();
@@ -139,7 +139,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     @Test
     public void shouldShowQuestionnaireTextIfMediationNotRequestedAndIsFullDefence() {
         Claim claim = SampleClaim.builder().withResponse(
-            SampleResponse.FullDefence.builder()
+            SampleFullDefenceResponse.builder()
                 .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
                 .withMediation(Response.FreeMediationOption.NO)
                 .build())
@@ -158,7 +158,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
             wrapInMap(
                 SampleClaim.builder()
                     .withResponse(
-                        SampleResponse.FullDefence.builder()
+                        SampleFullDefenceResponse.builder()
                             .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
                             .withMediation(null)
                             .build()

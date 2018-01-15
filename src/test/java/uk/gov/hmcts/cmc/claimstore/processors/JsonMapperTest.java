@@ -6,6 +6,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
@@ -13,8 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.math.BigDecimal;
@@ -121,7 +122,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessDependantResponseFromJson() throws Exception {
+    public void shouldProcessDefendantResponseFromJson() throws Exception {
         //given
         String input = new ResourceReader().read("/defendant-response.json");
 
@@ -129,7 +130,20 @@ public class JsonMapperTest {
         Response output = processor.fromJson(input, Response.class);
 
         //then
-        Response expected = SampleResponse.validDefaults();
+        Response expected = SampleResponse.validDefence();
+        assertThat(output).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldProcessDefendantPartialResponseFromJson() throws Exception {
+        //given
+        String input = new ResourceReader().read("/partial-defendant-response.json");
+
+        //when
+        PartAdmissionResponse output = processor.fromJson(input, PartAdmissionResponse.class);
+
+        //then
+        PartAdmissionResponse expected = SampleResponse.validPartAdmissionDefaults();
         assertThat(output).isEqualTo(expected);
     }
 

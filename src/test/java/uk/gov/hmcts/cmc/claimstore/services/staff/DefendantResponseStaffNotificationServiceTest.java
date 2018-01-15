@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleFullDefenceResponse;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 
@@ -47,7 +47,7 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
     public void beforeEachTest() {
         claim = SampleClaim.builder()
             .withResponse(
-                SampleResponse.FullDefence
+                SampleFullDefenceResponse
                     .builder()
                     .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
                     .withMediation(null)

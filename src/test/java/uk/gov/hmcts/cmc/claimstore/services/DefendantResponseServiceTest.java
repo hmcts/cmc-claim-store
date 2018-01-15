@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleResponse;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseServiceTest {
 
-    private static final Response VALID_APP = SampleResponse.validDefaults();
+    private static final Response VALID_APP = SampleResponse.validDefence();
     private static final Claim claim = SampleClaim.getDefault();
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String DEFENDANT_EMAIL = "test@example.com";

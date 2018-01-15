@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,7 +64,7 @@ public final class SampleClaim {
     }
 
     public static Claim getWithDefaultResponse() {
-        return getWithResponse(SampleResponse.validDefaults());
+        return getWithResponse(SampleResponse.validDefence());
     }
 
     public static Claim getWithResponse(Response response) {
