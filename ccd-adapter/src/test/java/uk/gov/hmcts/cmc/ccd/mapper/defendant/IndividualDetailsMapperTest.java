@@ -57,7 +57,6 @@ public class IndividualDetailsMapperTest {
             .organisationAddress(ccdAddress)
             .build();
         CCDIndividual ccdIndividual = CCDIndividual.builder()
-            .title("Mr.")
             .name("Individual")
             .email("my@email.com")
             .dateOfBirth("1950-01-01")

@@ -3,17 +3,12 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
-import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.constraints.Size;
 
-public class IndividualDetails extends TheirDetails implements TitledParty {
-
-    @Size(max = 35, message = "must be at most {max} characters")
-    private final String title;
+public class IndividualDetails extends TheirDetails {
 
     @AgeRangeValidator
     private final LocalDate dateOfBirth;
@@ -24,17 +19,10 @@ public class IndividualDetails extends TheirDetails implements TitledParty {
         String email,
         Representative representative,
         Address serviceAddress,
-        String title,
         LocalDate dateOfBirth
     ) {
         super(name, address, email, representative, serviceAddress);
-        this.title = title;
         this.dateOfBirth = dateOfBirth;
-    }
-
-    @Override
-    public Optional<String> getTitle() {
-        return Optional.ofNullable(title);
     }
 
     public Optional<LocalDate> getDateOfBirth() {
@@ -49,14 +37,16 @@ public class IndividualDetails extends TheirDetails implements TitledParty {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
+        if (!super.equals(obj)) {
+            return false;
+        }
         IndividualDetails that = (IndividualDetails) obj;
-        return super.equals(that) && Objects.equals(this.title, that.title);
+        return Objects.equals(dateOfBirth, that.dateOfBirth);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), this.title);
-    }
 
+        return Objects.hash(super.hashCode(), dateOfBirth);
+    }
 }

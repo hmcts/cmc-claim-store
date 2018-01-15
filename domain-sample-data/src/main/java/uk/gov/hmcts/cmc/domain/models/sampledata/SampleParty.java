@@ -81,18 +81,18 @@ public class SampleParty {
     }
 
     public Party party() {
-        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, title, dateOfBirth);
+        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth);
     }
 
     public Individual individual() {
-        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, title, dateOfBirth);
+        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth);
     }
 
     public List<Party> individualDetails(int count) {
         List<Party> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new Individual(name, address, correspondenceAddress, mobilePhone, representative, title, dateOfBirth)
+                new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth)
             );
         }
         return individualDetailsList;
