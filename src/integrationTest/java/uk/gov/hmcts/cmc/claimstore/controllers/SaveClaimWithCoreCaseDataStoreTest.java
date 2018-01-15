@@ -34,10 +34,10 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     private static final boolean IGNORE_WARNING = true;
 
     @Test
-    public void shouldStoreNonRepresentedClaimIntoCCDStore() throws Exception {
+    public void shouldStoreRepresentedClaimIntoCCD() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        given(coreCaseDataApi.start(
+        given(coreCaseDataApi.startForCaseworker(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN), eq(USER_ID),
             eq(JURISDICTION_ID),
@@ -46,7 +46,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submit(
+        given(coreCaseDataApi.submitForCaseworker(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
@@ -68,7 +68,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .contains(claimData);
 
         verify(coreCaseDataApi)
-            .start(
+            .startForCaseworker(
                 eq(AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
@@ -78,7 +78,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             );
 
         verify(coreCaseDataApi)
-            .submit(
+            .submitForCaseworker(
                 eq(AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
@@ -90,9 +90,67 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     }
 
     @Test
+    public void shouldStoreCitizenClaimIntoCCD() throws Exception {
+        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
+
+        given(coreCaseDataApi.startForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(EVENT_ID)
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+
+        given(coreCaseDataApi.submitForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(IGNORE_WARNING),
+            any()
+            )
+        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+
+        MvcResult result = makeRequest(claimData)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getClaimData)
+            .contains(claimData);
+
+        verify(coreCaseDataApi)
+            .startForCitizen(
+                eq(AUTHORISATION_TOKEN),
+                eq(SERVICE_TOKEN),
+                eq(USER_ID),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(EVENT_ID)
+            );
+
+        verify(coreCaseDataApi)
+            .submitForCitizen(
+                eq(AUTHORISATION_TOKEN),
+                eq(SERVICE_TOKEN),
+                eq(USER_ID),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                eq(IGNORE_WARNING),
+                any()
+            );
+    }
+
+
+    @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-        given(coreCaseDataApi.start(
+        given(coreCaseDataApi.startForCaseworker(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
@@ -116,7 +174,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToSubmitEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-        given(coreCaseDataApi.start(
+        given(coreCaseDataApi.startForCaseworker(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
@@ -126,7 +184,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submit(
+        given(coreCaseDataApi.submitForCaseworker(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),

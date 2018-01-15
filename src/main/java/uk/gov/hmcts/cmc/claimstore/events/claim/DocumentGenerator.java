@@ -36,7 +36,7 @@ public class DocumentGenerator {
     }
 
     @EventListener
-    public void generateForNonRepresentedClaim(ClaimIssuedEvent event) {
+    public void generateForNonRepresentedClaim(CitizenClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             citizenSealedClaimPdfService.createPdf(event.getClaim()));
         PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
