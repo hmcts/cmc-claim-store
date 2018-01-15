@@ -2,10 +2,14 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
@@ -29,8 +33,24 @@ public class Assertions {
         return new AddressAssert(address);
     }
 
+    public static InterestAssert assertThat(Interest interest) {
+        return new InterestAssert(interest);
+    }
+
+    public static InterestDateAssert assertThat(InterestDate interestDate) {
+        return new InterestDateAssert(interestDate);
+    }
+
     public static CCDAddressAssert assertThat(CCDAddress ccdAddress) {
         return new CCDAddressAssert(ccdAddress);
+    }
+
+    public static CCDInterestAssert assertThat(CCDInterest ccdInterest) {
+        return new CCDInterestAssert(ccdInterest);
+    }
+
+    public static CCDInterestDateAssert assertThat(CCDInterestDate ccdInterestDate) {
+        return new CCDInterestDateAssert(ccdInterestDate);
     }
 
     public static ContactDetailsAssert assertThat(ContactDetails contactDetails) {
