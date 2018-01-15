@@ -43,9 +43,9 @@ public class ClaimIssuedEvent {
             return false;
         }
         ClaimIssuedEvent that = (ClaimIssuedEvent) other;
-        return Objects.equals(claim, that.claim) &&
-            Objects.equals(submitterName, that.submitterName) &&
-            Objects.equals(authorisation, that.authorisation);
+        return Objects.equals(claim, that.claim)
+            && Objects.equals(submitterName, that.submitterName)
+            && Objects.equals(authorisation, that.authorisation);
     }
 
     @Override
