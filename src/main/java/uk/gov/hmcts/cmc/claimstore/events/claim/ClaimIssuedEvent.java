@@ -4,33 +4,25 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class ClaimIssuedEvent {
     private final Claim claim;
-    private final String pin;
     private final String submitterName;
     private final String authorisation;
 
     public ClaimIssuedEvent(Claim claim,
-                            String pin,
                             String submitterName,
                             String authorisation
     ) {
         this.claim = claim;
-        this.pin = pin;
         this.submitterName = submitterName;
         this.authorisation = authorisation;
     }
 
     public Claim getClaim() {
         return claim;
-    }
-
-    public Optional<String> getPin() {
-        return Optional.ofNullable(pin);
     }
 
     public String getSubmitterName() {
@@ -47,22 +39,18 @@ public class ClaimIssuedEvent {
         if (this == other) {
             return true;
         }
-
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-
         ClaimIssuedEvent that = (ClaimIssuedEvent) other;
-
-        return Objects.equals(claim, that.claim)
-            && Objects.equals(pin, that.pin)
-            && Objects.equals(submitterName, that.submitterName)
-            && Objects.equals(authorisation, that.authorisation);
+        return Objects.equals(claim, that.claim) &&
+            Objects.equals(submitterName, that.submitterName) &&
+            Objects.equals(authorisation, that.authorisation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(claim, pin, submitterName, authorisation);
+        return Objects.hash(claim, submitterName, authorisation);
     }
 
     @Override

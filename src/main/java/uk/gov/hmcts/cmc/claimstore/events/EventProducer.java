@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
@@ -29,7 +29,7 @@ public class EventProducer {
         if (claim.getClaimData().isClaimantRepresented()) {
             publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName, authorisation));
         } else {
-            publisher.publishEvent(new ClaimIssuedEvent(claim, pin, submitterName, authorisation));
+            publisher.publishEvent(new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation));
         }
     }
 
