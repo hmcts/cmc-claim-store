@@ -13,7 +13,7 @@ DECLARE
 BEGIN
     FOR i IN SELECT id FROM claim
     LOOP
-    SELECT INTO length jsonb_array_length(jsonb_extract_path(claim::JSONB, p_partyType)) from Claim where id =id;
+    SELECT INTO length jsonb_array_length(jsonb_extract_path(claim::JSONB, p_partyType)) from Claim where id =i;
     FOR counter IN 0..length-1 LOOP
          WITH subquery AS (
           SELECT
@@ -54,7 +54,7 @@ DECLARE
 BEGIN
 	FOR i IN SELECT id FROM claim
 	LOOP
-		SELECT INTO length jsonb_array_length(jsonb_extract_path(claim::JSONB, p_partyType)) from Claim where id =id;
+		SELECT INTO length jsonb_array_length(jsonb_extract_path(claim::JSONB, p_partyType)) from Claim where id =i;
 		FOR counter IN 0..length-1
 		LOOP
 
