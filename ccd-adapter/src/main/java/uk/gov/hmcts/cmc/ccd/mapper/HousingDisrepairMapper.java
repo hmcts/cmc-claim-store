@@ -18,6 +18,10 @@ public class HousingDisrepairMapper implements Mapper<CCDHousingDisrepair, Housi
 
     @Override
     public HousingDisrepair from(CCDHousingDisrepair ccdHousingDisrepair) {
+        if (ccdHousingDisrepair == null) {
+            return null;
+        }
+
         DamagesExpectation costOfRepairs = DamagesExpectation.valueOf(ccdHousingDisrepair.getCostOfRepairsDamages());
         DamagesExpectation otherDamages = DamagesExpectation.valueOf(ccdHousingDisrepair.getOtherDamages());
         return new HousingDisrepair(costOfRepairs, otherDamages);

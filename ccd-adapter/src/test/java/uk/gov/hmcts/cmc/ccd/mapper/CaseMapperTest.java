@@ -14,7 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaim;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDCitizenClaim;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDLegalClaim;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -28,6 +29,18 @@ public class CaseMapperTest {
     public void shouldMapLegalClaimToCCD() {
         //given
         Claim claim = SampleClaim.getDefaultForLegal();
+
+        //when
+        CCDCase ccdCase = caseMapper.to(claim);
+
+        //then
+        assertThat(claim).isEqualTo(ccdCase);
+    }
+
+    @Test
+    public void shouldMapCitizenClaimToCCD() {
+        //given
+        Claim claim = SampleClaim.getDefault();
 
         //when
         CCDCase ccdCase = caseMapper.to(claim);
@@ -56,7 +69,28 @@ public class CaseMapperTest {
             .submitterId("123")
             .referenceNumber("ref no")
             .externalId(UUID.randomUUID().toString())
-            .claimData(getCCDClaim())
+            .claimData(getCCDLegalClaim())
+            .build();
+
+        //when
+        Claim claim = caseMapper.from(ccdCase);
+
+        //then
+        assertThat(claim).isEqualTo(ccdCase);
+    }
+
+    @Test
+    public void shouldMapCitizenClaimFromCCD() {
+        //given
+        CCDCase ccdCase = CCDCase.builder()
+            .id(1L)
+            .submittedOn("2017-11-01T10:15:30")
+            .issuedOn("2017-11-15")
+            .submitterEmail("my@email.com")
+            .submitterId("123")
+            .referenceNumber("ref no")
+            .externalId(UUID.randomUUID().toString())
+            .claimData(getCCDCitizenClaim())
             .build();
 
         //when
