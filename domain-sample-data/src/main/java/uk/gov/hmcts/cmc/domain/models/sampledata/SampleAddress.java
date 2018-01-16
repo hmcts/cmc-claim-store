@@ -6,6 +6,7 @@ public class SampleAddress {
 
     private String line1 = "52";
     private String line2 = "Down Street";
+    private String line3 = "";
     private String city = "Manchester";
     private String postcode = "DF1 3LJ";
 
@@ -27,6 +28,11 @@ public class SampleAddress {
         return this;
     }
 
+    public SampleAddress withLine3(String line3) {
+        this.line3 = line3;
+        return this;
+    }
+
     public SampleAddress withCity(String city) {
         this.city = city;
         return this;
@@ -38,6 +44,6 @@ public class SampleAddress {
     }
 
     public Address build() {
-        return new Address(line1, line2, city, postcode);
+        return new Address(line1, line2, line3, city, postcode);
     }
 }

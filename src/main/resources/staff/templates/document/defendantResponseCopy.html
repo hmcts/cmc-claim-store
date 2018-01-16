@@ -160,6 +160,10 @@
           {{ defendant.address.line2 }}
           <br/>
           {% endif %}
+          {% if defendant.address.line3 is not empty %}
+          {{ defendant.address.line3 }}
+          <br/>
+          {% endif %}
           {{ defendant.address.city }}
           <br/>
           {{ defendant.address.postcode }}
@@ -178,6 +182,10 @@
           {{ defendant.correspondenceAddress.line2 }}
           <br/>
           {% endif %}
+          {% if defendant.correspondenceAddress.line3 is not empty %}
+          {{ defendant.correspondenceAddress.line3 }}
+          <br/>
+          {% endif %}
           {{ defendant.correspondenceAddress.city }}
           <br/>
           {{ defendant.correspondenceAddress.postcode }}
@@ -191,6 +199,10 @@
           <br/>
           {% if defendant.address.line2 is not empty %}
           {{ defendant.address.line2 }}
+          <br/>
+          {% endif %}
+          {% if defendant.address.line23is not empty %}
+          {{ defendant.address.line3 }}
           <br/>
           {% endif %}
           {{ defendant.address.city }}
