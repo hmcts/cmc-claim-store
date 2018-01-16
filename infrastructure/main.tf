@@ -16,6 +16,10 @@ data "vault_generic_secret" "s2s_secret" {
   path = "secret/test/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore"
 }
 
+locals {
+  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+}
+
 module "claim-store-api" {
   source = "git@github.com:contino/moj-module-webapp.git"
   product = "${var.product}-${var.microservice}"
@@ -48,7 +52,7 @@ module "claim-store-api" {
 
     // urls
     FRONTEND_BASE_URL = "${var.frontend-url}"
-    PDF_SERVICE_URL = "${var.pdf-service-url}"
+    PDF_SERVICE_URL = "http://cmc-pdf-service-${env}.${local.aseName}.internal"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "${var.document-management-url}"
     CORE_CASE_DATA_API_URL = "${var.ccd-url}"
 
