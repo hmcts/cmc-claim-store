@@ -48,7 +48,9 @@ public class Address {
         return line2;
     }
 
-    public String getLine3() { return line3; }
+    public String getLine3() {
+        return line3;
+    }
 
     public String getCity() {
         return city;

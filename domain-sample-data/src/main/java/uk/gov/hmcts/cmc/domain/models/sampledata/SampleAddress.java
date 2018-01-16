@@ -6,7 +6,7 @@ public class SampleAddress {
 
     private String line1 = "52";
     private String line2 = "Down Street";
-    private String line3 = "";
+    private String line3 = "Salford";
     private String city = "Manchester";
     private String postcode = "DF1 3LJ";
 
