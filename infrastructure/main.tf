@@ -52,7 +52,7 @@ module "claim-store-api" {
 
     // urls
     FRONTEND_BASE_URL = "${var.frontend-url}"
-    PDF_SERVICE_URL = "http://cmc-pdf-service-${env}.${local.aseName}.internal"
+    PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.${local.aseName}.internal"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "${var.document-management-url}"
     CORE_CASE_DATA_API_URL = "${var.ccd-url}"
 
