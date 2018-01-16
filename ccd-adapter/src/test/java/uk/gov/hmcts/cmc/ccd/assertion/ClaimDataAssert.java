@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
@@ -55,6 +56,19 @@ public class ClaimDataAssert extends AbstractAssert<ClaimDataAssert, ClaimData> 
         }
 
         assertThat(actual.getAmount()).isEqualTo(ccdClaim.getAmount());
+
+        Optional.ofNullable(actual.getInterest())
+            .ifPresent(interest -> assertThat(interest).isEqualTo(ccdClaim.getInterest())
+            );
+
+        Optional.ofNullable(actual.getInterestDate())
+            .ifPresent(interestDate -> assertThat(interestDate).isEqualTo(ccdClaim.getInterestDate())
+            );
+
+        Optional.ofNullable(actual.getPayment())
+            .ifPresent(payment -> assertThat(payment).isEqualTo(ccdClaim.getPayment())
+            );
+
         actual.getPersonalInjury()
             .ifPresent(personalInjury ->
                 assertThat(personalInjury.getGeneralDamages().name())
