@@ -119,29 +119,28 @@ public class PartyTest {
     }
 
     @Test
-    public void shouldReturnValidationErrorsWhenGivenEmptyMobilePhone() {
+    public void shouldReturnNoValidationErrorsWhenGivenValidMobilePhone() {
         Party party = SampleParty.builder()
-            .withMobilePhone("")
+            .withMobilePhone("07987654321")
             .party();
 
         Set<String> validationErrors = validate(party);
 
         assertThat(validationErrors)
-            .hasSize(1)
-            .contains("mobilePhone : Mobile number is not valid UK number");
+            .hasSize(0);
     }
 
     @Test
     public void shouldReturnValidationErrorsWhenGivenInvalidMobilePhone() {
         Party party = SampleParty.builder()
-            .withMobilePhone("432423")
+            .withMobilePhone("1234567890123456789012345678901")
             .party();
 
         Set<String> validationErrors = validate(party);
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("mobilePhone : Mobile number is not valid UK number");
+            .contains("mobilePhone : may not be longer than 30 characters");
     }
 
 }
