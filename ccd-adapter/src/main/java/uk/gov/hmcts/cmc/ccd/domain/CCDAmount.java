@@ -8,4 +8,6 @@ import lombok.Value;
 public class CCDAmount {
     private AmountType type;
     private CCDAmountRange amountRange;
+    private CCDAmountBreakDown amountBreakDown;
+    private CCDNotKnown notKnown;
 }
