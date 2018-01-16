@@ -25,6 +25,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final PartyMapper partyMapper;
     private final TheirDetailsMapper theirDetailsMapper;
     private final AmountMapper amountMapper;
+    private final PaymentMapper paymentMapper;
+    private final InterestMapper interestMapper;
+    private final InterestDateMapper interestDateMapper;
 
     @Autowired
     public ClaimMapper(PersonalInjuryMapper personalInjuryMapper,
@@ -32,7 +35,10 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
                        StatementOfTruthMapper statementOfTruthMapper,
                        PartyMapper partyMapper,
                        TheirDetailsMapper theirDetailsMapper,
-                       AmountMapper amountMapper) {
+                       AmountMapper amountMapper,
+                       PaymentMapper paymentMapper,
+                       InterestMapper interestMapper,
+                       InterestDateMapper interestDateMapper) {
 
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
@@ -40,6 +46,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         this.partyMapper = partyMapper;
         this.theirDetailsMapper = theirDetailsMapper;
         this.amountMapper = amountMapper;
+        this.paymentMapper = paymentMapper;
+        this.interestMapper = interestMapper;
+        this.interestDateMapper = interestDateMapper;
     }
 
     @Override
@@ -69,6 +78,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .collect(Collectors.toList()));
 
         return builder
+            .payment(paymentMapper.to(claimData.getPayment()))
+            .interest(interestMapper.to(claimData.getInterest()))
+            .interestDate(interestDateMapper.to(claimData.getInterestDate()))
             .reason(claimData.getReason())
             .amount(amountMapper.to(claimData.getAmount()))
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
@@ -100,11 +112,11 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             UUID.fromString(ccdClaim.getExternalId()),
             claimants,
             defendants,
-            null,
+            paymentMapper.from(ccdClaim.getPayment()),
             amountMapper.from(ccdClaim.getAmount()),
             ccdClaim.getFeeAmountInPennies(),
-            null,
-            null,
+            interestMapper.from(ccdClaim.getInterest()),
+            interestDateMapper.from(ccdClaim.getInterestDate()),
             personalInjuryMapper.from(ccdClaim.getPersonalInjury()),
             housingDisrepairMapper.from(ccdClaim.getHousingDisrepair()),
             ccdClaim.getReason(),

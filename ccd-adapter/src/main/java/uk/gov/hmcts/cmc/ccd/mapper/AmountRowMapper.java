@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-    import org.springframework.stereotype.Component;
-    import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
-    import uk.gov.hmcts.cmc.domain.models.AmountRow;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
+import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
 @Component
 public class AmountRowMapper implements Mapper<CCDAmountRow, AmountRow> {

@@ -55,6 +55,10 @@ public class ClaimDataAssert extends AbstractAssert<ClaimDataAssert, ClaimData> 
         }
 
         assertThat(actual.getAmount()).isEqualTo(ccdClaim.getAmount());
+        assertThat(actual.getInterest()).isEqualTo(ccdClaim.getInterest());
+        assertThat(actual.getInterestDate()).isEqualTo(ccdClaim.getInterestDate());
+        assertThat(actual.getPayment()).isEqualTo(ccdClaim.getPayment());
+
         actual.getPersonalInjury()
             .ifPresent(personalInjury ->
                 assertThat(personalInjury.getGeneralDamages().name())

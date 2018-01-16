@@ -8,8 +8,14 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDHousingDisrepair;
 import uk.gov.hmcts.cmc.ccd.domain.CCDIndividual;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPayment;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentState;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
@@ -17,6 +23,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -129,6 +136,9 @@ public class SampleData {
                             .higherValue(BigDecimal.valueOf(500))
                             .build()).build())
             .housingDisrepair(getCCDHousingDisrepair())
+            .payment(getCCDPayment())
+            .interest(getCCDInterest())
+            .interestDate(getCCDInterestDate())
             .personalInjury(getCCDPersonalInjury())
             .statementOfTruth(getCCDStatementOfTruth())
             .externalReferenceNumber("external ref")
@@ -139,6 +149,33 @@ public class SampleData {
             .preferredCourt("London Court")
             .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
             .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .build();
+    }
+
+    public static CCDInterestDate getCCDInterestDate() {
+        return CCDInterestDate.builder()
+            .date(LocalDate.now())
+            .reason("reason")
+            .type(CCDInterestDateType.CUSTOM)
+            .build();
+    }
+
+    public static CCDInterest getCCDInterest() {
+        return CCDInterest.builder()
+            .rate(BigDecimal.valueOf(2))
+            .reason("reason")
+            .type(CCDInterestType.DIFFERENT)
+            .build();
+    }
+
+    public static CCDPayment getCCDPayment() {
+        return CCDPayment.builder()
+            .id("paymentId")
+            .description("description")
+            .reference("reference")
+            .amount(BigDecimal.valueOf(7000))
+            .dateCreated("2017-10-12")
+            .paymentState(CCDPaymentState.builder().status("Success").finished(true).build())
             .build();
     }
 

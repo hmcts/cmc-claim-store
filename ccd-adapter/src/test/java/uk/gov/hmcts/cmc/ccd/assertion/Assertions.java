@@ -4,12 +4,16 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPayment;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentState;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentState;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
@@ -41,12 +45,28 @@ public class Assertions {
         return new InterestDateAssert(interestDate);
     }
 
+    public static PaymentAssert assertThat(Payment payment) {
+        return new PaymentAssert(payment);
+    }
+
     public static CCDAddressAssert assertThat(CCDAddress ccdAddress) {
         return new CCDAddressAssert(ccdAddress);
     }
 
     public static CCDInterestAssert assertThat(CCDInterest ccdInterest) {
         return new CCDInterestAssert(ccdInterest);
+    }
+
+    public static CCDPaymentAssert assertThat(CCDPayment ccdPayment) {
+        return new CCDPaymentAssert(ccdPayment);
+    }
+
+    public static PaymentStateAssert assertThat(PaymentState paymentState) {
+        return new PaymentStateAssert(paymentState);
+    }
+
+    public static CCDPaymentStateAssert assertThat(CCDPaymentState ccdPaymentState) {
+        return new CCDPaymentStateAssert(ccdPaymentState);
     }
 
     public static CCDInterestDateAssert assertThat(CCDInterestDate ccdInterestDate) {
