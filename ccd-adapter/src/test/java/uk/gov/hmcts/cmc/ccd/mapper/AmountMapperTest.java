@@ -60,8 +60,7 @@ public class AmountMapperTest {
         //then
         assertThat(amount).isEqualTo(ccdAmount);
     }
-
-
+    
     @Test
     public void shouldMapAmountBreakDownToCCD() {
         //given

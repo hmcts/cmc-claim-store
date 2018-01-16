@@ -19,6 +19,10 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
 
     @Override
     public Interest from(CCDInterest ccdInterest) {
+        if (ccdInterest == null) {
+            return null;
+        }
+
         return new Interest(
             Interest.InterestType.valueOf(ccdInterest.getType().name()),
             ccdInterest.getRate(),

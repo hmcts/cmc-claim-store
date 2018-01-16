@@ -28,6 +28,10 @@ public class PaymentMapper implements Mapper<CCDPayment, Payment> {
 
     @Override
     public Payment from(CCDPayment ccdPayment) {
+        if (ccdPayment == null) {
+            return null;
+        }
+
         return new Payment(ccdPayment.getId(),
             ccdPayment.getAmount(),
             ccdPayment.getReference(),

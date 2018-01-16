@@ -1,8 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
+import org.assertj.core.util.Lists;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRange;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
@@ -28,6 +31,7 @@ import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
+import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
@@ -125,7 +129,7 @@ public class SampleData {
             .build();
     }
 
-    public static CCDClaim getCCDClaim() {
+    public static CCDClaim getCCDLegalClaim() {
         return CCDClaim.builder()
             .amount(
                 CCDAmount.builder()
@@ -136,9 +140,6 @@ public class SampleData {
                             .higherValue(BigDecimal.valueOf(500))
                             .build()).build())
             .housingDisrepair(getCCDHousingDisrepair())
-            .payment(getCCDPayment())
-            .interest(getCCDInterest())
-            .interestDate(getCCDInterestDate())
             .personalInjury(getCCDPersonalInjury())
             .statementOfTruth(getCCDStatementOfTruth())
             .externalReferenceNumber("external ref")
@@ -147,6 +148,33 @@ public class SampleData {
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
+            .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .build();
+    }
+
+    public static CCDClaim getCCDCitizenClaim() {
+        return CCDClaim.builder()
+            .amount(
+                CCDAmount.builder()
+                    .type(BREAK_DOWN)
+                    .amountBreakDown(
+                        CCDAmountBreakDown.builder().rows(Lists.newArrayList(
+                            CCDAmountRow.builder().amount(BigDecimal.valueOf(50)).reason("payment").build(),
+                            CCDAmountRow.builder().build(),
+                            CCDAmountRow.builder().build(),
+                            CCDAmountRow.builder().build()))
+                        .build())
+                    .build()
+            )
+            .payment(getCCDPayment())
+            .interest(getCCDInterest())
+            .interestDate(getCCDInterestDate())
+            .statementOfTruth(getCCDStatementOfTruth())
+            .externalReferenceNumber("external ref")
+            .externalId(UUID.randomUUID().toString())
+            .feeCode("X1202")
+            .reason("Reason for the case")
             .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
             .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
             .build();

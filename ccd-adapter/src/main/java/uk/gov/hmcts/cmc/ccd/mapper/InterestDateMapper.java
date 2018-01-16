@@ -19,6 +19,10 @@ public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate>
 
     @Override
     public InterestDate from(CCDInterestDate ccdInterestDate) {
+        if (ccdInterestDate == null) {
+            return null;
+        }
+
         return new InterestDate(
             InterestDate.InterestDateType.valueOf(ccdInterestDate.getType().name()),
             ccdInterestDate.getDate(),

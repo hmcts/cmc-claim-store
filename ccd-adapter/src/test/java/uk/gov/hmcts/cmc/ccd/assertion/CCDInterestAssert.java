@@ -16,7 +16,7 @@ public class CCDInterestAssert extends AbstractAssert<CCDInterestAssert, CCDInte
         isNotNull();
 
         if (!Objects.equals(actual.getRate(), interest.getRate())) {
-            failWithMessage("Expected CCDInterest.line1 to be <%s> but was <%s>",
+            failWithMessage("Expected CCDInterest.rate to be <%s> but was <%s>",
                 interest.getRate(), actual.getRate());
         }
 
