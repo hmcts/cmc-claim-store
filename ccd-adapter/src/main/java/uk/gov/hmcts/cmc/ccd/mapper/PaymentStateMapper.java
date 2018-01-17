@@ -18,6 +18,6 @@ public class PaymentStateMapper implements Mapper<CCDPaymentState, PaymentState>
 
     @Override
     public PaymentState from(CCDPaymentState payment) {
-        return new PaymentState(payment.getStatus(), payment.getFinished().equals("YES"));
+        return new PaymentState(payment.getStatus(), "YES".equals(payment.getFinished()));
     }
 }
