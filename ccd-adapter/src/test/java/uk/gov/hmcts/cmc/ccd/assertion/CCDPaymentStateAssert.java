@@ -20,9 +20,9 @@ public class CCDPaymentStateAssert extends AbstractAssert<CCDPaymentStateAssert,
                 paymentState.getStatus(), actual.getStatus());
         }
 
-        if (!Objects.equals(actual.isFinished(), paymentState.isFinished())) {
+        if (!Objects.equals(actual.getFinished().equals("YES"), paymentState.isFinished())) {
             failWithMessage("Expected CCDPayment.finished to be <%s> but was <%s>",
-                paymentState.isFinished(), actual.isFinished());
+                paymentState.isFinished(), actual.getFinished().equals("YES"));
         }
         return this;
     }
