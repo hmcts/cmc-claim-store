@@ -25,6 +25,11 @@ public class CCDAddressAssert extends AbstractAssert<CCDAddressAssert, CCDAddres
                 address.getLine2(), actual.getLine2());
         }
 
+        if (!Objects.equals(actual.getLine3(), address.getLine3())) {
+            failWithMessage("Expected CCDAddress.line3 to be <%s> but was <%s>",
+                address.getLine3(), actual.getLine3());
+        }
+
         if (!Objects.equals(actual.getCity(), address.getCity())) {
             failWithMessage("Expected CCDAddress.city to be <%s> but was <%s>",
                 address.getCity(), actual.getCity());

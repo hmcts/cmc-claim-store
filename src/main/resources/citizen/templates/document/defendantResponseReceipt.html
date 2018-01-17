@@ -146,6 +146,10 @@
             {{ claimant.address.line2 }}
             <br/>
           {% endif %}
+          {% if claimant.address.line3 is not empty %}
+          {{ claimant.address.line3 }}
+          <br/>
+          {% endif %}
           {{ claimant.address.city }}
           <br/>
           {{ claimant.address.postcode }}
@@ -198,6 +202,10 @@
             {{ defendant.address.line2 }}
             <br/>
           {% endif %}
+          {% if defendant.address.line3 is not empty %}
+          {{ defendant.address.line3 }}
+          <br/>
+          {% endif %}
           {{ defendant.address.city }}
           <br/>
           {{ defendant.address.postcode }}
@@ -212,6 +220,10 @@
           {% if defendant.correspondenceAddress.line2 is not empty %}
             {{ defendant.correspondenceAddress.line2 }}
             <br/>
+          {% endif %}
+          {% if defendant.correspondenceAddress.line3 is not empty %}
+          {{ defendant.correspondenceAddress.line3 }}
+          <br/>
           {% endif %}
           {{ defendant.correspondenceAddress.city }}
           <br/>

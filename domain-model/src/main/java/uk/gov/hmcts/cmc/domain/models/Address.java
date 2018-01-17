@@ -14,6 +14,9 @@ public class Address {
     @Size(max = 100, message = "Address Line2 should not be longer than {max} characters")
     private final String line2;
 
+    @Size(max = 100, message = "Address Line3 should not be longer than {max} characters")
+    private final String line3;
+
     @NotBlank(message = "City/town should not be empty")
     @Size(max = 100, message = "City should not be longer than {max} characters")
     private final String city;
@@ -24,10 +27,12 @@ public class Address {
 
     public Address(String line1,
                    String line2,
+                   String line3,
                    String city,
                    String postcode) {
         this.line1 = line1;
         this.line2 = line2;
+        this.line3 = line3;
         this.city = city;
         this.postcode = postcode;
     }
@@ -38,6 +43,10 @@ public class Address {
 
     public String getLine2() {
         return line2;
+    }
+
+    public String getLine3() {
+        return line3;
     }
 
     public String getCity() {
@@ -59,13 +68,14 @@ public class Address {
         Address address = (Address) other;
         return Objects.equals(line1, address.line1)
             && Objects.equals(line2, address.line2)
+            && Objects.equals(line3, address.line3)
             && Objects.equals(city, address.city)
             && Objects.equals(postcode, address.postcode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(line1, line2, city, postcode);
+        return Objects.hash(line1, line2, line3, city, postcode);
     }
 
     @Override
@@ -73,6 +83,7 @@ public class Address {
         return "Address{"
             + "line1='" + line1 + '\''
             + ", line2='" + line2 + '\''
+            + ", line3='" + line3 + '\''
             + ", city='" + city + '\''
             + ", postcode='" + postcode + '\''
             + '}';

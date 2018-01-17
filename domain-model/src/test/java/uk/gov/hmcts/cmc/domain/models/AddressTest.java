@@ -78,6 +78,20 @@ public class AddressTest {
     }
 
     @Test
+    public void shouldBeInvalidForTooLongLineThree() {
+        //given
+        Address address = SampleAddress.builder()
+            .withLine3(StringUtils.repeat("a", 101))
+            .build();
+        //when
+        Set<String> errors = validate(address);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("line3 : Address Line3 should not be longer than 100 characters");
+    }
+
+    @Test
     public void shouldBeInvalidForEmptyCity() {
         //given
         Address address = SampleAddress.builder()

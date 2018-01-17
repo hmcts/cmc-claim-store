@@ -111,6 +111,10 @@
           {{ defendant.address.line2 }}
           <br/>
           {% endif %}
+          {% if defendant.address.line3 is not empty %}
+          {{ defendant.address.line3 }}
+          <br/>
+          {% endif %}
           {{ defendant.address.city }}
           <br/>
           {{ defendant.address.postcode }}
@@ -147,6 +151,10 @@
           <br/>
           {% if claimant.address.line2 is not empty %}
           {{ claimant.address.line2 }}
+          <br/>
+          {% endif %}
+          {% if claimant.address.line3 is not empty %}
+          {{ claimant.address.line3 }}
           <br/>
           {% endif %}
           {{ claimant.address.city }}
