@@ -76,24 +76,24 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
                 CCDCompany ccdCompany = ccdParty.getCompany();
                 return new Company(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
                     addressMapper.from(ccdCompany.getCorrespondenceAddress()),
-                    ccdCompany.getMobilePhone(), representativeMapper.from(ccdCompany.getRepresentative()),
+                    ccdCompany.getPhoneNumber(), representativeMapper.from(ccdCompany.getRepresentative()),
                     ccdCompany.getContactPerson());
             case INDIVIDUAL:
                 CCDIndividual ccdIndividual = ccdParty.getIndividual();
                 return new Individual(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
-                    addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getMobilePhone(),
+                    addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getPhoneNumber(),
                     representativeMapper.from(ccdIndividual.getRepresentative()),
                     LocalDate.parse(ccdIndividual.getDateOfBirth(), DateTimeFormatter.ISO_DATE));
             case SOLE_TRADER:
                 CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
                 return new SoleTrader(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
-                    addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getMobilePhone(),
+                    addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getPhoneNumber(),
                     representativeMapper.from(ccdSoleTrader.getRepresentative()), ccdSoleTrader.getTitle(),
                     ccdSoleTrader.getBusinessName());
             case ORGANISATION:
                 CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
                 return new Organisation(ccdOrganisation.getName(), addressMapper.from(ccdOrganisation.getAddress()),
-                    addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getMobilePhone(),
+                    addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getPhoneNumber(),
                     representativeMapper.from(ccdOrganisation.getRepresentative()), ccdOrganisation.getContactPerson(),
                     ccdOrganisation.getCompaniesHouseNumber());
             default:
