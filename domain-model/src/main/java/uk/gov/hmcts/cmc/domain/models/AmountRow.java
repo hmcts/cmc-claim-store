@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import uk.gov.hmcts.cmc.domain.constraints.ClaimantAmount;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 
@@ -8,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import javax.validation.constraints.DecimalMin;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 @ClaimantAmount
 public class AmountRow {
     private final String reason;

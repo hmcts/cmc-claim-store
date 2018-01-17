@@ -1,11 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Optional;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class PartyStatement {
 
     private StatementType type;

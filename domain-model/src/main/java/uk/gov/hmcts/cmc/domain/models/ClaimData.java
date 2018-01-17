@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import cz.jirutka.validator.collection.constraints.EachNotNull;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
@@ -31,7 +30,6 @@ import javax.validation.constraints.Size;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 @InterDependentFields(field = "interestDate", dependentField = "interest")
 public class ClaimData {
     @Valid

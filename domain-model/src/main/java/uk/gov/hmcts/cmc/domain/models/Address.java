@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Objects;
@@ -12,7 +11,6 @@ public class Address {
     @Size(max = 100, message = "Address Line1 should not be longer than {max} characters")
     private final String line1;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Size(max = 100, message = "Address Line2 should not be longer than {max} characters")
     private final String line2;
 

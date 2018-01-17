@@ -4,9 +4,10 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Map;
 
 @Value
 @Builder
 public class CCDAmountBreakDown {
-    private List<CCDAmountRow> rows;
+    private List<Map<String, CCDAmountRow>> rows;
 }
