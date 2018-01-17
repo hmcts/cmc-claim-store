@@ -40,8 +40,8 @@ public class AmountBreakDownMapper implements Mapper<CCDAmountBreakDown, AmountB
         );
     }
 
-    private Map<String, CCDAmountRow> mapToValue(CCDAmountRow ccdParty) {
-        return Collections.singletonMap(COLLECTION_KEY_NAME, ccdParty);
+    private Map<String, CCDAmountRow> mapToValue(CCDAmountRow ccdAmountRow) {
+        return Collections.singletonMap(COLLECTION_KEY_NAME, ccdAmountRow);
     }
 
     private CCDAmountRow valueFromMap(Map<String, CCDAmountRow> value) {
