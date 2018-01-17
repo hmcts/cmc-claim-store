@@ -25,6 +25,11 @@ public class AddressAssert extends AbstractAssert<AddressAssert, Address> {
                 ccdAddress.getLine2(), actual.getLine2());
         }
 
+        if (!Objects.equals(actual.getLine3(), ccdAddress.getLine3())) {
+            failWithMessage("Expected Address.line3 to be <%s> but was <%s>",
+                ccdAddress.getLine3(), actual.getLine3());
+        }
+
         if (!Objects.equals(actual.getCity(), ccdAddress.getCity())) {
             failWithMessage("Expected Address.city to be <%s> but was <%s>",
                 ccdAddress.getCity(), actual.getCity());
