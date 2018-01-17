@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
@@ -15,7 +14,6 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonIgnoreProperties(value = {"totalAmountTillToday", "totalAmountTillDateOfIssue"}, allowGetters = true)
 public class Claim {
 

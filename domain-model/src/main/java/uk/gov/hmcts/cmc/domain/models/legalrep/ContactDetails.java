@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.legalrep;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
 import uk.gov.hmcts.cmc.domain.constraints.PhoneNumber;
@@ -11,7 +10,6 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ContactDetails {
 
     @PhoneNumber

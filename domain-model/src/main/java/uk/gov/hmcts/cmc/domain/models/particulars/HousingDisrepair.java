@@ -1,12 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.particulars;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class HousingDisrepair {
 
     @NotNull

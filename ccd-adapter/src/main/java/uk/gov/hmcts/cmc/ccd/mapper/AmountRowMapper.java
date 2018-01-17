@@ -9,6 +9,10 @@ public class AmountRowMapper implements Mapper<CCDAmountRow, AmountRow> {
 
     @Override
     public CCDAmountRow to(AmountRow amountRow) {
+        if (amountRow.getAmount() == null) {
+            return null;
+        }
+
         CCDAmountRow.CCDAmountRowBuilder builder = CCDAmountRow.builder();
         return builder.reason(amountRow.getReason()).amount(amountRow.getAmount()).build();
     }
