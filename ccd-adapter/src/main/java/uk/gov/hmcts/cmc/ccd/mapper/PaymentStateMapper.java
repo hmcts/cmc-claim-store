@@ -12,12 +12,12 @@ public class PaymentStateMapper implements Mapper<CCDPaymentState, PaymentState>
         return CCDPaymentState
             .builder()
             .status(paymentState.getStatus())
-            .finished(paymentState.isFinished())
+            .finished(paymentState.isFinished() ? "YES" : "NO")
             .build();
     }
 
     @Override
     public PaymentState from(CCDPaymentState payment) {
-        return new PaymentState(payment.getStatus(), payment.isFinished());
+        return new PaymentState(payment.getStatus(), "YES".equals(payment.getFinished()));
     }
 }

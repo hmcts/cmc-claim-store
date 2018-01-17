@@ -7,5 +7,5 @@ import lombok.Value;
 @Builder
 public class CCDPaymentState {
     private String status;
-    private boolean finished;
+    private String finished;
 }
