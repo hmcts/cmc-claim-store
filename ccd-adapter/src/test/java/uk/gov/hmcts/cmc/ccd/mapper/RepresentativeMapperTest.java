@@ -46,6 +46,7 @@ public class RepresentativeMapperTest {
         CCDAddress address = CCDAddress.builder()
             .line1("line 1")
             .line2("line 2")
+            .line3("line 3")
             .city("city")
             .postcode("postcode")
             .build();
