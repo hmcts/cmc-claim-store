@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
@@ -20,7 +19,6 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 @ValidCountyCourtJudgment
 public class CountyCourtJudgment {
 
