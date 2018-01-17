@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 
@@ -9,6 +10,7 @@ import java.util.Map;
 
 @Value
 @Builder
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class CCDClaim {
 
     private String reason;

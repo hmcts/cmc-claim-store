@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -174,6 +175,7 @@ public class SampleData {
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
             .feeCode("X1202")
+            .feeAmountInPennies(BigInteger.valueOf(400))
             .reason("Reason for the case")
             .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
             .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
