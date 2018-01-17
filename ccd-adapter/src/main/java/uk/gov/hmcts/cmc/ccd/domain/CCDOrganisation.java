@@ -11,7 +11,7 @@ public class CCDOrganisation {
     private CCDAddress address;
     private String email;
     private CCDAddress correspondenceAddress;
-    private String mobilePhone;
+    private String phoneNumber;
     private CCDRepresentative representative;
     private String contactPerson;
     private String companiesHouseNumber;
