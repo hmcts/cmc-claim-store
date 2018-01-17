@@ -11,7 +11,7 @@ public class CCDSoleTrader {
     private String name;
     private String email;
     private String businessName;
-    private String mobilePhone;
+    private String phoneNumber;
     private CCDAddress address;
     private CCDAddress correspondenceAddress;
     private CCDRepresentative representative;
