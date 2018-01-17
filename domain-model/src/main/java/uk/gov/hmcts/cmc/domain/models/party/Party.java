@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.hmcts.cmc.domain.constraints.MobilePhoneNumber;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
@@ -45,7 +44,7 @@ public abstract class Party implements NamedParty {
     @Valid
     private final Address correspondenceAddress;
 
-    @MobilePhoneNumber
+    @Size(max = 30, message = "may not be longer than {max} characters")
     private final String mobilePhone;
 
     @Valid
