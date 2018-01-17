@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
-import org.assertj.core.util.Lists;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
@@ -31,6 +30,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -160,14 +160,15 @@ public class SampleData {
                 CCDAmount.builder()
                     .type(BREAK_DOWN)
                     .amountBreakDown(
-                        CCDAmountBreakDown.builder().rows(Lists.newArrayList(
-                            CCDAmountRow.builder().amount(BigDecimal.valueOf(50)).reason("payment").build(),
-                            CCDAmountRow.builder().build(),
-                            CCDAmountRow.builder().build(),
-                            CCDAmountRow.builder().build()))
-                        .build())
-                    .build()
-            )
+                        CCDAmountBreakDown.builder()
+                            .rows(singletonList(singletonMap("value", CCDAmountRow.builder()
+                                    .amount(BigDecimal.valueOf(50))
+                                    .reason("payment")
+                                    .build()
+                                )
+                            )).build()
+                    )
+                    .build())
             .payment(getCCDPayment())
             .interest(getCCDInterest())
             .interestDate(getCCDInterestDate())
@@ -177,8 +178,8 @@ public class SampleData {
             .feeCode("X1202")
             .feeAmountInPennies(BigInteger.valueOf(400))
             .reason("Reason for the case")
-            .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
-            .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .claimants(singletonList(singletonMap("value", getCCDPartyIndividual())))
+            .defendants(singletonList(singletonMap("value", getCCDPartyIndividual())))
             .build();
     }
 
@@ -205,7 +206,7 @@ public class SampleData {
             .reference("reference")
             .amount(BigDecimal.valueOf(7000))
             .dateCreated("2017-10-12")
-            .paymentState(CCDPaymentState.builder().status("Success").finished(true).build())
+            .paymentState(CCDPaymentState.builder().status("Success").finished("YES").build())
             .build();
     }
 
