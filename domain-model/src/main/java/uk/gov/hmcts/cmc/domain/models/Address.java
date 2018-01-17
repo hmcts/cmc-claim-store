@@ -14,7 +14,6 @@ public class Address {
     @Size(max = 100, message = "Address Line2 should not be longer than {max} characters")
     private final String line2;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Size(max = 100, message = "Address Line3 should not be longer than {max} characters")
     private final String line3;
 
