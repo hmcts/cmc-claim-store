@@ -65,9 +65,9 @@ public class TotalAmountCalculator {
             BigDecimal rate = data.getInterest().getRate();
 
             if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
-            LocalDate fromDate = (data.getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
-                ? claim.getCreatedAt().toLocalDate()
-                : data.getInterestDate().getDate();
+                LocalDate fromDate = (data.getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
+                    ? claim.getCreatedAt().toLocalDate()
+                    : data.getInterestDate().getDate();
                 return claimAmount
                     .add(data.getFeesPaidInPound())
                     .add(calculateInterest(claimAmount, rate, fromDate, toDate));
