@@ -31,7 +31,7 @@ public class ResponseDeadlineCalculatorTest {
 
         LocalDate responseDeadline = calculator.calculateResponseDeadline(issuedOn);
 
-        assertThat(responseDeadline).isWeekday().isTheSame(expectedDeadlineDate);
+        assertThat(responseDeadline).isTheSame(expectedDeadlineDate);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ResponseDeadlineCalculatorTest {
 
         LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(issuedOn);
 
-        assertThat(postponedDeadline).isWeekday().isTheSame(expectedPostponedDate);
+        assertThat(postponedDeadline).isTheSame(expectedPostponedDate);
     }
 
 }
