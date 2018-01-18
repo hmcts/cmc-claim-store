@@ -29,7 +29,7 @@ public class ResponseDeadlineCalculator {
      * Calculates response deadline by date of issue.
      */
     public LocalDate calculateResponseDeadline(LocalDate issueDate) {
-        return issueDate.plusDays(timeForResponseInDays + serviceDays);
+        return issueDate.plusDays((long) timeForResponseInDays + serviceDays);
     }
 
     /**
@@ -37,6 +37,6 @@ public class ResponseDeadlineCalculator {
      * as there are some edge cases that will not be covered otherwise.
      */
     public LocalDate calculatePostponedResponseDeadline(LocalDate issueDate) {
-        return issueDate.plusDays(timeForResponseInDays + serviceDays + requestedAdditionalTimeInDays);
+        return issueDate.plusDays((long) timeForResponseInDays + serviceDays + requestedAdditionalTimeInDays);
     }
 }
