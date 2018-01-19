@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 @Service("claimSearchService")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDClaimSearchService implements ClaimSearchService {
@@ -42,8 +44,8 @@ public class CCDClaimSearchService implements ClaimSearchService {
                 ccdClaims.stream()
                     .filter(c -> c.getReferenceNumber().equals(postgressClaim.getReferenceNumber()))
                     .findFirst()
-                    .ifPresent((c) -> logger.info("claim with reference number %s exist in ccd",
-                        postgressClaim.getReferenceNumber()));
+                    .ifPresent((c) -> logger.info(format("claim with reference number %s for user %s exist in ccd",
+                        postgressClaim.getReferenceNumber(), postgressClaim.getSubmitterId())));
             });
         }
     }
@@ -55,7 +57,8 @@ public class CCDClaimSearchService implements ClaimSearchService {
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             if (claim.get().equals(ccdClaim.get())) {
-                logger.info("claim with reference number %s exist in ccd", claim.get().getReferenceNumber());
+                logger.info(format("claim with reference number %s user %s exist in ccd",
+                    claim.get().getReferenceNumber(), claim.get().getSubmitterId()));
             }
         }
         return claim;

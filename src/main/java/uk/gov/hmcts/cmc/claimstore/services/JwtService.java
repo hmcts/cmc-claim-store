@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class JwtService {
 
     public boolean isCitizen(String authorisation) {
-        final DecodedJWT decodedToken = JWT.decode(authorisation);
+        final DecodedJWT decodedToken = JWT.decode(authorisation.replace("Bearer ",""));
         final String[] data = decodedToken.getClaims().get("data").asString().split(",");
         return Arrays.stream(data).anyMatch(s -> s.equals("citizen"));
     }

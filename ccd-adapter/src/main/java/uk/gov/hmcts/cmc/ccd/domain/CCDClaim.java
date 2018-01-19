@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 
@@ -25,7 +26,7 @@ public class CCDClaim {
     private CCDPersonalInjury personalInjury;
     private CCDHousingDisrepair housingDisrepair;
     private CCDStatementOfTruth statementOfTruth;
-    private List<Map<String, CCDParty>> claimants;
-    private List<Map<String, CCDParty>> defendants;
+    private List<Map<String, Object>> claimants;
+    private List<Map<String, Object>> defendants;
 }
 

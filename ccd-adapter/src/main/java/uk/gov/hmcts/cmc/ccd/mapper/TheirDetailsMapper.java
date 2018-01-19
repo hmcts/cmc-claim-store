@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
@@ -26,7 +27,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 
 @Component
-public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
+public class TheirDetailsMapper implements Mapper<Object, TheirDetails> {
 
     private final IndividualDetailsMapper individualDetailsMapper;
     private final CompanyDetailsMapper companyDetailsMapper;
@@ -76,7 +77,9 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
     }
 
     @Override
-    public TheirDetails from(CCDParty ccdParty) {
+    public TheirDetails from(Object party) {
+        CCDParty ccdParty = (CCDParty) party;
+
         switch (ccdParty.getType()) {
             case COMPANY:
                 return getCompany(ccdParty);
@@ -100,10 +103,19 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
 
     private TheirDetails getIndividual(CCDParty ccdParty) {
         CCDIndividual ccdIndividual = ccdParty.getIndividual();
-        return new IndividualDetails(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
-            ccdIndividual.getEmail(), representativeMapper.from(ccdIndividual.getRepresentative()),
-            addressMapper.from(ccdIndividual.getCorrespondenceAddress()),
-            LocalDate.parse(ccdIndividual.getDateOfBirth(), ISO_DATE));
+        return new IndividualDetails(ccdIndividual.getName(),
+            addressMapper.from(ccdIndividual.getAddress()),
+            ccdIndividual.getEmail(),
+            Optional.ofNullable(ccdIndividual.getRepresentative()).isPresent()
+                ? representativeMapper.from(ccdIndividual.getRepresentative())
+                : null,
+            Optional.ofNullable(ccdIndividual.getCorrespondenceAddress()).isPresent()
+                ? addressMapper.from(ccdIndividual.getCorrespondenceAddress())
+                : null,
+            Optional.ofNullable(ccdIndividual.getDateOfBirth()).isPresent()
+                ? LocalDate.parse(ccdIndividual.getDateOfBirth(), ISO_DATE)
+                : null
+        );
     }
 
     private TheirDetails getSoleTrader(CCDParty ccdParty) {

@@ -17,9 +17,10 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Component
-public class PartyMapper implements Mapper<CCDParty, Party> {
+public class PartyMapper implements Mapper<Object, Party> {
 
     private final IndividualMapper individualMapper;
     private final CompanyMapper companyMapper;
@@ -70,32 +71,48 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
     }
 
     @Override
-    public Party from(CCDParty ccdParty) {
+    public Party from(Object party) {
+        CCDParty ccdParty = (CCDParty) party;
         switch (ccdParty.getType()) {
             case COMPANY:
                 CCDCompany ccdCompany = ccdParty.getCompany();
-                return new Company(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
+                return new Company(ccdCompany.getName(),
+                    addressMapper.from(ccdCompany.getAddress()),
                     addressMapper.from(ccdCompany.getCorrespondenceAddress()),
-                    ccdCompany.getPhoneNumber(), representativeMapper.from(ccdCompany.getRepresentative()),
+                    ccdCompany.getPhoneNumber(),
+                    representativeMapper.from(ccdCompany.getRepresentative()),
                     ccdCompany.getContactPerson());
             case INDIVIDUAL:
                 CCDIndividual ccdIndividual = ccdParty.getIndividual();
-                return new Individual(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
-                    addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getPhoneNumber(),
+                return new Individual(ccdIndividual.getName(),
+                    addressMapper.from(ccdIndividual.getAddress()),
+                    addressMapper.from(ccdIndividual.getCorrespondenceAddress()),
+                    ccdIndividual.getPhoneNumber(),
                     representativeMapper.from(ccdIndividual.getRepresentative()),
-                    LocalDate.parse(ccdIndividual.getDateOfBirth(), DateTimeFormatter.ISO_DATE));
+                    Optional.ofNullable(ccdIndividual.getDateOfBirth()).isPresent()
+                        ? LocalDate.parse(ccdIndividual.getDateOfBirth(), DateTimeFormatter.ISO_DATE)
+                        : null
+                );
             case SOLE_TRADER:
                 CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
-                return new SoleTrader(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
-                    addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getPhoneNumber(),
-                    representativeMapper.from(ccdSoleTrader.getRepresentative()), ccdSoleTrader.getTitle(),
-                    ccdSoleTrader.getBusinessName());
+                return new SoleTrader(ccdSoleTrader.getName(),
+                    addressMapper.from(ccdSoleTrader.getAddress()),
+                    addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()),
+                    ccdSoleTrader.getPhoneNumber(),
+                    representativeMapper.from(ccdSoleTrader.getRepresentative()),
+                    ccdSoleTrader.getTitle(),
+                    ccdSoleTrader.getBusinessName()
+                );
             case ORGANISATION:
                 CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
-                return new Organisation(ccdOrganisation.getName(), addressMapper.from(ccdOrganisation.getAddress()),
-                    addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getPhoneNumber(),
-                    representativeMapper.from(ccdOrganisation.getRepresentative()), ccdOrganisation.getContactPerson(),
-                    ccdOrganisation.getCompaniesHouseNumber());
+                return new Organisation(ccdOrganisation.getName(),
+                    addressMapper.from(ccdOrganisation.getAddress()),
+                    addressMapper.from(ccdOrganisation.getCorrespondenceAddress()),
+                    ccdOrganisation.getPhoneNumber(),
+                    representativeMapper.from(ccdOrganisation.getRepresentative()),
+                    ccdOrganisation.getContactPerson(),
+                    ccdOrganisation.getCompaniesHouseNumber()
+                );
             default:
                 throw new MappingException();
         }

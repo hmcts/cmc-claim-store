@@ -1,5 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
@@ -8,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +22,10 @@ import java.util.stream.Collectors;
 
 @Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
+    private final Logger logger = LoggerFactory.getLogger(ClaimMapper.class);
 
+    private static final String SERIALISATION_ERROR_MESSAGE = "Failed to serialize '%s' to JSON";
+    private static final String DESERIALISATION_ERROR_MESSAGE = "Failed to deserialize '%s' from JSON";
     private static final String COLLECTION_KEY_NAME = "value";
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
@@ -28,6 +36,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final PaymentMapper paymentMapper;
     private final InterestMapper interestMapper;
     private final InterestDateMapper interestDateMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
@@ -89,7 +98,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .build();
     }
 
-    private Map<String, CCDParty> mapToValue(CCDParty ccdParty) {
+    private Map<String, Object> mapToValue(Object ccdParty) {
         return Collections.singletonMap(COLLECTION_KEY_NAME, ccdParty);
     }
 
@@ -99,13 +108,19 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
         List<Party> claimants = ccdClaim.getClaimants()
             .stream()
+            .filter(c -> c.containsKey("value"))
             .map(this::valueFromMap)
+            .map(this::toJson)
+            .map(s -> this.fromJson(s, CCDParty.class))
             .map(partyMapper::from)
             .collect(Collectors.toList());
 
         List<TheirDetails> defendants = ccdClaim.getDefendants()
             .stream()
+            .filter(c -> c.containsKey("value"))
             .map(this::valueFromMap)
+            .map(this::toJson)
+            .map(s -> this.fromJson(s, CCDParty.class))
             .map(theirDetailsMapper::from)
             .collect(Collectors.toList());
 
@@ -128,7 +143,29 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             ccdClaim.getFeeCode());
     }
 
-    private CCDParty valueFromMap(Map<String, CCDParty> value) {
+    private Object valueFromMap(Map<String, Object> value) {
         return value.get(COLLECTION_KEY_NAME);
+    }
+
+    private String toJson(Object input) {
+        try {
+            return objectMapper.writeValueAsString(input);
+        } catch (JsonProcessingException e) {
+            logger.info(e.getMessage(), e);
+            throw new RuntimeException(
+                String.format(SERIALISATION_ERROR_MESSAGE, input.getClass().getSimpleName()), e
+            );
+        }
+    }
+
+    private <T> T fromJson(String value, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(value, clazz);
+        } catch (IOException e) {
+            logger.info(e.getMessage(), e);
+            throw new RuntimeException(
+                String.format(DESERIALISATION_ERROR_MESSAGE, clazz.getSimpleName()), e
+            );
+        }
     }
 }

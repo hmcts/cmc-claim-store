@@ -1,0 +1,83 @@
+{"submitterEmail": "me@server.net",
+  "issuedOn": "2018-01-16",
+  "id": 4,
+  "externalId": "fd889f74-5956-421a-b21f-6720ff3b6693",
+  "claimData": {
+    "amount": {
+      "type": null,
+      "amountRange": null
+    },
+    "reason": "reason",
+    "feeCode": "X0012",
+    "claimants": [
+      {
+        "id": "47112586-9d43-41a3-8e80-5d3634ae022d",
+        "value": {
+          "type": "INDIVIDUAL",
+          "email": null,
+          "company": null,
+          "individual": {
+            "name": "John Rambo",
+            "email": null,
+            "address": {
+              "city": "Manchester",
+              "line1": "52",
+              "line2": "Down Street",
+              "postcode": "DF1 3LJ"
+            },
+            "dateOfBirth": "1968-01-02",
+            "mobilePhone": "07873727165",
+            "representative": null,
+            "correspondenceAddress": {
+              "city": "Manchester",
+              "line1": "52",
+              "line2": "Down Street",
+              "postcode": "DF1 3LJ"
+            }
+          },
+          "soleTrader": null,
+          "organisation": null,
+          "serviceAddress": null
+        }
+      }
+    ],
+    "defendants": [
+      {
+        "id": "ef6bf2be-677c-4b79-8b66-d67a8ff3923d",
+        "value": {
+          "type": "INDIVIDUAL",
+          "email": null,
+          "company": null,
+          "individual": {
+            "name": "John Smith",
+            "email": "j.smith@example.com",
+            "address": {
+              "city": "Manchester",
+              "line1": "52",
+              "line2": "Down Street",
+              "postcode": "DF1 3LJ"
+            },
+            "dateOfBirth": null,
+            "mobilePhone": null,
+            "representative": null,
+            "correspondenceAddress": null
+          },
+          "soleTrader": null,
+          "organisation": null,
+          "serviceAddress": null
+        }
+      }
+    ],
+    "externalId": "fd889f74-5956-421a-b21f-6720ff3b6693",
+    "personalInjury": null,
+    "preferredCourt": null,
+    "feeAccountNumber": null,
+    "housingDisrepair": null,
+    "statementOfTruth": null,
+    "feeAmountInPennies": 4000,
+    "externalReferenceNumber": null
+  },
+  "submittedOn": "2018-01-16T12:07:40.916298",
+  "submitterId": "20",
+  "referenceNumber": "000MC004"
+}
