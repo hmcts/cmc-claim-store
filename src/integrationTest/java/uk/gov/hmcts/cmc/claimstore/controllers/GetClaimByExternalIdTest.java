@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -13,7 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class GetClaimByExternalIdTest extends BaseIntegrationTest {
+    private static final String AUTHORISATION_TOKEN = "Bearer token";
 
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
@@ -39,6 +47,8 @@ public class GetClaimByExternalIdTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String externalId) throws Exception {
         return webClient
-            .perform(get("/claims/" + externalId));
+            .perform(get("/claims/" + externalId)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            );
     }
 }

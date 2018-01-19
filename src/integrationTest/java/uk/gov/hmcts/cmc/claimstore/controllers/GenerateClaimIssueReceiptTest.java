@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,8 +16,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class GenerateClaimIssueReceiptTest extends BaseIntegrationTest {
-
+    private static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     @Test
@@ -54,6 +61,8 @@ public class GenerateClaimIssueReceiptTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String externalId) throws Exception {
         return webClient
-            .perform(get("/documents/claimIssueReceipt/" + externalId));
+            .perform(get("/documents/claimIssueReceipt/" + externalId)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            );
     }
 }

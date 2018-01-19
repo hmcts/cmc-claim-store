@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
@@ -9,8 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +24,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.api_gateway.url=false"
     }
 )
-public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
+public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseSaveTest {
 
     private static final String SERVICE_TOKEN = "S2S token";
     private static final String USER_ID = "1";
@@ -39,16 +36,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     @Test
     public void shouldStoreRepresentedClaimIntoCCD() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
-            )
-        ).willReturn(Collections.emptyList());
 
         given(coreCaseDataApi.startForCaseworker(
             eq(AUTHORISATION_TOKEN),
@@ -105,16 +92,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     @Test
     public void shouldStoreCitizenClaimIntoCCD() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
-
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
-            )
-        ).willReturn(Collections.emptyList());
 
         given(coreCaseDataApi.startForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -173,17 +150,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
-            )
-        ).willReturn(Collections.emptyList());
-
         given(coreCaseDataApi.startForCaseworker(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -208,17 +174,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToSubmitEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
-            )
-        ).willReturn(Collections.emptyList());
-
         given(coreCaseDataApi.startForCaseworker(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -254,16 +209,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     @Test
     public void shouldIssueClaimEvenWhenS2STokenGenerationFails() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
-            )
-        ).willReturn(Collections.emptyList());
 
         given(serviceAuthorisationApi.serviceToken(anyString(), anyString())).willThrow(FeignException.class);
 

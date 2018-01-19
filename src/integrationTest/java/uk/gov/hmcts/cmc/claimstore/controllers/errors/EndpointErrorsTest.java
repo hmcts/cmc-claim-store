@@ -7,6 +7,7 @@ import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -29,10 +30,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
 @ActiveProfiles("test")
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class EndpointErrorsTest extends MockSpringTest {
 
     private static final Exception UNEXPECTED_ERROR
         = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
+    public static final String AUTHORISATION = "Bearer token";
 
     @Autowired
     private MockMvc webClient;
@@ -41,10 +48,12 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(claimRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
+        given(claimSearchService.getClaimByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/claims/" + externalId))
+            .perform(get("/claims/" + externalId)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+            )
             .andExpect(status().isInternalServerError());
     }
 
@@ -52,10 +61,12 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchBySubmitterIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String submitterId = "1";
 
-        given(claimRepository.getBySubmitterId(submitterId)).willThrow(UNEXPECTED_ERROR);
+        given(claimSearchService.getBySubmitterId(submitterId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/claims/claimant/" + submitterId))
+            .perform(get("/claims/claimant/" + submitterId)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+            )
             .andExpect(status().isInternalServerError());
     }
 
@@ -66,7 +77,9 @@ public class EndpointErrorsTest extends MockSpringTest {
         given(claimRepository.getByDefendantId(defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/claims/defendant/" + defendantId))
+            .perform(get("/claims/defendant/" + defendantId)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+            )
             .andExpect(status().isInternalServerError());
     }
 
@@ -101,10 +114,12 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void retrieveDefendantLinkStatusShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
+        given(claimSearchService.getByClaimReferenceNumber(referenceNumber, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/claims/" + referenceNumber + "/defendant-link-status"))
+            .perform(get("/claims/" + referenceNumber + "/defendant-link-status")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+            )
             .andExpect(status().isInternalServerError());
     }
 
@@ -124,10 +139,12 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void getByClaimReferenceNumberShouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
+        given(claimSearchService.getByClaimReferenceNumber(referenceNumber, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/testing-support/claims/" + referenceNumber))
+            .perform(get("/testing-support/claims/" + referenceNumber)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+            )
             .andExpect(status().isInternalServerError());
     }
 
@@ -167,7 +184,7 @@ public class EndpointErrorsTest extends MockSpringTest {
         webClient
             .perform(post("/responses/claim/" + claimId + "/defendant/" + DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
                 .content(jsonMapper.toJson(SampleResponse.validDefaults()))
             )
             .andExpect(status().isInternalServerError());

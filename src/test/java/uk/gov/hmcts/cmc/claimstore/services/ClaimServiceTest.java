@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.search.PostgresClaimSearchService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -52,6 +53,7 @@ public class ClaimServiceTest {
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INVALID_DEFENDANT_TOKEN = "You shall not pass!";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
+    private static final String AUTHORISATION = "Bearer: aaa";
 
     private static final UserDetails validDefendant
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
@@ -66,6 +68,8 @@ public class ClaimServiceTest {
 
     @Mock
     private ClaimRepository claimRepository;
+    @Mock
+    private PostgresClaimSearchService claimSearchService;
     @Mock
     private JsonMapper mapper;
     @Mock
@@ -87,8 +91,8 @@ public class ClaimServiceTest {
             mapper,
             issueDateCalculator,
             responseDeadlineCalculator,
-            eventProducer
-        );
+            eventProducer,
+            claimSearchService);
     }
 
     @Test
@@ -139,9 +143,9 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String externalId = "does not exist";
 
-        when(claimRepository.getClaimByExternalId(eq(externalId))).thenReturn(result);
+        when(claimSearchService.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
 
-        claimService.getClaimByExternalId(externalId);
+        claimService.getClaimByExternalId(externalId, AUTHORISATION);
     }
 
     @Test
@@ -179,7 +183,7 @@ public class ClaimServiceTest {
     public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
         ClaimData app = SampleClaimData.validDefaults();
         String authorisationToken = "Open same!";
-        when(claimRepository.getClaimByExternalId(any())).thenReturn(Optional.of(claim));
+        when(claimSearchService.getClaimByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
 
         claimService.saveClaim(USER_ID, app, authorisationToken);
     }

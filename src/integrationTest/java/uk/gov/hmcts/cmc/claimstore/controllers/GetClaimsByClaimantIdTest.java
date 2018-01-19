@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -13,6 +15,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class GetClaimsByClaimantIdTest extends BaseIntegrationTest {
 
     @Test
@@ -44,6 +51,8 @@ public class GetClaimsByClaimantIdTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(Object submitterId) throws Exception {
         return webClient
-            .perform(get("/claims/claimant/" + submitterId));
+            .perform(get("/claims/claimant/" + submitterId)
+                .header(HttpHeaders.AUTHORIZATION, "ABC123")
+            );
     }
 }

@@ -4,6 +4,7 @@ import org.assertj.core.util.Maps;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -22,8 +23,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class GetClaimByClaimReferenceTest extends BaseIntegrationTest {
 
+    private static final String AUTHORISATION_TOKEN = "Bearer token";
     private static final String AUTH_TOKEN = "I am a valid token";
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
