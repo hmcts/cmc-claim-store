@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
@@ -15,24 +15,24 @@ import static java.lang.String.format;
 
 @Service("claimSearchService")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
-public class CCDClaimSearchService implements ClaimSearchService {
-    private final Logger logger = LoggerFactory.getLogger(CCDClaimSearchService.class);
+public class CCDCaseRepository implements CaseRepository {
+    private final Logger logger = LoggerFactory.getLogger(CCDCaseRepository.class);
 
-    private final ClaimSearchRepository claimSearchRepository;
+    private final CaseDBI caseDBI;
     private final CCDClaimRepository ccdClaimSearchRepository;
 
-    public CCDClaimSearchService(
-        ClaimSearchRepository claimSearchRepository,
+    public CCDCaseRepository(
+        CaseDBI caseDBI,
         CCDClaimRepository ccdClaimSearchRepository
     ) {
 
-        this.claimSearchRepository = claimSearchRepository;
+        this.caseDBI = caseDBI;
         this.ccdClaimSearchRepository = ccdClaimSearchRepository;
     }
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        final List<Claim> postgresClaims = claimSearchRepository.getBySubmitterId(submitterId);
+        final List<Claim> postgresClaims = caseDBI.getBySubmitterId(submitterId);
         final List<Claim> ccdClaims = ccdClaimSearchRepository.getBySubmitterId(submitterId, authorisation);
         compareAndLog(postgresClaims, ccdClaims);
         return postgresClaims;
@@ -40,19 +40,19 @@ public class CCDClaimSearchService implements ClaimSearchService {
 
     private void compareAndLog(List<Claim> postgresClaims, List<Claim> ccdClaims) {
         if (!postgresClaims.isEmpty() && !ccdClaims.isEmpty()) {
-            postgresClaims.forEach(postgressClaim -> {
+            postgresClaims.forEach(postgresClaim -> {
                 ccdClaims.stream()
-                    .filter(c -> c.getReferenceNumber().equals(postgressClaim.getReferenceNumber()))
+                    .filter(c -> c.getReferenceNumber().equals(postgresClaim.getReferenceNumber()))
                     .findFirst()
                     .ifPresent((c) -> logger.info(format("claim with reference number %s for user %s exist in ccd",
-                        postgressClaim.getReferenceNumber(), postgressClaim.getSubmitterId())));
+                        postgresClaim.getReferenceNumber(), postgresClaim.getSubmitterId())));
             });
         }
     }
 
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        final Optional<Claim> claim = claimSearchRepository.getClaimByExternalId(externalId);
+        final Optional<Claim> claim = caseDBI.getClaimByExternalId(externalId);
         final Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByClaimExternalId(externalId, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
@@ -66,16 +66,16 @@ public class CCDClaimSearchService implements ClaimSearchService {
 
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-        final Optional<Claim> claim = claimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber);
+        final Optional<Claim> claim = caseDBI.getByClaimReferenceNumber(claimReferenceNumber);
 
         final Optional<Claim> ccdClaim
             = ccdClaimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber, authorisation);
 
-        if (claim.isPresent() && ccdClaim.isPresent()) {
-            if (claim.get().equals(ccdClaim.get())) {
-                logger.info("claim with reference number %s exist in ccd", claim.get().getReferenceNumber());
-            }
+        if (claim.isPresent() && ccdClaim.isPresent() && claim.get().equals(ccdClaim.get())) {
+            logger.info(format("claim with reference number %s user %s exist in ccd",
+                claim.get().getReferenceNumber(), claim.get().getSubmitterId()));
         }
+
         return claim;
     }
 }

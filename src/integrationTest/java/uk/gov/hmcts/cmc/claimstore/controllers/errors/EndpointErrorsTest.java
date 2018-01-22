@@ -48,7 +48,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(claimSearchService.getClaimByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + externalId)
@@ -61,7 +61,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchBySubmitterIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String submitterId = "1";
 
-        given(claimSearchService.getBySubmitterId(submitterId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getBySubmitterId(submitterId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/claimant/" + submitterId)
@@ -114,7 +114,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void retrieveDefendantLinkStatusShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimSearchService.getByClaimReferenceNumber(referenceNumber, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getByClaimReferenceNumber(referenceNumber, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + referenceNumber + "/defendant-link-status")
@@ -139,7 +139,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void getByClaimReferenceNumberShouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimSearchService.getByClaimReferenceNumber(referenceNumber, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getByClaimReferenceNumber(referenceNumber, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/testing-support/claims/" + referenceNumber)

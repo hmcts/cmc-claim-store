@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JwtService;
@@ -24,10 +23,9 @@ import java.util.stream.Collectors;
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDClaimRepository {
-    private final Logger logger = LoggerFactory.getLogger(CCDClaimRepository.class);
 
-    private static final String JURISDICTION_ID = "CMC";
-    private static final String CASE_TYPE_ID = "MoneyClaimCase";
+    public static final String JURISDICTION_ID = "CMC";
+    public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -53,31 +51,31 @@ public class CCDClaimRepository {
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        return searchClaimsOnCCD(authorisation, ImmutableMap.of("case.submitterId", submitterId));
+        return search(authorisation, ImmutableMap.of("case.submitterId", submitterId));
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String referenceNumber, String authorisation) {
         final List<Claim> claims
-            = searchClaimsOnCCD(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
+            = search(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
 
         if (claims.size() > 1) {
-            throw new RuntimeException("More than one claim found by claim reference " + referenceNumber);
+            throw new CoreCaseDataStoreException("More than one claim found by claim reference " + referenceNumber);
         }
 
-        return claims.stream().findFirst();
+        return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
     }
 
     public Optional<Claim> getByClaimExternalId(String externalId, String authorisation) {
-        final List<Claim> claims = searchClaimsOnCCD(authorisation, ImmutableMap.of("case.externalId", externalId));
+        final List<Claim> claims = search(authorisation, ImmutableMap.of("case.externalId", externalId));
 
         if (claims.size() > 1) {
-            throw new RuntimeException("More than one claim found by claim externalId " + externalId);
+            throw new CoreCaseDataStoreException("More than one claim found by claim externalId " + externalId);
         }
 
-        return claims.stream().findFirst();
+        return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
     }
 
-    private List<Claim> searchClaimsOnCCD(String authorisation, Map<String, Object> searchString) {
+    private List<Claim> search(String authorisation, Map<String, Object> searchString) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         final String serviceAuthToken = this.authTokenGenerator.generate();
 

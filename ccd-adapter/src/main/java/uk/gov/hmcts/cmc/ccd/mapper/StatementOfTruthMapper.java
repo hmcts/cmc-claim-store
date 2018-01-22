@@ -18,7 +18,7 @@ public class StatementOfTruthMapper implements Mapper<CCDStatementOfTruth, State
 
     @Override
     public StatementOfTruth from(CCDStatementOfTruth statementOfTruth) {
-        if(statementOfTruth == null){
+        if (statementOfTruth == null) {
             return null;
         }
 

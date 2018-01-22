@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDIndividual;
@@ -18,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
@@ -106,16 +106,18 @@ public class TheirDetailsMapper implements Mapper<Object, TheirDetails> {
         return new IndividualDetails(ccdIndividual.getName(),
             addressMapper.from(ccdIndividual.getAddress()),
             ccdIndividual.getEmail(),
-            Optional.ofNullable(ccdIndividual.getRepresentative()).isPresent()
-                ? representativeMapper.from(ccdIndividual.getRepresentative())
-                : null,
-            Optional.ofNullable(ccdIndividual.getCorrespondenceAddress()).isPresent()
-                ? addressMapper.from(ccdIndividual.getCorrespondenceAddress())
-                : null,
-            Optional.ofNullable(ccdIndividual.getDateOfBirth()).isPresent()
-                ? LocalDate.parse(ccdIndividual.getDateOfBirth(), ISO_DATE)
-                : null
+            representativeMapper.from(ccdIndividual.getRepresentative()),
+            addressMapper.from(ccdIndividual.getCorrespondenceAddress()),
+            parseDob(ccdIndividual.getDateOfBirth())
         );
+    }
+
+    private LocalDate parseDob(String dateOfBirth) {
+        if (StringUtils.isBlank(dateOfBirth)) {
+            return null;
+        }
+
+        return LocalDate.parse(dateOfBirth, ISO_DATE);
     }
 
     private TheirDetails getSoleTrader(CCDParty ccdParty) {

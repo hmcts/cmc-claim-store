@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RegisterMapper(ClaimMapper.class)
 @SuppressWarnings("squid:S1214") // Pointless to create class for string statement
-public interface ClaimSearchRepository {
+public interface CaseDBI {
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
         String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 

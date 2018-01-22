@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -144,14 +143,4 @@ public class JsonMapperTest {
         processor.fromJson("{asads:", new TypeReference<List<Response>>() {
         });
     }
-
-    @Test
-    public void test() {
-        final String json = new ResourceReader().read("/temp.json");
-
-        final CCDCase ccdCase = processor.fromJson(json, CCDCase.class);
-        System.out.println(ccdCase);
-
-    }
-
 }

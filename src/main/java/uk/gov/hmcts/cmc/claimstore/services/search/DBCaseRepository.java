@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.search;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
@@ -12,27 +10,26 @@ import java.util.Optional;
 
 @Service("claimSearchService")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
-public class PostgresClaimSearchService implements ClaimSearchService {
-    private final Logger logger = LoggerFactory.getLogger(PostgresClaimSearchService.class);
+public class DBCaseRepository implements CaseRepository {
 
-    private final ClaimSearchRepository claimSearchRepository;
+    private final CaseDBI caseDBI;
 
-    public PostgresClaimSearchService(ClaimSearchRepository claimSearchRepository) {
-        this.claimSearchRepository = claimSearchRepository;
+    public DBCaseRepository(CaseDBI caseDBI) {
+        this.caseDBI = caseDBI;
     }
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        return claimSearchRepository.getBySubmitterId(submitterId);
+        return caseDBI.getBySubmitterId(submitterId);
     }
 
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        return claimSearchRepository.getClaimByExternalId(externalId);
+        return caseDBI.getClaimByExternalId(externalId);
     }
 
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-        return claimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber);
+        return caseDBI.getByClaimReferenceNumber(claimReferenceNumber);
     }
 }

@@ -1,65 +1,71 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import feign.FeignException;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimRepository.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimRepository.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
 
 @TestPropertySource(
     properties = {
         "document_management.api_gateway.url=false"
     }
 )
-public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseSaveTest {
-
+public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrationTest {
+    private static final String AUTHORISATION_TOKEN = "I am a valid token";
     private static final String SERVICE_TOKEN = "S2S token";
     private static final String USER_ID = "1";
-    private static final String JURISDICTION_ID = "CMC";
-    private static final String CASE_TYPE_ID = "MoneyClaimCase";
-    private static final String EVENT_ID = "submitClaimEvent";
-    private static final boolean IGNORE_WARNING = true;
+
+    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
+        .withUserId(USER_ID)
+        .withMail("submitter@example.com")
+        .build();
 
     @Test
-    public void shouldStoreRepresentedClaimIntoCCD() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+    public void shouldFindClaimFromCCDHoweverReturnClaimFromPostgres() throws Exception {
+        UUID externalId = UUID.randomUUID();
 
-        given(coreCaseDataApi.startForCaseworker(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN), eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId)
+            .withAmount(SampleAmountRange.validDefaults())
+            .build();
 
-        given(coreCaseDataApi.submitForCaseworker(
+        claimStore.saveClaim(claimData);
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
+        given(jwtService.isCitizen(AUTHORISATION_TOKEN)).willReturn(true);
+
+        given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(IGNORE_WARNING),
-            any()
+            eq(ImmutableMap.of("case.externalId", externalId.toString()))
             )
-        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+        ).willReturn(successfulCoreCaseDataSearchResponse());
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeRequest(claimData)
+        MvcResult result = makeRequest(externalId.toString())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -68,156 +74,20 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseSaveTest 
             .contains(claimData);
 
         verify(coreCaseDataApi)
-            .startForCaseworker(
+            .searchForCitizen(
                 eq(AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(EVENT_ID)
-            );
-
-        verify(coreCaseDataApi)
-            .submitForCaseworker(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(IGNORE_WARNING),
-                any()
+                eq(ImmutableMap.of("case.externalId", externalId.toString()))
             );
     }
 
-    @Test
-    public void shouldStoreCitizenClaimIntoCCD() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
-
-        given(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
-
-        given(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(IGNORE_WARNING),
-            any()
-            )
-        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        MvcResult result = makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
-
-        verify(coreCaseDataApi)
-            .startForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(EVENT_ID)
+    private ResultActions makeRequest(String externalId) throws Exception {
+        return webClient
+            .perform(get("/claims/" + externalId)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
-
-        verify(coreCaseDataApi)
-            .submitForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(IGNORE_WARNING),
-                any()
-            );
-    }
-
-
-    @Test
-    public void shouldIssueClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-        given(coreCaseDataApi.startForCaseworker(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
-            )
-        ).willThrow(FeignException.class);
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        MvcResult result = makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
-    }
-
-    @Test
-    public void shouldIssueClaimEvenWhenCCDStoreFailsToSubmitEvent() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-        given(coreCaseDataApi.startForCaseworker(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
-
-        given(coreCaseDataApi.submitForCaseworker(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(IGNORE_WARNING),
-            any()
-            )
-        ).willThrow(FeignException.class);
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        MvcResult result = makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
-    }
-
-    @Test
-    public void shouldIssueClaimEvenWhenS2STokenGenerationFails() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-
-        given(serviceAuthorisationApi.serviceToken(anyString(), anyString())).willThrow(FeignException.class);
-
-        MvcResult result = makeRequest(claimData)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
     }
 }

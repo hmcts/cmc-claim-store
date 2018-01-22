@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.search.ClaimSearchService;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -34,7 +34,7 @@ public class ClaimService {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
-    private final ClaimSearchService claimSearchService;
+    private final CaseRepository caseRepository;
 
     @Autowired
     public ClaimService(
@@ -44,7 +44,7 @@ public class ClaimService {
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
-        ClaimSearchService claimSearchService
+        CaseRepository caseRepository
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -52,7 +52,7 @@ public class ClaimService {
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
-        this.claimSearchService = claimSearchService;
+        this.caseRepository = caseRepository;
     }
 
     public Claim getClaimById(long claimId) {
@@ -62,7 +62,7 @@ public class ClaimService {
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
-        return claimSearchService.getBySubmitterId(submitterId, authorisation);
+        return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
     public Claim getClaimByLetterHolderId(String id) {
@@ -72,13 +72,13 @@ public class ClaimService {
     }
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {
-        return claimSearchService
+        return caseRepository
             .getClaimByExternalId(externalId, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
-        return claimSearchService
+        return caseRepository
             .getByClaimReferenceNumber(reference, authorisation);
     }
 
@@ -95,7 +95,7 @@ public class ClaimService {
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        claimSearchService.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
+        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
         });
 

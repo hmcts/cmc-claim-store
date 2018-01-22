@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.List;
 import java.util.Optional;
 
-public interface ClaimSearchService {
+public interface CaseRepository {
     List<Claim> getBySubmitterId(String submitterId, String authorisation);
 
     Optional<Claim> getClaimByExternalId(String externalId, String authorisation);

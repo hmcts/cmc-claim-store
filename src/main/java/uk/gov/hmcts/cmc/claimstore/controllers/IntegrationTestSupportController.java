@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
-import uk.gov.hmcts.cmc.claimstore.services.search.ClaimSearchService;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -23,15 +23,15 @@ import java.time.LocalDate;
 @ConditionalOnProperty("claim-store.test-support.enabled")
 public class IntegrationTestSupportController {
 
-    private final ClaimSearchService claimSearchService;
+    private final CaseRepository caseRepository;
     private final TestingSupportRepository testingSupportRepository;
 
     @Autowired
     public IntegrationTestSupportController(
-        ClaimSearchService claimSearchService,
+        CaseRepository caseRepository,
         TestingSupportRepository testingSupportRepository
     ) {
-        this.claimSearchService = claimSearchService;
+        this.caseRepository = caseRepository;
         this.testingSupportRepository = testingSupportRepository;
     }
 
@@ -41,7 +41,7 @@ public class IntegrationTestSupportController {
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return claimSearchService.getByClaimReferenceNumber(claimReferenceNumber, authorisation)
+        return caseRepository.getByClaimReferenceNumber(claimReferenceNumber, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by ref no: " + claimReferenceNumber));
     }
 
