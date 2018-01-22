@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
-import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 @Component
@@ -42,15 +41,7 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
         return new Representative(
             representative.getOrganisationName(),
             addressMapper.from(representative.getOrganisationAddress()),
-            getOrganisationContactDetails(representative)
+            contactDetailsMapper.from(representative.getOrganisationContactDetails().orElse(null))
         );
-    }
-
-    private ContactDetails getOrganisationContactDetails(CCDRepresentative representative) {
-        if (representative.getOrganisationContactDetails().isPresent()) {
-            return contactDetailsMapper.from(representative.getOrganisationContactDetails().get());
-        } else {
-            return null;
-        }
     }
 }

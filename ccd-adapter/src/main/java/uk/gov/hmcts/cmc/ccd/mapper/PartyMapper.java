@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 
 @Component
-public class PartyMapper implements Mapper<Object, Party> {
+public class PartyMapper implements Mapper<CCDParty, Party> {
 
     private final IndividualMapper individualMapper;
     private final CompanyMapper companyMapper;
@@ -72,8 +72,7 @@ public class PartyMapper implements Mapper<Object, Party> {
     }
 
     @Override
-    public Party from(Object party) {
-        CCDParty ccdParty = (CCDParty) party;
+    public Party from(CCDParty ccdParty) {
         switch (ccdParty.getType()) {
             case COMPANY:
                 CCDCompany ccdCompany = ccdParty.getCompany();

@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.services.JwtService;
+import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -32,7 +32,7 @@ public class CCDClaimRepository {
     private final UserService userService;
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
-    private final JwtService jwtService;
+    private final JwtHelper jwtHelper;
 
     public CCDClaimRepository(
         CoreCaseDataApi coreCaseDataApi,
@@ -40,14 +40,14 @@ public class CCDClaimRepository {
         UserService userService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
-        JwtService jwtService
+        JwtHelper jwtHelper
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
-        this.jwtService = jwtService;
+        this.jwtHelper = jwtHelper;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -79,9 +79,9 @@ public class CCDClaimRepository {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         final String serviceAuthToken = this.authTokenGenerator.generate();
 
-        if (jwtService.isCitizen(authorisation)) {
+        if (jwtHelper.isSolicitor(authorisation)) {
 
-            final List<CaseDetails> result = this.coreCaseDataApi.searchForCitizen(
+            final List<CaseDetails> result = this.coreCaseDataApi.searchForCaseworker(
                 authorisation,
                 serviceAuthToken,
                 userDetails.getId(),
@@ -94,7 +94,7 @@ public class CCDClaimRepository {
         } else {
 
             final List<CaseDetails> result
-                = this.coreCaseDataApi.searchForCaseworker(
+                = this.coreCaseDataApi.searchForCitizen(
                 authorisation,
                 serviceAuthToken,
                 userDetails.getId(),

@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 @Component
-public class JwtService {
+public class JwtHelper {
 
-    public boolean isCitizen(String authorisation) {
-        final DecodedJWT decodedToken = JWT.decode(authorisation.replace("Bearer ",""));
+    public boolean isSolicitor(String authorisation) {
+        final DecodedJWT decodedToken = JWT.decode(authorisation.replace("Bearer ", ""));
         final String[] data = decodedToken.getClaims().get("data").asString().split(",");
-        return Arrays.stream(data).anyMatch("citizen"::equals);
+        return Arrays.stream(data).anyMatch("solicitor"::equals);
     }
 }

@@ -25,7 +25,6 @@ public class CCDCaseRepository implements CaseRepository {
         CaseDBI caseDBI,
         CCDClaimRepository ccdClaimSearchRepository
     ) {
-
         this.caseDBI = caseDBI;
         this.ccdClaimSearchRepository = ccdClaimSearchRepository;
     }
