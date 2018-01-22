@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 
 @Value
 @Builder
@@ -15,5 +16,7 @@ public class CCDCase {
     private String issuedOn;
     private String submitterEmail;
     private CCDClaim claimData;
+    private CCDCountyCourtJudgment countyCourtJudgment;
+    private String countyCourtJudgmentRequestedAt;
 
 }
