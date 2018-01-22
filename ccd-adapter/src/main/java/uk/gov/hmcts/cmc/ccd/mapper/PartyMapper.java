@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
@@ -16,8 +17,8 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 
 @Component
 public class PartyMapper implements Mapper<Object, Party> {
@@ -89,9 +90,7 @@ public class PartyMapper implements Mapper<Object, Party> {
                     addressMapper.from(ccdIndividual.getCorrespondenceAddress()),
                     ccdIndividual.getPhoneNumber(),
                     representativeMapper.from(ccdIndividual.getRepresentative()),
-                    Optional.ofNullable(ccdIndividual.getDateOfBirth()).isPresent()
-                        ? LocalDate.parse(ccdIndividual.getDateOfBirth(), DateTimeFormatter.ISO_DATE)
-                        : null
+                    parseDob(ccdIndividual.getDateOfBirth())
                 );
             case SOLE_TRADER:
                 CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
@@ -116,5 +115,13 @@ public class PartyMapper implements Mapper<Object, Party> {
             default:
                 throw new MappingException();
         }
+    }
+
+    private LocalDate parseDob(String dateOfBirth) {
+        if (StringUtils.isBlank(dateOfBirth)) {
+            return null;
+        }
+
+        return LocalDate.parse(dateOfBirth, ISO_DATE);
     }
 }

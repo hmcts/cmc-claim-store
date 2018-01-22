@@ -11,12 +11,10 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,7 +31,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.api_gateway.url=false"
     }
 )
-public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrationTest {
+public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseIntegrationTest {
     private static final String AUTHORISATION_TOKEN = "I am a valid token";
     private static final String SERVICE_TOKEN = "S2S token";
     private static final String USER_ID = "1";
@@ -51,14 +49,10 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
     }
 
     @Test
-    public void shouldFindClaimFromCCDHoweverReturnClaimFromPostgres() throws Exception {
-        UUID externalId = UUID.randomUUID();
+    public void shouldFindClaimFromCCDForClaimantIdHoweverReturnClaimFromPostgres() throws Exception {
+        String submitterId = "1";
 
-        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId)
-            .withAmount(SampleAmountRange.validDefaults())
-            .build();
-
-        claimStore.saveClaim(claimData);
+        claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -66,17 +60,17 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", externalId.toString()))
+            eq(ImmutableMap.of("case.submitterId", submitterId))
             )
         ).willReturn(successfulCoreCaseDataSearchResponse());
 
-        MvcResult result = makeRequest(externalId.toString())
+        MvcResult result = makeRequest(submitterId)
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
+        assertThat(deserializeListFrom(result))
+            .hasSize(1).first()
+            .extracting(Claim::getSubmitterId).containsExactly(submitterId);
 
         verify(coreCaseDataApi)
             .searchForCitizen(
@@ -85,13 +79,13 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.externalId", externalId.toString()))
+                eq(ImmutableMap.of("case.submitterId", submitterId))
             );
     }
 
     @Test
-    public void shouldSearchCCDEvenWhenNoClaimFound() throws Exception {
-        String nonExistingExternalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
+    public void shouldSearchCCDEvenWhenNoClaimFoundInDB() throws Exception {
+        String nonExistingSubmitterId = "12";
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -99,12 +93,16 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", nonExistingExternalId))
+            eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId))
             )
         ).willReturn(Collections.emptyList());
 
-        makeRequest(nonExistingExternalId)
-            .andExpect(status().isNotFound());
+        MvcResult result = makeRequest(nonExistingSubmitterId)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeListFrom(result))
+            .isEmpty();
 
         verify(coreCaseDataApi)
             .searchForCitizen(
@@ -113,13 +111,13 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.externalId", nonExistingExternalId))
+                eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId))
             );
     }
 
     private ResultActions makeRequest(String externalId) throws Exception {
         return webClient
-            .perform(get("/claims/" + externalId)
+            .perform(get("/claims/claimant/" + externalId)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }

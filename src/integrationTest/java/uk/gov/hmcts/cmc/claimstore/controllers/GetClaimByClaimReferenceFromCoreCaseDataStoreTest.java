@@ -12,11 +12,9 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.util.Collections;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,7 +31,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.api_gateway.url=false"
     }
 )
-public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrationTest {
+public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseIntegrationTest {
     private static final String AUTHORISATION_TOKEN = "I am a valid token";
     private static final String SERVICE_TOKEN = "S2S token";
     private static final String USER_ID = "1";
@@ -51,14 +49,13 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
     }
 
     @Test
-    public void shouldFindClaimFromCCDHoweverReturnClaimFromPostgres() throws Exception {
-        UUID externalId = UUID.randomUUID();
+    public void shouldFindClaimFromCCDForClaimReferenceHoweverReturnClaimFromPostgres() throws Exception {
 
-        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId)
-            .withAmount(SampleAmountRange.validDefaults())
-            .build();
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        claimStore.saveClaim(claimData);
+        final Claim claim = claimStore.saveClaim(claimData);
+
+        final String referenceNumber = claim.getReferenceNumber();
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -66,17 +63,16 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", externalId.toString()))
+            eq(ImmutableMap.of("case.referenceNumber", referenceNumber))
             )
         ).willReturn(successfulCoreCaseDataSearchResponse());
 
-        MvcResult result = makeRequest(externalId.toString())
+        MvcResult result = makeRequest(referenceNumber)
             .andExpect(status().isOk())
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .extracting(Claim::getReferenceNumber).containsExactly(claim.getReferenceNumber());
 
         verify(coreCaseDataApi)
             .searchForCitizen(
@@ -85,13 +81,13 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.externalId", externalId.toString()))
+                eq(ImmutableMap.of("case.referenceNumber", referenceNumber))
             );
     }
 
     @Test
-    public void shouldSearchCCDEvenWhenNoClaimFound() throws Exception {
-        String nonExistingExternalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
+    public void shouldSearchCCDEvenWhenNoClaimFoundInDB() throws Exception {
+        String nonExistingReferenceNumber = "999LR999";
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -99,11 +95,11 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", nonExistingExternalId))
+            eq(ImmutableMap.of("case.referenceNumber", nonExistingReferenceNumber))
             )
         ).willReturn(Collections.emptyList());
 
-        makeRequest(nonExistingExternalId)
+        makeRequest(nonExistingReferenceNumber)
             .andExpect(status().isNotFound());
 
         verify(coreCaseDataApi)
@@ -113,13 +109,13 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.externalId", nonExistingExternalId))
+                eq(ImmutableMap.of("case.referenceNumber", nonExistingReferenceNumber))
             );
     }
 
-    private ResultActions makeRequest(String externalId) throws Exception {
+    private ResultActions makeRequest(String referenceNumber) throws Exception {
         return webClient
-            .perform(get("/claims/" + externalId)
+            .perform(get("/claims/" + referenceNumber)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }

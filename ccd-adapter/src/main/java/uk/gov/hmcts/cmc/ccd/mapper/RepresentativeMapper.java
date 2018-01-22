@@ -41,7 +41,9 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
         return new Representative(
             representative.getOrganisationName(),
             addressMapper.from(representative.getOrganisationAddress()),
-            contactDetailsMapper.from(representative.getOrganisationContactDetails().get())
+            representative.getOrganisationContactDetails().isPresent()
+                ? contactDetailsMapper.from(representative.getOrganisationContactDetails().get())
+                : null
         );
     }
 }

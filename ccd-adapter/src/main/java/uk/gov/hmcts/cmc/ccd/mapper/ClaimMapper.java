@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
@@ -18,9 +17,6 @@ import java.util.stream.Collectors;
 @Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
-    private static final String SERIALISATION_ERROR_MESSAGE = "Failed to serialize '%s' to JSON";
-    private static final String DESERIALISATION_ERROR_MESSAGE = "Failed to deserialize '%s' from JSON";
-    private static final String COLLECTION_KEY_NAME = "value";
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
@@ -30,7 +26,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final PaymentMapper paymentMapper;
     private final InterestMapper interestMapper;
     private final InterestDateMapper interestDateMapper;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping

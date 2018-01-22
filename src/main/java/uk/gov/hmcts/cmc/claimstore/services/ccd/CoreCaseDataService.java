@@ -48,12 +48,4 @@ public class CoreCaseDataService {
                 .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
         }
     }
-
-    public CaseDetails findByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-        return null;
-    }
-
-    public CaseDetails[] findByClaimSubmitterId(String submitterId, String authorisation) {
-        return null;
-    }
 }
