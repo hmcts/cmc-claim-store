@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GetClaimByExternalReferenceTest extends BaseIntegrationTest {
 
     private static final String AUTH_TOKEN = "I am a valid token";
-    private static final String AUTHORISATION_TOKEN = "Bearer token";
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withUserId("1")
