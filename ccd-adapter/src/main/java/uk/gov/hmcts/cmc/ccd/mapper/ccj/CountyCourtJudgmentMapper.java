@@ -8,6 +8,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
 
+import java.time.LocalDate;
+
 import static java.time.LocalDate.parse;
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static uk.gov.hmcts.cmc.ccd.domain.ccj.CCDPaymentOption.valueOf;
@@ -45,12 +47,18 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
 
     @Override
     public CountyCourtJudgment from(CCDCountyCourtJudgment ccdCountyCourtJudgment) {
+        LocalDate defendantDateOfBirth = ccdCountyCourtJudgment.getDefendantDateOfBirth() != null
+            ? parse(ccdCountyCourtJudgment.getDefendantDateOfBirth(), ISO_DATE) : null;
+
+        LocalDate payBySetDate = ccdCountyCourtJudgment.getPayBySetDate() != null
+            ? parse(ccdCountyCourtJudgment.getPayBySetDate(), ISO_DATE) : null;
+
         return new CountyCourtJudgment(
-            parse(ccdCountyCourtJudgment.getDefendantDateOfBirth(), ISO_DATE),
+            defendantDateOfBirth,
             PaymentOption.valueOf(ccdCountyCourtJudgment.getPaymentOption().name()),
             ccdCountyCourtJudgment.getPaidAmount(),
             repaymentPlanMapper.from(ccdCountyCourtJudgment.getRepaymentPlan()),
-            parse(ccdCountyCourtJudgment.getPayBySetDate(), ISO_DATE),
+            payBySetDate,
             statementOfTruthMapper.from(ccdCountyCourtJudgment.getStatementOfTruth())
         );
     }

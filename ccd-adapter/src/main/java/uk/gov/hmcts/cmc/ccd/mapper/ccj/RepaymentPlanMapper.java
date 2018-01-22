@@ -27,6 +27,10 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
 
     @Override
     public RepaymentPlan from(CCDRepaymentPlan ccdRepaymentPlan) {
+        if (ccdRepaymentPlan == null) {
+            return null;
+        }
+
         return new RepaymentPlan(
             ccdRepaymentPlan.getFirstPayment(),
             ccdRepaymentPlan.getInstalmentAmount(),
