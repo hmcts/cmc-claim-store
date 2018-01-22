@@ -46,7 +46,7 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseIntegrati
     @Before
     public void before() {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
-        given(jwtService.isCitizen(AUTHORISATION_TOKEN)).willReturn(true);
+        given(jwtHelper.isSolicitor(AUTHORISATION_TOKEN)).willReturn(false);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
