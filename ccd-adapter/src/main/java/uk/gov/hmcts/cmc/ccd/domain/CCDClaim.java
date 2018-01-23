@@ -5,7 +5,6 @@ import lombok.Value;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
 
 @Value
 @Builder
@@ -25,7 +24,6 @@ public class CCDClaim {
     private CCDPersonalInjury personalInjury;
     private CCDHousingDisrepair housingDisrepair;
     private CCDStatementOfTruth statementOfTruth;
-    private List<Map<String, CCDParty>> claimants;
-    private List<Map<String, CCDParty>> defendants;
+    private List<CCDPartyArrayElement> claimants;
+    private List<CCDPartyArrayElement> defendants;
 }
-

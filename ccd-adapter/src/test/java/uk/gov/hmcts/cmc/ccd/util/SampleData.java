@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyArrayElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPayment;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentState;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
@@ -29,7 +30,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
@@ -150,8 +150,8 @@ public class SampleData {
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
-            .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .claimants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
+            .defendants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
             .build();
     }
 
@@ -179,8 +179,8 @@ public class SampleData {
             .feeCode("X1202")
             .feeAmountInPennies(BigInteger.valueOf(400))
             .reason("Reason for the case")
-            .claimants(singletonList(singletonMap("value", getCCDPartyIndividual())))
-            .defendants(singletonList(singletonMap("value", getCCDPartyIndividual())))
+            .claimants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
+            .defendants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
             .build();
     }
 
