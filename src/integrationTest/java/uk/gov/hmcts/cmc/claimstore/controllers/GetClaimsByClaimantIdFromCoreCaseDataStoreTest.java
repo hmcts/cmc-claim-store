@@ -3,11 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -20,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.JURISDICTION_ID;
@@ -31,8 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.api_gateway.url=false"
     }
 )
-public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseIntegrationTest {
-    private static final String AUTHORISATION_TOKEN = "I am a valid token";
+public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest {
     private static final String SERVICE_TOKEN = "S2S token";
     private static final String USER_ID = "1";
 
@@ -64,7 +60,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseIntegrat
             )
         ).willReturn(successfulCoreCaseDataSearchResponse());
 
-        MvcResult result = makeRequest(submitterId)
+        MvcResult result = makeRequest("/claims/claimant/" + submitterId)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -97,7 +93,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseIntegrat
             )
         ).willReturn(Collections.emptyList());
 
-        MvcResult result = makeRequest(nonExistingSubmitterId)
+        MvcResult result = makeRequest("/claims/claimant/" + nonExistingSubmitterId)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -112,13 +108,6 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseIntegrat
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
                 eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId))
-            );
-    }
-
-    private ResultActions makeRequest(String externalId) throws Exception {
-        return webClient
-            .perform(get("/claims/claimant/" + externalId)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }
 }

@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -16,7 +14,6 @@ import uk.gov.hmcts.reform.pdf.service.client.exception.PDFServiceClientExceptio
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,9 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "core_case_data.api.url=false"
     }
 )
-public class GenerateSettlementAgreementCopyTest extends BaseIntegrationTest {
-
-    private static final String AUTHORISATION_TOKEN = "Bearer token";
+public class GenerateSettlementAgreementCopyTest extends BaseGetTest {
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     @Test
@@ -72,12 +67,5 @@ public class GenerateSettlementAgreementCopyTest extends BaseIntegrationTest {
 
         makeRequest("/documents/settlementAgreement/" + claim.getExternalId())
             .andExpect(status().isInternalServerError());
-    }
-
-    private ResultActions makeRequest(String urlTemplate) throws Exception {
-        return webClient.perform(
-            get(urlTemplate)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-        );
     }
 }
