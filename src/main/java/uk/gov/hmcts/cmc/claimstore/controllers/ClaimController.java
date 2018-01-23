@@ -44,8 +44,9 @@ public class ClaimController {
 
     @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
-    public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId) {
-        return claimService.getClaimBySubmitterId(submitterId);
+    public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId,
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimBySubmitterId(submitterId, authorisation);
     }
 
     @GetMapping("/letter/{letterHolderId}")
@@ -56,8 +57,9 @@ public class ClaimController {
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}")
     @ApiOperation("Fetch claim for given external id")
-    public Claim getByExternalId(@PathVariable("externalId") String externalId) {
-        return claimService.getClaimByExternalId(externalId);
+    public Claim getByExternalId(@PathVariable("externalId") String externalId,
+                                 @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
