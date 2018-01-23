@@ -1,5 +1,5 @@
 #!groovy
-@Library("pipeline") _
+@Library("Infrastructure") _
 
 properties([
 		parameters([
