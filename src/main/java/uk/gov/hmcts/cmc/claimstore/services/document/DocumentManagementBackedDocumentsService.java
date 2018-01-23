@@ -53,38 +53,38 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] generateClaimIssueReceipt(String externalId) {
-        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
+        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
     public byte[] getLegalSealedClaim(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId);
+        Claim claim = getClaimByExternalId(externalId, authorisation);
         return downloadOrGenerateAndUpload(claim, () -> legalSealedClaimPdfService.createPdf(claim), authorisation);
     }
 
     @Override
-    public byte[] generateDefendantResponseCopy(String externalId) {
-        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateDefendantResponseCopy(String externalId, String authorisation) {
+        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
-    public byte[] generateDefendantResponseReceipt(String externalId) {
-        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
+        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
-    public byte[] generateCountyCourtJudgement(String externalId) {
-        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateCountyCourtJudgement(String externalId, String authorisation) {
+        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
-    public byte[] generateSettlementAgreement(String externalId) {
-        return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateSettlementAgreement(String externalId, String authorisation) {
+        return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
-    private Claim getClaimByExternalId(String externalId) {
-        return claimService.getClaimByExternalId(externalId);
+    private Claim getClaimByExternalId(String externalId, String authorisation) {
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     @SuppressWarnings("squid:S3655")

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class IsDefendantLinkedTest extends BaseIntegrationTest {
+    private static final String AUTHORISATION_TOKEN = "Bearer token";
 
     @Test
     public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinked() throws Exception {
@@ -54,6 +56,8 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String referenceNumber) throws Exception {
         return webClient
-            .perform(get("/claims/" + referenceNumber + "/defendant-link-status"));
+            .perform(get("/claims/" + referenceNumber + "/defendant-link-status")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            );
     }
 }
