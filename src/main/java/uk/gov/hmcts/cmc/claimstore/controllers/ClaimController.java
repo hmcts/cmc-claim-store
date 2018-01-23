@@ -111,9 +111,8 @@ public class ClaimController {
 
     @GetMapping("/{caseReference}/defendant-link-status")
     @ApiOperation("Check whether a claim is linked to a defendant")
-    public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference,
-                                                 @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        Boolean linked = claimService.getClaimByReference(caseReference, authorisation)
+    public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
+        Boolean linked = claimService.getClaimByReference(caseReference)
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();
         return new DefendantLinkStatus(linked);
