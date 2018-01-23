@@ -52,10 +52,11 @@ public class ClaimControllerTest {
     @Test
     public void shouldReturnClaimFromRepositoryForClaimantId() throws JsonProcessingException {
         //given
-        when(claimService.getClaimBySubmitterId(eq(USER_ID))).thenReturn(Collections.singletonList(CLAIM));
+        when(claimService.getClaimBySubmitterId(eq(USER_ID), eq(AUTHORISATION)))
+            .thenReturn(Collections.singletonList(CLAIM));
 
         //when
-        List<Claim> output = claimController.getBySubmitterId(USER_ID);
+        List<Claim> output = claimController.getBySubmitterId(USER_ID, AUTHORISATION);
 
         //then
         assertThat(output.get(0)).isEqualTo(CLAIM);

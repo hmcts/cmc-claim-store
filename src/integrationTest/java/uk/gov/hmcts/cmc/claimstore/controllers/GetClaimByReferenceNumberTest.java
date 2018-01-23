@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 public class GetClaimByReferenceNumberTest extends BaseIntegrationTest {
+    private static final String AUTHORISATION_TOKEN = "Bearer token";
 
     @Test
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
@@ -37,6 +39,8 @@ public class GetClaimByReferenceNumberTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String referenceNumber) throws Exception {
         return webClient
-            .perform(get("/testing-support/claims/" + referenceNumber));
+            .perform(get("/testing-support/claims/" + referenceNumber)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            );
     }
 }

@@ -18,9 +18,11 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -45,6 +47,9 @@ public abstract class MockSpringTest {
 
     @Autowired
     protected ClaimRepository claimRepository;
+
+    @Autowired
+    protected CaseRepository caseRepository;
 
     @MockBean
     protected UserService userService;
@@ -91,6 +96,9 @@ public abstract class MockSpringTest {
 
         @MockBean
         private ClaimRepository claimRepository;
+
+        @MockBean
+        private CaseDBI caseDBI;
 
         @Bean
         protected PlatformTransactionManager transactionManager() {

@@ -44,8 +44,9 @@ public class ClaimController {
 
     @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
-    public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId) {
-        return claimService.getClaimBySubmitterId(submitterId);
+    public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId,
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimBySubmitterId(submitterId, authorisation);
     }
 
     @GetMapping("/letter/{letterHolderId}")
@@ -56,8 +57,9 @@ public class ClaimController {
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}")
     @ApiOperation("Fetch claim for given external id")
-    public Claim getByExternalId(@PathVariable("externalId") String externalId) {
-        return claimService.getClaimByExternalId(externalId);
+    public Claim getByExternalId(@PathVariable("externalId") String externalId,
+                                 @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
@@ -109,8 +111,9 @@ public class ClaimController {
 
     @GetMapping("/{caseReference}/defendant-link-status")
     @ApiOperation("Check whether a claim is linked to a defendant")
-    public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
-        Boolean linked = claimService.getClaimByReference(caseReference)
+    public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference,
+                                                 @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        Boolean linked = claimService.getClaimByReference(caseReference, authorisation)
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();
         return new DefendantLinkStatus(linked);
