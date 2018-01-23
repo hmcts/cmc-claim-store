@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
@@ -18,20 +18,20 @@ import static java.lang.String.format;
 public class CCDCaseRepository implements CaseRepository {
     private final Logger logger = LoggerFactory.getLogger(CCDCaseRepository.class);
 
-    private final CaseDBI caseDBI;
-    private final CCDClaimRepository ccdClaimSearchRepository;
+    private final ClaimSearchRepository claimSearchRepository;
+    private final CCDClaimSearchRepository ccdClaimSearchRepository;
 
     public CCDCaseRepository(
-        CaseDBI caseDBI,
-        CCDClaimRepository ccdClaimSearchRepository
+        ClaimSearchRepository claimSearchRepository,
+        CCDClaimSearchRepository ccdClaimSearchRepository
     ) {
-        this.caseDBI = caseDBI;
+        this.claimSearchRepository = claimSearchRepository;
         this.ccdClaimSearchRepository = ccdClaimSearchRepository;
     }
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        final List<Claim> dbClaims = caseDBI.getBySubmitterId(submitterId);
+        final List<Claim> dbClaims = claimSearchRepository.getBySubmitterId(submitterId);
         final List<Claim> ccdClaims = ccdClaimSearchRepository.getBySubmitterId(submitterId, authorisation);
         logClaimDetails(dbClaims, ccdClaims);
         return dbClaims;
@@ -46,7 +46,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        final Optional<Claim> claim = caseDBI.getClaimByExternalId(externalId);
+        final Optional<Claim> claim = claimSearchRepository.getClaimByExternalId(externalId);
         final Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByClaimExternalId(externalId, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
@@ -59,7 +59,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-        final Optional<Claim> claim = caseDBI.getByClaimReferenceNumber(claimReferenceNumber);
+        final Optional<Claim> claim = claimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber);
 
         final Optional<Claim> ccdClaim
             = ccdClaimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber, authorisation);

@@ -39,7 +39,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     private static final Exception UNEXPECTED_ERROR
         = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
-    public static final String AUTHORISATION = "Bearer token";
+    private static final String AUTHORISATION = "Bearer token";
 
     @Autowired
     private MockMvc webClient;

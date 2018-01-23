@@ -33,7 +33,7 @@ public class GenerateCountyCourtJudgementCopyTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
 
-        makeRequest(claim.getExternalId())
+        makeRequest("/documents/ccj/" + claim.getExternalId())
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES))
             .andReturn();
@@ -43,7 +43,7 @@ public class GenerateCountyCourtJudgementCopyTest extends BaseIntegrationTest {
     public void shouldReturnNotFoundWhenClaimIsNotFound() throws Exception {
         String nonExistingExternalId = "f5b92e36-fc9c-49e6-99f7-74d60aaa8da2";
 
-        makeRequest(nonExistingExternalId)
+        makeRequest("/documents/ccj/" + nonExistingExternalId)
             .andExpect(status().isNotFound());
     }
 
@@ -55,14 +55,14 @@ public class GenerateCountyCourtJudgementCopyTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
 
-        makeRequest(claim.getExternalId())
+        makeRequest("/documents/ccj/" + claim.getExternalId())
             .andExpect(status().isInternalServerError());
     }
 
-    private ResultActions makeRequest(String externalId) throws Exception {
-        return webClient
-            .perform(get("/documents/ccj/" + externalId)
+    private ResultActions makeRequest(String urlTemplate) throws Exception {
+        return webClient.perform(
+            get(urlTemplate)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-            );
+        );
     }
 }

@@ -27,7 +27,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 
 @Component
-public class TheirDetailsMapper implements Mapper<Object, TheirDetails> {
+public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
 
     private final IndividualDetailsMapper individualDetailsMapper;
     private final CompanyDetailsMapper companyDetailsMapper;
@@ -77,9 +77,7 @@ public class TheirDetailsMapper implements Mapper<Object, TheirDetails> {
     }
 
     @Override
-    public TheirDetails from(Object party) {
-        CCDParty ccdParty = (CCDParty) party;
-
+    public TheirDetails from(CCDParty ccdParty) {
         switch (ccdParty.getType()) {
             case COMPANY:
                 return getCompany(ccdParty);

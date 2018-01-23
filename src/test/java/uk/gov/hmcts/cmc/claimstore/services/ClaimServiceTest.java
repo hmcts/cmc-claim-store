@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.search.DBCaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -69,7 +69,7 @@ public class ClaimServiceTest {
     @Mock
     private ClaimRepository claimRepository;
     @Mock
-    private DBCaseRepository claimSearchService;
+    private CaseRepository caseRepository;
     @Mock
     private JsonMapper mapper;
     @Mock
@@ -92,7 +92,7 @@ public class ClaimServiceTest {
             issueDateCalculator,
             responseDeadlineCalculator,
             eventProducer,
-            claimSearchService);
+            caseRepository);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String externalId = "does not exist";
 
-        when(claimSearchService.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
+        when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
 
         claimService.getClaimByExternalId(externalId, AUTHORISATION);
     }
@@ -183,7 +183,7 @@ public class ClaimServiceTest {
     public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
         ClaimData app = SampleClaimData.validDefaults();
         String authorisationToken = "Open same!";
-        when(claimSearchService.getClaimByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
 
         claimService.saveClaim(USER_ID, app, authorisationToken);
     }

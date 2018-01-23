@@ -22,8 +22,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimRepository.CASE_TYPE_ID;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimRepository.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
 
 @TestPropertySource(
@@ -67,7 +67,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseInteg
             )
         ).willReturn(successfulCoreCaseDataSearchResponse());
 
-        MvcResult result = makeRequest(referenceNumber)
+        MvcResult result = makeRequest("/claims/" + referenceNumber)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -99,7 +99,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseInteg
             )
         ).willReturn(Collections.emptyList());
 
-        makeRequest(nonExistingReferenceNumber)
+        makeRequest("/claims/" + nonExistingReferenceNumber)
             .andExpect(status().isNotFound());
 
         verify(coreCaseDataApi)
@@ -113,9 +113,9 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseInteg
             );
     }
 
-    private ResultActions makeRequest(String referenceNumber) throws Exception {
+    private ResultActions makeRequest(String urlTemplate) throws Exception {
         return webClient
-            .perform(get("/claims/" + referenceNumber)
+            .perform(get(urlTemplate)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }

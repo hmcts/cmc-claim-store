@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
-public class CCDClaimRepository {
+public class CCDClaimSearchRepository {
 
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -34,7 +34,7 @@ public class CCDClaimRepository {
     private final JsonMapper jsonMapper;
     private final JwtHelper jwtHelper;
 
-    public CCDClaimRepository(
+    public CCDClaimSearchRepository(
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         UserService userService,

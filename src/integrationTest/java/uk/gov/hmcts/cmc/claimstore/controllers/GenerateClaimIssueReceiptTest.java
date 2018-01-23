@@ -33,7 +33,7 @@ public class GenerateClaimIssueReceiptTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
 
-        makeRequest(claim.getExternalId())
+        makeRequest("/documents/claimIssueReceipt/" + claim.getExternalId())
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES))
             .andReturn();
@@ -43,7 +43,7 @@ public class GenerateClaimIssueReceiptTest extends BaseIntegrationTest {
     public void shouldReturnNotFoundWhenClaimIsNotFound() throws Exception {
         String nonExistingExternalId = "f5b92e36-fc9c-49e6-99f7-74d60aaa8da2";
 
-        makeRequest(nonExistingExternalId)
+        makeRequest("/documents/claimIssueReceipt/" + nonExistingExternalId)
             .andExpect(status().isNotFound());
     }
 
@@ -55,7 +55,7 @@ public class GenerateClaimIssueReceiptTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
 
-        makeRequest(claim.getExternalId())
+        makeRequest("/documents/claimIssueReceipt/" + claim.getExternalId())
             .andExpect(status().isInternalServerError());
     }
 
