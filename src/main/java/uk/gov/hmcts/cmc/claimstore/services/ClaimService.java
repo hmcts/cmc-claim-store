@@ -82,6 +82,11 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference, authorisation);
     }
 
+    public Optional<Claim> getClaimByReference(String reference) {
+        return claimRepository
+            .getByClaimReferenceNumber(reference);
+    }
+
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
         return claimRepository.getByExternalReference(externalReference, submitterId);

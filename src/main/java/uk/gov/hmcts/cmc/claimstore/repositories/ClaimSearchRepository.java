@@ -28,7 +28,9 @@ public interface ClaimSearchRepository {
     Optional<Claim> getClaimByExternalId(@Bind("externalId") String externalId);
 
     @SingleValueResult
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
-    Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber "
+        + "AND claim.submitter_id = :submitterId")
+    Optional<Claim> getByClaimReferenceAndSubmitter(@Bind("claimReferenceNumber") String claimReferenceNumber,
+                                                    @Bind("submitterId") String submitterId);
 
 }

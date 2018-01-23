@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
@@ -13,20 +14,23 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 
-@Service("claimSearchService")
+@Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseRepository implements CaseRepository {
     private final Logger logger = LoggerFactory.getLogger(CCDCaseRepository.class);
 
     private final ClaimSearchRepository claimSearchRepository;
     private final CCDClaimSearchRepository ccdClaimSearchRepository;
+    private final UserService userService;
 
     public CCDCaseRepository(
         ClaimSearchRepository claimSearchRepository,
-        CCDClaimSearchRepository ccdClaimSearchRepository
+        CCDClaimSearchRepository ccdClaimSearchRepository,
+        UserService userService
     ) {
         this.claimSearchRepository = claimSearchRepository;
         this.ccdClaimSearchRepository = ccdClaimSearchRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -59,7 +63,9 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-        final Optional<Claim> claim = claimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber);
+        final String submitterId = userService.getUserDetails(authorisation).getId();
+        final Optional<Claim> claim
+            = claimSearchRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
 
         final Optional<Claim> ccdClaim
             = ccdClaimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber, authorisation);
