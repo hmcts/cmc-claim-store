@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.claimstore.config.db.OptionalContainerFactory;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 
@@ -46,6 +47,11 @@ public class DbConfiguration {
     @Bean
     public ClaimRepository claimRepository(DBI dbi) {
         return dbi.onDemand(ClaimRepository.class);
+    }
+
+    @Bean
+    public ClaimSearchRepository claimSearchRepository(DBI dbi) {
+        return dbi.onDemand(ClaimSearchRepository.class);
     }
 
     @Bean

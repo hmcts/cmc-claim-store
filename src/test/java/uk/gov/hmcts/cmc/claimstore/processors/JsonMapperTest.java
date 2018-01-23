@@ -143,5 +143,4 @@ public class JsonMapperTest {
         processor.fromJson("{asads:", new TypeReference<List<Response>>() {
         });
     }
-
 }

@@ -10,6 +10,10 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
 
     @Override
     public CCDInterest to(Interest interest) {
+        if (interest == null) {
+            return null;
+        }
+
         CCDInterest.CCDInterestBuilder builder = CCDInterest.builder();
         return builder.type(CCDInterestType.valueOf(interest.getType().name()))
             .rate(interest.getRate())

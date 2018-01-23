@@ -1,16 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 public interface DocumentsService {
-    byte[] generateClaimIssueReceipt(String externalId);
+    byte[] generateClaimIssueReceipt(String externalId, String authorisation);
 
     byte[] getLegalSealedClaim(String externalId, String authorisation);
 
-    byte[] generateDefendantResponseCopy(String externalId);
+    byte[] generateDefendantResponseCopy(String externalId, String authorisation);
 
-    byte[] generateDefendantResponseReceipt(String externalId);
+    byte[] generateDefendantResponseReceipt(String externalId, String authorisation);
 
-    byte[] generateCountyCourtJudgement(String externalId);
+    byte[] generateCountyCourtJudgement(String externalId, String authorisation);
 
-    byte[] generateSettlementAgreement(String externalId);
+    byte[] generateSettlementAgreement(String externalId, String authorisation);
 
 }

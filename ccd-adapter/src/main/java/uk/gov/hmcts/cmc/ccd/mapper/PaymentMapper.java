@@ -15,6 +15,10 @@ public class PaymentMapper implements Mapper<CCDPayment, Payment> {
 
     @Override
     public CCDPayment to(Payment payment) {
+        if (payment == null) {
+            return null;
+        }
+
         return CCDPayment
             .builder()
             .amount(payment.getAmount())
