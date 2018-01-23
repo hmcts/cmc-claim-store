@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
-import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.DBCaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -23,12 +23,12 @@ import java.time.LocalDate;
 @ConditionalOnProperty("claim-store.test-support.enabled")
 public class IntegrationTestSupportController {
 
-    private final CaseRepository caseRepository;
+    private final DBCaseRepository caseRepository;
     private final TestingSupportRepository testingSupportRepository;
 
     @Autowired
     public IntegrationTestSupportController(
-        CaseRepository caseRepository,
+        DBCaseRepository caseRepository,
         TestingSupportRepository testingSupportRepository
     ) {
         this.caseRepository = caseRepository;

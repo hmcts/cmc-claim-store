@@ -22,7 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
-import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.DBCaseRepository;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -49,7 +49,7 @@ public abstract class MockSpringTest {
     protected ClaimRepository claimRepository;
 
     @Autowired
-    protected CaseRepository caseRepository;
+    protected DBCaseRepository caseRepository;
 
     @MockBean
     protected UserService userService;

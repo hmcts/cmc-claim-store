@@ -26,23 +26,12 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
     List<Claim> findAll();
 
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
-    List<Claim> getBySubmitterId(@Bind("submitterId") String submitterId);
-
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.letter_holder_id = :letterHolderId")
     Optional<Claim> getByLetterHolderId(@Bind("letterHolderId") String letterHolderId);
 
-    @SingleValueResult
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_id = :externalId")
-    Optional<Claim> getClaimByExternalId(@Bind("externalId") String externalId);
-
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :defendantId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getByDefendantId(@Bind("defendantId") String defendantId);
-
-    @SingleValueResult
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
-    Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber "
