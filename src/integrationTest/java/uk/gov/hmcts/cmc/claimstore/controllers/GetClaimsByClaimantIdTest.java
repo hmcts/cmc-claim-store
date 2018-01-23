@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -44,6 +45,8 @@ public class GetClaimsByClaimantIdTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(Object submitterId) throws Exception {
         return webClient
-            .perform(get("/claims/claimant/" + submitterId));
+            .perform(get("/claims/claimant/" + submitterId)
+                .header(HttpHeaders.AUTHORIZATION, "ABC123")
+            );
     }
 }
