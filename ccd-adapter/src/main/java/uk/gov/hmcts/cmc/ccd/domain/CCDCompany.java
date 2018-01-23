@@ -10,7 +10,7 @@ public class CCDCompany {
     private String name;
     private CCDAddress address;
     private String email;
-    private String mobilePhone;
+    private String phoneNumber;
     private String contactPerson;
     private CCDAddress correspondenceAddress;
     private CCDRepresentative representative;

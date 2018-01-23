@@ -10,8 +10,9 @@ import java.io.IOException;
 
 @Service
 public class JsonMapper {
+
     private static final String SERIALISATION_ERROR_MESSAGE = "Failed to serialize '%s' to JSON";
-    private static final String DESERIALISATION_ERROR_MESSAGE = "Failed to deserialize '%s' from JSON";
+    private static final String DESERIALIZATION_ERROR_MESSAGE = "Failed to deserialize '%s' from JSON";
 
     private final ObjectMapper objectMapper;
 
@@ -34,7 +35,7 @@ public class JsonMapper {
             return objectMapper.readValue(value, clazz);
         } catch (IOException e) {
             throw new InvalidApplicationException(
-                String.format(DESERIALISATION_ERROR_MESSAGE, clazz.getSimpleName()), e
+                String.format(DESERIALIZATION_ERROR_MESSAGE, clazz.getSimpleName()), e
             );
         }
     }
@@ -44,7 +45,7 @@ public class JsonMapper {
             return objectMapper.readValue(value, typeReference);
         } catch (IOException e) {
             throw new InvalidApplicationException(
-                String.format(DESERIALISATION_ERROR_MESSAGE, typeReference.getType()), e
+                String.format(DESERIALIZATION_ERROR_MESSAGE, typeReference.getType()), e
             );
         }
     }

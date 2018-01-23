@@ -18,6 +18,9 @@ public class StatementOfTruthMapper implements Mapper<CCDStatementOfTruth, State
 
     @Override
     public StatementOfTruth from(CCDStatementOfTruth statementOfTruth) {
+        if (statementOfTruth == null) {
+            return null;
+        }
 
         return new StatementOfTruth(statementOfTruth.getSignerName(), statementOfTruth.getSignerRole());
     }

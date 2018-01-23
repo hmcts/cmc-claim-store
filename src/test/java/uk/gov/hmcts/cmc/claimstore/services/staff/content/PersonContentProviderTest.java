@@ -25,6 +25,7 @@ public class PersonContentProviderTest {
         address = SampleAddress.builder()
             .withLine1("28 Somewhere Homes")
             .withLine2("75 That Way Road")
+            .withLine3("")
             .withCity("London")
             .withPostcode("AQ9 5FS")
             .build();
@@ -91,6 +92,7 @@ public class PersonContentProviderTest {
 
         assertThat(content.getAddress().getLine1()).isEqualTo(address.getLine1());
         assertThat(content.getAddress().getLine2()).isEqualTo(address.getLine2());
+        assertThat(content.getAddress().getLine3()).isEqualTo(address.getLine3());
         assertThat(content.getAddress().getCity()).isEqualTo(address.getCity());
         assertThat(content.getAddress().getPostcode()).isEqualTo(address.getPostcode());
     }
@@ -109,6 +111,7 @@ public class PersonContentProviderTest {
 
         assertThat(content.getCorrespondenceAddress().getLine1()).isEqualTo(correspondenceAddress.getLine1());
         assertThat(content.getCorrespondenceAddress().getLine2()).isEqualTo(correspondenceAddress.getLine2());
+        assertThat(content.getCorrespondenceAddress().getLine3()).isEqualTo(correspondenceAddress.getLine3());
         assertThat(content.getCorrespondenceAddress().getCity()).isEqualTo(correspondenceAddress.getCity());
         assertThat(content.getCorrespondenceAddress().getPostcode()).isEqualTo(correspondenceAddress.getPostcode());
     }

@@ -11,12 +11,14 @@
     "address": {
       "line1": "52",
       "line2": "Down Street",
+      "line3": "Salford",
       "city": "Manchester",
       "postcode": "DF1 3LJ"
     },
     "correspondenceAddress": {
       "line1": "52",
       "line2": "Down Street",
+      "line3": "Salford",
       "city": "Manchester",
       "postcode": "DF1 3LJ"
     },

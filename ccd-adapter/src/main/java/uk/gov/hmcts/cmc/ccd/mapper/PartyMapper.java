@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
@@ -16,7 +17,8 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 
 @Component
 public class PartyMapper implements Mapper<CCDParty, Party> {
@@ -75,29 +77,36 @@ public class PartyMapper implements Mapper<CCDParty, Party> {
             case COMPANY:
                 CCDCompany ccdCompany = ccdParty.getCompany();
                 return new Company(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
-                    addressMapper.from(ccdCompany.getCorrespondenceAddress()),
-                    ccdCompany.getMobilePhone(), representativeMapper.from(ccdCompany.getRepresentative()),
-                    ccdCompany.getContactPerson());
+                    addressMapper.from(ccdCompany.getCorrespondenceAddress()), ccdCompany.getPhoneNumber(),
+                    representativeMapper.from(ccdCompany.getRepresentative()), ccdCompany.getContactPerson());
             case INDIVIDUAL:
                 CCDIndividual ccdIndividual = ccdParty.getIndividual();
                 return new Individual(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
-                    addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getMobilePhone(),
+                    addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getPhoneNumber(),
                     representativeMapper.from(ccdIndividual.getRepresentative()),
-                    LocalDate.parse(ccdIndividual.getDateOfBirth(), DateTimeFormatter.ISO_DATE));
+                    parseDob(ccdIndividual.getDateOfBirth()));
             case SOLE_TRADER:
                 CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
                 return new SoleTrader(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
-                    addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getMobilePhone(),
-                    representativeMapper.from(ccdSoleTrader.getRepresentative()), ccdSoleTrader.getTitle(),
-                    ccdSoleTrader.getBusinessName());
+                    addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()),
+                    ccdSoleTrader.getPhoneNumber(), representativeMapper.from(ccdSoleTrader.getRepresentative()),
+                    ccdSoleTrader.getTitle(), ccdSoleTrader.getBusinessName());
             case ORGANISATION:
                 CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
                 return new Organisation(ccdOrganisation.getName(), addressMapper.from(ccdOrganisation.getAddress()),
-                    addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getMobilePhone(),
-                    representativeMapper.from(ccdOrganisation.getRepresentative()), ccdOrganisation.getContactPerson(),
-                    ccdOrganisation.getCompaniesHouseNumber());
+                    addressMapper.from(ccdOrganisation.getCorrespondenceAddress()),
+                    ccdOrganisation.getPhoneNumber(), representativeMapper.from(ccdOrganisation.getRepresentative()),
+                    ccdOrganisation.getContactPerson(), ccdOrganisation.getCompaniesHouseNumber());
             default:
                 throw new MappingException();
         }
+    }
+
+    private LocalDate parseDob(String dateOfBirth) {
+        if (StringUtils.isBlank(dateOfBirth)) {
+            return null;
+        }
+
+        return LocalDate.parse(dateOfBirth, ISO_DATE);
     }
 }

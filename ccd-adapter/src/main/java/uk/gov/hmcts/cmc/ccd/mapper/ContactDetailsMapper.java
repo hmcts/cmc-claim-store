@@ -20,6 +20,9 @@ public class ContactDetailsMapper implements Mapper<CCDContactDetails, ContactDe
 
     @Override
     public ContactDetails from(CCDContactDetails contactDetails) {
+        if (contactDetails == null) {
+            return null;
+        }
 
         return new ContactDetails(
             contactDetails.getPhone().orElse(null),

@@ -41,7 +41,8 @@ public class CompanyDetailsMapperTest {
         //given
         CCDAddress ccdAddress = CCDAddress.builder()
             .line1("line1")
-            .line2("line1")
+            .line2("line2")
+            .line3("line3")
             .city("city")
             .postcode("postcode")
             .build();
@@ -59,7 +60,7 @@ public class CompanyDetailsMapperTest {
         CCDCompany ccdCompany = CCDCompany.builder()
             .name("My Company")
             .address(ccdAddress)
-            .mobilePhone("07987654321")
+            .phoneNumber("07987654321")
             .correspondenceAddress(ccdAddress)
             .representative(ccdRepresentative)
             .contactPerson("MR. Hyde")
