@@ -21,6 +21,10 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
 
     @Override
     public Address from(CCDAddress address) {
+        if (address == null) {
+            return null;
+        }
+
         return new Address(address.getLine1(), address.getLine2(), address.getLine3(),
             address.getCity(), address.getPostcode());
     }
