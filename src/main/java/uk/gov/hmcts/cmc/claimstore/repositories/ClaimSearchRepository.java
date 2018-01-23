@@ -11,9 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 @RegisterMapper(ClaimMapper.class)
+@SuppressWarnings("squid:S1214") // Pointless to create class for string statement
 public interface ClaimSearchRepository {
-    String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
-    String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
+    @SuppressWarnings("squid:S1214") // Pointless to create class for this
+        String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
+
+    @SuppressWarnings("squid:S1214") // Pointless to create class for this
+        String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getBySubmitterId(@Bind("submitterId") String submitterId);
