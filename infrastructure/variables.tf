@@ -17,11 +17,11 @@ variable "document-management-url" {
 }
 
 variable "idam-api-url" {
-  default = "http://betaDevBccidamAppLB.reform.hmcts.net:4551"
+  default = "http://betaDevBccidamAppLB.reform.hmcts.net"
 }
 
 variable "s2s-url" {
-  default = "http://betaDevBccidamAppLB.reform.hmcts.net:4552"
+  default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
 }
 
 variable "ccd-url" {
