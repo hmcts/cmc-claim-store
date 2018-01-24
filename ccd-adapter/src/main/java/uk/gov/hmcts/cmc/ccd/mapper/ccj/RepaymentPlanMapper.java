@@ -6,9 +6,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 
-import java.time.LocalDate;
-
-import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static uk.gov.hmcts.cmc.ccd.domain.ccj.CCDPaymentSchedule.valueOf;
 
 @Component
@@ -20,7 +17,7 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
             .builder()
             .firstPayment(repaymentPlan.getFirstPayment())
             .instalmentAmount(repaymentPlan.getInstalmentAmount())
-            .firstPaymentDate(repaymentPlan.getFirstPaymentDate().format(ISO_DATE))
+            .firstPaymentDate(repaymentPlan.getFirstPaymentDate())
             .paymentSchedule(valueOf(repaymentPlan.getPaymentSchedule().name()))
             .build();
     }
@@ -34,7 +31,7 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
         return new RepaymentPlan(
             ccdRepaymentPlan.getFirstPayment(),
             ccdRepaymentPlan.getInstalmentAmount(),
-            LocalDate.parse(ccdRepaymentPlan.getFirstPaymentDate(), ISO_DATE),
+            ccdRepaymentPlan.getFirstPaymentDate(),
             PaymentSchedule.valueOf(ccdRepaymentPlan.getPaymentSchedule().name())
         );
     }

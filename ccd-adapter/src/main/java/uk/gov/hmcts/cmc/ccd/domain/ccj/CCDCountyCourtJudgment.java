@@ -5,15 +5,16 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Value
 @Builder
 public class CCDCountyCourtJudgment {
 
-    private String defendantDateOfBirth;
+    private LocalDate defendantDateOfBirth;
     private BigDecimal paidAmount;
     private CCDPaymentOption paymentOption;
     private CCDRepaymentPlan repaymentPlan;
-    private String payBySetDate;
+    private LocalDate payBySetDate;
     private CCDStatementOfTruth statementOfTruth;
 }
