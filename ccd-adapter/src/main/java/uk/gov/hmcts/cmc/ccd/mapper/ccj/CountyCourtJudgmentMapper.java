@@ -8,10 +8,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
 
-import java.time.LocalDate;
-
-import static java.time.LocalDate.parse;
-import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static uk.gov.hmcts.cmc.ccd.domain.ccj.CCDPaymentOption.valueOf;
 
 @Component
@@ -34,11 +30,11 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
 
         CCDCountyCourtJudgment.CCDCountyCourtJudgmentBuilder builder = CCDCountyCourtJudgment.builder();
 
-        countyCourtJudgment.getDefendantDateOfBirth().ifPresent(dob -> dob.format(ISO_DATE));
+        countyCourtJudgment.getDefendantDateOfBirth().ifPresent(builder::defendantDateOfBirth);
         countyCourtJudgment.getPaidAmount().ifPresent(builder::paidAmount);
         builder.paymentOption(valueOf(countyCourtJudgment.getPaymentOption().name()));
         countyCourtJudgment.getRepaymentPlan().ifPresent(plan -> builder.repaymentPlan(repaymentPlanMapper.to(plan)));
-        countyCourtJudgment.getPayBySetDate().ifPresent(pbs -> builder.payBySetDate(pbs.format(ISO_DATE)));
+        countyCourtJudgment.getPayBySetDate().ifPresent(builder::payBySetDate);
         countyCourtJudgment.getStatementOfTruth()
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
 
@@ -47,18 +43,13 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
 
     @Override
     public CountyCourtJudgment from(CCDCountyCourtJudgment ccdCountyCourtJudgment) {
-        LocalDate defendantDateOfBirth = ccdCountyCourtJudgment.getDefendantDateOfBirth() != null
-            ? parse(ccdCountyCourtJudgment.getDefendantDateOfBirth(), ISO_DATE) : null;
-
-        LocalDate payBySetDate = ccdCountyCourtJudgment.getPayBySetDate() != null
-            ? parse(ccdCountyCourtJudgment.getPayBySetDate(), ISO_DATE) : null;
 
         return new CountyCourtJudgment(
-            defendantDateOfBirth,
+            ccdCountyCourtJudgment.getDefendantDateOfBirth(),
             PaymentOption.valueOf(ccdCountyCourtJudgment.getPaymentOption().name()),
             ccdCountyCourtJudgment.getPaidAmount(),
             repaymentPlanMapper.from(ccdCountyCourtJudgment.getRepaymentPlan()),
-            payBySetDate,
+            ccdCountyCourtJudgment.getPayBySetDate(),
             statementOfTruthMapper.from(ccdCountyCourtJudgment.getStatementOfTruth())
         );
     }
