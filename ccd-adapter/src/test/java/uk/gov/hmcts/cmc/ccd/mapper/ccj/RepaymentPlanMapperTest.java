@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 
 import java.math.BigDecimal;
 
+import static java.time.LocalDate.now;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule.EVERY_MONTH;
 import static uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule.EVERY_TWO_WEEKS;
@@ -68,7 +69,7 @@ public class RepaymentPlanMapperTest {
         final CCDRepaymentPlan ccdRepaymentPlan = CCDRepaymentPlan.builder()
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .instalmentAmount(BigDecimal.valueOf(100))
-            .firstPaymentDate("2018-01-22")
+            .firstPaymentDate(now())
             .firstPayment(BigDecimal.valueOf(150))
             .build();
 
@@ -85,7 +86,7 @@ public class RepaymentPlanMapperTest {
         final CCDRepaymentPlan ccdRepaymentPlan = CCDRepaymentPlan.builder()
             .paymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
             .instalmentAmount(BigDecimal.valueOf(100))
-            .firstPaymentDate("2018-01-22")
+            .firstPaymentDate(now())
             .firstPayment(BigDecimal.valueOf(150))
             .build();
 
@@ -102,7 +103,7 @@ public class RepaymentPlanMapperTest {
         final CCDRepaymentPlan ccdRepaymentPlan = CCDRepaymentPlan.builder()
             .paymentSchedule(CCDPaymentSchedule.EVERY_TWO_WEEKS)
             .instalmentAmount(BigDecimal.valueOf(100))
-            .firstPaymentDate("2018-01-22")
+            .firstPaymentDate(now())
             .firstPayment(BigDecimal.valueOf(150))
             .build();
 
