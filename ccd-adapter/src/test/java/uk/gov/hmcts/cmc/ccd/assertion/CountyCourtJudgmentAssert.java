@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
 import java.util.Objects;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmentAssert, CountyCourtJudgment> {
@@ -19,14 +18,14 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
         isNotNull();
 
         actual.getDefendantDateOfBirth().ifPresent(dob -> {
-            if (!Objects.equals(dob.format(ISO_DATE), ccdCountyCourtJudgment.getDefendantDateOfBirth())) {
+            if (!Objects.equals(dob, ccdCountyCourtJudgment.getDefendantDateOfBirth())) {
                 failWithMessage("Expected CountyCourtJudgment.defendantDateOfBirth to be <%s> but was <%s>",
                     ccdCountyCourtJudgment.getDefendantDateOfBirth(), actual.getDefendantDateOfBirth());
             }
         });
 
         actual.getPayBySetDate().ifPresent(payBysetDate -> {
-            if (!Objects.equals(payBysetDate.format(ISO_DATE), ccdCountyCourtJudgment.getPayBySetDate())) {
+            if (!Objects.equals(payBysetDate, ccdCountyCourtJudgment.getPayBySetDate())) {
                 failWithMessage("Expected CountyCourtJudgment.payBySetDate to be <%s> but was <%s>",
                     ccdCountyCourtJudgment.getPayBySetDate(), actual.getPayBySetDate());
             }
