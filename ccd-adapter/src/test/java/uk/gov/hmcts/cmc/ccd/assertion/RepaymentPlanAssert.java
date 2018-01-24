@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 
 import java.util.Objects;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-
 public class RepaymentPlanAssert extends AbstractAssert<RepaymentPlanAssert, RepaymentPlan> {
 
     public RepaymentPlanAssert(RepaymentPlan actual) {
@@ -27,8 +25,7 @@ public class RepaymentPlanAssert extends AbstractAssert<RepaymentPlanAssert, Rep
                 ccdRepaymentPlan.getInstalmentAmount(), actual.getInstalmentAmount());
         }
 
-        if (!Objects.equals(actual.getFirstPaymentDate().format(ISO_DATE),
-            ccdRepaymentPlan.getFirstPaymentDate())) {
+        if (!Objects.equals(actual.getFirstPaymentDate(), ccdRepaymentPlan.getFirstPaymentDate())) {
             failWithMessage("Expected RepaymentPlan.firstPaymentDate to be <%s> but was <%s>",
                 ccdRepaymentPlan.getFirstPaymentDate(), actual.getFirstPaymentDate());
         }
