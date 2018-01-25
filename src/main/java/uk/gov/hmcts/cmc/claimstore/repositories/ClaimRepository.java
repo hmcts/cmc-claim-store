@@ -18,10 +18,10 @@ import java.util.Optional;
 public interface ClaimRepository {
 
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
-    String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
+        String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
-    String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
+        String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
     List<Claim> findAll();
@@ -157,10 +157,9 @@ public interface ClaimRepository {
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
         + " county_court_judgment_requested_at = now() at time zone 'utc'"
-        + "WHERE"
-        + " id = :claimId")
+        + " WHERE external_id = :externalId")
     void saveCountyCourtJudgment(
-        @Bind("claimId") long claimId,
+        @Bind("externalId") String externalId,
         @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
     );
 }
