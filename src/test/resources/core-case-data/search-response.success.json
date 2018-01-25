@@ -74,7 +74,7 @@
             "type": "INDIVIDUAL",
             "individual": {
               "name": "John Smith",
-              "email": "tim.jacomb@hmcts.net",
+              "email": "john.smith@server.net",
               "address": {
                 "city": "Manchester",
                 "line1": "52",
