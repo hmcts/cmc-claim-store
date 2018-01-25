@@ -54,7 +54,7 @@ public class CCDClaimSearchRepository {
         return search(authorisation, ImmutableMap.of("case.submitterId", submitterId));
     }
 
-    public Optional<Claim> getByClaimReferenceNumber(String referenceNumber, String authorisation) {
+    public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
         final List<Claim> claims
             = search(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
 
@@ -65,7 +65,7 @@ public class CCDClaimSearchRepository {
         return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
     }
 
-    public Optional<Claim> getByClaimExternalId(String externalId, String authorisation) {
+    public Optional<Claim> getByExternalId(String externalId, String authorisation) {
         final List<Claim> claims = search(authorisation, ImmutableMap.of("case.externalId", externalId));
 
         if (claims.size() > 1) {

@@ -51,7 +51,7 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         final Optional<Claim> claim = claimSearchRepository.getClaimByExternalId(externalId);
-        final Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByClaimExternalId(externalId, authorisation);
+        final Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByExternalId(externalId, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with external id %s user %s exist in ccd",
@@ -68,7 +68,7 @@ public class CCDCaseRepository implements CaseRepository {
             = claimSearchRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
 
         final Optional<Claim> ccdClaim
-            = ccdClaimSearchRepository.getByClaimReferenceNumber(claimReferenceNumber, authorisation);
+            = ccdClaimSearchRepository.getByReferenceNumber(claimReferenceNumber, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with reference number %s user %s exist in ccd",
