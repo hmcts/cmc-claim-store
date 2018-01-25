@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public abstract class BaseSaveTest extends BaseIntegrationTest {
 
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
+
     protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     @Before
@@ -28,6 +30,8 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(PDF_BYTES);
+
+        given(jwtHelper.isSolicitor(anyString())).willReturn(false);
     }
 
     protected ResultActions makeRequest(ClaimData claimData) throws Exception {

@@ -20,9 +20,10 @@ import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
+import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
-import uk.gov.hmcts.cmc.claimstore.services.search.DBCaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -49,7 +50,7 @@ public abstract class MockSpringTest {
     protected ClaimRepository claimRepository;
 
     @Autowired
-    protected DBCaseRepository caseRepository;
+    protected CaseRepository caseRepository;
 
     @MockBean
     protected UserService userService;
@@ -83,6 +84,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected ServiceAuthorisationApi serviceAuthorisationApi;
+
+    @MockBean
+    protected JwtHelper jwtHelper;
 
     @TestConfiguration
     @Profile("unit-tests")

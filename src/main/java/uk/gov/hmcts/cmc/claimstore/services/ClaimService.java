@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.search.DBCaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -34,7 +34,7 @@ public class ClaimService {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
-    private final DBCaseRepository caseRepository;
+    private final CaseRepository caseRepository;
 
     @Autowired
     public ClaimService(
@@ -44,7 +44,7 @@ public class ClaimService {
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
-        DBCaseRepository caseRepository
+        CaseRepository caseRepository
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
