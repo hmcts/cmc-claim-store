@@ -143,7 +143,7 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String externalId = "does not exist";
 
-        when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
+        when(caseRepository.getByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
 
         claimService.getClaimByExternalId(externalId, AUTHORISATION);
     }
@@ -183,7 +183,7 @@ public class ClaimServiceTest {
     public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
         ClaimData app = SampleClaimData.validDefaults();
         String authorisationToken = "Open same!";
-        when(caseRepository.getClaimByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
+        when(caseRepository.getByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
 
         claimService.saveClaim(USER_ID, app, authorisationToken);
     }

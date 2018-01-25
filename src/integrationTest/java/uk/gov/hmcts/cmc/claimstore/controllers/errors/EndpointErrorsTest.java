@@ -48,7 +48,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(caseRepository.getClaimByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + externalId)

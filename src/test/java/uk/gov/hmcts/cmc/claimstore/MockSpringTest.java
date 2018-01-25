@@ -19,7 +19,7 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.LegacyClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
@@ -102,7 +102,7 @@ public abstract class MockSpringTest {
         private ClaimRepository claimRepository;
 
         @MockBean
-        private ClaimSearchRepository claimSearchRepository;
+        private LegacyClaimRepository claimSearchRepository;
 
         @Bean
         protected PlatformTransactionManager transactionManager() {

@@ -4,8 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.LegacyClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -19,24 +18,24 @@ import static java.lang.String.format;
 public class CCDCaseRepository implements CaseRepository {
     private final Logger logger = LoggerFactory.getLogger(CCDCaseRepository.class);
 
-    private final ClaimSearchRepository claimSearchRepository;
-    private final CCDClaimSearchRepository ccdClaimSearchRepository;
+    private final LegacyClaimRepository legacyClaimRepository;
+    private final CCDCaseRepository ccdCaseRepository;
     private final UserService userService;
 
     public CCDCaseRepository(
-        ClaimSearchRepository claimSearchRepository,
-        CCDClaimSearchRepository ccdClaimSearchRepository,
+        LegacyClaimRepository legacyClaimRepository,
+        CCDCaseRepository ccdCaseRepository,
         UserService userService
     ) {
-        this.claimSearchRepository = claimSearchRepository;
-        this.ccdClaimSearchRepository = ccdClaimSearchRepository;
+        this.legacyClaimRepository = legacyClaimRepository;
+        this.ccdCaseRepository = ccdCaseRepository;
         this.userService = userService;
     }
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        final List<Claim> dbClaims = claimSearchRepository.getBySubmitterId(submitterId);
-        final List<Claim> ccdClaims = ccdClaimSearchRepository.getBySubmitterId(submitterId, authorisation);
+        final List<Claim> dbClaims = legacyClaimRepository.getBySubmitterId(submitterId);
+        final List<Claim> ccdClaims = ccdCaseRepository.getBySubmitterId(submitterId, authorisation);
         logClaimDetails(dbClaims, ccdClaims);
         return dbClaims;
     }
@@ -49,9 +48,9 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        final Optional<Claim> claim = claimSearchRepository.getClaimByExternalId(externalId);
-        final Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByExternalId(externalId, authorisation);
+    public Optional<Claim> getByExternalId(String externalId, String authorisation) {
+        final Optional<Claim> claim = legacyClaimRepository.getByExternalId(externalId);
+        final Optional<Claim> ccdClaim = ccdCaseRepository.getByExternalId(externalId, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with external id %s user %s exist in ccd",
@@ -62,13 +61,13 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
+    public Optional<Claim> getByReferenceNumber(String claimReferenceNumber, String authorisation) {
         final String submitterId = userService.getUserDetails(authorisation).getId();
         final Optional<Claim> claim
-            = claimSearchRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
+            = legacyClaimRepository.getByReferenceAndSubmitter(claimReferenceNumber, submitterId);
 
         final Optional<Claim> ccdClaim
-            = ccdClaimSearchRepository.getByReferenceNumber(claimReferenceNumber, authorisation);
+            = ccdCaseRepository.getByReferenceNumber(claimReferenceNumber, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with reference number %s user %s exist in ccd",
@@ -76,5 +75,10 @@ public class CCDCaseRepository implements CaseRepository {
         }
 
         return claim;
+    }
+
+    @Override
+    public void linkDefendant(String externalId, String defendantId, String authorisation) {
+
     }
 }

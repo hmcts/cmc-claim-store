@@ -38,7 +38,7 @@ public class IntegrationTestSupportController {
     public Claim getByClaimReferenceNumber(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber
     ) {
-        return claimRepository.getByClaimReferenceNumber(claimReferenceNumber)
+        return testingSupportRepository.getByClaimReferenceNumber(claimReferenceNumber)
             .orElseThrow(() -> new NotFoundException("Claim not found by ref no: " + claimReferenceNumber));
     }
 

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
@@ -46,65 +45,6 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);
 
-    @GetGeneratedKeys
-    @SqlUpdate("INSERT INTO claim ( "
-        + "submitter_id, "
-        + "claim, "
-        + "issued_on, "
-        + "response_deadline, "
-        + "external_id, "
-        + "submitter_email, "
-        + "reference_number"
-        + ") "
-        + "VALUES ("
-        + ":submitterId, "
-        + ":claim::JSONB, "
-        + ":issuedOn, "
-        + ":responseDeadline, "
-        + ":externalId, "
-        + ":submitterEmail, "
-        + "next_legal_rep_reference_number()"
-        + ")")
-    Long saveRepresented(
-        @Bind("claim") String claim,
-        @Bind("submitterId") String submitterId,
-        @Bind("issuedOn") LocalDate issuedOn,
-        @Bind("responseDeadline") LocalDate responseDeadline,
-        @Bind("externalId") String externalId,
-        @Bind("submitterEmail") String submitterEmail
-    );
-
-    @GetGeneratedKeys
-    @SqlUpdate("INSERT INTO claim ( "
-        + "submitter_id, "
-        + "claim, "
-        + "letter_holder_id, "
-        + "issued_on, "
-        + "response_deadline, "
-        + "external_id, "
-        + "submitter_email, "
-        + "reference_number"
-        + ") "
-        + "VALUES ("
-        + ":submitterId, "
-        + ":claim::JSONB, "
-        + ":letterHolderId, "
-        + ":issuedOn, "
-        + ":responseDeadline, "
-        + ":externalId, "
-        + ":submitterEmail, "
-        + "next_reference_number()"
-        + ")")
-    Long saveSubmittedByClaimant(
-        @Bind("claim") String claim,
-        @Bind("submitterId") String submitterId,
-        @Bind("letterHolderId") String letterHolderId,
-        @Bind("issuedOn") LocalDate issuedOn,
-        @Bind("responseDeadline") LocalDate responseDeadline,
-        @Bind("externalId") String externalId,
-        @Bind("submitterEmail") String submitterEmail
-    );
-
     @SqlUpdate(
         "UPDATE claim SET letter_holder_id = :letterHolderId WHERE id = :claimId"
     )
@@ -120,14 +60,6 @@ public interface ClaimRepository {
     Integer linkSealedClaimDocument(
         @Bind("claimId") Long claimId,
         @Bind("documentSelfPath") String documentSelfPath
-    );
-
-    @SqlUpdate(
-        "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
-    )
-    Integer linkDefendant(
-        @Bind("claimId") Long claimId,
-        @Bind("defendantId") String defendantId
     );
 
     @SqlUpdate(

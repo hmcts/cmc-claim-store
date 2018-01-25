@@ -73,18 +73,20 @@ public class ClaimService {
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {
         return caseRepository
-            .getClaimByExternalId(externalId, authorisation)
+            .getByExternalId(externalId, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
         return caseRepository
-            .getByClaimReferenceNumber(reference, authorisation);
+            .getByReferenceNumber(reference, authorisation);
     }
 
-    public Optional<Claim> getClaimByReference(String reference) {
-        return claimRepository
-            .getByClaimReferenceNumber(reference);
+    /**
+     * Only call this in situations where the call must be anonymous from the user side
+     */
+    public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
+        return caseRepository.getByReferenceNumber(reference, "");
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
@@ -100,7 +102,7 @@ public class ClaimService {
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
+        caseRepository.getByExternalId(externalId, authorisation).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
         });
 
@@ -167,11 +169,8 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(Long claimId, String defendantId) {
-        Claim claim = claimRepository.getById(claimId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
-
-        claimRepository.linkDefendant(claim.getId(), defendantId);
+    public void linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
+        caseRepository.linkDefendant(externalId, defendantId, authorisation);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
