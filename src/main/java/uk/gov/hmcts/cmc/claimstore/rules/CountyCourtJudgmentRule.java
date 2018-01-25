@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Service
 public class CountyCourtJudgmentRule {
 
-    public void assertCanIssueCountyCourtJudgment(final Claim claim) {
+    public void assertCountyCourtJudgementCanBeRequested(Claim claim) {
 
         if (isResponseAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("Response for the claim " + claim.getExternalId() + " was submitted");
@@ -27,15 +27,15 @@ public class CountyCourtJudgmentRule {
         }
     }
 
-    private boolean canCountyCourtJudgmentBeRequestedYet(final Claim claim) {
+    private boolean canCountyCourtJudgmentBeRequestedYet(Claim claim) {
         return LocalDate.now().isAfter(claim.getResponseDeadline());
     }
 
-    private boolean isResponseAlreadySubmitted(final Claim claim) {
+    private boolean isResponseAlreadySubmitted(Claim claim) {
         return null != claim.getRespondedAt();
     }
 
-    private boolean isCountyCourtJudgmentAlreadySubmitted(final Claim claim) {
+    private boolean isCountyCourtJudgmentAlreadySubmitted(Claim claim) {
         return claim.getCountyCourtJudgment() != null;
     }
 }

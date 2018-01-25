@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static uk.gov.hmcts.cmc.claimstore.controllers.ClaimController.UUID_PATTERN;
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
 @Api
 @RestController

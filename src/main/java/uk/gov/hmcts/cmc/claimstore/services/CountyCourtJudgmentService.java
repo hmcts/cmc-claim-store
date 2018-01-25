@@ -41,7 +41,7 @@ public class CountyCourtJudgmentService {
 
         authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
-        countyCourtJudgmentRule.assertCanIssueCountyCourtJudgment(claim);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim);
 
         claimService.saveCountyCourtJudgment(externalId, countyCourtJudgment);
 
