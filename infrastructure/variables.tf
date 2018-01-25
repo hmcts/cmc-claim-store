@@ -29,7 +29,7 @@ variable "ccd-url" {
 }
 
 variable "frontend-url" {
-  default = "https://case-data-app.test.ccd.reform.hmcts.net:4481"
+  default = "https://www.nonprod.moneyclaim.platform.hmcts.net/health"
 }
 
 variable "database-name" {
