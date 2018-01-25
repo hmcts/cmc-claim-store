@@ -5,12 +5,14 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
 @Service
 public class CountyCourtJudgmentRule {
 
-    public void assertCountyCourtJudgementCanBeRequested(Claim claim) {
-
+    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim) {
+        Objects.requireNonNull(claim, "claim object can not be null");
         if (isResponseAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("Response for the claim " + claim.getExternalId() + " was submitted");
         }
