@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.search;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -8,7 +9,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service("caseRepository")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimSearchRepository claimSearchRepository;
