@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure@feature/add-timestamps-to-jenkins-log") _
+@Library("Infrastructure") _
 
 properties([
 		parameters([
