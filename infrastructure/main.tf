@@ -65,6 +65,9 @@ module "claim-store-api" {
     // staff notifications
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "civilmoneyclaims+cnp@gmail.com"
+
+    // feature toggles
+    CLAIM_STORE_TEST_SUPPORT_ENABLED = "true"
   }
 }
 
