@@ -102,11 +102,11 @@ public class ClaimController {
         return claimService.linkDefendantToClaim(externalId, defendantId, authorisation);
     }
 
-    @PostMapping(value = "/{claimId:\\d+}/request-more-time")
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")
     @ApiOperation("Updates response deadline. Can be called only once per each claim")
-    public Claim requestMoreTimeToRespond(@PathVariable("claimId") Long claimId,
+    public Claim requestMoreTimeToRespond(@PathVariable("externalId") String externalId,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.requestMoreTimeForResponse(claimId, authorisation);
+        return claimService.requestMoreTimeForResponse(externalId, authorisation);
     }
 
     @GetMapping("/{caseReference}/defendant-link-status")
