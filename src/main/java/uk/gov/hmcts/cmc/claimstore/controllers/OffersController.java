@@ -70,7 +70,7 @@ public class OffersController {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertActionIsPermittedFor(claim, party, authorisation);
         offersService.makeOffer(claim, offer, party);
-        return claimService.getClaimByExternalId(externalId, externalId);
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/accept", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -84,7 +84,7 @@ public class OffersController {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertActionIsPermittedFor(claim, party, authorisation);
         offersService.accept(claim, party);
-        return claimService.getClaimByExternalId(externalId, externalId);
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/reject", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
