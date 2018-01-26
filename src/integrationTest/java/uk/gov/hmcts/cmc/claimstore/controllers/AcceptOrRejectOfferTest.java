@@ -57,7 +57,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
         );
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
-        caseRepository.linkDefendant(claim.getExternalId(), "2", BEARER_TOKEN);
+        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         claimStore.saveResponse(claim.getId(), SampleResponse.validDefaults(), DEFENDANT_ID,
             SampleClaim.DEFENDANT_EMAIL);
         prepareDefendantOffer();

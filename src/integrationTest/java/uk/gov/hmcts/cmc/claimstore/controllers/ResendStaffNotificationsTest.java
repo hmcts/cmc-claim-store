@@ -72,7 +72,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         String event = "claim-issued";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), "2", BEARER_TOKEN);
+        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isConflict());
