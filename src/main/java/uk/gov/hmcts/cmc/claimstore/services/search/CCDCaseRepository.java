@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.LegacyClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,5 +84,36 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim = legacyClaimRepository.getByExternalId(externalId)
             .orElseThrow(() -> new NotFoundException("Claim not found by externalId: " + externalId));
         legacyClaimRepository.linkDefendant(claim.getId(), defendantId);
+    }
+
+    @Override
+    public Long saveSubmittedByClaimant(
+        String claim,
+        String submitterId,
+        String letterHolderId,
+        LocalDate issuedOn,
+        LocalDate responseDeadline,
+        String externalId,
+        String submitterEmail
+    ) {
+        return legacyClaimRepository.saveSubmittedByClaimant(
+            claim, submitterId, letterHolderId, issuedOn,
+            responseDeadline, externalId, submitterEmail
+        );
+    }
+
+    @Override
+    public Long saveRepresented(
+        String claim,
+        String submitterId,
+        LocalDate issuedOn,
+        LocalDate responseDeadline,
+        String externalId,
+        String submitterEmail
+    ) {
+        return legacyClaimRepository.saveRepresented(
+            claim, submitterId, issuedOn,
+            responseDeadline, externalId, submitterEmail
+        );
     }
 }
