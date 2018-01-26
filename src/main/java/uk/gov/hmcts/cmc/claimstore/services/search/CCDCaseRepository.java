@@ -35,8 +35,8 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        final List<Claim> dbClaims = claimSearchRepository.getBySubmitterId(submitterId);
-        final List<Claim> ccdClaims = ccdClaimSearchRepository.getBySubmitterId(submitterId, authorisation);
+        List<Claim> dbClaims = claimSearchRepository.getBySubmitterId(submitterId);
+        List<Claim> ccdClaims = ccdClaimSearchRepository.getBySubmitterId(submitterId, authorisation);
         logClaimDetails(dbClaims, ccdClaims);
         return dbClaims;
     }
@@ -50,8 +50,8 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        final Optional<Claim> claim = claimSearchRepository.getClaimByExternalId(externalId);
-        final Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByExternalId(externalId, authorisation);
+        Optional<Claim> claim = claimSearchRepository.getClaimByExternalId(externalId);
+        Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByExternalId(externalId, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with external id %s user %s exist in ccd",
@@ -63,12 +63,12 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-        final String submitterId = userService.getUserDetails(authorisation).getId();
-        final Optional<Claim> claim
+        String submitterId = userService.getUserDetails(authorisation).getId();
+
+        Optional<Claim> claim
             = claimSearchRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
 
-        final Optional<Claim> ccdClaim
-            = ccdClaimSearchRepository.getByReferenceNumber(claimReferenceNumber, authorisation);
+        Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByReferenceNumber(claimReferenceNumber, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with reference number %s user %s exist in ccd",
