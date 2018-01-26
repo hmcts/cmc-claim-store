@@ -58,7 +58,8 @@ public class OffersController {
         webDataBinder.registerCustomEditor(MadeBy.class, new MadeByEnumConverter());
     }
 
-    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Makes an offer as a party")
     public Claim makeOffer(
@@ -73,7 +74,8 @@ public class OffersController {
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/accept", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/accept",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Accepts an offer as a party")
     public Claim accept(
@@ -87,7 +89,8 @@ public class OffersController {
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/reject", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/reject",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Rejects an offer as a party")
     public Claim reject(

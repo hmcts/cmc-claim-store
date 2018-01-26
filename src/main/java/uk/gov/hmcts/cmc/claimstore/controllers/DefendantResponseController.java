@@ -40,9 +40,9 @@ public class DefendantResponseController {
     public Claim save(
         @Valid @NotNull @RequestBody Response response,
         @PathVariable("defendantId") String defendantId,
-        @PathVariable("claimId") Long claimId,
+        @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     ) {
-        return defendantResponseService.save(claimId, defendantId, response, authorization);
+        return defendantResponseService.save(externalId, defendantId, response, authorization);
     }
 }
