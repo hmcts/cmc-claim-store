@@ -136,7 +136,7 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     private ResultActions makeOffer(String authToken, Offer offer, String party) throws Exception {
         return webClient
-            .perform(post(format("/claims/%d/offers/%s", claim.getId(), party))
+            .perform(post(format("/claims/%s/offers/%s", claim.getExternalId(), party))
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, authToken)
                 .content(jsonMapper.toJson(offer))

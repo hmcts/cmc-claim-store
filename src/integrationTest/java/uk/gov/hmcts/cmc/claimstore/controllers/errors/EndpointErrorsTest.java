@@ -127,12 +127,12 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void requestForMoreTimeShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        long claimId = 1L;
+        String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
-        given(claimRepository.getById(claimId)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId, anyString())).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(post("/claims/" + claimId + "/request-more-time")
+            .perform(post("/claims/" + externalId + "/request-more-time")
                 .header(HttpHeaders.AUTHORIZATION, "it's me!"))
             .andExpect(status().isInternalServerError());
     }
@@ -175,14 +175,15 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void saveResponseShouldFailWhenDefendantResponseFailedStoring() throws Exception {
-        long claimId = 1L;
+        String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
-        given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.getDefault()));
+        given(caseRepository.getClaimByExternalId(externalId, anyString()))
+            .willReturn(Optional.of(SampleClaim.getDefault()));
         willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyLong(), anyString(), anyString(),
             anyString());
 
         webClient
-            .perform(post("/responses/claim/" + claimId + "/defendant/" + DEFENDANT_ID)
+            .perform(post("/responses/claim/" + externalId + "/defendant/" + DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
                 .content(jsonMapper.toJson(SampleResponse.validDefaults()))

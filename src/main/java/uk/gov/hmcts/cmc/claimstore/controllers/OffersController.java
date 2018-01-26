@@ -27,6 +27,8 @@ import uk.gov.hmcts.cmc.domain.models.offers.converters.MadeByEnumConverter;
 
 import javax.validation.Valid;
 
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
+
 @Api
 @RestController
 @RequestMapping(
@@ -56,47 +58,50 @@ public class OffersController {
         webDataBinder.registerCustomEditor(MadeBy.class, new MadeByEnumConverter());
     }
 
-    @PostMapping(value = "/{claimId:\\d+}/offers/{party}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Makes an offer as a party")
     public Claim makeOffer(
-        @PathVariable("claimId") Long claimId,
+        @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
         @RequestBody @Valid Offer offer,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimById(claimId);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertActionIsPermittedFor(claim, party, authorisation);
         offersService.makeOffer(claim, offer, party);
-        return claimService.getClaimById(claimId);
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    @PostMapping(value = "/{claimId:\\d+}/offers/{party}/accept", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/accept",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Accepts an offer as a party")
     public Claim accept(
-        @PathVariable("claimId") Long claimId,
+        @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimById(claimId);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertActionIsPermittedFor(claim, party, authorisation);
         offersService.accept(claim, party);
-        return claimService.getClaimById(claimId);
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    @PostMapping(value = "/{claimId:\\d+}/offers/{party}/reject", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/reject",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Rejects an offer as a party")
     public Claim reject(
-        @PathVariable("claimId") Long claimId,
+        @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimById(claimId);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertActionIsPermittedFor(claim, party, authorisation);
         offersService.reject(claim, party);
-        return claimService.getClaimById(claimId);
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     private void assertActionIsPermittedFor(Claim claim, MadeBy party, String authorisation) {
