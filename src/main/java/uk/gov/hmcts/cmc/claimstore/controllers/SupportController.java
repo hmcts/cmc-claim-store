@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -66,10 +65,10 @@ public class SupportController {
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("event") String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
     ) throws ServletRequestBindingException {
 
-        Claim claim = claimService.getClaimByReference(referenceNumber)
+        Claim claim = claimService.getClaimByReference(referenceNumber, authorisation)
             .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 
         switch (event) {
@@ -93,30 +92,18 @@ public class SupportController {
         }
     }
 
-    private void validateAuthorisationPresentWhenRequired(String authorisation)
-        throws ServletRequestBindingException {
-        if (StringUtils.isBlank(authorisation)) {
-            throw new ServletRequestBindingException(
-                "Missing request header 'Authorization' for method parameter of type String"
-            );
-        }
-    }
-
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
             new CountyCourtJudgmentRequestedEvent(claim)
         );
     }
 
-    private void resendStaffNotificationsOnClaimIssued(Claim claim, String authorisation)
-        throws ServletRequestBindingException {
+    private void resendStaffNotificationsOnClaimIssued(Claim claim, String authorisation) {
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
         }
 
         if (!claim.getClaimData().isClaimantRepresented()) {
-            validateAuthorisationPresentWhenRequired(authorisation);
-
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
