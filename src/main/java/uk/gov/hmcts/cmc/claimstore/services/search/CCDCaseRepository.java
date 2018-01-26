@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.LegacyClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -79,6 +80,8 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void linkDefendant(String externalId, String defendantId, String authorisation) {
-
+        Claim claim = legacyClaimRepository.getByExternalId(externalId)
+            .orElseThrow(() -> new NotFoundException("Claim not found by externalId: " + externalId));
+        legacyClaimRepository.linkDefendant(claim.getId(), defendantId);
     }
 }
