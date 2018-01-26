@@ -33,6 +33,11 @@ public class IntegrationTestSupportController {
         this.testingSupportRepository = testingSupportRepository;
     }
 
+    @GetMapping("/oops")
+    public void poo() {
+        throw new RuntimeException();
+    }
+
     @GetMapping("/claims/{claimReferenceNumber}")
     @ApiOperation("Fetch user claim for given reference number")
     public Claim getByClaimReferenceNumber(
