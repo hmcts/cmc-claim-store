@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
+import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import org.skife.jdbi.v2.sqlobject.customizers.SingleValueResult;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.ClaimMapper;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @RegisterMapper(ClaimMapper.class)
 @SuppressWarnings("squid:S1214") // Pointless to create class for string statement
-public interface ClaimSearchRepository {
+public interface LegacyCaseRepository {
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
         String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 
@@ -32,5 +33,13 @@ public interface ClaimSearchRepository {
         + "AND claim.submitter_id = :submitterId")
     Optional<Claim> getByClaimReferenceAndSubmitter(@Bind("claimReferenceNumber") String claimReferenceNumber,
                                                     @Bind("submitterId") String submitterId);
+
+    @SqlUpdate(
+        "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
+    )
+    Integer linkDefendant(
+        @Bind("claimId") Long claimId,
+        @Bind("defendantId") String defendantId
+    );
 
 }
