@@ -43,7 +43,7 @@ public class MakeOfferTest extends BaseIntegrationTest {
     @Before
     public void beforeEachTest() {
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
+        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, DEFENDANT_AUTH_TOKEN);
 
         when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(
             SampleUserDetails.builder()
