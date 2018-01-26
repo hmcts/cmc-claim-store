@@ -103,7 +103,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withClaimId(claimId)
             .withDefendantId(null)
             .build()));
-        given(claimRepository.linkDefendant(claimId, defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(legacyCaseRepository.linkDefendant(claimId, defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + claimId + "/defendant/" + defendantId))
@@ -114,7 +114,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void retrieveDefendantLinkStatusShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getByClaimReferenceNumberAnonymous(referenceNumber)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + referenceNumber + "/defendant-link-status"))
@@ -137,7 +137,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void getByClaimReferenceNumberShouldReturn500HttpStatusWhenInternalErrorOccurs() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getByClaimReferenceNumberAnonymous(referenceNumber)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/testing-support/claims/" + referenceNumber))
