@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -21,21 +22,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CountyCourtJudgmentServiceTest {
 
     private static final CountyCourtJudgment DATA = SampleCountyCourtJudgment.builder().build();
+    private static final String AUTHORISATION = "Bearer: aaa";
 
     private CountyCourtJudgmentService countyCourtJudgmentService;
 
     @Mock
     private ClaimService claimService;
-
-    @Mock
-    private AuthorisationService authorisationService;
 
     @Mock
     private EventProducer eventProducer;
@@ -45,8 +44,9 @@ public class CountyCourtJudgmentServiceTest {
 
         countyCourtJudgmentService = new CountyCourtJudgmentService(
             claimService,
-            authorisationService,
-            eventProducer
+            new AuthorisationService(),
+            eventProducer,
+            new CountyCourtJudgmentRule()
         );
     }
 
@@ -56,20 +56,21 @@ public class CountyCourtJudgmentServiceTest {
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2)).build();
 
-        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
 
         verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class));
-        verify(claimService, once()).saveCountyCourtJudgment(eq(CLAIM_ID), any());
+        verify(claimService, once()).saveCountyCourtJudgment(eq(EXTERNAL_ID), any());
     }
 
     @Test(expected = NotFoundException.class)
     public void saveThrowsNotFoundExceptionWhenClaimDoesNotExist() {
 
-        when(claimService.getClaimById(eq(CLAIM_ID))).thenThrow(new NotFoundException("Claim not found by id"));
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+            .thenThrow(new NotFoundException("Claim not found by id"));
 
-        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -79,9 +80,9 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim claim = SampleClaim.getDefault();
 
-        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(claim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(differentUser, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(differentUser, DATA, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -89,9 +90,9 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.builder().withRespondedAt(LocalDateTime.now().minusDays(2)).build();
 
-        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -99,9 +100,9 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(12));
 
-        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -109,8 +110,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getDefault();
 
-        when(claimService.getClaimById(eq(CLAIM_ID))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, CLAIM_ID);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
 }
