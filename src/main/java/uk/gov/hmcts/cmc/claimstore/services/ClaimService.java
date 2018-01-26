@@ -140,9 +140,9 @@ public class ClaimService {
         return getClaimById(issuedClaimId);
     }
 
-    public Claim requestMoreTimeForResponse(long claimId, String authorisation) {
+    public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         UserDetails defendant = userService.getUserDetails(authorisation);
-        Claim claim = getClaimById(claimId);
+        Claim claim = getClaimByExternalId(externalId, authorisation);
 
         if (!claim.getDefendantId()
             .equals(defendant.getId())) {
@@ -160,8 +160,8 @@ public class ClaimService {
         LocalDate newDeadline = responseDeadlineCalculator
             .calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        claimRepository.requestMoreTime(claimId, newDeadline);
-        claim = getClaimById(claimId);
+        claimRepository.requestMoreTime(claim.getId(), newDeadline);
+        claim = getClaimByExternalId(externalId, authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
         return claim;
