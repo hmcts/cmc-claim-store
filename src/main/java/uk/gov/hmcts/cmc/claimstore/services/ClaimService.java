@@ -82,9 +82,9 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference, authorisation);
     }
 
-    public Optional<Claim> getClaimByReference(String reference) {
+    public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
         return claimRepository
-            .getByClaimReferenceNumber(reference);
+            .getByClaimReferenceNumberAnonymous(reference);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
@@ -167,11 +167,9 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(Long claimId, String defendantId) {
-        Claim claim = claimRepository.getById(claimId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
-
-        claimRepository.linkDefendant(claim.getId(), defendantId);
+    public Claim linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
+        return caseRepository.linkDefendant(externalId, defendantId, authorisation)
+            .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
