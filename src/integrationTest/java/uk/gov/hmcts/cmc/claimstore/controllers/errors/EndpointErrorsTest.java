@@ -11,6 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -85,28 +86,31 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        String claimId = "asda";
+        String externalId = "2ab19d16-fddf-4494-a01a-f64f93d04782";
 
-        given(legacyCaseRepository.getClaimByExternalId(claimId)).willThrow(UNEXPECTED_ERROR);
+        given(legacyCaseRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(put("/claims/" + claimId + "/defendant/2"))
+            .perform(put("/claims/" + externalId + "/defendant/2")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION))
             .andExpect(status().isInternalServerError());
     }
 
     @Test
     public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToUpdateClaim() throws Exception {
-        long claimId = 1L;
+        String externalId = "2ab19d16-fddf-4494-a01a-f64f93d04782";
         String defendantId = "2";
 
-        given(claimRepository.getById(claimId)).willReturn(Optional.of(SampleClaim.builder()
-            .withClaimId(claimId)
+        Claim claim = SampleClaim.builder()
+            .withExternalId(externalId)
             .withDefendantId(null)
-            .build()));
-        given(legacyCaseRepository.linkDefendant(claimId, defendantId)).willThrow(UNEXPECTED_ERROR);
+            .build();
+        given(legacyCaseRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
+        given(legacyCaseRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(put("/claims/" + claimId + "/defendant/" + defendantId))
+            .perform(put("/claims/" + externalId + "/defendant/" + defendantId)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION))
             .andExpect(status().isInternalServerError());
     }
 

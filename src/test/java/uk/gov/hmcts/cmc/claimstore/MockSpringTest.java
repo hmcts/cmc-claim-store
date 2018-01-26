@@ -109,6 +109,9 @@ public abstract class MockSpringTest {
         private ClaimRepository claimRepository;
 
         @MockBean
+        private TestingSupportRepository testingSupportRepository;
+
+        @MockBean
         private LegacyCaseRepository legacyCaseRepository;
 
         @Bean
