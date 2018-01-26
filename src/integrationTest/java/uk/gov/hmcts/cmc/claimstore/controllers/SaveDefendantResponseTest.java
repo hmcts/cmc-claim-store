@@ -50,7 +50,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
-        MvcResult result = makeRequest(claim.getId(), DEFENDANT_ID, response)
+        MvcResult result = makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -66,7 +66,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
-        makeRequest(claim.getId(), DEFENDANT_ID, response)
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
             .andExpect(status().isOk());
 
         verify(staffActionsHandler).onDefendantResponseSubmitted(defendantResponseEventArgument.capture());
@@ -81,7 +81,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
-        makeRequest(claim.getId(), DEFENDANT_ID, response)
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
             .andExpect(status().isOk());
 
         verify(notificationClient, times(2))
@@ -96,19 +96,19 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         doThrow(new RuntimeException()).when(staffActionsHandler).onDefendantResponseSubmitted(any());
 
-        makeRequest(claim.getId(), DEFENDANT_ID, response)
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
             .andExpect(status().isInternalServerError());
     }
 
     @Test
     public void shouldFailForEmptyDefence() throws Exception {
-        long anyClaimId = 500;
+        String anyExternalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
         String anyDefendantId = "500";
         Response response = SampleResponse.FullDefence.builder()
             .withDefence("")
             .build();
 
-        MvcResult result = makeRequest(anyClaimId, anyDefendantId, response)
+        MvcResult result = makeRequest(anyExternalId, anyDefendantId, response)
             .andExpect(status().isBadRequest())
             .andReturn();
 
@@ -117,9 +117,9 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .contains("defence : may not be empty");
     }
 
-    private ResultActions makeRequest(long claimId, String defendantId, Response response) throws Exception {
+    private ResultActions makeRequest(String externalId, String defendantId, Response response) throws Exception {
         return webClient
-            .perform(post("/responses/claim/" + claimId + "/defendant/" + defendantId)
+            .perform(post("/responses/claim/" + externalId + "/defendant/" + defendantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
                 .content(jsonMapper.toJson(response))

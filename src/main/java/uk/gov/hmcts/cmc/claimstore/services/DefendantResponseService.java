@@ -29,27 +29,27 @@ public class DefendantResponseService {
 
     @Transactional
     public Claim save(
-        long claimId,
+        String externalId,
         String defendantId,
         Response response,
         String authorization
     ) {
-        Claim claim = claimService.getClaimById(claimId);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorization);
 
         authorisationService.assertIsDefendantOnClaim(claim, defendantId);
 
         if (isResponseAlreadySubmitted(claim)) {
-            throw new ResponseAlreadySubmittedException(claimId);
+            throw new ResponseAlreadySubmittedException(claim.getId());
         }
 
         if (isCCJAlreadyRequested(claim)) {
-            throw new CountyCourtJudgmentAlreadyRequestedException(claimId);
+            throw new CountyCourtJudgmentAlreadyRequestedException(claim.getId());
         }
 
         String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        claimService.saveDefendantResponse(claimId, defendantId, defendantEmail, response);
+        claimService.saveDefendantResponse(claim.getId(), defendantId, defendantEmail, response);
 
-        Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
+        Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 
