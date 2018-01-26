@@ -52,6 +52,9 @@ public abstract class MockSpringTest {
     @Autowired
     protected CaseRepository caseRepository;
 
+    @Autowired
+    protected LegacyClaimRepository legacyClaimRepository;
+
     @MockBean
     protected UserService userService;
 

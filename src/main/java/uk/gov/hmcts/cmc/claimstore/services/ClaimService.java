@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.LegacyClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -35,6 +36,7 @@ public class ClaimService {
     private final UserService userService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
+    private final LegacyClaimRepository legacyClaimRepository;
 
     @Autowired
     public ClaimService(
@@ -44,7 +46,8 @@ public class ClaimService {
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
-        CaseRepository caseRepository
+        CaseRepository caseRepository,
+        LegacyClaimRepository legacyClaimRepository
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -53,6 +56,7 @@ public class ClaimService {
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
+        this.legacyClaimRepository = legacyClaimRepository;
     }
 
     public Claim getClaimById(long claimId) {
@@ -124,10 +128,10 @@ public class ClaimService {
         long issuedClaimId;
 
         if (claimData.isClaimantRepresented()) {
-            issuedClaimId = claimRepository.saveRepresented(claimDataString, submitterId, issuedOn,
+            issuedClaimId = legacyClaimRepository.saveRepresented(claimDataString, submitterId, issuedOn,
                 responseDeadline, externalId, submitterEmail);
         } else {
-            issuedClaimId = claimRepository.saveSubmittedByClaimant(claimDataString, submitterId,
+            issuedClaimId = legacyClaimRepository.saveSubmittedByClaimant(claimDataString, submitterId,
                 letterHolderId.orElseThrow(IllegalStateException::new), issuedOn, responseDeadline,
                 externalId, submitterEmail);
         }

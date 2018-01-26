@@ -67,7 +67,7 @@ public class ClaimController {
     public Claim getByClaimReference(@PathVariable("claimReference") String claimReference,
                                      @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
 
-        return claimService.getClaimByReferenceAnonymous(claimReference, authorisation)
+        return claimService.getClaimByReference(claimReference, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
     }
 

@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.LegacyClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -71,6 +72,8 @@ public class ClaimServiceTest {
     @Mock
     private CaseRepository caseRepository;
     @Mock
+    private LegacyClaimRepository legacyClaimRepository;
+    @Mock
     private JsonMapper mapper;
     @Mock
     private UserService userService;
@@ -92,7 +95,9 @@ public class ClaimServiceTest {
             issueDateCalculator,
             responseDeadlineCalculator,
             eventProducer,
-            caseRepository);
+            caseRepository,
+            legacyClaimRepository
+            );
     }
 
     @Test
@@ -160,7 +165,7 @@ public class ClaimServiceTest {
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
 
-        when(claimRepository.saveRepresented(
+        when(legacyClaimRepository.saveRepresented(
             eq(jsonApp),
             eq(USER_ID),
             eq(ISSUE_DATE),

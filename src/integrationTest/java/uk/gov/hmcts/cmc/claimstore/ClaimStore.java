@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.LegacyClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -30,6 +31,9 @@ public class ClaimStore {
     private OffersRepository offersRepository;
 
     @Autowired
+    private LegacyClaimRepository legacyClaimRepository;
+
+    @Autowired
     private JsonMapper jsonMapper;
 
     public Claim getClaim(long claimId) {
@@ -43,7 +47,7 @@ public class ClaimStore {
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
         logger.info(String.format("Saving claim: %s", claimData.getExternalId()));
 
-        Long claimId = this.claimRepository.saveSubmittedByClaimant(
+        Long claimId = this.legacyClaimRepository.saveSubmittedByClaimant(
             jsonMapper.toJson(claimData),
             submitterId,
             SampleClaim.LETTER_HOLDER_ID,

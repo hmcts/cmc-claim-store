@@ -103,7 +103,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withClaimId(claimId)
             .withDefendantId(null)
             .build()));
-        given(claimRepository.linkDefendant(claimId, defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(legacyClaimRepository.linkDefendant(claimId, DEFENDANT_ID)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + claimId + "/defendant/" + defendantId))
@@ -156,7 +156,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withMail("claimant@email.com")
             .build());
 
-        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
+        given(legacyClaimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))
             .willThrow(duplicateKeyError);
 
