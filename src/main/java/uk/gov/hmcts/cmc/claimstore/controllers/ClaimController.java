@@ -99,8 +99,7 @@ public class ClaimController {
         @PathVariable("defendantId") String defendantId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        claimService.linkDefendantToClaim(externalId, defendantId, authorisation);
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return claimService.linkDefendantToClaim(externalId, defendantId, authorisation);
     }
 
     @PostMapping(value = "/{claimId:\\d+}/request-more-time")

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -17,7 +18,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
-        MvcResult result = linkdefendantRequest(claim.getId(), "1")
+        MvcResult result = linkdefendantRequest(claim.getExternalId(), "1")
             .andExpect(status().isOk())
             .andReturn();
 
@@ -28,14 +29,15 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
-        long nonExistingClaimId = 900;
+        String nonExistingExternalId = "7d293143-b787-454f-aa8e-2fd69a209e52";
 
-        linkdefendantRequest(nonExistingClaimId, "1")
+        linkdefendantRequest(nonExistingExternalId, "1")
             .andExpect(status().isNotFound());
     }
 
-    private ResultActions linkdefendantRequest(Object claimId, String defendantId) throws Exception {
+    private ResultActions linkdefendantRequest(Object externalId, String defendantId) throws Exception {
         return webClient
-            .perform(put("/claims/" + claimId + "/defendant/" + defendantId));
+            .perform(put("/claims/" + externalId + "/defendant/" + defendantId)
+            .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
 }

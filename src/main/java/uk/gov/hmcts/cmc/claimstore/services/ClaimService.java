@@ -167,11 +167,9 @@ public class ClaimService {
         return claim;
     }
 
-    public void linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
-        Claim claim = caseRepository.getClaimByExternalId(externalId, authorisation)
+    public Claim linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
+        return caseRepository.linkDefendant(externalId, defendantId, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
-
-        caseRepository.linkDefendant(claim.getExternalId(), defendantId, authorisation);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

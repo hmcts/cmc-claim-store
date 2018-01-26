@@ -15,7 +15,7 @@ public class GetClaimsByDefendantIdTest extends BaseGetTest {
         String defendantId = "1";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), "2", BEARER_TOKEN);
+        caseRepository.linkDefendant(claim.getExternalId(), defendantId, BEARER_TOKEN);
 
         MvcResult result = makeRequest("/claims/defendant/" + defendantId)
             .andExpect(status().isOk())
