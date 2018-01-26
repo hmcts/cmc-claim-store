@@ -23,17 +23,15 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
+
 @Api
 @RestController
 @RequestMapping(
     path = "/claims",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ClaimController {
-
-    public static final String UUID_PATTERN = "\\p{XDigit}{8}-\\p{XDigit}"
-        + "{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}";
-
-    public static final String CLAIM_REFERENCE_PATTERN = "^\\d{3}(?:LR|MC)\\d{3}$";
 
     private final ClaimService claimService;
 

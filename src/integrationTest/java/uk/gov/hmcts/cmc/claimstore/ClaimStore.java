@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -27,6 +28,9 @@ public class ClaimStore {
     private ClaimRepository claimRepository;
 
     @Autowired
+    private ClaimSearchRepository claimSearchRepository;
+
+    @Autowired
     private OffersRepository offersRepository;
 
     @Autowired
@@ -34,6 +38,10 @@ public class ClaimStore {
 
     public Claim getClaim(long claimId) {
         return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
+    }
+
+    public Claim getClaimByExternalId(String externalId) {
+        return claimSearchRepository.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
     }
 
     public Claim saveClaim(ClaimData claimData) {
@@ -79,17 +87,17 @@ public class ClaimStore {
         return getClaim(claimId);
     }
 
-    public Claim saveCountyCourtJudgement(long claimId, CountyCourtJudgment ccj) {
-        logger.info(String.format("Saving county court judgement with claim : %d", claimId));
+    public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {
+        logger.info(String.format("Saving county court judgement with claim : %s", externalId));
 
         this.claimRepository.saveCountyCourtJudgment(
-            claimId,
+            externalId,
             jsonMapper.toJson(ccj)
         );
 
         logger.info("Saved county court judgement");
 
-        return getClaim(claimId);
+        return getClaimByExternalId(externalId);
     }
 
     public Claim makeOffer(long claimId, Settlement settlement) {

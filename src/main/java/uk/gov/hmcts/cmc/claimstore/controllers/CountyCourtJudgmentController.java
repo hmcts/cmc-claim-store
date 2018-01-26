@@ -19,6 +19,8 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
+
 @Api
 @RestController
 @RequestMapping(
@@ -36,14 +38,14 @@ public class CountyCourtJudgmentController {
         this.userService = userService;
     }
 
-    @PostMapping("/{claimId:\\d+}/county-court-judgment")
+    @PostMapping("/{externalId:" + UUID_PATTERN + "}/county-court-judgment")
     @ApiOperation("Save County Court Judgment")
     public Claim save(
-        @PathVariable("claimId") Long claimId,
+        @PathVariable("externalId") String externalId,
         @NotNull @RequestBody @Valid CountyCourtJudgment countyCourtJudgment,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, claimId);
+        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation);
     }
 }
