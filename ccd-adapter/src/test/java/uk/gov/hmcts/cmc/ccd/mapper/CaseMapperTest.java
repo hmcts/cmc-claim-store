@@ -49,15 +49,6 @@ public class CaseMapperTest {
         assertThat(claim).isEqualTo(ccdCase);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowExceptionWhenMissingClaimDataFromClaim() {
-        //given
-        Claim claim = SampleClaim.builder().withClaimData(null).build();
-
-        //when
-        caseMapper.to(claim);
-    }
-
     @Test
     public void shouldMapLegalClaimFromCCD() {
         //given
@@ -98,23 +89,5 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowExceptionWhenMissingClaimDataFromCCDCase() {
-        //given
-        CCDCase ccdCase = CCDCase.builder()
-            .id(1L)
-            .submittedOn("2017-11-01T10:15:30")
-            .issuedOn("2017-11-15")
-            .submitterEmail("my@email.com")
-            .submitterId("123")
-            .referenceNumber("ref no")
-            .externalId(UUID.randomUUID().toString())
-            .claimData(null)
-            .build();
-
-        //when
-        caseMapper.from(ccdCase);
     }
 }

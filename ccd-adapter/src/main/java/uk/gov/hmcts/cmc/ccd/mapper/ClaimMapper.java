@@ -93,7 +93,10 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Override
     public ClaimData from(CCDClaim ccdClaim) {
-        Objects.requireNonNull(ccdClaim, "ccdClaim must not be null");
+        // After data migration remove this null check and enforce presence
+        if (ccdClaim == null || ccdClaim.getClaimants() == null) {
+            return null;
+        }
 
         List<Party> claimants = ccdClaim.getClaimants()
             .stream()
