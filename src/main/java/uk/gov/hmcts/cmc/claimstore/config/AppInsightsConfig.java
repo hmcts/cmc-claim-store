@@ -14,10 +14,10 @@ public class AppInsightsConfig {
     @Bean
     public String telemetryConfig() {
         String telemetryKey = "f8c7905e-861c-4e9a-83f8-a63099a73f6e";
-//        String telemetryKey = System.getenv("APPLICATION_INSIGHTS_IKEY");
-//        if (telemetryKey != null) {
+        //String telemetryKey = System.getenv("APPLICATION_INSIGHTS_IKEY");
+        //if (telemetryKey != null) {
         TelemetryConfiguration.getActive().setInstrumentationKey(telemetryKey);
-//        }
+        //}
         return telemetryKey;
     }
 
@@ -31,7 +31,8 @@ public class AppInsightsConfig {
     }
 
     @Bean(name = "WebRequestTrackingFilter")
-    public Filter WebRequestTrackingFilter() {
+    public Filter webRequestTrackingFilter() {
         return new WebRequestTrackingFilter();
     }
+
 }
