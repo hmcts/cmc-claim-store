@@ -35,7 +35,7 @@ public interface ClaimRepository {
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
-    Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
+    Optional<Claim> getByClaimReferenceNumberAnonymous(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId "
         + " AND claim.claim ->>'externalReferenceNumber' = :externalReference" + ORDER_BY_ID_DESCENDING)
@@ -120,14 +120,6 @@ public interface ClaimRepository {
     Integer linkSealedClaimDocument(
         @Bind("claimId") Long claimId,
         @Bind("documentSelfPath") String documentSelfPath
-    );
-
-    @SqlUpdate(
-        "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
-    )
-    Integer linkDefendant(
-        @Bind("claimId") Long claimId,
-        @Bind("defendantId") String defendantId
     );
 
     @SqlUpdate(

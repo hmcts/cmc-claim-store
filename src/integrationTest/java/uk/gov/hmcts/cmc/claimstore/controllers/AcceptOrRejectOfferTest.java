@@ -57,7 +57,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
         );
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
-        claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
+        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         claimStore.saveResponse(claim.getId(), SampleResponse.validDefaults(), DEFENDANT_ID,
             SampleClaim.DEFENDANT_EMAIL);
         prepareDefendantOffer();
@@ -129,7 +129,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
     private ResultActions postRequestTo(String endpoint) throws Exception {
         return webClient
             .perform(
-                post(format("/claims/%d/offers/%s/%s", claim.getId(), MadeBy.CLAIMANT.name(), endpoint))
+                post(format("/claims/%s/offers/%s/%s", claim.getExternalId(), MadeBy.CLAIMANT.name(), endpoint))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
             );
@@ -138,7 +138,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
     private void prepareDefendantOffer() throws Exception {
         webClient
             .perform(
-                post(format("/claims/%d/offers/%s", claim.getId(), MadeBy.DEFENDANT.name()))
+                post(format("/claims/%s/offers/%s", claim.getExternalId(), MadeBy.DEFENDANT.name()))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, DEFENDANT_AUTH_TOKEN)
                     .content(jsonMapper.toJson(SampleOffer.validDefaults()))

@@ -43,7 +43,7 @@ public class MakeOfferTest extends BaseIntegrationTest {
     @Before
     public void beforeEachTest() {
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
+        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(
             SampleUserDetails.builder()
@@ -136,7 +136,7 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     private ResultActions makeOffer(String authToken, Offer offer, String party) throws Exception {
         return webClient
-            .perform(post(format("/claims/%d/offers/%s", claim.getId(), party))
+            .perform(post(format("/claims/%s/offers/%s", claim.getExternalId(), party))
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, authToken)
                 .content(jsonMapper.toJson(offer))

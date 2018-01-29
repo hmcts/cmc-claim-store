@@ -92,25 +92,27 @@ public class ClaimController {
         return claimService.saveClaim(submitterId, claimData, authorisation);
     }
 
-    @PutMapping("/{claimId:\\d+}/defendant/{defendantId}")
+    @PutMapping("/{externalId:" + UUID_PATTERN + "}/defendant/{defendantId}")
     @ApiOperation("Links defendant to existing claim")
-    public Claim linkDefendantToClaim(@PathVariable("claimId") Long claimId,
-                                      @PathVariable("defendantId") String defendantId) {
-        claimService.linkDefendantToClaim(claimId, defendantId);
-        return claimService.getClaimById(claimId);
+    public Claim linkDefendantToClaim(
+        @PathVariable("externalId") String externalId,
+        @PathVariable("defendantId") String defendantId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.linkDefendantToClaim(externalId, defendantId, authorisation);
     }
 
-    @PostMapping(value = "/{claimId:\\d+}/request-more-time")
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")
     @ApiOperation("Updates response deadline. Can be called only once per each claim")
-    public Claim requestMoreTimeToRespond(@PathVariable("claimId") Long claimId,
+    public Claim requestMoreTimeToRespond(@PathVariable("externalId") String externalId,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.requestMoreTimeForResponse(claimId, authorisation);
+        return claimService.requestMoreTimeForResponse(externalId, authorisation);
     }
 
     @GetMapping("/{caseReference}/defendant-link-status")
     @ApiOperation("Check whether a claim is linked to a defendant")
     public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
-        Boolean linked = claimService.getClaimByReference(caseReference)
+        Boolean linked = claimService.getClaimByReferenceAnonymous(caseReference)
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();
         return new DefendantLinkStatus(linked);

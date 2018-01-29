@@ -125,7 +125,7 @@ dependencies {
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.0'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '1.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.4.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '2.3.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '2.3.2'
 
   testCompile project(':domain-sample-data')
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
