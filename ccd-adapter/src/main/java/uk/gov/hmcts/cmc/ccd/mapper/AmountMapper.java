@@ -45,6 +45,10 @@ public class AmountMapper implements Mapper<CCDAmount, Amount> {
 
     @Override
     public Amount from(CCDAmount ccdAmount) {
+        // After data migration remove this null check and enforce presence
+        if (ccdAmount == null || ccdAmount.getType() == null) {
+            return null;
+        }
 
         switch (ccdAmount.getType()) {
             case RANGE:
