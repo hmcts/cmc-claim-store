@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.LegacyCaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -14,28 +14,28 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 
-@Service("caseRepository")
+@Service("caseDBI")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
-public class CCDCaseRepository implements CaseRepository {
-    private final Logger logger = LoggerFactory.getLogger(CCDCaseRepository.class);
+public class CCDCaseDBI implements CaseDBI {
+    private final Logger logger = LoggerFactory.getLogger(CCDCaseDBI.class);
 
-    private final LegacyCaseRepository legacyCaseRepository;
+    private final CaseRepository caseRepository;
     private final CCDClaimSearchRepository ccdClaimSearchRepository;
     private final UserService userService;
 
-    public CCDCaseRepository(
-        LegacyCaseRepository legacyCaseRepository,
+    public CCDCaseDBI(
+        CaseRepository caseRepository,
         CCDClaimSearchRepository ccdClaimSearchRepository,
         UserService userService
     ) {
-        this.legacyCaseRepository = legacyCaseRepository;
+        this.caseRepository = caseRepository;
         this.ccdClaimSearchRepository = ccdClaimSearchRepository;
         this.userService = userService;
     }
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        List<Claim> dbClaims = legacyCaseRepository.getBySubmitterId(submitterId);
+        List<Claim> dbClaims = caseRepository.getBySubmitterId(submitterId);
         List<Claim> ccdClaims = ccdClaimSearchRepository.getBySubmitterId(submitterId, authorisation);
         logClaimDetails(dbClaims, ccdClaims);
         return dbClaims;
@@ -50,7 +50,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        Optional<Claim> claim = legacyCaseRepository.getClaimByExternalId(externalId);
+        Optional<Claim> claim = caseRepository.getClaimByExternalId(externalId);
         Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByExternalId(externalId, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
@@ -65,7 +65,7 @@ public class CCDCaseRepository implements CaseRepository {
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
         Optional<Claim> claim
-            = legacyCaseRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
+            = caseRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
 
         Optional<Claim> ccdClaim
             = ccdClaimSearchRepository.getByReferenceNumber(claimReferenceNumber, authorisation);
@@ -80,10 +80,10 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
-        Optional<Claim> claim = legacyCaseRepository.getClaimByExternalId(externalId);
+        Optional<Claim> claim = caseRepository.getClaimByExternalId(externalId);
         if (claim.isPresent()) {
-            legacyCaseRepository.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
-            claim = legacyCaseRepository.getClaimByExternalId(externalId);
+            caseRepository.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
+            claim = caseRepository.getClaimByExternalId(externalId);
         }
         return claim;
     }

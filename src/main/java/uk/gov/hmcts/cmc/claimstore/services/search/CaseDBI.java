@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.List;
 import java.util.Optional;
 
-public interface CaseRepository {
+public interface CaseDBI {
     List<Claim> getBySubmitterId(String submitterId, String authorisation);
 
     Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
@@ -14,3 +14,4 @@ public interface CaseRepository {
 
     Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation);
 }
+

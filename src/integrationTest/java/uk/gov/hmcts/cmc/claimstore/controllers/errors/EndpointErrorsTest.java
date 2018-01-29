@@ -49,7 +49,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(caseRepository.getClaimByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseDBI.getClaimByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + externalId)
@@ -62,7 +62,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchBySubmitterIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String submitterId = "1";
 
-        given(caseRepository.getBySubmitterId(submitterId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseDBI.getBySubmitterId(submitterId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/claimant/" + submitterId)
@@ -75,7 +75,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByDefendantIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String defendantId = "1";
 
-        given(claimRepository.getByDefendantId(defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getByDefendantId(defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/defendant/" + defendantId)
@@ -88,7 +88,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "2ab19d16-fddf-4494-a01a-f64f93d04782";
 
-        given(legacyCaseRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/2")
@@ -105,8 +105,8 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withExternalId(externalId)
             .withDefendantId(null)
             .build();
-        given(legacyCaseRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
-        given(legacyCaseRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
+        given(caseRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/" + defendantId)
@@ -118,7 +118,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void retrieveDefendantLinkStatusShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimRepository.getByClaimReferenceNumberAnonymous(referenceNumber)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getByClaimReferenceNumberAnonymous(referenceNumber)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + referenceNumber + "/defendant-link-status"))
@@ -129,7 +129,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void requestForMoreTimeShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
-        given(caseRepository.getClaimByExternalId(externalId, anyString())).willThrow(UNEXPECTED_ERROR);
+        given(caseDBI.getClaimByExternalId(externalId, anyString())).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(post("/claims/" + externalId + "/request-more-time")
@@ -160,7 +160,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withMail("claimant@email.com")
             .build());
 
-        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
+        given(caseRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString()))
             .willThrow(duplicateKeyError);
 
@@ -177,9 +177,9 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void saveResponseShouldFailWhenDefendantResponseFailedStoring() throws Exception {
         String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
-        given(caseRepository.getClaimByExternalId(externalId, anyString()))
+        given(caseDBI.getClaimByExternalId(externalId, anyString()))
             .willReturn(Optional.of(SampleClaim.getDefault()));
-        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyLong(), anyString(), anyString(),
+        willThrow(UNEXPECTED_ERROR).given(caseRepository).saveDefendantResponse(anyLong(), anyString(), anyString(),
             anyString());
 
         webClient

@@ -18,13 +18,12 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.LegacyCaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
-import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseDBI;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -48,13 +47,10 @@ public abstract class MockSpringTest {
     protected JsonMapper jsonMapper;
 
     @Autowired
-    protected ClaimRepository claimRepository;
-
-    @Autowired
     protected CaseRepository caseRepository;
 
     @Autowired
-    protected LegacyCaseRepository legacyCaseRepository;
+    protected CaseDBI caseDBI;
 
     @Autowired
     protected TestingSupportRepository testingSupportRepository;
@@ -106,13 +102,10 @@ public abstract class MockSpringTest {
         private DataSource dataSource;
 
         @MockBean
-        private ClaimRepository claimRepository;
+        private CaseRepository caseRepository;
 
         @MockBean
         private TestingSupportRepository testingSupportRepository;
-
-        @MockBean
-        private LegacyCaseRepository legacyCaseRepository;
 
         @Bean
         protected PlatformTransactionManager transactionManager() {

@@ -5,8 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.LegacyCaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -25,10 +24,7 @@ public class ClaimStore {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ClaimRepository claimRepository;
-
-    @Autowired
-    private LegacyCaseRepository legacyCaseRepository;
+    private CaseRepository caseRepository;
 
     @Autowired
     private OffersRepository offersRepository;
@@ -37,11 +33,11 @@ public class ClaimStore {
     private JsonMapper jsonMapper;
 
     public Claim getClaim(long claimId) {
-        return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
+        return caseRepository.getById(claimId).orElseThrow(RuntimeException::new);
     }
 
     public Claim getClaimByExternalId(String externalId) {
-        return legacyCaseRepository.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
+        return caseRepository.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
     }
 
     public Claim saveClaim(ClaimData claimData) {
@@ -51,7 +47,7 @@ public class ClaimStore {
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
         logger.info(String.format("Saving claim: %s", claimData.getExternalId()));
 
-        Long claimId = this.claimRepository.saveSubmittedByClaimant(
+        Long claimId = this.caseRepository.saveSubmittedByClaimant(
             jsonMapper.toJson(claimData),
             submitterId,
             SampleClaim.LETTER_HOLDER_ID,
@@ -62,7 +58,7 @@ public class ClaimStore {
         );
 
         logger.info("Saved claim has been given ID " + claimId + ". The following claims exist in the DB: "
-            + this.claimRepository.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
+            + this.caseRepository.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
             .collect(Collectors.toList()));
 
         return getClaim(claimId);
@@ -75,7 +71,7 @@ public class ClaimStore {
     public Claim saveResponse(long claimId, Response response, String defendantId, String defendantEmail) {
         logger.info(String.format("Saving response data with claim : %d", claimId));
 
-        this.claimRepository.saveDefendantResponse(
+        this.caseRepository.saveDefendantResponse(
             claimId,
             defendantId,
             defendantEmail,
@@ -90,7 +86,7 @@ public class ClaimStore {
     public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {
         logger.info(String.format("Saving county court judgement with claim : %s", externalId));
 
-        this.claimRepository.saveCountyCourtJudgment(
+        this.caseRepository.saveCountyCourtJudgment(
             externalId,
             jsonMapper.toJson(ccj)
         );
@@ -126,7 +122,7 @@ public class ClaimStore {
     }
 
     public Claim linkSealedClaimDocumentSelfPath(long claimId, String documentSelfPath) {
-        this.claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+        this.caseRepository.linkSealedClaimDocument(claimId, documentSelfPath);
 
         return getClaim(claimId);
     }

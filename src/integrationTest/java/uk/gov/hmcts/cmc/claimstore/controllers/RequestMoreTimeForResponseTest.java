@@ -45,13 +45,13 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseDBI.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
             .andReturn();
 
-        Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
+        Claim updatedClaim = caseRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
 
         assertThat(updatedClaim.isMoreTimeRequested()).isTrue();
     }
@@ -61,7 +61,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseDBI.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk());
@@ -75,7 +75,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseDBI.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .willThrow(new NotificationClientException(new RuntimeException("first attempt fails")))
@@ -106,7 +106,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(OTHER_USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseDBI.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isForbidden());
@@ -119,7 +119,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", responseDeadlineInThePast);
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseDBI.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
@@ -130,8 +130,8 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-        claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
+        caseDBI.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.requestMoreTime(claim.getId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
