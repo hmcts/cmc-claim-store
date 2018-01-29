@@ -15,6 +15,6 @@ withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.E
   enableSlackNotifications('#cmc-tech-cnp')
 
   before('build') {
-    sh './gradlew build'
+    sh './gradlew check'
   }
 }
