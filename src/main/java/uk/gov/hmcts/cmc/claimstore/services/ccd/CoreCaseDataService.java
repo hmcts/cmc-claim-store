@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 import java.io.IOException;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 
 @Service
@@ -61,6 +62,11 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(String
                 .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
         }
+    }
+
+    public CaseDetails saveCountyCourtJudgment(String authorisation, Claim claimWithCCJ) {
+        CCDCase ccdCase = this.caseMapper.to(claimWithCCJ);
+        return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {

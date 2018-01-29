@@ -47,7 +47,7 @@ public class CountyCourtJudgmentService {
 
         Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
-        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ);
+        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ, authorisation);
 
         return claimWithCCJ;
     }

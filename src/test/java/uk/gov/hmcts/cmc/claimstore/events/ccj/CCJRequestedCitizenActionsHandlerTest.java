@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class CCJRequestedCitizenActionsHandlerTest {
 
     private static final CountyCourtJudgmentRequestedEvent EVENT = new CountyCourtJudgmentRequestedEvent(
-        SampleClaimIssuedEvent.CLAIM
+        SampleClaimIssuedEvent.CLAIM, "Bearer token here"
     );
     private CCJRequestedCitizenActionsHandler handler;
 
