@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -13,36 +13,36 @@ import java.util.Optional;
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
 public class DBCaseRepository implements CaseRepository {
 
-    private final CaseDBI caseDBI;
+    private final ClaimRepository claimRepository;
     private final UserService userService;
 
     public DBCaseRepository(
-        CaseDBI caseDBI,
+        ClaimRepository claimRepository,
         UserService userService
     ) {
-        this.caseDBI = caseDBI;
+        this.claimRepository = claimRepository;
         this.userService = userService;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        return caseDBI.getBySubmitterId(submitterId);
+        return claimRepository.getBySubmitterId(submitterId);
     }
 
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        return caseDBI.getClaimByExternalId(externalId);
+        return claimRepository.getClaimByExternalId(externalId);
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return caseDBI.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
+        return claimRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
     }
 
     @Override
     public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
-        Optional<Claim> claim = caseDBI.getClaimByExternalId(externalId);
+        Optional<Claim> claim = claimRepository.getClaimByExternalId(externalId);
         if (claim.isPresent()) {
-            caseDBI.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
-            claim = caseDBI.getClaimByExternalId(externalId);
+            claimRepository.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
+            claim = claimRepository.getClaimByExternalId(externalId);
         }
         return claim;
 

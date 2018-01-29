@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -28,7 +28,7 @@ import java.util.Optional;
 @Component
 public class ClaimService {
 
-    private final CaseDBI caseDBI;
+    private final ClaimRepository claimRepository;
     private final JsonMapper jsonMapper;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
@@ -38,7 +38,7 @@ public class ClaimService {
 
     @Autowired
     public ClaimService(
-        CaseDBI caseDBI,
+        ClaimRepository claimRepository,
         UserService userService,
         JsonMapper jsonMapper,
         IssueDateCalculator issueDateCalculator,
@@ -46,7 +46,7 @@ public class ClaimService {
         EventProducer eventProducer,
         CaseRepository caseRepository
     ) {
-        this.caseDBI = caseDBI;
+        this.claimRepository = claimRepository;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.issueDateCalculator = issueDateCalculator;
@@ -56,7 +56,7 @@ public class ClaimService {
     }
 
     public Claim getClaimById(long claimId) {
-        return caseDBI
+        return claimRepository
             .getById(claimId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
@@ -66,7 +66,7 @@ public class ClaimService {
     }
 
     public Claim getClaimByLetterHolderId(String id) {
-        return caseDBI
+        return claimRepository
             .getByLetterHolderId(id)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
@@ -83,17 +83,17 @@ public class ClaimService {
     }
 
     public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
-        return caseDBI
+        return claimRepository
             .getByClaimReferenceNumberAnonymous(reference);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return caseDBI.getByExternalReference(externalReference, submitterId);
+        return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 
     public List<Claim> getClaimByDefendantId(String id) {
-        return caseDBI.getByDefendantId(id);
+        return claimRepository.getByDefendantId(id);
     }
 
     @Transactional
@@ -122,10 +122,10 @@ public class ClaimService {
         long issuedClaimId;
 
         if (claimData.isClaimantRepresented()) {
-            issuedClaimId = caseDBI.saveRepresented(claimDataString, submitterId, issuedOn,
+            issuedClaimId = claimRepository.saveRepresented(claimDataString, submitterId, issuedOn,
                 responseDeadline, externalId, submitterEmail);
         } else {
-            issuedClaimId = caseDBI.saveSubmittedByClaimant(claimDataString, submitterId,
+            issuedClaimId = claimRepository.saveSubmittedByClaimant(claimDataString, submitterId,
                 letterHolderId.orElseThrow(IllegalStateException::new), issuedOn, responseDeadline,
                 externalId, submitterEmail);
         }
@@ -160,7 +160,7 @@ public class ClaimService {
         LocalDate newDeadline = responseDeadlineCalculator
             .calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        caseDBI.requestMoreTime(claim.getId(), newDeadline);
+        claimRepository.requestMoreTime(claim.getId(), newDeadline);
         claim = getClaimByExternalId(externalId, authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
@@ -173,18 +173,18 @@ public class ClaimService {
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
-        caseDBI.linkLetterHolder(claimId, userId);
+        claimRepository.linkLetterHolder(claimId, userId);
     }
 
     public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
-        caseDBI.linkSealedClaimDocument(claimId, documentSelfPath);
+        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
     }
 
     public void saveCountyCourtJudgment(String externalId, CountyCourtJudgment countyCourtJudgment) {
-        caseDBI.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
+        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
     }
 
     public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
-        caseDBI.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
+        claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
     }
 }

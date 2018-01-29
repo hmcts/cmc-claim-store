@@ -18,7 +18,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -47,7 +47,7 @@ public abstract class MockSpringTest {
     protected JsonMapper jsonMapper;
 
     @Autowired
-    protected CaseDBI caseDBI;
+    protected ClaimRepository claimRepository;
 
     @Autowired
     protected CaseRepository caseRepository;
@@ -102,7 +102,7 @@ public abstract class MockSpringTest {
         private DataSource dataSource;
 
         @MockBean
-        private CaseDBI caseDBI;
+        private ClaimRepository claimRepository;
 
         @MockBean
         private TestingSupportRepository testingSupportRepository;

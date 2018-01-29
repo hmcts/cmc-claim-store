@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineExce
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
+import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -67,7 +67,7 @@ public class ClaimServiceTest {
     private ClaimService claimService;
 
     @Mock
-    private CaseDBI caseDBI;
+    private ClaimRepository claimRepository;
     @Mock
     private CaseRepository caseRepository;
     @Mock
@@ -86,7 +86,7 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(VALID_DEFENDANT_TOKEN))).thenReturn(validDefendant);
 
         claimService = new ClaimService(
-            caseDBI,
+            claimRepository,
             userService,
             mapper,
             issueDateCalculator,
@@ -100,7 +100,7 @@ public class ClaimServiceTest {
 
         Optional<Claim> result = Optional.of(claim);
 
-        when(caseDBI.getById(eq(CLAIM_ID))).thenReturn(result);
+        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(result);
 
         Claim actual = claimService.getClaimById(CLAIM_ID);
         assertThat(actual).isEqualTo(claim);
@@ -109,7 +109,7 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void getClaimByIdShouldThrowNotFoundException() {
 
-        when(caseDBI.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
+        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
 
         claimService.getClaimById(CLAIM_ID);
     }
@@ -120,7 +120,7 @@ public class ClaimServiceTest {
         Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
         Optional<Claim> result = Optional.of(claim);
 
-        when(caseDBI.getByLetterHolderId(eq(LETTER_HOLDER_ID))).thenReturn(result);
+        when(claimRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID))).thenReturn(result);
 
         Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID);
         assertThat(claimApplication).isEqualTo(claim);
@@ -132,7 +132,7 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String letterHolderId = "0";
 
-        when(caseDBI.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
+        when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
 
         claimService.getClaimByLetterHolderId(letterHolderId);
     }
@@ -160,7 +160,7 @@ public class ClaimServiceTest {
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
 
-        when(caseDBI.saveRepresented(
+        when(claimRepository.saveRepresented(
             eq(jsonApp),
             eq(USER_ID),
             eq(ISSUE_DATE),
@@ -169,7 +169,7 @@ public class ClaimServiceTest {
             eq(SUBMITTER_EMAIL)
         )).thenReturn(CLAIM_ID);
 
-        when(caseDBI.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
 
         Claim createdClaim = claimService.saveClaim(USER_ID, app, authorisationToken);
 
@@ -199,7 +199,7 @@ public class ClaimServiceTest {
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
 
-        verify(caseDBI, once()).requestMoreTime(eq(CLAIM_ID), eq(newDeadline));
+        verify(claimRepository, once()).requestMoreTime(eq(CLAIM_ID), eq(newDeadline));
         verify(eventProducer, once())
             .createMoreTimeForResponseRequestedEvent(eq(claim), eq(newDeadline), eq(validDefendant.getEmail()));
     }

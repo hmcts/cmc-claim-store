@@ -51,7 +51,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        Claim updatedClaim = caseDBI.getById(claim.getId()).orElseThrow(RuntimeException::new);
+        Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
 
         assertThat(updatedClaim.isMoreTimeRequested()).isTrue();
     }
@@ -131,7 +131,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-        caseDBI.requestMoreTime(claim.getId(), LocalDate.now());
+        claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
