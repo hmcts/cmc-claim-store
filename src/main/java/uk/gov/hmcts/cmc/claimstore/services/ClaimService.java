@@ -12,8 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
-import uk.gov.hmcts.cmc.claimstore.services.search.CaseDBI;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -28,79 +28,79 @@ import java.util.Optional;
 @Component
 public class ClaimService {
 
-    private final CaseRepository caseRepository;
+    private final CaseDBI caseDBI;
     private final JsonMapper jsonMapper;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
-    private final CaseDBI caseDBI;
+    private final CaseRepository caseRepository;
 
     @Autowired
     public ClaimService(
-        CaseRepository caseRepository,
+        CaseDBI caseDBI,
         UserService userService,
         JsonMapper jsonMapper,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
-        CaseDBI caseDBI
+        CaseRepository caseRepository
     ) {
-        this.caseRepository = caseRepository;
+        this.caseDBI = caseDBI;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
-        this.caseDBI = caseDBI;
+        this.caseRepository = caseRepository;
     }
 
     public Claim getClaimById(long claimId) {
-        return caseRepository
+        return caseDBI
             .getById(claimId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
-        return caseDBI.getBySubmitterId(submitterId, authorisation);
+        return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
     public Claim getClaimByLetterHolderId(String id) {
-        return caseRepository
+        return caseDBI
             .getByLetterHolderId(id)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {
-        return caseDBI
+        return caseRepository
             .getClaimByExternalId(externalId, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
-        return caseDBI
+        return caseRepository
             .getByClaimReferenceNumber(reference, authorisation);
     }
 
     public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
-        return caseRepository
+        return caseDBI
             .getByClaimReferenceNumberAnonymous(reference);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return caseRepository.getByExternalReference(externalReference, submitterId);
+        return caseDBI.getByExternalReference(externalReference, submitterId);
     }
 
     public List<Claim> getClaimByDefendantId(String id) {
-        return caseRepository.getByDefendantId(id);
+        return caseDBI.getByDefendantId(id);
     }
 
     @Transactional
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        caseDBI.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
+        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
         });
 
@@ -122,10 +122,10 @@ public class ClaimService {
         long issuedClaimId;
 
         if (claimData.isClaimantRepresented()) {
-            issuedClaimId = caseRepository.saveRepresented(claimDataString, submitterId, issuedOn,
+            issuedClaimId = caseDBI.saveRepresented(claimDataString, submitterId, issuedOn,
                 responseDeadline, externalId, submitterEmail);
         } else {
-            issuedClaimId = caseRepository.saveSubmittedByClaimant(claimDataString, submitterId,
+            issuedClaimId = caseDBI.saveSubmittedByClaimant(claimDataString, submitterId,
                 letterHolderId.orElseThrow(IllegalStateException::new), issuedOn, responseDeadline,
                 externalId, submitterEmail);
         }
@@ -160,7 +160,7 @@ public class ClaimService {
         LocalDate newDeadline = responseDeadlineCalculator
             .calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        caseRepository.requestMoreTime(claim.getId(), newDeadline);
+        caseDBI.requestMoreTime(claim.getId(), newDeadline);
         claim = getClaimByExternalId(externalId, authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
@@ -168,23 +168,23 @@ public class ClaimService {
     }
 
     public Claim linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
-        return caseDBI.linkDefendant(externalId, defendantId, authorisation)
+        return caseRepository.linkDefendant(externalId, defendantId, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
-        caseRepository.linkLetterHolder(claimId, userId);
+        caseDBI.linkLetterHolder(claimId, userId);
     }
 
     public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
-        caseRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+        caseDBI.linkSealedClaimDocument(claimId, documentSelfPath);
     }
 
     public void saveCountyCourtJudgment(String externalId, CountyCourtJudgment countyCourtJudgment) {
-        caseRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
+        caseDBI.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
     }
 
     public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
-        caseRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
+        caseDBI.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
     }
 }

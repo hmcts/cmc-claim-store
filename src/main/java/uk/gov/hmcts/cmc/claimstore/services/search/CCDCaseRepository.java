@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -14,29 +14,29 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 
-@Service("caseDBI")
+@Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
-public class CCDCaseDBI implements CaseDBI {
-    private final Logger logger = LoggerFactory.getLogger(CCDCaseDBI.class);
+public class CCDCaseRepository implements CaseRepository {
+    private final Logger logger = LoggerFactory.getLogger(CCDCaseRepository.class);
 
-    private final CaseRepository caseRepository;
-    private final CCDClaimSearchRepository ccdClaimSearchRepository;
+    private final CaseDBI caseDBI;
+    private final CCDCaseApi ccdCaseApi;
     private final UserService userService;
 
-    public CCDCaseDBI(
-        CaseRepository caseRepository,
-        CCDClaimSearchRepository ccdClaimSearchRepository,
+    public CCDCaseRepository(
+        CaseDBI caseDBI,
+        CCDCaseApi ccdCaseApi,
         UserService userService
     ) {
-        this.caseRepository = caseRepository;
-        this.ccdClaimSearchRepository = ccdClaimSearchRepository;
+        this.caseDBI = caseDBI;
+        this.ccdCaseApi = ccdCaseApi;
         this.userService = userService;
     }
 
     @Override
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        List<Claim> dbClaims = caseRepository.getBySubmitterId(submitterId);
-        List<Claim> ccdClaims = ccdClaimSearchRepository.getBySubmitterId(submitterId, authorisation);
+        List<Claim> dbClaims = caseDBI.getBySubmitterId(submitterId);
+        List<Claim> ccdClaims = ccdCaseApi.getBySubmitterId(submitterId, authorisation);
         logClaimDetails(dbClaims, ccdClaims);
         return dbClaims;
     }
@@ -50,8 +50,8 @@ public class CCDCaseDBI implements CaseDBI {
 
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        Optional<Claim> claim = caseRepository.getClaimByExternalId(externalId);
-        Optional<Claim> ccdClaim = ccdClaimSearchRepository.getByExternalId(externalId, authorisation);
+        Optional<Claim> claim = caseDBI.getClaimByExternalId(externalId);
+        Optional<Claim> ccdClaim = ccdCaseApi.getByExternalId(externalId, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with external id %s user %s exist in ccd",
@@ -65,10 +65,10 @@ public class CCDCaseDBI implements CaseDBI {
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
         Optional<Claim> claim
-            = caseRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
+            = caseDBI.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
 
         Optional<Claim> ccdClaim
-            = ccdClaimSearchRepository.getByReferenceNumber(claimReferenceNumber, authorisation);
+            = ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
 
         if (claim.isPresent() && ccdClaim.isPresent()) {
             logger.info(format("claim with reference number %s user %s exist in ccd",
@@ -80,10 +80,10 @@ public class CCDCaseDBI implements CaseDBI {
 
     @Override
     public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
-        Optional<Claim> claim = caseRepository.getClaimByExternalId(externalId);
+        Optional<Claim> claim = caseDBI.getClaimByExternalId(externalId);
         if (claim.isPresent()) {
-            caseRepository.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
-            claim = caseRepository.getClaimByExternalId(externalId);
+            caseDBI.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
+            claim = caseDBI.getClaimByExternalId(externalId);
         }
         return claim;
     }

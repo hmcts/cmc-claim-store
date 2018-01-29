@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseDBI;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -24,7 +24,7 @@ public class ClaimStore {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private CaseRepository caseRepository;
+    private CaseDBI caseDBI;
 
     @Autowired
     private OffersRepository offersRepository;
@@ -33,11 +33,11 @@ public class ClaimStore {
     private JsonMapper jsonMapper;
 
     public Claim getClaim(long claimId) {
-        return caseRepository.getById(claimId).orElseThrow(RuntimeException::new);
+        return caseDBI.getById(claimId).orElseThrow(RuntimeException::new);
     }
 
     public Claim getClaimByExternalId(String externalId) {
-        return caseRepository.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
+        return caseDBI.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
     }
 
     public Claim saveClaim(ClaimData claimData) {
@@ -47,7 +47,7 @@ public class ClaimStore {
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
         logger.info(String.format("Saving claim: %s", claimData.getExternalId()));
 
-        Long claimId = this.caseRepository.saveSubmittedByClaimant(
+        Long claimId = this.caseDBI.saveSubmittedByClaimant(
             jsonMapper.toJson(claimData),
             submitterId,
             SampleClaim.LETTER_HOLDER_ID,
@@ -58,7 +58,7 @@ public class ClaimStore {
         );
 
         logger.info("Saved claim has been given ID " + claimId + ". The following claims exist in the DB: "
-            + this.caseRepository.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
+            + this.caseDBI.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
             .collect(Collectors.toList()));
 
         return getClaim(claimId);
@@ -71,7 +71,7 @@ public class ClaimStore {
     public Claim saveResponse(long claimId, Response response, String defendantId, String defendantEmail) {
         logger.info(String.format("Saving response data with claim : %d", claimId));
 
-        this.caseRepository.saveDefendantResponse(
+        this.caseDBI.saveDefendantResponse(
             claimId,
             defendantId,
             defendantEmail,
@@ -86,7 +86,7 @@ public class ClaimStore {
     public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {
         logger.info(String.format("Saving county court judgement with claim : %s", externalId));
 
-        this.caseRepository.saveCountyCourtJudgment(
+        this.caseDBI.saveCountyCourtJudgment(
             externalId,
             jsonMapper.toJson(ccj)
         );
@@ -122,7 +122,7 @@ public class ClaimStore {
     }
 
     public Claim linkSealedClaimDocumentSelfPath(long claimId, String documentSelfPath) {
-        this.caseRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+        this.caseDBI.linkSealedClaimDocument(claimId, documentSelfPath);
 
         return getClaim(claimId);
     }
