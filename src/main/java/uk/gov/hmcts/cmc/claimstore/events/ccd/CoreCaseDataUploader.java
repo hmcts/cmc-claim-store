@@ -32,7 +32,7 @@ public class CoreCaseDataUploader {
     }
 
     @TransactionalEventListener
-    public void saveClaim(CountyCourtJudgmentRequestedEvent event) {
+    public void saveCountyCourtJudgment(CountyCourtJudgmentRequestedEvent event) {
         try {
             coreCaseDataService.saveCountyCourtJudgment(event.getAuthorisation(), event.getClaim());
         } catch (CoreCaseDataStoreException ex) {

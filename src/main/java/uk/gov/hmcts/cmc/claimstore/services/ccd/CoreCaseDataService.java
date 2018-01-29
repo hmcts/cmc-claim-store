@@ -83,7 +83,8 @@ public class CoreCaseDataService {
                 .update(authorisation, eventRequestData, ccdCase, ccdCase.getId());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
-                .format("Failed storing claim in CCD store for claim %s", ccdCase.getReferenceNumber()), exception);
+                .format("Failed updating claim in CCD store for claim %s on event %s", ccdCase.getReferenceNumber(),
+                    caseEvent), exception);
         }
     }
 
