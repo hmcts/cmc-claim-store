@@ -24,10 +24,6 @@ variable "s2s-url" {
   default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
 }
 
-variable "ccd-url" {
-  default = "https://case-data-app.test.ccd.reform.hmcts.net:4481"
-}
-
 variable "frontend-url" {
   default = "https://www.nonprod.moneyclaim.platform.hmcts.net"
 }
