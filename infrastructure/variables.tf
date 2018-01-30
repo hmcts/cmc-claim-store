@@ -25,7 +25,7 @@ variable "s2s-url" {
 }
 
 variable "ccd-url" {
-  default = "http://ccd-data-store-api-sandbox.service.core-compute-sandbox.internal"
+  default = "http://ccd-user-profile-api-${var.env}.service.${data.terraform_remote_state.core_apps_compute.ase_name[0]}.internal"
 }
 
 variable "frontend-url" {
