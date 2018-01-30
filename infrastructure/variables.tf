@@ -24,10 +24,6 @@ variable "s2s-url" {
   default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
 }
 
-variable "ccd-url" {
-  default = "http://ccd-data-store-api-${var.env}.service.${data.terraform_remote_state.core_apps_compute.ase_name[0]}.internal"
-}
-
 variable "frontend-url" {
   default = "https://www.nonprod.moneyclaim.platform.hmcts.net"
 }
