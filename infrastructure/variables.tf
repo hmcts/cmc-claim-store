@@ -29,7 +29,7 @@ variable "ccd-url" {
 }
 
 variable "frontend-url" {
-  default = "http://ccd-data-store-api-sandbox.service.core-compute-sandbox.internal"
+  default = "https://www.nonprod.moneyclaim.platform.hmcts.net"
 }
 
 variable "database-name" {
