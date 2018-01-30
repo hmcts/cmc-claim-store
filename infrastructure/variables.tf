@@ -25,11 +25,11 @@ variable "s2s-url" {
 }
 
 variable "ccd-url" {
-  default = "https://case-data-app.test.ccd.reform.hmcts.net:4481"
+  default = "http://ccd-data-store-api-sandbox.service.core-compute-sandbox.internal"
 }
 
 variable "frontend-url" {
-  default = "https://www.nonprod.moneyclaim.platform.hmcts.net"
+  default = "http://ccd-data-store-api-sandbox.service.core-compute-sandbox.internal"
 }
 
 variable "database-name" {
