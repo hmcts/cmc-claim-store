@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.LegacyCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,15 +23,18 @@ public class CCDCaseRepository implements CaseRepository {
 
     private final LegacyCaseRepository legacyCaseRepository;
     private final CCDClaimSearchRepository ccdClaimSearchRepository;
+    private final CoreCaseDataService coreCaseDataService;
     private final UserService userService;
 
     public CCDCaseRepository(
         LegacyCaseRepository legacyCaseRepository,
         CCDClaimSearchRepository ccdClaimSearchRepository,
+        CoreCaseDataService coreCaseDataService,
         UserService userService
     ) {
         this.legacyCaseRepository = legacyCaseRepository;
         this.ccdClaimSearchRepository = ccdClaimSearchRepository;
+        this.coreCaseDataService = coreCaseDataService;
         this.userService = userService;
     }
 
@@ -87,4 +92,10 @@ public class CCDCaseRepository implements CaseRepository {
         }
         return claim;
     }
+
+    @Override
+    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
+        this.coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+    }
+
 }

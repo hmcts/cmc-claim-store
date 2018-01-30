@@ -90,7 +90,7 @@ public class ClaimStore {
     public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {
         logger.info(String.format("Saving county court judgement with claim : %s", externalId));
 
-        this.claimRepository.saveCountyCourtJudgment(
+        this.legacyCaseRepository.saveCountyCourtJudgment(
             externalId,
             jsonMapper.toJson(ccj)
         );

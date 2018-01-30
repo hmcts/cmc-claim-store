@@ -8,14 +8,18 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.reform.ccd.client.exception.InvalidCaseDataException;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 import java.io.IOException;
 
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 
@@ -29,6 +33,7 @@ public class CoreCaseDataService {
     private final SaveCoreCaseDataService saveCoreCaseDataService;
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
+    private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ObjectMapper objectMapper;
 
 
@@ -37,11 +42,13 @@ public class CoreCaseDataService {
         SaveCoreCaseDataService saveCoreCaseDataService,
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ObjectMapper objectMapper
     ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
+        this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.objectMapper = objectMapper;
     }
 
@@ -64,8 +71,15 @@ public class CoreCaseDataService {
         }
     }
 
-    public CaseDetails saveCountyCourtJudgment(String authorisation, Claim claimWithCCJ) {
-        CCDCase ccdCase = this.caseMapper.to(claimWithCCJ);
+    public CaseDetails saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment
+    ) {
+
+        CCDCase ccdCase = this.caseMapper.to(claim);
+        ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
+        ccdCase.setCountyCourtJudgmentRequestedAt(now().format(ISO_DATE_TIME));
         return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 

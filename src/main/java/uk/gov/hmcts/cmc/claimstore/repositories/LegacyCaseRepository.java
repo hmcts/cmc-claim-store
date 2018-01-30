@@ -42,4 +42,12 @@ public interface LegacyCaseRepository {
         @Bind("defendantId") String defendantId
     );
 
+    @SqlUpdate("UPDATE claim SET "
+        + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
+        + " county_court_judgment_requested_at = now() at time zone 'utc'"
+        + " WHERE external_id = :externalId")
+    void saveCountyCourtJudgment(
+        @Bind("externalId") String externalId,
+        @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
+    );
 }
