@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.LegacyCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -25,17 +26,20 @@ public class CCDCaseRepository implements CaseRepository {
     private final CCDClaimSearchRepository ccdClaimSearchRepository;
     private final CoreCaseDataService coreCaseDataService;
     private final UserService userService;
+    private final JsonMapper jsonMapper;
 
     public CCDCaseRepository(
         LegacyCaseRepository legacyCaseRepository,
         CCDClaimSearchRepository ccdClaimSearchRepository,
         CoreCaseDataService coreCaseDataService,
-        UserService userService
+        UserService userService,
+        JsonMapper jsonMapper
     ) {
         this.legacyCaseRepository = legacyCaseRepository;
         this.ccdClaimSearchRepository = ccdClaimSearchRepository;
         this.coreCaseDataService = coreCaseDataService;
         this.userService = userService;
+        this.jsonMapper = jsonMapper;
     }
 
     @Override
@@ -95,7 +99,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
-        this.coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        legacyCaseRepository.saveCountyCourtJudgment(claim.getExternalId(), jsonMapper.toJson(countyCourtJudgment));
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
     }
-
 }
