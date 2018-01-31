@@ -57,8 +57,9 @@ public class UpdateCoreCaseDataService {
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
-            eventRequestData.getEventId(),
-            caseId.toString());
+            caseId.toString(),
+            eventRequestData.getEventId()
+            );
     }
 
     private CaseDetails submit(
