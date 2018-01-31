@@ -199,6 +199,7 @@ sonarqube {
 }
 
 jar {
+  archiveName = 'claim-store.jar'
   manifest {
 
     attributes 'Implementation-Title': project.name,
