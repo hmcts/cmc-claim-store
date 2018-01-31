@@ -18,6 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.Response;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
+
 @Api
 @RestController
 @RequestMapping(
@@ -32,15 +34,15 @@ public class DefendantResponseController {
     }
 
     @PostMapping(
-        value = "/claim/{claimId}/defendant/{defendantId:\\d+}",
+        value = "/claim/{externalId:" + UUID_PATTERN + "}/defendant/{defendantId}",
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new defendant response")
     public Claim save(
         @Valid @NotNull @RequestBody Response response,
         @PathVariable("defendantId") String defendantId,
-        @PathVariable("claimId") Long claimId,
+        @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     ) {
-        return defendantResponseService.save(claimId, defendantId, response, authorization);
+        return defendantResponseService.save(externalId, defendantId, response, authorization);
     }
 }

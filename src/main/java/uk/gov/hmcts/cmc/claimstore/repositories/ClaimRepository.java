@@ -35,7 +35,7 @@ public interface ClaimRepository {
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
-    Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
+    Optional<Claim> getByClaimReferenceNumberAnonymous(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId "
         + " AND claim.claim ->>'externalReferenceNumber' = :externalReference" + ORDER_BY_ID_DESCENDING)
@@ -123,14 +123,6 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
-    )
-    Integer linkDefendant(
-        @Bind("claimId") Long claimId,
-        @Bind("defendantId") String defendantId
-    );
-
-    @SqlUpdate(
         "UPDATE claim SET more_time_requested = TRUE, response_deadline = :responseDeadline "
             + "WHERE id = :claimId AND more_time_requested = FALSE"
     )
@@ -157,10 +149,9 @@ public interface ClaimRepository {
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
         + " county_court_judgment_requested_at = now() at time zone 'utc'"
-        + "WHERE"
-        + " id = :claimId")
+        + " WHERE external_id = :externalId")
     void saveCountyCourtJudgment(
-        @Bind("claimId") long claimId,
+        @Bind("externalId") String externalId,
         @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
     );
 }

@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.services.search.DBCaseRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -34,7 +34,7 @@ public class ClaimService {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
-    private final DBCaseRepository caseRepository;
+    private final CaseRepository caseRepository;
 
     @Autowired
     public ClaimService(
@@ -44,7 +44,7 @@ public class ClaimService {
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
-        DBCaseRepository caseRepository
+        CaseRepository caseRepository
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -82,9 +82,9 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference, authorisation);
     }
 
-    public Optional<Claim> getClaimByReference(String reference) {
+    public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
         return claimRepository
-            .getByClaimReferenceNumber(reference);
+            .getByClaimReferenceNumberAnonymous(reference);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
@@ -140,9 +140,9 @@ public class ClaimService {
         return getClaimById(issuedClaimId);
     }
 
-    public Claim requestMoreTimeForResponse(long claimId, String authorisation) {
+    public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         UserDetails defendant = userService.getUserDetails(authorisation);
-        Claim claim = getClaimById(claimId);
+        Claim claim = getClaimByExternalId(externalId, authorisation);
 
         if (!claim.getDefendantId()
             .equals(defendant.getId())) {
@@ -160,18 +160,16 @@ public class ClaimService {
         LocalDate newDeadline = responseDeadlineCalculator
             .calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        claimRepository.requestMoreTime(claimId, newDeadline);
-        claim = getClaimById(claimId);
+        claimRepository.requestMoreTime(claim.getId(), newDeadline);
+        claim = getClaimByExternalId(externalId, authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
         return claim;
     }
 
-    public void linkDefendantToClaim(Long claimId, String defendantId) {
-        Claim claim = claimRepository.getById(claimId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
-
-        claimRepository.linkDefendant(claim.getId(), defendantId);
+    public Claim linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
+        return caseRepository.linkDefendant(externalId, defendantId, authorisation)
+            .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
@@ -182,8 +180,8 @@ public class ClaimService {
         claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
     }
 
-    public void saveCountyCourtJudgment(long claimId, CountyCourtJudgment countyCourtJudgment) {
-        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
+    public void saveCountyCourtJudgment(String externalId, CountyCourtJudgment countyCourtJudgment) {
+        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
     }
 
     public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {

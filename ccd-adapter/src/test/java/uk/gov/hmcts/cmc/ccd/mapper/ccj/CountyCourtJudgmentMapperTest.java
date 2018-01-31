@@ -111,7 +111,7 @@ public class CountyCourtJudgmentMapperTest {
         final CCDRepaymentPlan ccdRepaymentPlan = CCDRepaymentPlan.builder()
             .paymentSchedule(CCDPaymentSchedule.EVERY_TWO_WEEKS)
             .instalmentAmount(BigDecimal.valueOf(100))
-            .firstPaymentDate("2018-01-22")
+            .firstPaymentDate(now())
             .firstPayment(BigDecimal.valueOf(150))
             .build();
 
@@ -133,9 +133,9 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentFullBySetDateFromCCD() {
         //given
         final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
-            .defendantDateOfBirth("1990-01-01")
+            .defendantDateOfBirth(now().minusYears(20))
             .paymentOption(CCDPaymentOption.FULL_BY_SPECIFIED_DATE)
-            .payBySetDate("2018-01-22")
+            .payBySetDate(now())
             .paidAmount(BigDecimal.TEN)
             .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())
             .build();

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -13,14 +13,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class IsDefendantLinkedTest extends BaseIntegrationTest {
-    private static final String AUTHORISATION_TOKEN = "Bearer token";
 
     @Test
     public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinked() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
-        claimRepository.linkDefendant(claim.getId(), "1");
+        caseRepository.linkDefendant(claim.getExternalId(), "1", BEARER_TOKEN);
 
         MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())
@@ -56,8 +60,6 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String referenceNumber) throws Exception {
         return webClient
-            .perform(get("/claims/" + referenceNumber + "/defendant-link-status")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-            );
+            .perform(get("/claims/" + referenceNumber + "/defendant-link-status"));
     }
 }

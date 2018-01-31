@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -21,15 +20,12 @@ import java.time.LocalDate;
 @ConditionalOnProperty("claim-store.test-support.enabled")
 public class IntegrationTestSupportController {
 
-    private final ClaimRepository claimRepository;
     private final TestingSupportRepository testingSupportRepository;
 
     @Autowired
     public IntegrationTestSupportController(
-        ClaimRepository claimRepository,
         TestingSupportRepository testingSupportRepository
     ) {
-        this.claimRepository = claimRepository;
         this.testingSupportRepository = testingSupportRepository;
     }
 
@@ -43,7 +39,7 @@ public class IntegrationTestSupportController {
     public Claim getByClaimReferenceNumber(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber
     ) {
-        return claimRepository.getByClaimReferenceNumber(claimReferenceNumber)
+        return testingSupportRepository.getByClaimReferenceNumber(claimReferenceNumber)
             .orElseThrow(() -> new NotFoundException("Claim not found by ref no: " + claimReferenceNumber));
     }
 
