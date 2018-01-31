@@ -122,7 +122,7 @@ public class ClaimServiceTest {
 
         when(claimRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID))).thenReturn(result);
 
-        Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID);
+        Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
         assertThat(claimApplication).isEqualTo(claim);
     }
 
@@ -134,7 +134,7 @@ public class ClaimServiceTest {
 
         when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
 
-        claimService.getClaimByLetterHolderId(letterHolderId);
+        claimService.getClaimByLetterHolderId(letterHolderId, AUTHORISATION);
     }
 
     @Test(expected = NotFoundException.class)

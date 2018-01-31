@@ -49,8 +49,11 @@ public class ClaimController {
 
     @GetMapping("/letter/{letterHolderId}")
     @ApiOperation("Fetch user claim for given letter holder id")
-    public Claim getByLetterHolderId(@PathVariable("letterHolderId") String letterHolderId) {
-        return claimService.getClaimByLetterHolderId(letterHolderId);
+    public Claim getByLetterHolderId(
+        @PathVariable("letterHolderId") String letterHolderId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.getClaimByLetterHolderId(letterHolderId, authorisation);
     }
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}")
@@ -80,8 +83,10 @@ public class ClaimController {
 
     @GetMapping("/defendant/{defendantId}")
     @ApiOperation("Fetch claims linked to given defendant id")
-    public List<Claim> getByDefendantId(@PathVariable("defendantId") String defendantId) {
-        return claimService.getClaimByDefendantId(defendantId);
+    public List<Claim> getByDefendantId(@PathVariable("defendantId") String defendantId,
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.getClaimByDefendantId(defendantId, authorisation);
     }
 
     @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

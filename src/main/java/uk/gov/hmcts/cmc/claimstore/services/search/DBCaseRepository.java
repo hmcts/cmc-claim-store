@@ -47,4 +47,14 @@ public class DBCaseRepository implements CaseRepository {
         return claim;
 
     }
+
+    @Override
+    public List<Claim> getByDefendantId(String id, String authorisation) {
+        return claimRepository.getByDefendantId(id);
+    }
+
+    @Override
+    public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
+        return claimRepository.getByLetterHolderId(id);
+    }
 }

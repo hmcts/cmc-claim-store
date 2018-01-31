@@ -65,9 +65,9 @@ public class ClaimService {
         return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
-    public Claim getClaimByLetterHolderId(String id) {
-        return claimRepository
-            .getByLetterHolderId(id)
+    public Claim getClaimByLetterHolderId(String id, String authorisation) {
+        return caseRepository
+            .getByLetterHolderId(id, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
 
@@ -92,8 +92,8 @@ public class ClaimService {
         return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 
-    public List<Claim> getClaimByDefendantId(String id) {
-        return claimRepository.getByDefendantId(id);
+    public List<Claim> getClaimByDefendantId(String id, String authorisation) {
+        return caseRepository.getByDefendantId(id, authorisation);
     }
 
     @Transactional
