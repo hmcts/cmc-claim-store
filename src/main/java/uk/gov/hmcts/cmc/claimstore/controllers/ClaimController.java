@@ -83,8 +83,9 @@ public class ClaimController {
 
     @GetMapping("/defendant/{defendantId}")
     @ApiOperation("Fetch claims linked to given defendant id")
-    public List<Claim> getByDefendantId(@PathVariable("defendantId") String defendantId,
-                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    public List<Claim> getByDefendantId(
+        @PathVariable("defendantId") String defendantId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.getClaimByDefendantId(defendantId, authorisation);
     }
