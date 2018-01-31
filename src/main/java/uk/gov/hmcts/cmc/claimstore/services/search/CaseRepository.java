@@ -14,3 +14,4 @@ public interface CaseRepository {
 
     Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation);
 }
+
