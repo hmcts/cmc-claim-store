@@ -26,9 +26,16 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
     List<Claim> findAll();
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId" + ORDER_BY_ID_DESCENDING)
+    List<Claim> getBySubmitterId(@Bind("submitterId") String submitterId);
+
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.letter_holder_id = :letterHolderId")
     Optional<Claim> getByLetterHolderId(@Bind("letterHolderId") String letterHolderId);
+
+    @SingleValueResult
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_id = :externalId")
+    Optional<Claim> getClaimByExternalId(@Bind("externalId") String externalId);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :defendantId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getByDefendantId(@Bind("defendantId") String defendantId);
@@ -36,6 +43,12 @@ public interface ClaimRepository {
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
     Optional<Claim> getByClaimReferenceNumberAnonymous(@Bind("claimReferenceNumber") String claimReferenceNumber);
+
+    @SingleValueResult
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber "
+        + "AND claim.submitter_id = :submitterId")
+    Optional<Claim> getByClaimReferenceAndSubmitter(@Bind("claimReferenceNumber") String claimReferenceNumber,
+                                                    @Bind("submitterId") String submitterId);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_id = :submitterId "
         + " AND claim.claim ->>'externalReferenceNumber' = :externalReference" + ORDER_BY_ID_DESCENDING)
@@ -120,6 +133,14 @@ public interface ClaimRepository {
     Integer linkSealedClaimDocument(
         @Bind("claimId") Long claimId,
         @Bind("documentSelfPath") String documentSelfPath
+    );
+
+    @SqlUpdate(
+        "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
+    )
+    Integer linkDefendant(
+        @Bind("claimId") Long claimId,
+        @Bind("defendantId") String defendantId
     );
 
     @SqlUpdate(
