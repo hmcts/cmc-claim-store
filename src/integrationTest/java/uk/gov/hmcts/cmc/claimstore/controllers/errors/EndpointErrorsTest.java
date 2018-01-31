@@ -88,7 +88,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "2ab19d16-fddf-4494-a01a-f64f93d04782";
 
-        given(legacyCaseRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/2")
@@ -105,8 +105,8 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withExternalId(externalId)
             .withDefendantId(null)
             .build();
-        given(legacyCaseRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
-        given(legacyCaseRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
+        given(claimRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/" + defendantId)

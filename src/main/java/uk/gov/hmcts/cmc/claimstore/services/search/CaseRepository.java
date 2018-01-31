@@ -17,3 +17,4 @@ public interface CaseRepository {
 
     void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);
 }
+

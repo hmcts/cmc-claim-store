@@ -179,6 +179,7 @@ public final class SampleClaim {
             claim.getSealedClaimDocumentSelfPath().orElse(null)
         );
     }
+    
     public SampleClaim withSubmitterId(String userId) {
         this.submitterId = userId;
         return this;
