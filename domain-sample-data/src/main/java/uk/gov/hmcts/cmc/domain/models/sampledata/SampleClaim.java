@@ -155,6 +155,30 @@ public final class SampleClaim {
         );
     }
 
+    public Claim build(Claim claim, Long claimId) {
+        return new Claim(
+            claimId,
+            claim.getSubmitterId(),
+            claim.getLetterHolderId(),
+            claim.getDefendantId(),
+            claim.getExternalId(),
+            claim.getReferenceNumber(),
+            claim.getClaimData(),
+            claim.getCreatedAt(),
+            claim.getIssuedOn(),
+            claim.getResponseDeadline(),
+            claim.isMoreTimeRequested(),
+            claim.getSubmitterEmail(),
+            claim.getRespondedAt(),
+            claim.getResponse().orElse(null),
+            claim.getSubmitterEmail(),
+            claim.getCountyCourtJudgment(),
+            claim.getCountyCourtJudgmentRequestedAt(),
+            claim.getSettlement().orElse(null),
+            claim.getSettlementReachedAt(),
+            claim.getSealedClaimDocumentSelfPath().orElse(null)
+        );
+    }
     public SampleClaim withSubmitterId(String userId) {
         this.submitterId = userId;
         return this;
