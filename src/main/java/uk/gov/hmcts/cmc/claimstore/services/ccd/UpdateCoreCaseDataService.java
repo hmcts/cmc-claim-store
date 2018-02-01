@@ -41,7 +41,7 @@ public class UpdateCoreCaseDataService {
             .event(Event.builder()
                 .id(startEventResponse.getEventId())
                 .summary("CMC case update")
-                .description("Submitting CMC case update with token " + startEventResponse.getToken())
+                .description("Submitting CMC case update")
                 .build())
             .data(data)
             .build();

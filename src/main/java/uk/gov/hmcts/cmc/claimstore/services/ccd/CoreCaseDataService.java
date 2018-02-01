@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -10,13 +8,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.reform.ccd.client.exception.InvalidCaseDataException;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
-
-import java.io.IOException;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
@@ -34,7 +30,7 @@ public class CoreCaseDataService {
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
 
     @Autowired
@@ -43,13 +39,13 @@ public class CoreCaseDataService {
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        ObjectMapper objectMapper
+        JsonMapper jsonMapper
     ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
     }
 
     public CaseDetails save(String authorisation, Claim claim) {
@@ -64,7 +60,12 @@ public class CoreCaseDataService {
                 .build();
 
             return saveCoreCaseDataService
-                .save(authorisation, eventRequestData, toJson(ccdCase), claim.getClaimData().isClaimantRepresented());
+                .save(
+                    authorisation,
+                    eventRequestData,
+                    jsonMapper.toJson(ccdCase),
+                    claim.getClaimData().isClaimantRepresented()
+                );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
                 .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
@@ -99,15 +100,6 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(String
                 .format("Failed updating claim in CCD store for claim %s on event %s", ccdCase.getReferenceNumber(),
                     caseEvent), exception);
-        }
-    }
-
-    private JsonNode toJson(CCDCase ccdCase) {
-        try {
-            JsonNode dataNode = objectMapper.readTree(objectMapper.writeValueAsString(ccdCase));
-            return objectMapper.convertValue(dataNode, JsonNode.class);
-        } catch (IOException e) {
-            throw new InvalidCaseDataException("Failed to serialize to JSON", e);
         }
     }
 }
