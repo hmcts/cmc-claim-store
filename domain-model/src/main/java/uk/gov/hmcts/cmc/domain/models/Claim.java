@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -40,6 +41,7 @@ public class Claim {
     private final String sealedClaimDocumentSelfPath;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
+    @JsonCreator
     public Claim(
         Long id,
         String submitterId,
@@ -82,6 +84,29 @@ public class Claim {
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
         this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
+    }
+
+    public Claim(Long id, Claim claim) {
+        this.id = id;
+        this.submitterId = claim.submitterId;
+        this.letterHolderId = claim.letterHolderId;
+        this.defendantId = claim.defendantId;
+        this.externalId = claim.externalId;
+        this.referenceNumber = claim.referenceNumber;
+        this.claimData = claim.claimData;
+        this.createdAt = claim.createdAt;
+        this.issuedOn =  claim.issuedOn;
+        this.responseDeadline =  claim.responseDeadline;
+        this.moreTimeRequested =  claim.moreTimeRequested;
+        this.submitterEmail =  claim.submitterEmail;
+        this.respondedAt =  claim.respondedAt;
+        this.response =  claim.response;
+        this.defendantEmail =  claim.defendantEmail;
+        this.countyCourtJudgment =  claim.countyCourtJudgment;
+        this.countyCourtJudgmentRequestedAt =  claim.countyCourtJudgmentRequestedAt;
+        this.settlement =  claim.settlement;
+        this.settlementReachedAt =  claim.settlementReachedAt;
+        this.sealedClaimDocumentSelfPath =  claim.sealedClaimDocumentSelfPath;
     }
 
     public Long getId() {

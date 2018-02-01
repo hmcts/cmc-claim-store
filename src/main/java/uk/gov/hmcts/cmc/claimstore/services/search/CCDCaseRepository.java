@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +66,7 @@ public class CCDCaseRepository implements CaseRepository {
             logger.info(format("claim with external id %s user %s exist in ccd",
                 claim.get().getReferenceNumber(), claim.get().getSubmitterId()));
             // temporary work around to pass CCD id. must be removed
-            return Optional.of(SampleClaim.builder().build(claim.get(), ccdClaim.get().getId()));
+            return Optional.of(new Claim(ccdClaim.get().getId(), claim.get()));
         }
 
         return claim;
