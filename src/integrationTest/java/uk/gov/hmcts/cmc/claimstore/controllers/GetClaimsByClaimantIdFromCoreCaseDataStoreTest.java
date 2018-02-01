@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -39,7 +40,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
 
     @Before
     public void before() {
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
         given(jwtHelper.isSolicitor(AUTHORISATION_TOKEN)).willReturn(false);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }

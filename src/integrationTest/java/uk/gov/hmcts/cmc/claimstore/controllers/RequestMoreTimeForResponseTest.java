@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.assertj.core.util.Maps;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -25,6 +26,11 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_ID = "100";

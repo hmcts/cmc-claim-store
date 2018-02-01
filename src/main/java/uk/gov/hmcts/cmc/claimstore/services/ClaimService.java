@@ -140,7 +140,6 @@ public class ClaimService {
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
-        UserDetails defendant = userService.getUserDetails(authorisation);
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
         if (claim.isMoreTimeRequested()) {
@@ -156,6 +155,7 @@ public class ClaimService {
 
         claimRepository.requestMoreTime(claim.getId(), newDeadline);
         claim = getClaimByExternalId(externalId, authorisation);
+        UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
         return claim;

@@ -83,7 +83,6 @@ public class CCDCaseRepository implements CaseRepository {
         Optional<Claim> claim = ccdCaseApi.linkDefendant(externalId, defendantId, authorisation);
         if (claim.isPresent()) {
             claimRepository.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
-            claim = ccdCaseApi.getByExternalId(externalId, authorisation);
         }
 
         return claim;

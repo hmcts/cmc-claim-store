@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.api_gateway.url=false"
     }
 )
+@Ignore
 public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseGetTest {
     private static final String SERVICE_TOKEN = "S2S token";
 
