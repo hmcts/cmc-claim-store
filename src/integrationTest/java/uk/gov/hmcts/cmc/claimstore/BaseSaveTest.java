@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore;
 
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.junit.Before;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
@@ -51,16 +50,6 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(claimData))
             );
-    }
-
-    protected MockMvcResponse makeRestAssuredRequest(ClaimData claimData) {
-        return RestAssuredMockMvc
-            .given()
-                .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .body(jsonMapper.toJson(claimData))
-            .when()
-                .post("/claims/" + USER_ID);
     }
 
 }

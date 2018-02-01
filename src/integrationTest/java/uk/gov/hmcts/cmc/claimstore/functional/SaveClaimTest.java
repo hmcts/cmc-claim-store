@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.functional;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
@@ -21,11 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 )
 public class SaveClaimTest extends BaseSaveTest {
 
+    @Autowired
+    private RestTestClient restTestClient;
+
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-        Claim createdCase = makeRestAssuredRequest(claimData)
+        Claim createdCase = restTestClient.post(claimData)
             .then()
                 .statusCode(HttpStatus.OK.value())
             .and()
@@ -45,9 +49,9 @@ public class SaveClaimTest extends BaseSaveTest {
             .withExternalId(externalId)
             .build();
 
-        makeRestAssuredRequest(claimData)
+        restTestClient.post(claimData)
             .andReturn();
-        makeRestAssuredRequest(claimData)
+        restTestClient.post(claimData)
             .then()
                 .statusCode(HttpStatus.CONFLICT.value());
     }
