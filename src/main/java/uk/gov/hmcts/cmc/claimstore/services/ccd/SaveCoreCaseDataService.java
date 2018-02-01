@@ -78,7 +78,7 @@ public class SaveCoreCaseDataService {
                 user.getUserDetails().getId(),
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
-                caseDetails.getId() + "",
+                caseDetails.getId().toString(),
                 new UserId(letterHolderId)
             );
         }

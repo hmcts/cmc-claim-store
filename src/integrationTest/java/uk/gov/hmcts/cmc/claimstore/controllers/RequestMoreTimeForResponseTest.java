@@ -101,17 +101,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturn403HttpStatusWhenUserIsNotLinkedWithClaim() throws Exception {
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(OTHER_USER_DETAILS);
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-
-        makeRequest(claim.getExternalId())
-            .andExpect(status().isForbidden());
-    }
-
-    @Test
     public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTime() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 

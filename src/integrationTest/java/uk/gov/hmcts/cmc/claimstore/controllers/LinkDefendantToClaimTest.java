@@ -1,24 +1,33 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LinkDefendantToClaimTest extends BaseIntegrationTest {
 
+    @Before
+    public void init() {
+        when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(SampleUserDetails.getDefault());
+    }
+
     @Test
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
-        MvcResult result = linkDefendantRequest(claim.getExternalId(), "1")
+        MvcResult result = linkDefendantRequest(claim.getExternalId())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -31,13 +40,13 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
         String nonExistingExternalId = "7d293143-b787-454f-aa8e-2fd69a209e52";
 
-        linkDefendantRequest(nonExistingExternalId, "1")
+        linkDefendantRequest(nonExistingExternalId)
             .andExpect(status().isNotFound());
     }
 
-    private ResultActions linkDefendantRequest(String externalId, String defendantId) throws Exception {
+    private ResultActions linkDefendantRequest(String externalId) throws Exception {
         return webClient
-            .perform(put("/claims/" + externalId + "/defendant/" + defendantId)
+            .perform(put("/claims/" + externalId + "/defendant/1")
             .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
 }

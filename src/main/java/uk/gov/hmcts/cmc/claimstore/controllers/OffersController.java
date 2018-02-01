@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
@@ -69,7 +68,6 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        assertActionIsPermittedFor(claim, party, authorisation);
         offersService.makeOffer(claim, offer, party);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
@@ -84,7 +82,6 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        assertActionIsPermittedFor(claim, party, authorisation);
         offersService.accept(claim, party);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
@@ -99,18 +96,8 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        assertActionIsPermittedFor(claim, party, authorisation);
         offersService.reject(claim, party);
         return claimService.getClaimByExternalId(externalId, authorisation);
-    }
-
-    private void assertActionIsPermittedFor(Claim claim, MadeBy party, String authorisation) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        if (party.equals(MadeBy.CLAIMANT)) {
-            authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
-        }
-        // We have no way to check if a user is a defendant on the claim other than CCD allowing the save
-
     }
 
 }

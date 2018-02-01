@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -143,11 +142,6 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         UserDetails defendant = userService.getUserDetails(authorisation);
         Claim claim = getClaimByExternalId(externalId, authorisation);
-
-        if (!claim.getDefendantId()
-            .equals(defendant.getId())) {
-            throw new ForbiddenActionException("This claim is not raised against you");
-        }
 
         if (claim.isMoreTimeRequested()) {
             throw new MoreTimeAlreadyRequestedException("You have already requested more time");

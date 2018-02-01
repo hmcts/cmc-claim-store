@@ -82,7 +82,7 @@ public class CCDCaseApi {
 
     public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
         User user = userService.authenticateAnonymousCaseWorker();
-        Optional<CaseDetails> optionalCaseDetails = getCaseDetailsByExternalId(authorisation, externalId);
+        Optional<CaseDetails> optionalCaseDetails = getCaseDetailsByExternalId(user.getAuthorisation(), externalId);
 
         if (optionalCaseDetails.isPresent()) {
             CaseDetails caseDetails = optionalCaseDetails.get();
@@ -95,7 +95,7 @@ public class CCDCaseApi {
                 new UserId(defendantId)
             );
 
-            return Optional.of(caseMapper.from(convertToCCDCase(caseDetails.getData())));
+            return Optional.of(readCase(authorisation, caseDetails.getId().toString()));
         }
         return Optional.empty();
     }
