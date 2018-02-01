@@ -1,5 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.junit.Before;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
@@ -22,6 +27,13 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
 
     @Before
     public void setup() {
+        RestAssuredMockMvc.config = RestAssuredMockMvc
+            .config()
+            .objectMapperConfig(
+                ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
+            );
+        RestAssuredMockMvc.mockMvc(webClient);
+
         given(userService.getUserDetails(AUTHORISATION_TOKEN))
             .willReturn(SampleUserDetails.builder().build());
 
@@ -42,4 +54,15 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
                 .content(jsonMapper.toJson(claimData))
             );
     }
+
+    protected MockMvcResponse makeRestAssuredRequest(ClaimData claimData) {
+        return RestAssuredMockMvc
+            .given()
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .body(jsonMapper.toJson(claimData))
+            .when()
+                .post("/claims/" + USER_ID);
+    }
+
 }

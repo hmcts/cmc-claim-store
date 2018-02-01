@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.flywaydb.core.Flyway;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -42,6 +43,9 @@ import javax.sql.DataSource;
 @TestPropertySource("/environment.properties")
 @ActiveProfiles("unit-tests")
 public abstract class MockSpringTest {
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @Autowired
     protected JsonMapper jsonMapper;
