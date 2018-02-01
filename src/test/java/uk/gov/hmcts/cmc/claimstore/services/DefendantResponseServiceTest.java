@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -74,16 +73,6 @@ public class DefendantResponseServiceTest {
         verify(eventProducer, once())
             .createDefendantResponseEvent(eq(claim));
     }
-
-    @Test(expected = ForbiddenActionException.class)
-    public void saveShouldThrowForbiddenActionWhenUserIsNotDefendant() {
-
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
-            .thenReturn(SampleClaim.getDefault());
-
-        responseService.save(EXTERNAL_ID, "23132", VALID_APP, AUTHORISATION);
-    }
-
 
     @Test(expected = ResponseAlreadySubmittedException.class)
     public void saveShouldThrowResponseAlreadySubmittedExceptionWhenResponseSubmitted() {

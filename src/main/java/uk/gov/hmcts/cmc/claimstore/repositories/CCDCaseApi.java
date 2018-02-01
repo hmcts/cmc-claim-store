@@ -74,25 +74,30 @@ public class CCDCaseApi {
     }
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
-        return searchByExternalId(authorisation, externalId)
+        return getCaseDetailsByExternalId(authorisation, externalId)
             .map(CaseDetails::getData)
             .map(this::convertToCCDCase)
             .map((caseMapper::from));
     }
 
-    public void linkDefendant(String externalId, String defendantId, String authorisation) {
+    public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
         User user = userService.authenticateAnonymousCaseWorker();
-        CaseDetails caseResult = searchByExternalId(authorisation, externalId)
-            .orElseThrow(() -> new CoreCaseDataStoreException("Claim not found by external ID"));
+        Optional<CaseDetails> optionalCaseDetails = getCaseDetailsByExternalId(authorisation, externalId);
 
-        caseAccessApi.grantAccessToCase(user.getAuthorisation(),
-            authTokenGenerator.generate(),
-            user.getUserDetails().getId(),
-            JURISDICTION_ID,
-            CASE_TYPE_ID,
-            caseResult.getId() + "",
-            new UserId(defendantId)
-        );
+        if (optionalCaseDetails.isPresent()) {
+            CaseDetails caseDetails = optionalCaseDetails.get();
+            caseAccessApi.grantAccessToCase(user.getAuthorisation(),
+                authTokenGenerator.generate(),
+                user.getUserDetails().getId(),
+                JURISDICTION_ID,
+                CASE_TYPE_ID,
+                caseDetails.getId().toString(),
+                new UserId(defendantId)
+            );
+
+            return Optional.of(caseMapper.from(convertToCCDCase(caseDetails.getData())));
+        }
+        return Optional.empty();
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
@@ -149,7 +154,7 @@ public class CCDCaseApi {
         );
     }
 
-    private Optional<CaseDetails> searchByExternalId(String authorisation, String externalId) {
+    private Optional<CaseDetails> getCaseDetailsByExternalId(String authorisation, String externalId) {
         List<CaseDetails> caseResults = search(authorisation, ImmutableMap.of("case.externalId", externalId));
         if (caseResults.size() > 1) {
             throw new CoreCaseDataStoreException("More than one claim found by claim externalId " + externalId);

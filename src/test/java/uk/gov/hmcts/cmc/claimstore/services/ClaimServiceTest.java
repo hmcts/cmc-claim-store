@@ -120,7 +120,7 @@ public class ClaimServiceTest {
         Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
         Optional<Claim> result = Optional.of(claim);
 
-        when(claimRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID))).thenReturn(result);
+        when(caseRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID), any())).thenReturn(result);
 
         Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
         assertThat(claimApplication).isEqualTo(claim);
@@ -132,7 +132,7 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String letterHolderId = "0";
 
-        when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
+        when(caseRepository.getByLetterHolderId(eq(letterHolderId), any())).thenReturn(result);
 
         claimService.getClaimByLetterHolderId(letterHolderId, AUTHORISATION);
     }

@@ -36,8 +36,6 @@ public class DefendantResponseService {
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
 
-        authorisationService.assertIsDefendantOnClaim(claim, defendantId);
-
         if (isResponseAlreadySubmitted(claim)) {
             throw new ResponseAlreadySubmittedException(claim.getId());
         }

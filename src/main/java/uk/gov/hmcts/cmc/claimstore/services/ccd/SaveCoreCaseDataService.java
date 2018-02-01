@@ -71,15 +71,17 @@ public class SaveCoreCaseDataService {
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent, represented);
 
-        User user = userService.authenticateAnonymousCaseWorker();
-        caseAccessApi.grantAccessToCase(user.getAuthorisation(),
-            authTokenGenerator.generate(),
-            user.getUserDetails().getId(),
-            JURISDICTION_ID,
-            CASE_TYPE_ID,
-            caseDetails.getId() + "",
-            new UserId(letterHolderId)
-        );
+        if (letterHolderId != null) {
+            User user = userService.authenticateAnonymousCaseWorker();
+            caseAccessApi.grantAccessToCase(user.getAuthorisation(),
+                authTokenGenerator.generate(),
+                user.getUserDetails().getId(),
+                JURISDICTION_ID,
+                CASE_TYPE_ID,
+                caseDetails.getId() + "",
+                new UserId(letterHolderId)
+            );
+        }
         return caseDetails;
     }
 

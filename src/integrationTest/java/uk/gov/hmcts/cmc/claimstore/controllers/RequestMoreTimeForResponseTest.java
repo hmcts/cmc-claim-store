@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
-    private static final String AUTH_TOKEN = "it's me!";
     private static final String DEFENDANT_ID = "100";
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
@@ -42,7 +41,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
@@ -58,7 +57,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
@@ -72,7 +71,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRetrySendNotifications() throws Exception {
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
@@ -93,7 +92,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         String nonExistingClaim = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
@@ -103,7 +102,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn403HttpStatusWhenUserIsNotLinkedWithClaim() throws Exception {
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(OTHER_USER_DETAILS);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(OTHER_USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
@@ -114,7 +113,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTime() throws Exception {
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
 
@@ -127,7 +126,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgain() throws Exception {
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
@@ -144,7 +143,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     private ResultActions makeRequest(String externalId) throws Exception {
-        return makeRequest(externalId, Maps.newHashMap(HttpHeaders.AUTHORIZATION, AUTH_TOKEN));
+        return makeRequest(externalId, Maps.newHashMap(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
 
     private ResultActions makeRequest(String externalId, Map<String, String> headers) throws Exception {

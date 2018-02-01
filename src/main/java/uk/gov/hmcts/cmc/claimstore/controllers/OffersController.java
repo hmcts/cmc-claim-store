@@ -109,9 +109,8 @@ public class OffersController {
         if (party.equals(MadeBy.CLAIMANT)) {
             authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
         }
-        if (party.equals(MadeBy.DEFENDANT)) {
-            authorisationService.assertIsDefendantOnClaim(claim, userDetails.getId());
-        }
+        // We have no way to check if a user is a defendant on the claim other than CCD allowing the save
+
     }
 
 }

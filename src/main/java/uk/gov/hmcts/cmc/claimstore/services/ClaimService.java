@@ -185,6 +185,8 @@ public class ClaimService {
     }
 
     public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
+        // When this is saved in CCD ensure a Forbidden response is returned to the client if they
+        // aren't allowed to access the case
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
     }
 }

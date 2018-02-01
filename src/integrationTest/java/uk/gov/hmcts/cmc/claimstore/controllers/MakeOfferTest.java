@@ -42,14 +42,15 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     @Before
     public void beforeEachTest() {
-        claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-
         when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(
             SampleUserDetails.builder()
                 .withUserId(DEFENDANT_ID)
                 .build()
         );
+
+        claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
+        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, DEFENDANT_AUTH_TOKEN);
+
     }
 
     @Test
@@ -68,13 +69,13 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenIfUserIsNotPartyOnClaim() throws Exception {
-        when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(
+        when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(
             SampleUserDetails.builder()
                 .withUserId("Not an ID on the claim")
                 .build()
         );
 
-        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
+        makeOffer(BEARER_TOKEN, SampleOffer.validDefaults(), MadeBy.CLAIMANT.name())
             .andExpect(status().isForbidden())
             .andReturn();
     }
