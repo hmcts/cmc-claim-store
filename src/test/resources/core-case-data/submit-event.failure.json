@@ -1,0 +1,11 @@
+{
+  "exception": "uk.gov.hmcts.ccd.endpoint.exceptions.BadRequestException",
+  "timestamp": "2018-02-01T11:28:40.834",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Case reference is not valid",
+  "path": "/citizens/16/jurisdictions/CMC/case-types/MoneyClaimCase/cases/15173969292/events",
+  "details": null,
+  "callbackErrors": null,
+  "callbackWarnings": null
+}
