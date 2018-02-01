@@ -50,8 +50,7 @@ public class DefendantResponseServiceTest {
         responseService = new DefendantResponseService(
             eventProducer,
             claimService,
-            userService,
-            new AuthorisationService()
+            userService
         );
     }
 
