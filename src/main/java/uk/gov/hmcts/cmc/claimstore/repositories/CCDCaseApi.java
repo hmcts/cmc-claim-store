@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -58,12 +57,15 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
-        return extractClaims(search(authorisation, ImmutableMap.of("case.submitterId", submitterId)));
+        User user = userService.getUser(authorisation);
+        return extractClaims(search(user, ImmutableMap.of("case.submitterId", submitterId)));
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
+        User user = userService.getUser(authorisation);
+
         List<Claim> claims = extractClaims(
-            search(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber))
+            search(user, ImmutableMap.of("case.referenceNumber", referenceNumber))
         );
 
         if (claims.size() > 1) {
@@ -74,56 +76,59 @@ public class CCDCaseApi {
     }
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
-        return getCaseDetailsByExternalId(authorisation, externalId)
+        User user = userService.getUser(authorisation);
+        return getCaseDetailsByExternalId(user, externalId)
             .map(CaseDetails::getData)
             .map(this::convertToCCDCase)
             .map((caseMapper::from));
     }
 
     public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        Optional<CaseDetails> optionalCaseDetails = getCaseDetailsByExternalId(user.getAuthorisation(), externalId);
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        Optional<CaseDetails> optionalCaseDetails = getCaseDetailsByExternalId(anonymousCaseWorker, externalId);
 
         if (optionalCaseDetails.isPresent()) {
             CaseDetails caseDetails = optionalCaseDetails.get();
-            caseAccessApi.grantAccessToCase(user.getAuthorisation(),
+            caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
                 authTokenGenerator.generate(),
-                user.getUserDetails().getId(),
+                anonymousCaseWorker.getUserDetails().getId(),
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
                 caseDetails.getId().toString(),
                 new UserId(defendantId)
             );
 
-            return Optional.of(readCase(authorisation, caseDetails.getId().toString()));
+            User defendant = userService.getUser(authorisation);
+            return Optional.of(readCase(defendant, caseDetails.getId().toString()));
         }
         return Optional.empty();
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
-        User caseWorker = userService.authenticateAnonymousCaseWorker();
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
         List<String> caseIdsGivenUserIdHasAccessTo = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
-            caseWorker.getAuthorisation(),
+            anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
-            caseWorker.getUserDetails().getId(),
+            anonymousCaseWorker.getUserDetails().getId(),
             JURISDICTION_ID,
             CASE_TYPE_ID,
             id
         );
 
+        User defendant = userService.getUser(authorisation);
         return caseIdsGivenUserIdHasAccessTo.stream()
-            .map((caseId) -> readCase(authorisation, caseId))
+            .map((caseId) -> readCase(defendant, caseId))
             .filter((claim -> !claim.getSubmitterId().equals(id)))
             .collect(Collectors.toList());
     }
 
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
-        User user = userService.authenticateAnonymousCaseWorker();
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
 
         List<String> letterHolderCases = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
-            user.getAuthorisation(),
+            anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
-            user.getUserDetails().getId(),
+            anonymousCaseWorker.getUserDetails().getId(),
             JURISDICTION_ID,
             CASE_TYPE_ID,
             id
@@ -135,17 +140,17 @@ public class CCDCaseApi {
             throw new DefendantLinkingException("No cases found that the letter holder ID has access to");
         }
 
-        return Optional.of(readCase(authorisation, letterHolderCases.get(0)));
+        User letterHolder = userService.getUser(authorisation);
+        return Optional.of(readCase(letterHolder, letterHolderCases.get(0)));
     }
 
-    private Claim readCase(String authorisation, String caseId) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
+    private Claim readCase(User user, String caseId) {
         return caseMapper.from(
             convertToCCDCase(
                 coreCaseDataApi.readForCitizen(
-                    authorisation,
+                    user.getAuthorisation(),
                     authTokenGenerator.generate(),
-                    userDetails.getId(),
+                    user.getUserDetails().getId(),
                     JURISDICTION_ID,
                     CASE_TYPE_ID,
                     caseId
@@ -154,8 +159,8 @@ public class CCDCaseApi {
         );
     }
 
-    private Optional<CaseDetails> getCaseDetailsByExternalId(String authorisation, String externalId) {
-        List<CaseDetails> caseResults = search(authorisation, ImmutableMap.of("case.externalId", externalId));
+    private Optional<CaseDetails> getCaseDetailsByExternalId(User user, String externalId) {
+        List<CaseDetails> caseResults = search(user, ImmutableMap.of("case.externalId", externalId));
         if (caseResults.size() > 1) {
             throw new CoreCaseDataStoreException("More than one claim found by claim externalId " + externalId);
         }
@@ -163,17 +168,16 @@ public class CCDCaseApi {
         return caseResults.isEmpty() ? Optional.empty() : Optional.of(caseResults.get(0));
     }
 
-    private List<CaseDetails> search(String authorisation, Map<String, Object> searchString) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
+    private List<CaseDetails> search(User user, Map<String, Object> searchString) {
+
         String serviceAuthToken = this.authTokenGenerator.generate();
 
         List<CaseDetails> result;
-        if (jwtHelper.isSolicitor(authorisation)) {
-
+        if (jwtHelper.isSolicitor(user.getAuthorisation())) {
             result = this.coreCaseDataApi.searchForCaseworker(
-                authorisation,
+                user.getAuthorisation(),
                 serviceAuthToken,
-                userDetails.getId(),
+                user.getUserDetails().getId(),
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
                 searchString
@@ -181,9 +185,9 @@ public class CCDCaseApi {
 
         } else {
             result = this.coreCaseDataApi.searchForCitizen(
-                authorisation,
+                user.getAuthorisation(),
                 serviceAuthToken,
-                userDetails.getId(),
+                user.getUserDetails().getId(),
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
                 searchString

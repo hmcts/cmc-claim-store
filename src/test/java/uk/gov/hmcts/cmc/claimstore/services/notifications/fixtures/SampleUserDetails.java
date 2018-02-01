@@ -45,4 +45,13 @@ public final class SampleUserDetails {
     public static UserDetails getDefault() {
         return SampleUserDetails.builder().build();
     }
+
+    public static UserDetails getAnonymousCaseWorker() {
+        return SampleUserDetails.builder()
+            .withUserId("1234")
+            .withMail("anonymous@caseworker.com")
+            .withForename("Case")
+            .withSurname("Worker")
+            .build();
+    }
 }

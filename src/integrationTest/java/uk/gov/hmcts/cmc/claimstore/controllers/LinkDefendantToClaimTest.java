@@ -6,11 +6,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -21,11 +25,21 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
     @Before
     public void init() {
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(SampleUserDetails.getDefault());
+        when(userService.authenticateAnonymousCaseWorker())
+            .thenReturn(new User("Bearer: 1234", SampleUserDetails.getAnonymousCaseWorker()));
     }
 
     @Test
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+
+        when(coreCaseDataApi.searchForCaseworker(any(), any(), any(), any(), any(), any()))
+            .thenReturn(singletonList(
+                CaseDetails.builder()
+                    .id(123456789L)
+                    .build()
+                )
+            );
 
         MvcResult result = linkDefendantRequest(claim.getExternalId())
             .andExpect(status().isOk())
@@ -47,6 +61,6 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
     private ResultActions linkDefendantRequest(String externalId) throws Exception {
         return webClient
             .perform(put("/claims/" + externalId + "/defendant/1")
-            .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
 }

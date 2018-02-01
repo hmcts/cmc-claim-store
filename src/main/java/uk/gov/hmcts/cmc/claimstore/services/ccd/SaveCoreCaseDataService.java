@@ -71,7 +71,7 @@ public class SaveCoreCaseDataService {
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent, represented);
 
-        if (letterHolderId != null) {
+        if (!represented) {
             User user = userService.authenticateAnonymousCaseWorker();
             caseAccessApi.grantAccessToCase(user.getAuthorisation(),
                 authTokenGenerator.generate(),

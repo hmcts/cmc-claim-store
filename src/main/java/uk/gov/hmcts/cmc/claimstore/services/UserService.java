@@ -22,8 +22,12 @@ public class UserService {
         return idamApi.retrieveUserDetails(authorisation);
     }
 
+    public User getUser(String authorisation) {
+        return new User(authorisation, idamApi.retrieveUserDetails(authorisation));
+    }
+
     public User authenticateAnonymousCaseWorker() {
-        return new User("", new UserDetails(null, null, null, null));
+        return new User("jkljasd", new UserDetails("1", "1@1.com", "1", "123"));
     }
 
     public GeneratePinResponse generatePin(String name, String authorisation) {
