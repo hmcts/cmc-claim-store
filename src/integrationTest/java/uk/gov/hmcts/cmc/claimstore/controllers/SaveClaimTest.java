@@ -3,9 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
-//import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -27,7 +26,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(
     properties = {
@@ -46,16 +45,11 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldReturnNewlyCreatedClaim() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-//        MvcResult result = makeRequest(claimData)
-//            .andExpect(status().isOk())
-//            .andReturn();
+        MvcResult result = makeRequest(claimData)
+            .andExpect(status().isOk())
+            .andReturn();
 
-        Claim result = makeRestAssuredRequest(claimData)
-            .then()
-                .statusCode(HttpStatus.OK.value())
-            .and().extract().body().as(Claim.class);
-
-        assertThat(result)
+        assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
             .contains(claimData);
     }
@@ -67,11 +61,8 @@ public class SaveClaimTest extends BaseSaveTest {
         ClaimData claimData = SampleClaimData.builder().withExternalId(externalId).build();
         claimStore.saveClaim(claimData);
 
-//        makeRequest(claimData)
-//            .andExpect(status().isConflict());
-        makeRestAssuredRequest(claimData)
-            .then()
-            .statusCode(HttpStatus.CONFLICT.value());
+        makeRequest(claimData)
+            .andExpect(status().isConflict());
     }
 
     @Test
@@ -79,11 +70,8 @@ public class SaveClaimTest extends BaseSaveTest {
         doThrow(new RuntimeException("Sending failed"))
             .when(emailService).sendEmail(anyString(), any(EmailData.class));
 
-//        makeRequest(SampleClaimData.submittedByClaimant())
-//            .andExpect(status().isInternalServerError());
-        makeRestAssuredRequest(SampleClaimData.submittedByClaimant())
-            .then()
-            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        makeRequest(SampleClaimData.submittedByClaimant())
+            .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -93,11 +81,8 @@ public class SaveClaimTest extends BaseSaveTest {
             .willThrow(new NotificationClientException(new RuntimeException("invalid email2")))
             .willThrow(new NotificationClientException(new RuntimeException("invalid email3")));
 
-//        makeRequest(SampleClaimData.submittedByClaimant())
-//            .andExpect(status().isOk());
-        makeRestAssuredRequest(SampleClaimData.submittedByClaimant())
-            .then()
-            .statusCode(HttpStatus.OK.value());
+        makeRequest(SampleClaimData.submittedByClaimant())
+            .andExpect(status().isOk());
 
         verify(notificationClient, atLeast(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
@@ -107,15 +92,11 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         given(notificationClient.sendEmail(any(), any(), any(), any())).willReturn(null);
 
-//        MvcResult result = makeRequest(SampleClaimData.submittedByLegalRepresentative())
-//            .andExpect(status().isOk())
-//            .andReturn();
-        Claim savedClaim = makeRestAssuredRequest(SampleClaimData.submittedByLegalRepresentative())
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and().extract().body().as(Claim.class);
+        MvcResult result = makeRequest(SampleClaimData.submittedByLegalRepresentative())
+            .andExpect(status().isOk())
+            .andReturn();
 
-//        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
+        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
         verify(notificationClient).sendEmail(eq(REPRESENTATIVE_EMAIL_TEMPLATE), anyString(),
             anyMap(), eq("representative-issue-notification-" + savedClaim.getReferenceNumber()));
@@ -123,15 +104,11 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldSendStaffNotificationsForCitizenClaimIssuedEvent() throws Exception {
-//        MvcResult result = makeRequest(SampleClaimData.submittedByClaimant())
-//            .andExpect(status().isOk())
-//            .andReturn();
-        Claim savedClaim = makeRestAssuredRequest(SampleClaimData.submittedByClaimant())
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and().extract().body().as(Claim.class);
+        MvcResult result = makeRequest(SampleClaimData.submittedByClaimant())
+            .andExpect(status().isOk())
+            .andReturn();
 
-//        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
+        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
@@ -147,15 +124,11 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldSendStaffNotificationsForLegalClaimIssuedEvent() throws Exception {
-//        MvcResult result = makeRequest(SampleClaimData.submittedByLegalRepresentative())
-//            .andExpect(status().isOk())
-//            .andReturn();
-        Claim savedClaim = makeRestAssuredRequest(SampleClaimData.submittedByLegalRepresentative())
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and().extract().body().as(Claim.class);
+        MvcResult result = makeRequest(SampleClaimData.submittedByLegalRepresentative())
+            .andExpect(status().isOk())
+            .andReturn();
 
-//        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
+        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
@@ -170,11 +143,8 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldNotMakeCallToStoreInCoreCaseDataStoreWhenToggledOff() throws Exception {
-//        makeRequest(SampleClaimData.submittedByLegalRepresentative())
-//            .andExpect(status().isOk());
-        makeRestAssuredRequest(SampleClaimData.submittedByLegalRepresentative())
-            .then()
-            .statusCode(HttpStatus.OK.value());
+        makeRequest(SampleClaimData.submittedByLegalRepresentative())
+            .andExpect(status().isOk());
 
         verify(coreCaseDataApi, never())
             .startForCaseworker(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
@@ -191,11 +161,8 @@ public class SaveClaimTest extends BaseSaveTest {
     }
 
     private void assertSealedClaimIsNotUploadedToDocumentManagementStore(ClaimData claimData) throws Exception {
-//        makeRequest(claimData)
-//            .andExpect(status().isOk());
-        makeRestAssuredRequest(claimData)
-            .then()
-            .statusCode(HttpStatus.OK.value());
+        makeRequest(claimData)
+            .andExpect(status().isOk());
 
         verify(documentUploadClient, never()).upload(anyString(), anyList());
     }

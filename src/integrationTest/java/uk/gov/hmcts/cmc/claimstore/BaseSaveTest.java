@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.config.ObjectMapperConfig;
-import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.junit.Before;
