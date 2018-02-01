@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -36,19 +34,14 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 public class OffersController {
 
     private ClaimService claimService;
-    private UserService userService;
-    private AuthorisationService authorisationService;
     private OffersService offersService;
 
     @Autowired
     public OffersController(
         ClaimService claimService,
-        UserService userService,
-        AuthorisationService authorisationService,
-        OffersService offersService) {
+        OffersService offersService
+    ) {
         this.claimService = claimService;
-        this.userService = userService;
-        this.authorisationService = authorisationService;
         this.offersService = offersService;
     }
 

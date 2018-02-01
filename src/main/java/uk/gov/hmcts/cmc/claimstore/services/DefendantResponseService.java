@@ -14,17 +14,15 @@ public class DefendantResponseService {
     private final EventProducer eventProducer;
     private final ClaimService claimService;
     private final UserService userService;
-    private final AuthorisationService authorisationService;
 
     public DefendantResponseService(
         EventProducer eventProducer,
         ClaimService claimService,
-        UserService userService,
-        AuthorisationService authorisationService) {
+        UserService userService
+    ) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
-        this.authorisationService = authorisationService;
     }
 
     @Transactional

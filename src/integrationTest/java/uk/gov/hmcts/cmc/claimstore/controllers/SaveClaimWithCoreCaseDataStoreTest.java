@@ -28,7 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.api_gateway.url=false"
     }
 )
-@Ignore
+@Ignore // Ignored until we decide how we are testing against CCD
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     private static final String SERVICE_TOKEN = "S2S token";

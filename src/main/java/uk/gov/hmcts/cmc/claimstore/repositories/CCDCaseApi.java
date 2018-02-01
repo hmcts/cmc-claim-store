@@ -117,7 +117,7 @@ public class CCDCaseApi {
 
         User defendant = userService.getUser(authorisation);
         return caseIdsGivenUserIdHasAccessTo.stream()
-            .map((caseId) -> readCase(defendant, caseId))
+            .map(caseId -> readCase(defendant, caseId))
             .filter((claim -> !claim.getSubmitterId().equals(id)))
             .collect(Collectors.toList());
     }
