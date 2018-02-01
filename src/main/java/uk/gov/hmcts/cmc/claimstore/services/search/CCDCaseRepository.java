@@ -79,13 +79,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
-        Optional<Claim> claim = ccdCaseApi.linkDefendant(externalId, defendantId, authorisation);
-        if (claim.isPresent()) {
-            claimRepository.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
-        }
-
-        return claim;
+    public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
+        return ccdCaseApi.linkDefendant(externalId, defendantId, authorisation);
     }
 
     @Override

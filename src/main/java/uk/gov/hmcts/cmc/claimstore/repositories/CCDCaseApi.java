@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
@@ -83,25 +84,22 @@ public class CCDCaseApi {
             .map((caseMapper::from));
     }
 
-    public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
+    public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        Optional<CaseDetails> optionalCaseDetails = getCaseDetailsByExternalId(anonymousCaseWorker, externalId);
+        CaseDetails caseDetails = getCaseDetailsByExternalId(anonymousCaseWorker, externalId)
+            .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
 
-        if (optionalCaseDetails.isPresent()) {
-            CaseDetails caseDetails = optionalCaseDetails.get();
-            caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
-                authTokenGenerator.generate(),
-                anonymousCaseWorker.getUserDetails().getId(),
-                JURISDICTION_ID,
-                CASE_TYPE_ID,
-                caseDetails.getId().toString(),
-                new UserId(defendantId)
-            );
+        caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
+            authTokenGenerator.generate(),
+            anonymousCaseWorker.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            caseDetails.getId().toString(),
+            new UserId(defendantId)
+        );
 
-            User defendant = userService.getUser(authorisation);
-            return Optional.of(readCase(defendant, caseDetails.getId().toString()));
-        }
-        return Optional.empty();
+        User defendant = userService.getUser(authorisation);
+        return readCase(defendant, caseDetails.getId().toString());
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
