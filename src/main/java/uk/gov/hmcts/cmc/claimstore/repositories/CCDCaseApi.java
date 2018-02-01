@@ -136,7 +136,7 @@ public class CCDCaseApi {
         if (letterHolderCases.size() > 1) {
             throw new DefendantLinkingException("More than 1 case a letter holder ID has access to found");
         }
-        if (letterHolderCases.size() == 0) {
+        if (letterHolderCases.isEmpty()) {
             throw new DefendantLinkingException("No cases found that the letter holder ID has access to");
         }
 
