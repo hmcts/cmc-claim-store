@@ -41,7 +41,7 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
         String notFoundErrorMessage = "Claim not found by external id: " + externalId;
-        
+
         Claim claim = claimRepository.getClaimByExternalId(externalId)
             .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
         claimRepository.linkDefendant(claim.getId(), defendantId);
