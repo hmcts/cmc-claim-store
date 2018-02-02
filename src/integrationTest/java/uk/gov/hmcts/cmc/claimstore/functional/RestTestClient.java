@@ -8,28 +8,29 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
-
 @Component
-public class RestAssuredHelper {
+public class RestTestClient {
 
+    private final TestsSetup testsSetup;
     private final JsonMapper jsonMapper;
 
     @Autowired
-    public RestAssuredHelper(JsonMapper jsonMapper) {
+    public RestTestClient(
+        TestsSetup testsSetup,
+        JsonMapper jsonMapper
+    ) {
+        this.testsSetup = testsSetup;
         this.jsonMapper = jsonMapper;
     }
-
-    private static final String AUTHORISATION_TOKEN = "Bearer token";
 
     public Response post(ClaimData claimData) {
         return RestAssured
             .given()
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, testsSetup.getUserAuthenticationToken())
                 .body(jsonMapper.toJson(claimData))
             .when()
-                .post("/claims/" + USER_ID);
+                .post("/claims/" + testsSetup.getUserId());
     }
 
 }

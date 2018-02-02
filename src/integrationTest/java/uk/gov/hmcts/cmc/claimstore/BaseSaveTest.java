@@ -17,7 +17,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 public abstract class BaseSaveTest extends BaseIntegrationTest {
 
-    protected static final String AUTHORISATION_TOKEN = "Bearer token";
+    public static final String AUTHORISATION_TOKEN = "Bearer token";
 
     protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
