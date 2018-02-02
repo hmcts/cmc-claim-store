@@ -23,13 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SaveClaimTest extends BaseSaveTest {
 
     @Autowired
-    private RestTestClient restTestClient;
+    private RestAssuredHelper restAssuredHelper;
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-        Claim createdCase = restTestClient.post(claimData)
+        Claim createdCase = restAssuredHelper.post(claimData)
             .then()
                 .statusCode(HttpStatus.OK.value())
             .and()
@@ -49,9 +49,9 @@ public class SaveClaimTest extends BaseSaveTest {
             .withExternalId(externalId)
             .build();
 
-        restTestClient.post(claimData)
+        restAssuredHelper.post(claimData)
             .andReturn();
-        restTestClient.post(claimData)
+        restAssuredHelper.post(claimData)
             .then()
                 .statusCode(HttpStatus.CONFLICT.value());
     }

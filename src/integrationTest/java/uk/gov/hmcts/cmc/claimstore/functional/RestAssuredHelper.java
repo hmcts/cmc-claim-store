@@ -11,12 +11,12 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
 @Component
-public class RestTestClient {
+public class RestAssuredHelper {
 
     private final JsonMapper jsonMapper;
 
     @Autowired
-    public RestTestClient(JsonMapper jsonMapper) {
+    public RestAssuredHelper(JsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
     }
 
