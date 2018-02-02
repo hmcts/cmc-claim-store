@@ -5,12 +5,14 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 @Component
+@Profile("mocked-tests")
 public class MockedLocalTestsSetup implements TestsSetup {
 
     private final ObjectMapper objectMapper;
