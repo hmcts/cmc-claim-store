@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -149,5 +150,9 @@ public class Assertions {
 
     public static CountyCourtJudgmentAssert assertThat(CountyCourtJudgment countyCourtJudgment) {
         return new CountyCourtJudgmentAssert(countyCourtJudgment);
+    }
+
+    public static ResponseAssert assertThat(FullDefenceResponse fullDefenceResponse) {
+        return new ResponseAssert(fullDefenceResponse);
     }
 }
