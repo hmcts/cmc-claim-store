@@ -38,7 +38,7 @@ import uk.gov.service.notify.NotificationClient;
 import javax.sql.DataSource;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
 @ActiveProfiles("unit-tests")

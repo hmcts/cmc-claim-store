@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import org.junit.Before;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
