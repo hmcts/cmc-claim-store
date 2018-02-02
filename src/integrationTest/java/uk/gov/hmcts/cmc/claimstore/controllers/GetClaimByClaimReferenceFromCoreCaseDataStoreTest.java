@@ -4,15 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -23,7 +18,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false"
+        "document_management.api_gateway.url=false",
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
 public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTest {
@@ -36,13 +32,9 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
     }
 
     @Test
-    public void shouldFindClaimFromCCDForClaimReferenceHoweverReturnClaimFromPostgres() throws Exception {
+    public void shouldFindClaimFromCCDForClaimReference() throws Exception {
 
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-
-        final Claim claim = claimStore.saveClaim(claimData);
-
-        final String referenceNumber = claim.getReferenceNumber();
+        final String referenceNumber = "000MC023";
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -54,12 +46,9 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
             )
         ).willReturn(successfulCoreCaseDataSearchResponse());
 
-        MvcResult result = makeRequest("/claims/" + referenceNumber)
+        makeRequest("/claims/" + referenceNumber)
             .andExpect(status().isOk())
             .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getReferenceNumber).containsExactly(claim.getReferenceNumber());
 
         verify(coreCaseDataApi)
             .searchForCitizen(

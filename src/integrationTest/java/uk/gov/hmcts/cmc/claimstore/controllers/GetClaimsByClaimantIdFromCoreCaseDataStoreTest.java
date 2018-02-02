@@ -25,7 +25,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false"
+        "document_management.api_gateway.url=false",
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
 public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest {
@@ -45,8 +46,8 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
     }
 
     @Test
-    public void shouldFindClaimFromCCDForClaimantIdHoweverReturnClaimFromPostgres() throws Exception {
-        String submitterId = "1";
+    public void shouldFindClaimFromCCDForClaimantId() throws Exception {
+        String submitterId = "20";
 
         claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 
