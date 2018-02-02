@@ -18,13 +18,13 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, FullDefenceRe
         isNotNull();
 
         actual.getFreeMediation().ifPresent(freeMediation -> {
-            if (!Objects.equals(freeMediation.name(), ccdResponse.getFreeMediation().toUpperCase())) {
+            if (!Objects.equals(freeMediation.name(), ccdResponse.getFreeMediation().name())) {
                 failWithMessage("Expected FullDefenceResponse.freeMediation to be <%s> but was <%s>",
                     ccdResponse.getFreeMediation(), freeMediation);
             }
         });
 
-        if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdResponse.getMoreTimeNeeded())) {
+        if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdResponse.getMoreTimeNeeded().name())) {
             failWithMessage("Expected FullDefenceResponse.moreTimeNeeded to be <%s> but was <%s>",
                 ccdResponse.getMoreTimeNeeded(), actual.getMoreTimeNeeded().name());
         }

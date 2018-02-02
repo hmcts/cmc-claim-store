@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
@@ -30,9 +31,9 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
         CCDResponse.CCDResponseBuilder builder = CCDResponse.builder();
 
         response.getFreeMediation()
-            .ifPresent(freeMediation -> builder.freeMediation(freeMediation.name().toLowerCase()));
+            .ifPresent(freeMediation -> builder.freeMediation(CCDYesNoOption.valueOf(freeMediation.name())));
 
-        builder.moreTimeNeeded(response.getMoreTimeNeeded().name());
+        builder.moreTimeNeeded(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
         builder.defendant(partyMapper.to(response.getDefendant()));
 
         response.getStatementOfTruth()
@@ -48,8 +49,8 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
     public FullDefenceResponse from(CCDResponse response) {
 
         return new FullDefenceResponse(
-            Response.FreeMediationOption.valueOf(response.getFreeMediation().toUpperCase()),
-            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeeded().toUpperCase()),
+            Response.FreeMediationOption.valueOf(response.getFreeMediation().name()),
+            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeeded().name()),
             partyMapper.from(response.getDefendant()),
             statementOfTruthMapper.from(response.getStatementOfTruth()),
             FullDefenceResponse.DefenceType.valueOf(response.getDefenceType().name()),
