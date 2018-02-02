@@ -82,9 +82,9 @@ public class ClaimService {
             .getByClaimReferenceNumber(reference, authorisation);
     }
 
-    public Optional<Claim> getClaimByReference(String reference) {
+    public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
         return claimRepository
-            .getByClaimReferenceNumber(reference);
+            .getByClaimReferenceNumberAnonymous(reference);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
@@ -140,9 +140,9 @@ public class ClaimService {
         return getClaimById(issuedClaimId);
     }
 
-    public Claim requestMoreTimeForResponse(long claimId, String authorisation) {
+    public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         UserDetails defendant = userService.getUserDetails(authorisation);
-        Claim claim = getClaimById(claimId);
+        Claim claim = getClaimByExternalId(externalId, authorisation);
 
         if (!claim.getDefendantId()
             .equals(defendant.getId())) {
@@ -160,18 +160,16 @@ public class ClaimService {
         LocalDate newDeadline = responseDeadlineCalculator
             .calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        claimRepository.requestMoreTime(claimId, newDeadline);
-        claim = getClaimById(claimId);
+        claimRepository.requestMoreTime(claim.getId(), newDeadline);
+        claim = getClaimByExternalId(externalId, authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
         return claim;
     }
 
-    public void linkDefendantToClaim(Long claimId, String defendantId) {
-        Claim claim = claimRepository.getById(claimId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
-
-        claimRepository.linkDefendant(claim.getId(), defendantId);
+    public Claim linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
+        return caseRepository.linkDefendant(externalId, defendantId, authorisation)
+            .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

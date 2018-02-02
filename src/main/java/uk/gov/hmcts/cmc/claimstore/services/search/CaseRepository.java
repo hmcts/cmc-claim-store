@@ -11,4 +11,7 @@ public interface CaseRepository {
     Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
+
+    Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation);
 }
+

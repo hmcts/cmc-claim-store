@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.ClaimSearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -28,9 +27,6 @@ public class ClaimStore {
     private ClaimRepository claimRepository;
 
     @Autowired
-    private ClaimSearchRepository claimSearchRepository;
-
-    @Autowired
     private OffersRepository offersRepository;
 
     @Autowired
@@ -41,7 +37,7 @@ public class ClaimStore {
     }
 
     public Claim getClaimByExternalId(String externalId) {
-        return claimSearchRepository.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
+        return claimRepository.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
     }
 
     public Claim saveClaim(ClaimData claimData) {

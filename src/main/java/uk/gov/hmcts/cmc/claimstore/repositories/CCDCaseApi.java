@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
-public class CCDClaimSearchRepository {
+public class CCDCaseApi {
 
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -34,7 +34,7 @@ public class CCDClaimSearchRepository {
     private final JsonMapper jsonMapper;
     private final JwtHelper jwtHelper;
 
-    public CCDClaimSearchRepository(
+    public CCDCaseApi(
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         UserService userService,
@@ -55,8 +55,7 @@ public class CCDClaimSearchRepository {
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
-        final List<Claim> claims
-            = search(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        List<Claim> claims = search(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
 
         if (claims.size() > 1) {
             throw new CoreCaseDataStoreException("More than one claim found by claim reference " + referenceNumber);
@@ -77,11 +76,11 @@ public class CCDClaimSearchRepository {
 
     private List<Claim> search(String authorisation, Map<String, Object> searchString) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
-        final String serviceAuthToken = this.authTokenGenerator.generate();
+        String serviceAuthToken = this.authTokenGenerator.generate();
 
         if (jwtHelper.isSolicitor(authorisation)) {
 
-            final List<CaseDetails> result = this.coreCaseDataApi.searchForCaseworker(
+            List<CaseDetails> result = this.coreCaseDataApi.searchForCaseworker(
                 authorisation,
                 serviceAuthToken,
                 userDetails.getId(),
@@ -93,7 +92,7 @@ public class CCDClaimSearchRepository {
             return extractClaims(result);
         } else {
 
-            final List<CaseDetails> result
+            List<CaseDetails> result
                 = this.coreCaseDataApi.searchForCitizen(
                 authorisation,
                 serviceAuthToken,
@@ -116,7 +115,7 @@ public class CCDClaimSearchRepository {
     }
 
     private CCDCase convertToCCDCase(Map<String, Object> mapData) {
-        final String json = jsonMapper.toJson(mapData);
+        String json = jsonMapper.toJson(mapData);
         return jsonMapper.fromJson(json, CCDCase.class);
     }
 }

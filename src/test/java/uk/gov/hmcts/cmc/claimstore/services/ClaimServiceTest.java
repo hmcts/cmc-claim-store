@@ -193,11 +193,11 @@ public class ClaimServiceTest {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(eq(ISSUE_DATE)))
             .thenReturn(newDeadline);
 
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
 
         verify(claimRepository, once()).requestMoreTime(eq(CLAIM_ID), eq(newDeadline));
         verify(eventProducer, once())
@@ -207,17 +207,16 @@ public class ClaimServiceTest {
     @Test(expected = ForbiddenActionException.class)
     public void requestMoreTimeToRespondShouldThrowForbiddenActionExceptionWhenClaimIsNotLinkedToDefendant() {
         when(userService.getUserDetails(eq(INVALID_DEFENDANT_TOKEN))).thenReturn(invalidDefendant);
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
 
-        claimService.requestMoreTimeForResponse(CLAIM_ID, INVALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, INVALID_DEFENDANT_TOKEN);
     }
 
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.empty());
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
-
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
     }
 
     @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
@@ -227,18 +226,18 @@ public class ClaimServiceTest {
             .minusDays(10);
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
 
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
 
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
