@@ -16,9 +16,7 @@ public class RestTestClient {
     private final JsonMapper jsonMapper;
 
     @Autowired
-    public RestTestClient(
-        JsonMapper jsonMapper
-    ) {
+    public RestTestClient(JsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
     }
 
