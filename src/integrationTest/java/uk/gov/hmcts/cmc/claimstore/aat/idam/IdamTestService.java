@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.functional.idam;
+package uk.gov.hmcts.cmc.claimstore.aat.idam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.functional;
+package uk.gov.hmcts.cmc.claimstore.aat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
@@ -12,13 +12,13 @@ import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 @Component
-@Profile("mocked-tests")
-public class MockedLocalTestsSetup implements TestsSetup {
+@Profile("integration-tests")
+public class IntegrationTestsSetup implements TestsSetup {
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public MockedLocalTestsSetup(ObjectMapper objectMapper) {
+    public IntegrationTestsSetup(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 

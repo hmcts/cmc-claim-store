@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.functional.idam;
+package uk.gov.hmcts.cmc.claimstore.aat.idam;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

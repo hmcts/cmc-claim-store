@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.functional;
+package uk.gov.hmcts.cmc.claimstore.aat;
 
 import io.restassured.RestAssured;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,12 +6,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.functional.idam.IdamTestService;
+import uk.gov.hmcts.cmc.claimstore.aat.idam.IdamTestService;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 
 @Component
-@Profile("functional-tests")
-public class FunctionalTestsSetup implements TestsSetup {
+@Profile("aat-tests")
+public class AutomatedAcceptanceTestsSetup implements TestsSetup {
 
     private final IdamTestService idamTestService;
     private final IdamApi idamApi;
@@ -20,7 +20,7 @@ public class FunctionalTestsSetup implements TestsSetup {
     private String userId;
 
     @Autowired
-    public FunctionalTestsSetup(
+    public AutomatedAcceptanceTestsSetup(
         IdamTestService idamTestService,
         IdamApi idamApi
     ) {

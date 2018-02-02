@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.functional;
+package uk.gov.hmcts.cmc.claimstore.aat;
 
 import org.junit.Ignore;
 import org.junit.Test;

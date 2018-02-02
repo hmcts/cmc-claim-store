@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.functional.idam;
+package uk.gov.hmcts.cmc.claimstore.aat.idam;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.HttpHeaders;
