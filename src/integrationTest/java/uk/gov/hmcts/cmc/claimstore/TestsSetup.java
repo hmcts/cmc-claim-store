@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.aat;
+package uk.gov.hmcts.cmc.claimstore;
 
 public interface TestsSetup {
 

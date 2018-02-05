@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.aat.TestsSetup;
 import uk.gov.hmcts.cmc.claimstore.aat.idam.IdamTestService;
 import uk.gov.hmcts.cmc.claimstore.aat.idam.TestUser;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
