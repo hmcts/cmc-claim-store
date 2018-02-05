@@ -166,6 +166,15 @@ task apiTest(type: Test) {
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
 }
 
+task functional(type: Test) {
+  group = 'AAT'
+  description = 'Executes functional tests against an AAT environment'
+  systemProperty 'spring.profiles.active', 'aat-tests'
+  setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
+  setClasspath(sourceSets.integrationTest.runtimeClasspath)
+  include 'uk/gov/hmcts/cmc/claimstore/aat/**'
+}
+
 compileIntegrationTestJava {
   options.compilerArgs << '-Xlint:deprecation'
 }
