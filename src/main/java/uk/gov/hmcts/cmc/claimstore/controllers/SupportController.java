@@ -82,7 +82,7 @@ public class SupportController {
                 resendStaffNotificationOnDefendantResponseSubmitted(claim);
                 break;
             case "ccj-request-submitted":
-                resendStaffNotificationCCJRequestSubmitted(claim);
+                resendStaffNotificationCCJRequestSubmitted(claim, authorisation);
                 break;
             case "offer-accepted":
                 resendStaffNotificationOnOfferAccepted(claim);
@@ -92,9 +92,9 @@ public class SupportController {
         }
     }
 
-    private void resendStaffNotificationCCJRequestSubmitted(Claim claim) {
+    private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
-            new CountyCourtJudgmentRequestedEvent(claim)
+            new CountyCourtJudgmentRequestedEvent(claim, authorisation)
         );
     }
 

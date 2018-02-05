@@ -43,11 +43,11 @@ public class CountyCourtJudgmentService {
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim);
 
-        claimService.saveCountyCourtJudgment(externalId, countyCourtJudgment);
+        claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
 
         Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
-        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ);
+        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ, authorisation);
 
         return claimWithCCJ;
     }

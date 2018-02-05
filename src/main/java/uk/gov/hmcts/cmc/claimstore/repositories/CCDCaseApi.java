@@ -196,15 +196,25 @@ public class CCDCaseApi {
     }
 
     private List<Claim> extractClaims(List<CaseDetails> result) {
-        return result.stream()
-            .map(CaseDetails::getData)
-            .map(this::convertToCCDCase)
-            .map(caseMapper::from)
+
+        Map<Long, Map<String, Object>> collectMap = result.stream()
+            .collect(Collectors.toMap(CaseDetails::getId, CaseDetails::getData));
+
+        return collectMap.entrySet().stream()
+            .map(this::mapToClaim)
             .collect(Collectors.toList());
     }
 
     private CCDCase convertToCCDCase(Map<String, Object> mapData) {
         String json = jsonMapper.toJson(mapData);
         return jsonMapper.fromJson(json, CCDCase.class);
+    }
+
+    private Claim mapToClaim(Map.Entry<Long, Map<String, Object>> entry) {
+        Map<String, Object> entryValue = entry.getValue();
+        entryValue.put("id", entry.getKey());
+
+        CCDCase ccdCase = convertToCCDCase(entryValue);
+        return caseMapper.from(ccdCase);
     }
 }
