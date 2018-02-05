@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.aat.TestInstance;
 import uk.gov.hmcts.cmc.claimstore.aat.idam.IdamTestService;
 import uk.gov.hmcts.cmc.claimstore.aat.idam.TestUser;
-import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 
 import javax.annotation.PostConstruct;
 
@@ -18,7 +18,7 @@ import javax.annotation.PostConstruct;
 public class AutomatedAcceptanceTestsSetup implements TestsSetup {
 
     private final IdamTestService idamTestService;
-    private final IdamApi idamApi;
+    private final JwtHelper jwtHelper;
     private final TestUser testUser;
     private final TestInstance testInstance;
 
@@ -28,13 +28,13 @@ public class AutomatedAcceptanceTestsSetup implements TestsSetup {
     @Autowired
     public AutomatedAcceptanceTestsSetup(
         IdamTestService idamTestService,
-        IdamApi idamApi,
+        JwtHelper jwtHelper,
         TestUser testUser,
         TestInstance testInstance
     ) {
         this.idamTestService = idamTestService;
-        this.idamApi = idamApi;
         this.testUser = testUser;
+        this.jwtHelper = jwtHelper;
         this.testInstance = testInstance;
     }
 
@@ -42,7 +42,7 @@ public class AutomatedAcceptanceTestsSetup implements TestsSetup {
     public void initialize() {
         RestAssured.baseURI = testInstance.getUri();
         authenticationToken = "Bearer " + idamTestService.logIn(testUser.getUsername(), testUser.getPassword());
-        userId = idamApi.retrieveUserDetails(authenticationToken).getId();
+        userId = jwtHelper.getUserId(authenticationToken);
     }
 
     @Override
