@@ -10,13 +10,19 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class CountyCourtJudgmentRequestedEvent {
 
     private final Claim claim;
+    private final String authorisation;
 
-    public CountyCourtJudgmentRequestedEvent(Claim claim) {
+    public CountyCourtJudgmentRequestedEvent(Claim claim, String authorisation) {
         this.claim = claim;
+        this.authorisation = authorisation;
     }
 
     public Claim getClaim() {
         return claim;
+    }
+
+    public String getAuthorisation() {
+        return authorisation;
     }
 
     @Override
@@ -30,12 +36,13 @@ public class CountyCourtJudgmentRequestedEvent {
         }
 
         CountyCourtJudgmentRequestedEvent that = (CountyCourtJudgmentRequestedEvent) other;
-        return Objects.equals(claim, that.claim);
+        return Objects.equals(claim, that.claim)
+            && Objects.equals(authorisation, that.authorisation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(claim);
+        return Objects.hash(claim, authorisation);
     }
 
     @Override

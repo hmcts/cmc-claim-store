@@ -1,25 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.exception.InvalidCaseDataException;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
-
-import java.io.IOException;
 
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -29,7 +23,6 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_I
 public class SaveCoreCaseDataService {
 
     private final CoreCaseDataApi coreCaseDataApi;
-    private final ObjectMapper objectMapper;
     private final AuthTokenGenerator authTokenGenerator;
     private final CaseAccessApi caseAccessApi;
     private final UserService userService;
@@ -37,13 +30,11 @@ public class SaveCoreCaseDataService {
     @Autowired
     public SaveCoreCaseDataService(
         CoreCaseDataApi coreCaseDataApi,
-        ObjectMapper objectMapper,
         AuthTokenGenerator authTokenGenerator,
         CaseAccessApi caseAccessApi,
         UserService userService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
-        this.objectMapper = objectMapper;
         this.authTokenGenerator = authTokenGenerator;
         this.caseAccessApi = caseAccessApi;
         this.userService = userService;
@@ -52,7 +43,7 @@ public class SaveCoreCaseDataService {
     public CaseDetails save(
         String authorisation,
         EventRequestData eventRequestData,
-        CCDCase ccdCase,
+        Object data,
         boolean represented,
         String letterHolderId
     ) {
@@ -66,7 +57,7 @@ public class SaveCoreCaseDataService {
                 .summary("CMC case submission event")
                 .description("Submitting CMC case with token " + startEventResponse.getToken())
                 .build())
-            .data(toJson(ccdCase))
+            .data(data)
             .build();
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent, represented);
@@ -132,15 +123,6 @@ public class SaveCoreCaseDataService {
                 eventRequestData.getJurisdictionId(),
                 eventRequestData.getCaseTypeId(),
                 eventRequestData.getEventId());
-        }
-    }
-
-    private JsonNode toJson(CCDCase ccdCase) {
-        try {
-            JsonNode dataNode = objectMapper.readTree(objectMapper.writeValueAsString(ccdCase));
-            return objectMapper.convertValue(dataNode, JsonNode.class);
-        } catch (IOException e) {
-            throw new InvalidCaseDataException("Failed to serialize to JSON", e);
         }
     }
 }

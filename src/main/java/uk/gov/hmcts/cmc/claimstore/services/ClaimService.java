@@ -173,8 +173,8 @@ public class ClaimService {
         claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
     }
 
-    public void saveCountyCourtJudgment(String externalId, CountyCourtJudgment countyCourtJudgment) {
-        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
+    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
+        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
     }
 
     public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
