@@ -27,7 +27,7 @@ public class RestTestClient {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + testsSetup.getUserAuthenticationToken())
+            .header(HttpHeaders.AUTHORIZATION, testsSetup.getUserAuthenticationToken())
             .body(jsonMapper.toJson(claimData))
             .when()
             .post("/claims/" + testsSetup.getUserId());

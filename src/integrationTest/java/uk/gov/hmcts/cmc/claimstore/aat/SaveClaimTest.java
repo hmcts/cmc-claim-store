@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.aat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,14 +38,11 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(createdCase.getClaimData()).isEqualTo(claimData);
     }
 
-    // Original test was creating the existing claim with ClaimStore helper class.
-    // This should work too but returns 500 instead, will investigate later.
-    @Ignore
     @Test
     public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
         UUID externalId = UUID.randomUUID();
 
-        ClaimData claimData = SampleClaimData.builder()
+        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder()
             .withExternalId(externalId)
             .build();
 

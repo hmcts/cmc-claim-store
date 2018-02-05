@@ -41,8 +41,8 @@ public class AutomatedAcceptanceTestsSetup implements TestsSetup {
     @PostConstruct
     public void initialize() {
         RestAssured.baseURI = testInstance.getUri();
-        authenticationToken = idamTestService.logIn(testUser.getUsername(), testUser.getPassword());
-        userId = idamApi.retrieveUserDetails("Bearer " + authenticationToken).getId();
+        authenticationToken = "Bearer " + idamTestService.logIn(testUser.getUsername(), testUser.getPassword());
+        userId = idamApi.retrieveUserDetails(authenticationToken).getId();
     }
 
     @Override
