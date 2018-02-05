@@ -26,11 +26,11 @@ public class RestTestClient {
     public Response post(ClaimData claimData) {
         return RestAssured
             .given()
-                .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + testsSetup.getUserAuthenticationToken())
-                .body(jsonMapper.toJson(claimData))
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + testsSetup.getUserAuthenticationToken())
+            .body(jsonMapper.toJson(claimData))
             .when()
-                .post("/claims/" + testsSetup.getUserId());
+            .post("/claims/" + testsSetup.getUserId());
     }
 
 }
