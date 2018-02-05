@@ -32,9 +32,9 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim createdCase = restTestClient.post(claimData)
             .then()
-                .statusCode(HttpStatus.OK.value())
+            .statusCode(HttpStatus.OK.value())
             .and()
-                .extract().body().as(Claim.class);
+            .extract().body().as(Claim.class);
 
         assertThat(createdCase.getClaimData()).isEqualTo(claimData);
     }
@@ -54,7 +54,7 @@ public class SaveClaimTest extends BaseSaveTest {
             .andReturn();
         restTestClient.post(claimData)
             .then()
-                .statusCode(HttpStatus.CONFLICT.value());
+            .statusCode(HttpStatus.CONFLICT.value());
     }
 
 }
