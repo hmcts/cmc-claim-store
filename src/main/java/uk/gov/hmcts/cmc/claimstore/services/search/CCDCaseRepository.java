@@ -1,8 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.search;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
@@ -11,16 +8,12 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.String.format;
-
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
 
-    public CCDCaseRepository(
-        CCDCaseApi ccdCaseApi
-    ) {
+    public CCDCaseRepository(CCDCaseApi ccdCaseApi) {
         this.ccdCaseApi = ccdCaseApi;
     }
 

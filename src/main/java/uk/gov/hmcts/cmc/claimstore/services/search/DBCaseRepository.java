@@ -47,7 +47,7 @@ public class DBCaseRepository implements CaseRepository {
         claimRepository.linkDefendant(claim.getId(), defendantId);
 
         claim = claimRepository.getClaimByExternalId(externalId)
-            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));;
+            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
         return claim;
 
     }
