@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.aat.TestInstance;
 import uk.gov.hmcts.cmc.claimstore.aat.idam.IdamTestService;
 import uk.gov.hmcts.cmc.claimstore.aat.idam.TestUser;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
@@ -19,6 +20,7 @@ public class AutomatedAcceptanceTestsSetup implements TestsSetup {
     private final IdamTestService idamTestService;
     private final IdamApi idamApi;
     private final TestUser testUser;
+    private final TestInstance testInstance;
 
     private String authenticationToken;
     private String userId;
@@ -27,16 +29,18 @@ public class AutomatedAcceptanceTestsSetup implements TestsSetup {
     public AutomatedAcceptanceTestsSetup(
         IdamTestService idamTestService,
         IdamApi idamApi,
-        TestUser testUser
+        TestUser testUser,
+        TestInstance testInstance
     ) {
         this.idamTestService = idamTestService;
         this.idamApi = idamApi;
         this.testUser = testUser;
+        this.testInstance = testInstance;
     }
 
     @PostConstruct
     public void initialize() {
-        RestAssured.baseURI = "http://localhost:4400";
+        RestAssured.baseURI = testInstance.getUri();
         authenticationToken = idamTestService.logIn(testUser.getUsername(), testUser.getPassword());
         userId = idamApi.retrieveUserDetails("Bearer " + authenticationToken).getId();
     }

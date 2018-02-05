@@ -103,3 +103,5 @@ aat:
   test-user:
     username: "${FUNCTIONAL_TEST_USERNAME:}"
     password: "${FUNCTIONAL_TEST_PASSWORD:}"
+  test-instance:
+    uri: "${FUNCTIONAL_TEST_INSTANCE_URI:}"
