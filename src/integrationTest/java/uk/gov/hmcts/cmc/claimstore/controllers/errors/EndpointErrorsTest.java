@@ -30,12 +30,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
-@ActiveProfiles("test")
 @TestPropertySource(
     properties = {
         "core_case_data.api.url=false"
     }
 )
+@ActiveProfiles("mocked-database-tests")
 public class EndpointErrorsTest extends MockSpringTest {
 
     private static final Exception UNEXPECTED_ERROR
