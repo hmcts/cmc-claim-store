@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -65,9 +64,9 @@ public class ClaimService {
         return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
-    public Claim getClaimByLetterHolderId(String id) {
-        return claimRepository
-            .getByLetterHolderId(id)
+    public Claim getClaimByLetterHolderId(String id, String authorisation) {
+        return caseRepository
+            .getByLetterHolderId(id, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
 
@@ -92,8 +91,8 @@ public class ClaimService {
         return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 
-    public List<Claim> getClaimByDefendantId(String id) {
-        return claimRepository.getByDefendantId(id);
+    public List<Claim> getClaimByDefendantId(String id, String authorisation) {
+        return caseRepository.getByDefendantId(id, authorisation);
     }
 
     @Transactional
@@ -141,13 +140,7 @@ public class ClaimService {
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
-        UserDetails defendant = userService.getUserDetails(authorisation);
         Claim claim = getClaimByExternalId(externalId, authorisation);
-
-        if (!claim.getDefendantId()
-            .equals(defendant.getId())) {
-            throw new ForbiddenActionException("This claim is not raised against you");
-        }
 
         if (claim.isMoreTimeRequested()) {
             throw new MoreTimeAlreadyRequestedException("You have already requested more time");
@@ -162,14 +155,14 @@ public class ClaimService {
 
         claimRepository.requestMoreTime(claim.getId(), newDeadline);
         claim = getClaimByExternalId(externalId, authorisation);
+        UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
         return claim;
     }
 
     public Claim linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
-        return caseRepository.linkDefendant(externalId, defendantId, authorisation)
-            .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
+        return caseRepository.linkDefendant(externalId, defendantId, authorisation);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
@@ -185,6 +178,8 @@ public class ClaimService {
     }
 
     public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
+        // When this is saved in CCD ensure a Forbidden response is returned to the client if they
+        // aren't allowed to access the case
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
     }
 }

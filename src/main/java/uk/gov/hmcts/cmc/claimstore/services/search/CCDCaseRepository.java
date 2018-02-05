@@ -1,8 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.search;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
@@ -13,13 +10,9 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.String.format;
-
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseRepository implements CaseRepository {
-    private final Logger logger = LoggerFactory.getLogger(CCDCaseRepository.class);
-
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
 
@@ -38,32 +31,27 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        Optional<Claim> claim = ccdCaseApi.getByExternalId(externalId, authorisation);
-
-        if (claim.isPresent()) {
-            logger.info(format("claim with external id %s user %s exist in ccd",
-                claim.get().getReferenceNumber(), claim.get().getSubmitterId()));
-        }
-
-        return claim;
+        return ccdCaseApi.getByExternalId(externalId, authorisation);
     }
 
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-
-        Optional<Claim> claim = ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
-
-        if (claim.isPresent()) {
-            logger.info(format("claim with reference number %s user %s exist in ccd",
-                claim.get().getReferenceNumber(), claim.get().getSubmitterId()));
-        }
-
-        return claim;
+        return ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
     }
 
     @Override
-    public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
-        throw new NotImplementedException("This is being implemented in ROC-3024");
+    public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
+        return ccdCaseApi.linkDefendant(externalId, defendantId, authorisation);
+    }
+
+    @Override
+    public List<Claim> getByDefendantId(String id, String authorisation) {
+        return ccdCaseApi.getByDefendantId(id, authorisation);
+    }
+
+    @Override
+    public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
+        return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }
 
 

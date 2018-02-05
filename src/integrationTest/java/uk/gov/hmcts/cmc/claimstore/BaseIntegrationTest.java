@@ -10,6 +10,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.io.UnsupportedEncodingException;
@@ -32,6 +33,9 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
 
     @Autowired
     protected ClaimStore claimStore;
+
+    @Autowired
+    protected CaseMapper caseMapper;
 
     public static class CleanDatabaseListener extends AbstractTestExecutionListener {
 

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
@@ -37,7 +37,7 @@ public class ClaimControllerTest {
     }
 
     @Test
-    public void shouldSaveClaimInRepository() throws JsonProcessingException {
+    public void shouldSaveClaimInRepository() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
         when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION))).thenReturn(CLAIM);
@@ -50,7 +50,7 @@ public class ClaimControllerTest {
     }
 
     @Test
-    public void shouldReturnClaimFromRepositoryForClaimantId() throws JsonProcessingException {
+    public void shouldReturnClaimFromRepositoryForClaimantId() {
         //given
         when(claimService.getClaimBySubmitterId(eq(USER_ID), eq(AUTHORISATION)))
             .thenReturn(Collections.singletonList(CLAIM));
@@ -63,12 +63,12 @@ public class ClaimControllerTest {
     }
 
     @Test
-    public void shouldReturnClaimFromRepositoryForLetterHolderId() throws JsonProcessingException {
+    public void shouldReturnClaimFromRepositoryForLetterHolderId() {
         //given
-        when(claimService.getClaimByLetterHolderId(eq(LETTER_HOLDER_ID))).thenReturn(CLAIM);
+        when(claimService.getClaimByLetterHolderId(eq(LETTER_HOLDER_ID), any())).thenReturn(CLAIM);
 
         //when
-        Claim output = claimController.getByLetterHolderId(LETTER_HOLDER_ID);
+        Claim output = claimController.getByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(CLAIM);

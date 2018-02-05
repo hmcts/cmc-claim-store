@@ -18,13 +18,12 @@ import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CoreCaseDataService {
-
-    private static final String JURISDICTION_ID = "CMC";
-    private static final String CASE_TYPE_ID = "MoneyClaimCase";
 
     private final SaveCoreCaseDataService saveCoreCaseDataService;
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
@@ -64,7 +63,8 @@ public class CoreCaseDataService {
                     authorisation,
                     eventRequestData,
                     jsonMapper.toJson(ccdCase),
-                    claim.getClaimData().isClaimantRepresented()
+                    claim.getClaimData().isClaimantRepresented(),
+                    claim.getLetterHolderId()
                 );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
