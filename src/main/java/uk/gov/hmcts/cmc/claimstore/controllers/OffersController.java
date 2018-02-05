@@ -15,11 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.AuthorisationService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -37,19 +34,14 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 public class OffersController {
 
     private ClaimService claimService;
-    private UserService userService;
-    private AuthorisationService authorisationService;
     private OffersService offersService;
 
     @Autowired
     public OffersController(
         ClaimService claimService,
-        UserService userService,
-        AuthorisationService authorisationService,
-        OffersService offersService) {
+        OffersService offersService
+    ) {
         this.claimService = claimService;
-        this.userService = userService;
-        this.authorisationService = authorisationService;
         this.offersService = offersService;
     }
 
@@ -69,7 +61,6 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        assertActionIsPermittedFor(claim, party, authorisation);
         offersService.makeOffer(claim, offer, party);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
@@ -84,7 +75,6 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        assertActionIsPermittedFor(claim, party, authorisation);
         offersService.accept(claim, party);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
@@ -99,19 +89,8 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        assertActionIsPermittedFor(claim, party, authorisation);
         offersService.reject(claim, party);
         return claimService.getClaimByExternalId(externalId, authorisation);
-    }
-
-    private void assertActionIsPermittedFor(Claim claim, MadeBy party, String authorisation) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        if (party.equals(MadeBy.CLAIMANT)) {
-            authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
-        }
-        if (party.equals(MadeBy.DEFENDANT)) {
-            authorisationService.assertIsDefendantOnClaim(claim, userDetails.getId());
-        }
     }
 
 }

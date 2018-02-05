@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -38,13 +39,26 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> linkDefendant(String externalId, String defendantId, String authorisation) {
-        Optional<Claim> claim = claimRepository.getClaimByExternalId(externalId);
-        if (claim.isPresent()) {
-            claimRepository.linkDefendant(claim.orElseThrow(IllegalStateException::new).getId(), defendantId);
-            claim = claimRepository.getClaimByExternalId(externalId);
-        }
+    public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
+        String notFoundErrorMessage = "Claim not found by external id: " + externalId;
+
+        Claim claim = claimRepository.getClaimByExternalId(externalId)
+            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
+        claimRepository.linkDefendant(claim.getId(), defendantId);
+
+        claim = claimRepository.getClaimByExternalId(externalId)
+            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
         return claim;
 
+    }
+
+    @Override
+    public List<Claim> getByDefendantId(String id, String authorisation) {
+        return claimRepository.getByDefendantId(id);
+    }
+
+    @Override
+    public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
+        return claimRepository.getByLetterHolderId(id);
     }
 }
