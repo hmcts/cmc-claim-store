@@ -207,10 +207,6 @@ jar {
   }
 }
 
-bootRepackage {
-  classifier 'all'
-}
-
 task printVersion {
   description 'Prints the version of this project'
   doLast {
