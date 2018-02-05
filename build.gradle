@@ -69,8 +69,7 @@ dependencyManagement {
 def versions = [
   springBoot      : springBootVersion,
   jackson         : dependencyManagement.importedProperties['jackson.version'],
-  springfoxSwagger: '2.7.0',
-  restAssured     : '3.0.6',
+  springfoxSwagger: '2.7.0'
 ]
 
 configurations {
@@ -130,8 +129,7 @@ dependencies {
 
   testCompile project(':domain-sample-data')
 
-  testCompile group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
-  testCompile group: 'io.rest-assured', name: 'spring-mock-mvc', version: versions.restAssured
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.6'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
