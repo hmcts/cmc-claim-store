@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @Profile("mocked-database-tests")
+@SuppressWarnings("unused")
 class MockedDatabaseConfiguration {
 
     @MockBean
@@ -34,7 +35,6 @@ class MockedDatabaseConfiguration {
     @Bean
     protected PlatformTransactionManager transactionManager() {
         return new PlatformTransactionManager() {
-
             @Override
             public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
                 return null;
@@ -51,4 +51,5 @@ class MockedDatabaseConfiguration {
             }
         };
     }
+
 }
