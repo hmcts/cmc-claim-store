@@ -3,9 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,13 +17,16 @@ import java.util.Optional;
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimRepository claimRepository;
+    private final JsonMapper jsonMapper;
     private final UserService userService;
 
     public DBCaseRepository(
         ClaimRepository claimRepository,
+        JsonMapper jsonMapper,
         UserService userService
     ) {
         this.claimRepository = claimRepository;
+        this.jsonMapper = jsonMapper;
         this.userService = userService;
     }
 
@@ -50,6 +55,12 @@ public class DBCaseRepository implements CaseRepository {
             .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
         return claim;
 
+    }
+
+    @Override
+    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
+        final String externalId = claim.getExternalId();
+        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
     }
 
     @Override
