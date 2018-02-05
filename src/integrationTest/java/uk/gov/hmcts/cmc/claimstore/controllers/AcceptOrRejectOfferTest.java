@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
@@ -32,6 +33,11 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_AUTH_TOKEN = "defendant-authDataString";
@@ -57,7 +63,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
         );
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
         claimStore.saveResponse(claim.getId(), SampleResponse.validDefaults(), DEFENDANT_ID,
             SampleClaim.DEFENDANT_EMAIL);
         prepareDefendantOffer();
