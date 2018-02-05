@@ -47,6 +47,11 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         return this;
     }
 
+    public SampleResponse<T> withMoreTimeNeededOption(Response.MoreTimeNeededOption moreTimeNeededOption) {
+        this.moreTimeNeededOption = moreTimeNeededOption;
+        return this;
+    }
+
     public SampleResponse<T> withDefendantDetails(Party sampleDefendantDetails) {
         this.defendantDetails = sampleDefendantDetails;
         return this;
