@@ -28,12 +28,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource(
-    properties = {
-        "document_management.api_gateway.url=false",
-        "core_case_data.api.url=false"
-    }
-)
 public class SaveClaimTest extends BaseSaveTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
