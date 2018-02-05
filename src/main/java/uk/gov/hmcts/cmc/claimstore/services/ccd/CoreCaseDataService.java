@@ -10,12 +10,13 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CoreCaseDataService {
 
-    private static final String JURISDICTION_ID = "CMC";
-    private static final String CASE_TYPE_ID = "MoneyClaimCase";
     private static final String EVENT_ID = "submitClaimEvent";
 
     private final SaveCoreCaseDataService saveCoreCaseDataService;
@@ -42,7 +43,13 @@ public class CoreCaseDataService {
                 .build();
 
             return saveCoreCaseDataService
-                .save(authorisation, eventRequestData, ccdCase, claim.getClaimData().isClaimantRepresented());
+                .save(
+                    authorisation,
+                    eventRequestData,
+                    ccdCase,
+                    claim.getClaimData().isClaimantRepresented(),
+                    claim.getLetterHolderId()
+                );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
                 .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);

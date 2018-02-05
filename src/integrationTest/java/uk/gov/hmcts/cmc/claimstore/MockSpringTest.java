@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
@@ -75,6 +76,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected CoreCaseDataApi coreCaseDataApi;
+
+    @MockBean
+    protected CaseAccessApi caseAccessApi;
 
     @MockBean
     protected ServiceAuthorisationApi serviceAuthorisationApi;
