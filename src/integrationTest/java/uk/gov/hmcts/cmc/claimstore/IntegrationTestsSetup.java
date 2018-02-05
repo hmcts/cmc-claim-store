@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.aat;
+package uk.gov.hmcts.cmc.claimstore;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
@@ -8,6 +8,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerInitial
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import uk.gov.hmcts.cmc.claimstore.aat.TestsSetup;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 @Component

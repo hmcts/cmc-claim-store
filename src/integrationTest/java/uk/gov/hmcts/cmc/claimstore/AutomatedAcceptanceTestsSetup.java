@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.aat;
+package uk.gov.hmcts.cmc.claimstore;
 
 import io.restassured.RestAssured;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.aat.TestsSetup;
 import uk.gov.hmcts.cmc.claimstore.aat.idam.IdamTestService;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 

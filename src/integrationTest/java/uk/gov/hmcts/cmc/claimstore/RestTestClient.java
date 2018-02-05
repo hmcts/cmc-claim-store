@@ -1,10 +1,11 @@
-package uk.gov.hmcts.cmc.claimstore.aat;
+package uk.gov.hmcts.cmc.claimstore;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.aat.TestsSetup;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
