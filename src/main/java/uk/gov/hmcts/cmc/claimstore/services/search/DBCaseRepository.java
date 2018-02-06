@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.search;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -44,7 +45,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
+    public Claim linkDefendantV1(String externalId, String defendantId, String authorisation) {
         String notFoundErrorMessage = "Claim not found by external id: " + externalId;
 
         Claim claim = claimRepository.getClaimByExternalId(externalId)
@@ -55,6 +56,11 @@ public class DBCaseRepository implements CaseRepository {
             .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
         return claim;
 
+    }
+
+    @Override
+    public void linkDefendantV2(String authorisation) {
+        throw new NotImplementedException("Will not be implemented for DB");
     }
 
     @Override
