@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "core_case_data.api.url=false"
     }
 )
-public class SaveClaimTest extends BaseSaveTest {
+public class SaveClaimFunctionalTest extends BaseSaveTest {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -34,16 +34,16 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldReturnNewlyCreatedClaim() {
-        System.out.println(">>> SaveClaimTest : AppContext " + applicationContext);
-        System.out.println(">>> SaveClaimTest : AppContext hash " + applicationContext.hashCode());
-        System.out.println(">>> SaveClaimTest : field UserService hash " + userService.hashCode());
-        System.out.println(">>> SaveClaimTest : AppContext UserService hash " + applicationContext
+        System.out.println(">>> SaveClaimFunctionalTest : AppContext " + applicationContext);
+        System.out.println(">>> SaveClaimFunctionalTest : AppContext hash " + applicationContext.hashCode());
+        System.out.println(">>> SaveClaimFunctionalTest : field UserService hash " + userService.hashCode());
+        System.out.println(">>> SaveClaimFunctionalTest : AppContext UserService hash " + applicationContext
             .getBean(UserService.class));
         System.out.println(">>> ClaimService : CaseRepository hash " + caseRepository.hashCode());
 
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-        //        System.out.println(">>> SaveClaimTest : calling with MockMvc");
+        //        System.out.println(">>> SaveClaimFunctionalTest : calling with MockMvc");
         //        MvcResult result = makeRequest(claimData)
         //            .andExpect(status().isOk())
         //            .andReturn();
@@ -52,7 +52,7 @@ public class SaveClaimTest extends BaseSaveTest {
         //            .extracting(Claim::getClaimData)
         //            .contains(claimData);
 
-        System.out.println(">>> SaveClaimTest : calling with RestAssured");
+        System.out.println(">>> SaveClaimFunctionalTest : calling with RestAssured");
         Claim createdCase = restTestClient.post(claimData)
             .then()
             .statusCode(HttpStatus.OK.value())
