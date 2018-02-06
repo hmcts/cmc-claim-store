@@ -141,9 +141,9 @@ public class CCDCaseApi {
     }
 
     private boolean isLetterHolderRole(String role) {
-        return role.startsWith("letter") &&
-            !role.equals("letter-holder") &&
-            !role.endsWith("loa1");
+        return role.startsWith("letter")
+            && !role.equals("letter-holder")
+            && !role.endsWith("loa1");
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {

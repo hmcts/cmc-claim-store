@@ -6,8 +6,8 @@ public class ExceptionForClient {
     private String message;
 
     public ExceptionForClient(int httpStatus, String message) {
-     this.status = httpStatus;
-     this.message = message;
+        this.status = httpStatus;
+        this.message = message;
     }
 
     public int getStatus() {

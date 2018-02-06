@@ -16,6 +16,7 @@ public interface CaseRepository {
     void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);
 
     Claim linkDefendantV1(String externalId, String defendantId, String authorisation);
+
     void linkDefendantV2(String authorisation);
 
     List<Claim> getByDefendantId(String id, String authorisation);
