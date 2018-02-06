@@ -83,10 +83,15 @@ public class CCDCaseApi {
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getCaseDetailsByExternalId(user, externalId)
-            .map(CaseDetails::getData)
-            .map(this::convertToCCDCase)
-            .map((caseMapper::from));
+        List<Claim> claims = extractClaims(
+            search(user, ImmutableMap.of("case.externalId", externalId))
+        );
+
+        if (claims.size() > 1) {
+            throw new CoreCaseDataStoreException("More than one claim found by externalId " + externalId);
+        }
+
+        return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
     }
 
     /**
@@ -205,15 +210,6 @@ public class CCDCaseApi {
                 ).getData()
             )
         );
-    }
-
-    private Optional<CaseDetails> getCaseDetailsByExternalId(User user, String externalId) {
-        List<CaseDetails> caseResults = search(user, ImmutableMap.of("case.externalId", externalId));
-        if (caseResults.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by claim externalId " + externalId);
-        }
-
-        return caseResults.isEmpty() ? Optional.empty() : Optional.of(caseResults.get(0));
     }
 
     private List<CaseDetails> search(User user, Map<String, Object> searchString) {
