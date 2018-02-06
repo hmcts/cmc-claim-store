@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest//(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
 public abstract class MockSpringTest {
