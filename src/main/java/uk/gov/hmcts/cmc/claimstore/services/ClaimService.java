@@ -103,6 +103,11 @@ public class ClaimService {
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
+        System.out.println(">>> ClaimService : AppContext " + applicationContext);
+        System.out.println(">>> ClaimService : AppContext hash " + applicationContext.hashCode());
+        System.out.println(">>> ClaimService : UserService hash " + userService.hashCode());
+        System.out.println(">>> ClaimService : CaseRepository hash " + caseRepository.hashCode());
+
         caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
         });
@@ -111,9 +116,6 @@ public class ClaimService {
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
 
         if (!claimData.isClaimantRepresented()) {
-            System.out.println(">>> ClaimService : AppContext " + applicationContext);
-            System.out.println(">>> ClaimService : AppContext hash " + applicationContext.hashCode());
-            System.out.println(">>> ClaimService : UserService hash " + userService.hashCode());
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 

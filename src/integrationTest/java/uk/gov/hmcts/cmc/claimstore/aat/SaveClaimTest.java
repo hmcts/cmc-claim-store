@@ -39,6 +39,7 @@ public class SaveClaimTest extends BaseSaveTest {
         System.out.println(">>> SaveClaimTest : field UserService hash " + userService.hashCode());
         System.out.println(">>> SaveClaimTest : AppContext UserService hash " + applicationContext
             .getBean(UserService.class));
+        System.out.println(">>> ClaimService : CaseRepository hash " + caseRepository.hashCode());
 
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
