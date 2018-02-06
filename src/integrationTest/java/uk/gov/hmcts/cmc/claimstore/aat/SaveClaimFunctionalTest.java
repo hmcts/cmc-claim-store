@@ -38,7 +38,7 @@ public class SaveClaimFunctionalTest extends BaseSaveTest {
         System.out.println(">>> SaveClaimFunctionalTest : AppContext hash " + applicationContext.hashCode());
         System.out.println(">>> SaveClaimFunctionalTest : field UserService hash " + userService.hashCode());
         System.out.println(">>> SaveClaimFunctionalTest : AppContext UserService hash " + applicationContext
-            .getBean(UserService.class));
+            .getBean(UserService.class).hashCode());
         System.out.println(">>> ClaimService : CaseRepository hash " + caseRepository.hashCode());
 
         ClaimData claimData = SampleClaimData.submittedByClaimant();
