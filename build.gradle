@@ -128,6 +128,9 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '2.4.0'
 
   testCompile project(':domain-sample-data')
+
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.6'
+
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.3'
@@ -159,6 +162,15 @@ task apiTest(type: Test) {
   description = 'Runs the api tests'
   setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
+}
+
+task functional(type: Test) {
+  group = 'AAT'
+  description = 'Executes functional tests against an AAT environment'
+  systemProperty 'spring.profiles.active', 'aat-tests'
+  setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
+  setClasspath(sourceSets.integrationTest.runtimeClasspath)
+  include 'uk/gov/hmcts/cmc/claimstore/aat/**'
 }
 
 compileIntegrationTestJava {
