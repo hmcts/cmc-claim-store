@@ -55,7 +55,7 @@ public class SaveCoreCaseDataService {
             .event(Event.builder()
                 .id(startEventResponse.getEventId())
                 .summary("CMC case submission event")
-                .description("Submitting CMC case with token " + startEventResponse.getToken())
+                .description("Submitting CMC case")
                 .build())
             .data(data)
             .build();

@@ -100,12 +100,18 @@ public class ClaimController {
 
     @PutMapping("/{externalId:" + UUID_PATTERN + "}/defendant/{defendantId}")
     @ApiOperation("Links defendant to existing claim")
-    public Claim linkDefendantToClaim(
+    public Claim linkDefendantToClaimV1(
         @PathVariable("externalId") String externalId,
         @PathVariable("defendantId") String defendantId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return claimService.linkDefendantToClaim(externalId, defendantId, authorisation);
+        return claimService.linkDefendantToClaimV1(externalId, defendantId, authorisation);
+    }
+
+    @PutMapping("/defendant/link")
+    @ApiOperation("Links defendant to all unlinked letter-holder cases")
+    public void linkDefendantToClaimV2(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        claimService.linkDefendantToClaimV2(authorisation);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")
