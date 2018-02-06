@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.aat;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
@@ -21,8 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 public class SaveClaimTest extends BaseSaveTest {
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Test
     public void shouldReturnNewlyCreatedClaim() throws Exception {
+        System.out.println(">>> SaveClaimTest : AppContext " + applicationContext);
+        System.out.println(">>> SaveClaimTest : AppContext hash " + applicationContext.hashCode());
+
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
         MvcResult result = makeRequest(claimData)
