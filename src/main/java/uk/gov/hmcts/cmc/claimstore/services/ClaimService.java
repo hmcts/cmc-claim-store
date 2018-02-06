@@ -113,6 +113,7 @@ public class ClaimService {
         if (!claimData.isClaimantRepresented()) {
             System.out.println(">>> ClaimService : AppContext " + applicationContext);
             System.out.println(">>> ClaimService : AppContext hash " + applicationContext.hashCode());
+            System.out.println(">>> ClaimService : UserService hash " + userService.hashCode());
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 

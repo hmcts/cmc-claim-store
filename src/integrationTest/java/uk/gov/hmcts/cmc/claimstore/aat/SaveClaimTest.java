@@ -8,6 +8,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.RestTestClient;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -35,9 +36,13 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldReturnNewlyCreatedClaim() throws Exception {
         System.out.println(">>> SaveClaimTest : AppContext " + applicationContext);
         System.out.println(">>> SaveClaimTest : AppContext hash " + applicationContext.hashCode());
+        System.out.println(">>> SaveClaimTest : field UserService hash " + userService.hashCode());
+        System.out.println(">>> SaveClaimTest : AppContext UserService hash " + applicationContext
+            .getBean(UserService.class));
 
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
+        System.out.println(">>> SaveClaimTest : calling with MockMvc");
         MvcResult result = makeRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
@@ -46,6 +51,7 @@ public class SaveClaimTest extends BaseSaveTest {
             .extracting(Claim::getClaimData)
             .contains(claimData);
 
+        System.out.println(">>> SaveClaimTest : calling with RestAssured");
         Claim createdCase = restTestClient.post(claimData)
             .then()
             .statusCode(HttpStatus.OK.value())
