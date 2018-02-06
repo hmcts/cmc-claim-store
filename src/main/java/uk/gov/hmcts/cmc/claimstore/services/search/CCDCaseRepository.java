@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.search;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
@@ -40,8 +41,13 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
-        return ccdCaseApi.linkDefendant(externalId, defendantId, authorisation);
+    public Claim linkDefendantV1(String externalId, String defendantId, String authorisation) {
+        throw new NotImplementedException("Will not be implemented for CCD");
+    }
+
+    @Override
+    public void linkDefendantV2(String authorisation) {
+        ccdCaseApi.linkDefendant(authorisation);
     }
 
     @Override
