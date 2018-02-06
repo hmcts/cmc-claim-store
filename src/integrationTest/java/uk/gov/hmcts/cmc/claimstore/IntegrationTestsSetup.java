@@ -22,7 +22,7 @@ public class IntegrationTestsSetup implements TestsSetup {
     @EventListener
     public void onServletContainerReady(EmbeddedServletContainerInitializedEvent event) {
         System.out.println(">>> IntegrationTestsSetup : AppContext " + event.getApplicationContext());
-        System.out.println(">>> IntegrationTestsSetup : AppContext hash" + event.getApplicationContext().hashCode());
+        System.out.println(">>> IntegrationTestsSetup : AppContext hash " + event.getApplicationContext().hashCode());
         System.out.println(">>> IntegrationTestsSetup : Port " + event.getEmbeddedServletContainer().getPort());
         RestAssured.port = event.getEmbeddedServletContainer().getPort();
         RestAssured.config = RestAssured.config()

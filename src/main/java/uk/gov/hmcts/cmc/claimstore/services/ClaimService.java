@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -34,6 +35,9 @@ public class ClaimService {
     private final UserService userService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     public ClaimService(
@@ -107,6 +111,8 @@ public class ClaimService {
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
 
         if (!claimData.isClaimantRepresented()) {
+            System.out.println(">>> ClaimService : AppContext " + applicationContext);
+            System.out.println(">>> ClaimService : AppContext hash " + applicationContext.hashCode());
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 
