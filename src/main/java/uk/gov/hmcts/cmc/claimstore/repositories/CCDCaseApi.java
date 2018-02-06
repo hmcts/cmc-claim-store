@@ -1,13 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
@@ -38,6 +40,8 @@ public class CCDCaseApi {
     private final JsonMapper jsonMapper;
     private final JwtHelper jwtHelper;
     private final CaseAccessApi caseAccessApi;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
 
     public CCDCaseApi(
         CoreCaseDataApi coreCaseDataApi,
@@ -84,22 +88,62 @@ public class CCDCaseApi {
             .map((caseMapper::from));
     }
 
-    public Claim linkDefendant(String externalId, String defendantId, String authorisation) {
-        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        CaseDetails caseDetails = getCaseDetailsByExternalId(anonymousCaseWorker, externalId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by external id: " + externalId));
+    /**
+     * LLD https://tools.hmcts.net/confluence/display/ROC/Defendant+linking+with+CCD
+     */
+    public void linkDefendant(String authorisation) {
+        User defendantUser = userService.getUser(authorisation);
+        List<String> letterHolderIds = defendantUser.getUserDetails().getRoles()
+            .stream()
+            .filter(this::isLetterHolderRole)
+            .map(this::extractLetterHolderId)
+            .collect(Collectors.toList());
 
+        if (letterHolderIds.isEmpty()) {
+            return;
+        }
+
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+
+        letterHolderIds
+            .forEach(letterHolderId -> caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
+                anonymousCaseWorker.getAuthorisation(),
+                authTokenGenerator.generate(),
+                anonymousCaseWorker.getUserDetails().getId(),
+                JURISDICTION_ID,
+                CASE_TYPE_ID,
+                letterHolderId
+            ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+    }
+
+    private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
+        String defendantId = defendantUser.getUserDetails().getId();
+        LOGGER.info("Granting access to case: {} for user: {} with letter-holder id: {}",
+            caseId, defendantId, letterHolderId);
         caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
             JURISDICTION_ID,
             CASE_TYPE_ID,
-            caseDetails.getId().toString(),
+            caseId,
             new UserId(defendantId)
         );
 
-        User defendant = userService.getUser(authorisation);
-        return readCase(defendant, caseDetails.getId().toString());
+        LOGGER.info("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+        caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
+            authTokenGenerator.generate(),
+            anonymousCaseWorker.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            caseId,
+            letterHolderId
+        );
+    }
+
+    private boolean isLetterHolderRole(String role) {
+        return role.startsWith("letter") &&
+            !role.equals("letter-holder") &&
+            !role.endsWith("loa1");
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
@@ -140,6 +184,10 @@ public class CCDCaseApi {
 
         User letterHolder = userService.getUser(authorisation);
         return Optional.of(readCase(letterHolder, letterHolderCases.get(0)));
+    }
+
+    private String extractLetterHolderId(String role) {
+        return StringUtils.remove(role, "letter-");
     }
 
     private Claim readCase(User user, String caseId) {

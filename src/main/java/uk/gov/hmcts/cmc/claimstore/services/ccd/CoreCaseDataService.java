@@ -62,7 +62,7 @@ public class CoreCaseDataService {
                 .save(
                     authorisation,
                     eventRequestData,
-                    jsonMapper.toJson(ccdCase),
+                    ccdCase,
                     claim.getClaimData().isClaimantRepresented(),
                     claim.getLetterHolderId()
                 );

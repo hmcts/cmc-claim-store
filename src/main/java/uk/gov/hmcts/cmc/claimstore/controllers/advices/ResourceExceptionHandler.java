@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
 import com.google.common.base.Throwables;
+import feign.FeignException;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.slf4j.Logger;
@@ -143,5 +144,15 @@ public class ResourceExceptionHandler {
     public ResponseEntity<String> badRequestException(BadRequestException exception) {
         logger.debug(exception.getMessage(), exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FeignException.class)
+    protected ResponseEntity<Object> handleFeignException(FeignException exc) {
+        logger.warn("Error communicating with an API", exc);
+        String errorMessage = exc.status() < HttpStatus.INTERNAL_SERVER_ERROR.value() ? exc
+            .getMessage() : "Internal server error";
+        return ResponseEntity
+            .status(exc.status())
+            .body(new ExceptionForClient(exc.status(), errorMessage));
     }
 }
