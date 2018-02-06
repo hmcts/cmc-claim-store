@@ -34,11 +34,12 @@ import java.util.Optional;
 public class ResourceExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
     private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE = "duplicate key value violates unique constraint";
+    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> internalServiceError(Exception exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(INTERNAL_SERVER_ERROR, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = UnableToExecuteStatementException.class)
@@ -56,7 +57,7 @@ public class ResourceExceptionHandler {
             return new ResponseEntity<>(message.get(), HttpStatus.CONFLICT);
         }
 
-        return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(INTERNAL_SERVER_ERROR, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = HttpClientErrorException.class)
@@ -150,7 +151,7 @@ public class ResourceExceptionHandler {
     protected ResponseEntity<Object> handleFeignException(FeignException exc) {
         logger.warn("Error communicating with an API", exc);
         String errorMessage = exc.status() < HttpStatus.INTERNAL_SERVER_ERROR.value() ? exc
-            .getMessage() : "Internal server error";
+            .getMessage() : INTERNAL_SERVER_ERROR;
         return ResponseEntity
             .status(exc.status())
             .body(new ExceptionForClient(exc.status(), errorMessage));

@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -141,6 +142,7 @@ public class CCDCaseApi {
     }
 
     private boolean isLetterHolderRole(String role) {
+        Objects.requireNonNull(role);
         return role.startsWith("letter")
             && !role.equals("letter-holder")
             && !role.endsWith("loa1");
