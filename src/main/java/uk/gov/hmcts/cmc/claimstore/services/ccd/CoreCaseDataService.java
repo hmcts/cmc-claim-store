@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -29,22 +28,18 @@ public class CoreCaseDataService {
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    private final JsonMapper jsonMapper;
-
 
     @Autowired
     public CoreCaseDataService(
         SaveCoreCaseDataService saveCoreCaseDataService,
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
-        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        JsonMapper jsonMapper
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper
     ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
-        this.jsonMapper = jsonMapper;
     }
 
     public CaseDetails save(String authorisation, Claim claim) {
