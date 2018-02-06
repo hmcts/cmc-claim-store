@@ -212,15 +212,6 @@ public class CCDCaseApi {
         );
     }
 
-    private Optional<CaseDetails> getCaseDetailsByExternalId(User user, String externalId) {
-        List<CaseDetails> caseResults = search(user, ImmutableMap.of("case.externalId", externalId));
-        if (caseResults.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by claim externalId " + externalId);
-        }
-
-        return caseResults.isEmpty() ? Optional.empty() : Optional.of(caseResults.get(0));
-    }
-
     private List<CaseDetails> search(User user, Map<String, Object> searchString) {
 
         String serviceAuthToken = this.authTokenGenerator.generate();
