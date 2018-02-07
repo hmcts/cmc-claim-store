@@ -34,14 +34,18 @@ public class UserService {
         return new User(authorisation, idamApi.retrieveUserDetails(authorisation));
     }
 
-    public User authenticateAnonymousCaseWorker() {
-        IdamCaseworker anonymousCaseworker = idamCaseworkerProperties.getAnonymousCaseworker();
+    public User authenticateUser(String username, String password) {
         AuthenticateUserResponse authenticateUserResponse = idamApi
-            .authenticateUser(getBasicAuthHeader(anonymousCaseworker.getUsername(), anonymousCaseworker.getPassword()));
+            .authenticateUser(getBasicAuthHeader(username, password));
 
         String authorisation = BEARER + authenticateUserResponse.getAccessToken();
         UserDetails userDetails = idamApi.retrieveUserDetails(authorisation);
         return new User(authorisation, userDetails);
+    }
+
+    public User authenticateAnonymousCaseWorker() {
+        IdamCaseworker anonymousCaseworker = idamCaseworkerProperties.getAnonymousCaseworker();
+        return authenticateUser(anonymousCaseworker.getUsername(), anonymousCaseworker.getPassword());
     }
 
     public GeneratePinResponse generatePin(String name, String authorisation) {

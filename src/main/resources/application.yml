@@ -1,3 +1,4 @@
+---
 server:
   port: 4400
 
@@ -93,3 +94,14 @@ feign:
 claim-store:
   test-support:
     enabled: true
+
+---
+spring:
+  profiles: 'aat'
+
+aat:
+  test-user:
+    username: "${FUNCTIONAL_TEST_USERNAME:}"
+    password: "${FUNCTIONAL_TEST_PASSWORD:}"
+  test-instance:
+    uri: "${TEST_URL:}"
