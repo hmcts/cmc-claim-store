@@ -178,10 +178,19 @@ task apiTest(type: Test) {
 }
 
 task functional(type: Test) {
-  group = 'AAT'
-  description = 'Executes functional tests against an AAT environment'
+  group = 'Delivery pipeline'
+  description = 'Executes functional tests against an AAT Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
+  include "uk/gov/hmcts/cmc/claimstore/tests/aat/**"
+}
+
+task smoke(type: Test) {
+  group = 'Delivery pipeline'
+  description = 'Executes non-destructive smoke tests against a running Claim Store instance'
+  setTestClassesDirs(sourceSets.aat.output.classesDirs)
+  setClasspath(sourceSets.aat.runtimeClasspath)
+  include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
 }
 
 compileIntegrationTestJava {
