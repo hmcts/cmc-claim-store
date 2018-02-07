@@ -1,10 +1,11 @@
-package uk.gov.hmcts.cmc.claimstore.aat.tests;
+package uk.gov.hmcts.cmc.claimstore.tests.aat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
