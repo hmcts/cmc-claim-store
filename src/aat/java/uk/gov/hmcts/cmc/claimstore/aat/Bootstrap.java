@@ -5,9 +5,8 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.aat.idam.IdamTestService;
-import uk.gov.hmcts.cmc.claimstore.aat.idam.TestUser;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import javax.annotation.PostConstruct;
 
@@ -15,7 +14,7 @@ import javax.annotation.PostConstruct;
 public class Bootstrap {
 
     private final ObjectMapper objectMapper;
-    private final IdamTestService idamTestService;
+    private final UserService userService;
     private final JwtHelper jwtHelper;
     private final TestUser testUser;
     private final TestInstance testInstance;
@@ -26,13 +25,13 @@ public class Bootstrap {
     @Autowired
     public Bootstrap(
         ObjectMapper objectMapper,
-        IdamTestService idamTestService,
+        UserService userService,
         JwtHelper jwtHelper,
         TestUser testUser,
         TestInstance testInstance
     ) {
         this.objectMapper = objectMapper;
-        this.idamTestService = idamTestService;
+        this.userService = userService;
         this.testUser = testUser;
         this.jwtHelper = jwtHelper;
         this.testInstance = testInstance;
@@ -45,7 +44,8 @@ public class Bootstrap {
             .objectMapperConfig(
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
-        authenticationToken = "Bearer " + idamTestService.logIn(testUser.getUsername(), testUser.getPassword());
+        authenticationToken = userService
+            .authenticateUser(testUser.getUsername(), testUser.getPassword()).getAuthorisation();
         userId = jwtHelper.getUserId(authenticationToken);
     }
 
