@@ -35,9 +35,10 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> defendantResponseCopy(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String externalId
+        @PathVariable("externalId") @NotBlank String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.generateDefendantResponseCopy(externalId);
+        byte[] pdfDocument = documentsService.generateDefendantResponseCopy(externalId, authorisation);
 
         return ResponseEntity
             .ok()
@@ -70,9 +71,10 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> countyCourtJudgement(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String externalId
+        @PathVariable("externalId") @NotBlank String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId);
+        byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId, authorisation);
 
         return ResponseEntity
             .ok()
@@ -87,9 +89,10 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> settlementAgreement(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String externalId
+        @PathVariable("externalId") @NotBlank String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.generateSettlementAgreement(externalId);
+        byte[] pdfDocument = documentsService.generateSettlementAgreement(externalId, authorisation);
 
         return ResponseEntity
             .ok()
@@ -104,9 +107,10 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> defendantResponseReceipt(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String externalId
+        @PathVariable("externalId") @NotBlank String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(externalId);
+        byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(externalId, authorisation);
 
         return ResponseEntity
             .ok()
@@ -121,9 +125,10 @@ public class DocumentsController {
     )
     public ResponseEntity<ByteArrayResource> claimIssueReceipt(
         @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String externalId
+        @PathVariable("externalId") @NotBlank String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.generateClaimIssueReceipt(externalId);
+        byte[] pdfDocument = documentsService.generateClaimIssueReceipt(externalId, authorisation);
 
         return ResponseEntity
             .ok()

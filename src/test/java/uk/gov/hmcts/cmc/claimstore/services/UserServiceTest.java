@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.config.properties.idam.IdamCaseworkerProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -21,9 +22,12 @@ public class UserServiceTest {
     @Mock
     private IdamApi idamApi;
 
+    @Mock
+    private IdamCaseworkerProperties idamCaseworkerProperties;
+
     @Before
     public void setup() {
-        userService = new UserService(idamApi);
+        userService = new UserService(idamApi, idamCaseworkerProperties);
     }
 
     @Test

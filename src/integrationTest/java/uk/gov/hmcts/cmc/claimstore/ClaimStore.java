@@ -36,6 +36,10 @@ public class ClaimStore {
         return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
     }
 
+    public Claim getClaimByExternalId(String externalId) {
+        return claimRepository.getClaimByExternalId(externalId).orElseThrow(RuntimeException::new);
+    }
+
     public Claim saveClaim(ClaimData claimData) {
         return saveClaim(claimData, "1", LocalDate.now());
     }
@@ -79,17 +83,17 @@ public class ClaimStore {
         return getClaim(claimId);
     }
 
-    public Claim saveCountyCourtJudgement(long claimId, CountyCourtJudgment ccj) {
-        logger.info(String.format("Saving county court judgement with claim : %d", claimId));
+    public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {
+        logger.info(String.format("Saving county court judgement with claim : %s", externalId));
 
         this.claimRepository.saveCountyCourtJudgment(
-            claimId,
+            externalId,
             jsonMapper.toJson(ccj)
         );
 
         logger.info("Saved county court judgement");
 
-        return getClaim(claimId);
+        return getClaimByExternalId(externalId);
     }
 
     public Claim makeOffer(long claimId, Settlement settlement) {

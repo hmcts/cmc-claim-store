@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class IndividualAssert extends AbstractAssert<IndividualAssert, Individual> {
@@ -19,16 +18,14 @@ public class IndividualAssert extends AbstractAssert<IndividualAssert, Individua
     public IndividualAssert isEqualTo(CCDIndividual ccdIndividual) {
         isNotNull();
 
-        actual.getTitle().ifPresent(title -> assertThat(ccdIndividual.getTitle()).isEqualTo(title));
-
         if (!Objects.equals(actual.getName(), ccdIndividual.getName())) {
             failWithMessage("Expected CCDIndividual.name to be <%s> but was <%s>",
                 ccdIndividual.getName(), actual.getName());
         }
 
-        if (!Objects.equals(actual.getMobilePhone().orElse(null), ccdIndividual.getMobilePhone())) {
+        if (!Objects.equals(actual.getMobilePhone().orElse(null), ccdIndividual.getPhoneNumber())) {
             failWithMessage("Expected CCDIndividual.mobilePhone to be <%s> but was <%s>",
-                ccdIndividual.getMobilePhone(), actual.getMobilePhone().orElse(null));
+                ccdIndividual.getPhoneNumber(), actual.getMobilePhone().orElse(null));
         }
 
         if (actual.getDateOfBirth() != null) {
@@ -38,7 +35,7 @@ public class IndividualAssert extends AbstractAssert<IndividualAssert, Individua
                     ccdIndividual.getDateOfBirth(), dateOfBirth);
             }
         }
-        
+
         assertThat(ccdIndividual.getAddress()).isEqualTo(actual.getAddress());
         actual.getCorrespondenceAddress()
             .ifPresent(address -> assertThat(ccdIndividual.getCorrespondenceAddress())

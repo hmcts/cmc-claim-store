@@ -2,14 +2,23 @@ package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRange;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDHousingDisrepair;
 import uk.gov.hmcts.cmc.ccd.domain.CCDIndividual;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPayment;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentState;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
@@ -17,10 +26,13 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.UUID;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
@@ -41,9 +53,8 @@ public class SampleData {
         CCDRepresentative ccdRepresentative = getCCDRepresentative(ccdAddress, ccdContactDetails);
 
         return CCDIndividual.builder()
-            .title("Mr.")
             .name("Individual")
-            .mobilePhone("07987654321")
+            .phoneNumber("07987654321")
             .dateOfBirth("1950-01-01")
             .address(ccdAddress)
             .correspondenceAddress(ccdAddress)
@@ -62,7 +73,8 @@ public class SampleData {
     public static CCDAddress getCCDAddress() {
         return CCDAddress.builder()
             .line1("line1")
-            .line2("line1")
+            .line2("line2")
+            .line3("line3")
             .city("city")
             .postcode("postcode")
             .build();
@@ -75,7 +87,7 @@ public class SampleData {
         return CCDCompany.builder()
             .name("Abc Ltd")
             .address(ccdAddress)
-            .mobilePhone("07987654321")
+            .phoneNumber("07987654321")
             .correspondenceAddress(ccdAddress)
             .representative(ccdRepresentative)
             .contactPerson("MR. Hyde")
@@ -119,7 +131,7 @@ public class SampleData {
             .build();
     }
 
-    public static CCDClaim getCCDClaim() {
+    public static CCDClaim getCCDLegalClaim() {
         return CCDClaim.builder()
             .amount(
                 CCDAmount.builder()
@@ -138,8 +150,64 @@ public class SampleData {
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .claimants(asList(singletonMap("value", getCCDPartyIndividual())))
-            .defendants(asList(singletonMap("value", getCCDPartyIndividual())))
+            .claimants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
+            .defendants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
+            .build();
+    }
+
+    public static CCDClaim getCCDCitizenClaim() {
+        return CCDClaim.builder()
+            .amount(
+                CCDAmount.builder()
+                    .type(BREAK_DOWN)
+                    .amountBreakDown(
+                        CCDAmountBreakDown.builder()
+                            .rows(singletonList(singletonMap("value", CCDAmountRow.builder()
+                                    .amount(BigDecimal.valueOf(50))
+                                    .reason("payment")
+                                    .build()
+                                )
+                            )).build()
+                    )
+                    .build())
+            .payment(getCCDPayment())
+            .interest(getCCDInterest())
+            .interestDate(getCCDInterestDate())
+            .statementOfTruth(getCCDStatementOfTruth())
+            .externalReferenceNumber("external ref")
+            .externalId(UUID.randomUUID().toString())
+            .feeCode("X1202")
+            .feeAmountInPennies(BigInteger.valueOf(400))
+            .reason("Reason for the case")
+            .claimants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
+            .defendants(singletonList(CCDPartyArrayElement.builder().value(getCCDPartyIndividual()).build()))
+            .build();
+    }
+
+    public static CCDInterestDate getCCDInterestDate() {
+        return CCDInterestDate.builder()
+            .date(LocalDate.now())
+            .reason("reason")
+            .type(CCDInterestDateType.CUSTOM)
+            .build();
+    }
+
+    public static CCDInterest getCCDInterest() {
+        return CCDInterest.builder()
+            .rate(BigDecimal.valueOf(2))
+            .reason("reason")
+            .type(CCDInterestType.DIFFERENT)
+            .build();
+    }
+
+    public static CCDPayment getCCDPayment() {
+        return CCDPayment.builder()
+            .id("paymentId")
+            .description("description")
+            .reference("reference")
+            .amount(BigDecimal.valueOf(7000))
+            .dateCreated("2017-10-12")
+            .paymentState(CCDPaymentState.builder().status("Success").finished("YES").build())
             .build();
     }
 
@@ -171,7 +239,7 @@ public class SampleData {
         return CCDOrganisation.builder()
             .name("Xyz & Co")
             .address(ccdAddress)
-            .mobilePhone("07987654321")
+            .phoneNumber("07987654321")
             .correspondenceAddress(ccdAddress)
             .representative(ccdRepresentative)
             .contactPerson("MR. Hyde")
@@ -186,7 +254,7 @@ public class SampleData {
         return CCDSoleTrader.builder()
             .title("Mr.")
             .name("Individual")
-            .mobilePhone("07987654321")
+            .phoneNumber("07987654321")
             .businessName("My Trade")
             .address(ccdAddress)
             .correspondenceAddress(ccdAddress)

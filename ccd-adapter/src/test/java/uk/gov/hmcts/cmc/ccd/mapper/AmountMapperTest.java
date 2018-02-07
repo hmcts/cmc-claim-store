@@ -8,13 +8,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRange;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
+import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 
 import java.math.BigDecimal;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
+import static uk.gov.hmcts.cmc.ccd.domain.AmountType.NOT_KNOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 
 @SpringBootTest
@@ -46,6 +54,65 @@ public class AmountMapperTest {
                 .higherValue(BigDecimal.valueOf(500))
                 .build())
             .build();
+
+        //when
+        Amount amount = amountMapper.from(ccdAmount);
+
+        //then
+        assertThat(amount).isEqualTo(ccdAmount);
+    }
+
+    @Test
+    public void shouldMapAmountBreakDownToCCD() {
+        //given
+        Amount amount = SampleAmountBreakdown.validDefaults();
+
+        //when
+        CCDAmount ccdAmount = amountMapper.to(amount);
+
+        //then
+        assertThat(amount).isEqualTo(ccdAmount);
+    }
+
+    @Test
+    public void shouldMapAmountBreakDownFromCCD() {
+        //given
+        CCDAmount ccdAmount = CCDAmount.builder()
+            .type(BREAK_DOWN)
+            .amountBreakDown(
+                CCDAmountBreakDown.builder()
+                    .rows(singletonList(singletonMap("value", CCDAmountRow.builder()
+                            .amount(BigDecimal.valueOf(50))
+                            .reason("payment")
+                            .build()
+                        )
+                    )).build()
+            )
+            .build();
+
+        //when
+        Amount amount = amountMapper.from(ccdAmount);
+
+        //then
+        assertThat(amount).isEqualTo(ccdAmount);
+    }
+
+    @Test
+    public void shouldMapAmountNotKnownToCCD() {
+        //given
+        Amount amount = new NotKnown();
+
+        //when
+        CCDAmount ccdAmount = amountMapper.to(amount);
+
+        //then
+        assertThat(amount).isEqualTo(ccdAmount);
+    }
+
+    @Test
+    public void shouldMapAmountNotKnownFromCCD() {
+        //given
+        CCDAmount ccdAmount = CCDAmount.builder().type(NOT_KNOWN).build();
 
         //when
         Amount amount = amountMapper.from(ccdAmount);

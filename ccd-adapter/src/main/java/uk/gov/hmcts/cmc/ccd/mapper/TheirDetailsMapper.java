@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.domain.CCDIndividual;
@@ -100,10 +101,21 @@ public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
 
     private TheirDetails getIndividual(CCDParty ccdParty) {
         CCDIndividual ccdIndividual = ccdParty.getIndividual();
-        return new IndividualDetails(ccdIndividual.getName(), addressMapper.from(ccdIndividual.getAddress()),
-            ccdIndividual.getEmail(), representativeMapper.from(ccdIndividual.getRepresentative()),
-            addressMapper.from(ccdIndividual.getCorrespondenceAddress()), ccdIndividual.getTitle(),
-            LocalDate.parse(ccdIndividual.getDateOfBirth(), ISO_DATE));
+        return new IndividualDetails(ccdIndividual.getName(),
+            addressMapper.from(ccdIndividual.getAddress()),
+            ccdIndividual.getEmail(),
+            representativeMapper.from(ccdIndividual.getRepresentative()),
+            addressMapper.from(ccdIndividual.getCorrespondenceAddress()),
+            parseDob(ccdIndividual.getDateOfBirth())
+        );
+    }
+
+    private LocalDate parseDob(String dateOfBirth) {
+        if (StringUtils.isBlank(dateOfBirth)) {
+            return null;
+        }
+
+        return LocalDate.parse(dateOfBirth, ISO_DATE);
     }
 
     private TheirDetails getSoleTrader(CCDParty ccdParty) {

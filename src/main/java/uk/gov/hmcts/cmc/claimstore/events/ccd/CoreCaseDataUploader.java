@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import org.springframework.transaction.event.TransactionalEventListener;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 
@@ -21,8 +21,8 @@ public class CoreCaseDataUploader {
         this.coreCaseDataService = coreCaseDataService;
     }
 
-    @EventListener
-    public void saveClaim(RepresentedClaimIssuedEvent event) {
+    @TransactionalEventListener
+    public void saveClaim(ClaimIssuedEvent event) {
         try {
             coreCaseDataService.save(event.getAuthorisation(), event.getClaim());
         } catch (CoreCaseDataStoreException ex) {

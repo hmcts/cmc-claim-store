@@ -25,7 +25,7 @@ public class ClaimIssuedCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendClaimantNotification(ClaimIssuedEvent event) {
+    public void sendClaimantNotification(CitizenClaimIssuedEvent event) {
         Claim claim = event.getClaim();
 
         claimIssuedNotificationService.sendMail(
@@ -39,7 +39,7 @@ public class ClaimIssuedCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendDefendantNotification(ClaimIssuedEvent event) {
+    public void sendDefendantNotification(CitizenClaimIssuedEvent event) {
         Claim claim = event.getClaim();
 
         if (!claim.getClaimData().isClaimantRepresented()) {

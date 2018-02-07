@@ -55,7 +55,7 @@ public class ClaimMapperTest {
     @Test
     public void shouldMapClaimFromCCD() {
         //given
-        CCDClaim ccdClaim = SampleData.getCCDClaim();
+        CCDClaim ccdClaim = SampleData.getCCDLegalClaim();
 
         //when
         ClaimData claimData = claimMapper.from(ccdClaim);

@@ -1,26 +1,29 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
-
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
+public class GetClaimsByDefendantIdTest extends BaseGetTest {
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {
         String defendantId = "1";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.linkDefendant(claim.getId(), defendantId);
+        caseRepository.linkDefendantV1(claim.getExternalId(), defendantId, BEARER_TOKEN);
 
-        MvcResult result = makeRequest(defendantId)
+        MvcResult result = makeRequest("/claims/defendant/" + defendantId)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -33,16 +36,11 @@ public class GetClaimsByDefendantIdTest extends BaseIntegrationTest {
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
         String nonExistingDefendantId = "900";
 
-        MvcResult result = makeRequest(nonExistingDefendantId)
+        MvcResult result = makeRequest("/claims/defendant/" + nonExistingDefendantId)
             .andExpect(status().isOk())
             .andReturn();
 
         assertThat(deserializeListFrom(result))
             .isEmpty();
-    }
-
-    private ResultActions makeRequest(String defendantId) throws Exception {
-        return webClient
-            .perform(get("/claims/defendant/" + defendantId));
     }
 }

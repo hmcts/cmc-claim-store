@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatPercent;
+import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.calculateInterest;
 
 public class AmountContentProvider {
 
@@ -48,9 +49,10 @@ public class AmountContentProvider {
 
             interestRate = interest.getRate();
             interestAmount = getInterestAmount(
-                interestCalculationService, claim, claim.getCountyCourtJudgmentRequestedAt()
-                    .toLocalDate(), claimAmount)
-            ;
+                claim,
+                claim.getCountyCourtJudgmentRequestedAt().toLocalDate(),
+                claimAmount
+            );
         }
         InterestContent interestContent = new InterestContent(
             formatPercent(interestRate),
@@ -74,14 +76,13 @@ public class AmountContentProvider {
     }
 
     private static BigDecimal getInterestAmount(
-        InterestCalculationService interestCalculationService,
         Claim claim,
         LocalDate toDate,
         BigDecimal claimAmount
     ) {
         if (!claim.getClaimData().getInterest().getType()
             .equals(InterestType.NO_INTEREST)) {
-            return interestCalculationService.calculateInterest(
+            return calculateInterest(
                 claimAmount,
                 claim.getClaimData().getInterest().getRate(),
                 getInterestFromDate(claim),

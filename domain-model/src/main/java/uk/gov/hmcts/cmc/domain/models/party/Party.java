@@ -1,12 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models.party;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.hmcts.cmc.domain.constraints.MobilePhoneNumber;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
@@ -22,7 +20,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
  * This class and its subtypes represent the data that a person provides about themselves.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes(
     {
@@ -45,7 +42,7 @@ public abstract class Party implements NamedParty {
     @Valid
     private final Address correspondenceAddress;
 
-    @MobilePhoneNumber
+    @Size(max = 30, message = "may not be longer than {max} characters")
     private final String mobilePhone;
 
     @Valid

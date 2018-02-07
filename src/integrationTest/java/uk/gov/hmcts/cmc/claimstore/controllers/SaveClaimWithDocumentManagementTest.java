@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocum
 
 @TestPropertySource(
     properties = {
-        "feature_toggles.document_management=true"
+        "core_case_data.api.url=false"
     }
 )
 public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {

@@ -4,11 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-
-import java.time.LocalDate;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -16,57 +14,42 @@ public class CountyCourtJudgmentService {
     private final ClaimService claimService;
     private final AuthorisationService authorisationService;
     private final EventProducer eventProducer;
+    private final CountyCourtJudgmentRule countyCourtJudgmentRule;
 
     @Autowired
     public CountyCourtJudgmentService(
         ClaimService claimService,
         AuthorisationService authorisationService,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        CountyCourtJudgmentRule countyCourtJudgmentRule
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
         this.eventProducer = eventProducer;
+        this.countyCourtJudgmentRule = countyCourtJudgmentRule;
     }
 
     @Transactional
-    public Claim save(String submitterId, CountyCourtJudgment countyCourtJudgment, long claimId) {
+    public Claim save(
+        String submitterId,
+        CountyCourtJudgment countyCourtJudgment,
+        String externalId,
+        String authorisation
+    ) {
 
-        Claim claim = claimService.getClaimById(claimId);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
-        if (isResponseAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("Response for the claim " + claimId + " was submitted");
-        }
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim);
 
-        if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("County Court Judgment for the claim " + claimId + " was submitted");
-        }
+        claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
 
-        if (!canCountyCourtJudgmentBeRequestedYet(claim)) {
-            throw new ForbiddenActionException(
-                "County Court Judgment for claim " + claimId + " cannot be requested yet"
-            );
-        }
+        Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
-        claimService.saveCountyCourtJudgment(claimId, countyCourtJudgment);
-
-        Claim claimWithCCJ = claimService.getClaimById(claimId);
-
-        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ);
+        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ, authorisation);
 
         return claimWithCCJ;
     }
 
-    private boolean canCountyCourtJudgmentBeRequestedYet(Claim claim) {
-        return LocalDate.now().isAfter(claim.getResponseDeadline());
-    }
-
-    private boolean isResponseAlreadySubmitted(Claim claim) {
-        return null != claim.getRespondedAt();
-    }
-
-    private boolean isCountyCourtJudgmentAlreadySubmitted(Claim claim) {
-        return claim.getCountyCourtJudgment() != null;
-    }
 }

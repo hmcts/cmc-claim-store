@@ -17,6 +17,10 @@ public class PersonalInjuryMapper implements Mapper<CCDPersonalInjury, PersonalI
 
     @Override
     public PersonalInjury from(CCDPersonalInjury ccdPersonalInjury) {
+        if (ccdPersonalInjury == null) {
+            return null;
+        }
+
         return new PersonalInjury(DamagesExpectation.valueOf(ccdPersonalInjury.getGeneralDamages()));
     }
 }

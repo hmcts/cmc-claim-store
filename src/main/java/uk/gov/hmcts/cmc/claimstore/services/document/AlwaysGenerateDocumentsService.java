@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "document_management", havingValue = "false")
+@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url", havingValue = "false")
 public class AlwaysGenerateDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
@@ -43,36 +43,36 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public byte[] generateClaimIssueReceipt(String externalId) {
-        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
+        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
     public byte[] getLegalSealedClaim(String externalId, String authorisation) {
-        return legalSealedClaimPdfService.createPdf(getClaimByExternalId(externalId));
+        return legalSealedClaimPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
-    public byte[] generateDefendantResponseCopy(String externalId) {
-        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateDefendantResponseCopy(String externalId, String authorisation) {
+        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
-    public byte[] generateDefendantResponseReceipt(String externalId) {
-        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
+        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
-    public byte[] generateCountyCourtJudgement(String externalId) {
-        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateCountyCourtJudgement(String externalId, String authorisation) {
+        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
-    public byte[] generateSettlementAgreement(String externalId) {
-        return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId));
+    public byte[] generateSettlementAgreement(String externalId, String authorisation) {
+        return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
-    private Claim getClaimByExternalId(String externalId) {
-        return claimService.getClaimByExternalId(externalId);
+    private Claim getClaimByExternalId(String externalId, String authorisation) {
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 }

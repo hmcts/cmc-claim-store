@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -33,6 +33,7 @@ public class ClaimService {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
+    private final CaseRepository caseRepository;
 
     @Autowired
     public ClaimService(
@@ -41,13 +42,16 @@ public class ClaimService {
         JsonMapper jsonMapper,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
-        EventProducer eventProducer) {
+        EventProducer eventProducer,
+        CaseRepository caseRepository
+    ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
+        this.caseRepository = caseRepository;
     }
 
     public Claim getClaimById(long claimId) {
@@ -56,31 +60,30 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claimId));
     }
 
-    public List<Claim> getClaimBySubmitterId(String submitterId) {
-        return claimRepository.getBySubmitterId(submitterId);
+    public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
+        return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
-    public Claim getClaimByLetterHolderId(String id) {
-        return claimRepository
-            .getByLetterHolderId(id)
+    public Claim getClaimByLetterHolderId(String id, String authorisation) {
+        return caseRepository
+            .getByLetterHolderId(id, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
 
-    public Claim getClaimByExternalId(String externalId) {
-        return claimRepository
-            .getClaimByExternalId(externalId)
+    public Claim getClaimByExternalId(String externalId, String authorisation) {
+        return caseRepository
+            .getClaimByExternalId(externalId, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
-        String submitterId = userService.getUserDetails(authorisation).getId();
-        return claimRepository
-            .getByClaimReferenceAndSubmitter(reference, submitterId);
+        return caseRepository
+            .getByClaimReferenceNumber(reference, authorisation);
     }
 
-    public Optional<Claim> getClaimByReference(String reference) {
+    public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
         return claimRepository
-            .getByClaimReferenceNumber(reference);
+            .getByClaimReferenceNumberAnonymous(reference);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
@@ -88,15 +91,15 @@ public class ClaimService {
         return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 
-    public List<Claim> getClaimByDefendantId(String id) {
-        return claimRepository.getByDefendantId(id);
+    public List<Claim> getClaimByDefendantId(String id, String authorisation) {
+        return caseRepository.getByDefendantId(id, authorisation);
     }
 
     @Transactional
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        claimRepository.getClaimByExternalId(externalId).ifPresent(claim -> {
+        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
         });
 
@@ -126,46 +129,47 @@ public class ClaimService {
                 externalId, submitterEmail);
         }
 
-        eventProducer.createClaimIssuedEvent(getClaimById(issuedClaimId),
+        eventProducer.createClaimIssuedEvent(
+            getClaimById(issuedClaimId),
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            userDetails.getFullName(), authorisation);
+            userDetails.getFullName(),
+            authorisation
+        );
 
         return getClaimById(issuedClaimId);
     }
 
-    public Claim requestMoreTimeForResponse(long claimId, String authorisation) {
-        UserDetails defendant = userService.getUserDetails(authorisation);
-        Claim claim = getClaimById(claimId);
-
-        if (!claim.getDefendantId()
-            .equals(defendant.getId())) {
-            throw new ForbiddenActionException("This claim is not raised against you");
-        }
+    public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
+        Claim claim = getClaimByExternalId(externalId, authorisation);
 
         if (claim.isMoreTimeRequested()) {
             throw new MoreTimeAlreadyRequestedException("You have already requested more time");
         }
 
-        if (LocalDate.now()
-            .isAfter(claim.getResponseDeadline())) {
+        if (LocalDate.now().isAfter(claim.getResponseDeadline())) {
             throw new MoreTimeRequestedAfterDeadlineException("You must not request more time after deadline");
         }
 
         LocalDate newDeadline = responseDeadlineCalculator
             .calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        claimRepository.requestMoreTime(claimId, newDeadline);
-        claim = getClaimById(claimId);
+        claimRepository.requestMoreTime(claim.getId(), newDeadline);
+        claim = getClaimByExternalId(externalId, authorisation);
+        UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
         return claim;
     }
 
-    public void linkDefendantToClaim(Long claimId, String defendantId) {
-        Claim claim = claimRepository.getById(claimId)
-            .orElseThrow(() -> new NotFoundException("Claim not found by id: " + claimId));
+    /**
+     * Temporarily left in until CCD is enabled everywhere.
+     */
+    public Claim linkDefendantToClaimV1(String externalId, String defendantId, String authorisation) {
+        return caseRepository.linkDefendantV1(externalId, defendantId, authorisation);
+    }
 
-        claimRepository.linkDefendant(claim.getId(), defendantId);
+    public void linkDefendantToClaimV2(String authorisation) {
+        caseRepository.linkDefendantV2(authorisation);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
@@ -176,12 +180,13 @@ public class ClaimService {
         claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
     }
 
-    public void saveCountyCourtJudgment(long claimId, CountyCourtJudgment countyCourtJudgment) {
-        claimRepository.saveCountyCourtJudgment(claimId, jsonMapper.toJson(countyCourtJudgment));
+    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
+        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
     }
 
-    public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail,
-                                      Response response) {
+    public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
+        // When this is saved in CCD ensure a Forbidden response is returned to the client if they
+        // aren't allowed to access the case
         claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
     }
 }

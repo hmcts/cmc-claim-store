@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyArrayElement;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -18,21 +17,27 @@ import java.util.stream.Collectors;
 @Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
-    private static final String COLLECTION_KEY_NAME = "value";
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
     private final PartyMapper partyMapper;
     private final TheirDetailsMapper theirDetailsMapper;
     private final AmountMapper amountMapper;
+    private final PaymentMapper paymentMapper;
+    private final InterestMapper interestMapper;
+    private final InterestDateMapper interestDateMapper;
 
     @Autowired
+    @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
     public ClaimMapper(PersonalInjuryMapper personalInjuryMapper,
                        HousingDisrepairMapper housingDisrepairMapper,
                        StatementOfTruthMapper statementOfTruthMapper,
                        PartyMapper partyMapper,
                        TheirDetailsMapper theirDetailsMapper,
-                       AmountMapper amountMapper) {
+                       AmountMapper amountMapper,
+                       PaymentMapper paymentMapper,
+                       InterestMapper interestMapper,
+                       InterestDateMapper interestDateMapper) {
 
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
@@ -40,6 +45,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         this.partyMapper = partyMapper;
         this.theirDetailsMapper = theirDetailsMapper;
         this.amountMapper = amountMapper;
+        this.paymentMapper = paymentMapper;
+        this.interestMapper = interestMapper;
+        this.interestDateMapper = interestDateMapper;
     }
 
     @Override
@@ -69,6 +77,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .collect(Collectors.toList()));
 
         return builder
+            .payment(paymentMapper.to(claimData.getPayment()))
+            .interest(interestMapper.to(claimData.getInterest()))
+            .interestDate(interestDateMapper.to(claimData.getInterestDate()))
             .reason(claimData.getReason())
             .amount(amountMapper.to(claimData.getAmount()))
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
@@ -76,8 +87,8 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .build();
     }
 
-    private Map<String, CCDParty> mapToValue(CCDParty ccdParty) {
-        return Collections.singletonMap(COLLECTION_KEY_NAME, ccdParty);
+    private CCDPartyArrayElement mapToValue(CCDParty ccdParty) {
+        return CCDPartyArrayElement.builder().value(ccdParty).build();
     }
 
     @Override
@@ -86,13 +97,13 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
         List<Party> claimants = ccdClaim.getClaimants()
             .stream()
-            .map(this::valueFromMap)
+            .map(CCDPartyArrayElement::getValue)
             .map(partyMapper::from)
             .collect(Collectors.toList());
 
         List<TheirDetails> defendants = ccdClaim.getDefendants()
             .stream()
-            .map(this::valueFromMap)
+            .map(CCDPartyArrayElement::getValue)
             .map(theirDetailsMapper::from)
             .collect(Collectors.toList());
 
@@ -100,11 +111,11 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             UUID.fromString(ccdClaim.getExternalId()),
             claimants,
             defendants,
-            null,
+            paymentMapper.from(ccdClaim.getPayment()),
             amountMapper.from(ccdClaim.getAmount()),
             ccdClaim.getFeeAmountInPennies(),
-            null,
-            null,
+            interestMapper.from(ccdClaim.getInterest()),
+            interestDateMapper.from(ccdClaim.getInterestDate()),
             personalInjuryMapper.from(ccdClaim.getPersonalInjury()),
             housingDisrepairMapper.from(ccdClaim.getHousingDisrepair()),
             ccdClaim.getReason(),
@@ -113,9 +124,5 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             ccdClaim.getExternalReferenceNumber(),
             ccdClaim.getPreferredCourt(),
             ccdClaim.getFeeCode());
-    }
-
-    private CCDParty valueFromMap(Map<String, CCDParty> value) {
-        return value.get(COLLECTION_KEY_NAME);
     }
 }

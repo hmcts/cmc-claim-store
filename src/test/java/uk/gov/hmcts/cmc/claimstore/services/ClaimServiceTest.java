@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -15,8 +14,10 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
@@ -51,6 +52,7 @@ public class ClaimServiceTest {
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INVALID_DEFENDANT_TOKEN = "You shall not pass!";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
+    private static final String AUTHORISATION = "Bearer: aaa";
 
     private static final UserDetails validDefendant
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
@@ -65,6 +67,8 @@ public class ClaimServiceTest {
 
     @Mock
     private ClaimRepository claimRepository;
+    @Mock
+    private CaseRepository caseRepository;
     @Mock
     private JsonMapper mapper;
     @Mock
@@ -86,8 +90,8 @@ public class ClaimServiceTest {
             mapper,
             issueDateCalculator,
             responseDeadlineCalculator,
-            eventProducer
-        );
+            eventProducer,
+            caseRepository);
     }
 
     @Test
@@ -112,13 +116,12 @@ public class ClaimServiceTest {
     @Test
     public void getClaimByLetterHolderIdShouldCallRepositoryWhenValidClaimIsReturned() {
 
-        String letterHolderId = "1";
-        Claim claim = createClaimModel(VALID_APP, letterHolderId);
+        Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
         Optional<Claim> result = Optional.of(claim);
 
-        when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
+        when(caseRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID), any())).thenReturn(result);
 
-        Claim claimApplication = claimService.getClaimByLetterHolderId(letterHolderId);
+        Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
         assertThat(claimApplication).isEqualTo(claim);
     }
 
@@ -128,9 +131,9 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String letterHolderId = "0";
 
-        when(claimRepository.getByLetterHolderId(eq(letterHolderId))).thenReturn(result);
+        when(caseRepository.getByLetterHolderId(eq(letterHolderId), any())).thenReturn(result);
 
-        claimService.getClaimByLetterHolderId(letterHolderId);
+        claimService.getClaimByLetterHolderId(letterHolderId, AUTHORISATION);
     }
 
     @Test(expected = NotFoundException.class)
@@ -139,9 +142,9 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String externalId = "does not exist";
 
-        when(claimRepository.getClaimByExternalId(eq(externalId))).thenReturn(result);
+        when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
 
-        claimService.getClaimByExternalId(externalId);
+        claimService.getClaimByExternalId(externalId, AUTHORISATION);
     }
 
     @Test
@@ -179,7 +182,7 @@ public class ClaimServiceTest {
     public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
         ClaimData app = SampleClaimData.validDefaults();
         String authorisationToken = "Open same!";
-        when(claimRepository.getClaimByExternalId(any())).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
 
         claimService.saveClaim(USER_ID, app, authorisationToken);
     }
@@ -189,31 +192,22 @@ public class ClaimServiceTest {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(eq(ISSUE_DATE)))
             .thenReturn(newDeadline);
 
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
 
         verify(claimRepository, once()).requestMoreTime(eq(CLAIM_ID), eq(newDeadline));
         verify(eventProducer, once())
             .createMoreTimeForResponseRequestedEvent(eq(claim), eq(newDeadline), eq(validDefendant.getEmail()));
     }
 
-    @Test(expected = ForbiddenActionException.class)
-    public void requestMoreTimeToRespondShouldThrowForbiddenActionExceptionWhenClaimIsNotLinkedToDefendant() {
-        when(userService.getUserDetails(eq(INVALID_DEFENDANT_TOKEN))).thenReturn(invalidDefendant);
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
-
-        claimService.requestMoreTimeForResponse(CLAIM_ID, INVALID_DEFENDANT_TOKEN);
-    }
-
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.empty());
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
-
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
     }
 
     @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
@@ -223,67 +217,51 @@ public class ClaimServiceTest {
             .minusDays(10);
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
 
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
 
-        claimService.requestMoreTimeForResponse(CLAIM_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
-        return new Claim(
-            CLAIM_ID,
-            USER_ID,
-            letterHolderId,
-            DEFENDANT_ID,
-            EXTERNAL_ID,
-            REFERENCE_NUMBER,
-            claimData,
-            NOW_IN_LOCAL_ZONE,
-            ISSUE_DATE,
-            RESPONSE_DEADLINE,
-            NOT_REQUESTED_FOR_MORE_TIME,
-            SUBMITTER_EMAIL,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
+        return SampleClaim.builder()
+            .withClaimId(CLAIM_ID)
+            .withSubmitterId(USER_ID)
+            .withLetterHolderId(letterHolderId)
+            .withDefendantId(DEFENDANT_ID)
+            .withExternalId(EXTERNAL_ID)
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withClaimData(claimData)
+            .withCreatedAt(NOW_IN_LOCAL_ZONE)
+            .withIssuedOn(ISSUE_DATE)
+            .withResponseDeadline(RESPONSE_DEADLINE)
+            .withMoreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
+            .withSubmitterEmail(SUBMITTER_EMAIL)
+            .build();
     }
 
     private static Claim createClaimModel(LocalDate responseDeadline, boolean moreTimeAlreadyRequested) {
-        return new Claim(
-            CLAIM_ID,
-            USER_ID,
-            LETTER_HOLDER_ID,
-            DEFENDANT_ID,
-            EXTERNAL_ID,
-            REFERENCE_NUMBER,
-            VALID_APP,
-            NOW_IN_LOCAL_ZONE,
-            ISSUE_DATE,
-            responseDeadline,
-            moreTimeAlreadyRequested,
-            SUBMITTER_EMAIL,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
+        return SampleClaim.builder()
+            .withClaimId(CLAIM_ID)
+            .withSubmitterId(USER_ID)
+            .withLetterHolderId(LETTER_HOLDER_ID)
+            .withDefendantId(DEFENDANT_ID)
+            .withExternalId(EXTERNAL_ID)
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withClaimData(VALID_APP)
+            .withCreatedAt(NOW_IN_LOCAL_ZONE)
+            .withIssuedOn(ISSUE_DATE)
+            .withResponseDeadline(responseDeadline)
+            .withMoreTimeRequested(moreTimeAlreadyRequested)
+            .withSubmitterEmail(SUBMITTER_EMAIL)
+            .build();
     }
 }

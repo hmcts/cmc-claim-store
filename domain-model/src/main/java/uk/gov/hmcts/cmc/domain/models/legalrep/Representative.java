@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.legalrep;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
@@ -13,7 +12,6 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class Representative {
 
     @NotBlank

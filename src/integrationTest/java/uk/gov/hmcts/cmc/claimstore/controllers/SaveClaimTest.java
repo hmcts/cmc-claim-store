@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "feature_toggles.document_management=false",
+        "document_management.api_gateway.url=false",
         "core_case_data.api.url=false"
     }
 )
@@ -147,7 +147,7 @@ public class SaveClaimTest extends BaseSaveTest {
             .andExpect(status().isOk());
 
         verify(coreCaseDataApi, never())
-            .start(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+            .startForCaseworker(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test

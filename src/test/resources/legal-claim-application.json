@@ -2,17 +2,18 @@
   "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
   "claimants": [{
     "type": "individual",
-    "title": "Dr.",
     "name": "John Rambo",
     "address": {
       "line1": "52",
       "line2": "Down Street",
+      "line3": "Salford",
       "city": "Manchester",
       "postcode": "DF1 3LJ"
     },
     "correspondenceAddress": {
       "line1": "52",
       "line2": "Down Street",
+      "line3": "Salford",
       "city": "Manchester",
       "postcode": "DF1 3LJ"
     },
@@ -28,6 +29,7 @@
       "organisationAddress": {
         "line1": "52",
         "line2": "Down Street",
+        "line3": "Salford",
         "city": "Manchester",
         "postcode": "DF1 3LJ"
       }
@@ -50,11 +52,11 @@
   "defendants": [
     {
       "type": "individual",
-      "title": "Dr.",
       "name": "John Smith",
       "address": {
         "line1": "52",
         "line2": "Down Street",
+        "line3": "Salford",
         "city": "Manchester",
         "postcode": "DF1 3LJ"
       },
@@ -69,6 +71,7 @@
         "organisationAddress": {
           "line1": "52",
           "line2": "Down Street",
+          "line3": "Salford",
           "city": "Manchester",
           "postcode": "DF1 3LJ"
         }
@@ -76,6 +79,7 @@
       "serviceAddress": {
         "line1": "52",
         "line2": "Down Street",
+        "line3": "Salford",
         "city": "Manchester",
         "postcode": "DF1 3LJ"
       }

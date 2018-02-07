@@ -42,19 +42,24 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         return FullDefence.builder().build();
     }
 
-    public T withMediation(Response.FreeMediationOption freeMediationOption) {
+    public SampleResponse<T> withMediation(Response.FreeMediationOption freeMediationOption) {
         this.freeMediationOption = freeMediationOption;
-        return (T)this;
+        return this;
     }
 
-    public T withDefendantDetails(Party sampleDefendantDetails) {
+    public SampleResponse<T> withMoreTimeNeededOption(Response.MoreTimeNeededOption moreTimeNeededOption) {
+        this.moreTimeNeededOption = moreTimeNeededOption;
+        return this;
+    }
+
+    public SampleResponse<T> withDefendantDetails(Party sampleDefendantDetails) {
         this.defendantDetails = sampleDefendantDetails;
-        return (T)this;
+        return this;
     }
 
-    public T withStatementOfTruth(String signerName, String signerRole) {
+    public SampleResponse<T> withStatementOfTruth(String signerName, String signerRole) {
         this.statementOfTruth = new StatementOfTruth(signerName,signerRole);
-        return (T)this;
+        return this;
     }
 
     public abstract Response build();

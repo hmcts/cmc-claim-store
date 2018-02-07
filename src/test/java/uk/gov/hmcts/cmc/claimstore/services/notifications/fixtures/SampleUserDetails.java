@@ -12,7 +12,6 @@ public final class SampleUserDetails {
     private String forename = SUBMITTER_FORENAME;
     private String surname = SUBMITTER_SURNAME;
 
-
     public static SampleUserDetails builder() {
         return new SampleUserDetails();
     }
@@ -39,7 +38,7 @@ public final class SampleUserDetails {
 
 
     public UserDetails build() {
-        return new UserDetails(userId, userEmail, forename, surname);
+        return new UserDetails(userId, userEmail, forename, surname, null);
     }
 
     public static UserDetails getDefault() {
