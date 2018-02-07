@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestExecutionListeners;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.UUID;
 
@@ -43,6 +45,9 @@ public class SaveClaimFunctionalTest {
 
     @Autowired
     private RestTestClient restTestClient;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Test
     public void shouldReturnNewlyCreatedClaim() {
