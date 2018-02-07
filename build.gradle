@@ -1,3 +1,5 @@
+import java.util.stream.Collectors
+
 plugins {
   id 'application'
   id 'checkstyle'
@@ -221,11 +223,18 @@ test.shouldRunAfter(checkstyleTest)
 apiTest.shouldRunAfter(checkstyleIntegrationTest)
 apiTest.shouldRunAfter(test)
 
+def listFiles(String pattern) {
+  return new FileNameFinder()
+    .getFileNames("${project.rootDir}", pattern)
+    .stream()
+    .collect(Collectors.joining(","))
+}
+
 sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
-    property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-    property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
+    property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
+    property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/claimstore/idam/models/**," +
