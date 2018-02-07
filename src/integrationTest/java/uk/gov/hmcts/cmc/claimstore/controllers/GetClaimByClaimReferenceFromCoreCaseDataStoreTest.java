@@ -29,7 +29,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
 
     @Before
     public void before() {
-        given(jwtHelper.isSolicitor(AUTHORISATION_TOKEN)).willReturn(false);
+        given(userHelper.isSolicitor(AUTHORISATION_TOKEN)).willReturn(false);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 

@@ -1,11 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.tests;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
+import uk.gov.hmcts.cmc.claimstore.services.UserHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +17,7 @@ public class Bootstrap {
 
     private final ObjectMapper objectMapper;
     private final UserService userService;
-    private final JwtHelper jwtHelper;
+    private final UserHelper userHelper;
     private final TestUser testUser;
     private final TestInstance testInstance;
 
@@ -26,14 +28,14 @@ public class Bootstrap {
     public Bootstrap(
         ObjectMapper objectMapper,
         UserService userService,
-        JwtHelper jwtHelper,
+        UserHelper userHelper,
         TestUser testUser,
         TestInstance testInstance
     ) {
         this.objectMapper = objectMapper;
         this.userService = userService;
         this.testUser = testUser;
-        this.jwtHelper = jwtHelper;
+        this.userHelper = userHelper;
         this.testInstance = testInstance;
     }
 
@@ -46,7 +48,7 @@ public class Bootstrap {
             );
         authenticationToken = userService
             .authenticateUser(testUser.getUsername(), testUser.getPassword()).getAuthorisation();
-        userId = jwtHelper.getUserId(authenticationToken);
+        userId = decodeUserId(authenticationToken);
     }
 
     public String getUserAuthenticationToken() {
@@ -55,6 +57,11 @@ public class Bootstrap {
 
     public String getUserId() {
         return userId;
+    }
+
+    private String decodeUserId(String authorisation) {
+        DecodedJWT decodedToken = JWT.decode(authorisation);
+        return decodedToken.getClaims().get("id").asString();
     }
 
 }

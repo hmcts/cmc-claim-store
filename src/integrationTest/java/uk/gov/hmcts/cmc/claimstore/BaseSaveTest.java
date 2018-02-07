@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -31,7 +30,7 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(PDF_BYTES);
 
-        given(jwtHelper.isSolicitor(anyString())).willReturn(false);
+        given(userHelper.isSolicitor(any())).willReturn(false);
     }
 
     protected ResultActions makeRequest(ClaimData claimData) throws Exception {
