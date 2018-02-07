@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,13 +26,10 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
 public abstract class MockSpringTest {
-
-    @Autowired
-    protected ObjectMapper objectMapper;
 
     @Autowired
     protected JsonMapper jsonMapper;

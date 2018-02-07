@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -38,6 +40,30 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
+
+    @Test
+    public void shouldReturnNewlyCreatedClaim() throws Exception {
+        ClaimData claimData = SampleClaimData.submittedByClaimant();
+
+        MvcResult result = makeRequest(claimData)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getClaimData)
+            .contains(claimData);
+    }
+
+    @Test
+    public void shouldFailWhenDuplicateExternalId() throws Exception {
+        UUID externalId = UUID.randomUUID();
+
+        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId).build();
+        claimStore.saveClaim(claimData);
+
+        makeRequest(claimData)
+            .andExpect(status().isConflict());
+    }
 
     @Test
     public void shouldFailWhenStaffNotificationFails() throws Exception {
