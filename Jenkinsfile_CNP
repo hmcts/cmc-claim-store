@@ -5,6 +5,28 @@
 def product = "cmc"
 def component = "claim-store"
 
-withPipeline("java", product, component) {
-  enableSlackNotifications('#cmc-tech-cnp')
+// All secrets used in this project defined here to hide them in the build logs
+List<LinkedHashMap<String, Object>> secrets = [
+  basicSecret("secret/dev/cmc/notify_api_key", 'IGNORED'),
+  basicSecret("secret/test/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore", 'IGNORED2'),
+  basicSecret('secret/dev/cmc/smoke-tests/username', 'AAT_TEST_USERNAME'),
+  basicSecret('secret/dev/cmc/smoke-tests/password', 'AAT_TEST_PASSWORD')
+]
+
+static LinkedHashMap<String, Object> basicSecret(String path, String envVar) {
+  secret(path, envVar, 'value')
+}
+
+static LinkedHashMap<String, Object> secret(String path, String envVar, String value) {
+  [$class: 'VaultSecret', path: path, secretValues:
+    [
+      [$class: 'VaultSecretValue', envVar: envVar, vaultKey: value]
+    ]
+  ]
+}
+
+wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
+  withPipeline("java", product, component) {
+    enableSlackNotifications('#cmc-tech-cnp')
+  }
 }
