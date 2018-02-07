@@ -226,7 +226,7 @@ sonarqube {
     property "sonar.projectName", "CMC :: Claim Store"
     property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
     property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/apiTest.exec"
-    property "sonar.exclusions", "**/ccd/domain/**,**/cmc/domain/models/**"
+    property "sonar.exclusions", "**/ccd/domain/**,**/cmc/domain/models/**,**/config/**"
   }
 }
 
