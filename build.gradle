@@ -73,6 +73,8 @@ def versions = [
 ]
 
 configurations {
+  aatCompile.extendsFrom(testCompile)
+  aatRuntime.extendsFrom(testRuntime)
   integrationTestCompile.extendsFrom(testCompile)
   integrationTestRuntime.extendsFrom(testRuntime)
 }
@@ -150,6 +152,17 @@ sourceSets {
       srcDir('src/integrationTests/resources')
     }
   }
+
+  aat {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output + integrationTest.output
+      srcDir('src/aat/java')
+    }
+    resources {
+      srcDir('src/aat/resources')
+    }
+  }
 }
 
 dependencies {
@@ -167,10 +180,8 @@ task apiTest(type: Test) {
 task functional(type: Test) {
   group = 'AAT'
   description = 'Executes functional tests against an AAT environment'
-  systemProperty 'spring.profiles.active', 'aat-tests'
-  setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
-  setClasspath(sourceSets.integrationTest.runtimeClasspath)
-  include 'uk/gov/hmcts/cmc/claimstore/aat/**'
+  setTestClassesDirs(sourceSets.aat.output.classesDirs)
+  setClasspath(sourceSets.aat.runtimeClasspath)
 }
 
 compileIntegrationTestJava {

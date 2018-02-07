@@ -1,11 +1,9 @@
-package uk.gov.hmcts.cmc.claimstore.aat;
+package uk.gov.hmcts.cmc.claimstore.aat.tests;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
-import uk.gov.hmcts.cmc.claimstore.RestTestClient;
+import uk.gov.hmcts.cmc.claimstore.aat.RestTestClient;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -14,13 +12,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestPropertySource(
-    properties = {
-        "document_management.api_gateway.url=false",
-        "core_case_data.api.url=false"
-    }
-)
-public class SaveClaimTest extends BaseSaveTest {
+public class SaveClaimTest extends BaseTest {
 
     @Autowired
     private RestTestClient restTestClient;

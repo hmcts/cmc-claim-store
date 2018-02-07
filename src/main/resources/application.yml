@@ -97,7 +97,7 @@ claim-store:
 
 ---
 spring:
-  profiles: 'aat-tests'
+  profiles: 'aat'
 
 aat:
   test-user:

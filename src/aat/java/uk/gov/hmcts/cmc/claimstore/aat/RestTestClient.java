@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore;
+package uk.gov.hmcts.cmc.claimstore.aat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -11,15 +11,15 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 @Component
 public class RestTestClient {
 
-    private final TestsSetup testsSetup;
+    private final Bootstrap bootstrap;
     private final JsonMapper jsonMapper;
 
     @Autowired
     public RestTestClient(
-        TestsSetup testsSetup,
+        Bootstrap bootstrap,
         JsonMapper jsonMapper
     ) {
-        this.testsSetup = testsSetup;
+        this.bootstrap = bootstrap;
         this.jsonMapper = jsonMapper;
     }
 
@@ -27,10 +27,10 @@ public class RestTestClient {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .header(HttpHeaders.AUTHORIZATION, testsSetup.getUserAuthenticationToken())
+            .header(HttpHeaders.AUTHORIZATION, bootstrap.getUserAuthenticationToken())
             .body(jsonMapper.toJson(claimData))
             .when()
-            .post("/claims/" + testsSetup.getUserId());
+            .post("/claims/" + bootstrap.getUserId());
     }
 
 }
