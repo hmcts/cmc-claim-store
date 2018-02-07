@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.tests.aat;
+package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;

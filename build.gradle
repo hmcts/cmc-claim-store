@@ -182,7 +182,7 @@ task functional(type: Test) {
   description = 'Executes functional tests against an AAT Claim Store instance'
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
-  include "uk/gov/hmcts/cmc/claimstore/tests/aat/**"
+  include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
 }
 
 task smoke(type: Test) {
