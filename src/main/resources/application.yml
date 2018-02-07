@@ -101,7 +101,7 @@ spring:
 
 aat:
   test-user:
-    username: "${FUNCTIONAL_TEST_USERNAME:}"
-    password: "${FUNCTIONAL_TEST_PASSWORD:}"
+    username: "${AAT_TEST_USERNAME:}"
+    password: "${AAT_TEST_PASSWORD:}"
   test-instance:
     uri: "${TEST_URL:}"

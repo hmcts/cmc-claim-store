@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.aat;
+package uk.gov.hmcts.cmc.claimstore.tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
