@@ -60,8 +60,8 @@ public class CountyCourtJudgmentServiceTest {
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class));
-        verify(claimService, once()).saveCountyCourtJudgment(eq(EXTERNAL_ID), any());
+        verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class), any());
+        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
     }
 
     @Test(expected = NotFoundException.class)

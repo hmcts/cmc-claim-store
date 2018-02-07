@@ -2,32 +2,28 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.util.Collections;
-import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.CASE_TYPE_ID;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false"
+        "document_management.api_gateway.url=false",
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
+@Ignore // Ignored until we decide how we are testing against CCD
 public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseGetTest {
     private static final String SERVICE_TOKEN = "S2S token";
 
@@ -38,14 +34,8 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseGetTest {
     }
 
     @Test
-    public void shouldFindClaimFromCCDHoweverReturnClaimFromPostgres() throws Exception {
-        UUID externalId = UUID.randomUUID();
-
-        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId)
-            .withAmount(SampleAmountRange.validDefaults())
-            .build();
-
-        claimStore.saveClaim(claimData);
+    public void shouldFindClaimFromCCD() throws Exception {
+        String externalId = "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b";
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -53,17 +43,13 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseGetTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", externalId.toString()))
+            eq(ImmutableMap.of("case.externalId", externalId))
             )
         ).willReturn(successfulCoreCaseDataSearchResponse());
 
-        MvcResult result = makeRequest("/claims/" + externalId.toString())
+        makeRequest("/claims/" + externalId)
             .andExpect(status().isOk())
             .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .contains(claimData);
 
         verify(coreCaseDataApi)
             .searchForCitizen(

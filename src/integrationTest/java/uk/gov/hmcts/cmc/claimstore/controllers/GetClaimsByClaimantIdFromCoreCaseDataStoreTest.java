@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -19,13 +20,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.CASE_TYPE_ID;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDClaimSearchRepository.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false"
+        "document_management.api_gateway.url=false",
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
 public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest {
@@ -39,14 +41,14 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
 
     @Before
     public void before() {
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
         given(jwtHelper.isSolicitor(AUTHORISATION_TOKEN)).willReturn(false);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
     @Test
-    public void shouldFindClaimFromCCDForClaimantIdHoweverReturnClaimFromPostgres() throws Exception {
-        String submitterId = "1";
+    public void shouldFindClaimFromCCDForClaimantId() throws Exception {
+        String submitterId = "20";
 
         claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,9 +25,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false"
+        "document_management.api_gateway.url=false",
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
+@Ignore // Ignored until we decide how we are testing against CCD
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     private static final String SERVICE_TOKEN = "S2S token";

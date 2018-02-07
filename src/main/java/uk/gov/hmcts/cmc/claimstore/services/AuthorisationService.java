@@ -23,20 +23,4 @@ public class AuthorisationService {
         }
     }
 
-    public boolean isDefendantOnClaim(Claim claim, String userId) {
-        return userId.equals(claim.getDefendantId());
-    }
-
-    public void assertIsDefendantOnClaim(Claim claim, String userId) {
-        if (!isDefendantOnClaim(claim, userId)) {
-            throw new ForbiddenActionException(
-                String.format(
-                    "Provided user %s is not a defendant on this claim (%s)",
-                    userId,
-                    claim.getDefendantId()
-                )
-            );
-        }
-    }
-
 }

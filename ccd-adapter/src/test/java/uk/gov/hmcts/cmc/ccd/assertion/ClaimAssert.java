@@ -49,6 +49,11 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
         }
 
+        if (!Objects.equals(actual.getResponseDeadline(), ccdCase.getResponseDeadline())) {
+            failWithMessage("Expected CCDCase.responseDeadline to be <%s> but was <%s>",
+                ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
+        }
+
         assertThat(actual.getClaimData()).isEqualTo(ccdCase.getClaimData());
 
         return this;

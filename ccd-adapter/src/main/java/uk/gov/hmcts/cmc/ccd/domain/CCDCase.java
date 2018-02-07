@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 
-@Value
+import java.time.LocalDate;
+
+@Data
 @Builder
 public class CCDCase {
 
@@ -14,6 +16,7 @@ public class CCDCase {
     private String submittedOn;
     private String externalId;
     private String issuedOn;
+    private LocalDate responseDeadline;
     private String submitterEmail;
     private CCDClaim claimData;
     private CCDCountyCourtJudgment countyCourtJudgment;

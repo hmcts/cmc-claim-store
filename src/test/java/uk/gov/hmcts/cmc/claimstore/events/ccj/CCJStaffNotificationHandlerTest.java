@@ -16,7 +16,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class CCJStaffNotificationHandlerTest {
 
     private static final CountyCourtJudgmentRequestedEvent EVENT = new CountyCourtJudgmentRequestedEvent(
-        SampleClaimIssuedEvent.CLAIM);
+        SampleClaimIssuedEvent.CLAIM, "Bearer token here");
     private CCJStaffNotificationHandler handler;
 
     @Mock

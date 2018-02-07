@@ -30,12 +30,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
-@ActiveProfiles("test")
 @TestPropertySource(
     properties = {
         "core_case_data.api.url=false"
     }
 )
+@ActiveProfiles("mocked-database-tests")
 public class EndpointErrorsTest extends MockSpringTest {
 
     private static final Exception UNEXPECTED_ERROR
@@ -88,7 +88,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "2ab19d16-fddf-4494-a01a-f64f93d04782";
 
-        given(legacyCaseRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/2")
@@ -105,8 +105,8 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withExternalId(externalId)
             .withDefendantId(null)
             .build();
-        given(legacyCaseRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
-        given(legacyCaseRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
+        given(claimRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/" + defendantId)

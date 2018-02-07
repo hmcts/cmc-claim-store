@@ -7,9 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
@@ -51,8 +49,7 @@ public class DefendantResponseServiceTest {
         responseService = new DefendantResponseService(
             eventProducer,
             claimService,
-            userService,
-            new AuthorisationService()
+            userService
         );
     }
 
@@ -60,7 +57,7 @@ public class DefendantResponseServiceTest {
     public void saveShouldFinishSuccessfully() {
         //given
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(
-            new UserDetails(USER_ID, DEFENDANT_EMAIL, "Jonny", "Jones")
+            SampleUserDetails.getDefault()
         );
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(
             SampleUserDetails.builder().withUserId(USER_ID).withMail(DEFENDANT_EMAIL).build());
@@ -74,16 +71,6 @@ public class DefendantResponseServiceTest {
         verify(eventProducer, once())
             .createDefendantResponseEvent(eq(claim));
     }
-
-    @Test(expected = ForbiddenActionException.class)
-    public void saveShouldThrowForbiddenActionWhenUserIsNotDefendant() {
-
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
-            .thenReturn(SampleClaim.getDefault());
-
-        responseService.save(EXTERNAL_ID, "23132", VALID_APP, AUTHORISATION);
-    }
-
 
     @Test(expected = ResponseAlreadySubmittedException.class)
     public void saveShouldThrowResponseAlreadySubmittedExceptionWhenResponseSubmitted() {

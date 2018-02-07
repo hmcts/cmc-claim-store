@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -31,6 +32,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails.getDefault;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     @MockBean
@@ -47,7 +53,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnNewlyCreatedDefendantResponse() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         MvcResult result = makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
@@ -63,7 +69,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
@@ -78,7 +84,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
@@ -91,7 +97,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnInternalServerErrorWhenStaffNotificationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendant(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         doThrow(new RuntimeException()).when(staffActionsHandler).onDefendantResponseSubmitted(any());
