@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,5 +78,10 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return claimRepository.getByLetterHolderId(id);
+    }
+
+    @Override
+    public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
+        claimRepository.requestMoreTime(claim.getExternalId(), newResponseDeadline);
     }
 }

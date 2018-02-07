@@ -13,9 +13,12 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
+import java.time.LocalDate;
+
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -65,6 +68,16 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(String
                 .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
         }
+    }
+
+    public CaseDetails requestMoreTimeForResponse(
+        String authorisation,
+        Claim claim,
+        LocalDate newResponseDeadline
+    ) {
+        CCDCase ccdCase = this.caseMapper.to(claim);
+        ccdCase.setResponseDeadline(newResponseDeadline);
+        return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED);
     }
 
     public CaseDetails saveCountyCourtJudgment(

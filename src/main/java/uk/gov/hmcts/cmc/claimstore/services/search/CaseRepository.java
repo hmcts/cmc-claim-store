@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,5 +23,7 @@ public interface CaseRepository {
     List<Claim> getByDefendantId(String id, String authorisation);
 
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
+
+    void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
 }
 
