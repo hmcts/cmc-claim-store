@@ -10,12 +10,15 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentState;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
@@ -139,5 +142,17 @@ public class Assertions {
 
     public static ClaimAssert assertThat(Claim claim) {
         return new ClaimAssert(claim);
+    }
+
+    public static RepaymentPlanAssert assertThat(RepaymentPlan repaymentPlan) {
+        return new RepaymentPlanAssert(repaymentPlan);
+    }
+
+    public static CountyCourtJudgmentAssert assertThat(CountyCourtJudgment countyCourtJudgment) {
+        return new CountyCourtJudgmentAssert(countyCourtJudgment);
+    }
+
+    public static ResponseAssert assertThat(FullDefenceResponse fullDefenceResponse) {
+        return new ResponseAssert(fullDefenceResponse);
     }
 }

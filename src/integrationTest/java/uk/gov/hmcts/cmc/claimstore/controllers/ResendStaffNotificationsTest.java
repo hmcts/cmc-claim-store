@@ -31,7 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false"
+        "document_management.api_gateway.url=false",
+        "core_case_data.api.url=false"
     }
 )
 public class ResendStaffNotificationsTest extends BaseIntegrationTest {
@@ -43,6 +44,8 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     public void setup() {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
+
+        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
     }
 
     @Test
@@ -69,7 +72,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         String event = "claim-issued";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.linkDefendant(claim.getId(), "2");
+        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isConflict());
@@ -85,7 +88,6 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
-        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());

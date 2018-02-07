@@ -14,42 +14,38 @@ public class DefendantResponseService {
     private final EventProducer eventProducer;
     private final ClaimService claimService;
     private final UserService userService;
-    private final AuthorisationService authorisationService;
 
     public DefendantResponseService(
         EventProducer eventProducer,
         ClaimService claimService,
-        UserService userService,
-        AuthorisationService authorisationService) {
+        UserService userService
+    ) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
-        this.authorisationService = authorisationService;
     }
 
     @Transactional
     public Claim save(
-        long claimId,
+        String externalId,
         String defendantId,
         Response response,
         String authorization
     ) {
-        Claim claim = claimService.getClaimById(claimId);
-
-        authorisationService.assertIsDefendantOnClaim(claim, defendantId);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorization);
 
         if (isResponseAlreadySubmitted(claim)) {
-            throw new ResponseAlreadySubmittedException(claimId);
+            throw new ResponseAlreadySubmittedException(claim.getId());
         }
 
         if (isCCJAlreadyRequested(claim)) {
-            throw new CountyCourtJudgmentAlreadyRequestedException(claimId);
+            throw new CountyCourtJudgmentAlreadyRequestedException(claim.getId());
         }
 
         String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        claimService.saveDefendantResponse(claimId, defendantId, defendantEmail, response);
+        claimService.saveDefendantResponse(claim.getId(), defendantId, defendantEmail, response);
 
-        Claim claimAfterSavingResponse = claimService.getClaimById(claimId);
+        Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 

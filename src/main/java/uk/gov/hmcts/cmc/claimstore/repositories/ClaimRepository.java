@@ -42,7 +42,7 @@ public interface ClaimRepository {
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
-    Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
+    Optional<Claim> getByClaimReferenceNumberAnonymous(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber "
@@ -170,10 +170,9 @@ public interface ClaimRepository {
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
         + " county_court_judgment_requested_at = now() at time zone 'utc'"
-        + "WHERE"
-        + " id = :claimId")
+        + " WHERE external_id = :externalId")
     void saveCountyCourtJudgment(
-        @Bind("claimId") long claimId,
+        @Bind("externalId") String externalId,
         @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
     );
 }

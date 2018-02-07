@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
@@ -32,6 +33,11 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_AUTH_TOKEN = "defendant-authDataString";
@@ -129,7 +135,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
     private ResultActions postRequestTo(String endpoint) throws Exception {
         return webClient
             .perform(
-                post(format("/claims/%d/offers/%s/%s", claim.getId(), MadeBy.CLAIMANT.name(), endpoint))
+                post(format("/claims/%s/offers/%s/%s", claim.getExternalId(), MadeBy.CLAIMANT.name(), endpoint))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
             );
@@ -138,7 +144,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
     private void prepareDefendantOffer() throws Exception {
         webClient
             .perform(
-                post(format("/claims/%d/offers/%s", claim.getId(), MadeBy.DEFENDANT.name()))
+                post(format("/claims/%s/offers/%s", claim.getExternalId(), MadeBy.DEFENDANT.name()))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, DEFENDANT_AUTH_TOKEN)
                     .content(jsonMapper.toJson(SampleOffer.validDefaults()))

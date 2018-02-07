@@ -10,6 +10,10 @@ public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate>
 
     @Override
     public CCDInterestDate to(InterestDate interestDate) {
+        if (interestDate == null) {
+            return null;
+        }
+
         CCDInterestDate.CCDInterestDateBuilder builder = CCDInterestDate.builder();
         return builder.type(CCDInterestDateType.valueOf(interestDate.getType().name()))
             .date(interestDate.getDate())

@@ -9,7 +9,7 @@ public class CCDIndividual {
 
     private String name;
     private String email;
-    private String mobilePhone;
+    private String phoneNumber;
     private CCDAddress address;
     private CCDAddress correspondenceAddress;
     private String dateOfBirth;

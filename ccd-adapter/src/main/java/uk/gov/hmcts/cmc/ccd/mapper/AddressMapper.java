@@ -13,6 +13,7 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
             .builder()
             .line1(address.getLine1())
             .line2(address.getLine2())
+            .line3(address.getLine3())
             .city(address.getCity())
             .postcode(address.getPostcode())
             .build();
@@ -20,7 +21,11 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
 
     @Override
     public Address from(CCDAddress address) {
-        return new Address(address.getLine1(), address.getLine2(),
+        if (address == null) {
+            return null;
+        }
+
+        return new Address(address.getLine1(), address.getLine2(), address.getLine3(),
             address.getCity(), address.getPostcode());
     }
 }

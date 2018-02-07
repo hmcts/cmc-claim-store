@@ -23,17 +23,15 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
+
 @Api
 @RestController
 @RequestMapping(
     path = "/claims",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ClaimController {
-
-    public static final String UUID_PATTERN = "\\p{XDigit}{8}-\\p{XDigit}"
-        + "{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}";
-
-    public static final String CLAIM_REFERENCE_PATTERN = "^\\d{3}(?:LR|MC)\\d{3}$";
 
     private final ClaimService claimService;
 
@@ -44,20 +42,25 @@ public class ClaimController {
 
     @GetMapping("/claimant/{submitterId}")
     @ApiOperation("Fetch user claims for given submitter id")
-    public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId) {
-        return claimService.getClaimBySubmitterId(submitterId);
+    public List<Claim> getBySubmitterId(@PathVariable("submitterId") String submitterId,
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimBySubmitterId(submitterId, authorisation);
     }
 
     @GetMapping("/letter/{letterHolderId}")
     @ApiOperation("Fetch user claim for given letter holder id")
-    public Claim getByLetterHolderId(@PathVariable("letterHolderId") String letterHolderId) {
-        return claimService.getClaimByLetterHolderId(letterHolderId);
+    public Claim getByLetterHolderId(
+        @PathVariable("letterHolderId") String letterHolderId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.getClaimByLetterHolderId(letterHolderId, authorisation);
     }
 
     @GetMapping("/{externalId:" + UUID_PATTERN + "}")
     @ApiOperation("Fetch claim for given external id")
-    public Claim getByExternalId(@PathVariable("externalId") String externalId) {
-        return claimService.getClaimByExternalId(externalId);
+    public Claim getByExternalId(@PathVariable("externalId") String externalId,
+                                 @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
@@ -80,8 +83,11 @@ public class ClaimController {
 
     @GetMapping("/defendant/{defendantId}")
     @ApiOperation("Fetch claims linked to given defendant id")
-    public List<Claim> getByDefendantId(@PathVariable("defendantId") String defendantId) {
-        return claimService.getClaimByDefendantId(defendantId);
+    public List<Claim> getByDefendantId(
+        @PathVariable("defendantId") String defendantId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.getClaimByDefendantId(defendantId, authorisation);
     }
 
     @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -92,25 +98,33 @@ public class ClaimController {
         return claimService.saveClaim(submitterId, claimData, authorisation);
     }
 
-    @PutMapping("/{claimId:\\d+}/defendant/{defendantId}")
+    @PutMapping("/{externalId:" + UUID_PATTERN + "}/defendant/{defendantId}")
     @ApiOperation("Links defendant to existing claim")
-    public Claim linkDefendantToClaim(@PathVariable("claimId") Long claimId,
-                                      @PathVariable("defendantId") String defendantId) {
-        claimService.linkDefendantToClaim(claimId, defendantId);
-        return claimService.getClaimById(claimId);
+    public Claim linkDefendantToClaimV1(
+        @PathVariable("externalId") String externalId,
+        @PathVariable("defendantId") String defendantId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.linkDefendantToClaimV1(externalId, defendantId, authorisation);
     }
 
-    @PostMapping(value = "/{claimId:\\d+}/request-more-time")
+    @PutMapping("/defendant/link")
+    @ApiOperation("Links defendant to all unlinked letter-holder cases")
+    public void linkDefendantToClaimV2(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        claimService.linkDefendantToClaimV2(authorisation);
+    }
+
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")
     @ApiOperation("Updates response deadline. Can be called only once per each claim")
-    public Claim requestMoreTimeToRespond(@PathVariable("claimId") Long claimId,
+    public Claim requestMoreTimeToRespond(@PathVariable("externalId") String externalId,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.requestMoreTimeForResponse(claimId, authorisation);
+        return claimService.requestMoreTimeForResponse(externalId, authorisation);
     }
 
     @GetMapping("/{caseReference}/defendant-link-status")
     @ApiOperation("Check whether a claim is linked to a defendant")
     public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
-        Boolean linked = claimService.getClaimByReference(caseReference)
+        Boolean linked = claimService.getClaimByReferenceAnonymous(caseReference)
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();
         return new DefendantLinkStatus(linked);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
 import com.google.common.base.Throwables;
+import feign.FeignException;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
 import org.slf4j.Logger;
@@ -33,11 +34,12 @@ import java.util.Optional;
 public class ResourceExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
     private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE = "duplicate key value violates unique constraint";
+    private static final String INTERNAL_SERVER_ERROR = "Internal server error";
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> internalServiceError(Exception exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(INTERNAL_SERVER_ERROR, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = UnableToExecuteStatementException.class)
@@ -55,7 +57,7 @@ public class ResourceExceptionHandler {
             return new ResponseEntity<>(message.get(), HttpStatus.CONFLICT);
         }
 
-        return new ResponseEntity<>("Internal server error", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(INTERNAL_SERVER_ERROR, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = HttpClientErrorException.class)
@@ -143,5 +145,15 @@ public class ResourceExceptionHandler {
     public ResponseEntity<String> badRequestException(BadRequestException exception) {
         logger.debug(exception.getMessage(), exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FeignException.class)
+    protected ResponseEntity<Object> handleFeignException(FeignException exc) {
+        logger.warn("Error communicating with an API", exc);
+        String errorMessage = exc.status() < HttpStatus.INTERNAL_SERVER_ERROR.value() ? exc
+            .getMessage() : INTERNAL_SERVER_ERROR;
+        return ResponseEntity
+            .status(exc.status())
+            .body(new ExceptionForClient(exc.status(), errorMessage));
     }
 }

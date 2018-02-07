@@ -41,7 +41,8 @@ public class IndividualDetailsMapperTest {
         //given
         CCDAddress ccdAddress = CCDAddress.builder()
             .line1("line1")
-            .line2("line1")
+            .line2("line2")
+            .line3("line3")
             .city("city")
             .postcode("postcode")
             .build();

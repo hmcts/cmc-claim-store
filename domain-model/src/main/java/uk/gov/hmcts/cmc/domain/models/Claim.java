@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
@@ -45,6 +45,7 @@ public class Claim {
     private final String sealedClaimDocumentSelfPath;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
+    @JsonCreator
     public Claim(
         Long id,
         String submitterId,
