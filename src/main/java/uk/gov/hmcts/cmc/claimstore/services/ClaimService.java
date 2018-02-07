@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -34,6 +35,9 @@ public class ClaimService {
     private final UserService userService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     public ClaimService(
@@ -98,6 +102,11 @@ public class ClaimService {
     @Transactional
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
+
+        System.out.println(">>> ClaimService : AppContext " + applicationContext);
+        System.out.println(">>> ClaimService : AppContext hash " + applicationContext.hashCode());
+        System.out.println(">>> ClaimService : UserService hash " + userService.hashCode());
+        System.out.println(">>> ClaimService : CaseRepository hash " + caseRepository.hashCode());
 
         caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
             throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
