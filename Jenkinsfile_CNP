@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@timja-kainos-patch-1")
 
 def product = "cmc"
 def component = "claim-store"
