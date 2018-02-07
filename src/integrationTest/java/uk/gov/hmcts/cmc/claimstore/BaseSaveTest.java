@@ -42,5 +42,4 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
                 .content(jsonMapper.toJson(claimData))
             );
     }
-
 }
