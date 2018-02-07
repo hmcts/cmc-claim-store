@@ -81,5 +81,4 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected JwtHelper jwtHelper;
-
 }
