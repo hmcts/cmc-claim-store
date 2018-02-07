@@ -246,14 +246,6 @@ task printVersion {
   }
 }
 
-task smoke {
-  group 'Delivery pipeline'
-  description 'Executes a non-destructive smoke test'
-  doLast {
-    print 'Hello, Smoke Test!'
-  }
-}
-
 run {
   def debug = System.getProperty("debug")
   if (debug == 'true') {
