@@ -25,6 +25,7 @@ static LinkedHashMap<String, Object> secret(String path, String envVar, String v
   ]
 }
 
-withPipeline("java", product, component, secrets) {
+withPipeline("java", product, component) {
+  loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-cnp')
 }
