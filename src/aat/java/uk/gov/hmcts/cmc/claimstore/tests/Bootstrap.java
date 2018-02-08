@@ -3,7 +3,10 @@ package uk.gov.hmcts.cmc.claimstore.tests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.JwtHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -12,6 +15,8 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class Bootstrap {
+
+    private static final Logger log = LoggerFactory.getLogger(Bootstrap.class);
 
     private final ObjectMapper objectMapper;
     private final UserService userService;
@@ -28,13 +33,15 @@ public class Bootstrap {
         UserService userService,
         JwtHelper jwtHelper,
         TestUser testUser,
-        TestInstance testInstance
+        TestInstance testInstance,
+        @Value("${idam.api.url}") String idamApiUrl
     ) {
         this.objectMapper = objectMapper;
         this.userService = userService;
         this.testUser = testUser;
         this.jwtHelper = jwtHelper;
         this.testInstance = testInstance;
+        log.info(">>> IDAM API URL: {}", idamApiUrl);
     }
 
     @PostConstruct
