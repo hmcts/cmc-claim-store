@@ -51,7 +51,12 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
         if (!Objects.equals(actual.getResponseDeadline(), ccdCase.getResponseDeadline())) {
             failWithMessage("Expected CCDCase.responseDeadline to be <%s> but was <%s>",
-                ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
+                ccdCase.getResponseDeadline(), actual.getResponseDeadline());
+        }
+
+        if (!Objects.equals(actual.isMoreTimeRequested(), ccdCase.isMoreTimeRequested())) {
+            failWithMessage("Expected CCDCase.moreTimeRequested to be <%s> but was <%s>",
+                ccdCase.isMoreTimeRequested(), actual.isMoreTimeRequested());
         }
 
         assertThat(actual.getClaimData()).isEqualTo(ccdCase.getClaimData());

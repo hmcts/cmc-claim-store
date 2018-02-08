@@ -77,6 +77,7 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setResponseDeadline(newResponseDeadline);
+        ccdCase.setMoreTimeRequested(true);
         return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED);
     }
 

@@ -45,6 +45,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .issuedOn(claim.getIssuedOn().format(ISO_DATE))
             .submittedOn(claim.getCreatedAt().format(ISO_DATE_TIME))
             .responseDeadline(claim.getResponseDeadline())
+            .moreTimeRequested(claim.isMoreTimeRequested())
             .claimData(claimMapper.to(claim.getClaimData()))
             .build();
     }
@@ -73,7 +74,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME),
             LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE),
             ccdCase.getResponseDeadline(),
-            false,
+            ccdCase.isMoreTimeRequested(),
             ccdCase.getSubmitterEmail(),
             null,
             null,
