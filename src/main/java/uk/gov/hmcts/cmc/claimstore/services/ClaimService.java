@@ -35,6 +35,7 @@ public class ClaimService {
     private final CaseRepository caseRepository;
     private final MoreTimeRequestRule moreTimeRequestRule;
 
+    @SuppressWarnings("squid:S00107")
     @Autowired
     public ClaimService(
         ClaimRepository claimRepository,
