@@ -161,6 +161,23 @@ task apiTest(type: Test) {
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
 }
 
+task migrateClaims() {
+  description 'Migrating claims from claim-store database to CCD'
+
+  doLast {
+    print 'I am going to start migration app'
+
+    javaexec {
+      main="-jar";
+      args = [
+        "ccd-claim-migration/build/libs/ccd-claim-migration-1.1.0.jar"
+      ]
+    }
+
+    print 'Done'
+  }
+}
+
 compileIntegrationTestJava {
   options.compilerArgs << '-Xlint:deprecation'
 }

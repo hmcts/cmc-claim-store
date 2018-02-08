@@ -55,6 +55,9 @@ public interface ClaimRepository {
     List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
                                        @Bind("submitterId") String submitterId);
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
+    List<Claim> getAllNotMigratedClaims();
+
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);
