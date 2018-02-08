@@ -28,6 +28,7 @@ static LinkedHashMap<String, Object> secret(String path, String envVar, String v
 withPipeline("java", product, component) {
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
   env.SPRING_MAIL_HOST="localhost"
+  env.SPRING_MAIL_TEST_CONNECTION="false"
   loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-cnp')
 }
