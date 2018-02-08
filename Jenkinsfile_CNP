@@ -25,8 +25,6 @@ static LinkedHashMap<String, Object> secret(String path, String envVar, String v
   ]
 }
 
-//wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-withPipeline("java", product, component) {
+withPipeline("java", product, component, secrets) {
   enableSlackNotifications('#cmc-tech-cnp')
 }
-//}
