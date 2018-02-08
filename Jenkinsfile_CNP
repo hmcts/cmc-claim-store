@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@timja-kainos-patch-1")
+@Library("Infrastructure@feature/Fetch-vault-secrets")
 
 def product = "cmc"
 def component = "claim-store"
@@ -25,8 +25,8 @@ static LinkedHashMap<String, Object> secret(String path, String envVar, String v
   ]
 }
 
-wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-  withPipeline("java", product, component) {
-    enableSlackNotifications('#cmc-tech-cnp')
-  }
+//wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
+withPipeline("java", product, component) {
+  enableSlackNotifications('#cmc-tech-cnp')
 }
+//}
