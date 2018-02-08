@@ -26,6 +26,6 @@ public abstract class BaseTest {
     protected JsonMapper jsonMapper;
 
     @MockBean
-    private JavaMailSender javaMailSender;
+    protected JavaMailSender javaMailSender;
 
 }
