@@ -29,7 +29,6 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseGetTest {
 
     @Before
     public void before() {
-        given(userHelper.isSolicitor(AUTHORISATION_TOKEN)).willReturn(false);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 

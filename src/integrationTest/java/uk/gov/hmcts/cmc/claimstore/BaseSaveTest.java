@@ -29,8 +29,6 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(PDF_BYTES);
-
-        given(userHelper.isSolicitor(any())).willReturn(false);
     }
 
     protected ResultActions makeRequest(ClaimData claimData) throws Exception {

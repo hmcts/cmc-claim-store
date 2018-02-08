@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.services.UserHelper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -39,7 +38,6 @@ public class CCDCaseApi {
     private final UserService userService;
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
-    private final UserHelper userHelper;
     private final CaseAccessApi caseAccessApi;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
@@ -50,7 +48,6 @@ public class CCDCaseApi {
         UserService userService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
-        UserHelper userHelper,
         CaseAccessApi caseAccessApi
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
@@ -58,7 +55,6 @@ public class CCDCaseApi {
         this.userService = userService;
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
-        this.userHelper = userHelper;
         this.caseAccessApi = caseAccessApi;
     }
 
@@ -217,7 +213,7 @@ public class CCDCaseApi {
         String serviceAuthToken = this.authTokenGenerator.generate();
 
         List<CaseDetails> result;
-        if (userHelper.isSolicitor(user)) {
+        if (user.getUserDetails().isSolicitor()) {
             result = this.coreCaseDataApi.searchForCaseworker(
                 user.getAuthorisation(),
                 serviceAuthToken,

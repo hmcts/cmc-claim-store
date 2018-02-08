@@ -31,4 +31,17 @@ public class UserDetailsTest {
         //then
         assertThat(fullName).isEqualTo(SUBMITTER_FORENAME);
     }
+
+    @Test
+    public void shouldReturnTrueWhenSolicitorRolePresent() {
+
+    }
+
+    public void shouldReturnFalseWhenSolicitorRoleNotPresent() {
+
+    }
+
+    public void shouldReturnTrueWhenMultipleRolesPresent() {
+
+    }
 }
