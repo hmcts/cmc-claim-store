@@ -59,8 +59,8 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
 
 notifications:
-  govNotifyApiKey: 'aa'
-  frontendBaseUrl: "http://example.com"
+  govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
+  frontendBaseUrl: "${FRONTEND_BASE_URL:}"
   templates:
     email:
       claimantClaimIssued: "58e645b8-bcd6-4462-822c-f17da9dd3dc7"
@@ -81,8 +81,8 @@ notifications:
       offerRejectedByClaimantEmailToDefendant: "46be31b4-6af8-46b2-9325-80ff63e78535"
 
 staff-notifications:
-  sender: 'a@example.com'
-  recipient: 'a@example.com'
+  sender:
+  recipient:
 
 feature_toggles:
   watermark_pdf: false
@@ -105,6 +105,3 @@ aat:
     password: "${AAT_TEST_PASSWORD:}"
   test-instance:
     uri: "${TEST_URL:}"
-
-pdf_service:
-  url: 'http://some-test-host/api/v1/pdf-generator'

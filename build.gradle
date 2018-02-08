@@ -186,7 +186,17 @@ task migrateClaims() {
     javaexec {
       main="-jar";
       args = [
-        "ccd-claim-migration/build/libs/ccd-claim-migration-1.1.0.jar"
+        "ccd-claim-migration/build/libs/ccd-claim-migration-1.1.0.jar",
+        "--pdf_service.url=http://some-test-host/api/v1/pdf-generator",
+        "--staff-notifications.sender=sender@example.com",
+        "--staff-notifications.recipient=recipient@example.com",
+        "--notifications.frontendBaseUrl=http://example.com",
+        "--spring.mail.host=http://example.com",
+        "--core_case_data.api.url=http://example.com",
+        "--document_management.api_gateway.url=false",
+        "--database.username=claimstore",
+        "--database.password=",
+        "--database.url=jdbc:postgresql://localhost:5430/claimstore"
       ]
     }
 
