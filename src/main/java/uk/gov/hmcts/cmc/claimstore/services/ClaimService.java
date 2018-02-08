@@ -161,8 +161,15 @@ public class ClaimService {
         return claim;
     }
 
-    public Claim linkDefendantToClaim(String externalId, String defendantId, String authorisation) {
-        return caseRepository.linkDefendant(externalId, defendantId, authorisation);
+    /**
+     * Temporarily left in until CCD is enabled everywhere.
+     */
+    public Claim linkDefendantToClaimV1(String externalId, String defendantId, String authorisation) {
+        return caseRepository.linkDefendantV1(externalId, defendantId, authorisation);
+    }
+
+    public void linkDefendantToClaimV2(String authorisation) {
+        caseRepository.linkDefendantV2(authorisation);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

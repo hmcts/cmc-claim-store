@@ -73,6 +73,8 @@ def versions = [
 ]
 
 configurations {
+  aatCompile.extendsFrom(testCompile)
+  aatRuntime.extendsFrom(testRuntime)
   integrationTestCompile.extendsFrom(testCompile)
   integrationTestRuntime.extendsFrom(testRuntime)
 }
@@ -128,6 +130,9 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '2.4.0'
 
   testCompile project(':domain-sample-data')
+
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.6'
+
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.3'
@@ -145,6 +150,17 @@ sourceSets {
     }
     resources {
       srcDir('src/integrationTests/resources')
+    }
+  }
+
+  aat {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output + integrationTest.output
+      srcDir('src/aat/java')
+    }
+    resources {
+      srcDir('src/aat/resources')
     }
   }
 }
@@ -176,6 +192,22 @@ task migrateClaims() {
 
     print 'Done'
   }
+}
+
+task functional(type: Test) {
+  group = 'Delivery pipeline'
+  description = 'Executes functional tests against an AAT Claim Store instance'
+  setTestClassesDirs(sourceSets.aat.output.classesDirs)
+  setClasspath(sourceSets.aat.runtimeClasspath)
+  include "uk/gov/hmcts/cmc/claimstore/tests/**"
+}
+
+task smoke(type: Test) {
+  group = 'Delivery pipeline'
+  description = 'Executes non-destructive smoke tests against a running Claim Store instance'
+  setTestClassesDirs(sourceSets.aat.output.classesDirs)
+  setClasspath(sourceSets.aat.runtimeClasspath)
+  include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
 }
 
 compileIntegrationTestJava {

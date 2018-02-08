@@ -1,3 +1,4 @@
+---
 server:
   port: 4400
 
@@ -93,6 +94,17 @@ feign:
 claim-store:
   test-support:
     enabled: true
+
+---
+spring:
+  profiles: 'aat'
+
+aat:
+  test-user:
+    username: "${AAT_TEST_USERNAME:}"
+    password: "${AAT_TEST_PASSWORD:}"
+  test-instance:
+    uri: "${TEST_URL:}"
 
 pdf_service:
   url: 'http://some-test-host/api/v1/pdf-generator'
