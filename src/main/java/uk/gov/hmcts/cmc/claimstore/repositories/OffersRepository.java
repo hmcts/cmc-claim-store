@@ -23,7 +23,7 @@ public interface OffersRepository {
             + " settlement = :settlement::JSONB, settlement_reached_at = :settlementReachedAt "
             + " WHERE id = :claimId"
     )
-    void acceptOffer(
+    void countersignAgreement(
         @Bind("claimId") Long claimId,
         @Bind("settlement") String settlement,
         @Bind("settlementReachedAt") LocalDateTime settlementReachedAt

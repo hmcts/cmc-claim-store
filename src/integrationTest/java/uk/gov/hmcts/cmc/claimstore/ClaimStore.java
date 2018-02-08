@@ -109,14 +109,14 @@ public class ClaimStore {
         return getClaim(claimId);
     }
 
-    public Claim acceptOffer(long claimId, Settlement settlement) {
-        this.offersRepository.acceptOffer(
+    public Claim countersignAgreement(long claimId, Settlement settlement) {
+        this.offersRepository.countersignAgreement(
             claimId,
             jsonMapper.toJson(settlement),
             LocalDateTime.now()
         );
 
-        logger.info("Accepted offer");
+        logger.info("Countersigned agreement");
 
         return getClaim(claimId);
     }

@@ -38,7 +38,8 @@ public class GenerateSettlementAgreementCopyTest extends BaseGetTest {
         claimStore.makeOffer(claim.getId(), settlement);
 
         settlement.accept(MadeBy.CLAIMANT);
-        claimStore.acceptOffer(claim.getId(), settlement);
+        settlement.countersign(MadeBy.DEFENDANT);
+        claimStore.countersignAgreement(claim.getId(), settlement);
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
