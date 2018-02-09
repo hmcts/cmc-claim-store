@@ -17,7 +17,7 @@ public class CCDCase {
     private String externalId;
     private String issuedOn;
     private LocalDate responseDeadline;
-    private boolean moreTimeRequested;
+    private CCDYesNoOption moreTimeRequested;
     private String submitterEmail;
     private CCDClaim claimData;
     private CCDCountyCourtJudgment countyCourtJudgment;

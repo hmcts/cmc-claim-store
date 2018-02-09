@@ -35,7 +35,7 @@ public class ClaimService {
     private final CaseRepository caseRepository;
     private final MoreTimeRequestRule moreTimeRequestRule;
 
-    @SuppressWarnings("squid:S00107")
+    @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
     public ClaimService(
         ClaimRepository claimRepository,

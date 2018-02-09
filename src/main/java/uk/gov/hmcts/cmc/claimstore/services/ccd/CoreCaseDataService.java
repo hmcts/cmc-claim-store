@@ -17,6 +17,7 @@ import java.time.LocalDate;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
@@ -77,7 +78,7 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setResponseDeadline(newResponseDeadline);
-        ccdCase.setMoreTimeRequested(true);
+        ccdCase.setMoreTimeRequested(YES);
         return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED);
     }
 
