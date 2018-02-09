@@ -7,15 +7,19 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -28,18 +32,21 @@ public class CoreCaseDataService {
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
+    private final ResponseMapper responseMapper;
 
     @Autowired
     public CoreCaseDataService(
         SaveCoreCaseDataService saveCoreCaseDataService,
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
-        CountyCourtJudgmentMapper countyCourtJudgmentMapper
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
+        ResponseMapper responseMapper
     ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
+        this.responseMapper = responseMapper;
     }
 
     public CaseDetails save(String authorisation, Claim claim) {
@@ -77,6 +84,22 @@ public class CoreCaseDataService {
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(now().format(ISO_DATE_TIME));
         return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+    }
+
+    public CaseDetails saveDefendantResponse(
+        String authorisation,
+        Claim claim,
+        String defendantEmail,
+        Response response,
+        String defendantId
+    ) {
+
+        CCDCase ccdCase = this.caseMapper.to(claim);
+        ccdCase.setSubmitterId(defendantId);
+        ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
+        ccdCase.setDefendantEmail(defendantEmail);
+        ccdCase.setRespondedAt(now().format(ISO_DATE_TIME));
+        return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {

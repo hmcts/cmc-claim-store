@@ -31,15 +31,15 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
         CCDResponse.CCDResponseBuilder builder = CCDResponse.builder();
 
         response.getFreeMediation()
-            .ifPresent(freeMediation -> builder.freeMediation(CCDYesNoOption.valueOf(freeMediation.name())));
+            .ifPresent(freeMediation -> builder.freeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
-        builder.moreTimeNeeded(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        builder.moreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
         builder.defendant(partyMapper.to(response.getDefendant()));
 
         response.getStatementOfTruth()
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
 
-        builder.defenceType(CCDDefenceType.valueOf(response.getDefenceType().name()));
+        builder.responseType(CCDDefenceType.valueOf(response.getDefenceType().name()));
         builder.defence(response.getDefence());
 
         return builder.build();
@@ -49,11 +49,11 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
     public FullDefenceResponse from(CCDResponse response) {
 
         return new FullDefenceResponse(
-            Response.FreeMediationOption.valueOf(response.getFreeMediation().name()),
-            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeeded().name()),
+            Response.FreeMediationOption.valueOf(response.getFreeMediationOption().name()),
+            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeededOption().name()),
             partyMapper.from(response.getDefendant()),
             statementOfTruthMapper.from(response.getStatementOfTruth()),
-            FullDefenceResponse.DefenceType.valueOf(response.getDefenceType().name()),
+            FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
             response.getDefence()
         );
     }
