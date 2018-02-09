@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
@@ -33,6 +34,7 @@ public class CoreCaseDataService {
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
+    private final UserService userService;
 
     @Autowired
     public CoreCaseDataService(
@@ -40,13 +42,14 @@ public class CoreCaseDataService {
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        ResponseMapper responseMapper
-    ) {
+        ResponseMapper responseMapper,
+        UserService userService) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
+        this.userService = userService;
     }
 
     public CaseDetails save(String authorisation, Claim claim) {
@@ -83,29 +86,28 @@ public class CoreCaseDataService {
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(now().format(ISO_DATE_TIME));
-        return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+        return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED, ccdCase.getSubmitterId());
     }
 
     public CaseDetails saveDefendantResponse(
-        String authorisation,
         Claim claim,
+        String defendantId,
         String defendantEmail,
         Response response,
-        String defendantId
+        String authorisation
     ) {
 
         CCDCase ccdCase = this.caseMapper.to(claim);
-        ccdCase.setSubmitterId(defendantId);
         ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(now().format(ISO_DATE_TIME));
-        return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+        return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED, defendantId);
     }
 
-    public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
+    public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent, String userId) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(ccdCase.getSubmitterId())
+                .userId(userId)
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(caseEvent.getValue())

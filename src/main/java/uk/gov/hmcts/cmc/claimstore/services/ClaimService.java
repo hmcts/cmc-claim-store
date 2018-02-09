@@ -191,8 +191,6 @@ public class ClaimService {
         Response response,
         String authorization
     ) {
-        // When this is saved in CCD ensure a Forbidden response is returned to the client if they
-        // aren't allowed to access the case
         caseRepository.saveDefendantResponse(claim, defendantId, defendantEmail, response, authorization);
     }
 }
