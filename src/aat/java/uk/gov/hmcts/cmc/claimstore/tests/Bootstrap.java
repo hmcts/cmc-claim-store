@@ -44,7 +44,7 @@ public class Bootstrap {
             );
         authenticationToken = userService
             .authenticateUser(testUser.getUsername(), testUser.getPassword()).getAuthorisation();
-        userId = decodeUserId(authenticationToken);
+        userId = userService.getUserDetails(authenticationToken).getId();
     }
 
     public String getUserAuthenticationToken() {
@@ -53,11 +53,6 @@ public class Bootstrap {
 
     public String getUserId() {
         return userId;
-    }
-
-    private String decodeUserId(String authorisation) {
-        DecodedJWT decodedToken = JWT.decode(authorisation);
-        return decodedToken.getClaims().get("id").asString();
     }
 
 }
