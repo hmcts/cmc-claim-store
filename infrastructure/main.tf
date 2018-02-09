@@ -8,16 +8,21 @@ provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
 
+locals {
+  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  vault_section = "${var.env == "prod" ? "prod" : "test"}"
+
+  idam_api_url = "${var.env == "prod" ? var.prod-idam-api-url : var.test-idam-api-url}"
+  s2s_url = "${var.env == "prod" ? var.prod-s2s-url : var.test-s2s-url}"
+  frontend_url = "${var.env == "prod" ? var.prod-frontend-url : var.nonprod-frontend-url}"
+}
+
 data "vault_generic_secret" "notify_api_key" {
-  path = "secret/dev/cmc/notify_api_key"
+  path = "secret/${local.vault_section}/cmc/notify_api_key"
 }
 
 data "vault_generic_secret" "s2s_secret" {
-  path = "secret/test/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore"
-}
-
-locals {
-  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  path = "secret/${local.vault_section}/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore"
 }
 
 module "claim-store-api" {
@@ -43,17 +48,17 @@ module "claim-store-api" {
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
     // idam
-    IDAM_API_URL = "${var.idam-api-url}"
-    IDAM_S2S_AUTH_URL = "${var.s2s-url}"
+    IDAM_API_URL = "${local.idam_api_url}"
+    IDAM_S2S_AUTH_URL = "${local.s2s_url}"
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
     // notify
     GOV_NOTIFY_API_KEY = "${data.vault_generic_secret.notify_api_key.data["value"]}"
 
     // urls
-    FRONTEND_BASE_URL = "${var.frontend-url}"
+    FRONTEND_BASE_URL = "${local.frontend_url}"
     PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
-    DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "${var.document-management-url}"
+    DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
     // CORE_CASE_DATA_API_URL = "http://ccd-data-store-api-${var.env}.service.${local.aseName}.internal"
     CORE_CASE_DATA_API_URL = "false"
 
@@ -68,7 +73,7 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_RECIPIENT = "civilmoneyclaims+cnp@gmail.com"
 
     // feature toggles
-    CLAIM_STORE_TEST_SUPPORT_ENABLED = "true"
+    CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
   }
 }
 

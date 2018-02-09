@@ -12,20 +12,28 @@ variable "location" {
 
 variable "env" {}
 
-variable "document-management-url" {
-  default = "false"
-}
-
-variable "idam-api-url" {
+variable "test-idam-api-url" {
   default = "http://betaDevBccidamAppLB.reform.hmcts.net"
 }
 
-variable "s2s-url" {
+variable "prod-idam-api-url" {
+  default = "http://betaProdccidamAppLB.reform.hmcts.net:4501"
+}
+
+variable "test-s2s-url" {
   default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
 }
 
-variable "frontend-url" {
+variable "prod-s2s-url" {
+  default = "http://betaProdccidamAppLB.reform.hmcts.net:4502"
+}
+
+variable "nonprod-frontend-url" {
   default = "https://www.nonprod.moneyclaim.platform.hmcts.net"
+}
+
+variable "prod-frontend-url" {
+  default = "https://www.moneyclaim.platform.hmcts.net"
 }
 
 variable "database-name" {
