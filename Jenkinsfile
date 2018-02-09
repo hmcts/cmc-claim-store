@@ -24,7 +24,7 @@ def channel = '#cmc-tech-notification'
 timestamps {
   milestone()
   lock(resource: "claim-store-${env.BRANCH_NAME}", inversePrecedence: true) {
-    node('moj-centos-dynamic-slave-regular') {
+    node('moj_centos_regular') {
       try {
         def version
         def claimStoreVersion
