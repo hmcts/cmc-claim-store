@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -32,18 +33,21 @@ public class CoreCaseDataService {
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
+    private final UserService userService;
 
     @Autowired
     public CoreCaseDataService(
         SaveCoreCaseDataService saveCoreCaseDataService,
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
-        CountyCourtJudgmentMapper countyCourtJudgmentMapper
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
+        UserService userService
     ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
+        this.userService = userService;
     }
 
     public CaseDetails save(String authorisation, Claim claim) {
@@ -96,8 +100,9 @@ public class CoreCaseDataService {
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
+            String userId = userService.getUserDetails(authorisation).getId();
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(ccdCase.getSubmitterId())
+                .userId(userId)
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(caseEvent.getValue())
