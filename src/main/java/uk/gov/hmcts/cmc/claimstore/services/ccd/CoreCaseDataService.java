@@ -83,15 +83,15 @@ public class CoreCaseDataService {
         CountyCourtJudgment countyCourtJudgment
     ) {
 
+        userService.getUserDetails(authorisation).getId();
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(now().format(ISO_DATE_TIME));
-        return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED, ccdCase.getSubmitterId());
+        return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 
     public CaseDetails saveDefendantResponse(
         Claim claim,
-        String defendantId,
         String defendantEmail,
         Response response,
         String authorisation
@@ -101,13 +101,13 @@ public class CoreCaseDataService {
         ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(now().format(ISO_DATE_TIME));
-        return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED, defendantId);
+        return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
 
-    public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent, String userId) {
+    public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(userId)
+                .userId(userService.getUserDetails(authorisation).getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(caseEvent.getValue())

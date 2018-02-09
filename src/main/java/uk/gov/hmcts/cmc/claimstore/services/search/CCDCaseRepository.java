@@ -74,6 +74,6 @@ public class CCDCaseRepository implements CaseRepository {
         String defendantEmail,
         Response response,
         String authorization) {
-        coreCaseDataService.saveDefendantResponse(claim, defendantId, defendantEmail, response, authorization);
+        coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
     }
 }
