@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Response;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,9 @@ public interface CaseRepository {
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
     void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);
+
+    void saveDefendantResponse(Claim claim, String defendantId, String defendantEmail,
+                               Response response, String authorization);
 
     Claim linkDefendantV1(String externalId, String defendantId, String authorisation);
 

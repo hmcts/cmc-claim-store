@@ -2,6 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures;
 
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
+import java.util.Collections;
+import java.util.List;
+
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_FORENAME;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.SUBMITTER_SURNAME;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -11,6 +14,7 @@ public final class SampleUserDetails {
     private String userEmail = "user@example.com";
     private String forename = SUBMITTER_FORENAME;
     private String surname = SUBMITTER_SURNAME;
+    private List<String> roles = Collections.emptyList();
 
     public static SampleUserDetails builder() {
         return new SampleUserDetails();
@@ -36,9 +40,13 @@ public final class SampleUserDetails {
         return this;
     }
 
+    public SampleUserDetails withRoles(List<String> roles) {
+        this.roles = roles;
+        return this;
+    }
 
     public UserDetails build() {
-        return new UserDetails(userId, userEmail, forename, surname, null);
+        return new UserDetails(userId, userEmail, forename, surname, roles);
     }
 
     public static UserDetails getDefault() {
