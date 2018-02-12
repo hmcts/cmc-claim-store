@@ -29,7 +29,7 @@ variable "prod-s2s-url" {
 }
 
 variable "nonprod-frontend-url" {
-  default = "https://www.nonprod.moneyclaim.platform.hmcts.net"
+  default = "https://moneyclaim.nonprod.platform.hmcts.net"
 }
 
 variable "prod-frontend-url" {
