@@ -44,6 +44,7 @@ public class Bootstrap {
             .objectMapperConfig(
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
+        RestAssured.useRelaxedHTTPSValidation();
         authenticationToken = userService
             .authenticateUser(testUser.getUsername(), testUser.getPassword()).getAuthorisation();
         userId = jwtHelper.getUserId(authenticationToken);
