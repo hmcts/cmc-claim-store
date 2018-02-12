@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.tests;
 
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
