@@ -44,6 +44,27 @@ public class RespondToClaimTest extends BaseTest {
         assertThat(updatedCase.getRespondedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
     }
 
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
+        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
+
+        User defendant = idamTestService.createDefendant();
+
+        commonOperations.linkDefendant(
+            createdCase.getExternalId(),
+            defendant.getAuthorisation(),
+            defendant.getUserDetails().getId()
+        );
+
+        Response invalidResponse = SampleResponse.FullDefence.builder()
+            .withDefence(null)
+            .build();
+
+        respondToClaim(createdCase.getExternalId(), defendant, invalidResponse)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
     private io.restassured.response.Response respondToClaim(String claimExternalId, User defendant, Response response) {
         return RestAssured
             .given()

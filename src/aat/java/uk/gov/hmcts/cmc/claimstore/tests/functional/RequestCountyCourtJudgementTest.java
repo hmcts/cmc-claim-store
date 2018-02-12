@@ -8,15 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -42,6 +39,21 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
         assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
         assertThat(updatedCase.getCountyCourtJudgmentRequestedAt())
             .isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() {
+        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
+
+        updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
+
+        CountyCourtJudgment invalidCCJ = SampleCountyCourtJudgment.builder()
+            .withPaymentOption(null)
+            .build();
+
+        requestCCJ(createdCase.getExternalId(), invalidCCJ)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test

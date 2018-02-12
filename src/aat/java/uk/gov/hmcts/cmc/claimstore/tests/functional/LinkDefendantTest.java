@@ -9,6 +9,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LinkDefendantTest extends BaseTest {
@@ -26,6 +28,17 @@ public class LinkDefendantTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
+    }
+
+    @Test
+    public void shouldReturnNotFoundResponseWhenGivenInvalidClaimExternalReference() {
+        User defendant = idamTestService.createDefendant();
+
+        String invalidCaseReference = UUID.randomUUID().toString();
+
+        linkDefendant(defendant, invalidCaseReference)
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     private Response linkDefendant(User defendant, String externalId) {

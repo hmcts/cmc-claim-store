@@ -12,7 +12,7 @@ import static java.lang.String.format;
 @Service
 public class IdamTestService {
 
-    private final static String EMAIL_PATTERN = "aat-functional-testing-%s@server.com";
+    private static final String EMAIL_PATTERN = "aat-functional-testing-%s@server.com";
 
     private final IdamTestApi idamTestApi;
     private final UserService userService;
@@ -29,9 +29,6 @@ public class IdamTestService {
         this.password = password;
     }
 
-    /**
-     * @return created user's authentication token
-     */
     public User createDefendant() {
         String email = format(EMAIL_PATTERN, RandomStringUtils.randomAlphanumeric(10));
         idamTestApi.createUser(createDefendantRequest(email, password));

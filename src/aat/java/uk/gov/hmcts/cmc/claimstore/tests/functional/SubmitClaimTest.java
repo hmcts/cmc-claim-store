@@ -35,6 +35,17 @@ public class SubmitClaimTest extends BaseTest {
     }
 
     @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidClaimIsSubmitted() {
+        ClaimData invalidClaimData = SampleClaimData.submittedByClaimantBuilder()
+            .withAmount(null)
+            .build();
+
+        submitClaim(invalidClaimData)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
     public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
         UUID externalId = UUID.randomUUID();
 
