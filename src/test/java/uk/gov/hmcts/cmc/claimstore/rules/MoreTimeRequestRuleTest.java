@@ -13,7 +13,7 @@ public class MoreTimeRequestRuleTest {
     private final MoreTimeRequestRule moreTimeRequestRule = new MoreTimeRequestRule();
 
     @Test
-    public void shouldNotThrowExceptionWhenMoreTimeRequested() {
+    public void noExceptionThrownWhenMoreTimeRequestedFirstTime() {
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().plusDays(2))
             .withMoreTimeRequested(false)
@@ -22,7 +22,7 @@ public class MoreTimeRequestRuleTest {
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
-    public void shouldThrowExceptionWhenMoreTimeWasAlreadyResponded() {
+    public void shouldThrowExceptionWhenMoreTimeWasAlreadyRequested() {
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().plusDays(2))
             .withMoreTimeRequested(true)

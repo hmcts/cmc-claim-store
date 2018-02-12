@@ -7,12 +7,11 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
 
 @Service
 public class MoreTimeRequestRule {
 
-    public void assertMoreTimeCanBeRequested(@NotNull Claim claim) {
+    public void assertMoreTimeCanBeRequested(Claim claim) {
         Objects.requireNonNull(claim, "claim object can not be null");
 
         if (claim.isMoreTimeRequested()) {
