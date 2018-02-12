@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 @Component
 public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
 
-    private PartStatementMapper partyStatementMapper;
+    private PartyStatementMapper partyStatementMapper;
 
     @Autowired
-    public SettlementMapper(PartStatementMapper partyStatementMapper) {
+    public SettlementMapper(PartyStatementMapper partyStatementMapper) {
         this.partyStatementMapper = partyStatementMapper;
     }
 

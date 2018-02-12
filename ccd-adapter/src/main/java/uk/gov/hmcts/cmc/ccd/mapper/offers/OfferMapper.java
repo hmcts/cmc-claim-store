@@ -9,10 +9,10 @@ import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 public class OfferMapper implements Mapper<CCDOffer, Offer> {
     @Override
     public CCDOffer to(Offer offer) {
-        CCDOffer.CCDOfferBuilder builder = CCDOffer.builder();
-        builder.content(offer.getContent());
-        builder.completionDate(offer.getCompletionDate());
-        return builder.build();
+        return CCDOffer.builder()
+            .content(offer.getContent())
+            .completionDate(offer.getCompletionDate())
+            .build();
     }
 
     @Override

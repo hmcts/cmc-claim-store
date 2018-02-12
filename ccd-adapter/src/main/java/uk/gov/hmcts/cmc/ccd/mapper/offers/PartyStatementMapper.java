@@ -10,11 +10,11 @@ import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 @Component
-public class PartStatementMapper implements Mapper<CCDPartyStatement, PartyStatement> {
+public class PartyStatementMapper implements Mapper<CCDPartyStatement, PartyStatement> {
 
     private final OfferMapper offerMapper;
 
-    public PartStatementMapper(OfferMapper offerMapper) {
+    public PartyStatementMapper(OfferMapper offerMapper) {
         this.offerMapper = offerMapper;
     }
 
