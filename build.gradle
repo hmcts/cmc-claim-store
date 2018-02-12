@@ -112,8 +112,10 @@ dependencies {
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.4.0-RELEASE'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '1.4.2'
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: '1.4.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '1.5.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: '1.5.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: '1.5.0'
+
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '5.0.0'
@@ -131,7 +133,6 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.4.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '2.4.0'
 
-  compile group: 'com.microsoft.azure', name: 'applicationinsights-web', version: '2.0.0-BETA'
   compile group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: '2.0.0-BETA'
 
   testCompile project(':domain-sample-data')
