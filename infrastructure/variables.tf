@@ -17,7 +17,8 @@ variable "test-idam-api-url" {
 }
 
 variable "prod-idam-api-url" {
-  default = "http://betaProdccidamAppLB.reform.hmcts.net:4501"
+  default = "http://betaPreProdccidamAppLB.reform.hmcts.net:4501"
+//  default = "http://betaProdccidamAppLB.reform.hmcts.net:4501"
 }
 
 variable "test-s2s-url" {
@@ -25,7 +26,8 @@ variable "test-s2s-url" {
 }
 
 variable "prod-s2s-url" {
-  default = "http://betaProdccidamAppLB.reform.hmcts.net:4502"
+  default = "http://betaPreProdccidamAppLB.reform.hmcts.net:4502"
+//  default = "http://betaProdccidamAppLB.reform.hmcts.net:4502"
 }
 
 variable "nonprod-frontend-url" {
@@ -33,7 +35,7 @@ variable "nonprod-frontend-url" {
 }
 
 variable "prod-frontend-url" {
-  default = "https://www.moneyclaim.platform.hmcts.net"
+  default = "https://moneyclaim-non-live-prod.nonprod.platform.hmcts.net"
 }
 
 variable "database-name" {
