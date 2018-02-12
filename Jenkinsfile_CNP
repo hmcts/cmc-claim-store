@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@smokey")
+@Library("Infrastructure@feature/Fetch-vault-secrets")
 
 def product = "cmc"
 def component = "claim-store"
