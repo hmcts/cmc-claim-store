@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CCDPartyArrayElement {
+public class ListArrayElement<T> {
     private String id;
-    private CCDParty value;
+    private T value;
 }

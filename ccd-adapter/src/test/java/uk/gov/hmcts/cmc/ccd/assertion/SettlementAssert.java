@@ -1,7 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatementArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.ListArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -31,10 +32,10 @@ public class SettlementAssert extends AbstractAssert<SettlementAssert, Settlemen
 
     private void assertPartyStatement(
         PartyStatement actual,
-        List<CCDPartyStatementArrayElement> ccdPartyStatements
+        List<ListArrayElement<CCDPartyStatement>> ccdPartyStatements
     ) {
         ccdPartyStatements.stream()
-            .map(CCDPartyStatementArrayElement::getValue)
+            .map(ListArrayElement::getValue)
             .filter(partyStatement -> actual.getType().name().equals(partyStatement.getType().name()))
             .findFirst()
             .ifPresent(partyStatement -> assertThat(actual).isEqualTo(partyStatement));

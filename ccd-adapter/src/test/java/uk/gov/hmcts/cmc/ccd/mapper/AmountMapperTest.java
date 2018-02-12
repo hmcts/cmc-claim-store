@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRange;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
+import uk.gov.hmcts.cmc.ccd.domain.ListArrayElement;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import java.math.BigDecimal;
 
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.NOT_KNOWN;
@@ -81,11 +81,14 @@ public class AmountMapperTest {
             .type(BREAK_DOWN)
             .amountBreakDown(
                 CCDAmountBreakDown.builder()
-                    .rows(singletonList(singletonMap("value", CCDAmountRow.builder()
-                            .amount(BigDecimal.valueOf(50))
-                            .reason("payment")
+                    .rows(singletonList(
+                        ListArrayElement.<CCDAmountRow>builder()
+                            .value(CCDAmountRow.builder()
+                                .amount(BigDecimal.valueOf(50))
+                                .reason("payment")
+                                .build()
+                            )
                             .build()
-                        )
                     )).build()
             )
             .build();

@@ -2,7 +2,8 @@ package uk.gov.hmcts.cmc.ccd.mapper.offers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatementArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.ListArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
@@ -26,9 +27,9 @@ public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
     public CCDSettlement to(Settlement settlement) {
         CCDSettlement.CCDSettlementBuilder builder = CCDSettlement.builder();
 
-        List<CCDPartyStatementArrayElement> partyStatements = settlement.getPartyStatements().stream()
+        List<ListArrayElement<CCDPartyStatement>> partyStatements = settlement.getPartyStatements().stream()
             .map(partyStatement -> partyStatementMapper.to(partyStatement))
-            .map(ccdPartyStatement -> CCDPartyStatementArrayElement.builder().value(ccdPartyStatement).build())
+            .map(ccdPartyStatement -> ListArrayElement.<CCDPartyStatement>builder().value(ccdPartyStatement).build())
             .collect(Collectors.toList());
 
         builder.partyStatements(partyStatements);
@@ -39,7 +40,7 @@ public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
     @Override
     public Settlement from(CCDSettlement ccdSettlement) {
         List<PartyStatement> partyStatements = ccdSettlement.getPartyStatements().stream()
-            .map(CCDPartyStatementArrayElement::getValue)
+            .map(ListArrayElement::getValue)
             .map(partyStatement -> partyStatementMapper.from(partyStatement))
             .collect(Collectors.toList());
 

@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatementArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.ListArrayElement;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -91,7 +91,7 @@ public class SettlementMapperTest {
         assertThat(partyStatements)
             .isEqualTo(
                 ccdSettlement.getPartyStatements().stream()
-                    .map(CCDPartyStatementArrayElement::getValue)
+                    .map(ListArrayElement::getValue)
                     .map(partyStatementMapper::from)
                     .toArray()
             );
