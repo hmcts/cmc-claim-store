@@ -7,9 +7,12 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class SaveClaimTest extends BaseTest {
 
@@ -24,6 +27,7 @@ public class SaveClaimTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(createdCase.getClaimData()).isEqualTo(claimData);
+        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
     }
 
     @Test

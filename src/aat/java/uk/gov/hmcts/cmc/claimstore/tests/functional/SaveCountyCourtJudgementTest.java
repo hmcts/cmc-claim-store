@@ -15,9 +15,11 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 public class SaveCountyCourtJudgementTest extends BaseTest {
 
@@ -45,7 +47,8 @@ public class SaveCountyCourtJudgementTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
-        assertThat(updatedCase.getCountyCourtJudgmentRequestedAt()).isEqualToIgnoringSeconds(LocalDateTime.now());
+        assertThat(updatedCase.getCountyCourtJudgmentRequestedAt())
+            .isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
     }
 
     @Test
