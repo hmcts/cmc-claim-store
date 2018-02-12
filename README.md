@@ -76,7 +76,7 @@ As a result the following containers will get created and started:
  
 ### Smoke and functional tests for Automated Acceptance Testing environment
 
-The [`src/aat`](src/aat) source set contains automatic tests which are executed in the delivery pipeline. They are intended to run against a real Claim Store instances after deployments to consecutive slots and environments.
+The [`src/aat`](src/aat) source set contains automatic tests which are executed in the delivery pipeline. They are intended to run against real Claim Store instances after deployments to consecutive slots and environments.
 
 They can be run against local instance of Claim Store as well, but need some environment variables exported:
 
