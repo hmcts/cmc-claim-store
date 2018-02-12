@@ -39,12 +39,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         .withUserId(DEFENDANT_ID)
         .withMail("defendant@example.com")
         .build();
-
-    private static final UserDetails OTHER_USER_DETAILS = SampleUserDetails.builder()
-        .withUserId(SUBMITTER_ID)
-        .withMail("submitter@example.com")
-        .build();
-
+    
     @Test
     public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
@@ -125,7 +120,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-        claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
+        claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
