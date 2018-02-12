@@ -32,13 +32,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 @Ignore // Ignored until we decide how we are testing against CCD
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
-    private static final String SERVICE_TOKEN = "S2S token";
-    private static final String USER_ID = "1";
-    private static final String JURISDICTION_ID = "CMC";
-    private static final String CASE_TYPE_ID = "MoneyClaimCase";
-    private static final String EVENT_ID = "submitClaimEvent";
-    private static final boolean IGNORE_WARNING = true;
-
     @Test
     public void shouldStoreRepresentedClaimIntoCCD() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
@@ -49,7 +42,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -115,7 +108,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -183,7 +176,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -218,7 +211,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -264,7 +257,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
             )
         ).willReturn(Collections.emptyList());
 
