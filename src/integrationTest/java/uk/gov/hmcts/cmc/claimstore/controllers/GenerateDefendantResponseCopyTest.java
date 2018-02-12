@@ -24,7 +24,7 @@ public class GenerateDefendantResponseCopyTest extends BaseGetTest {
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
+        claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
@@ -46,7 +46,7 @@ public class GenerateDefendantResponseCopyTest extends BaseGetTest {
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
+        claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));

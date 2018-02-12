@@ -18,15 +18,15 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, FullDefenceRe
         isNotNull();
 
         actual.getFreeMediation().ifPresent(freeMediation -> {
-            if (!Objects.equals(freeMediation.name(), ccdResponse.getFreeMediation().name())) {
+            if (!Objects.equals(freeMediation.name(), ccdResponse.getFreeMediationOption().name())) {
                 failWithMessage("Expected FullDefenceResponse.freeMediation to be <%s> but was <%s>",
-                    ccdResponse.getFreeMediation(), freeMediation);
+                    ccdResponse.getFreeMediationOption(), freeMediation);
             }
         });
 
-        if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdResponse.getMoreTimeNeeded().name())) {
+        if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdResponse.getMoreTimeNeededOption().name())) {
             failWithMessage("Expected FullDefenceResponse.moreTimeNeeded to be <%s> but was <%s>",
-                ccdResponse.getMoreTimeNeeded(), actual.getMoreTimeNeeded().name());
+                ccdResponse.getMoreTimeNeededOption(), actual.getMoreTimeNeeded().name());
         }
 
         if (!Objects.equals(actual.getDefence(), ccdResponse.getDefence())) {
@@ -34,9 +34,9 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, FullDefenceRe
                 ccdResponse.getDefence(), actual.getDefence());
         }
 
-        if (!Objects.equals(actual.getDefenceType().name(), ccdResponse.getDefenceType().name())) {
+        if (!Objects.equals(actual.getDefenceType().name(), ccdResponse.getResponseType().name())) {
             failWithMessage("Expected FullDefenceResponse.defenceType to be <%s> but was <%s>",
-                ccdResponse.getDefenceType().name(), actual.getDefenceType().name());
+                ccdResponse.getResponseType().name(), actual.getDefenceType().name());
         }
 
         assertThat(actual.getDefendant()).isEqualTo(ccdResponse.getDefendant());

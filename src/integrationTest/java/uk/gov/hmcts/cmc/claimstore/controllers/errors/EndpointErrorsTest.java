@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -175,11 +174,14 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void saveResponseShouldFailWhenDefendantResponseFailedStoring() throws Exception {
-        String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
+
+        Claim claim = SampleClaim.getDefault();
+        String externalId = claim.getExternalId();
 
         given(caseRepository.getClaimByExternalId(externalId, anyString()))
-            .willReturn(Optional.of(SampleClaim.getDefault()));
-        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyLong(), anyString(), anyString(),
+            .willReturn(Optional.of(claim));
+
+        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyString(), anyString(), anyString(),
             anyString());
 
         webClient

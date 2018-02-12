@@ -46,8 +46,6 @@ public final class SampleUserDetails {
         return this;
     }
 
-
-
     public UserDetails build() {
         return new UserDetails(userId, userEmail, forename, surname, roles);
     }
