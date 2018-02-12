@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.CommonOperations;
 import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
@@ -32,14 +33,7 @@ public abstract class BaseTest {
     @Autowired
     protected IdamTestService idamTestService;
 
-    protected Response saveClaim(ClaimData claimData) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, bootstrap.getUserAuthenticationToken())
-            .body(jsonMapper.toJson(claimData))
-            .when()
-            .post("/claims/" + bootstrap.getUserId());
-    }
+    @Autowired
+    protected CommonOperations commonOperations;
 
 }

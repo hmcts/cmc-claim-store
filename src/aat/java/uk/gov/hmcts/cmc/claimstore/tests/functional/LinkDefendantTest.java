@@ -9,10 +9,6 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,18 +16,11 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
-        UUID externalId = UUID.randomUUID();
-
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder()
-            .withExternalId(externalId)
-            .build();
-
-        saveClaim(claimData)
-            .andReturn();
+        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
 
         User defendant = idamTestService.createDefendant();
 
-        Claim claim = linkDefendant(defendant, externalId.toString())
+        Claim claim = linkDefendant(defendant, createdCase.getExternalId())
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()

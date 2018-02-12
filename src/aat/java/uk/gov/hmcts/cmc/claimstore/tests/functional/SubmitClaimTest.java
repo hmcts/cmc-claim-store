@@ -1,7 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -20,7 +24,7 @@ public class SubmitClaimTest extends BaseTest {
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-        Claim createdCase = saveClaim(claimData)
+        Claim createdCase = submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
@@ -38,11 +42,21 @@ public class SubmitClaimTest extends BaseTest {
             .withExternalId(externalId)
             .build();
 
-        saveClaim(claimData)
+        submitClaim(claimData)
             .andReturn();
-        saveClaim(claimData)
+        submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    private Response submitClaim(ClaimData claimData) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, bootstrap.getUserAuthenticationToken())
+            .body(jsonMapper.toJson(claimData))
+            .when()
+            .post("/claims/" + bootstrap.getUserId());
     }
 
 }

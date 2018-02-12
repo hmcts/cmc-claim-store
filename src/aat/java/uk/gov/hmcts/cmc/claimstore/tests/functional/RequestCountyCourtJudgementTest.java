@@ -25,14 +25,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyRequestCCJ() {
-        UUID externalId = UUID.randomUUID();
-
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder()
-            .withExternalId(externalId)
-            .build();
-
-        Claim createdCase = saveClaim(claimData)
-            .then().extract().body().as(Claim.class);
+        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
@@ -40,7 +33,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             .withPaymentOptionImmediately()
             .build();
 
-        Claim updatedCase = requestCCJ(externalId.toString(), ccj)
+        Claim updatedCase = requestCCJ(createdCase.getExternalId(), ccj)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
@@ -53,20 +46,13 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
     @Test
     public void shouldNotBeAllowedToRequestCCJWhenResponseDeadlineHasNotPassed() {
-        UUID externalId = UUID.randomUUID();
-
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder()
-            .withExternalId(externalId)
-            .build();
-
-        saveClaim(claimData)
-            .andReturn();
+        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .withPaymentOptionImmediately()
             .build();
 
-        requestCCJ(externalId.toString(), ccj)
+        requestCCJ(createdCase.getExternalId(), ccj)
             .then()
             .statusCode(HttpStatus.FORBIDDEN.value());
     }
