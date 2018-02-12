@@ -43,7 +43,7 @@ public class DefendantResponseService {
         }
 
         String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        claimService.saveDefendantResponse(claim.getId(), defendantId, defendantEmail, response);
+        claimService.saveDefendantResponse(claim, defendantId, defendantEmail, response, authorization);
 
         Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
