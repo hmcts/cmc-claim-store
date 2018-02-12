@@ -20,7 +20,7 @@ public class ValidCountyCourtJudgmentValidator
 
     @Override
     public boolean isValid(CountyCourtJudgment ccj, ConstraintValidatorContext context) {
-        if (ccj == null || ccj.getPaymentOption() == null) {
+        if (!isEligibleForThisValidator(ccj)) {
             return true;
         }
 
@@ -34,4 +34,9 @@ public class ValidCountyCourtJudgmentValidator
 
         return isValidImmediately || isValidFull || isValidByInstalments;
     }
+
+    private boolean isEligibleForThisValidator(CountyCourtJudgment ccj) {
+        return ccj != null && ccj.getPaymentOption() != null;
+    }
+
 }
