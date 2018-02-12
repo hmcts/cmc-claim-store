@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 @Component
 public class CaseMapper implements Mapper<CCDCase, Claim> {
@@ -58,6 +60,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .issuedOn(claim.getIssuedOn().format(ISO_DATE))
             .submittedOn(claim.getCreatedAt().format(ISO_DATE_TIME))
             .responseDeadline(claim.getResponseDeadline())
+            .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
             .claimData(claimMapper.to(claim.getClaimData()))
             .defendantEmail(claim.getDefendantEmail())
             .build();
@@ -97,7 +100,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME),
             LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE),
             ccdCase.getResponseDeadline(),
-            false,
+            ccdCase.getMoreTimeRequested() == YES ? true : false,
             ccdCase.getSubmitterEmail(),
             respondedAt,
             response,
