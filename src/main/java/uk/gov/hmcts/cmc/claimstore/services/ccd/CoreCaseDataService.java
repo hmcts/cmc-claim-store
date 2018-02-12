@@ -17,10 +17,14 @@ import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
+import java.time.LocalDate;
+
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -77,13 +81,23 @@ public class CoreCaseDataService {
         }
     }
 
+    public CaseDetails requestMoreTimeForResponse(
+        String authorisation,
+        Claim claim,
+        LocalDate newResponseDeadline
+    ) {
+        CCDCase ccdCase = this.caseMapper.to(claim);
+        ccdCase.setResponseDeadline(newResponseDeadline);
+        ccdCase.setMoreTimeRequested(YES);
+        return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED);
+    }
+
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
         CountyCourtJudgment countyCourtJudgment
     ) {
 
-        userService.getUserDetails(authorisation).getId();
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(now().format(ISO_DATE_TIME));
@@ -106,8 +120,9 @@ public class CoreCaseDataService {
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
+            String userId = userService.getUserDetails(authorisation).getId();
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(userService.getUserDetails(authorisation).getId())
+                .userId(userId)
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(caseEvent.getValue())

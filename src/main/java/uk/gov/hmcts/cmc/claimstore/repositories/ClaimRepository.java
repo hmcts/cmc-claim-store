@@ -145,10 +145,10 @@ public interface ClaimRepository {
 
     @SqlUpdate(
         "UPDATE claim SET more_time_requested = TRUE, response_deadline = :responseDeadline "
-            + "WHERE id = :claimId AND more_time_requested = FALSE"
+            + "WHERE external_id = :externalId AND more_time_requested = FALSE"
     )
     void requestMoreTime(
-        @Bind("claimId") Long claimId,
+        @Bind("externalId") String externalId,
         @Bind("responseDeadline") LocalDate responseDeadline
     );
 
