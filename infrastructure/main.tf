@@ -33,9 +33,6 @@ module "claim-store-api" {
   ilbIp = "${var.ilbIp}"
 
   app_settings = {
-    // Azure vars
-    WEBSITE_SLOT_POLL_WORKER_FOR_CHANGE_NOTIFICATION = "0"
-
     //    logging vars
     REFORM_TEAM = "${var.product}"
     REFORM_SERVICE_NAME = "${var.microservice}"
