@@ -55,4 +55,9 @@ public class UserDetails {
         return getSurname().map(s -> String.join(" ", forename, s))
             .orElse(forename);
     }
+
+    @JsonIgnore
+    public boolean isSolicitor() {
+        return roles.stream().anyMatch("solicitor"::equals);
+    }
 }
