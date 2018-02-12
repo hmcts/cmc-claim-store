@@ -3,24 +3,33 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.Response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 @Component
 public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     private final ClaimMapper claimMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
+    private final ResponseMapper responseMapper;
 
-    public CaseMapper(ClaimMapper claimMapper, CountyCourtJudgmentMapper countyCourtJudgmentMapper) {
+    public CaseMapper(ClaimMapper claimMapper,
+                      CountyCourtJudgmentMapper countyCourtJudgmentMapper,
+                      ResponseMapper responseMapper) {
         this.claimMapper = claimMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
+        this.responseMapper = responseMapper;
     }
 
     @Override
@@ -36,6 +45,12 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.countyCourtJudgmentRequestedAt(claim.getCountyCourtJudgmentRequestedAt().format(ISO_DATE_TIME));
         }
 
+        if (claim.getRespondedAt() != null) {
+            builder.respondedAt(claim.getRespondedAt().format(ISO_DATE_TIME));
+        }
+
+        claim.getResponse().ifPresent(response -> builder.response(responseMapper.to((FullDefenceResponse) response)));
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -45,7 +60,9 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .issuedOn(claim.getIssuedOn().format(ISO_DATE))
             .submittedOn(claim.getCreatedAt().format(ISO_DATE_TIME))
             .responseDeadline(claim.getResponseDeadline())
+            .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
             .claimData(claimMapper.to(claim.getClaimData()))
+            .defendantEmail(claim.getDefendantEmail())
             .build();
     }
 
@@ -62,6 +79,16 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             countyCourtJudgmentRequestedAt = LocalDateTime.parse(ccdCase.getCountyCourtJudgmentRequestedAt());
         }
 
+        LocalDateTime respondedAt = null;
+        if (ccdCase.getRespondedAt() != null) {
+            respondedAt = LocalDateTime.parse(ccdCase.getRespondedAt());
+        }
+
+        Response response = null;
+        if (ccdCase.getResponse() != null) {
+            response = responseMapper.from(ccdCase.getResponse());
+        }
+
         return new Claim(
             ccdCase.getId(),
             ccdCase.getSubmitterId(),
@@ -73,11 +100,11 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME),
             LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE),
             ccdCase.getResponseDeadline(),
-            false,
+            ccdCase.getMoreTimeRequested() == YES ? true : false,
             ccdCase.getSubmitterEmail(),
-            null,
-            null,
-            null,
+            respondedAt,
+            response,
+            ccdCase.getDefendantEmail(),
             countyCourtJudgment,
             countyCourtJudgmentRequestedAt,
             null,

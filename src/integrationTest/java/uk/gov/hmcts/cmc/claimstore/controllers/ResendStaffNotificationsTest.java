@@ -117,7 +117,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         String event = "more-time-requested";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.requestMoreTime(claim.getId(), LocalDate.now());
+        claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());
@@ -144,7 +144,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimStore.saveResponse(
-            claim.getId(),
+            claim,
             SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
