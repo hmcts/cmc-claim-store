@@ -13,6 +13,9 @@ import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
@@ -88,12 +91,12 @@ public class SettlementMapperTest {
         //then
         assertThat(settlement).isEqualTo(ccdSettlement);
 
-        assertThat(partyStatements)
+        assertThat(Arrays.asList(partyStatements))
             .isEqualTo(
                 ccdSettlement.getPartyStatements().stream()
                     .map(ListArrayElement::getValue)
                     .map(partyStatementMapper::from)
-                    .toArray()
+                    .collect(Collectors.toList())
             );
     }
 }
