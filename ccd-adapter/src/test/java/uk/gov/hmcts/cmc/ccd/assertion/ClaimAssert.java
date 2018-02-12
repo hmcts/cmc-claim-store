@@ -9,6 +9,7 @@ import java.util.Objects;
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
@@ -51,7 +52,12 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
         if (!Objects.equals(actual.getResponseDeadline(), ccdCase.getResponseDeadline())) {
             failWithMessage("Expected CCDCase.responseDeadline to be <%s> but was <%s>",
-                ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
+                ccdCase.getResponseDeadline(), actual.getResponseDeadline());
+        }
+
+        if (!Objects.equals(actual.isMoreTimeRequested(), ccdCase.getMoreTimeRequested() == YES ? true : false)) {
+            failWithMessage("Expected CCDCase.moreTimeRequested to be <%s> but was <%s>",
+                ccdCase.getMoreTimeRequested(), actual.isMoreTimeRequested());
         }
 
         assertThat(actual.getClaimData()).isEqualTo(ccdCase.getClaimData());
