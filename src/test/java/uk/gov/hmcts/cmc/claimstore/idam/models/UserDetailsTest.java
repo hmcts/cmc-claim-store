@@ -31,4 +31,28 @@ public class UserDetailsTest {
         //then
         assertThat(fullName).isEqualTo(SUBMITTER_FORENAME);
     }
+
+    @Test
+    public void shouldReturnTrueWhenSolicitorRolePresent() {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("solicitor").build();
+
+        assertThat(userDetails.isSolicitor()).isTrue();
+    }
+
+    @Test
+    public void shouldReturnFalseWhenSolicitorRoleNotPresent() {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("citizen", "letter-holder").build();
+
+        assertThat(userDetails.isSolicitor()).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenMultipleRolesPresent() {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("solicitor", "cmc-caseworker").build();
+
+        assertThat(userDetails.isSolicitor()).isTrue();
+    }
 }

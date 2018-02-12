@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Response;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -68,6 +69,18 @@ public class DBCaseRepository implements CaseRepository {
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
         final String externalId = claim.getExternalId();
         claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
+    }
+
+    @Override
+    public void saveDefendantResponse(
+        Claim claim,
+        String defendantId,
+        String defendantEmail,
+        Response response,
+        String authorization
+    ) {
+        String defendantResponse = jsonMapper.toJson(response);
+        claimRepository.saveDefendantResponse(claim.getExternalId(), defendantId, defendantEmail, defendantResponse);
     }
 
     @Override

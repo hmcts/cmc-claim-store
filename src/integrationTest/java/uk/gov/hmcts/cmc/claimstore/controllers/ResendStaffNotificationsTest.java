@@ -144,7 +144,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         claimStore.saveResponse(
-            claim.getId(),
+            claim,
             SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
