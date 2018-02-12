@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 
 import java.time.LocalDate;
@@ -26,4 +27,6 @@ public class CCDCase {
     private String defendantEmail;
     private CCDResponse response;
     private String respondedAt;
+    private CCDSettlement settlement;
+    private String settlementReachedAt;
 }

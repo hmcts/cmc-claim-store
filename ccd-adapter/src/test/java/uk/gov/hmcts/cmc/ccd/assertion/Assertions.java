@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
@@ -154,5 +155,9 @@ public class Assertions {
 
     public static ResponseAssert assertThat(FullDefenceResponse fullDefenceResponse) {
         return new ResponseAssert(fullDefenceResponse);
+    }
+
+    public static SettlementAssert assertThat(Settlement settlement) {
+        return new SettlementAssert(settlement);
     }
 }

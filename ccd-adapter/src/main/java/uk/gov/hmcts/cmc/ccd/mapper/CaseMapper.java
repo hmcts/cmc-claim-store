@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -23,13 +24,16 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
     private final ClaimMapper claimMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
+    private final SettlementMapper settlementMapper;
 
     public CaseMapper(ClaimMapper claimMapper,
                       CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-                      ResponseMapper responseMapper) {
+                      ResponseMapper responseMapper,
+                      SettlementMapper settlementMapper) {
         this.claimMapper = claimMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
+        this.settlementMapper = settlementMapper;
     }
 
     @Override
@@ -50,6 +54,12 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         }
 
         claim.getResponse().ifPresent(response -> builder.response(responseMapper.to((FullDefenceResponse) response)));
+
+        claim.getSettlement().ifPresent(settlement ->  builder.settlement(settlementMapper.to(settlement)));
+
+        if (claim.getSettlementReachedAt() != null) {
+            builder.settlementReachedAt(claim.getSettlementReachedAt().format(ISO_DATE_TIME));
+        }
 
         return builder
             .id(claim.getId())
