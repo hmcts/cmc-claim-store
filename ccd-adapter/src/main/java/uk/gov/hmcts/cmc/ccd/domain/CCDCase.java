@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -23,10 +24,10 @@ public class CCDCase {
     private String submitterEmail;
     private CCDClaim claimData;
     private CCDCountyCourtJudgment countyCourtJudgment;
-    private String countyCourtJudgmentRequestedAt;
+    private LocalDateTime countyCourtJudgmentRequestedAt;
     private String defendantEmail;
     private CCDResponse response;
-    private String respondedAt;
+    private LocalDateTime respondedAt;
     private CCDSettlement settlement;
-    private String settlementReachedAt;
+    private LocalDateTime settlementReachedAt;
 }

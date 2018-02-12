@@ -37,26 +37,29 @@ public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
     }
 
     @Override
-    public Settlement from(CCDSettlement settlement) {
-        List<PartyStatement> partyStatements = settlement.getPartyStatements().stream()
+    public Settlement from(CCDSettlement ccdSettlement) {
+        List<PartyStatement> partyStatements = ccdSettlement.getPartyStatements().stream()
             .map(CCDPartyStatementArrayElement::getValue)
             .map(partyStatement -> partyStatementMapper.from(partyStatement))
             .collect(Collectors.toList());
 
-        Settlement output = new Settlement();
+        Settlement settlement = new Settlement();
+        partyStatements.forEach(partyStatement -> addPartyStatement(partyStatement, settlement));
 
-        partyStatements.stream()
-            .filter(p -> p.getType().equals(StatementType.OFFER))
-            .forEach(p -> output.makeOffer(p.getOffer().orElse(null), p.getMadeBy()));
+        return settlement;
+    }
 
-        partyStatements.stream()
-            .filter(p -> p.getType().equals(StatementType.REJECTION))
-            .forEach(p -> output.reject(p.getMadeBy()));
+    private void addPartyStatement(PartyStatement partyStatement, Settlement settlement) {
+        if (partyStatement.getType().equals(StatementType.OFFER)) {
+            settlement.makeOffer(partyStatement.getOffer().orElse(null), partyStatement.getMadeBy());
+        }
 
-        partyStatements.stream()
-            .filter(p -> p.getType().equals(StatementType.ACCEPTATION))
-            .forEach(p -> output.accept(p.getMadeBy()));
+        if (partyStatement.getType().equals(StatementType.REJECTION)) {
+            settlement.reject(partyStatement.getMadeBy());
+        }
 
-        return output;
+        if (partyStatement.getType().equals(StatementType.ACCEPTATION)) {
+            settlement.accept(partyStatement.getMadeBy());
+        }
     }
 }

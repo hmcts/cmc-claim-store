@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,19 +47,19 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         }
 
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
-            builder.countyCourtJudgmentRequestedAt(claim.getCountyCourtJudgmentRequestedAt().format(ISO_DATE_TIME));
+            builder.countyCourtJudgmentRequestedAt(claim.getCountyCourtJudgmentRequestedAt());
         }
 
         if (claim.getRespondedAt() != null) {
-            builder.respondedAt(claim.getRespondedAt().format(ISO_DATE_TIME));
+            builder.respondedAt(claim.getRespondedAt());
         }
 
         claim.getResponse().ifPresent(response -> builder.response(responseMapper.to((FullDefenceResponse) response)));
 
-        claim.getSettlement().ifPresent(settlement ->  builder.settlement(settlementMapper.to(settlement)));
+        claim.getSettlement().ifPresent(settlement -> builder.settlement(settlementMapper.to(settlement)));
 
         if (claim.getSettlementReachedAt() != null) {
-            builder.settlementReachedAt(claim.getSettlementReachedAt().format(ISO_DATE_TIME));
+            builder.settlementReachedAt(claim.getSettlementReachedAt());
         }
 
         return builder
@@ -84,19 +85,14 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             countyCourtJudgment = countyCourtJudgmentMapper.from(ccdCase.getCountyCourtJudgment());
         }
 
-        LocalDateTime countyCourtJudgmentRequestedAt = null;
-        if (ccdCase.getCountyCourtJudgmentRequestedAt() != null) {
-            countyCourtJudgmentRequestedAt = LocalDateTime.parse(ccdCase.getCountyCourtJudgmentRequestedAt());
-        }
-
-        LocalDateTime respondedAt = null;
-        if (ccdCase.getRespondedAt() != null) {
-            respondedAt = LocalDateTime.parse(ccdCase.getRespondedAt());
-        }
-
         Response response = null;
         if (ccdCase.getResponse() != null) {
             response = responseMapper.from(ccdCase.getResponse());
+        }
+
+        Settlement settlement = null;
+        if (ccdCase.getSettlement() != null) {
+            settlement = settlementMapper.from(ccdCase.getSettlement());
         }
 
         return new Claim(
@@ -112,13 +108,13 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             ccdCase.getResponseDeadline(),
             ccdCase.getMoreTimeRequested() == YES ? true : false,
             ccdCase.getSubmitterEmail(),
-            respondedAt,
+            ccdCase.getRespondedAt(),
             response,
             ccdCase.getDefendantEmail(),
             countyCourtJudgment,
-            countyCourtJudgmentRequestedAt,
-            null,
-            null,
+            ccdCase.getCountyCourtJudgmentRequestedAt(),
+            settlement,
+            ccdCase.getSettlementReachedAt(),
             null
         );
     }
