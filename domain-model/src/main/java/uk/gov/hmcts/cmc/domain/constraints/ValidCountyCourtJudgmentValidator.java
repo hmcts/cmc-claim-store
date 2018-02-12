@@ -20,7 +20,7 @@ public class ValidCountyCourtJudgmentValidator
 
     @Override
     public boolean isValid(CountyCourtJudgment ccj, ConstraintValidatorContext context) {
-        if (ccj == null) {
+        if (ccj == null || ccj.getPaymentOption() == null) {
             return true;
         }
 
