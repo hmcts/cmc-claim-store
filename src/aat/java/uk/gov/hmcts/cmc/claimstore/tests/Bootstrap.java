@@ -14,8 +14,7 @@ public class Bootstrap {
 
     private final ObjectMapper objectMapper;
     private final UserService userService;
-    private final TestUser testUser;
-    private final TestInstance testInstance;
+    private final AATConfiguration aatConfiguration;
 
     private String authenticationToken;
     private String userId;
@@ -24,24 +23,24 @@ public class Bootstrap {
     public Bootstrap(
         ObjectMapper objectMapper,
         UserService userService,
-        TestUser testUser,
-        TestInstance testInstance
+        AATConfiguration aatConfiguration
     ) {
         this.objectMapper = objectMapper;
         this.userService = userService;
-        this.testUser = testUser;
-        this.testInstance = testInstance;
+        this.aatConfiguration = aatConfiguration;
     }
 
     @PostConstruct
     public void initialize() {
-        RestAssured.baseURI = testInstance.getUri();
+        RestAssured.baseURI = aatConfiguration.getTestInstanceUri();
         RestAssured.config = RestAssured.config()
             .objectMapperConfig(
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
-        authenticationToken = userService
-            .authenticateUser(testUser.getUsername(), testUser.getPassword()).getAuthorisation();
+        authenticationToken = userService.authenticateUser(
+            aatConfiguration.getTestUser().getUsername(),
+            aatConfiguration.getTestUser().getPassword()
+        ).getAuthorisation();
         userId = userService.getUserDetails(authenticationToken).getId();
     }
 
