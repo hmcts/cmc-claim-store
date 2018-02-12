@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 public class SamplePartyStatement {
 
     private StatementType statementType = StatementType.OFFER;
-    private MadeBy madeBy = MadeBy.CLAIMANT;
+    private MadeBy madeBy = MadeBy.DEFENDANT;
     private Offer offer = SampleOffer.validDefaults();
 
     public static PartyStatement validDefaults() {

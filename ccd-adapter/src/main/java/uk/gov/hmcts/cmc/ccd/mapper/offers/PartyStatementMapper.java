@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDStatementType;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
@@ -31,6 +32,12 @@ public class PartyStatementMapper implements Mapper<CCDPartyStatement, PartyStat
     public PartyStatement from(CCDPartyStatement partyStatement) {
         StatementType statementType = StatementType.valueOf(partyStatement.getType().name());
         MadeBy madeBy = MadeBy.valueOf(partyStatement.getMadeBy().name());
-        return new PartyStatement(statementType, madeBy, offerMapper.from(partyStatement.getOffer()));
+
+        Offer offer = null;
+        if (partyStatement.getOffer() != null) {
+            offer = offerMapper.from(partyStatement.getOffer());
+        }
+
+        return new PartyStatement(statementType, madeBy, offer);
     }
 }

@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata.offers;
 
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,11 +15,17 @@ public class SampleSettlement {
     public static final PartyStatement offerPartyStatement
         = SamplePartyStatement.validDefaults();
 
-    public static final PartyStatement rejectPartyStatement
-        = SamplePartyStatement.builder().withStatementType(StatementType.REJECTION).build();
+    public static final PartyStatement rejectPartyStatement = SamplePartyStatement.builder()
+        .withStatementType(StatementType.REJECTION)
+        .withMadeBy(MadeBy.CLAIMANT)
+        .withOffer(null)
+        .build();
 
-    public static final PartyStatement acceptPartyStatement
-        = SamplePartyStatement.builder().withStatementType(StatementType.ACCEPTATION).build();
+    public static final PartyStatement acceptPartyStatement = SamplePartyStatement.builder()
+        .withStatementType(StatementType.ACCEPTATION)
+        .withMadeBy(MadeBy.CLAIMANT)
+        .withOffer(null)
+        .build();
 
     private List<PartyStatement> partyStatements = new ArrayList<>(Collections.singletonList(offerPartyStatement));
 
@@ -32,25 +40,28 @@ public class SampleSettlement {
 
     public Settlement build() {
         Settlement settlement = new Settlement();
-
-        partyStatements.stream()
-            .filter(p -> p.getType().equals(StatementType.OFFER))
-            .forEach(p -> settlement.makeOffer(p.getOffer().orElse(null), p.getMadeBy()));
-
-        partyStatements.stream()
-            .filter(p -> p.getType().equals(StatementType.REJECTION))
-            .forEach(p -> settlement.reject(p.getMadeBy()));
-
-        partyStatements.stream()
-            .filter(p -> p.getType().equals(StatementType.ACCEPTATION))
-            .forEach(p -> settlement.accept(p.getMadeBy()));
-
+        partyStatements.forEach(partyStatement -> addPartyStatement(partyStatement, settlement));
         return settlement;
     }
 
-    public SampleSettlement withPartyStatement(PartyStatement partyStatement) {
-        this.partyStatements = new ArrayList<>(partyStatements);
+    public SampleSettlement withPartyStatements(PartyStatement... partyStatement) {
+        List<PartyStatement> statements = Arrays.asList(partyStatement);
+        this.partyStatements = new ArrayList<>(statements);
 
         return this;
+    }
+
+    private void addPartyStatement(PartyStatement partyStatement, Settlement settlement) {
+        if (partyStatement.getType().equals(StatementType.OFFER)) {
+            settlement.makeOffer(partyStatement.getOffer().orElse(null), partyStatement.getMadeBy());
+        }
+
+        if (partyStatement.getType().equals(StatementType.REJECTION)) {
+            settlement.reject(partyStatement.getMadeBy());
+        }
+
+        if (partyStatement.getType().equals(StatementType.ACCEPTATION)) {
+            settlement.accept(partyStatement.getMadeBy());
+        }
     }
 }
