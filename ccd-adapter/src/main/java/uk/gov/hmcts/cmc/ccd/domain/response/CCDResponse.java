@@ -9,10 +9,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 @Value
 @Builder
 public class CCDResponse {
-    CCDDefenceType defenceType;
+    CCDDefenceType responseType;
     String defence;
-    CCDYesNoOption freeMediation;
-    CCDYesNoOption moreTimeNeeded;
+    CCDYesNoOption freeMediationOption;
+    CCDYesNoOption moreTimeNeededOption;
     CCDParty defendant;
     CCDStatementOfTruth statementOfTruth;
 }
