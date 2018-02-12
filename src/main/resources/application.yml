@@ -27,6 +27,8 @@ database:
   validationQuery: SELECT 1
 
 spring:
+  application:
+    name: 'Claim Store'
   mail:
     default-encoding: UTF-8
     test-connection: true
