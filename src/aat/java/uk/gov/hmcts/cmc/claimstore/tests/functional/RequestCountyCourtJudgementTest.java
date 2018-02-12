@@ -21,7 +21,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-public class SaveCountyCourtJudgementTest extends BaseTest {
+public class RequestCountyCourtJudgementTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyRequestCCJ() {

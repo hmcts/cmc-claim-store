@@ -14,7 +14,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-public class SaveClaimTest extends BaseTest {
+public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
