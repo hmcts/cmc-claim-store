@@ -5,7 +5,6 @@ import io.restassured.response.Response;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -32,7 +31,6 @@ public class LinkDefendantTest extends BaseTest {
     private Response linkDefendant(User defendant, String externalId) {
         return RestAssured
             .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
             .when()
             .put("/claims/" + externalId + "/defendant/" + defendant.getUserDetails().getId());

@@ -23,9 +23,6 @@ public class CommonOperations {
         this.jsonMapper = jsonMapper;
     }
 
-    /**
-     * @return created claim's external id
-     */
     public Claim submitClaim(String userAuthentication, String userId) {
         UUID externalId = UUID.randomUUID();
 
@@ -44,6 +41,13 @@ public class CommonOperations {
             .body(jsonMapper.toJson(claimData))
             .when()
             .post("/claims/" + userId);
+    }
+
+    public void linkDefendant(String claimExternalId, String userAuthentication, String userId) {
+        RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .put("/claims/" + claimExternalId + "/defendant/" + userId);
     }
 
 }

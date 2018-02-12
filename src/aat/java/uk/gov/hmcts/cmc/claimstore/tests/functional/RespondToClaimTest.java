@@ -25,7 +25,12 @@ public class RespondToClaimTest extends BaseTest {
 
         User defendant = idamTestService.createDefendant();
 
-        // TODO Link
+        commonOperations.linkDefendant(
+            createdCase.getExternalId(),
+            defendant.getAuthorisation(),
+            defendant.getUserDetails().getId()
+        );
+
         Response response = SampleResponse.validDefaults();
 
         Claim updatedCase = respondToClaim(createdCase.getExternalId(), defendant, response)
