@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class AmountBreakDownMapper implements Mapper<CCDAmountBreakDown, AmountBreakDown> {
-    private static final String COLLECTION_KEY_NAME = "value";
     private final AmountRowMapper amountRowMapper;
 
     public AmountBreakDownMapper(AmountRowMapper amountRowMapper) {
