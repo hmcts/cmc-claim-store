@@ -32,6 +32,7 @@ public class RespondToClaimTest extends BaseTest {
     public void shouldBeAbleToSuccessfullySubmitAlreadyPaidDefence() {
         Response fullDefenceAlreadyPaidResponse = SampleResponse.FullDefence.builder()
             .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
+            .withMediation(null)
             .build();
         shouldBeAbleToSuccessfullySubmit(fullDefenceAlreadyPaidResponse);
     }
