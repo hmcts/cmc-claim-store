@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyArrayElement;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -87,8 +87,8 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             .build();
     }
 
-    private CCDPartyArrayElement mapToValue(CCDParty ccdParty) {
-        return CCDPartyArrayElement.builder().value(ccdParty).build();
+    private CCDCollectionElement<CCDParty> mapToValue(CCDParty ccdParty) {
+        return CCDCollectionElement.<CCDParty>builder().value(ccdParty).build();
     }
 
     @Override
@@ -97,13 +97,13 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
         List<Party> claimants = ccdClaim.getClaimants()
             .stream()
-            .map(CCDPartyArrayElement::getValue)
+            .map(CCDCollectionElement::getValue)
             .map(partyMapper::from)
             .collect(Collectors.toList());
 
         List<TheirDetails> defendants = ccdClaim.getDefendants()
             .stream()
-            .map(CCDPartyArrayElement::getValue)
+            .map(CCDCollectionElement::getValue)
             .map(theirDetailsMapper::from)
             .collect(Collectors.toList());
 
