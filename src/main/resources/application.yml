@@ -100,8 +100,4 @@ spring:
   profiles: 'aat'
 
 aat:
-  test-user:
-    username: "${AAT_TEST_USERNAME:}"
-    password: "${AAT_TEST_PASSWORD:}"
   test-instance-uri: "${TEST_URL:}"
-  test-user-email-pattern: "${AAT_TEST_USER_EMAIL_PATTERN:}"
