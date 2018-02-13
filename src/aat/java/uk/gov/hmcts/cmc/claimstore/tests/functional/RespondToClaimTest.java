@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
@@ -20,7 +21,22 @@ import static org.assertj.core.api.Assertions.within;
 public class RespondToClaimTest extends BaseTest {
 
     @Test
-    public void shouldBeAbleToSuccessfullyRespondToClaim() {
+    public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
+        Response fullDefenceDisputeResponse = SampleResponse.FullDefence.builder()
+            .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
+            .build();
+        shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
+    }
+
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitAlreadyPaidDefence() {
+        Response fullDefenceAlreadyPaidResponse = SampleResponse.FullDefence.builder()
+            .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
+            .build();
+        shouldBeAbleToSuccessfullySubmit(fullDefenceAlreadyPaidResponse);
+    }
+
+    private void shouldBeAbleToSuccessfullySubmit(Response response) {
         Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
 
         User defendant = idamTestService.createDefendant();
@@ -30,8 +46,6 @@ public class RespondToClaimTest extends BaseTest {
             defendant.getAuthorisation(),
             defendant.getUserDetails().getId()
         );
-
-        Response response = SampleResponse.validDefaults();
 
         Claim updatedCase = respondToClaim(createdCase.getExternalId(), defendant, response)
             .then()
