@@ -115,7 +115,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .build();
 
         MvcResult result = makeRequest(anyExternalId, anyDefendantId, response)
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isUnprocessableEntity())
             .andReturn();
 
         assertThat(extractErrors(result))

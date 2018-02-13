@@ -9,43 +9,57 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
-public class SaveClaimTest extends BaseTest {
+public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
-        ClaimData claimData = SampleClaimData.submittedByClaimant();
+        ClaimData claimData = testData.submittedByClaimantBuilder().build();
 
-        Claim createdCase = post(claimData)
+        Claim createdCase = submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
 
         assertThat(createdCase.getClaimData()).isEqualTo(claimData);
+        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidClaimIsSubmitted() {
+        ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
+            .withAmount(null)
+            .build();
+
+        submitClaim(invalidClaimData)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
     public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
         UUID externalId = UUID.randomUUID();
 
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder()
+        ClaimData claimData = testData.submittedByClaimantBuilder()
             .withExternalId(externalId)
             .build();
 
-        post(claimData)
+        submitClaim(claimData)
             .andReturn();
-        post(claimData)
+        submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
-    private Response post(ClaimData claimData) {
+    private Response submitClaim(ClaimData claimData) {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
