@@ -5,7 +5,7 @@ public enum CCDStatementType {
     ACCEPTATION("acceptation"),
     REJECTION("rejection");
 
-    private String value;
+    private final String value;
 
     CCDStatementType(String value) {
         this.value = value;

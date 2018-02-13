@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.ListArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -33,7 +33,7 @@ public class SettlementMapperTest {
     @Test
     public void shouldMapSettlementToCCD() {
         //given
-        final Settlement settlement = SampleSettlement.validDefaults();
+        Settlement settlement = SampleSettlement.validDefaults();
 
         //when
         CCDSettlement ccdSettlement = settlementMapper.to(settlement);
@@ -45,7 +45,7 @@ public class SettlementMapperTest {
     @Test
     public void shouldMapRejectionSettlementToCCD() {
         //given
-        final Settlement settlement = SampleSettlement.builder()
+        Settlement settlement = SampleSettlement.builder()
             .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.rejectPartyStatement)
             .build();
 
@@ -59,7 +59,7 @@ public class SettlementMapperTest {
     @Test
     public void shouldMapAcceptanceSettlementToCCD() {
         //given
-        final Settlement settlement = SampleSettlement.builder()
+        Settlement settlement = SampleSettlement.builder()
             .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.acceptPartyStatement).build();
 
         //when
@@ -82,7 +82,7 @@ public class SettlementMapperTest {
             SampleSettlement.acceptPartyStatement
         };
 
-        final Settlement settlement = SampleSettlement.builder()
+        Settlement settlement = SampleSettlement.builder()
             .withPartyStatements(partyStatements).build();
 
         //when
@@ -94,7 +94,7 @@ public class SettlementMapperTest {
         assertThat(Arrays.asList(partyStatements))
             .isEqualTo(
                 ccdSettlement.getPartyStatements().stream()
-                    .map(ListArrayElement::getValue)
+                    .map(CCDCollectionElement::getValue)
                     .map(partyStatementMapper::from)
                     .collect(Collectors.toList())
             );

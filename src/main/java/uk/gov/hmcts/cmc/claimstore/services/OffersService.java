@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -20,52 +19,55 @@ import static java.lang.String.format;
 public class OffersService {
 
     private final ClaimService claimService;
-    private final OffersRepository offersRepository;
-    private final JsonMapper jsonMapper;
+    private final CaseRepository caseRepository;
     private final EventProducer eventProducer;
 
     @Autowired
     public OffersService(
         ClaimService claimService,
-        OffersRepository offersRepository,
-        EventProducer eventProducer,
-        JsonMapper jsonMapper
+        CaseRepository caseRepository,
+        EventProducer eventProducer
     ) {
         this.claimService = claimService;
-        this.offersRepository = offersRepository;
+        this.caseRepository = caseRepository;
         this.eventProducer = eventProducer;
-        this.jsonMapper = jsonMapper;
     }
 
-    public void makeOffer(Claim claim, Offer offer, MadeBy party) {
+    public void makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
-        offersRepository.updateSettlement(claim.getId(), jsonMapper.toJson(settlement));
+
+        caseRepository.updateSettlement(claim, settlement, authorisation,
+            eventName("OfferMadeBy", party.name()), null);
         eventProducer.createOfferMadeEvent(claim);
     }
 
     @Transactional
-    public void accept(Claim claim, MadeBy party) {
+    public void accept(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
             .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.accept(party);
 
-        offersRepository.acceptOffer(claim.getId(), jsonMapper.toJson(settlement), LocalDateTime.now());
+        caseRepository.updateSettlement(claim, settlement, authorisation,
+            eventName("OfferAcceptedBy", party.name()), LocalDateTime.now());
+
         eventProducer.createOfferAcceptedEvent(claimService.getClaimById(claim.getId()), party);
     }
 
-    public void reject(Claim claim, MadeBy party) {
+    public void reject(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
             .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.reject(party);
 
-        offersRepository.updateSettlement(claim.getId(), jsonMapper.toJson(settlement));
+        caseRepository.updateSettlement(claim, settlement, authorisation,
+            eventName("OfferRejectedBy", party.name()), null);
+
         eventProducer.createOfferRejectedEvent(claim, party);
     }
 
@@ -73,5 +75,9 @@ public class OffersService {
         if (claim.getSettlementReachedAt() != null) {
             throw new ConflictException(format("Settlement for claim %d has been already reached", claim.getId()));
         }
+    }
+
+    private String eventName(String userAction, String userType) {
+        return userAction + userType;
     }
 }

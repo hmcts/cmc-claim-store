@@ -96,29 +96,29 @@ public class ClaimStore {
         return getClaimByExternalId(externalId);
     }
 
-    public Claim makeOffer(long claimId, Settlement settlement) {
-        logger.info(String.format("Saving offer with claim : %d", claimId));
+    public Claim makeOffer(String externalId, Settlement settlement) {
+        logger.info(String.format("Saving offer with claim : %s", externalId));
 
         this.offersRepository.updateSettlement(
-            claimId,
+            externalId,
             jsonMapper.toJson(settlement)
         );
 
         logger.info("Saved offer");
 
-        return getClaim(claimId);
+        return getClaimByExternalId(externalId);
     }
 
-    public Claim acceptOffer(long claimId, Settlement settlement) {
+    public Claim acceptOffer(String externalId, Settlement settlement) {
         this.offersRepository.acceptOffer(
-            claimId,
+            externalId,
             jsonMapper.toJson(settlement),
             LocalDateTime.now()
         );
 
         logger.info("Accepted offer");
 
-        return getClaim(claimId);
+        return getClaimByExternalId(externalId);
     }
 
     public Claim linkSealedClaimDocumentSelfPath(long claimId, String documentSelfPath) {

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 @Component
 public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> {
@@ -47,12 +48,23 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
 
     @Override
     public FullDefenceResponse from(CCDResponse response) {
+        Response.FreeMediationOption freeMediation = null;
 
+        if (response.getFreeMediationOption() != null) {
+            freeMediation = Response.FreeMediationOption.valueOf(response.getFreeMediationOption().name());
+        }
+
+        StatementOfTruth statementOfTruth = null;
+
+        if (response.getStatementOfTruth() != null) {
+            statementOfTruth = statementOfTruthMapper.from(response.getStatementOfTruth());
+        }
+        
         return new FullDefenceResponse(
-            Response.FreeMediationOption.valueOf(response.getFreeMediationOption().name()),
+            freeMediation,
             Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeededOption().name()),
             partyMapper.from(response.getDefendant()),
-            statementOfTruthMapper.from(response.getStatementOfTruth()),
+            statementOfTruth,
             FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
             response.getDefence()
         );
