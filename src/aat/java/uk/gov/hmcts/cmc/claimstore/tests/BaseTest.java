@@ -7,6 +7,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.CommonOperations;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
+import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -22,5 +25,14 @@ public abstract class BaseTest {
 
     @Autowired
     protected JsonMapper jsonMapper;
+
+    @Autowired
+    protected IdamTestService idamTestService;
+
+    @Autowired
+    protected CommonOperations commonOperations;
+
+    @Autowired
+    protected TestData testData;
 
 }

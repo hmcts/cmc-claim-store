@@ -119,7 +119,7 @@ public class ResourceExceptionHandler {
         }
 
         builder.delete(builder.length() - 2, builder.length());
-        return new ResponseEntity<>(builder.toString(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(builder.toString(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     private StringBuilder addError(StringBuilder builder, String key, String message) {
