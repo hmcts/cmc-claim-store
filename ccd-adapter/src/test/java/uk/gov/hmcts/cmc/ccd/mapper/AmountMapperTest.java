@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRange;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
-import uk.gov.hmcts.cmc.ccd.domain.ListArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
@@ -82,7 +82,7 @@ public class AmountMapperTest {
             .amountBreakDown(
                 CCDAmountBreakDown.builder()
                     .rows(singletonList(
-                        ListArrayElement.<CCDAmountRow>builder()
+                        CCDCollectionElement.<CCDAmountRow>builder()
                             .value(CCDAmountRow.builder()
                                 .amount(BigDecimal.valueOf(50))
                                 .reason("payment")

@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class ListArrayElement<T> {
+public class CCDCollectionElement<T> {
     private String id;
     private T value;
 }

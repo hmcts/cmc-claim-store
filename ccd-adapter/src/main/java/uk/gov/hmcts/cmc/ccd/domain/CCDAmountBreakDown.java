@@ -8,5 +8,5 @@ import java.util.List;
 @Value
 @Builder
 public class CCDAmountBreakDown {
-    private List<ListArrayElement<CCDAmountRow>> rows;
+    private List<CCDCollectionElement<CCDAmountRow>> rows;
 }

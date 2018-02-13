@@ -22,7 +22,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
-import uk.gov.hmcts.cmc.ccd.domain.ListArrayElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.math.BigDecimal;
@@ -149,8 +149,8 @@ public class SampleData {
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .claimants(singletonList(ListArrayElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
-            .defendants(singletonList(ListArrayElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
+            .claimants(singletonList(CCDCollectionElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
+            .defendants(singletonList(CCDCollectionElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
             .build();
     }
 
@@ -162,7 +162,7 @@ public class SampleData {
                     .amountBreakDown(
                         CCDAmountBreakDown.builder()
                             .rows(singletonList(
-                                ListArrayElement.<CCDAmountRow>builder()
+                                CCDCollectionElement.<CCDAmountRow>builder()
                                     .value(CCDAmountRow.builder()
                                         .amount(BigDecimal.valueOf(50))
                                         .reason("payment")
@@ -180,8 +180,8 @@ public class SampleData {
             .feeCode("X1202")
             .feeAmountInPennies(BigInteger.valueOf(400))
             .reason("Reason for the case")
-            .claimants(singletonList(ListArrayElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
-            .defendants(singletonList(ListArrayElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
+            .claimants(singletonList(CCDCollectionElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
+            .defendants(singletonList(CCDCollectionElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
             .build();
     }
 

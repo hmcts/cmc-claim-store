@@ -4,7 +4,7 @@ public enum CCDMadeBy {
     CLAIMANT("claimant"),
     DEFENDANT("defendant");
 
-    private String value;
+    private final String value;
 
     CCDMadeBy(String value) {
         this.value = value;
