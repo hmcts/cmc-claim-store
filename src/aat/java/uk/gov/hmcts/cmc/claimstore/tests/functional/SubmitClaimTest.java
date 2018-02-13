@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,7 +21,7 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
-        ClaimData claimData = SampleClaimData.submittedByClaimant();
+        ClaimData claimData = testData.submittedByClaimantBuilder().build();
 
         Claim createdCase = submitClaim(claimData)
             .then()
@@ -36,7 +35,7 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidClaimIsSubmitted() {
-        ClaimData invalidClaimData = SampleClaimData.submittedByClaimantBuilder()
+        ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
             .withAmount(null)
             .build();
 
@@ -49,7 +48,7 @@ public class SubmitClaimTest extends BaseTest {
     public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
         UUID externalId = UUID.randomUUID();
 
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder()
+        ClaimData claimData = testData.submittedByClaimantBuilder()
             .withExternalId(externalId)
             .build();
 

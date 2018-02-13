@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.util.UUID;
 
@@ -17,16 +16,21 @@ import java.util.UUID;
 public class CommonOperations {
 
     private final JsonMapper jsonMapper;
+    private final TestData testData;
 
     @Autowired
-    public CommonOperations(JsonMapper jsonMapper) {
+    public CommonOperations(
+        JsonMapper jsonMapper,
+        TestData testData
+    ) {
         this.jsonMapper = jsonMapper;
+        this.testData = testData;
     }
 
     public Claim submitClaim(String userAuthentication, String userId) {
         UUID externalId = UUID.randomUUID();
 
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder()
+        ClaimData claimData = testData.submittedByClaimantBuilder()
             .withExternalId(externalId)
             .build();
 
