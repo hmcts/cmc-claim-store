@@ -5,13 +5,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -34,7 +33,9 @@ public class ClaimService {
     private final UserService userService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
+    private final MoreTimeRequestRule moreTimeRequestRule;
 
+    @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
     public ClaimService(
         ClaimRepository claimRepository,
@@ -43,7 +44,8 @@ public class ClaimService {
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
-        CaseRepository caseRepository
+        CaseRepository caseRepository,
+        MoreTimeRequestRule moreTimeRequestRule
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -52,6 +54,7 @@ public class ClaimService {
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
+        this.moreTimeRequestRule = moreTimeRequestRule;
     }
 
     public Claim getClaimById(long claimId) {
@@ -142,18 +145,12 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
-        if (claim.isMoreTimeRequested()) {
-            throw new MoreTimeAlreadyRequestedException("You have already requested more time");
-        }
+        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
-        if (LocalDate.now().isAfter(claim.getResponseDeadline())) {
-            throw new MoreTimeRequestedAfterDeadlineException("You must not request more time after deadline");
-        }
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        LocalDate newDeadline = responseDeadlineCalculator
-            .calculatePostponedResponseDeadline(claim.getIssuedOn());
+        caseRepository.requestMoreTimeForResponse(authorisation, claim, newDeadline);
 
-        claimRepository.requestMoreTime(claim.getId(), newDeadline);
         claim = getClaimByExternalId(externalId, authorisation);
         UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
@@ -184,9 +181,13 @@ public class ClaimService {
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
     }
 
-    public void saveDefendantResponse(long claimId, String defendantId, String defendantEmail, Response response) {
-        // When this is saved in CCD ensure a Forbidden response is returned to the client if they
-        // aren't allowed to access the case
-        claimRepository.saveDefendantResponse(claimId, defendantId, defendantEmail, jsonMapper.toJson(response));
+    public void saveDefendantResponse(
+        Claim claim,
+        String defendantId,
+        String defendantEmail,
+        Response response,
+        String authorization
+    ) {
+        caseRepository.saveDefendantResponse(claim, defendantId, defendantEmail, response, authorization);
     }
 }

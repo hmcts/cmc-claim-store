@@ -7,15 +7,24 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
+import java.time.LocalDate;
+
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -28,18 +37,23 @@ public class CoreCaseDataService {
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
+    private final ResponseMapper responseMapper;
+    private final UserService userService;
 
     @Autowired
     public CoreCaseDataService(
         SaveCoreCaseDataService saveCoreCaseDataService,
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
-        CountyCourtJudgmentMapper countyCourtJudgmentMapper
-    ) {
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
+        ResponseMapper responseMapper,
+        UserService userService) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
+        this.responseMapper = responseMapper;
+        this.userService = userService;
     }
 
     public CaseDetails save(String authorisation, Claim claim) {
@@ -67,6 +81,17 @@ public class CoreCaseDataService {
         }
     }
 
+    public CaseDetails requestMoreTimeForResponse(
+        String authorisation,
+        Claim claim,
+        LocalDate newResponseDeadline
+    ) {
+        CCDCase ccdCase = this.caseMapper.to(claim);
+        ccdCase.setResponseDeadline(newResponseDeadline);
+        ccdCase.setMoreTimeRequested(YES);
+        return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED);
+    }
+
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
@@ -79,10 +104,25 @@ public class CoreCaseDataService {
         return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 
+    public CaseDetails saveDefendantResponse(
+        Claim claim,
+        String defendantEmail,
+        Response response,
+        String authorisation
+    ) {
+
+        CCDCase ccdCase = this.caseMapper.to(claim);
+        ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
+        ccdCase.setDefendantEmail(defendantEmail);
+        ccdCase.setRespondedAt(now().format(ISO_DATE_TIME));
+        return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+    }
+
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
+            String userId = userService.getUserDetails(authorisation).getId();
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(ccdCase.getSubmitterId())
+                .userId(userId)
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(caseEvent.getValue())

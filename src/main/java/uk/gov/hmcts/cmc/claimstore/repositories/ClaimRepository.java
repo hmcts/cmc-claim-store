@@ -145,10 +145,10 @@ public interface ClaimRepository {
 
     @SqlUpdate(
         "UPDATE claim SET more_time_requested = TRUE, response_deadline = :responseDeadline "
-            + "WHERE id = :claimId AND more_time_requested = FALSE"
+            + "WHERE external_id = :externalId AND more_time_requested = FALSE"
     )
     void requestMoreTime(
-        @Bind("claimId") Long claimId,
+        @Bind("externalId") String externalId,
         @Bind("responseDeadline") LocalDate responseDeadline
     );
 
@@ -158,10 +158,10 @@ public interface ClaimRepository {
             + "defendant_id = :defendantId, "
             + "defendant_email = :defendantEmail, "
             + "responded_at = now() AT TIME ZONE 'utc' "
-            + "WHERE id = :claimId"
+            + "WHERE external_id = :externalId"
     )
     void saveDefendantResponse(
-        @Bind("claimId") Long claimId,
+        @Bind("externalId") String externalId,
         @Bind("defendantId") String defendantId,
         @Bind("defendantEmail") String defendantEmail,
         @Bind("response") String response
