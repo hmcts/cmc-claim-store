@@ -37,7 +37,7 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-			only applies when tomcat is a service, file name: tomcat-annotations-api-8.5.27.jar
+			only applies when tomcat is run as a service, file name: tomcat-annotations-api-8.5.27.jar
 			]]></notes>
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
         <cve>CVE-2016-6325</cve>
