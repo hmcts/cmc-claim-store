@@ -47,7 +47,7 @@ public class IntegrationTestSupportController {
     ) {
         Claim claim = getClaim(claimReferenceNumber, authorisation);
 
-        supportRepository.updateResponseDeadline(claim.getId(), newDeadline, authorisation);
+        supportRepository.updateResponseDeadline(authorisation, claim, newDeadline);
 
         return getClaim(claimReferenceNumber, authorisation);
     }

@@ -9,8 +9,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@Service("testingSupportRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
+@Service("supportRepository")
 public class DBTestingSupportRepository implements SupportRepository {
 
     private final TestingSupportRepository testingSupportRepository;
@@ -21,8 +21,8 @@ public class DBTestingSupportRepository implements SupportRepository {
     }
 
     @Override
-    public void updateResponseDeadline(Long claimId, LocalDate responseDeadline, String authorisation) {
-        this.testingSupportRepository.updateResponseDeadline(claimId, responseDeadline);
+    public void updateResponseDeadline(String authorisation, Claim claim, LocalDate responseDeadline) {
+        this.testingSupportRepository.updateResponseDeadline(claim.getExternalId(), responseDeadline);
     }
 
     @Override

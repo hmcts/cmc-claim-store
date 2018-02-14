@@ -9,7 +9,7 @@ import java.util.Optional;
 @ConditionalOnProperty("claim-store.test-support.enabled")
 public interface SupportRepository {
 
-    void updateResponseDeadline(Long claimId, LocalDate responseDeadline, String authorisation);
+    void updateResponseDeadline(String authorisation, Claim claim, LocalDate responseDeadline);
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
