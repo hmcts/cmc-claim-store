@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import java.time.LocalDate;
 
 import static java.time.LocalDateTime.now;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
@@ -101,7 +100,7 @@ public class CoreCaseDataService {
 
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
-        ccdCase.setCountyCourtJudgmentRequestedAt(now().format(ISO_DATE_TIME));
+        ccdCase.setCountyCourtJudgmentRequestedAt(now());
         return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 
@@ -115,7 +114,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
         ccdCase.setDefendantEmail(defendantEmail);
-        ccdCase.setRespondedAt(now().format(ISO_DATE_TIME));
+        ccdCase.setRespondedAt(now());
         return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
 
