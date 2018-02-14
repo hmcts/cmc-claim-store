@@ -43,7 +43,7 @@ timestamps {
 
           stage('OWASP dependency check') {
             try {
-              sh "./gradlew -DdependencyCheck.failBuild=true dependencyCheck"
+              sh "./gradlew -DdependencyCheck.failBuild=true dependencyCheckAnalyze"
             } catch (ignored) {
               archiveArtifacts 'build/reports/dependency-check-report.html'
               notifyBuildResult channel: channel, color: 'warning',
