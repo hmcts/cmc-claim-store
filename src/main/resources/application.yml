@@ -26,7 +26,9 @@ database:
   testOnBorrow: true
   validationQuery: SELECT 1
 
-spring:
+ spring:
+  application:
+    name: 'Claim Store'
   mail:
     default-encoding: UTF-8
     test-connection: true
