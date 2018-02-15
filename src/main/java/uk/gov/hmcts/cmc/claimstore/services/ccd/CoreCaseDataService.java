@@ -128,11 +128,12 @@ public class CoreCaseDataService {
         String authorisation,
         CaseEvent event
     ) {
-        CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
+        CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .settlement(settlementMapper.to(settlement));
+            .settlement(settlementMapper.to(settlement))
+            .build();
 
-        return this.update(authorisation, ccdCase.build(), event);
+        return this.update(authorisation, ccdCase, event);
     }
 
     public CaseDetails reachSettlementAgreement(
@@ -141,12 +142,13 @@ public class CoreCaseDataService {
         String authorisation,
         CaseEvent event
     ) {
-        CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
+        CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             .settlement(settlementMapper.to(settlement))
-            .settlementReachedAt(now());
+            .settlementReachedAt(now())
+            .build();
 
-        return this.update(authorisation, ccdCase.build(), event);
+        return this.update(authorisation, ccdCase, event);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
