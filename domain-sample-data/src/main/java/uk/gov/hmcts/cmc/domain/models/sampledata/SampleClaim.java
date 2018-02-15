@@ -139,7 +139,7 @@ public final class SampleClaim {
             externalId,
             referenceNumber,
             claimData,
-            NOW_IN_LOCAL_ZONE,
+            createdAt,
             issuedOn,
             responseDeadline,
             isMoreTimeRequested,

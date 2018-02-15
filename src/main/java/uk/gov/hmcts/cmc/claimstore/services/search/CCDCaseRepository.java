@@ -3,11 +3,13 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -82,4 +84,18 @@ public class CCDCaseRepository implements CaseRepository {
         coreCaseDataService.requestMoreTimeForResponse(authorisation, claim, newResponseDeadline);
     }
 
+    @Override
+    public void updateSettlement(
+        Claim claim,
+        Settlement settlement,
+        String authorisation,
+        String userAction) {
+        coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, CaseEvent.valueOf(userAction));
+    }
+
+    @Override
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
+        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation,
+            CaseEvent.valueOf(userAction));
+    }
 }
