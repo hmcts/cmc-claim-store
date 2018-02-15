@@ -5,7 +5,11 @@ properties(
   [
     [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/cmc-claim-store/'],
     pipelineTriggers([[$class: 'GitHubPushTrigger']]),
-    [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '7', numToKeepStr: '10']]
+    [
+      $class: 'BuildDiscarderProperty', strategy: [
+        $class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '7', numToKeepStr: '10'
+      ]
+    ]
   ],
 )
 @Library(['CMC', 'Reform'])
