@@ -1,59 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
-  <suppress>
-    <notes><![CDATA[
-      This has nothing to do with this artifact, it detects nexus in the pom file
-      and thinks that it has something to do with a nexus vulnerability
-      ]]></notes>
-    <gav regex="true">^io\.jsonwebtoken:jjwt:.*$</gav>
-    <cpe>cpe:/a:sonatype:nexus</cpe>
-  </suppress>
-  <suppress>
-    <notes>Does not apply as tomcat is not installed as a service</notes>
-    <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-    <cve>CVE-2016-6325</cve>
-  </suppress>
-  <suppress>
-    <notes>Does not apply as tomcat is not installed as a service</notes>
-    <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed.*:.*$</gav>
-    <cve>CVE-2016-5425</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-      only effects distribution based tomcat that has been backported.
-      our tomcat version has the fix in it
-      ]]></notes>
-    <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-websocket:.*$</gav>
-    <cve>CVE-2017-6056</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-      only effects distribution based tomcat that has been backported.
-      our tomcat version has the fix in it
-      ]]></notes>
-    <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-core:.*$</gav>
-    <cve>CVE-2017-6056</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-      Does not apply as we're not using the XmlMapper.
-    ]]></notes>
-    <gav regex="true">^com\.fasterxml\.jackson\.(core|datatype|module):jackson-.*:.*$</gav>
-    <cve>CVE-2016-7051</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-      Applies to Mac OS X implementation of Java only.
-    ]]></notes>
-    <gav regex="true">^com\.apple:AppleJavaExtensions:.*$</gav>
-    <cve>CVE-2010-0538</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-      This vulnerability is related to a Ruby Gem, not Spring Boot Mail.
-    ]]></notes>
-    <gav regex="true">^org\.springframework\.boot:spring-boot-starter-mail:.*$</gav>
-    <cve>CVE-2015-9097</cve>
-  </suppress>
-
+    <suppress>
+        <notes><![CDATA[
+			only relates to cookies, which we don't do at the java level
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2015-2156</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			waiting for spring to upgrade to it, file name: jackson-databind-2.8.10.jar
+			]]></notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
+        <cve>CVE-2017-17485</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			waiting for spring to upgrade to it, file name: jackson-databind-2.8.10.jar
+			]]></notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
+        <cve>CVE-2018-5968</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			only relates to ssl which we don't do at the java app level
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2014-3488</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			something to do with oracle, doesn't look like it applies file name: jersey-apache-client4-1.19.1.jar
+			]]></notes>
+        <gav regex="true">^com\.sun\.jersey\.contribs:jersey-apache-client4:.*$</gav>
+        <cve>CVE-2006-0550</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			only applies when tomcat is run as a service, file name: tomcat-annotations-api-8.5.27.jar
+			]]></notes>
+        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+        <cve>CVE-2016-6325</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			only relates to ssl, file name: tomcat-annotations-api-8.5.27.jar
+			]]></notes>
+        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+        <cve>CVE-2017-6056</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			only relates to ssl
+			]]></notes>
+        <gav regex="true">.*$</gav>
+        <cve>CVE-2016-4970</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   only applies when it is run as a service, file name: tomcat-annotations-api-8.5.27.jar
+   ]]></notes>
+        <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
+        <cve>CVE-2016-5425</cve>
+    </suppress>
 </suppressions>
