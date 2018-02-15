@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Component
 public class ClaimStore {
@@ -57,12 +56,7 @@ public class ClaimStore {
             SampleClaim.SUBMITTER_EMAIL
         );
 
-        logger.debug("Saved claim has been given ID {}. The following claims exist in the DB: {}",
-            claimId,
-            this.claimRepository.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
-                .collect(Collectors.toList())
-        );
-
+        logger.debug("Saved claim has been given ID {}.", claimId);
         return getClaim(claimId);
     }
 
