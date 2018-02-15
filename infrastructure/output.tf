@@ -1,4 +1,4 @@
-output "hi" {
-  value = "What's up doc"
+output "vault-url" {
+  value = "${module.claim-store-vault.name}"
 }
 
