@@ -53,7 +53,8 @@ public class OffersService {
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
             userAcion("OFFER_ACCEPTED_BY", party.name()));
 
-        eventProducer.createOfferAcceptedEvent(claimService.getClaimById(claim.getId()), party);
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+        eventProducer.createOfferAcceptedEvent(updated, party);
     }
 
     public void reject(Claim claim, MadeBy party, String authorisation) {

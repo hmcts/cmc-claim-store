@@ -76,7 +76,10 @@ public class OfferServiceTest {
         // given
         Claim claimWithOffer = buildClaimWithOffer();
         Claim acceptedOffer = buildClaimWithAcceptedOffer();
-        when(claimService.getClaimById(eq(claimWithOffer.getId()))).thenReturn(acceptedOffer);
+        
+        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(acceptedOffer);
+
         Settlement settlement = acceptedOffer.getSettlement().orElse(null);
         // when
         offersService.accept(claimWithOffer, decidedBy, AUTHORISATION);
