@@ -1,9 +1,9 @@
 plugins {
-  id 'net.ltgt.apt' version '0.10'
+  id 'net.ltgt.apt' version '0.14'
   id 'jacoco'
 }
 
-def springBootVersion = '1.5.7.RELEASE'
+def springBootVersion = '1.5.10.RELEASE'
 
 def versions = [
   springBoot: springBootVersion
@@ -12,12 +12,12 @@ def versions = [
 dependencies {
   compile project(':domain-model')
   compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: versions.springBoot
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
-  apt group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+  apt group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
   testCompile group: 'junit', name: 'junit', version: '4.12'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
   testCompile project(':domain-sample-data')
 
 }

@@ -24,6 +24,6 @@ public class CCDClaim {
     private CCDPersonalInjury personalInjury;
     private CCDHousingDisrepair housingDisrepair;
     private CCDStatementOfTruth statementOfTruth;
-    private List<CCDPartyArrayElement> claimants;
-    private List<CCDPartyArrayElement> defendants;
+    private List<CCDCollectionElement<CCDParty>> claimants;
+    private List<CCDCollectionElement<CCDParty>> defendants;
 }
