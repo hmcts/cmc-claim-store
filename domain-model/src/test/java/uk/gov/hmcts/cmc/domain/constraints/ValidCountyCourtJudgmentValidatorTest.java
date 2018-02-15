@@ -37,6 +37,12 @@ public class ValidCountyCourtJudgmentValidatorTest {
     }
 
     @Test
+    public void shouldReturnTrueForNullPaymentOptionInput() {
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().withPaymentOption(null).build();
+        assertThat(validator.isValid(ccj, context)).isTrue();
+    }
+
+    @Test
     public void shouldReturnTrueForValidModelWithImmediatelyPaymentOption() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build();
