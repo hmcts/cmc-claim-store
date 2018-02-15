@@ -20,19 +20,16 @@ public class OffersService {
     private final ClaimService claimService;
     private final CaseRepository caseRepository;
     private final EventProducer eventProducer;
-    private final TimeService timeService;
 
     @Autowired
     public OffersService(
         ClaimService claimService,
         CaseRepository caseRepository,
-        EventProducer eventProducer,
-        TimeService timeService
+        EventProducer eventProducer
     ) {
         this.claimService = claimService;
         this.caseRepository = caseRepository;
         this.eventProducer = eventProducer;
-        this.timeService = timeService;
     }
 
     public void makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
@@ -41,8 +38,7 @@ public class OffersService {
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation,
-            eventName("OFFER_MADE_BY", party.name()), null);
+        caseRepository.updateSettlement(claim, settlement, authorisation, eventName("OFFER_MADE_BY", party.name()));
         eventProducer.createOfferMadeEvent(claim);
     }
 
@@ -55,8 +51,8 @@ public class OffersService {
 
         settlement.accept(party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation,
-            eventName("OFFER_ACCEPTED_BY", party.name()), timeService.nowInLocalZone());
+        caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
+            eventName("OFFER_ACCEPTED_BY", party.name()));
 
         eventProducer.createOfferAcceptedEvent(claimService.getClaimById(claim.getId()), party);
     }
@@ -68,8 +64,7 @@ public class OffersService {
             .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.reject(party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation,
-            eventName("OFFER_REJECTED_BY", party.name()), null);
+        caseRepository.updateSettlement(claim, settlement, authorisation, eventName("OFFER_REJECTED_BY", party.name()));
 
         eventProducer.createOfferRejectedEvent(claim, party);
     }

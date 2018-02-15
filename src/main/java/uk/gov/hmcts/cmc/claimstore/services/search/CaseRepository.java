@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,11 +32,8 @@ public interface CaseRepository {
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
 
-    void updateSettlement(Claim claim,
-                          Settlement settlement,
-                          String authorisation,
-                          CaseEvent event,
-                          LocalDateTime settlementReachedAt
-    );
+    void updateSettlement(Claim claim, Settlement settlement, String authorisation, CaseEvent event);
+
+    void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent event);
 }
 

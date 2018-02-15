@@ -124,18 +124,28 @@ public class CoreCaseDataService {
     }
 
     public CaseDetails saveSettlement(
-        Claim claim,
+        Long caseId,
         Settlement settlement,
         String authorisation,
-        LocalDateTime settlementReachedAt,
-        CaseEvent event) {
+        CaseEvent event
+    ) {
         CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
-            .id(claim.getId())
+            .id(caseId)
             .settlement(settlementMapper.to(settlement));
 
-        if (settlementReachedAt != null) {
-            ccdCase.settlementReachedAt(settlementReachedAt);
-        }
+        return this.update(authorisation, ccdCase.build(), event);
+    }
+
+    public CaseDetails reachSettlementAgreement(
+        Long caseId,
+        Settlement settlement,
+        String authorisation,
+        CaseEvent event
+    ) {
+        CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
+            .id(caseId)
+            .settlement(settlementMapper.to(settlement))
+            .settlementReachedAt(LocalDateTime.now());
 
         return this.update(authorisation, ccdCase.build(), event);
     }

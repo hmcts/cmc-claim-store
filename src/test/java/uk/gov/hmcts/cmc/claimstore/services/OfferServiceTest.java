@@ -49,12 +49,9 @@ public class OfferServiceTest {
     @Mock
     private EventProducer eventProducer;
 
-    @Mock
-    private TimeService timeService;
-
     @Before
     public void setup() {
-        offersService = new OffersService(claimService, caseRepository, eventProducer, timeService);
+        offersService = new OffersService(claimService, caseRepository, eventProducer);
     }
 
     @Test
@@ -64,7 +61,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claim), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT), eq(null));
+            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT));
 
         verify(eventProducer).createOfferMadeEvent(eq(claim));
     }
@@ -81,14 +78,13 @@ public class OfferServiceTest {
         Claim acceptedOffer = buildClaimWithAcceptedOffer();
         LocalDateTime now = LocalDateTime.now();
         when(claimService.getClaimById(eq(claimWithOffer.getId()))).thenReturn(acceptedOffer);
-        when(timeService.nowInLocalZone()).thenReturn(now);
         Settlement settlement = acceptedOffer.getSettlement().orElse(null);
         // when
         offersService.accept(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
-            eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT), eq(now));
+        verify(caseRepository).reachSettlementAgreement(eq(claimWithOffer), eq(settlement),
+            eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
@@ -106,7 +102,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT), eq(null));
+            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT));
 
         verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }

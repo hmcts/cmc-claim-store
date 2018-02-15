@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,8 +89,12 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent event,
-        LocalDateTime settlementReachedAt) {
-        coreCaseDataService.saveSettlement(claim, settlement, authorisation, settlementReachedAt, event);
+        CaseEvent event) {
+        coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, event);
+    }
+
+    @Override
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent event) {
+        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation, event);
     }
 }

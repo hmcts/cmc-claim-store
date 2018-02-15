@@ -45,7 +45,7 @@ public class ClaimStore {
     }
 
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
-        logger.info(String.format("Saving claim: %s", claimData.getExternalId()));
+        logger.debug(String.format("Saving claim: %s", claimData.getExternalId()));
 
         Long claimId = this.claimRepository.saveSubmittedByClaimant(
             jsonMapper.toJson(claimData),
@@ -69,7 +69,7 @@ public class ClaimStore {
     }
 
     public Claim saveResponse(Claim claim, Response response, String defendantId, String defendantEmail) {
-        logger.info(String.format("Saving response data with claim : %s", claim.getExternalId()));
+        logger.debug(String.format("Saving response data with claim : %s", claim.getExternalId()));
 
         this.claimRepository.saveDefendantResponse(
             claim.getExternalId(),
@@ -84,7 +84,7 @@ public class ClaimStore {
     }
 
     public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {
-        logger.info(String.format("Saving county court judgement with claim : %s", externalId));
+        logger.debug(String.format("Saving county court judgement with claim : %s", externalId));
 
         this.claimRepository.saveCountyCourtJudgment(
             externalId,
@@ -97,7 +97,7 @@ public class ClaimStore {
     }
 
     public Claim makeOffer(String externalId, Settlement settlement) {
-        logger.info(String.format("Saving offer with claim : %s", externalId));
+        logger.debug(String.format("Saving offer with claim : %s", externalId));
 
         this.offersRepository.updateSettlement(
             externalId,

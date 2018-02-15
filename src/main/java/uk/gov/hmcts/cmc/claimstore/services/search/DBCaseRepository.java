@@ -110,13 +110,13 @@ public class DBCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent event,
-        LocalDateTime settlementReachedAt
+        CaseEvent event
     ) {
-        if (settlementReachedAt != null) {
-            offersRepository.acceptOffer(claim.getExternalId(), jsonMapper.toJson(settlement), LocalDateTime.now());
-        } else {
-            offersRepository.updateSettlement(claim.getExternalId(), jsonMapper.toJson(settlement));
-        }
+        offersRepository.updateSettlement(claim.getExternalId(), jsonMapper.toJson(settlement));
+    }
+
+    @Override
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent event) {
+        offersRepository.acceptOffer(claim.getExternalId(), jsonMapper.toJson(settlement), LocalDateTime.now());
     }
 }
