@@ -27,6 +27,8 @@ database:
   validationQuery: SELECT 1
 
 spring:
+  application:
+    name: 'Claim Store'
   mail:
     default-encoding: UTF-8
     test-connection: true
@@ -100,8 +102,4 @@ spring:
   profiles: 'aat'
 
 aat:
-  test-user:
-    username: "${AAT_TEST_USERNAME:}"
-    password: "${AAT_TEST_PASSWORD:}"
-  test-instance:
-    uri: "${TEST_URL:}"
+  test-instance-uri: "${TEST_URL:}"

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 @Component
 public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> {
@@ -31,15 +32,15 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
         CCDResponse.CCDResponseBuilder builder = CCDResponse.builder();
 
         response.getFreeMediation()
-            .ifPresent(freeMediation -> builder.freeMediation(CCDYesNoOption.valueOf(freeMediation.name())));
+            .ifPresent(freeMediation -> builder.freeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
-        builder.moreTimeNeeded(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        builder.moreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
         builder.defendant(partyMapper.to(response.getDefendant()));
 
         response.getStatementOfTruth()
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
 
-        builder.defenceType(CCDDefenceType.valueOf(response.getDefenceType().name()));
+        builder.responseType(CCDDefenceType.valueOf(response.getDefenceType().name()));
         builder.defence(response.getDefence());
 
         return builder.build();
@@ -47,13 +48,24 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
 
     @Override
     public FullDefenceResponse from(CCDResponse response) {
+        Response.FreeMediationOption freeMediation = null;
+
+        if (response.getFreeMediationOption() != null) {
+            freeMediation = Response.FreeMediationOption.valueOf(response.getFreeMediationOption().name());
+        }
+
+        StatementOfTruth statementOfTruth = null;
+
+        if (response.getStatementOfTruth() != null) {
+            statementOfTruth = statementOfTruthMapper.from(response.getStatementOfTruth());
+        }
 
         return new FullDefenceResponse(
-            Response.FreeMediationOption.valueOf(response.getFreeMediation().name()),
-            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeeded().name()),
+            freeMediation,
+            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeededOption().name()),
             partyMapper.from(response.getDefendant()),
-            statementOfTruthMapper.from(response.getStatementOfTruth()),
-            FullDefenceResponse.DefenceType.valueOf(response.getDefenceType().name()),
+            statementOfTruth,
+            FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
             response.getDefence()
         );
     }

@@ -7,7 +7,9 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Response;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,9 +62,24 @@ public class CCDCaseRepository implements CaseRepository {
         return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }
 
-
     @Override
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
         coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
     }
+
+    @Override
+    public void saveDefendantResponse(
+        Claim claim,
+        String defendantId,
+        String defendantEmail,
+        Response response,
+        String authorization) {
+        coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
+    }
+
+    @Override
+    public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
+        coreCaseDataService.requestMoreTimeForResponse(authorisation, claim, newResponseDeadline);
+    }
+
 }
