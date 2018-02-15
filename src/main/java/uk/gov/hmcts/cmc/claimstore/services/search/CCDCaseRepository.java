@@ -89,12 +89,13 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent event) {
-        coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, event);
+        String userAction) {
+        coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, CaseEvent.valueOf(userAction));
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent event) {
-        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation, event);
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
+        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation,
+            CaseEvent.valueOf(userAction));
     }
 }

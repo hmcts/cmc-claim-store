@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -110,13 +109,13 @@ public class DBCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent event
+        String userAction
     ) {
         offersRepository.updateSettlement(claim.getExternalId(), jsonMapper.toJson(settlement));
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent event) {
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
         offersRepository.acceptOffer(claim.getExternalId(), jsonMapper.toJson(settlement), LocalDateTime.now());
     }
 }

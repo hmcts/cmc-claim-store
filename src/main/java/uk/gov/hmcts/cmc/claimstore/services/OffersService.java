@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
@@ -38,7 +37,7 @@ public class OffersService {
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, eventName("OFFER_MADE_BY", party.name()));
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAcion("OFFER_MADE_BY", party.name()));
         eventProducer.createOfferMadeEvent(claim);
     }
 
@@ -52,7 +51,7 @@ public class OffersService {
         settlement.accept(party);
 
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
-            eventName("OFFER_ACCEPTED_BY", party.name()));
+            userAcion("OFFER_ACCEPTED_BY", party.name()));
 
         eventProducer.createOfferAcceptedEvent(claimService.getClaimById(claim.getId()), party);
     }
@@ -64,7 +63,7 @@ public class OffersService {
             .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.reject(party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, eventName("OFFER_REJECTED_BY", party.name()));
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAcion("OFFER_REJECTED_BY", party.name()));
 
         eventProducer.createOfferRejectedEvent(claim, party);
     }
@@ -75,7 +74,7 @@ public class OffersService {
         }
     }
 
-    private CaseEvent eventName(String userAction, String userType) {
-        return CaseEvent.valueOf(userAction + "_" + userType);
+    private String userAcion(String userAction, String userType) {
+        return userAction + "_" + userType;
     }
 }

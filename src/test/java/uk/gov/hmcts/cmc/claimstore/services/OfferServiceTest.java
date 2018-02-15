@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
 
-    private static final String AUTHORISATION = "Bearer: aaa";
+    private static final String AUTHORISATION = "Bearer aaa";
     private static final Offer offer = mock(Offer.class);
     private static final MadeBy madeBy = MadeBy.DEFENDANT;
     private static final MadeBy decidedBy = MadeBy.CLAIMANT;
@@ -61,7 +61,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claim), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT));
+            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT.name()));
 
         verify(eventProducer).createOfferMadeEvent(eq(claim));
     }
@@ -76,7 +76,6 @@ public class OfferServiceTest {
         // given
         Claim claimWithOffer = buildClaimWithOffer();
         Claim acceptedOffer = buildClaimWithAcceptedOffer();
-        LocalDateTime now = LocalDateTime.now();
         when(claimService.getClaimById(eq(claimWithOffer.getId()))).thenReturn(acceptedOffer);
         Settlement settlement = acceptedOffer.getSettlement().orElse(null);
         // when
@@ -84,7 +83,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).reachSettlementAgreement(eq(claimWithOffer), eq(settlement),
-            eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT));
+            eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT.name()));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
@@ -102,7 +101,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT));
+            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT.name()));
 
         verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }

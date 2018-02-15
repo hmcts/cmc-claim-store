@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -145,7 +144,7 @@ public class CoreCaseDataService {
         CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
             .id(caseId)
             .settlement(settlementMapper.to(settlement))
-            .settlementReachedAt(LocalDateTime.now());
+            .settlementReachedAt(now());
 
         return this.update(authorisation, ccdCase.build(), event);
     }
