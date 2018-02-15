@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
@@ -10,8 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-
-import java.time.LocalDateTime;
 
 import static java.lang.String.format;
 
@@ -21,16 +20,19 @@ public class OffersService {
     private final ClaimService claimService;
     private final CaseRepository caseRepository;
     private final EventProducer eventProducer;
+    private final TimeService timeService;
 
     @Autowired
     public OffersService(
         ClaimService claimService,
         CaseRepository caseRepository,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        TimeService timeService
     ) {
         this.claimService = claimService;
         this.caseRepository = caseRepository;
         this.eventProducer = eventProducer;
+        this.timeService = timeService;
     }
 
     public void makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
@@ -40,7 +42,7 @@ public class OffersService {
         settlement.makeOffer(offer, party);
 
         caseRepository.updateSettlement(claim, settlement, authorisation,
-            eventName("OfferMadeBy", party.name()), null);
+            eventName("OFFER_MADE_BY", party.name()), null);
         eventProducer.createOfferMadeEvent(claim);
     }
 
@@ -50,10 +52,11 @@ public class OffersService {
 
         Settlement settlement = claim.getSettlement()
             .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
+
         settlement.accept(party);
 
         caseRepository.updateSettlement(claim, settlement, authorisation,
-            eventName("OfferAcceptedBy", party.name()), LocalDateTime.now());
+            eventName("OFFER_ACCEPTED_BY", party.name()), timeService.nowInLocalZone());
 
         eventProducer.createOfferAcceptedEvent(claimService.getClaimById(claim.getId()), party);
     }
@@ -66,7 +69,7 @@ public class OffersService {
         settlement.reject(party);
 
         caseRepository.updateSettlement(claim, settlement, authorisation,
-            eventName("OfferRejectedBy", party.name()), null);
+            eventName("OFFER_REJECTED_BY", party.name()), null);
 
         eventProducer.createOfferRejectedEvent(claim, party);
     }
@@ -77,7 +80,7 @@ public class OffersService {
         }
     }
 
-    private String eventName(String userAction, String userType) {
-        return userAction + userType;
+    private CaseEvent eventName(String userAction, String userType) {
+        return CaseEvent.valueOf(userAction + "_" + userType);
     }
 }

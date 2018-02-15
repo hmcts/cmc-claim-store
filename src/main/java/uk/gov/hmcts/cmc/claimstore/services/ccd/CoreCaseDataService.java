@@ -128,15 +128,16 @@ public class CoreCaseDataService {
         Settlement settlement,
         String authorisation,
         LocalDateTime settlementReachedAt,
-        String eventName) {
-        CCDCase ccdCase = this.caseMapper.to(claim);
-        ccdCase.setSettlement(settlementMapper.to(settlement));
+        CaseEvent event) {
+        CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
+            .id(claim.getId())
+            .settlement(settlementMapper.to(settlement));
 
         if (settlementReachedAt != null) {
-            ccdCase.setSettlementReachedAt(settlementReachedAt);
+            ccdCase.settlementReachedAt(settlementReachedAt);
         }
 
-        return this.update(authorisation, ccdCase, CaseEvent.event(eventName));
+        return this.update(authorisation, ccdCase.build(), event);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {

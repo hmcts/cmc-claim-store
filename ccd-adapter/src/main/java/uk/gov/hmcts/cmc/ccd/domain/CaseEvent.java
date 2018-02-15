@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
-import java.util.Arrays;
-
 public enum CaseEvent {
 
     SUBMIT_CLAIM("submitClaimEvent"),
@@ -23,12 +21,5 @@ public enum CaseEvent {
 
     public String getValue() {
         return value;
-    }
-
-    public static CaseEvent event(String value){
-        return Arrays.stream(CaseEvent.values())
-            .filter(v ->v.value.equals(value))
-            .findFirst()
-            .orElseThrow(RuntimeException::new);
     }
 }

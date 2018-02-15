@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -23,6 +22,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_ACCEPTED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
@@ -48,11 +50,11 @@ public class OfferServiceTest {
     private EventProducer eventProducer;
 
     @Mock
-    private JsonMapper jsonMapper;
+    private TimeService timeService;
 
     @Before
     public void setup() {
-        offersService = new OffersService(claimService, caseRepository, eventProducer);
+        offersService = new OffersService(claimService, caseRepository, eventProducer, timeService);
     }
 
     @Test
@@ -61,8 +63,8 @@ public class OfferServiceTest {
         offersService.makeOffer(claim, offer, madeBy, AUTHORISATION);
 
         //then
-        verify(caseRepository)
-            .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), );
+        verify(caseRepository).updateSettlement(eq(claim), any(Settlement.class),
+            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT), eq(null));
 
         verify(eventProducer).createOfferMadeEvent(eq(claim));
     }
@@ -77,15 +79,16 @@ public class OfferServiceTest {
         // given
         Claim claimWithOffer = buildClaimWithOffer();
         Claim acceptedOffer = buildClaimWithAcceptedOffer();
-
+        LocalDateTime now = LocalDateTime.now();
         when(claimService.getClaimById(eq(claimWithOffer.getId()))).thenReturn(acceptedOffer);
-
+        when(timeService.nowInLocalZone()).thenReturn(now);
+        Settlement settlement = acceptedOffer.getSettlement().orElse(null);
         // when
         offersService.accept(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(caseRepository).acceptOffer(
-            eq(claim), any(Settlement.class), eq(AUTHORISATION), eventName("OFFER_ACCEPTED_BY", party.name()));
+        verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
+            eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT), eq(now));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
@@ -98,13 +101,14 @@ public class OfferServiceTest {
     @Test
     public void shouldSuccessfullyRejectOffer() {
         // when
-        offersService.reject(OfferServiceTest.claimWithOffer, decidedBy, AUTHORISATION);
+        Claim claimWithOffer = OfferServiceTest.claimWithOffer;
+        offersService.reject(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(caseRepository)
-            .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), );
+        verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
+            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT), eq(null));
 
-        verify(eventProducer).createOfferRejectedEvent(eq(OfferServiceTest.claimWithOffer), eq(decidedBy));
+        verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }
 
     @Test(expected = ConflictException.class)
@@ -126,7 +130,6 @@ public class OfferServiceTest {
 
 
         return SampleClaim.builder()
-            .withSettlementReachedAt(LocalDateTime.now())
             .withSettlement(settlement).build();
     }
 }

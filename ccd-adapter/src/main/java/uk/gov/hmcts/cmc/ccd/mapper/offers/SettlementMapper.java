@@ -29,7 +29,7 @@ public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
 
         List<CCDCollectionElement<CCDPartyStatement>> partyStatements = settlement.getPartyStatements().stream()
             .map(partyStatement -> partyStatementMapper.to(partyStatement))
-            .map(ccdPartyStatement -> CCDCollectionElement.<CCDPartyStatement>builder().value(ccdPartyStatement).build())
+            .map(partyStatement -> CCDCollectionElement.<CCDPartyStatement>builder().value(partyStatement).build())
             .collect(Collectors.toList());
 
         builder.partyStatements(partyStatements);

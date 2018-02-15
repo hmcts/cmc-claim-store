@@ -59,7 +59,7 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
         if (response.getStatementOfTruth() != null) {
             statementOfTruth = statementOfTruthMapper.from(response.getStatementOfTruth());
         }
-        
+
         return new FullDefenceResponse(
             freeMediation,
             Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeededOption().name()),

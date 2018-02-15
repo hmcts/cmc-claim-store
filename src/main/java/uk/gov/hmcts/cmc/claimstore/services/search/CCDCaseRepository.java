@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.search;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -89,7 +90,7 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        String event,
+        CaseEvent event,
         LocalDateTime settlementReachedAt) {
         coreCaseDataService.saveSettlement(claim, settlement, authorisation, settlementReachedAt, event);
     }
