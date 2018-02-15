@@ -1,4 +1,4 @@
-output "vault-url" {
-  value = "${module.claim-store-vault.name}"
+output "vault-uri" {
+  value = "${module.claim-store-vault.key_vault_uri}"
 }
 
