@@ -11,9 +11,20 @@ properties([
 		])
 ])
 
+// All secrets used in this project defined here to hide them in the build logs
+List<Map<String, Object>> secrets = [
+  secret('AatTestUserUsername', 'AAT_TEST_USER_USERNAME'),
+  secret('AatTestUserPassword', 'AAT_TEST_USER_PASSWORD'),
+  secret('AatTestUserEmailPattern', 'AAT_TEST_USER_EMAIL_PATTERN')
+]
+
+static Map<String, Object> secret(String secretName, String envVar) {
+  [ $class: 'AzureKeyVaultSecret', _secretType: 'Secret', _name: secretName, _envVariable: envVar ]
+}
+
 withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
   enableSlackNotifications('#cmc-tech-cnp')
-
+  loadVaultSecrets(secrets)
   before('build') {
     sh './gradlew check'
   }
