@@ -24,7 +24,7 @@ def channel = '#cmc-tech-notification'
 timestamps {
   milestone()
   lock(resource: "claim-store-${env.BRANCH_NAME}", inversePrecedence: true) {
-    node('slave') {
+    node('moj_centos_regular') {
       try {
         def version
         def claimStoreVersion
@@ -43,7 +43,7 @@ timestamps {
 
           stage('OWASP dependency check') {
             try {
-              sh "./gradlew -DdependencyCheck.failBuild=true dependencyCheck"
+              sh "./gradlew -DdependencyCheck.failBuild=true dependencyCheckAnalyze"
             } catch (ignored) {
               archiveArtifacts 'build/reports/dependency-check-report.html'
               notifyBuildResult channel: channel, color: 'warning',
@@ -140,16 +140,15 @@ timestamps {
           }
 
           milestone()
-          lock(resource: "CMC-deploy-demo", inversePrecedence: true) {
-            stage('Deploy (Demo)') {
-              ansible.runDeployPlaybook(version, 'demo')
-            }
-            stage('Smoke test (Demo)') {
-              smokeTests.executeAgainst(env.CMC_DEMO_APPLICATION_URL)
-            }
-          }
-
-          milestone()
+//          lock(resource: "CMC-deploy-demo", inversePrecedence: true) {
+//            stage('Deploy (Demo)') {
+//              ansible.runDeployPlaybook(version, 'demo')
+//            }
+//            stage('Smoke test (Demo)') {
+//              smokeTests.executeAgainst(env.CMC_DEMO_APPLICATION_URL)
+//            }
+//          }
+//          milestone()
         }
       } catch (err) {
         archiveArtifacts 'build/reports/**/*.html'

@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -48,17 +49,12 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 public class ClaimServiceTest {
 
     private static final ClaimData VALID_APP = SampleClaimData.submittedByClaimant();
-    private static final String VALID_DEFENDANT_TOKEN = "this is valid token for defendant";
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
-    private static final String INVALID_DEFENDANT_TOKEN = "You shall not pass!";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
     private static final String AUTHORISATION = "Bearer: aaa";
 
     private static final UserDetails validDefendant
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
-
-    private static final UserDetails invalidDefendant
-        = SampleUserDetails.builder().withUserId("-1").withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails claimantDetails
         = SampleUserDetails.builder().withUserId("11").withMail(SUBMITTER_EMAIL).build();
@@ -82,7 +78,7 @@ public class ClaimServiceTest {
 
     @Before
     public void setup() {
-        when(userService.getUserDetails(eq(VALID_DEFENDANT_TOKEN))).thenReturn(validDefendant);
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(validDefendant);
 
         claimService = new ClaimService(
             claimRepository,
@@ -91,7 +87,8 @@ public class ClaimServiceTest {
             issueDateCalculator,
             responseDeadlineCalculator,
             eventProducer,
-            caseRepository);
+            caseRepository,
+            new MoreTimeRequestRule());
     }
 
     @Test
@@ -193,12 +190,12 @@ public class ClaimServiceTest {
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
-        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(eq(ISSUE_DATE)))
+        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any()))
             .thenReturn(newDeadline);
 
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
 
-        verify(claimRepository, once()).requestMoreTime(eq(CLAIM_ID), eq(newDeadline));
+        verify(caseRepository, once()).requestMoreTimeForResponse(eq(AUTHORISATION), eq(claim), eq(newDeadline));
         verify(eventProducer, once())
             .createMoreTimeForResponseRequestedEvent(eq(claim), eq(newDeadline), eq(validDefendant.getEmail()));
     }
@@ -207,7 +204,7 @@ public class ClaimServiceTest {
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.empty());
 
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
@@ -219,7 +216,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
 
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
@@ -228,7 +225,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
 
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, VALID_DEFENDANT_TOKEN);
+        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {

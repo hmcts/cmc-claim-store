@@ -64,15 +64,15 @@ public class ClaimStore {
         return getClaim(claimId);
     }
 
-    public Claim saveResponse(long claimId, Response response) {
-        return saveResponse(claimId, response, "1", SampleClaim.DEFENDANT_EMAIL);
+    public Claim saveResponse(Claim claim, Response response) {
+        return saveResponse(claim, response, "1", SampleClaim.DEFENDANT_EMAIL);
     }
 
-    public Claim saveResponse(long claimId, Response response, String defendantId, String defendantEmail) {
-        logger.info(String.format("Saving response data with claim : %d", claimId));
+    public Claim saveResponse(Claim claim, Response response, String defendantId, String defendantEmail) {
+        logger.info(String.format("Saving response data with claim : %s", claim.getExternalId()));
 
         this.claimRepository.saveDefendantResponse(
-            claimId,
+            claim.getExternalId(),
             defendantId,
             defendantEmail,
             jsonMapper.toJson(response)
@@ -80,7 +80,7 @@ public class ClaimStore {
 
         logger.info("Saved response data");
 
-        return getClaim(claimId);
+        return getClaimByExternalId(claim.getExternalId());
     }
 
     public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {

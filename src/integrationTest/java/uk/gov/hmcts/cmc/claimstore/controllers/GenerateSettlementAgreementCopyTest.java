@@ -28,7 +28,7 @@ public class GenerateSettlementAgreementCopyTest extends BaseGetTest {
     @Test
     public void shouldReturnPdfDocumentIfEverythingIsFine() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
+        claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
 
         Settlement settlement = new Settlement();
         Offer offer = SampleOffer.validDefaults();
@@ -61,7 +61,7 @@ public class GenerateSettlementAgreementCopyTest extends BaseGetTest {
     @Test
     public void shouldReturnServerErrorWhenPdfGenerationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(claim.getId(), SampleResponse.FullDefence.builder().build());
+        claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
 
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willThrow(new PDFServiceClientException(new RuntimeException("Something bad happened!")));
