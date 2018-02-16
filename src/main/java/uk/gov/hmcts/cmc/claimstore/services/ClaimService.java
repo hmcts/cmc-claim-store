@@ -119,27 +119,26 @@ public class ClaimService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String submitterEmail = userDetails.getEmail();
 
-        String claimDataString = jsonMapper.toJson(claimData);
+        final Claim claim = Claim.builder()
+            .claimData(claimData)
+            .submitterId(submitterId)
+            .issuedOn(issuedOn)
+            .responseDeadline(responseDeadline)
+            .externalId(externalId)
+            .submitterEmail(submitterEmail)
+            .letterHolderId(letterHolderId.orElse(null))
+            .build();
 
-        long issuedClaimId;
-
-        if (claimData.isClaimantRepresented()) {
-            issuedClaimId = claimRepository.saveRepresented(claimDataString, submitterId, issuedOn,
-                responseDeadline, externalId, submitterEmail);
-        } else {
-            issuedClaimId = claimRepository.saveSubmittedByClaimant(claimDataString, submitterId,
-                letterHolderId.orElseThrow(IllegalStateException::new), issuedOn, responseDeadline,
-                externalId, submitterEmail);
-        }
-
+        Claim issuedClaim = caseRepository.saveClaim(authorisation, claim);
+        
         eventProducer.createClaimIssuedEvent(
-            getClaimById(issuedClaimId),
+            issuedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
             userDetails.getFullName(),
             authorisation
         );
 
-        return getClaimById(issuedClaimId);
+        return issuedClaim;
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {

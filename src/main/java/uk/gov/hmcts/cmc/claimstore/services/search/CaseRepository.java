@@ -29,5 +29,7 @@ public interface CaseRepository {
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
+
+    Claim saveClaim(String authorisation, Claim claim);
 }
 

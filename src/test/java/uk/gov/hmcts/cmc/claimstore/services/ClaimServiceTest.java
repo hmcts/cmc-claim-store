@@ -149,30 +149,19 @@ public class ClaimServiceTest {
 
         ClaimData app = SampleClaimData.validDefaults();
         String jsonApp = new ResourceReader().read("/claim-application.json");
-        String authorisationToken = "Open sesame!";
 
-        when(userService.getUserDetails(eq(authorisationToken))).thenReturn(claimantDetails);
-        when(mapper.toJson(eq(app))).thenReturn(jsonApp);
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
 
-        when(claimRepository.saveRepresented(
-            eq(jsonApp),
-            eq(USER_ID),
-            eq(ISSUE_DATE),
-            eq(RESPONSE_DEADLINE),
-            anyString(),
-            eq(SUBMITTER_EMAIL)
-        )).thenReturn(CLAIM_ID);
+        when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
-
-        Claim createdClaim = claimService.saveClaim(USER_ID, app, authorisationToken);
+        Claim createdClaim = claimService.saveClaim(USER_ID, app, AUTHORISATION);
 
         assertThat(createdClaim).isEqualTo(claim);
 
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
-            anyString(), eq(authorisationToken));
+            anyString(), eq(AUTHORISATION));
     }
 
     @Test(expected = ConflictException.class)

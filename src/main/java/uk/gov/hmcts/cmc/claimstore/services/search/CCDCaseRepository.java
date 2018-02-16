@@ -82,4 +82,9 @@ public class CCDCaseRepository implements CaseRepository {
         coreCaseDataService.requestMoreTimeForResponse(authorisation, claim, newResponseDeadline);
     }
 
+    @Override
+    public Claim saveClaim(String authorisation, Claim claim) {
+        return coreCaseDataService.save(authorisation, claim);
+    }
+
 }
