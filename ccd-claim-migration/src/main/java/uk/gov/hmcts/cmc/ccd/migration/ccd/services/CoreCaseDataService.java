@@ -47,7 +47,7 @@ public class CoreCaseDataService {
     public void create(String authorisation, Claim claim) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(claim.getSubmitterId())
+                .userId("74")
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
