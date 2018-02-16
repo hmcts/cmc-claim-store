@@ -23,7 +23,7 @@ public interface OffersRepository {
             + " settlement = :settlement::JSONB, settlement_reached_at = :settlementReachedAt "
             + " WHERE external_id = :externalId"
     )
-    void acceptOffer(
+    void countersignAgreement(
         @Bind("externalId") String externalId,
         @Bind("settlement") String settlement,
         @Bind("settlementReachedAt") LocalDateTime settlementReachedAt

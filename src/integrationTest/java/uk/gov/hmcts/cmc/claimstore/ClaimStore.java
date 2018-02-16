@@ -105,14 +105,14 @@ public class ClaimStore {
         return getClaimByExternalId(externalId);
     }
 
-    public Claim acceptOffer(String externalId, Settlement settlement) {
-        this.offersRepository.acceptOffer(
+    public Claim countersignAgreement(String externalId, Settlement settlement) {
+        this.offersRepository.countersignAgreement(
             externalId,
             jsonMapper.toJson(settlement),
             LocalDateTime.now()
         );
 
-        logger.debug("Accepted offer");
+        logger.debug("Countersigned agreement");
 
         return getClaimByExternalId(externalId);
     }
