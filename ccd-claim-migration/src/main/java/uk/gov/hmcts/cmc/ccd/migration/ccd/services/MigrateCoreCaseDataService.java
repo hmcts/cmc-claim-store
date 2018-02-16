@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import static uk.gov.hmcts.cmc.ccd.migration.ccd.repositories.CCDCaseApi.JURISDI
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class MigrateCoreCaseDataService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -51,17 +55,20 @@ public class MigrateCoreCaseDataService {
         EventRequestData eventRequestData,
         Claim claim
     ) {
+        logger.info("claim: " + claim);
         CCDCase ccdCase = caseMapper.to(claim);
+        logger.info("ccdCase: " + ccdCase);
         StartEventResponse startEventResponse = start(authorisation, eventRequestData);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
-            .event(Event.builder()
-                .id(startEventResponse.getEventId())
-                .summary("CMC case update")
-                .description("Submitting CMC case update")
-                .build())
-            .data(ccdCase)
+            .event(
+                Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary("CMC case update")
+                    .description("Submitting CMC case update")
+                    .build()
+            ).data(ccdCase)
             .build();
 
         submit(authorisation, eventRequestData, caseDataContent);
@@ -76,12 +83,13 @@ public class MigrateCoreCaseDataService {
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
-            .event(Event.builder()
-                .id(startEventResponse.getEventId())
-                .summary("CMC case submission event")
-                .description("Submitting CMC case")
-                .build())
-            .data(ccdCase)
+            .event(
+                Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary("CMC case submission event")
+                    .description("Submitting CMC case")
+                    .build()
+            ).data(ccdCase)
             .build();
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);

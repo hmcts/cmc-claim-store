@@ -18,8 +18,7 @@ import static uk.gov.hmcts.cmc.ccd.migration.ccd.repositories.CCDCaseApi.JURISDI
 public class CoreCaseDataService {
 
     enum EventType {
-        MIGRATED_FROM_CLAIMSTORE("migratedFromClaimstore"),
-        SUBMIT_CLAIM("submitClaimEvent");
+        MIGRATED_FROM_CLAIMSTORE("MigrationFromClaimstoreEvent");
 
         private String value;
 
@@ -51,7 +50,7 @@ public class CoreCaseDataService {
                 .userId(claim.getSubmitterId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(EventType.SUBMIT_CLAIM.getValue())
+                .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -70,10 +69,10 @@ public class CoreCaseDataService {
     public void overwrite(String authorisation, Claim claim) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(claim.getSubmitterId())
+                .userId("74")
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(EventType.SUBMIT_CLAIM.getValue())
+                .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -83,7 +82,7 @@ public class CoreCaseDataService {
                 String.format(
                     "Failed updating claim in CCD store for claim %s on event %s",
                     claim.getReferenceNumber(),
-                    EventType.SUBMIT_CLAIM
+                    EventType.MIGRATED_FROM_CLAIMSTORE
                 ),
                 exception
             );

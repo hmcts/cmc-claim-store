@@ -36,9 +36,9 @@ public class ClaimMigrator {
         String authorisation = userService.authenticateSystemUpdateUser();
         List<Claim> notMigratedClaims = claimRepository.getAllNotMigratedClaims();
 
+        logger.info("User token: " + authorisation);
+
         logger.info("\t Claims to migrate: " + notMigratedClaims.size());
-
-
 
         notMigratedClaims.forEach(claim -> {
             logger.info("\t\t start migrating claim: " + claim.getReferenceNumber());
