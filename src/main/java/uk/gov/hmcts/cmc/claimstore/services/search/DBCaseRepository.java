@@ -6,12 +6,15 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,15 +23,18 @@ import java.util.Optional;
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimRepository claimRepository;
+    private final OffersRepository offersRepository;
     private final JsonMapper jsonMapper;
     private final UserService userService;
 
     public DBCaseRepository(
         ClaimRepository claimRepository,
+        OffersRepository offersRepository,
         JsonMapper jsonMapper,
         UserService userService
     ) {
         this.claimRepository = claimRepository;
+        this.offersRepository = offersRepository;
         this.jsonMapper = jsonMapper;
         this.userService = userService;
     }
@@ -96,5 +102,20 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
         claimRepository.requestMoreTime(claim.getExternalId(), newResponseDeadline);
+    }
+
+    @Override
+    public void updateSettlement(
+        Claim claim,
+        Settlement settlement,
+        String authorisation,
+        String userAction
+    ) {
+        offersRepository.updateSettlement(claim.getExternalId(), jsonMapper.toJson(settlement));
+    }
+
+    @Override
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
+        offersRepository.acceptOffer(claim.getExternalId(), jsonMapper.toJson(settlement), LocalDateTime.now());
     }
 }
