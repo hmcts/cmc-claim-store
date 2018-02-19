@@ -15,10 +15,6 @@ public class MappingUtils {
         return LocalDateTimeFactory.fromUTC(input.toLocalDateTime());
     }
 
-    public static Long toNullableLong(Integer input) {
-        return input != null ? input.longValue() : null;
-    }
-
     public static LocalDateTime toNullableLocalDateTimeFromUTC(Timestamp input) {
         return input != null ? toLocalDateTimeFromUTC(input) : null;
     }

@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Service
 public class ClaimMigrator {
@@ -46,7 +45,7 @@ public class ClaimMigrator {
         notMigratedClaims.forEach(claim -> {
             logger.info("\t\t start migrating claim: " + claim.getReferenceNumber());
 
-            Optional<Long> ccdId = coreCaseDataService.claimExists(user, claim.getReferenceNumber());
+            Optional<Long> ccdId = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
             if (ccdId.isPresent()) {
                 logger.info("\t\t claim exists - overwrite");
                 coreCaseDataService.overwrite(user, ccdId.get(), claim);

@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
-import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
-import uk.gov.hmcts.cmc.ccd.migration.models.mappers.JsonMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -16,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
@@ -27,21 +23,15 @@ public class CCDCaseApi {
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final UserService userService;
-    private final JsonMapper jsonMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
 
     public CCDCaseApi(
         CoreCaseDataApi coreCaseDataApi,
-        AuthTokenGenerator authTokenGenerator,
-        UserService userService,
-        JsonMapper jsonMapper
+        AuthTokenGenerator authTokenGenerator
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
-        this.userService = userService;
-        this.jsonMapper = jsonMapper;
     }
 
     public Optional<Long> claimExists(User user, String referenceNumber) {

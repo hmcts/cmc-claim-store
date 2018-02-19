@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.migration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,18 +23,19 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 )
 public class App implements CommandLineRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
+
     @Autowired
     private ClaimMigrator claimMigrator;
 
-    public static void main(String[] args) throws Exception {
-        System.out.print("Application startup");
+    public static void main(String[] args) {
+        logger.info("Application started");
         SpringApplication.run(App.class, args);
     }
 
-    //access command line arguments
     @Override
-    public void run(String... args) throws Exception {
-
+    public void run(String... args) {
+        logger.info("Migration is starting");
         claimMigrator.migrate();
     }
 }
