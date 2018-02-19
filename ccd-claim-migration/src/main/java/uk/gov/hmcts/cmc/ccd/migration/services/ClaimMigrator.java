@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService;
+import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -34,23 +35,22 @@ public class ClaimMigrator {
     public void migrate() {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
 
-        String authorisation = userService.authenticateSystemUpdateUser();
+        User user = userService.getUser(userService.authenticateSystemUpdateUser());
         List<Claim> notMigratedClaims = claimRepository.getAllNotMigratedClaims();
 
-        logger.info("User token: " + authorisation);
+        logger.info("User token: " + user.getAuthorisation());
 
         logger.info("\t Claims to migrate: " + notMigratedClaims.size());
 
         notMigratedClaims.forEach(claim -> {
             logger.info("\t\t start migrating claim: " + claim.getReferenceNumber());
 
-            Optional<Claim> ccdClaim = coreCaseDataService.retrieve(authorisation, claim.getReferenceNumber());
-            if (ccdClaim.isPresent()) {
+            if (coreCaseDataService.claimExists(user, claim.getReferenceNumber())) {
                 logger.info("\t\t claim exists - overwrite");
-                coreCaseDataService.overwrite(authorisation, ccdClaim.get());
+                coreCaseDataService.overwrite(user, claim);
             } else {
                 logger.info("\t\t claim created in ccd");
-                coreCaseDataService.create(authorisation, claim);
+                coreCaseDataService.create(user, claim);
             }
 
             claimRepository.markAsMigrated(claim.getId());

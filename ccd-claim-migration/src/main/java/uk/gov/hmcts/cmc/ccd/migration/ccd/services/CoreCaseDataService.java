@@ -4,11 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.repositories.CCDCaseApi;
+import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
-
-import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -44,10 +42,10 @@ public class CoreCaseDataService {
         this.ccdCaseApi = ccdCaseApi;
     }
 
-    public void create(String authorisation, Claim claim) {
+    public void create(User user, Claim claim) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId("74")
+                .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
@@ -55,7 +53,7 @@ public class CoreCaseDataService {
                 .build();
 
             migrateCoreCaseDataService.save(
-                authorisation,
+                user.getAuthorisation(),
                 eventRequestData,
                 claim
             );
@@ -66,17 +64,17 @@ public class CoreCaseDataService {
         }
     }
 
-    public void overwrite(String authorisation, Claim claim) {
+    public void overwrite(User user, Claim claim) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId("18")
+                .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.update(authorisation, eventRequestData, claim);
+            migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, claim);
         } catch (Exception exception) {
             throw new RuntimeException(
                 String.format(
@@ -89,7 +87,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public Optional<Claim> retrieve(String authorisation, String referenceNUmber) {
-        return ccdCaseApi.getByReferenceNumber(authorisation, referenceNUmber);
+    public boolean claimExists(User user, String referenceNUmber) {
+        return ccdCaseApi.claimExists(user, referenceNUmber);
     }
 }
