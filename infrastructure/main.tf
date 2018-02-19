@@ -88,7 +88,7 @@ module "claim-store-database" {
 
 module "claim-store-vault" {
   source              = "git@github.com:contino/moj-module-key-vault?ref=master"
-  name                = "cmc-claim-store"
+  name                = "cmc-claim-store-${var.env}"
   product             = "${var.product}"
   env                 = "${var.env}"
   tenant_id           = "${var.tenant_id}"
