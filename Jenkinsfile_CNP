@@ -1,32 +1,27 @@
 #!groovy
 
-@Library("Infrastructure@timja-kainos-patch-1")
+@Library("Infrastructure@feature/Fetch-vault-secrets")
 
 def product = "cmc"
 def component = "claim-store"
 
-// All secrets used in this project defined here to hide them in the build logs
 List<LinkedHashMap<String, Object>> secrets = [
-  basicSecret("secret/dev/cmc/notify_api_key", 'IGNORED'),
-  basicSecret("secret/test/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore", 'IGNORED2'),
-  basicSecret('secret/dev/cmc/smoke-tests/username', 'AAT_TEST_USERNAME'),
-  basicSecret('secret/dev/cmc/smoke-tests/password', 'AAT_TEST_PASSWORD')
+  secret('AatTestUserUsername', 'AAT_TEST_USER_USERNAME'),
+  secret('AatTestUserPassword', 'AAT_TEST_USER_PASSWORD'),
+  secret('AatTestUserEmailPattern', 'AAT_TEST_USER_EMAIL_PATTERN')
 ]
 
-static LinkedHashMap<String, Object> basicSecret(String path, String envVar) {
-  secret(path, envVar, 'value')
-}
-
-static LinkedHashMap<String, Object> secret(String path, String envVar, String value) {
-  [$class: 'VaultSecret', path: path, secretValues:
-    [
-      [$class: 'VaultSecretValue', envVar: envVar, vaultKey: value]
-    ]
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    version: '',
+    envVariable: envVar
   ]
 }
 
 withPipeline("java", product, component) {
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
-//  loadVaultSecrets(secrets)
+  loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-cnp')
 }
