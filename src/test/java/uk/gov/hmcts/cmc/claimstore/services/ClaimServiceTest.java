@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -65,8 +64,7 @@ public class ClaimServiceTest {
     private ClaimRepository claimRepository;
     @Mock
     private CaseRepository caseRepository;
-    @Mock
-    private JsonMapper mapper;
+
     @Mock
     private UserService userService;
     @Mock
@@ -83,7 +81,6 @@ public class ClaimServiceTest {
         claimService = new ClaimService(
             claimRepository,
             userService,
-            mapper,
             issueDateCalculator,
             responseDeadlineCalculator,
             eventProducer,

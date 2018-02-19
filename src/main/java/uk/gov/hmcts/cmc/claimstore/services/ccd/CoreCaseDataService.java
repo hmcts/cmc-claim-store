@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -44,7 +45,7 @@ public class CoreCaseDataService {
     private final SettlementMapper settlementMapper;
     private final UserService userService;
     private final JsonMapper jsonMapper;
-
+    private final ReferenceNumberRepository referenceNumberRepository;
 
     @Autowired
     public CoreCaseDataService(
@@ -55,7 +56,9 @@ public class CoreCaseDataService {
         ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
         UserService userService,
-        JsonMapper jsonMapper) {
+        JsonMapper jsonMapper,
+        ReferenceNumberRepository referenceNumberRepository
+    ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
@@ -64,11 +67,13 @@ public class CoreCaseDataService {
         this.settlementMapper = settlementMapper;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
+        this.referenceNumberRepository = referenceNumberRepository;
     }
 
     public Claim save(String authorisation, Claim claim) {
         try {
             CCDCase ccdCase = caseMapper.to(claim);
+            ccdCase.setReferenceNumber(this.getReferenceNumber(claim.getClaimData().isClaimantRepresented()));
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(claim.getSubmitterId())
                 .jurisdictionId(JURISDICTION_ID)
@@ -90,6 +95,14 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
                 .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
+        }
+    }
+
+    private String getReferenceNumber(Boolean claimantRepresented) {
+        if (claimantRepresented) {
+            return this.referenceNumberRepository.getReferenceNoForLegal();
+        } else {
+            return this.referenceNumberRepository.getReferenceNoForCitizen();
         }
     }
 

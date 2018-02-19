@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.search;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -21,6 +22,7 @@ public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
 
+    @Autowired
     public CCDCaseRepository(
         CCDCaseApi ccdCaseApi,
         CoreCaseDataService coreCaseDataService
@@ -98,6 +100,7 @@ public class CCDCaseRepository implements CaseRepository {
         coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation,
             CaseEvent.valueOf(userAction));
     }
+
     @Override
     public Claim saveClaim(String authorisation, Claim claim) {
         return coreCaseDataService.save(authorisation, claim);

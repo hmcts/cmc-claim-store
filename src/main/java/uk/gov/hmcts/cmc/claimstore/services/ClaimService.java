@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
@@ -27,7 +26,6 @@ import java.util.Optional;
 public class ClaimService {
 
     private final ClaimRepository claimRepository;
-    private final JsonMapper jsonMapper;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
@@ -40,7 +38,6 @@ public class ClaimService {
     public ClaimService(
         ClaimRepository claimRepository,
         UserService userService,
-        JsonMapper jsonMapper,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
@@ -49,7 +46,6 @@ public class ClaimService {
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
-        this.jsonMapper = jsonMapper;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
@@ -130,7 +126,7 @@ public class ClaimService {
             .build();
 
         Claim issuedClaim = caseRepository.saveClaim(authorisation, claim);
-        
+
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
