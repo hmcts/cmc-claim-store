@@ -1,7 +1,8 @@
-package uk.gov.hmcts.cmc.ccd.migration.models.mappers;
+package uk.gov.hmcts.cmc.ccd.migration.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.MigrationModelMappingException;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class JsonMapper {
         try {
             return objectMapper.readValue(value, clazz);
         } catch (IOException e) {
-            throw new RuntimeException(
+            throw new MigrationModelMappingException(
                 String.format(DESERIALIZATION_ERROR_MESSAGE, clazz.getSimpleName()), e
             );
         }

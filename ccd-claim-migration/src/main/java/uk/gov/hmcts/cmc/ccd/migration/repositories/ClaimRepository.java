@@ -4,7 +4,7 @@ import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
-import uk.gov.hmcts.cmc.ccd.migration.models.mappers.ClaimMapper;
+import uk.gov.hmcts.cmc.ccd.migration.mappers.ClaimMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;

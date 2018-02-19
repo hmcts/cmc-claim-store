@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.migration.models.mappers;
+package uk.gov.hmcts.cmc.ccd.migration.mappers;
 
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
