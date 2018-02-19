@@ -58,7 +58,7 @@ public class MigrateCoreCaseDataService {
         logger.info("claim: " + claim);
         CCDCase ccdCase = caseMapper.to(claim);
         logger.info("ccdCase: " + ccdCase);
-        StartEventResponse startEventResponse = start(authorisation, eventRequestData);
+        StartEventResponse startEventResponse = startEvent(authorisation, eventRequestData, ccdCase.getId());
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -71,7 +71,7 @@ public class MigrateCoreCaseDataService {
             ).data(ccdCase)
             .build();
 
-        submit(authorisation, eventRequestData, caseDataContent);
+        submitEvent(authorisation, eventRequestData, caseDataContent, ccdCase.getId());
     }
 
     public void save(
@@ -139,6 +139,38 @@ public class MigrateCoreCaseDataService {
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),
             eventRequestData.getEventId()
+        );
+    }
+
+    private StartEventResponse startEvent(String authorisation, EventRequestData eventRequestData, Long caseId) {
+
+        return this.coreCaseDataApi.startEventForCaseWorker(
+            authorisation,
+            this.authTokenGenerator.generate(),
+            eventRequestData.getUserId(),
+            eventRequestData.getJurisdictionId(),
+            eventRequestData.getCaseTypeId(),
+            caseId.toString(),
+            eventRequestData.getEventId()
+        );
+    }
+
+    private CaseDetails submitEvent(
+        String authorisation,
+        EventRequestData eventRequestData,
+        CaseDataContent caseDataContent,
+        Long caseId
+    ) {
+
+        return this.coreCaseDataApi.submitEventForCaseWorker(
+            authorisation,
+            this.authTokenGenerator.generate(),
+            eventRequestData.getUserId(),
+            eventRequestData.getJurisdictionId(),
+            eventRequestData.getCaseTypeId(),
+            caseId.toString(),
+            eventRequestData.isIgnoreWarning(),
+            caseDataContent
         );
     }
 }

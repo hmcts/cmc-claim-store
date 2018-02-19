@@ -49,11 +49,11 @@ public class CCDCaseApi {
         this.jsonMapper = jsonMapper;
     }
 
-    public Optional<Map<String, Object>> getByReferenceNumber(String authorisation, String referenceNumber) {
+    public Optional<Claim> getByReferenceNumber(String authorisation, String referenceNumber) {
         LOGGER.info("Get claim from CCD " + referenceNumber);
         User user = userService.getUser(authorisation);
 
-        List<Map<String, Object>> claims = extractClaims(
+        List<Claim> claims = extractClaims(
             search(user, ImmutableMap.of("case.referenceNumber", referenceNumber))
         );
 
@@ -83,7 +83,7 @@ public class CCDCaseApi {
         return result;
     }
 
-    private List<Map<String, Object>> extractClaims(List<CaseDetails> result) {
+    private List<Claim> extractClaims(List<CaseDetails> result) {
 
         Map<Long, Map<String, Object>> collectMap = result.stream()
             .collect(Collectors.toMap(CaseDetails::getId, CaseDetails::getData));
@@ -98,12 +98,11 @@ public class CCDCaseApi {
         return jsonMapper.fromJson(json, CCDCase.class);
     }
 
-    private Map<String, Object> mapToClaim(Map.Entry<Long, Map<String, Object>> entry) {
+    private Claim mapToClaim(Map.Entry<Long, Map<String, Object>> entry) {
         Map<String, Object> entryValue = entry.getValue();
         entryValue.put("id", entry.getKey());
 
-        return entryValue;
-//        CCDCase ccdCase = convertToCCDCase(entryValue);
-//        return caseMapper.from(ccdCase);
+        CCDCase ccdCase = convertToCCDCase(entryValue);
+        return caseMapper.from(ccdCase);
     }
 }

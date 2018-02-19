@@ -69,7 +69,7 @@ public class CoreCaseDataService {
     public void overwrite(String authorisation, Claim claim) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId("74")
+                .userId("18")
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
@@ -89,7 +89,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public Optional<Map<String, Object>> retrieve(String authorisation, String referenceNUmber) {
+    public Optional<Claim> retrieve(String authorisation, String referenceNUmber) {
         return ccdCaseApi.getByReferenceNumber(authorisation, referenceNUmber);
     }
 }

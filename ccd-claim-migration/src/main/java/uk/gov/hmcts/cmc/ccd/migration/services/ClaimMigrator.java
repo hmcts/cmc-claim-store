@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClaimMigrator {
@@ -43,9 +44,10 @@ public class ClaimMigrator {
         notMigratedClaims.forEach(claim -> {
             logger.info("\t\t start migrating claim: " + claim.getReferenceNumber());
 
-            if (coreCaseDataService.retrieve(authorisation, claim.getReferenceNumber()).isPresent()) {
+            Optional<Claim> ccdClaim = coreCaseDataService.retrieve(authorisation, claim.getReferenceNumber());
+            if (ccdClaim.isPresent()) {
                 logger.info("\t\t claim exists - overwrite");
-                coreCaseDataService.overwrite(authorisation, claim);
+                coreCaseDataService.overwrite(authorisation, ccdClaim.get());
             } else {
                 logger.info("\t\t claim created in ccd");
                 coreCaseDataService.create(authorisation, claim);
