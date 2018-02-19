@@ -53,25 +53,26 @@ public class MigrateCoreCaseDataService {
     public void update(
         String authorisation,
         EventRequestData eventRequestData,
+        Long ccdId,
         Claim claim
     ) {
         logger.info("claim: " + claim);
         CCDCase ccdCase = caseMapper.to(claim);
         logger.info("ccdCase: " + ccdCase);
-        StartEventResponse startEventResponse = startEvent(authorisation, eventRequestData, ccdCase.getId());
+        StartEventResponse startEventResponse = startEvent(authorisation, eventRequestData, ccdId);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
             .event(
                 Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case update")
-                    .description("Submitting CMC case update")
+                    .summary("CMC case migrate")
+                    .description("Submitting CMC case migrate - overwrite")
                     .build()
             ).data(ccdCase)
             .build();
 
-        submitEvent(authorisation, eventRequestData, caseDataContent, ccdCase.getId());
+        submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
     }
 
     public void save(
@@ -86,8 +87,8 @@ public class MigrateCoreCaseDataService {
             .event(
                 Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case submission event")
-                    .description("Submitting CMC case")
+                    .summary("CMC case migrate")
+                    .description("Submitting CMC case migrate - create")
                     .build()
             ).data(ccdCase)
             .build();

@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
@@ -42,21 +44,19 @@ public class CCDCaseApi {
         this.jsonMapper = jsonMapper;
     }
 
-    public boolean claimExists(User user, String referenceNumber) {
+    public Optional<Long> claimExists(User user, String referenceNumber) {
         LOGGER.info("Get claim from CCD " + referenceNumber);
 
-        int n = search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        Optional<Long> ccdId = search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
 
-        if (n > 1) {
-            throw new RuntimeException("More than one claim found by claim reference " + referenceNumber);
+        if (ccdId.isPresent()) {
+            LOGGER.info("Claim found " + ccdId.get());
         }
 
-        LOGGER.info("Claim found " + n);
-
-        return n > 0;
+        return ccdId;
     }
 
-    private int search(User user, Map<String, Object> searchString) {
+    private Optional<Long> search(User user, Map<String, Object> searchString) {
 
         String serviceAuthToken = this.authTokenGenerator.generate();
 
@@ -70,6 +70,6 @@ public class CCDCaseApi {
             searchString
         );
 
-        return result != null ? result.size() : 0;
+        return result.size() > 0 ? Optional.of(result.get(0).getId()) : Optional.empty();
     }
 }

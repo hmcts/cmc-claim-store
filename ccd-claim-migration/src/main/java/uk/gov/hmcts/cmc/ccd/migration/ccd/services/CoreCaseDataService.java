@@ -8,6 +8,8 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
+import java.util.Optional;
+
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.repositories.CCDCaseApi.JURISDICTION_ID;
 
@@ -64,7 +66,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public void overwrite(User user, Claim claim) {
+    public void overwrite(User user, Long ccdId, Claim claim) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
@@ -74,7 +76,7 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, claim);
+            migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, ccdId, claim);
         } catch (Exception exception) {
             throw new RuntimeException(
                 String.format(
@@ -87,7 +89,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public boolean claimExists(User user, String referenceNUmber) {
+    public Optional<Long> claimExists(User user, String referenceNUmber) {
         return ccdCaseApi.claimExists(user, referenceNUmber);
     }
 }
