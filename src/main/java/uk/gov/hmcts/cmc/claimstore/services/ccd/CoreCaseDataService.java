@@ -47,6 +47,7 @@ public class CoreCaseDataService {
     private final JsonMapper jsonMapper;
     private final ReferenceNumberService referenceNumberService;
 
+    @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
     public CoreCaseDataService(
         SaveCoreCaseDataService saveCoreCaseDataService,
