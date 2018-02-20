@@ -11,13 +11,13 @@ properties([
 		])
 ])
 
-List<LinkedHashMap<String, Object>> secrets = [
+List<Map<String, Object>> secrets = [
   secret('AatTestUserUsername', 'AAT_TEST_USER_USERNAME'),
   secret('AatTestUserPassword', 'AAT_TEST_USER_PASSWORD'),
   secret('AatTestUserEmailPattern', 'AAT_TEST_USER_EMAIL_PATTERN')
 ]
 
-static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+static Map<String, Object> secret(String secretName, String envVar) {
   [ $class: 'AzureKeyVaultSecret',
     secretType: 'Secret',
     name: secretName,
@@ -25,6 +25,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     envVariable: envVar
   ]
 }
+
 withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
   enableSlackNotifications('#cmc-tech-cnp')
