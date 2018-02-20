@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
@@ -37,6 +39,7 @@ public class CoreCaseDataService {
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
+    private final SettlementMapper settlementMapper;
     private final UserService userService;
 
     @Autowired
@@ -46,12 +49,14 @@ public class CoreCaseDataService {
         CaseMapper caseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ResponseMapper responseMapper,
+        SettlementMapper settlementMapper,
         UserService userService) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
+        this.settlementMapper = settlementMapper;
         this.userService = userService;
     }
 
@@ -115,6 +120,35 @@ public class CoreCaseDataService {
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(now());
         return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+    }
+
+    public CaseDetails saveSettlement(
+        Long caseId,
+        Settlement settlement,
+        String authorisation,
+        CaseEvent event
+    ) {
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .settlement(settlementMapper.to(settlement))
+            .build();
+
+        return this.update(authorisation, ccdCase, event);
+    }
+
+    public CaseDetails reachSettlementAgreement(
+        Long caseId,
+        Settlement settlement,
+        String authorisation,
+        CaseEvent event
+    ) {
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .settlement(settlementMapper.to(settlement))
+            .settlementReachedAt(now())
+            .build();
+
+        return this.update(authorisation, ccdCase, event);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
