@@ -37,7 +37,7 @@ public class OffersService {
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAcion("OFFER_MADE_BY", party.name()));
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_MADE_BY", party.name()));
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
     }
@@ -52,7 +52,7 @@ public class OffersService {
         settlement.accept(party);
 
         caseRepository.updateSettlement(claim, settlement, authorisation,
-            userAcion("OFFER_ACCEPTED_BY", party.name()));
+            userAction("OFFER_ACCEPTED_BY", party.name()));
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferAcceptedEvent(updated, party);
@@ -65,7 +65,7 @@ public class OffersService {
             .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.reject(party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAcion("OFFER_REJECTED_BY", party.name()));
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_REJECTED_BY", party.name()));
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
     }
@@ -89,7 +89,7 @@ public class OffersService {
         }
     }
 
-    private String userAcion(String userAction, String userType) {
+    private String userAction(String userAction, String userType) {
         return userAction + "_" + userType;
     }
 }

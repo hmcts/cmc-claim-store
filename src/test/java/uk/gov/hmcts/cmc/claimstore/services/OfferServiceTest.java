@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
+import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -40,6 +41,7 @@ public class OfferServiceTest {
 
     private static final Claim claimWithOffer = buildClaimWithOffer();
     private static final Claim claimWithAcceptedOffer = buildClaimWithAcceptedOffer();
+    private static final Claim claimWithSettledOffer = buildClaimWithSettledOffer();
 
     private OffersService offersService;
 
@@ -51,6 +53,32 @@ public class OfferServiceTest {
 
     @Mock
     private EventProducer eventProducer;
+
+    private static Claim buildClaimWithOffer() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
+
+        return SampleClaim.builder().withSettlement(settlement).build();
+    }
+
+    private static Claim buildClaimWithAcceptedOffer() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        return SampleClaim.builder()
+            .withSettlement(settlement).build();
+    }
+
+    private static Claim buildClaimWithSettledOffer() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
+        settlement.accept(MadeBy.CLAIMANT);
+        settlement.countersign(MadeBy.DEFENDANT);
+
+        return SampleClaim.builder()
+            .withSettlement(settlement).build();
+    }
 
     @Before
     public void setup() {
@@ -97,12 +125,9 @@ public class OfferServiceTest {
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test(expected = IllegalSettlementStatementException.class)
     public void acceptOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-
-        offersService.accept(claimWithAcceptedOffer, decidedBy, AUTHORISATION);
+        offersService.accept(claimWithSettledOffer, decidedBy, AUTHORISATION);
     }
 
     @Test
@@ -121,9 +146,9 @@ public class OfferServiceTest {
         verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test(expected = IllegalSettlementStatementException.class)
     public void rejectOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        offersService.reject(claimWithAcceptedOffer, decidedBy, AUTHORISATION);
+        offersService.reject(claimWithSettledOffer, decidedBy, AUTHORISATION);
     }
 
     @Test
@@ -141,22 +166,5 @@ public class OfferServiceTest {
                 eq(AUTHORISATION), eq(CaseEvent.SETTLED_PRE_JUDGMENT.name()));
 
         verify(eventProducer).createAgreementCountersignedEvent(eq(claimWithAcceptedOffer), eq(madeBy));
-    }
-
-    private static Claim buildClaimWithOffer() {
-        Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
-
-        return SampleClaim.builder().withSettlement(settlement).build();
-    }
-
-    private static Claim buildClaimWithAcceptedOffer() {
-        Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
-        settlement.accept(MadeBy.CLAIMANT);
-
-
-        return SampleClaim.builder()
-            .withSettlement(settlement).build();
     }
 }
