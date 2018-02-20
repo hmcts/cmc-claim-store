@@ -22,7 +22,10 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyRequestCCJ() {
-        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
+        Claim createdCase = commonOperations.submitClaim(
+            bootstrap.getCitizenUser().getAuthorisation(),
+            bootstrap.getCitizenUser().getUserDetails().getId()
+        );
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
@@ -43,7 +46,10 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() {
-        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
+        Claim createdCase = commonOperations.submitClaim(
+            bootstrap.getCitizenUser().getAuthorisation(),
+            bootstrap.getCitizenUser().getUserDetails().getId()
+        );
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
@@ -58,7 +64,10 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
     @Test
     public void shouldNotBeAllowedToRequestCCJWhenResponseDeadlineHasNotPassed() {
-        Claim createdCase = commonOperations.submitClaim(bootstrap.getUserAuthenticationToken(), bootstrap.getUserId());
+        Claim createdCase = commonOperations.submitClaim(
+            bootstrap.getCitizenUser().getAuthorisation(),
+            bootstrap.getCitizenUser().getUserDetails().getId()
+        );
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .withPaymentOptionImmediately()
@@ -73,7 +82,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, bootstrap.getUserAuthenticationToken())
+            .header(HttpHeaders.AUTHORIZATION, bootstrap.getCitizenUser().getAuthorisation())
             .body(jsonMapper.toJson(ccj))
             .when()
             .post("/claims/" + externalId + "/county-court-judgment");
