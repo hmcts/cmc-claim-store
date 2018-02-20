@@ -38,8 +38,8 @@ public class Bootstrap {
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
         authenticationToken = userService.authenticateUser(
-            aatConfiguration.getTestUser().getUsername(),
-            aatConfiguration.getTestUser().getPassword()
+            aatConfiguration.getTestCitizenUser().getUsername(),
+            aatConfiguration.getTestCitizenUser().getPassword()
         ).getAuthorisation();
         userId = userService.getUserDetails(authenticationToken).getId();
     }

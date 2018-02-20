@@ -13,7 +13,11 @@ public class AATConfiguration {
 
     @Valid
     @NotNull
-    private TestUser testUser;
+    private TestUser testCitizenUser;
+
+    @Valid
+    @NotNull
+    private TestUser testSolicitorUser;
 
     @NotBlank
     private String testInstanceUri;
@@ -21,12 +25,20 @@ public class AATConfiguration {
     @NotBlank
     private String testUserEmailPattern;
 
-    public TestUser getTestUser() {
-        return testUser;
+    public TestUser getTestCitizenUser() {
+        return testCitizenUser;
     }
 
-    public void setTestUser(TestUser testUser) {
-        this.testUser = testUser;
+    public void setTestCitizenUser(TestUser testCitizenUser) {
+        this.testCitizenUser = testCitizenUser;
+    }
+
+    public TestUser getTestSolicitorUser() {
+        return testSolicitorUser;
+    }
+
+    public void setTestSolicitorUser(TestUser testSolicitorUser) {
+        this.testSolicitorUser = testSolicitorUser;
     }
 
     public String getTestInstanceUri() {
