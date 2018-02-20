@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Component
 public class ClaimStore {
@@ -45,7 +44,7 @@ public class ClaimStore {
     }
 
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
-        logger.info(String.format("Saving claim: %s", claimData.getExternalId()));
+        logger.debug("Saving claim: {}", claimData.getExternalId());
 
         Long claimId = this.claimRepository.saveSubmittedByClaimant(
             jsonMapper.toJson(claimData),
@@ -57,10 +56,7 @@ public class ClaimStore {
             SampleClaim.SUBMITTER_EMAIL
         );
 
-        logger.info("Saved claim has been given ID " + claimId + ". The following claims exist in the DB: "
-            + this.claimRepository.findAll().stream().map(claim -> claim.getId() + " - " + claim.getExternalId())
-            .collect(Collectors.toList()));
-
+        logger.debug("Saved claim has been given ID {}.", claimId);
         return getClaim(claimId);
     }
 
@@ -69,7 +65,7 @@ public class ClaimStore {
     }
 
     public Claim saveResponse(Claim claim, Response response, String defendantId, String defendantEmail) {
-        logger.info(String.format("Saving response data with claim : %s", claim.getExternalId()));
+        logger.debug("Saving response data with claim : {}", claim.getExternalId());
 
         this.claimRepository.saveDefendantResponse(
             claim.getExternalId(),
@@ -78,47 +74,47 @@ public class ClaimStore {
             jsonMapper.toJson(response)
         );
 
-        logger.info("Saved response data");
+        logger.debug("Saved response data");
 
         return getClaimByExternalId(claim.getExternalId());
     }
 
     public Claim saveCountyCourtJudgement(String externalId, CountyCourtJudgment ccj) {
-        logger.info(String.format("Saving county court judgement with claim : %s", externalId));
+        logger.debug("Saving county court judgement with claim : {}", externalId);
 
         this.claimRepository.saveCountyCourtJudgment(
             externalId,
             jsonMapper.toJson(ccj)
         );
 
-        logger.info("Saved county court judgement");
+        logger.debug("Saved county court judgement");
 
         return getClaimByExternalId(externalId);
     }
 
-    public Claim makeOffer(long claimId, Settlement settlement) {
-        logger.info(String.format("Saving offer with claim : %d", claimId));
+    public Claim makeOffer(String externalId, Settlement settlement) {
+        logger.debug("Saving offer with claim : {}", externalId);
 
         this.offersRepository.updateSettlement(
-            claimId,
+            externalId,
             jsonMapper.toJson(settlement)
         );
 
-        logger.info("Saved offer");
+        logger.debug("Saved offer");
 
-        return getClaim(claimId);
+        return getClaimByExternalId(externalId);
     }
 
-    public Claim countersignAgreement(long claimId, Settlement settlement) {
-        this.offersRepository.countersignAgreement(
-            claimId,
+    public Claim countersignAgreement(String externalId, Settlement settlement) {
+        this.offersRepository.reachSettlement(
+            externalId,
             jsonMapper.toJson(settlement),
             LocalDateTime.now()
         );
 
         logger.info("Countersigned agreement");
 
-        return getClaim(claimId);
+        return getClaimByExternalId(externalId);
     }
 
     public Claim linkSealedClaimDocumentSelfPath(long claimId, String documentSelfPath) {

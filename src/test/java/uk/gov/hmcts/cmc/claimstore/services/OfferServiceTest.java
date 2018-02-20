@@ -7,8 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
+import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -23,11 +22,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_ACCEPTED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
 
-    private static final String settlementJsonMock = "I'm expected to be settlement json";
+    private static final String AUTHORISATION = "Bearer aaa";
     private static final Offer offer = mock(Offer.class);
     private static final MadeBy madeBy = MadeBy.DEFENDANT;
     private static final MadeBy decidedBy = MadeBy.CLAIMANT;
@@ -44,78 +46,81 @@ public class OfferServiceTest {
     private ClaimService claimService;
 
     @Mock
-    private OffersRepository offersRepository;
+    private CaseRepository caseRepository;
 
     @Mock
     private EventProducer eventProducer;
 
-    @Mock
-    private JsonMapper jsonMapper;
-
     @Before
     public void setup() {
-        offersService = new OffersService(claimService, offersRepository, eventProducer, jsonMapper);
-        when(jsonMapper.toJson(any(Settlement.class))).thenReturn(settlementJsonMock);
+        offersService = new OffersService(claimService, caseRepository, eventProducer);
     }
 
     @Test
     public void shouldSuccessfullySavedOffer() {
         // when
-        offersService.makeOffer(claim, offer, madeBy);
+        offersService.makeOffer(claim, offer, madeBy, AUTHORISATION);
 
         //then
-        verify(offersRepository).updateSettlement(eq(claim.getId()), eq(settlementJsonMock));
+        verify(caseRepository).updateSettlement(eq(claim), any(Settlement.class),
+            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT.name()));
+
         verify(eventProducer).createOfferMadeEvent(eq(claim));
     }
 
     @Test(expected = ConflictException.class)
     public void makeAnOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        offersService.makeOffer(settledClaim, offer, madeBy);
+        offersService.makeOffer(settledClaim, offer, madeBy, AUTHORISATION);
     }
 
     @Test
     public void shouldSuccessfullyAcceptOffer() {
         // when
-        offersService.accept(claimWithOffer, decidedBy);
+        offersService.accept(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(offersRepository).updateSettlement(eq(claimWithOffer.getId()), eq(settlementJsonMock));
+        verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
+            eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT.name()));
+
         verify(eventProducer).createOfferAcceptedEvent(eq(claimWithOffer), eq(decidedBy));
     }
 
     @Test(expected = ConflictException.class)
     public void acceptOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        offersService.accept(settledClaim, decidedBy);
+        offersService.accept(settledClaim, decidedBy, AUTHORISATION);
     }
 
     @Test
     public void shouldSuccessfullyRejectOffer() {
         // when
-        offersService.reject(claimWithOffer, decidedBy);
+        offersService.reject(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(offersRepository).updateSettlement(eq(claimWithOffer.getId()), eq(settlementJsonMock));
+        verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
+            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT.name()));
+
         verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }
 
     @Test(expected = ConflictException.class)
     public void rejectOfferShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        offersService.reject(settledClaim, decidedBy);
+        offersService.reject(settledClaim, decidedBy, AUTHORISATION);
     }
 
     @Test
     public void shouldSuccessfullyCountersignAgreement() {
         // given
-        when(claimService.getClaimById(eq(claimWithAcceptedOffer.getId()))).thenReturn(claimWithAcceptedOffer);
+        when(claimService.getClaimById(eq(claimWithAcceptedOffer.getId()))).thenReturn(settledClaim);
 
         // when
-        offersService.countersign(claimWithAcceptedOffer, madeBy);
+        offersService.countersign(claimWithAcceptedOffer, madeBy, AUTHORISATION);
 
         //then
-        verify(offersRepository)
-            .countersignAgreement(eq(claimWithAcceptedOffer.getId()), eq(settlementJsonMock), any(LocalDateTime.class));
+        verify(caseRepository)
+            .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
+                eq("OFFER_COUNTERSIGNED_BY_DEFENDANT"));
 
-        verify(eventProducer).createAgreementCountersignedEvent(eq(claimWithAcceptedOffer), eq(madeBy));
+        verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
     }
 
     private static Claim buildClaimWithOffer() {

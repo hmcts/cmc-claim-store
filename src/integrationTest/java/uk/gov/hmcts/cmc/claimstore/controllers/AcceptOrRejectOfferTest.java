@@ -76,7 +76,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
         postRequestTo("accept")
             .andExpect(status().isCreated());
 
-        verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT));
+        verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT), eq(CLAIMANT_AUTH_TOKEN));
 
         Claim claimWithAcceptedOffer = claimStore.getClaim(claim.getId());
     }
@@ -86,7 +86,7 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
         postRequestTo("reject")
             .andExpect(status().isCreated());
 
-        verify(offersService).reject(any(Claim.class), eq(MadeBy.CLAIMANT));
+        verify(offersService).reject(any(Claim.class), eq(MadeBy.CLAIMANT), eq(CLAIMANT_AUTH_TOKEN));
 
         Claim claimWithRejectedOffer = claimStore.getClaim(claim.getId());
         assertThat(claimWithRejectedOffer.getSettlementReachedAt()).isNull();

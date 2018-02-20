@@ -61,7 +61,7 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.makeOffer(claim, offer, party);
+        offersService.makeOffer(claim, offer, party, authorisation);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
@@ -75,7 +75,7 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.accept(claim, party);
+        offersService.accept(claim, party, authorisation);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
@@ -89,7 +89,7 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.reject(claim, party);
+        offersService.reject(claim, party, authorisation);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
@@ -103,7 +103,7 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.countersign(claim, party);
+        offersService.countersign(claim, party, authorisation);
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 }
