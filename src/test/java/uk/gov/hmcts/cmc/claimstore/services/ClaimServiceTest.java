@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -144,18 +144,19 @@ public class ClaimServiceTest {
     @Test
     public void saveClaimShouldFinishSuccessfully() {
 
-        ClaimData app = SampleClaimData.validDefaults();
-        String jsonApp = new ResourceReader().read("/claim-application.json");
+        ClaimData claimData = SampleClaimData.validDefaults();
 
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-
+        doReturn(Optional.empty())
+            .doReturn(Optional.of(claim))
+            .when(caseRepository).getClaimByExternalId(anyString(), anyString());
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
-        Claim createdClaim = claimService.saveClaim(USER_ID, app, AUTHORISATION);
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION);
 
-        assertThat(createdClaim).isEqualTo(claim);
+        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));

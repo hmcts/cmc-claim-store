@@ -137,7 +137,7 @@ public class ClaimService {
             authorisation
         );
 
-        return issuedClaim;
+        return getClaimByExternalId(externalId, authorisation);
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
