@@ -121,6 +121,48 @@ public class SettlementTest {
         settlement.reject(MadeBy.CLAIMANT);
     }
 
+    @Test
+    public void partyCanCountersignAnAcceptedOffer() {
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        settlement.countersign(MadeBy.DEFENDANT);
+
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void partyIsNotAllowedToCountersignWhenOfferAlreadyCountersigned() {
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+        settlement.countersign(MadeBy.DEFENDANT);
+
+        settlement.countersign(MadeBy.DEFENDANT);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void partyIsNotAllowedToCountersignWhenOfferWasAcceptedByThemselves() {
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        settlement.countersign(MadeBy.CLAIMANT);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void partyIsNotAllowedToCountersignWhenOfferWasNotAccepted() {
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+
+        settlement.countersign(MadeBy.DEFENDANT);
+    }
+
+    @Test(expected = IllegalSettlementStatementException.class)
+    public void partyIsNotAllowedToCountersignWhenOfferWasRejected() {
+        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.reject(MadeBy.CLAIMANT);
+
+        settlement.countersign(MadeBy.DEFENDANT);
+    }
+
     @Test(expected = IllegalSettlementStatementException.class)
     public void getLastStatementShouldThrowIllegalStateWhenNoStatementsHaveBeenMade() {
         settlement.getLastStatement();
