@@ -107,7 +107,7 @@ public class CoreCaseDataService {
         logger.info("Get claim from CCD " + referenceNumber);
 
         Optional<Long> ccdId = search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
-        ccdId.ifPresent((id) -> logger.info("Claim found " + id));
+        ccdId.ifPresent(id -> logger.info("Claim found " + id));
 
         return ccdId;
     }
@@ -125,6 +125,6 @@ public class CoreCaseDataService {
             searchString
         );
 
-        return result.size() > 0 ? Optional.of(result.get(0).getId()) : Optional.empty();
+        return result.isEmpty() ? Optional.of(result.get(0).getId()) : Optional.empty();
     }
 }
