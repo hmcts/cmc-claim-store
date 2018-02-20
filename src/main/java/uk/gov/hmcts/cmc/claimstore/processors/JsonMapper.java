@@ -49,4 +49,8 @@ public class JsonMapper {
             );
         }
     }
+
+    public <T> T convertValue(Object value, Class<T> clazz) {
+        return objectMapper.convertValue(value, clazz);
+    }
 }

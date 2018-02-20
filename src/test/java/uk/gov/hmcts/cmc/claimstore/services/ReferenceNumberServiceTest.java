@@ -22,7 +22,7 @@ public class ReferenceNumberServiceTest {
     private ReferenceNumberRepository referenceNumberRepository;
 
     @Before
-    public void setup() {
+    public void setUp() {
         referenceNumberService = new ReferenceNumberService(referenceNumberRepository);
     }
 

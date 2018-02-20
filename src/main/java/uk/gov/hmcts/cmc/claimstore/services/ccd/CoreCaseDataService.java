@@ -189,12 +189,8 @@ public class CoreCaseDataService {
     private Claim extractClaim(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getData();
         caseData.put("id", caseDetails.getId());
-        CCDCase ccdCase = convertToCCDCase(caseData);
+        CCDCase ccdCase = jsonMapper.convertValue(caseData, CCDCase.class);
         return caseMapper.from(ccdCase);
     }
 
-    private CCDCase convertToCCDCase(Map<String, Object> mapData) {
-        String json = jsonMapper.toJson(mapData);
-        return jsonMapper.fromJson(json, CCDCase.class);
-    }
 }
