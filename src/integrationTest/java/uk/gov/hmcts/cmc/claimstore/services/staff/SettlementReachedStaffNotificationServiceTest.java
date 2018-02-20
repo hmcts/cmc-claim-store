@@ -25,12 +25,12 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
+public class SettlementReachedStaffNotificationServiceTest extends MockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
-    private OfferAcceptedStaffNotificationService service;
+    private SettlementReachedStaffNotificationService service;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
@@ -60,12 +60,12 @@ public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyOfferAccepted(null);
+        service.notifySettlementReached(null);
     }
 
     @Test
     public void shouldSendEmailToExpectedRecipient() {
-        service.notifyOfferAccepted(claim);
+        service.notifySettlementReached(claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -74,7 +74,7 @@ public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedContent() {
-        service.notifyOfferAccepted(claim);
+        service.notifySettlementReached(claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -88,7 +88,7 @@ public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        service.notifyOfferAccepted(claim);
+        service.notifySettlementReached(claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -97,7 +97,7 @@ public class OfferAcceptedStaffNotificationServiceTest extends MockSpringTest {
             .get(0);
 
         String expectedFileName = String.format(
-            OfferAcceptedStaffNotificationService.FILE_NAME_FORMAT,
+            SettlementReachedStaffNotificationService.FILE_NAME_FORMAT,
             claim.getReferenceNumber()
         );
 
