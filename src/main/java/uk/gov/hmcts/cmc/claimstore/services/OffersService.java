@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 
 @Service
 public class OffersService {
@@ -86,7 +87,7 @@ public class OffersService {
             .orElseThrow(conflictOfferIsNotMade());
         settlement.countersign(party);
 
-        caseRepository.reachSettlementAgreement(claim, settlement, authorisation, "SETTLED_PRE_JUDGMENT");
+        caseRepository.reachSettlementAgreement(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
         return updated;
