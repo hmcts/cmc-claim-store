@@ -16,7 +16,7 @@ public class ReferenceNumberService {
         this.referenceNumberRepository = referenceNumberRepository;
     }
 
-    public String getReferenceNumber(Boolean claimantRepresented) {
+    public String getReferenceNumber(boolean claimantRepresented) {
         if (claimantRepresented) {
             return this.referenceNumberRepository.getReferenceNoForLegal();
         } else {
