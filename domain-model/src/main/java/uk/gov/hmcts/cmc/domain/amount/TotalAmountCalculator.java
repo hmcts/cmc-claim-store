@@ -31,7 +31,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> totalTillDateOfIssue(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, claim.getCreatedAt().toLocalDate()));
+        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn()));
     }
 
     public static BigDecimal calculateInterest(
@@ -66,7 +66,7 @@ public class TotalAmountCalculator {
 
             if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
                 LocalDate fromDate = (data.getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
-                    ? claim.getCreatedAt().toLocalDate()
+                    ? claim.getIssuedOn()
                     : data.getInterestDate().getDate();
                 return claimAmount
                     .add(data.getFeesPaidInPound())

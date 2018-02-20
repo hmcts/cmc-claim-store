@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -25,7 +24,7 @@ public class InterestProviderTest {
     private Interest interest;
     private InterestDate interestDate;
     private BigDecimal claimAmount;
-    private LocalDateTime submittedOn;
+    private LocalDate submittedOn;
 
     private InterestContentProvider provider = new InterestContentProvider(
         new InterestCalculationService(Clock.systemDefaultZone())
@@ -36,7 +35,7 @@ public class InterestProviderTest {
         interest = claim.getClaimData().getInterest();
         interestDate = claim.getClaimData().getInterestDate();
         claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-        submittedOn = claim.getCreatedAt();
+        submittedOn = claim.getIssuedOn();
     }
 
     @Test(expected = NullPointerException.class)

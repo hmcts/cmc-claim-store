@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -29,7 +29,7 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDateTime submittedOn) {
+        LocalDate submittedOn) {
         requireNonNull(interest);
         requireNonNull(interestDate);
         requireNonNull(claimAmount);
