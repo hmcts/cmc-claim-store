@@ -31,7 +31,8 @@ public class OffersService {
         this.eventProducer = eventProducer;
     }
 
-    public void makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
+    @Transactional
+    public Claim makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
@@ -40,10 +41,11 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_MADE_BY", party.name()));
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
+        return updated;
     }
 
     @Transactional
-    public void accept(Claim claim, MadeBy party, String authorisation) {
+    public Claim accept(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
@@ -56,22 +58,26 @@ public class OffersService {
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferAcceptedEvent(updated, party);
+        return updated;
     }
 
-    public void reject(Claim claim, MadeBy party, String authorisation) {
+    @Transactional
+    public Claim reject(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
             .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
         settlement.reject(party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_REJECTED_BY", party.name()));
+        String userAction = userAction("OFFER_REJECTED_BY", party.name());
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
+        return updated;
     }
 
     @Transactional
-    public void countersign(Claim claim, MadeBy party, String authorisation) {
+    public Claim countersign(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
@@ -81,6 +87,7 @@ public class OffersService {
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, "SETTLED_PRE_JUDGMENT");
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
+        return updated;
     }
 
     private void assertSettlementIsNotReached(Claim claim) {

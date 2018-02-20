@@ -106,7 +106,7 @@ public class ClaimStore {
     }
 
     public Claim countersignAgreement(String externalId, Settlement settlement) {
-        this.offersRepository.countersignAgreement(
+        this.offersRepository.reachSettlement(
             externalId,
             jsonMapper.toJson(settlement),
             LocalDateTime.now()
