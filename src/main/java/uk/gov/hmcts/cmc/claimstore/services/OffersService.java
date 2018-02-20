@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
+import java.util.function.Supplier;
+
 import static java.lang.String.format;
 
 @Service
@@ -49,7 +51,7 @@ public class OffersService {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
+            .orElseThrow(conflictOfferIsNotMade());
 
         settlement.accept(party);
 
@@ -66,7 +68,7 @@ public class OffersService {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
+            .orElseThrow(conflictOfferIsNotMade());
         settlement.reject(party);
 
         String userAction = userAction("OFFER_REJECTED_BY", party.name());
@@ -81,13 +83,17 @@ public class OffersService {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
+            .orElseThrow(conflictOfferIsNotMade());
         settlement.countersign(party);
 
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, "SETTLED_PRE_JUDGMENT");
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
         return updated;
+    }
+
+    private Supplier<ConflictException> conflictOfferIsNotMade() {
+        return () -> new ConflictException("Offer has not been made yet.");
     }
 
     private void assertSettlementIsNotReached(Claim claim) {

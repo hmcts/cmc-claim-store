@@ -93,7 +93,7 @@ public class OffersController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/countersign",
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Rejects an offer as a party")
+    @ApiOperation("Counter sign an offer as a party")
     public Claim countersign(
         @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
