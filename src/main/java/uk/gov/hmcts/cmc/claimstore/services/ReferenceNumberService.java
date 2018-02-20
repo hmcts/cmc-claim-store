@@ -18,9 +18,9 @@ public class ReferenceNumberService {
 
     public String getReferenceNumber(boolean claimantRepresented) {
         if (claimantRepresented) {
-            return this.referenceNumberRepository.getReferenceNoForLegal();
+            return this.referenceNumberRepository.getReferenceNumberForLegal();
         } else {
-            return this.referenceNumberRepository.getReferenceNoForCitizen();
+            return this.referenceNumberRepository.getReferenceNumberForCitizen();
         }
     }
 

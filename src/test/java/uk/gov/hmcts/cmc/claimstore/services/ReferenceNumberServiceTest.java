@@ -29,25 +29,22 @@ public class ReferenceNumberServiceTest {
     @Test
     public void shouldGetReferenceNumberForCitizen() {
 
-        when(referenceNumberRepository.getReferenceNoForCitizen()).thenReturn(CITIZEN_REFERENCE);
+        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(CITIZEN_REFERENCE);
 
         Boolean claimRepresented = false;
         String referenceNumber = referenceNumberService.getReferenceNumber(claimRepresented);
 
-        //then
         assertThat(referenceNumber).isNotNull().isEqualTo(CITIZEN_REFERENCE);
     }
 
     @Test
     public void shouldGetReferenceNumberForLegalRepresentative() {
 
-        when(referenceNumberRepository.getReferenceNoForLegal()).thenReturn(LEGAL_REFERENCE);
+        when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(LEGAL_REFERENCE);
 
-        //when
         Boolean claimRepresented = true;
         String referenceNumber = referenceNumberService.getReferenceNumber(claimRepresented);
 
-        //then
         assertThat(referenceNumber).isNotNull().isEqualTo(LEGAL_REFERENCE);
     }
 }
