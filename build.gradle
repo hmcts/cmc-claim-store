@@ -256,8 +256,10 @@ sonarqube {
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/claimstore/idam/models/**," +
+      "**/ExceptionForClient.java," +
       "**/config/**," +
       "**/*Exception.java," +
+      "**/PathPatterns.java," +
       "**/ClaimRepository.java"
   }
 }
