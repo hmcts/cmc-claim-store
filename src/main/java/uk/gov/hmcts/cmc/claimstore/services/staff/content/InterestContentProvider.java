@@ -29,11 +29,11 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDate submittedOn) {
+        LocalDate issuedOn) {
         requireNonNull(interest);
         requireNonNull(interestDate);
         requireNonNull(claimAmount);
-        requireNonNull(submittedOn);
+        requireNonNull(issuedOn);
 
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         String fromDate;
@@ -46,7 +46,7 @@ public class InterestContentProvider {
             );
             amountUpToNow = formatMoney(amountUpToNowRealValue);
         } else {
-            fromDate = formatDate(submittedOn);
+            fromDate = formatDate(issuedOn);
         }
         BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
 
