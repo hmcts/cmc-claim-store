@@ -5,6 +5,7 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 
 import javax.annotation.PostConstruct;
@@ -16,8 +17,7 @@ public class Bootstrap {
     private final UserService userService;
     private final AATConfiguration aatConfiguration;
 
-    private String authenticationToken;
-    private String userId;
+    private User citizenUser;
 
     @Autowired
     public Bootstrap(
@@ -37,19 +37,14 @@ public class Bootstrap {
             .objectMapperConfig(
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
-        authenticationToken = userService.authenticateUser(
+        citizenUser = userService.authenticateUser(
             aatConfiguration.getTestCitizenUser().getUsername(),
             aatConfiguration.getTestCitizenUser().getPassword()
-        ).getAuthorisation();
-        userId = userService.getUserDetails(authenticationToken).getId();
+        );
     }
 
-    public String getUserAuthenticationToken() {
-        return authenticationToken;
-    }
-
-    public String getUserId() {
-        return userId;
+    public User getCitizenUser() {
+        return citizenUser;
     }
 
 }

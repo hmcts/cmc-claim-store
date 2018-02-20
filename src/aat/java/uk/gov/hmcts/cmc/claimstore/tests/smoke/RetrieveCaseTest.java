@@ -16,18 +16,18 @@ public class RetrieveCaseTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToRetrieveCasesBySubmitterId() {
-        testCasesRetrievalFor("/claims/claimant/" + bootstrap.getUserId());
+        testCasesRetrievalFor("/claims/claimant/" + bootstrap.getCitizenUser().getUserDetails().getId());
     }
 
     @Test
     public void shouldBeAbleToRetrieveCasesByDefendantId() {
-        testCasesRetrievalFor("/claims/defendant/" + bootstrap.getUserId());
+        testCasesRetrievalFor("/claims/defendant/" + bootstrap.getCitizenUser().getUserDetails().getId());
     }
 
     private void testCasesRetrievalFor(String uriPath) {
         String response = RestAssured
             .given()
-            .header(HttpHeaders.AUTHORIZATION, bootstrap.getUserAuthenticationToken())
+            .header(HttpHeaders.AUTHORIZATION, bootstrap.getCitizenUser().getAuthorisation())
             .when()
             .get(uriPath)
             .then()
