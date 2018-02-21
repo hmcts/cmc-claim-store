@@ -93,4 +93,17 @@ public class OffersController {
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/countersign",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Rejects an offer as a party")
+    public Claim countersign(
+        @PathVariable("externalId") String externalId,
+        @PathVariable("party") MadeBy party,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        offersService.countersign(claim, party, authorisation);
+        return claimService.getClaimByExternalId(externalId, authorisation);
+    }
 }
