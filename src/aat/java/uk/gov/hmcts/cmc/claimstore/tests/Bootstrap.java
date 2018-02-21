@@ -38,8 +38,8 @@ public class Bootstrap {
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
         citizenUser = userService.authenticateUser(
-            aatConfiguration.getTestCitizenUser().getUsername(),
-            aatConfiguration.getTestCitizenUser().getPassword()
+            aatConfiguration.getSmokeTestCitizen().getUsername(),
+            aatConfiguration.getSmokeTestCitizen().getPassword()
         );
     }
 

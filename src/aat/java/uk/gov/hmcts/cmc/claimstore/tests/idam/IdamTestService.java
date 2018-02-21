@@ -30,8 +30,8 @@ public class IdamTestService {
 
     public User createDefendant() {
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createDefendantRequest(email, aatConfiguration.getTestCitizenUser().getPassword()));
-        return userService.authenticateUser(email, aatConfiguration.getTestCitizenUser().getPassword());
+        idamTestApi.createUser(createDefendantRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
+        return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
     private CreateUserRequest createDefendantRequest(String username, String password) {
