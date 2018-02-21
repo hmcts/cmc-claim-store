@@ -101,9 +101,8 @@ claim-store:
 spring:
   profiles: 'aat'
 
-aat:
-  test-instance-uri: "${TEST_URL:}"
-  test-citizen-user:
-    password: "${AAT_TEST_USER_PASSWORD:}"
-  test-solicitor-user:
-    password: "${AAT_TEST_USER_PASSWORD:}"
+test-instance-uri: "${TEST_URL:}"
+smoke-test-citizen:
+  password: "${SMOKE_TEST_USER_PASSWORD:}"
+smoke-test-solicitor:
+  password: "${SMOKE_TEST_USER_PASSWORD:}"
