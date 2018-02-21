@@ -152,7 +152,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldConvertMapToObject() {
+    public void shouldConvertMapToCCDCase() {
 
         LocalDateTime timestamp = LocalDateTime.now();
         String uuid = UUID.randomUUID().toString();
@@ -166,7 +166,7 @@ public class JsonMapperTest {
         data.put("externalId", uuid);
         data.put("issuedOn", date);
         data.put("responseDeadline", date.plusDays(14));
-        data.put("moreTimeRequested", "NO");
+        data.put("moreTimeRequested", CCDYesNoOption.NO.name());
 
         CCDCase ccdCase = processor.convertValue(data, CCDCase.class);
 
