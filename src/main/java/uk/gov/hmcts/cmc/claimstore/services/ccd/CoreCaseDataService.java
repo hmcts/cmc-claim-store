@@ -30,6 +30,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 
@@ -164,6 +165,18 @@ public class CoreCaseDataService {
             .build();
 
         return this.update(authorisation, ccdCase, event);
+    }
+
+    public CaseDetails updateResponseDeadline(
+        String authorisation,
+        Claim claim,
+        LocalDate newResponseDeadline
+    ) {
+        CCDCase ccdCase = CCDCase.builder()
+            .id(claim.getId())
+            .responseDeadline(newResponseDeadline)
+            .build();
+        return this.update(authorisation, ccdCase, TEST_SUPPORT_UPDATE);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
