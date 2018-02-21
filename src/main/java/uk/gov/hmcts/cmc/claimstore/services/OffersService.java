@@ -41,7 +41,6 @@ public class OffersService {
         eventProducer.createOfferMadeEvent(claim);
     }
 
-    @Transactional
     public void accept(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
@@ -50,11 +49,9 @@ public class OffersService {
 
         settlement.accept(party);
 
-        caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
+        caseRepository.updateSettlement(claim, settlement, authorisation,
             userAcion("OFFER_ACCEPTED_BY", party.name()));
-
-        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
-        eventProducer.createOfferAcceptedEvent(updated, party);
+        eventProducer.createOfferAcceptedEvent(claim, party);
     }
 
     public void reject(Claim claim, MadeBy party, String authorisation) {
@@ -67,6 +64,20 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation, userAcion("OFFER_REJECTED_BY", party.name()));
 
         eventProducer.createOfferRejectedEvent(claim, party);
+    }
+
+    @Transactional
+    public void countersign(Claim claim, MadeBy party, String authorisation) {
+        assertSettlementIsNotReached(claim);
+
+        Settlement settlement = claim.getSettlement()
+            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
+        settlement.countersign(party);
+
+        caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
+            userAcion("OFFER_COUNTERSIGNED_BY", party.name()));
+
+        eventProducer.createAgreementCountersignedEvent(claimService.getClaimById(claim.getId()), party);
     }
 
     private void assertSettlementIsNotReached(Claim claim) {

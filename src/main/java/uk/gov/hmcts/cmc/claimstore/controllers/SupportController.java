@@ -13,8 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -39,7 +39,7 @@ public class SupportController {
     private final MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
-    private final OfferAcceptedStaffNotificationHandler offerAcceptedStaffNotificationHandler;
+    private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
 
     @Autowired
     public SupportController(
@@ -49,7 +49,7 @@ public class SupportController {
         MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
-        OfferAcceptedStaffNotificationHandler offerAcceptedStaffNotificationHandler
+        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -57,7 +57,7 @@ public class SupportController {
         this.moreTimeRequestedStaffNotificationHandler = moreTimeRequestedStaffNotificationHandler;
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
-        this.offerAcceptedStaffNotificationHandler = offerAcceptedStaffNotificationHandler;
+        this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -85,7 +85,7 @@ public class SupportController {
                 resendStaffNotificationCCJRequestSubmitted(claim, authorisation);
                 break;
             case "offer-accepted":
-                resendStaffNotificationOnOfferAccepted(claim);
+                resendStaffNotificationOnAgreementCountersigned(claim);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -142,12 +142,12 @@ public class SupportController {
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
     }
 
-    private void resendStaffNotificationOnOfferAccepted(Claim claim) {
+    private void resendStaffNotificationOnAgreementCountersigned(Claim claim) {
         if (claim.getSettlementReachedAt() == null) {
             throw new ConflictException(CLAIM + claim.getId() + " does not have a settlement");
         }
-        OfferAcceptedEvent event = new OfferAcceptedEvent(claim, null);
-        offerAcceptedStaffNotificationHandler.onOfferAccepted(event);
+        AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null);
+        agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
     }
 
 }

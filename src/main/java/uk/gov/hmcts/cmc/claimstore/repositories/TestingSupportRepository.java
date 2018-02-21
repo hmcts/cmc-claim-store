@@ -18,10 +18,10 @@ import java.util.Optional;
 public interface TestingSupportRepository {
     @SqlUpdate(
         "UPDATE claim SET response_deadline = :responseDeadline "
-            + "WHERE id = :claimId"
+            + "WHERE external_id = :externalId"
     )
     void updateResponseDeadline(
-        @Bind("claimId") Long claimId,
+        @Bind("externalId") String externalId,
         @Bind("responseDeadline") LocalDate responseDeadline
     );
 

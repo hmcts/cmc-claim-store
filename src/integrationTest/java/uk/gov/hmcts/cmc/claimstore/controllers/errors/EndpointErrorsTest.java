@@ -39,7 +39,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     private static final Exception UNEXPECTED_ERROR
         = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
-    private static final String AUTHORISATION = "Bearer token";
+    private static final String BEARER_TOKEN = "Bearer token";
 
     @Autowired
     private MockMvc webClient;
@@ -48,11 +48,11 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(caseRepository.getClaimByExternalId(externalId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId, BEARER_TOKEN)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + externalId)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             )
             .andExpect(status().isInternalServerError());
     }
@@ -61,11 +61,11 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchBySubmitterIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String submitterId = "1";
 
-        given(caseRepository.getBySubmitterId(submitterId, AUTHORISATION)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getBySubmitterId(submitterId, BEARER_TOKEN)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/claimant/" + submitterId)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             )
             .andExpect(status().isInternalServerError());
     }
@@ -78,7 +78,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
         webClient
             .perform(get("/claims/defendant/" + defendantId)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             )
             .andExpect(status().isInternalServerError());
     }
@@ -91,7 +91,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/2")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION))
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isInternalServerError());
     }
 
@@ -109,7 +109,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
         webClient
             .perform(put("/claims/" + externalId + "/defendant/" + defendantId)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION))
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isInternalServerError());
     }
 
@@ -132,7 +132,7 @@ public class EndpointErrorsTest extends MockSpringTest {
 
         webClient
             .perform(post("/claims/" + externalId + "/request-more-time")
-                .header(HttpHeaders.AUTHORIZATION, "it's me!"))
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isInternalServerError());
     }
 
@@ -143,7 +143,8 @@ public class EndpointErrorsTest extends MockSpringTest {
         given(testingSupportRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(get("/testing-support/claims/" + referenceNumber))
+            .perform(get("/testing-support/claims/" + referenceNumber)
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isInternalServerError());
     }
 
@@ -166,7 +167,7 @@ public class EndpointErrorsTest extends MockSpringTest {
         webClient
             .perform(post("/claims/" + claimantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
             )
             .andExpect(status().isConflict());
@@ -187,7 +188,7 @@ public class EndpointErrorsTest extends MockSpringTest {
         webClient
             .perform(post("/responses/claim/" + externalId + "/defendant/" + DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION)
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .content(jsonMapper.toJson(SampleResponse.validDefaults()))
             )
             .andExpect(status().isInternalServerError());
