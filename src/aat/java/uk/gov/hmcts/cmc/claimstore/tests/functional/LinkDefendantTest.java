@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -15,14 +16,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LinkDefendantTest extends BaseTest {
 
+    @Autowired
+    private FunctionalTestsUsers functionalTestsUsers;
+
     @Test
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         Claim claim = linkDefendant(defendant, createdCase.getExternalId())
             .then()
@@ -35,7 +39,7 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     public void shouldReturnNotFoundResponseWhenGivenInvalidClaimExternalReference() {
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         String invalidCaseReference = UUID.randomUUID().toString();
 
