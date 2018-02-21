@@ -1,4 +1,7 @@
-apply plugin: 'java'
+plugins {
+  id 'net.ltgt.apt' version '0.14'
+  id 'java'
+}
 
 sourceCompatibility = 1.8
 
@@ -17,6 +20,8 @@ dependencies {
   compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: versions.jackson
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
   compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+  apt group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
 
   testCompile project(':domain-sample-data')
   testCompile group: 'junit', name: 'junit', version: '4.12'
