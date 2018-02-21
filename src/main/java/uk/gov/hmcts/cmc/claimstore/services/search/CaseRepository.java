@@ -34,5 +34,7 @@ public interface CaseRepository {
     void updateSettlement(Claim claim, Settlement settlement, String authorisation, String userAction);
 
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
+
+    Claim saveClaim(String authorisation, Claim claim);
 }
 

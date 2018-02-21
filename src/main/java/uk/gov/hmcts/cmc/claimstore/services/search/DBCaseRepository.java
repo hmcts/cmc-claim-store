@@ -118,4 +118,20 @@ public class DBCaseRepository implements CaseRepository {
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
         offersRepository.reachSettlement(claim.getExternalId(), jsonMapper.toJson(settlement), LocalDateTime.now());
     }
+
+    @Override
+    public Claim saveClaim(String authorisation, Claim claim) {
+        String claimDataString = jsonMapper.toJson(claim.getClaimData());
+        if (claim.getClaimData().isClaimantRepresented()) {
+            claimRepository.saveRepresented(claimDataString, claim.getSubmitterId(), claim.getIssuedOn(),
+                claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail());
+        } else {
+            claimRepository.saveSubmittedByClaimant(claimDataString, claim.getSubmitterId(), claim.getLetterHolderId(),
+                claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail());
+        }
+
+        return claimRepository
+            .getClaimByExternalId(claim.getExternalId())
+            .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
+    }
 }
