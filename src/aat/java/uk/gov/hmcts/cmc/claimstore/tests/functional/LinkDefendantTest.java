@@ -18,8 +18,8 @@ public class LinkDefendantTest extends BaseTest {
     @Test
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            bootstrap.getSmokeTestCitizen().getAuthorisation(),
+            bootstrap.getSmokeTestCitizen().getUserDetails().getId()
         );
 
         User defendant = idamTestService.createCitizen();

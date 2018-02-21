@@ -23,8 +23,8 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
     @Test
     public void shouldBeAbleToSuccessfullyRequestCCJ() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            bootstrap.getSmokeTestCitizen().getAuthorisation(),
+            bootstrap.getSmokeTestCitizen().getUserDetails().getId()
         );
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
@@ -47,8 +47,8 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            bootstrap.getSmokeTestCitizen().getAuthorisation(),
+            bootstrap.getSmokeTestCitizen().getUserDetails().getId()
         );
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
@@ -65,8 +65,8 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
     @Test
     public void shouldNotBeAllowedToRequestCCJWhenResponseDeadlineHasNotPassed() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            bootstrap.getSmokeTestCitizen().getAuthorisation(),
+            bootstrap.getSmokeTestCitizen().getUserDetails().getId()
         );
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
@@ -82,7 +82,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, bootstrap.getCitizenUser().getAuthorisation())
+            .header(HttpHeaders.AUTHORIZATION, bootstrap.getSmokeTestCitizen().getAuthorisation())
             .body(jsonMapper.toJson(ccj))
             .when()
             .post("/claims/" + externalId + "/county-court-judgment");

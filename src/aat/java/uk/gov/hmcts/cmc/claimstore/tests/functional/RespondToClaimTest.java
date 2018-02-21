@@ -39,8 +39,8 @@ public class RespondToClaimTest extends BaseTest {
 
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            bootstrap.getSmokeTestCitizen().getAuthorisation(),
+            bootstrap.getSmokeTestCitizen().getUserDetails().getId()
         );
 
         User defendant = idamTestService.createCitizen();
@@ -65,8 +65,8 @@ public class RespondToClaimTest extends BaseTest {
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            bootstrap.getSmokeTestCitizen().getAuthorisation(),
+            bootstrap.getSmokeTestCitizen().getUserDetails().getId()
         );
 
         User defendant = idamTestService.createCitizen();

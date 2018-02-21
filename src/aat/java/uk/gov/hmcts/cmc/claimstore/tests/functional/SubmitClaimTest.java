@@ -63,10 +63,10 @@ public class SubmitClaimTest extends BaseTest {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, bootstrap.getCitizenUser().getAuthorisation())
+            .header(HttpHeaders.AUTHORIZATION, bootstrap.getSmokeTestCitizen().getAuthorisation())
             .body(jsonMapper.toJson(claimData))
             .when()
-            .post("/claims/" + bootstrap.getCitizenUser().getUserDetails().getId());
+            .post("/claims/" + bootstrap.getSmokeTestCitizen().getUserDetails().getId());
     }
 
 }
