@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LinkDefendantTest extends BaseTest {
 
+    private User claimant;
+
+    @Before
+    public void beforeEachTest() {
+        claimant = idamTestService.createCitizen();
+    }
+
     @Test
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getSmokeTestCitizen().getAuthorisation(),
-            bootstrap.getSmokeTestCitizen().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimant.getUserDetails().getId()
         );
 
         User defendant = idamTestService.createCitizen();
