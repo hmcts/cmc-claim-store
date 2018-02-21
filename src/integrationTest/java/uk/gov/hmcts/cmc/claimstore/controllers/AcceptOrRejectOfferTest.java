@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +79,6 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
         verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT), eq(CLAIMANT_AUTH_TOKEN));
 
         Claim claimWithAcceptedOffer = claimStore.getClaim(claim.getId());
-        assertThat(claimWithAcceptedOffer.getSettlementReachedAt()).isBeforeOrEqualTo(LocalDateTime.now());
     }
 
     @Test

@@ -32,6 +32,11 @@ public class Settlement {
         partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
     }
 
+    public void countersign(MadeBy party) {
+        assertOfferHasBeenAcceptedByOtherParty(party);
+        partyStatements.add(new PartyStatement(StatementType.COUNTERSIGNATURE, party));
+    }
+
     @JsonIgnore
     PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
@@ -76,12 +81,27 @@ public class Settlement {
         }
     }
 
+    private void assertOfferHasBeenAcceptedByOtherParty(MadeBy party) {
+        if (!lastStatementIsAcceptationNotBy(party)) {
+            throw new IllegalSettlementStatementException(
+                format("Last statement was: %s , offer acceptation expected.",
+                    getLastStatement().getType().name().toLowerCase())
+            );
+        }
+    }
+
     private boolean lastStatementIsAnOfferMadeBy(MadeBy madeBy) {
         return lastStatementIsOffer() && getLastStatement().getMadeBy().equals(madeBy);
     }
 
     private boolean lastStatementIsOffer() {
         return getLastStatement().getType().equals(StatementType.OFFER);
+    }
+
+    private boolean lastStatementIsAcceptationNotBy(MadeBy madeBy) {
+        PartyStatement lastStatement = getLastStatement();
+        return lastStatement.getType().equals(StatementType.ACCEPTATION)
+            && !lastStatement.getMadeBy().equals(madeBy);
     }
 
     @Override
