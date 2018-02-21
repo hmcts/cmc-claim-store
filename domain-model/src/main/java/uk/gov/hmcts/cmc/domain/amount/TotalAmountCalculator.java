@@ -59,9 +59,10 @@ public class TotalAmountCalculator {
 
     private static BigDecimal calculateTotalAmount(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
+        LocalDate afterIssuedOnDate = toDate;
 
         if (toDate.isBefore(claim.getIssuedOn())) {
-            toDate = claim.getIssuedOn();
+            afterIssuedOnDate = claim.getIssuedOn();
         }
 
         if (data.getAmount() instanceof AmountBreakDown) {
@@ -74,7 +75,7 @@ public class TotalAmountCalculator {
                     : data.getInterestDate().getDate();
                 return claimAmount
                     .add(data.getFeesPaidInPound())
-                    .add(calculateInterest(claimAmount, rate, fromDate, toDate));
+                    .add(calculateInterest(claimAmount, rate, fromDate, afterIssuedOnDate));
             }
 
             return claimAmount.add(data.getFeesPaidInPound());
