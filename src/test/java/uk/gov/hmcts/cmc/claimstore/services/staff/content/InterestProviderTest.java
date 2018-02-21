@@ -123,22 +123,22 @@ public class InterestProviderTest {
 
     @Test
     public void customInterestDateShouldBeFalseIfSubmissionDateIsUsed() {
-        InterestContent content = provider.createContent(interest, submissionDate(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn);
 
         assertThat(content.isCustomFromDate()).isFalse();
     }
 
-    private InterestDate submissionDate() {
+    private InterestDate issuedOnDate() {
         return new InterestDate(
             InterestDate.InterestDateType.SUBMISSION,
-            claim.getCreatedAt().toLocalDate(),
+            claim.getIssuedOn(),
             "testing"
         );
     }
 
     @Test
     public void amountUpToNowShouldBeNullWhenSubmissionDateIsUsed() {
-        InterestContent content = provider.createContent(interest, submissionDate(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn);
 
         assertThat(content.getAmount()).isNull();
         assertThat(content.getAmountRealValue()).isNull();
@@ -146,7 +146,7 @@ public class InterestProviderTest {
 
     @Test
     public void dateFromShouldBeClaimCreatedOnWhenSubmissionDateIsUsed() {
-        InterestContent content = provider.createContent(interest, submissionDate(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn);
 
         assertThat(content.getFromDate()).isEqualTo(formatDate(issuedOn));
     }

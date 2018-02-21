@@ -40,13 +40,7 @@ public class AmountContentProvider {
                 interest.getRate()
             );
 
-            InterestDate interestDate = claim.getClaimData().getInterestDate();
-            if (interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM)) {
-                interestFromDate = Optional.of(interestDate.getDate());
-            } else {
-                interestFromDate = Optional.of(claim.getCreatedAt().toLocalDate());
-            }
-
+            interestFromDate = Optional.of(getInterestFromDate(claim));
             interestRate = interest.getRate();
             interestAmount = getInterestAmount(
                 claim,
@@ -97,7 +91,7 @@ public class AmountContentProvider {
             InterestDate interestDate = claim.getClaimData().getInterestDate();
             return interestDate.getDate();
         } else {
-            return claim.getCreatedAt().toLocalDate();
+            return claim.getIssuedOn();
         }
     }
 }

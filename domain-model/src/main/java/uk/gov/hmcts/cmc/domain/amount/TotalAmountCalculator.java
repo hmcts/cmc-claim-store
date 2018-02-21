@@ -60,6 +60,10 @@ public class TotalAmountCalculator {
     private static BigDecimal calculateTotalAmount(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
 
+        if (toDate.isBefore(claim.getIssuedOn())) {
+            toDate = claim.getIssuedOn();
+        }
+
         if (data.getAmount() instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
             BigDecimal rate = data.getInterest().getRate();
