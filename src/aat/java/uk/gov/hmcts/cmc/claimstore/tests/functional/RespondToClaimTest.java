@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 public class RespondToClaimTest extends BaseTest {
+
+    @Autowired
+    private FunctionalTestsUsers functionalTestsUsers;
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
@@ -39,11 +43,11 @@ public class RespondToClaimTest extends BaseTest {
 
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         commonOperations.linkDefendant(
             createdCase.getExternalId(),
@@ -65,11 +69,11 @@ public class RespondToClaimTest extends BaseTest {
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
         Claim createdCase = commonOperations.submitClaim(
-            bootstrap.getCitizenUser().getAuthorisation(),
-            bootstrap.getCitizenUser().getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         commonOperations.linkDefendant(
             createdCase.getExternalId(),
