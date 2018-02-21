@@ -3,9 +3,9 @@ package uk.gov.hmcts.cmc.ccd.migration.idam.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.migration.idam.api.IdamApi;
+import uk.gov.hmcts.cmc.ccd.migration.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.properties.IdamCaseworker;
-import uk.gov.hmcts.cmc.ccd.migration.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.ccd.migration.idam.properties.IdamCaseworkerProperties;
 
 import java.util.Base64;

@@ -21,3 +21,7 @@ dependencies {
   testCompile project(':domain-sample-data')
 
 }
+
+bootRepackage {
+  enabled false
+}

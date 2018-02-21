@@ -12,7 +12,11 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 /**
  * Application to migrate claims from claim-store database to CCD datastore.
  */
-@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.authorisation", "uk.gov.hmcts.cmc.ccd.migration", "uk.gov.hmcts.cmc.ccd.mapper"})
+@SpringBootApplication(scanBasePackages = {
+    "uk.gov.hmcts.reform.authorisation",
+    "uk.gov.hmcts.cmc.ccd.migration",
+    "uk.gov.hmcts.cmc.ccd.mapper"
+})
 @SuppressWarnings({"HideUtilityClassConstructor", "squid:S1118"}) // Spring needs a constructor, its not a utility class
 @EnableFeignClients(basePackages =
     {
