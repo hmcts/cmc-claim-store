@@ -43,7 +43,7 @@ public class RespondToClaimTest extends BaseTest {
             bootstrap.getCitizenUser().getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         commonOperations.linkDefendant(
             createdCase.getExternalId(),
@@ -69,7 +69,7 @@ public class RespondToClaimTest extends BaseTest {
             bootstrap.getCitizenUser().getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         commonOperations.linkDefendant(
             createdCase.getExternalId(),

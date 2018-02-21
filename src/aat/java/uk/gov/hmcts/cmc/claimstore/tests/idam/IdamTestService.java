@@ -28,7 +28,7 @@ public class IdamTestService {
         this.aatConfiguration = aatConfiguration;
     }
 
-    public User createDefendant() {
+    public User createCitizen() {
         String email = testData.nextUserEmail();
         idamTestApi.createUser(createDefendantRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());

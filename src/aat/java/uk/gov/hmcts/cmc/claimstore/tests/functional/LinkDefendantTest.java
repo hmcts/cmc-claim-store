@@ -22,7 +22,7 @@ public class LinkDefendantTest extends BaseTest {
             bootstrap.getCitizenUser().getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         Claim claim = linkDefendant(defendant, createdCase.getExternalId())
             .then()
@@ -35,7 +35,7 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     public void shouldReturnNotFoundResponseWhenGivenInvalidClaimExternalReference() {
-        User defendant = idamTestService.createDefendant();
+        User defendant = idamTestService.createCitizen();
 
         String invalidCaseReference = UUID.randomUUID().toString();
 
