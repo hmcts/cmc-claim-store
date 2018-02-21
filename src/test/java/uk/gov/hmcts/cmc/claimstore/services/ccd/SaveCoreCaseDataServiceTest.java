@@ -29,9 +29,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SaveCoreCaseDataServiceTest {
 
-    private static final String USER_AUTHORISATION = "Bearer: User authorisation token";
-    private static final String CASEWORKER_AUTHORISATION = "Bearer: Caseworker authorisation token";
-    private static final String SERVICE_AUTHORISATION = "Bearer: Service authorisation token";
+    private static final String USER_AUTHORISATION = "Bearer UserAuthorisationToken";
+    private static final String CASEWORKER_AUTHORISATION = "Bearer CaseworkerAuthorisationToken";
+    private static final String SERVICE_AUTHORISATION = "Bearer ServiceAuthorisationToken";
 
     private static final String LETTER_HOLDER_ID = "12345";
 
