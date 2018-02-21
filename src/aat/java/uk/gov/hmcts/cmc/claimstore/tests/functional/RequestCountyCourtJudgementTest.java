@@ -2,12 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -22,18 +21,14 @@ import static org.assertj.core.api.Assertions.within;
 
 public class RequestCountyCourtJudgementTest extends BaseTest {
 
-    private User claimant;
-
-    @Before
-    public void beforeEachTest() {
-        claimant = idamTestService.createCitizen();
-    }
+    @Autowired
+    private FunctionalTestsUsers functionalTestsUsers;
 
     @Test
     public void shouldBeAbleToSuccessfullyRequestCCJ() {
         Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimant.getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
@@ -56,8 +51,8 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() {
         Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimant.getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
@@ -74,8 +69,8 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
     @Test
     public void shouldNotBeAllowedToRequestCCJWhenResponseDeadlineHasNotPassed() {
         Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimant.getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
@@ -91,7 +86,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
+            .header(HttpHeaders.AUTHORIZATION, functionalTestsUsers.getClaimant().getAuthorisation())
             .body(jsonMapper.toJson(ccj))
             .when()
             .post("/claims/" + externalId + "/county-court-judgment");

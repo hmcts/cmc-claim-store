@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
-import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,12 +21,8 @@ import static org.assertj.core.api.Assertions.within;
 
 public class RespondToClaimTest extends BaseTest {
 
-    private User claimant;
-
-    @Before
-    public void beforeEachTest() {
-        claimant = idamTestService.createCitizen();
-    }
+    @Autowired
+    private FunctionalTestsUsers functionalTestsUsers;
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
@@ -47,8 +43,8 @@ public class RespondToClaimTest extends BaseTest {
 
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
         Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimant.getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
         User defendant = idamTestService.createCitizen();
@@ -73,8 +69,8 @@ public class RespondToClaimTest extends BaseTest {
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
         Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimant.getUserDetails().getId()
+            functionalTestsUsers.getClaimant().getAuthorisation(),
+            functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
         User defendant = idamTestService.createCitizen();
