@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
@@ -23,11 +22,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static java.time.LocalDateTime.now;
+
 @Component
 public class ClaimService {
 
     private final ClaimRepository claimRepository;
-    private final JsonMapper jsonMapper;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final UserService userService;
@@ -40,7 +40,6 @@ public class ClaimService {
     public ClaimService(
         ClaimRepository claimRepository,
         UserService userService,
-        JsonMapper jsonMapper,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
@@ -49,7 +48,6 @@ public class ClaimService {
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
-        this.jsonMapper = jsonMapper;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.eventProducer = eventProducer;
@@ -119,27 +117,27 @@ public class ClaimService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String submitterEmail = userDetails.getEmail();
 
-        String claimDataString = jsonMapper.toJson(claimData);
+        final Claim claim = Claim.builder()
+            .claimData(claimData)
+            .submitterId(submitterId)
+            .issuedOn(issuedOn)
+            .responseDeadline(responseDeadline)
+            .externalId(externalId)
+            .submitterEmail(submitterEmail)
+            .createdAt(now())
+            .letterHolderId(letterHolderId.orElse(null))
+            .build();
 
-        long issuedClaimId;
-
-        if (claimData.isClaimantRepresented()) {
-            issuedClaimId = claimRepository.saveRepresented(claimDataString, submitterId, issuedOn,
-                responseDeadline, externalId, submitterEmail);
-        } else {
-            issuedClaimId = claimRepository.saveSubmittedByClaimant(claimDataString, submitterId,
-                letterHolderId.orElseThrow(IllegalStateException::new), issuedOn, responseDeadline,
-                externalId, submitterEmail);
-        }
+        Claim issuedClaim = caseRepository.saveClaim(authorisation, claim);
 
         eventProducer.createClaimIssuedEvent(
-            getClaimById(issuedClaimId),
+            issuedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
             userDetails.getFullName(),
             authorisation
         );
 
-        return getClaimById(issuedClaimId);
+        return getClaimByExternalId(externalId, authorisation);
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
