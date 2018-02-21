@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -19,9 +21,14 @@ import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
@@ -142,5 +149,39 @@ public class JsonMapperTest {
     public void shouldThrowExceptionOnInvalidJsonWithTypeReference() {
         processor.fromJson("{asads:", new TypeReference<List<Response>>() {
         });
+    }
+
+    @Test
+    public void shouldConvertMapToObject() {
+
+        LocalDateTime timestamp = LocalDateTime.now();
+        String uuid = UUID.randomUUID().toString();
+        LocalDate date = LocalDate.now();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", "1");
+        data.put("referenceNumber", "000MC001");
+        data.put("submitterId", "2");
+        data.put("submittedOn", timestamp);
+        data.put("externalId", uuid);
+        data.put("issuedOn", date);
+        data.put("responseDeadline", date.plusDays(14));
+        data.put("moreTimeRequested", "NO");
+
+        CCDCase ccdCase = processor.convertValue(data, CCDCase.class);
+
+        CCDCase expected = CCDCase.builder()
+            .id(1L)
+            .referenceNumber("000MC001")
+            .submitterId("2")
+            .submittedOn(timestamp.format(ISO_DATE_TIME))
+            .externalId(uuid)
+            .issuedOn(date.format(ISO_DATE))
+            .responseDeadline(date.plusDays(14))
+            .moreTimeRequested(CCDYesNoOption.NO)
+            .build();
+
+        assertThat(ccdCase).isNotNull().isEqualTo(expected);
+
     }
 }
