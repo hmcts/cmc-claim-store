@@ -29,9 +29,9 @@ public class IntegrationTestSupportController {
         this.supportRepository = supportRepository;
     }
 
-    @GetMapping("/oops")
-    public void poo() {
-        throw new RuntimeException();
+    @GetMapping("/trigger-server-error")
+    public void throwAnError() {
+        throw new RuntimeException("Something really bad happened!");
     }
 
     @GetMapping("/claims/{claimReferenceNumber}")
