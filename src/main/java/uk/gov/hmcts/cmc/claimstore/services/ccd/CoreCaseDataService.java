@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -42,7 +45,10 @@ public class CoreCaseDataService {
     private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
     private final UserService userService;
+    private final JsonMapper jsonMapper;
+    private final ReferenceNumberService referenceNumberService;
 
+    @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
     public CoreCaseDataService(
         SaveCoreCaseDataService saveCoreCaseDataService,
@@ -51,7 +57,10 @@ public class CoreCaseDataService {
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
-        UserService userService) {
+        UserService userService,
+        JsonMapper jsonMapper,
+        ReferenceNumberService referenceNumberService
+    ) {
         this.saveCoreCaseDataService = saveCoreCaseDataService;
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
@@ -59,11 +68,15 @@ public class CoreCaseDataService {
         this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
         this.userService = userService;
+        this.jsonMapper = jsonMapper;
+        this.referenceNumberService = referenceNumberService;
     }
 
-    public CaseDetails save(String authorisation, Claim claim) {
+    public Claim save(String authorisation, Claim claim) {
         try {
             CCDCase ccdCase = caseMapper.to(claim);
+            Boolean claimantRepresented = claim.getClaimData().isClaimantRepresented();
+            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(claimantRepresented));
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(claim.getSubmitterId())
                 .jurisdictionId(JURISDICTION_ID)
@@ -72,14 +85,16 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            return saveCoreCaseDataService
+            CaseDetails caseDetails = saveCoreCaseDataService
                 .save(
                     authorisation,
                     eventRequestData,
                     ccdCase,
-                    claim.getClaimData().isClaimantRepresented(),
+                    claimantRepresented,
                     claim.getLetterHolderId()
                 );
+
+            return extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
                 .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
@@ -183,4 +198,12 @@ public class CoreCaseDataService {
                     caseEvent), exception);
         }
     }
+
+    private Claim extractClaim(CaseDetails caseDetails) {
+        Map<String, Object> caseData = caseDetails.getData();
+        caseData.put("id", caseDetails.getId());
+        CCDCase ccdCase = jsonMapper.convertValue(caseData, CCDCase.class);
+        return caseMapper.from(ccdCase);
+    }
+
 }
