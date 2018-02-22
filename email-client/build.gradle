@@ -1,3 +1,5 @@
+apply plugin: 'jacoco'
+
 buildscript {
   repositories { mavenCentral() }
 }
