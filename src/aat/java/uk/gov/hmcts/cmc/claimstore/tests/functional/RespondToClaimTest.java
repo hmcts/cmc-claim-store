@@ -1,11 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
-import io.restassured.RestAssured;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -55,7 +52,7 @@ public class RespondToClaimTest extends BaseTest {
             defendant.getUserDetails().getId()
         );
 
-        Claim updatedCase = respondToClaim(createdCase.getExternalId(), defendant, response)
+        Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
@@ -85,19 +82,8 @@ public class RespondToClaimTest extends BaseTest {
             .withDefence(null)
             .build();
 
-        respondToClaim(createdCase.getExternalId(), defendant, invalidResponse)
+        commonOperations.submitResponse(invalidResponse, createdCase.getExternalId(), defendant)
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
-
-    private io.restassured.response.Response respondToClaim(String claimExternalId, User defendant, Response response) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
-            .body(jsonMapper.toJson(response))
-            .when()
-            .post("/responses/claim/" + claimExternalId + "/defendant/" + defendant.getUserDetails().getId());
-    }
-
 }
