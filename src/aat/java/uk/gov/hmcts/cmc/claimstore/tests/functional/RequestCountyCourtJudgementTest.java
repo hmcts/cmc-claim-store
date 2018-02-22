@@ -94,11 +94,12 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
     private void updateResponseDeadlineToEnableCCJ(String claimReferenceNumber) {
         String updatedDeadlineString = LocalDate.now().minusMonths(1).toString();
-        String output = RestAssured
+        RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, functionalTestsUsers.getClaimant().getAuthorisation())
             .put("/testing-support/claims/" + claimReferenceNumber + "/response-deadline/" + updatedDeadlineString)
             .then()
-            .extract().body().asString();
-        System.out.println(">>> " + output);
+            .statusCode(HttpStatus.OK.value());
     }
 
 
