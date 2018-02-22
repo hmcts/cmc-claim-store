@@ -66,13 +66,15 @@ public class MigrateCoreCaseDataService {
             .event(
                 Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case migrate")
-                    .description("Submitting CMC case migrate - overwrite")
+                    .summary("Migrating case")
+                    .description("Migrating case - overwriting existing record")
                     .build()
             ).data(ccdCase)
             .build();
 
-        submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
+        CaseDetails caseDetails = submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
+
+        grantAccessToCase(caseDetails.getId(), claim);
     }
 
     public void save(
@@ -89,19 +91,23 @@ public class MigrateCoreCaseDataService {
             .event(
                 Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case migrate")
-                    .description("Submitting CMC case migrate - create")
+                    .summary("Migrating case")
+                    .description("Migrating case - create new record")
                     .build()
             ).data(ccdCase)
             .build();
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);
 
+        grantAccessToCase(caseDetails.getId(), claim);
+    }
+
+    private void grantAccessToCase(Long ccdId, Claim claim) {
         String defendantId = claim.getDefendantId() != null ? claim.getDefendantId() : claim.getLetterHolderId();
 
         // make sure both submitter and defendant (or letterHolder) can access the case
-        grantAccess(caseDetails.getId().toString(), claim.getSubmitterId());
-        grantAccess(caseDetails.getId().toString(), defendantId);
+        grantAccess(ccdId.toString(), claim.getSubmitterId());
+        grantAccess(ccdId.toString(), defendantId);
     }
 
     private void grantAccess(

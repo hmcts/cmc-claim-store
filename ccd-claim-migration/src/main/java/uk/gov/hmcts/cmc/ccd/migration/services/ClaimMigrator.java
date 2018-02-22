@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class ClaimMigrator {
@@ -38,25 +39,39 @@ public class ClaimMigrator {
         User user = userService.getUser(userService.authenticateSystemUpdateUser());
         List<Claim> notMigratedClaims = claimRepository.getAllNotMigratedClaims();
 
-        logger.info("User token: " + user.getAuthorisation());
+        logger.debug("User token: " + user.getAuthorisation());
 
-        logger.info("\t Claims to migrate: " + notMigratedClaims.size());
+        AtomicInteger migratedClaims = new AtomicInteger(0);
+        AtomicInteger updatedClaims = new AtomicInteger(0);
+        AtomicInteger failedMigrations = new AtomicInteger(0);
 
         notMigratedClaims.forEach(claim -> {
-            logger.info("\t\t start migrating claim: " + claim.getReferenceNumber());
+            try {
+                logger.debug("\t\t start migrating claim: " + claim.getReferenceNumber());
 
-            Optional<Long> ccdId = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
-            if (ccdId.isPresent()) {
-                logger.info("\t\t claim exists - overwrite");
-                coreCaseDataService.overwrite(user, ccdId.get(), claim);
-            } else {
-                logger.info("\t\t claim created in ccd");
-                coreCaseDataService.create(user, claim);
+                Optional<Long> ccdId = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
+                if (ccdId.isPresent()) {
+                    coreCaseDataService.overwrite(user, ccdId.get(), claim);
+                    logger.debug("\t\t claim exists - overwrite");
+                    migratedClaims.incrementAndGet();
+                } else {
+                    coreCaseDataService.create(user, claim);
+                    logger.debug("\t\t claim created in ccd");
+                    updatedClaims.incrementAndGet();
+                }
+
+                claimRepository.markAsMigrated(claim.getId());
+
+                logger.info("\t\t migrated successfully claim: " + claim.getReferenceNumber());
+            } catch (Exception e) {
+                logger.info(e.getMessage());
+                failedMigrations.incrementAndGet();
             }
-
-            claimRepository.markAsMigrated(claim.getId());
-            logger.info("\t\t migrated successfully claim: " + claim.getReferenceNumber());
-            logger.info("---------------------------");
         });
+
+        logger.info("Total Claims in database: " + notMigratedClaims.size());
+        logger.info("Successfully migrated: " + migratedClaims.toString());
+        logger.info("Successfully updated: " + updatedClaims.toString());
+        logger.info("Failed to migrate: " + failedMigrations.toString());
     }
 }
