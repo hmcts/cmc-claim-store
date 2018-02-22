@@ -200,8 +200,6 @@ task migrateClaims() {
   description 'Migrating claims from claim-store database to CCD'
 
   doLast {
-    print 'I am going to start migration app'
-
     javaexec {
       main="-jar";
       args = [
