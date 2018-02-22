@@ -11,7 +11,10 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
+import java.util.function.Supplier;
+
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 
 @Service
 public class OffersService {
@@ -31,53 +34,67 @@ public class OffersService {
         this.eventProducer = eventProducer;
     }
 
-    public void makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
+    @Transactional
+    public Claim makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAcion("OFFER_MADE_BY", party.name()));
-        eventProducer.createOfferMadeEvent(claim);
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_MADE_BY", party.name()));
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+        eventProducer.createOfferMadeEvent(updated);
+        return updated;
     }
 
-    public void accept(Claim claim, MadeBy party, String authorisation) {
+    @Transactional
+    public Claim accept(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
+            .orElseThrow(conflictOfferIsNotMade());
 
         settlement.accept(party);
 
         caseRepository.updateSettlement(claim, settlement, authorisation,
-            userAcion("OFFER_ACCEPTED_BY", party.name()));
-        eventProducer.createOfferAcceptedEvent(claim, party);
-    }
+            userAction("OFFER_ACCEPTED_BY", party.name()));
 
-    public void reject(Claim claim, MadeBy party, String authorisation) {
-        assertSettlementIsNotReached(claim);
-
-        Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
-        settlement.reject(party);
-
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAcion("OFFER_REJECTED_BY", party.name()));
-
-        eventProducer.createOfferRejectedEvent(claim, party);
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+        eventProducer.createOfferAcceptedEvent(updated, party);
+        return updated;
     }
 
     @Transactional
-    public void countersign(Claim claim, MadeBy party, String authorisation) {
+    public Claim reject(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Offer has not been made yet."));
+            .orElseThrow(conflictOfferIsNotMade());
+        settlement.reject(party);
+
+        String userAction = userAction("OFFER_REJECTED_BY", party.name());
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+        eventProducer.createOfferRejectedEvent(updated, party);
+        return updated;
+    }
+
+    @Transactional
+    public Claim countersign(Claim claim, MadeBy party, String authorisation) {
+        assertSettlementIsNotReached(claim);
+
+        Settlement settlement = claim.getSettlement()
+            .orElseThrow(conflictOfferIsNotMade());
         settlement.countersign(party);
 
-        caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
-            userAcion("OFFER_COUNTERSIGNED_BY", party.name()));
+        caseRepository.reachSettlementAgreement(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+        eventProducer.createAgreementCountersignedEvent(updated, party);
+        return updated;
+    }
 
-        eventProducer.createAgreementCountersignedEvent(claimService.getClaimById(claim.getId()), party);
+    private Supplier<ConflictException> conflictOfferIsNotMade() {
+        return () -> new ConflictException("Offer has not been made yet.");
     }
 
     private void assertSettlementIsNotReached(Claim claim) {
@@ -86,7 +103,7 @@ public class OffersService {
         }
     }
 
-    private String userAcion(String userAction, String userType) {
+    private String userAction(String userAction, String userType) {
         return userAction + "_" + userType;
     }
 }
