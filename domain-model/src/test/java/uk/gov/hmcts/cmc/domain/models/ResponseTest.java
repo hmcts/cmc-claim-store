@@ -11,7 +11,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
+import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class ResponseTest {
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();

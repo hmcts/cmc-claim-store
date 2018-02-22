@@ -29,6 +29,11 @@ public class IntegrationTestSupportController {
         this.supportRepository = supportRepository;
     }
 
+    @GetMapping("/trigger-server-error")
+    public void throwAnError() {
+        throw new IllegalStateException("Something really bad happened!");
+    }
+
     @GetMapping("/claims/{claimReferenceNumber}")
     @ApiOperation("Fetch user claim for given reference number")
     public Claim getByClaimReferenceNumber(

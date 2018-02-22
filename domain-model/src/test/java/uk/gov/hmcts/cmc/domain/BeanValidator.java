@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.utils;
+package uk.gov.hmcts.cmc.domain;
 
 import org.apache.commons.lang3.StringUtils;
 
