@@ -102,7 +102,7 @@ timestamps {
         }
 
         stage('Package (RPM)') {
-          claimStoreRPMVersion = packager.javaRPM('claim-store', 'build/libs/claim-store-$(./gradlew -q printVersion)-all.jar',
+          claimStoreRPMVersion = packager.javaRPM('claim-store', 'build/libs/claim-store.jar',
             'springboot', 'src/main/resources/application.yml')
           version = "{claim_store_buildnumber: ${claimStoreRPMVersion} }"
 
