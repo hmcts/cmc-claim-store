@@ -61,8 +61,7 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.makeOffer(claim, offer, party, authorisation);
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return offersService.makeOffer(claim, offer, party, authorisation);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/accept",
@@ -75,8 +74,7 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.accept(claim, party, authorisation);
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return offersService.accept(claim, party, authorisation);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/reject",
@@ -89,21 +87,19 @@ public class OffersController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.reject(claim, party, authorisation);
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return offersService.reject(claim, party, authorisation);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/countersign",
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Rejects an offer as a party")
+    @ApiOperation("Counter sign an offer as a party")
     public Claim countersign(
         @PathVariable("externalId") String externalId,
         @PathVariable("party") MadeBy party,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        offersService.countersign(claim, party, authorisation);
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return offersService.countersign(claim, party, authorisation);
     }
 }

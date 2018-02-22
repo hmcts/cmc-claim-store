@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
@@ -58,9 +59,12 @@ public class OfferServiceTest {
 
     @Test
     public void shouldSuccessfullySavedOffer() {
+        //given
+        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
         // when
         offersService.makeOffer(claim, offer, madeBy, AUTHORISATION);
-
         //then
         verify(caseRepository).updateSettlement(eq(claim), any(Settlement.class),
             eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT.name()));
@@ -75,14 +79,22 @@ public class OfferServiceTest {
 
     @Test
     public void shouldSuccessfullyAcceptOffer() {
+        // given
+        Claim claimWithOffer = buildClaimWithOffer();
+        Claim acceptedOffer = buildClaimWithAcceptedOffer();
+
+        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(acceptedOffer);
+
+        Settlement settlement = acceptedOffer.getSettlement().orElse(null);
         // when
         offersService.accept(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
+        verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
             eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT.name()));
 
-        verify(eventProducer).createOfferAcceptedEvent(eq(claimWithOffer), eq(decidedBy));
+        verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
 
     @Test(expected = ConflictException.class)
@@ -92,6 +104,10 @@ public class OfferServiceTest {
 
     @Test
     public void shouldSuccessfullyRejectOffer() {
+        //given
+        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claimWithOffer);
+
         // when
         offersService.reject(claimWithOffer, decidedBy, AUTHORISATION);
 
@@ -110,7 +126,8 @@ public class OfferServiceTest {
     @Test
     public void shouldSuccessfullyCountersignAgreement() {
         // given
-        when(claimService.getClaimById(eq(claimWithAcceptedOffer.getId()))).thenReturn(settledClaim);
+        when(claimService.getClaimByExternalId(eq(claimWithAcceptedOffer.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(settledClaim);
 
         // when
         offersService.countersign(claimWithAcceptedOffer, madeBy, AUTHORISATION);
@@ -118,7 +135,7 @@ public class OfferServiceTest {
         //then
         verify(caseRepository)
             .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
-                eq("OFFER_COUNTERSIGNED_BY_DEFENDANT"));
+                eq(CaseEvent.SETTLED_PRE_JUDGMENT.name()));
 
         verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
     }
