@@ -27,6 +27,12 @@ public class SampleSettlement {
         .withOffer(null)
         .build();
 
+    public static final PartyStatement counterSignPartyStatement = SamplePartyStatement.builder()
+        .withStatementType(StatementType.COUNTERSIGNATURE)
+        .withMadeBy(MadeBy.DEFENDANT)
+        .withOffer(null)
+        .build();
+
     private List<PartyStatement> partyStatements = new ArrayList<>(Collections.singletonList(offerPartyStatement));
 
     public static Settlement validDefaults() {
@@ -62,6 +68,10 @@ public class SampleSettlement {
 
         if (partyStatement.getType().equals(StatementType.ACCEPTATION)) {
             settlement.accept(partyStatement.getMadeBy());
+        }
+
+        if (partyStatement.getType().equals(StatementType.COUNTERSIGNATURE)) {
+            settlement.countersign(partyStatement.getMadeBy());
         }
     }
 }

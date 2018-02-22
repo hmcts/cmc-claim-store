@@ -69,6 +69,20 @@ public class SettlementMapperTest {
         assertThat(settlement).isEqualTo(ccdSettlement);
     }
 
+    @Test
+    public void shouldMapCounterSignSettlementToCCD() {
+        //given
+        Settlement settlement = SampleSettlement.builder()
+            .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.acceptPartyStatement,
+                SampleSettlement.counterSignPartyStatement)
+            .build();
+
+        //when
+        CCDSettlement ccdSettlement = settlementMapper.to(settlement);
+
+        //then
+        assertThat(settlement).isEqualTo(ccdSettlement);
+    }
 
     @Test
     public void shouldMaintainTheOrderOfPartyStatements() {
