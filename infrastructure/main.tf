@@ -8,16 +8,16 @@ provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
 
+locals {
+  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+}
+
 data "vault_generic_secret" "notify_api_key" {
-  path = "secret/dev/cmc/notify_api_key"
+  path = "secret/${var.vault_section}/cmc/notify_api_key"
 }
 
 data "vault_generic_secret" "s2s_secret" {
-  path = "secret/test/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore"
-}
-
-locals {
-  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  path = "secret/${var.vault_section}/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore"
 }
 
 module "claim-store-api" {
@@ -43,18 +43,19 @@ module "claim-store-api" {
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
     // idam
-    IDAM_API_URL = "${var.idam-api-url}"
-    IDAM_S2S_AUTH_URL = "${var.s2s-url}"
+    IDAM_API_URL = "${var.idam_api_url}"
+    IDAM_S2S_AUTH_URL = "${var.s2s_url}"
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
     // notify
     GOV_NOTIFY_API_KEY = "${data.vault_generic_secret.notify_api_key.data["value"]}"
 
     // urls
-    FRONTEND_BASE_URL = "${var.frontend-url}"
+    FRONTEND_BASE_URL = "${var.frontend_url}"
     PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
-    DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "${var.document-management-url}"
-    CORE_CASE_DATA_API_URL = "${var.ccd-url}"
+    DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
+    // CORE_CASE_DATA_API_URL = "http://ccd-data-store-api-${var.env}.service.${local.aseName}.internal"
+    CORE_CASE_DATA_API_URL = "false"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"
@@ -65,14 +66,28 @@ module "claim-store-api" {
     // staff notifications
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "civilmoneyclaims+cnp@gmail.com"
+
+    // feature toggles
+    CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
   }
 }
 
 module "claim-store-database" {
-  source = "git@github.com:contino/moj-module-postgres?ref=random-password"
+  source = "git@github.com:contino/moj-module-postgres?ref=master"
   product = "${var.product}-ase"
   location = "West Europe"
   env = "${var.env}"
   postgresql_user = "claimstore"
   postgresql_database = "${var.database-name}"
+}
+
+module "claim-store-vault" {
+  source              = "git@github.com:contino/moj-module-key-vault?ref=master"
+  name                = "cmc-claim-store-${var.env}"
+  product             = "${var.product}"
+  env                 = "${var.env}"
+  tenant_id           = "${var.tenant_id}"
+  object_id           = "${var.jenkins_AAD_objectId}"
+  resource_group_name = "${module.claim-store-api.resource_group_name}"
+  product_group_object_id = "68839600-92da-4862-bb24-1259814d1384"
 }

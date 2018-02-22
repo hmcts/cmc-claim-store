@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.domain.utils.BeanValidator.validate;
+import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class NameTest {
 

@@ -37,6 +37,7 @@ public class Bootstrap {
             .objectMapperConfig(
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
+        RestAssured.useRelaxedHTTPSValidation();
         smokeTestCitizen = userService.authenticateUser(
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
