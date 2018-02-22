@@ -39,7 +39,7 @@ public class ClaimMigrator {
         User user = userService.getUser(userService.authenticateSystemUpdateUser());
         List<Claim> notMigratedClaims = claimRepository.getAllNotMigratedClaims();
 
-        logger.debug("User token: " + user.getAuthorisation());
+        logger.info("User token: " + user.getAuthorisation());
 
         AtomicInteger migratedClaims = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
@@ -47,16 +47,16 @@ public class ClaimMigrator {
 
         notMigratedClaims.forEach(claim -> {
             try {
-                logger.debug("\t\t start migrating claim: " + claim.getReferenceNumber());
+                logger.info("\t\t start migrating claim: " + claim.getReferenceNumber());
 
                 Optional<Long> ccdId = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
                 if (ccdId.isPresent()) {
                     coreCaseDataService.overwrite(user, ccdId.get(), claim);
-                    logger.debug("\t\t claim exists - overwrite");
+                    logger.info("\t\t claim exists - overwrite");
                     migratedClaims.incrementAndGet();
                 } else {
                     coreCaseDataService.create(user, claim);
-                    logger.debug("\t\t claim created in ccd");
+                    logger.info("\t\t claim created in ccd");
                     updatedClaims.incrementAndGet();
                 }
 
