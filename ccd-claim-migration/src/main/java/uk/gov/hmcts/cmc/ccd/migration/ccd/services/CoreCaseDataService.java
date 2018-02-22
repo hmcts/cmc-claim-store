@@ -125,6 +125,6 @@ public class CoreCaseDataService {
             searchString
         );
 
-        return result.isEmpty() ? Optional.of(result.get(0).getId()) : Optional.empty();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0).getId());
     }
 }

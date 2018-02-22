@@ -78,7 +78,9 @@ public class MigrateCoreCaseDataService {
     public void save(
         String authorisation, EventRequestData eventRequestData, Claim claim
     ) {
+        logger.info("claim: " + claim);
         CCDCase ccdCase = caseMapper.to(claim);
+        logger.info("ccdCase: " + ccdCase);
 
         StartEventResponse startEventResponse = start(authorisation, eventRequestData);
 
