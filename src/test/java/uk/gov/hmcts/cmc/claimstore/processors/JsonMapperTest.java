@@ -181,7 +181,7 @@ public class JsonMapperTest {
             .moreTimeRequested(CCDYesNoOption.NO)
             .build();
 
-        assertThat(ccdCase).isNotNull().isEqualTo(expected);
+        assertThat(ccdCase).isEqualTo(expected);
 
     }
 }
