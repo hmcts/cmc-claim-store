@@ -112,7 +112,7 @@ public class ClaimStore {
             LocalDateTime.now()
         );
 
-        logger.info("Countersigned agreement");
+        logger.debug("Countersigned agreement");
 
         return getClaimByExternalId(externalId);
     }
