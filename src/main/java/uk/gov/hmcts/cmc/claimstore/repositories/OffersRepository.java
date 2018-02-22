@@ -10,10 +10,10 @@ public interface OffersRepository {
     @SqlUpdate(
         "UPDATE claim "
             + " SET settlement = :settlement::JSONB "
-            + " WHERE id = :claimId"
+            + " WHERE external_id = :externalId"
     )
     void updateSettlement(
-        @Bind("claimId") Long claimId,
+        @Bind("externalId") String externalId,
         @Bind("settlement") String settlement
     );
 
@@ -21,10 +21,10 @@ public interface OffersRepository {
         "UPDATE claim "
             + " SET "
             + " settlement = :settlement::JSONB, settlement_reached_at = :settlementReachedAt "
-            + " WHERE id = :claimId"
+            + " WHERE external_id = :externalId"
     )
-    void acceptOffer(
-        @Bind("claimId") Long claimId,
+    void reachSettlement(
+        @Bind("externalId") String externalId,
         @Bind("settlement") String settlement,
         @Bind("settlementReachedAt") LocalDateTime settlementReachedAt
     );

@@ -18,7 +18,7 @@ import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
-public class OfferAcceptedStaffNotificationService {
+public class SettlementReachedStaffNotificationService {
 
     static final String FILE_NAME_FORMAT = "%s-settlement-agreement.pdf";
 
@@ -28,7 +28,7 @@ public class OfferAcceptedStaffNotificationService {
     private final SettlementAgreementEmailContentProvider emailContentProvider;
 
     @Autowired
-    public OfferAcceptedStaffNotificationService(
+    public SettlementReachedStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties emailProperties,
         SettlementAgreementEmailContentProvider emailContentProvider,
@@ -40,7 +40,7 @@ public class OfferAcceptedStaffNotificationService {
         this.copyService = copyService;
     }
 
-    public void notifyOfferAccepted(
+    public void notifySettlementReached(
         Claim claim
     ) {
         EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim));

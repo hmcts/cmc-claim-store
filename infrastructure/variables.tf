@@ -12,24 +12,16 @@ variable "location" {
 
 variable "env" {}
 
-variable "document-management-url" {
-  default = "false"
+variable "idam_api_url" {
+  default = "http://betaDevBccidamAppLB.reform.hmcts.net"
 }
 
-variable "idam-api-url" {
-  default = "http://betaDevBccidamAppLB.reform.hmcts.net:4551"
+variable "s2s_url" {
+  default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
 }
 
-variable "s2s-url" {
-  default = "http://betaDevBccidamAppLB.reform.hmcts.net:4552"
-}
-
-variable "ccd-url" {
-  default = "https://case-data-app.test.ccd.reform.hmcts.net:4481"
-}
-
-variable "frontend-url" {
-  default = "https://case-data-app.test.ccd.reform.hmcts.net:4481"
+variable "frontend_url" {
+  default = "https://moneyclaim.nonprod.platform.hmcts.net"
 }
 
 variable "database-name" {
@@ -52,4 +44,15 @@ variable "tenant_id" {
 
 variable "client_id" {
   description = "(Required) The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. This is usually sourced from environment variables and not normally required to be specified."
+}
+
+variable "subscription" {}
+
+variable "jenkins_AAD_objectId" {
+  type                        = "string"
+  description                 = "(Required) The Azure AD object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
+}
+
+variable "vault_section" {
+  default = "test"
 }

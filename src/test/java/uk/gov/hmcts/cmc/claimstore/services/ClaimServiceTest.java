@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -65,8 +64,7 @@ public class ClaimServiceTest {
     private ClaimRepository claimRepository;
     @Mock
     private CaseRepository caseRepository;
-    @Mock
-    private JsonMapper mapper;
+
     @Mock
     private UserService userService;
     @Mock
@@ -83,7 +81,6 @@ public class ClaimServiceTest {
         claimService = new ClaimService(
             claimRepository,
             userService,
-            mapper,
             issueDateCalculator,
             responseDeadlineCalculator,
             eventProducer,
@@ -147,32 +144,22 @@ public class ClaimServiceTest {
     @Test
     public void saveClaimShouldFinishSuccessfully() {
 
-        ClaimData app = SampleClaimData.validDefaults();
-        String jsonApp = new ResourceReader().read("/claim-application.json");
-        String authorisationToken = "Open sesame!";
+        ClaimData claimData = SampleClaimData.validDefaults();
 
-        when(userService.getUserDetails(eq(authorisationToken))).thenReturn(claimantDetails);
-        when(mapper.toJson(eq(app))).thenReturn(jsonApp);
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        doReturn(Optional.empty())
+            .doReturn(Optional.of(claim))
+            .when(caseRepository).getClaimByExternalId(anyString(), anyString());
+        when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
-        when(claimRepository.saveRepresented(
-            eq(jsonApp),
-            eq(USER_ID),
-            eq(ISSUE_DATE),
-            eq(RESPONSE_DEADLINE),
-            anyString(),
-            eq(SUBMITTER_EMAIL)
-        )).thenReturn(CLAIM_ID);
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION);
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.of(claim));
-
-        Claim createdClaim = claimService.saveClaim(USER_ID, app, authorisationToken);
-
-        assertThat(createdClaim).isEqualTo(claim);
+        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
-            anyString(), eq(authorisationToken));
+            anyString(), eq(AUTHORISATION));
     }
 
     @Test(expected = ConflictException.class)

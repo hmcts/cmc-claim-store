@@ -8,25 +8,37 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Component
-@ConfigurationProperties(prefix = "aat")
+@ConfigurationProperties
 public class AATConfiguration {
 
     @Valid
     @NotNull
-    private TestUser testUser;
+    private TestUser smokeTestCitizen;
+
+    @Valid
+    @NotNull
+    private TestUser smokeTestSolicitor;
 
     @NotBlank
     private String testInstanceUri;
 
     @NotBlank
-    private String testUserEmailPattern;
+    private String generatedUserEmailPattern;
 
-    public TestUser getTestUser() {
-        return testUser;
+    public TestUser getSmokeTestCitizen() {
+        return smokeTestCitizen;
     }
 
-    public void setTestUser(TestUser testUser) {
-        this.testUser = testUser;
+    public void setSmokeTestCitizen(TestUser smokeTestCitizen) {
+        this.smokeTestCitizen = smokeTestCitizen;
+    }
+
+    public TestUser getSmokeTestSolicitor() {
+        return smokeTestSolicitor;
+    }
+
+    public void setSmokeTestSolicitor(TestUser smokeTestSolicitor) {
+        this.smokeTestSolicitor = smokeTestSolicitor;
     }
 
     public String getTestInstanceUri() {
@@ -37,12 +49,12 @@ public class AATConfiguration {
         this.testInstanceUri = testInstanceUri;
     }
 
-    public String getTestUserEmailPattern() {
-        return testUserEmailPattern;
+    public String getGeneratedUserEmailPattern() {
+        return generatedUserEmailPattern;
     }
 
-    public void setTestUserEmailPattern(String testUserEmailPattern) {
-        this.testUserEmailPattern = testUserEmailPattern;
+    public void setGeneratedUserEmailPattern(String generatedUserEmailPattern) {
+        this.generatedUserEmailPattern = generatedUserEmailPattern;
     }
 
 }
