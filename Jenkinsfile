@@ -2,8 +2,15 @@
 
 //noinspection GroovyAssignabilityCheck Jenkins API requires this format
 properties(
-  [[$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/cmc-claim-store/'],
-   pipelineTriggers([[$class: 'GitHubPushTrigger']])]
+  [
+    [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/cmc-claim-store/'],
+    pipelineTriggers([[$class: 'GitHubPushTrigger']]),
+    [
+      $class: 'BuildDiscarderProperty', strategy: [
+        $class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '7', numToKeepStr: '10'
+      ]
+    ]
+  ],
 )
 @Library(['CMC', 'Reform'])
 import uk.gov.hmcts.Ansible
@@ -24,7 +31,7 @@ def channel = '#cmc-tech-notification'
 timestamps {
   milestone()
   lock(resource: "claim-store-${env.BRANCH_NAME}", inversePrecedence: true) {
-    node('moj_centos_regular') {
+    node('moj_centos_large2') {
       try {
         def version
         def claimStoreVersion
@@ -102,7 +109,7 @@ timestamps {
         }
 
         stage('Package (RPM)') {
-          claimStoreRPMVersion = packager.javaRPM('claim-store', 'build/libs/claim-store-$(./gradlew -q printVersion)-all.jar',
+          claimStoreRPMVersion = packager.javaRPM('claim-store', 'build/libs/claim-store.jar',
             'springboot', 'src/main/resources/application.yml')
           version = "{claim_store_buildnumber: ${claimStoreRPMVersion} }"
 

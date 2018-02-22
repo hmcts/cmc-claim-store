@@ -30,7 +30,7 @@ public class TestData {
     }
 
     public String nextUserEmail() {
-        return format(aatConfiguration.getTestUserEmailPattern(), RandomStringUtils.randomAlphanumeric(10));
+        return format(aatConfiguration.getGeneratedUserEmailPattern(), RandomStringUtils.randomAlphanumeric(10));
     }
 
 }

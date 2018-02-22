@@ -17,7 +17,7 @@ public class Bootstrap {
     private final UserService userService;
     private final AATConfiguration aatConfiguration;
 
-    private User citizenUser;
+    private User smokeTestCitizen;
 
     @Autowired
     public Bootstrap(
@@ -37,14 +37,15 @@ public class Bootstrap {
             .objectMapperConfig(
                 ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> objectMapper)
             );
-        citizenUser = userService.authenticateUser(
-            aatConfiguration.getTestCitizenUser().getUsername(),
-            aatConfiguration.getTestCitizenUser().getPassword()
+        RestAssured.useRelaxedHTTPSValidation();
+        smokeTestCitizen = userService.authenticateUser(
+            aatConfiguration.getSmokeTestCitizen().getUsername(),
+            aatConfiguration.getSmokeTestCitizen().getPassword()
         );
     }
 
-    public User getCitizenUser() {
-        return citizenUser;
+    public User getSmokeTestCitizen() {
+        return smokeTestCitizen;
     }
 
 }

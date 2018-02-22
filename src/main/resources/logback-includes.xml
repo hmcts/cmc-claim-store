@@ -1,0 +1,3 @@
+<appender name="aiAppender"
+          class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+</appender>
