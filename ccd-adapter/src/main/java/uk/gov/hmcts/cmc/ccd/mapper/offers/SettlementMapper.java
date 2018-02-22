@@ -62,5 +62,9 @@ public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
         if (partyStatement.getType().equals(StatementType.ACCEPTATION)) {
             settlement.accept(partyStatement.getMadeBy());
         }
+
+        if (partyStatement.getType().equals(StatementType.COUNTERSIGNATURE)) {
+            settlement.countersign(partyStatement.getMadeBy());
+        }
     }
 }
