@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 
 import java.util.UUID;
 
@@ -54,4 +57,71 @@ public class CommonOperations {
             .put("/claims/" + claimExternalId + "/defendant/" + userId);
     }
 
+    public Response submitResponse(
+        uk.gov.hmcts.cmc.domain.models.Response response,
+        String claimExternalId,
+        User defendant
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
+            .body(jsonMapper.toJson(response))
+            .when()
+            .post("/responses/claim/" + claimExternalId + "/defendant/" + defendant.getUserDetails().getId());
+    }
+
+    public Response submitOffer(
+        Offer offer,
+        String claimExternalId,
+        String userAuthentication,
+        MadeBy madeBy
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .body(jsonMapper.toJson(offer))
+            .when()
+            .post("/claims/" + claimExternalId + "/offers/" + madeBy.name());
+    }
+
+    public Response acceptOffer(
+        String claimExternalId,
+        String userAuthentication,
+        MadeBy madeBy
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .when()
+            .post("/claims/" + claimExternalId + "/offers/" + madeBy.name() + "/accept");
+    }
+
+    public Response rejectOffer(
+        String claimExternalId,
+        String userAuthentication,
+        MadeBy madeBy
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .when()
+            .post("/claims/" + claimExternalId + "/offers/" + madeBy.name() + "/reject");
+    }
+
+    public Response countersignOffer(
+        String claimExternalId,
+        String userAuthentication,
+        MadeBy madeBy
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .when()
+            .post("/claims/" + claimExternalId + "/offers/" + madeBy.name() + "/countersign");
+    }
 }
