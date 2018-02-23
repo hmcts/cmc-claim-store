@@ -31,7 +31,7 @@ public class IntegrationTestSupportController {
 
     @GetMapping("/trigger-server-error")
     public void throwAnError() {
-        throw new RuntimeException("Something really bad happened!");
+        throw new IllegalStateException("Something really bad happened!");
     }
 
     @GetMapping("/claims/{claimReferenceNumber}")
