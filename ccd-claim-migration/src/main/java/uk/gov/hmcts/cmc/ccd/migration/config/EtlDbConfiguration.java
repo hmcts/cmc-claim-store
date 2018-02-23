@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.migration.config;
 
 import org.skife.jdbi.v2.DBI;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -17,13 +18,10 @@ public class EtlDbConfiguration {
 
     @Bean
     @Primary
+    @ConfigurationProperties(prefix = "database")
     public DataSource getDataSource() {
         return DataSourceBuilder
             .create()
-            .url("jdbc:postgresql://localhost:5430/")
-            .driverClassName("org.postgresql.Driver")
-            .username("claimstore")
-            .password("claimstore")
             .build();
     }
 
