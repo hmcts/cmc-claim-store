@@ -54,7 +54,7 @@ public class SettlementOfferTest extends BaseTest {
 
         Offer offer = SampleOffer.validDefaults();
 
-        Claim caseWithOffer = commonOperations
+        commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
