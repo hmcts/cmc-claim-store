@@ -13,10 +13,10 @@ database:
   url: jdbc:postgresql://${CLAIM_STORE_DB_HOST:}:${CLAIM_STORE_DB_PORT:}/${CLAIM_STORE_DB_NAME:claimstore}${CLAIM_STORE_DB_CONNECTION_OPTIONS:}
   properties:
     charSet: UTF-8
-  maxWaitForConnection: 1
+  maxWaitForConnection: 2000
   minSize: 8
   maxSize: 32
-  evictionInterval: 10
+  evictionInterval: 10000
   minIdleTime: 1 minute
   checkConnectionWhileIdle: true
   checkConnectionOnReturn: true
