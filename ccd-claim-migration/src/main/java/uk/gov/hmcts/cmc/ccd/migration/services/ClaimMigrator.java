@@ -64,7 +64,7 @@ public class ClaimMigrator {
 
                 logger.info("\t\t migrated successfully claim: " + claim.getReferenceNumber());
             } catch (Exception e) {
-                logger.info(e.getMessage());
+                logger.info(e.getMessage(), e);
                 failedMigrations.incrementAndGet();
             }
         });

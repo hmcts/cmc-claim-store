@@ -69,11 +69,7 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.save(
-                user.getAuthorisation(),
-                eventRequestData,
-                claim
-            );
+            migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
         } catch (Exception exception) {
             throw new CreateCaseException(
                 String.format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception
@@ -113,12 +109,11 @@ public class CoreCaseDataService {
     }
 
     private Optional<Long> search(User user, Map<String, Object> searchString) {
-        String serviceAuthToken = this.authTokenGenerator.generate();
 
         List<CaseDetails> result;
         result = this.coreCaseDataApi.searchForCaseworker(
             user.getAuthorisation(),
-            serviceAuthToken,
+            this.authTokenGenerator.generate(),
             user.getUserDetails().getId(),
             JURISDICTION_ID,
             CASE_TYPE_ID,

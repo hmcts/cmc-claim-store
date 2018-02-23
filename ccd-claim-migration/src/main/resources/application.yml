@@ -29,6 +29,9 @@ idam:
   systemUpdateUser:
     username: "civilmoneyclaims+systemupdate@gmail.com"
     password: "Password12"
+  anonymousCaseworker:
+    username: "civilmoneyclaims+anonymouscitizen@gmail.com"
+    password: "Password12"
 
 core_case_data:
   api:
