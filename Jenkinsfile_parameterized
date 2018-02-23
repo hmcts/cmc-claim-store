@@ -29,6 +29,6 @@ static Map<String, Object> secret(String secretName, String envVar) {
 
 withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.ENVIRONMENT, params.SUBSCRIPTION) {
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
-  enableSlackNotifications('#cmc-tech-cnp')
+  enableSlackNotifications('#cmc-tech-notification')
   loadVaultSecrets(secrets)
 }
