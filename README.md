@@ -80,8 +80,8 @@ The [`src/aat`](src/aat) source set contains automatic tests which are executed 
 
 They can be run against local instance of Claim Store as well, but need some environment variables exported:
 
-- `AAT_TEST_USERNAME`, `AAT_TEST_PASSWORD` - credentials of the pre-created test user (you can create it manually yourself),
-- `AAT_TEST_USER_EMAIL_PATTERN` - this is used to generate names for users created by tests on the fly. It should resolve to a valid email address and can have up to one [`printf`](https://en.wikipedia.org/wiki/Printf_format_string) string placeholder where a randomized value will be inserted. For example, if you were to export a value of `some-user-%s@server.com`, it would resolve to something like `some-user-w8a0wuqqvy@server.com` at runtime. You don't have to use a placeholder if you don't want to, but it should be a valid email address as to avoid unnecessary errors in GOV.UK Notify,
+- `SMOKE_TEST_CITIZEN_USERNAME`, `SMOKE_TEST_SOLICITOR_USERNAME`, `SMOKE_TEST_USER_PASSWORD` - credentials of the pre-created test users (you can create them manually yourself). It's assumed they both have the same password at the moment,
+- `GENERATED_USER_EMAIL_PATTERN` - this is used to generate names for users created by tests on the fly. It should resolve to a valid email address and can have up to one [`printf`](https://en.wikipedia.org/wiki/Printf_format_string) string placeholder where a randomized value will be inserted. For example, if you were to export a value of `some-user-%s@server.com`, it would resolve to something like `some-user-w8a0wuqqvy@server.com` at runtime. You don't have to use a placeholder if you don't want to, but it should be a valid email address as to avoid unnecessary errors in GOV.UK Notify,
 - `TEST_URL` - base URL of a running Claim Store instance.
 
 To run smoke tests (non-destructive read operations):
