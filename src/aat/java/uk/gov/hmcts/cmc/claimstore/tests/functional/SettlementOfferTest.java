@@ -46,6 +46,28 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    public void shouldFailForMultipleOfferFromOneUser() {
+        User defendant = idamTestService.createCitizen();
+
+        Claim updatedCase = createClaimWithResponse(defendant);
+
+
+        Offer offer = SampleOffer.validDefaults();
+
+        Claim caseWithOffer = commonOperations
+            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .then()
+            .statusCode(HttpStatus.CREATED.value())
+            .and()
+            .extract().body().as(Claim.class);
+
+        commonOperations
+            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     public void shouldBeAbleToSuccessfullyAcceptOffer() {
         User defendant = idamTestService.createCitizen();
 
@@ -70,6 +92,18 @@ public class SettlementOfferTest extends BaseTest {
         assertThat(caseWithAcceptance.getSettlement().isPresent()).isTrue();
         assertThat(caseWithAcceptance.getSettlement().get().getPartyStatements().size()).isEqualTo(2);
         assertThat(caseWithAcceptance.getSettlementReachedAt()).isNull();
+    }
+
+    @Test
+    public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
+        User defendant = idamTestService.createCitizen();
+
+        Claim updatedCase = createClaimWithResponse(defendant);
+
+        commonOperations
+            .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -100,7 +134,29 @@ public class SettlementOfferTest extends BaseTest {
     }
 
     @Test
+    public void shouldFailRejectOfferWithoutExistingOfferFromUser() {
+        User defendant = idamTestService.createCitizen();
+
+        Claim updatedCase = createClaimWithResponse(defendant);
+
+        commonOperations
+            .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
+        Claim caseWithCounterSign = countersignAnOffer();
+
+        assertThat(caseWithCounterSign.getSettlement().isPresent()).isTrue();
+        assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
+
+        assertThat(caseWithCounterSign.getSettlementReachedAt())
+            .isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+    }
+
+    private Claim countersignAnOffer() {
         User defendant = idamTestService.createCitizen();
 
         Claim updatedCase = createClaimWithResponse(defendant);
@@ -121,18 +177,36 @@ public class SettlementOfferTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        Claim caseWithCounterSign = commonOperations
+        return commonOperations
             .countersignOffer(caseWithAcceptance.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .and()
             .extract().body().as(Claim.class);
+    }
 
-        assertThat(caseWithCounterSign.getSettlement().isPresent()).isTrue();
-        assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
+    @Test
+    public void shouldFailRejectOfferWhenAlreadySettled() {
+        User defendant = idamTestService.createCitizen();
 
-        assertThat(caseWithCounterSign.getSettlementReachedAt())
-            .isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+        Claim updatedCase = countersignAnOffer();
+
+        commonOperations
+            .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    public void shouldFailAcceptOfferWhenAlreadySettled() {
+        User defendant = idamTestService.createCitizen();
+
+        Claim updatedCase = countersignAnOffer();
+
+        commonOperations
+            .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
     }
 
     private Claim createClaimWithResponse(User defendant) {
@@ -140,7 +214,6 @@ public class SettlementOfferTest extends BaseTest {
             functionalTestsUsers.getClaimant().getAuthorisation(),
             functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
-
 
         commonOperations.linkDefendant(
             createdCase.getExternalId(),
@@ -158,5 +231,4 @@ public class SettlementOfferTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
     }
-
 }
