@@ -1,0 +1,35 @@
+apply plugin: 'java'
+
+buildscript {
+  repositories { mavenCentral() }
+}
+
+def springBootVersion = '1.5.10.RELEASE'
+
+def versions = [
+  springBoot: springBootVersion
+]
+
+dependencies {
+  compile project(':domain-model')
+  compile project(':ccd-adapter')
+
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: versions.springBoot
+  compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
+  compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
+  compile group: 'org.springframework', name: 'spring-context-support', version: '4.3.10.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-feign', version: '1.3.5.RELEASE'
+
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.4.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '2.5.0'
+
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+}
+
+sourceCompatibility = 1.8
+
+bootRepackage {
+  mainClass = 'uk.gov.hmcts.cmc.ccd.migration.App'
+}
