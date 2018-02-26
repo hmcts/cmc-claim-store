@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -26,8 +24,6 @@ import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.JU
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class MigrateCoreCaseDataService {
-
-    private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -56,9 +52,8 @@ public class MigrateCoreCaseDataService {
         Long ccdId,
         Claim claim
     ) {
-        logger.info("claim: " + claim);
         CCDCase ccdCase = caseMapper.to(claim);
-        logger.info("ccdCase: " + ccdCase);
+
         StartEventResponse startEventResponse = startEvent(authorisation, eventRequestData, ccdId);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -80,9 +75,7 @@ public class MigrateCoreCaseDataService {
     public void save(
         String authorisation, EventRequestData eventRequestData, Claim claim
     ) {
-        logger.info("claim: " + claim);
         CCDCase ccdCase = caseMapper.to(claim);
-        logger.info("ccdCase: " + ccdCase);
 
         StartEventResponse startEventResponse = start(authorisation, eventRequestData);
 
