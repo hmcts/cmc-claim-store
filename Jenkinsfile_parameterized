@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure@feature/Fetch-vault-secrets") _
+@Library("Infrastructure") _
 
 properties([
 		parameters([
