@@ -168,6 +168,24 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
+    public void totalTillTodayWhenClaimIssuedOnIsYesterday() {
+        Claim claimStandardInterest = SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withAmount(SampleAmountBreakdown.validDefaults())
+                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                    .withInterest(SampleInterest.standard())
+                    .withInterestDate(SampleInterestDate.submission())
+                    .build()
+            )
+            .withIssuedOn(LocalDate.now().minusDays(1))
+            .build();
+
+        assertThat(TotalAmountCalculator.totalTillToday(claimStandardInterest))
+            .isEqualTo(Optional.of(format(new BigDecimal("60.01"))));
+    }
+
+    @Test
     public void totalTillDateOfIssueShouldReturnEmptyOptionalWhenClaimHasAmountDifferentThanAmountBreakdown() {
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claimWithAmountRange())).isEqualTo(Optional.empty());
     }
