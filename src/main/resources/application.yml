@@ -28,7 +28,7 @@ database:
 
 spring:
   application:
-    name: 'Claim Store'
+    name: 'claim-store'
   mail:
     default-encoding: UTF-8
     test-connection: true
