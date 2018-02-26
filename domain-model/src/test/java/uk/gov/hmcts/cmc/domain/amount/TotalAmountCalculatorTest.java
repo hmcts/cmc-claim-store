@@ -114,7 +114,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void totalTillTodayWhenClaimIssuedOnIsToday() {
+    public void totalTillTodayShouldNotIncludeInterestWhenClaimIssuedOnIsToday() {
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
@@ -132,7 +132,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void totalTillTodayWhenClaimIssuedOnIsTomorrow() {
+    public void totalTillTodayShouldNotIncludeInterestWhenClaimIssuedOnIsTomorrow() {
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
@@ -150,25 +150,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void totalTillTodayWhenClaimIssuedOnIsDayAfterTomorrow() {
-        Claim claimStandardInterest = SampleClaim.builder()
-            .withClaimData(
-                SampleClaimData.builder()
-                    .withAmount(SampleAmountBreakdown.validDefaults())
-                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
-                    .withInterest(SampleInterest.standard())
-                    .withInterestDate(SampleInterestDate.submission())
-                    .build()
-            )
-            .withIssuedOn(LocalDate.now().plusDays(2))
-            .build();
-
-        assertThat(TotalAmountCalculator.totalTillToday(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
-    }
-
-    @Test
-    public void totalTillTodayWhenClaimIssuedOnIsYesterday() {
+    public void totalTillTodayShouldIncludeOneDayInterestWhenClaimIssuedOnIsYesterday() {
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
