@@ -279,7 +279,8 @@ sonarqube {
       "**/config/**," +
       "**/*Exception.java," +
       "**/PathPatterns.java," +
-      "**/ClaimRepository.java"
+      "**/ClaimRepository.java," +
+      "**/ccd/migration/**"
   }
 }
 
