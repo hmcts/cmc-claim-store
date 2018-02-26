@@ -7,11 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmc.domain.models.party.Company;
-import uk.gov.hmcts.cmc.domain.models.party.Individual;
-import uk.gov.hmcts.cmc.domain.models.party.Organisation;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import java.util.Objects;
 
