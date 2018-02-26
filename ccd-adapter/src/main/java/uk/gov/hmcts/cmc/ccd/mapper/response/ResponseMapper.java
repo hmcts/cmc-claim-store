@@ -34,7 +34,12 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
         response.getFreeMediation()
             .ifPresent(freeMediation -> builder.freeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
-        builder.moreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        if (response.getMoreTimeNeeded() == null) {
+            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(Response.MoreTimeNeededOption.NO.name()));
+        } else {
+            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        }
+
         builder.defendant(partyMapper.to(response.getDefendant()));
 
         response.getStatementOfTruth()

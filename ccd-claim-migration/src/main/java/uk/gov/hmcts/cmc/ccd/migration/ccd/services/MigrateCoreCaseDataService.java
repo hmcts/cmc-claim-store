@@ -103,11 +103,14 @@ public class MigrateCoreCaseDataService {
     }
 
     private void grantAccessToCase(Long ccdId, Claim claim) {
-        String defendantId = claim.getDefendantId() != null ? claim.getDefendantId() : claim.getLetterHolderId();
-
         // make sure both submitter and defendant (or letterHolder) can access the case
         grantAccess(ccdId.toString(), claim.getSubmitterId());
-        grantAccess(ccdId.toString(), defendantId);
+        // only claims created by citizen have this fields populated
+        if (!claim.getClaimData().isClaimantRepresented()) {
+            String defendantId = claim.getDefendantId() != null ? claim.getDefendantId() : claim.getLetterHolderId();
+            grantAccess(ccdId.toString(), defendantId);
+        }
+
     }
 
     private void grantAccess(

@@ -24,7 +24,8 @@ import java.util.Optional;
 public class CoreCaseDataService {
 
     enum EventType {
-        MIGRATED_FROM_CLAIMSTORE("MigrationFromClaimstoreEvent");
+        MIGRATED_FROM_CLAIMSTORE_CREATE("MigrationFromClaimstoreCreate"),
+        MIGRATED_FROM_CLAIMSTORE_UPDATE("MigrationFromClaimstoreUpdate");
 
         private String value;
 
@@ -65,7 +66,7 @@ public class CoreCaseDataService {
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
+                .eventId(EventType.MIGRATED_FROM_CLAIMSTORE_CREATE.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -84,7 +85,7 @@ public class CoreCaseDataService {
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(EventType.MIGRATED_FROM_CLAIMSTORE.getValue())
+                .eventId(EventType.MIGRATED_FROM_CLAIMSTORE_UPDATE.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -94,7 +95,7 @@ public class CoreCaseDataService {
                 String.format(
                     "Failed updating claim in CCD store for claim %s on event %s",
                     claim.getReferenceNumber(),
-                    EventType.MIGRATED_FROM_CLAIMSTORE), exception
+                    EventType.MIGRATED_FROM_CLAIMSTORE_UPDATE), exception
             );
         }
     }
