@@ -26,6 +26,7 @@ module "claim-store-api" {
   location = "${var.location}"
   env = "${var.env}"
   ilbIp = "${var.ilbIp}"
+  subscription = "${var.subscription}"
 
   app_settings = {
     //    logging vars
