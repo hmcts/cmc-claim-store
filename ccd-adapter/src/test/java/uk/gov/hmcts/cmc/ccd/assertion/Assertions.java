@@ -28,6 +28,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -109,6 +110,11 @@ public class Assertions {
 
     public static PartyAssert assertThat(Party party) {
         return new PartyAssert(party);
+    }
+
+
+    public static TheirDetailsAssert assertThat(TheirDetails party) {
+        return new TheirDetailsAssert(party);
     }
 
     public static ClaimDataAssert assertThat(ClaimData claimData) {
