@@ -10,7 +10,7 @@ public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate>
 
     @Override
     public CCDInterestDate to(InterestDate interestDate) {
-        if (interestDate == null) {
+        if (interestDate == null || interestDate.getType() == null) {
             return null;
         }
 
