@@ -97,7 +97,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void totalTillTodayShouldReturnCalculatedTotalAmountPlusInterestWhenCalculateFromSubmission() {
+    public void totalTillTodayShouldReturnCalculatedTotalAmountPlusInterestWhenCalculateFromIssuedOn() {
 
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
