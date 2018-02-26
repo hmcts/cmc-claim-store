@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.math.BigDecimal.valueOf;
 import static java.util.Objects.requireNonNull;
@@ -21,6 +23,8 @@ public class TotalAmountCalculator {
     public static final BigDecimal NUMBER_OF_DAYS_IN_YEAR = new BigDecimal(365L);
     public static final int DIVISION_DECIMAL_SCALE = 10;
     private static final BigDecimal HUNDRED = valueOf(100);
+
+    private static final Comparator<LocalDate> LOCAL_DATE_COMPARATOR = Comparator.comparing(LocalDate::toEpochDay);
 
     private TotalAmountCalculator() {
         // do not instantiate
@@ -59,11 +63,6 @@ public class TotalAmountCalculator {
 
     private static BigDecimal calculateTotalAmount(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
-        LocalDate afterIssuedOnDate = toDate;
-
-        if (toDate.isBefore(claim.getIssuedOn())) {
-            afterIssuedOnDate = claim.getIssuedOn();
-        }
 
         if (data.getAmount() instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
@@ -75,7 +74,8 @@ public class TotalAmountCalculator {
                     : data.getInterestDate().getDate();
                 return claimAmount
                     .add(data.getFeesPaidInPound())
-                    .add(calculateInterest(claimAmount, rate, fromDate, afterIssuedOnDate));
+                    .add(calculateInterest(claimAmount, rate, fromDate,
+                        Stream.of(toDate, claim.getIssuedOn()).max(LOCAL_DATE_COMPARATOR).get()));
             }
 
             return claimAmount.add(data.getFeesPaidInPound());
