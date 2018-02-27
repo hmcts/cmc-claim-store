@@ -81,8 +81,8 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    private static LocalDate getLatestDate(LocalDate x, LocalDate y) {
-        return Stream.of(x, y).max(LOCAL_DATE_COMPARATOR)
+    private static LocalDate getLatestDate(LocalDate firstDate, LocalDate secondDate) {
+        return Stream.of(firstDate, secondDate).max(LOCAL_DATE_COMPARATOR)
             .orElseThrow(() -> new IllegalArgumentException("One of the dates is not correct"));
     }
 
