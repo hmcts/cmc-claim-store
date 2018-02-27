@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.WhenDidYouPay;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
@@ -10,6 +11,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
     public static class FullDefence extends SampleResponse<FullDefence> {
         private FullDefenceResponse.DefenceType defenceType = FullDefenceResponse.DefenceType.DISPUTE;
         private String defence = "defence string";
+        private WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.builder().build();
 
         public static FullDefence builder() {
             return new FullDefence();
@@ -28,7 +30,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
                 freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,
-                defenceType, defence
+                defenceType, defence, whenDidYouPay
             );
         }
     }

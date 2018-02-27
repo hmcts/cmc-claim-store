@@ -71,7 +71,8 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
             partyMapper.from(response.getDefendant()),
             statementOfTruth,
             FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
-            response.getDefence()
+            response.getDefence(),
+            null
         );
     }
 }
