@@ -56,3 +56,7 @@ variable "jenkins_AAD_objectId" {
 variable "vault_section" {
   default = "test"
 }
+
+variable "staff_email" {
+  default = "civilmoneyclaims+cnp@gmail.com"
+}
