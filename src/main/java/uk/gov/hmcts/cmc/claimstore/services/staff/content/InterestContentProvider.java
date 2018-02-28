@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -29,11 +29,11 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDate issuedOn) {
+        LocalDateTime submittedOn) {
         requireNonNull(interest);
         requireNonNull(interestDate);
         requireNonNull(claimAmount);
-        requireNonNull(issuedOn);
+        requireNonNull(submittedOn);
 
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         String fromDate;
@@ -46,7 +46,7 @@ public class InterestContentProvider {
             );
             amountUpToNow = formatMoney(amountUpToNowRealValue);
         } else {
-            fromDate = formatDate(issuedOn);
+            fromDate = formatDate(submittedOn);
         }
         BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
 
