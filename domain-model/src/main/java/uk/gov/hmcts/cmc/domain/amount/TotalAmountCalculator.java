@@ -10,9 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static java.math.BigDecimal.valueOf;
 import static java.util.Objects.requireNonNull;
@@ -24,8 +22,6 @@ public class TotalAmountCalculator {
     public static final int DIVISION_DECIMAL_SCALE = 10;
     private static final BigDecimal HUNDRED = valueOf(100);
 
-    private static final Comparator<LocalDate> LOCAL_DATE_COMPARATOR = Comparator.comparing(LocalDate::toEpochDay);
-
     private TotalAmountCalculator() {
         // do not instantiate
     }
@@ -35,7 +31,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> totalTillDateOfIssue(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn()));
+        return Optional.ofNullable(calculateTotalAmount(claim, claim.getCreatedAt().toLocalDate()));
     }
 
     public static BigDecimal calculateInterest(
@@ -69,10 +65,12 @@ public class TotalAmountCalculator {
             BigDecimal rate = data.getInterest().getRate();
 
             if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
-                LocalDate fromDate = getFromDate(claim);
+                LocalDate fromDate = (data.getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
+                    ? claim.getCreatedAt().toLocalDate()
+                    : data.getInterestDate().getDate();
                 return claimAmount
                     .add(data.getFeesPaidInPound())
-                    .add(calculateInterest(claimAmount, rate, fromDate, getLatestDate(toDate, claim.getIssuedOn())));
+                    .add(calculateInterest(claimAmount, rate, fromDate, toDate));
             }
 
             return claimAmount.add(data.getFeesPaidInPound());
@@ -81,16 +79,6 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    private static LocalDate getLatestDate(LocalDate firstDate, LocalDate secondDate) {
-        return Stream.of(firstDate, secondDate).max(LOCAL_DATE_COMPARATOR)
-            .orElseThrow(() -> new IllegalArgumentException("One of the dates is not correct"));
-    }
-
-    private static LocalDate getFromDate(Claim claim) {
-        return (claim.getClaimData().getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
-            ? claim.getIssuedOn()
-            : claim.getClaimData().getInterestDate().getDate();
-    }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
         requireValidOrderOfDates(startDate, endDate);
@@ -102,7 +90,9 @@ public class TotalAmountCalculator {
 
     private static void requireValidOrderOfDates(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("StartDate cannot be after endDate");
+            throw new IllegalArgumentException(
+                String.format("StartDate %s cannot be after endDate %s", startDate, endDate)
+            );
         }
     }
 
