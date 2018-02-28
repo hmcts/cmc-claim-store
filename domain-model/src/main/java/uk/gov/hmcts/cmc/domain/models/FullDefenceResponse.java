@@ -24,7 +24,7 @@ public class FullDefenceResponse extends Response {
     private final String defence;
 
     @Valid
-    private final WhenDidYouPay whenDidYouPay;
+    private final PaymentDeclaration paymentDeclaration;
 
     public FullDefenceResponse(
         FreeMediationOption freeMediation,
@@ -33,12 +33,12 @@ public class FullDefenceResponse extends Response {
         StatementOfTruth statementOfTruth,
         DefenceType defenceType,
         String defence,
-        WhenDidYouPay whenDidYouPay
+        PaymentDeclaration paymentDeclaration
     ) {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.defenceType = defenceType;
         this.defence = defence;
-        this.whenDidYouPay = whenDidYouPay;
+        this.paymentDeclaration = paymentDeclaration;
     }
 
     public DefenceType getDefenceType() {
@@ -49,7 +49,7 @@ public class FullDefenceResponse extends Response {
         return defence;
     }
 
-    public WhenDidYouPay getWhenDidYouPay() { return whenDidYouPay; }
+    public PaymentDeclaration getPaymentDeclaration() { return paymentDeclaration; }
 
     @Override
     public boolean equals(Object obj) {
@@ -65,13 +65,13 @@ public class FullDefenceResponse extends Response {
         return super.equals(other)
             && Objects.equals(defenceType, other.defenceType)
             && Objects.equals(defence, other.defence)
-            && Objects.equals(whenDidYouPay, other.whenDidYouPay);
+            && Objects.equals(paymentDeclaration, other.paymentDeclaration);
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), defenceType, defence, whenDidYouPay);
+        return Objects.hash(super.hashCode(), defenceType, defence, paymentDeclaration);
     }
 
 }

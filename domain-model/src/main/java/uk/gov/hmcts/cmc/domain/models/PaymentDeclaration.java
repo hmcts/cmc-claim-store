@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import java.time.LocalDate;
@@ -9,10 +8,10 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-    @JsonInclude(JsonInclude.Include.NON_ABSENT)
-    public class WhenDidYouPay {
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-        @JsonUnwrapped
+    public class PaymentDeclaration {
+
         @NotNull
         @DateNotInTheFuture
         private final LocalDate paidDate;
@@ -21,7 +20,7 @@ import javax.validation.constraints.Size;
         @Size(max = 99000)
         private final String explanation;
 
-        public WhenDidYouPay(final LocalDate paidDate, String explanation) {
+        public PaymentDeclaration(final LocalDate paidDate, String explanation) {
             this.paidDate = paidDate;
             this.explanation = explanation;
         }
@@ -44,7 +43,7 @@ import javax.validation.constraints.Size;
                 return false;
             }
 
-            final WhenDidYouPay that = (WhenDidYouPay) other;
+            final PaymentDeclaration that = (PaymentDeclaration) other;
             return Objects.equals(paidDate, that.paidDate)
                 && Objects.equals(explanation, that.explanation);
         }
@@ -56,9 +55,7 @@ import javax.validation.constraints.Size;
 
         @Override
         public String toString() {
-            return String.format(
-                "WhenDidYouPay{paidDate=%s, howDidYouPay='%s'}",
-                paidDate, explanation
-            );
+            return ReflectionToStringBuilder.toString(this, ourStyle());
         }
+
     }

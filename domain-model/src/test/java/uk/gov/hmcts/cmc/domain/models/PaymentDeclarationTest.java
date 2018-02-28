@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleWhenDidYouPay;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import java.time.LocalDate;
 import java.util.Set;
@@ -9,14 +9,14 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
-public class WhenDidYouPayTest {
+public class PaymentDeclarationTest {
 
     @Test
     public void shouldBeSuccessfulValidationForWhenDidYouPay() {
         //given
-        WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.validDefaults();
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.validDefaults();
         //when
-        Set<String> response = validate(whenDidYouPay);
+        Set<String> response = validate(paymentDeclaration);
         //then
         assertThat(response).hasSize(0);
     }
@@ -24,11 +24,11 @@ public class WhenDidYouPayTest {
     @Test
     public void shouldBeInvalidForNullExplanation() {
         //given
-        WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.builder()
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
             .withExplanation(null)
             .build();
         //when
-        Set<String> errors = validate(whenDidYouPay);
+        Set<String> errors = validate(paymentDeclaration);
         //then
         assertThat(errors)
             .hasSize(1)
@@ -40,11 +40,11 @@ public class WhenDidYouPayTest {
         //given
         String explanation = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
-        WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.builder()
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
             .withExplanation(explanation)
             .build();
         //when
-        Set<String> errors = validate(whenDidYouPay);
+        Set<String> errors = validate(paymentDeclaration);
         //then
         assertThat(errors)
             .hasSize(1)
@@ -54,11 +54,11 @@ public class WhenDidYouPayTest {
     @Test
     public void shouldHaveValidationMessagesWhenExplanationIsEmpty() {
         //given
-        WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.builder()
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
             .withExplanation("")
             .build();
         //when
-        Set<String> errors = validate(whenDidYouPay);
+        Set<String> errors = validate(paymentDeclaration);
         //then
         assertThat(errors)
             .hasSize(1)
@@ -68,48 +68,31 @@ public class WhenDidYouPayTest {
     @Test
     public void shouldHaveValidationMessagesWhenPaidDateIsInTheFuture() {
         //given
-        WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.builder()
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
             .withExplanation("defence")
             .withPaidDate(LocalDate.now().plusYears(1))
             .build();
         //when
-        Set<String> errors = validate(whenDidYouPay);
+        Set<String> errors = validate(paymentDeclaration);
         //then
         assertThat(errors)
             .hasSize(1)
             .contains("paidDate : is in the future");
-
     }
 
 
     @Test
     public void shouldHaveValidationMessagesWhenPaidDateIsNull() {
         //given
-        WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.builder()
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
             .withExplanation("defence")
             .withPaidDate(null)
             .build();
         //when
-        Set<String> errors = validate(whenDidYouPay);
+        Set<String> errors = validate(paymentDeclaration);
         //then
         assertThat(errors)
             .hasSize(1)
             .contains("paidDate : may not be null");
-
-    }
-
-    @Test
-    public void shouldHaveNoErrorsWhenThereIsValidDateAndExplanation() {
-        //given
-        WhenDidYouPay whenDidYouPay = SampleWhenDidYouPay.builder()
-            .withExplanation("paid by credit cars")
-            .withPaidDate(LocalDate.now().minusDays(10))
-            .build();
-        //when
-        Set<String> errors = validate(whenDidYouPay);
-        //then
-        assertThat(errors).hasSize(0);
-
-
     }
 }
