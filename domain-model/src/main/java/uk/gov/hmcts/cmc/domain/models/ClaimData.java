@@ -73,6 +73,9 @@ public class ClaimData {
     private final HousingDisrepair housingDisrepair;
 
     @Valid
+    private final Timeline timeline;
+
+    @Valid
     @NotBlank
     @Size(max = 99000)
     private final String reason;
@@ -106,7 +109,8 @@ public class ClaimData {
         String feeAccountNumber,
         String externalReferenceNumber,
         String preferredCourt,
-        String feeCode) {
+        String feeCode,
+        Timeline timeline) {
 
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
@@ -124,6 +128,7 @@ public class ClaimData {
         this.externalReferenceNumber = externalReferenceNumber;
         this.preferredCourt = preferredCourt;
         this.feeCode = feeCode;
+        this.timeline = timeline;
     }
 
     public List<Party> getClaimants() {
@@ -218,6 +223,10 @@ public class ClaimData {
         return Optional.ofNullable(feeCode);
     }
 
+    public Optional<Timeline> getTimeline() {
+        return Optional.ofNullable(timeline);
+    }
+
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object other) {
@@ -243,7 +252,8 @@ public class ClaimData {
             && Objects.equals(externalId, that.externalId)
             && Objects.equals(externalReferenceNumber, that.externalReferenceNumber)
             && Objects.equals(preferredCourt, that.preferredCourt)
-            && Objects.equals(feeCode, that.feeCode);
+            && Objects.equals(feeCode, that.feeCode)
+            && Objects.equals(timeline, that.timeline);
     }
 
     @Override
@@ -264,7 +274,8 @@ public class ClaimData {
             externalId,
             externalReferenceNumber,
             preferredCourt,
-            feeCode);
+            feeCode,
+            timeline);
     }
 
     @Override

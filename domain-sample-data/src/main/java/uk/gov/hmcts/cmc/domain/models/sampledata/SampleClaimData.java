@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -36,6 +37,7 @@ public class SampleClaimData {
     private String externalReferenceNumber = "CLAIM234324";
     private String preferredCourt = "LONDON COUNTY COUNCIL";
     private String feeCode = "X0012";
+    private Timeline timeline;
 
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
@@ -156,6 +158,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withTimeline(Timeline timeline) {
+        this.timeline = timeline;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -173,7 +180,8 @@ public class SampleClaimData {
             feeAccountNumber,
             externalReferenceNumber,
             preferredCourt,
-            feeCode);
+            feeCode,
+            timeline);
     }
 
     public static ClaimData validDefaults() {

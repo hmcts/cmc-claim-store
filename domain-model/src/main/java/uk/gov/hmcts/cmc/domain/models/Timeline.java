@@ -4,19 +4,23 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.List;
 import java.util.Objects;
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class Timeline {
 
-    private final List<TimelineEvent> timelineEvents;
+    @Valid
+    @Size(max = 20)
+    private final List<TimelineEvent> events;
 
     public Timeline(List<TimelineEvent> events) {
-        this.timelineEvents = events;
+        this.events = events;
     }
 
-    public List<TimelineEvent> getTimelineEvents() {
-        return timelineEvents;
+    public List<TimelineEvent> getEvents() {
+        return events;
     }
 
     @Override
@@ -28,12 +32,12 @@ public class Timeline {
             return false;
         }
         Timeline timeline = (Timeline) other;
-        return Objects.equals(timelineEvents, timeline.timelineEvents);
+        return Objects.equals(events, timeline.events);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timelineEvents);
+        return Objects.hash(events);
     }
 
     @Override
