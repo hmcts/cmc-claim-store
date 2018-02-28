@@ -20,6 +20,10 @@ data "vault_generic_secret" "s2s_secret" {
   path = "secret/${var.vault_section}/ccidam/service-auth-provider/api/microservice-keys/cmcClaimStore"
 }
 
+data "vault_generic_secret" "db_password" {
+  path = "secret/${var.vault_section}/cmc/claim-store/database/password"
+}
+
 module "claim-store-api" {
   source = "git@github.com:contino/moj-module-webapp.git"
   product = "${var.product}-${var.microservice}"
@@ -36,11 +40,10 @@ module "claim-store-api" {
     REFORM_ENVIRONMENT = "${var.env}"
 
     // db vars
-    CLAIM_STORE_DB_HOST = "${module.claim-store-database.host_name}"
-    CLAIM_STORE_DB_PORT = "${module.claim-store-database.postgresql_listen_port}"
-    POSTGRES_DATABASE = "${module.claim-store-database.postgresql_database}"
-    CLAIM_STORE_DB_USERNAME = "${module.claim-store-database.user_name}"
-    CLAIM_STORE_DB_PASSWORD = "${module.claim-store-database.postgresql_password}"
+    CLAIM_STORE_DB_HOST = "${var.db_host}"
+    CLAIM_STORE_DB_PORT = "5432"
+    CLAIM_STORE_DB_USERNAME = "claimstore"
+    CLAIM_STORE_DB_PASSWORD = "${data.vault_generic_secret.db_password.data["value"]}"
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
@@ -72,15 +75,6 @@ module "claim-store-api" {
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
   }
-}
-
-module "claim-store-database" {
-  source = "git@github.com:contino/moj-module-postgres?ref=master"
-  product = "${var.product}-ase"
-  location = "West Europe"
-  env = "${var.env}"
-  postgresql_user = "claimstore"
-  postgresql_database = "${var.database-name}"
 }
 
 module "claim-store-vault" {

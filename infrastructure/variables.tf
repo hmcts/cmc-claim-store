@@ -25,7 +25,7 @@ variable "frontend_url" {
 }
 
 variable "database-name" {
-  default = "postgres"
+  default = "claimstore"
 }
 
 variable "mail-host" {
@@ -59,4 +59,8 @@ variable "vault_section" {
 
 variable "staff_email" {
   default = "civilmoneyclaims+cnp@gmail.com"
+}
+
+variable "db_host" {
+  default = "test-data-lb.moneyclaim.reform.hmcts.net"
 }
