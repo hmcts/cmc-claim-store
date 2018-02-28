@@ -28,7 +28,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline("java", product, component) {
-  after('deploy') {
+  after('deploy:aat') {
+    sh './gradlew migrateClaims'
+  }
+
+  after('deploy:prod') {
     sh './gradlew migrateClaims'
   }
 
