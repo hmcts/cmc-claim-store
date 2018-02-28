@@ -21,19 +21,19 @@ data "vault_generic_secret" "s2s_secret" {
 }
 
 data "vault_generic_secret" "anonymous_citizen_username" {
-  path = "secret/${var.vault_section}/ccidam/idam-api/sscs/anonymouscitizen/user"
+  path = "secret/${var.vault_section}/ccidam/idam-api/cmc/anonymouscitizen/user"
 }
 
 data "vault_generic_secret" "anonymous_citizen_password" {
-  path = "secret/${var.vault_section}/ccidam/idam-api/sscs/anonymouscitizen/password"
+  path = "secret/${var.vault_section}/ccidam/idam-api/cmc/anonymouscitizen/password"
 }
 
 data "vault_generic_secret" "system_update_username" {
-  path = "secret/${var.vault_section}/ccidam/idam-api/sscs/systemupdate/user"
+  path = "secret/${var.vault_section}/ccidam/idam-api/cmc/systemupdate/user"
 }
 
 data "vault_generic_secret" "system_update_password" {
-  path = "secret/${var.vault_section}/ccidam/idam-api/sscs/systemupdate/password"
+  path = "secret/${var.vault_section}/ccidam/idam-api/cmc/systemupdate/password"
 }
 
 
