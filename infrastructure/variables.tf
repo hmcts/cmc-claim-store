@@ -25,7 +25,7 @@ variable "frontend_url" {
 }
 
 variable "database-name" {
-  default = "postgres"
+  default = "claimstore"
 }
 
 variable "mail-host" {
@@ -55,4 +55,8 @@ variable "jenkins_AAD_objectId" {
 
 variable "vault_section" {
   default = "test"
+}
+
+variable "db_host" {
+  default = "test-data-lb.moneyclaim.reform.hmcts.net"
 }
