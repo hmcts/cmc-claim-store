@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.util.Set;
 
-import static java.time.LocalDate.now;
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
@@ -13,7 +12,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectTimelineEvent() {
-        TimelineEvent timelineEvent = new TimelineEvent(now(), "description");
+        TimelineEvent timelineEvent = new TimelineEvent("Last Year", "description");
 
         Set<String> response = validate(timelineEvent);
 
@@ -28,23 +27,34 @@ public class TimelineEventTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("eventDate : may not be null");
+            .contains("date : may not be empty");
     }
 
     @Test
-    public void shouldFailValidationForFutureEventDate() {
-        TimelineEvent timelineEvent = new TimelineEvent(now().plusDays(1), "description");
+    public void shouldFailValidationForEmptyEventDate() {
+        TimelineEvent timelineEvent = new TimelineEvent("", "description");
 
         Set<String> response = validate(timelineEvent);
 
         assertThat(response)
             .hasSize(1)
-            .contains("eventDate : is in the future");
+            .contains("date : may not be empty");
+    }
+
+    @Test
+    public void shouldFailValidationForTooLongEventDate() {
+        TimelineEvent timelineEvent = new TimelineEvent(repeat("a", 21), "description");
+
+        Set<String> response = validate(timelineEvent);
+
+        assertThat(response)
+            .hasSize(1)
+            .contains("date : size must be between 0 and 20");
     }
 
     @Test
     public void shouldFailValidationForNullDescription() {
-        TimelineEvent timelineEvent = new TimelineEvent(now(), null);
+        TimelineEvent timelineEvent = new TimelineEvent("Last Year", null);
 
         Set<String> response = validate(timelineEvent);
 
@@ -55,7 +65,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForEmptyDescription() {
-        TimelineEvent timelineEvent = new TimelineEvent(now(), "");
+        TimelineEvent timelineEvent = new TimelineEvent("Last Year", "");
 
         Set<String> response = validate(timelineEvent);
 
@@ -65,8 +75,8 @@ public class TimelineEventTest {
     }
 
     @Test
-    public void shouldFailValidationForDescriptionTooLong() {
-        TimelineEvent timelineEvent = new TimelineEvent(now(), repeat("a", 99001));
+    public void shouldFailValidationForTooLongDescription() {
+        TimelineEvent timelineEvent = new TimelineEvent("Last Year", repeat("a", 99001));
 
         Set<String> response = validate(timelineEvent);
 

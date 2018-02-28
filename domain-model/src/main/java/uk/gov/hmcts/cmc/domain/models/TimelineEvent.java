@@ -1,13 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
-import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 
-import java.time.LocalDate;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -15,22 +11,21 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class TimelineEvent {
 
-    @JsonUnwrapped
-    @NotNull
-    @DateNotInTheFuture
-    private final LocalDate eventDate;
+    @NotBlank
+    @Size(max = 20)
+    private final String date;
 
     @NotBlank
     @Size(max = 99000)
     private final String description;
 
-    public TimelineEvent(LocalDate eventDate, String description) {
-        this.eventDate = eventDate;
+    public TimelineEvent(String eventDate, String description) {
+        this.date = eventDate;
         this.description = description;
     }
 
-    public LocalDate getEventDate() {
-        return eventDate;
+    public String getDate() {
+        return date;
     }
 
     public String getDescription() {
@@ -47,13 +42,13 @@ public class TimelineEvent {
         }
         TimelineEvent that = (TimelineEvent) other;
 
-        return Objects.equals(eventDate, that.eventDate)
+        return Objects.equals(date, that.date)
             && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(eventDate, description);
+        return Objects.hash(date, description);
     }
 
     @Override
