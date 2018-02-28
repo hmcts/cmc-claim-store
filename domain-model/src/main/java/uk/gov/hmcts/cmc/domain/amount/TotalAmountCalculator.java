@@ -69,10 +69,13 @@ public class TotalAmountCalculator {
             BigDecimal rate = data.getInterest().getRate();
 
             if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
-                LocalDate fromDate = getFromDate(claim);
+                LocalDate fromDate = (data.getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
+                    ? claim.getIssuedOn()
+                    : data.getInterestDate().getDate();
                 return claimAmount
                     .add(data.getFeesPaidInPound())
-                    .add(calculateInterest(claimAmount, rate, fromDate, getLatestDate(toDate, claim.getIssuedOn())));
+                    .add(calculateInterest(claimAmount, rate, fromDate,
+                        Stream.of(toDate, claim.getIssuedOn()).max(LOCAL_DATE_COMPARATOR).get()));
             }
 
             return claimAmount.add(data.getFeesPaidInPound());
@@ -81,16 +84,6 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    private static LocalDate getLatestDate(LocalDate firstDate, LocalDate secondDate) {
-        return Stream.of(firstDate, secondDate).max(LOCAL_DATE_COMPARATOR)
-            .orElseThrow(() -> new IllegalArgumentException("One of the dates is not correct"));
-    }
-
-    private static LocalDate getFromDate(Claim claim) {
-        return (claim.getClaimData().getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
-            ? claim.getIssuedOn()
-            : claim.getClaimData().getInterestDate().getDate();
-    }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
         requireValidOrderOfDates(startDate, endDate);
