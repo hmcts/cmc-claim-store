@@ -101,9 +101,11 @@ public class TotalAmountCalculator {
     }
 
     private static void requireValidOrderOfDates(LocalDate startDate, LocalDate endDate) {
-        throw new IllegalArgumentException(
-            String.format("StartDate %s cannot be after endDate %s", startDate, endDate)
-        );
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException(
+                String.format("StartDate %s cannot be after endDate %s", startDate, endDate)
+            );
+        }
     }
 
     private static void requireNonNegative(BigDecimal value) {
