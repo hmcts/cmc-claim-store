@@ -15,7 +15,7 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('IdamSystemUpdateUserUsername', 'IDAM_SYSTEM_UPDATE_USER_USERNAME'),
   secret('IdamSystemUpdateUserPassword', 'IDAM_SYSTEM_UPDATE_USER_PASSWORD'),
   secret('IdamAnonymousCaseworkerUsername', 'IDAM_ANONYMOUS_CASEWORKER_USERNAME'),
-  secret('IdamAnonymousCaseworkerPassword', 'IDAM_ANONYMOUS_CASEWORKER_PASSWORD'),
+  secret('IdamAnonymousCaseworkerPassword', 'IDAM_ANONYMOUS_CASEWORKER_PASSWORD')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
