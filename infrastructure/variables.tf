@@ -57,10 +57,6 @@ variable "vault_section" {
   default = "test"
 }
 
-variable "staff_email" {
-  default = "civilmoneyclaims+cnp@gmail.com"
-}
-
 variable "db_host" {
   default = "test-data-lb.moneyclaim.reform.hmcts.net"
 }

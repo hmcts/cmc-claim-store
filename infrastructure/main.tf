@@ -24,6 +24,10 @@ data "vault_generic_secret" "db_password" {
   path = "secret/${var.vault_section}/cmc/claim-store/database/password"
 }
 
+data "vault_generic_secret" "staff_email" {
+  path = "secret/${var.vault_section}/cmc/claim-store/staff_email"
+}
+
 module "claim-store-api" {
   source = "git@github.com:contino/moj-module-webapp.git"
   product = "${var.product}-${var.microservice}"
@@ -70,7 +74,7 @@ module "claim-store-api" {
 
     // staff notifications
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
-    STAFF_NOTIFICATIONS_RECIPIENT = "${var.staff_email}"
+    STAFF_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.staff_email.data["value"]}"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
