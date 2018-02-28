@@ -6,12 +6,14 @@ import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import java.time.LocalDate;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
     @JsonInclude(JsonInclude.Include.NON_ABSENT)
     public class WhenDidYouPay {
 
         @JsonUnwrapped
+        @NotNull
         @DateNotInTheFuture
         private final LocalDate paidDate;
 
@@ -24,11 +26,11 @@ import javax.validation.constraints.Size;
             this.explanation = explanation;
         }
 
-        public LocalDate getWhenDidYouPay() {
+        public LocalDate getPaidDate() {
             return paidDate;
         }
 
-        public String getHowDidYouPay() {
+        public String getExplanation() {
             return explanation;
         }
 

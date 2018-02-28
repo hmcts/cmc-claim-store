@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleWhenDidYouPay;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.util.Set;

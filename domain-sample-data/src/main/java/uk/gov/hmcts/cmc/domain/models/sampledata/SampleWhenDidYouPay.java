@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public class SampleWhenDidYouPay {
 
-    private LocalDate paidDate = LocalDate.of(1968, 1, 2);
+    private LocalDate paidDate = LocalDate.of(2016, 1, 2);
     private String explanation = "Paid cash";
 
     public static SampleWhenDidYouPay builder() {
@@ -16,7 +16,7 @@ public class SampleWhenDidYouPay {
         return builder().build();
     }
 
-    public SampleWhenDidYouPay withPaidDate(final LocalDate whenDidYouPay) {
+    public SampleWhenDidYouPay withPaidDate(final LocalDate paidDate) {
         this.paidDate = paidDate;
         return this;
     }
