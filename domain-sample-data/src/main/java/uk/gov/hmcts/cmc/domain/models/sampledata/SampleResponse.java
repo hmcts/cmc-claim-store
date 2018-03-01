@@ -27,6 +27,11 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+        public FullDefence withPaymentDeclaration(PaymentDeclaration paymentDeclaration) {
+            this.paymentDeclaration = paymentDeclaration;
+            return this;
+        }
+
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
                 freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,

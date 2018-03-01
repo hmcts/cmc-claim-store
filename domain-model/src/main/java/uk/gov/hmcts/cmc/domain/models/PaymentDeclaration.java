@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
         @Size(max = 99000)
         private final String explanation;
 
-        public PaymentDeclaration(final LocalDate paidDate, String explanation) {
+        public PaymentDeclaration(LocalDate paidDate, String explanation) {
             this.paidDate = paidDate;
             this.explanation = explanation;
         }

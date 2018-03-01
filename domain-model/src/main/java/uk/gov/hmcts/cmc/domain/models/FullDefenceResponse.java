@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.util.Objects;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -49,7 +50,7 @@ public class FullDefenceResponse extends Response {
         return defence;
     }
 
-    public PaymentDeclaration getPaymentDeclaration() { return paymentDeclaration; }
+    public Optional<PaymentDeclaration> getPaymentDeclaration() { return Optional.ofNullable(paymentDeclaration); }
 
     @Override
     public boolean equals(Object obj) {

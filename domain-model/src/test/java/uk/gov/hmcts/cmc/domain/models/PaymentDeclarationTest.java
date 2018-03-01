@@ -12,7 +12,7 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 public class PaymentDeclarationTest {
 
     @Test
-    public void shouldBeSuccessfulValidationForWhenDidYouPay() {
+    public void shouldHaveNoValidationMessageWhenInstanceIsValid() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.validDefaults();
         //when
@@ -22,7 +22,7 @@ public class PaymentDeclarationTest {
     }
 
     @Test
-    public void shouldBeInvalidForNullExplanation() {
+    public void shouldHaveValidationMessageWhenExplanationIsNull() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
             .withExplanation(null)
@@ -36,7 +36,7 @@ public class PaymentDeclarationTest {
     }
 
     @Test
-    public void shouldHaveValidationMessagesWhenExplanationExceedsSizeLimint() {
+    public void shouldHaveValidationMessagesWhenExplanationExceedsSizeLimit() {
         //given
         String explanation = new ResourceReader().read("/defence_exceeding_size_limit.text");
 
