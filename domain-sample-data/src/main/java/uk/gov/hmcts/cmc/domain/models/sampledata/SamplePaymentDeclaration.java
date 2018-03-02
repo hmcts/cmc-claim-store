@@ -16,12 +16,12 @@ public class SamplePaymentDeclaration {
         return builder().build();
     }
 
-    public SamplePaymentDeclaration withPaidDate(final LocalDate paidDate) {
+    public SamplePaymentDeclaration withPaidDate(LocalDate paidDate) {
         this.paidDate = paidDate;
         return this;
     }
 
-    public SamplePaymentDeclaration withExplanation(final String explanation) {
+    public SamplePaymentDeclaration withExplanation(String explanation) {
         this.explanation = explanation;
         return this;
     }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
+
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -22,6 +23,36 @@ public class PaymentDeclarationTest {
     }
 
     @Test
+    public void shouldHaveValidationMessageWhenPaidDateIsNull() {
+        //given
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
+            .withExplanation("defence")
+            .withPaidDate(null)
+            .build();
+        //when
+        Set<String> errors = validate(paymentDeclaration);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("paidDate : may not be null");
+    }
+
+    @Test
+    public void shouldHaveValidationMessageWhenPaidDateIsInTheFuture() {
+        //given
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
+            .withExplanation("defence")
+            .withPaidDate(LocalDate.now().plusYears(1))
+            .build();
+        //when
+        Set<String> errors = validate(paymentDeclaration);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("paidDate : is in the future");
+    }
+
+    @Test
     public void shouldHaveValidationMessageWhenExplanationIsNull() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
@@ -36,23 +67,7 @@ public class PaymentDeclarationTest {
     }
 
     @Test
-    public void shouldHaveValidationMessagesWhenExplanationExceedsSizeLimit() {
-        //given
-        String explanation = new ResourceReader().read("/defence_exceeding_size_limit.text");
-
-        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation(explanation)
-            .build();
-        //when
-        Set<String> errors = validate(paymentDeclaration);
-        //then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("explanation : size must be between 0 and 99000");
-    }
-
-    @Test
-    public void shouldHaveValidationMessagesWhenExplanationIsEmpty() {
+    public void shouldHaveValidationMessageWhenExplanationIsEmpty() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
             .withExplanation("")
@@ -66,33 +81,18 @@ public class PaymentDeclarationTest {
     }
 
     @Test
-    public void shouldHaveValidationMessagesWhenPaidDateIsInTheFuture() {
+    public void shouldHaveValidationMessageWhenExplanationExceedsSizeLimit() {
         //given
+        String explanation = new ResourceReader().read("/defence_exceeding_size_limit.text");
+
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation("defence")
-            .withPaidDate(LocalDate.now().plusYears(1))
+            .withExplanation(explanation)
             .build();
         //when
         Set<String> errors = validate(paymentDeclaration);
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("paidDate : is in the future");
-    }
-
-
-    @Test
-    public void shouldHaveValidationMessagesWhenPaidDateIsNull() {
-        //given
-        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation("defence")
-            .withPaidDate(null)
-            .build();
-        //when
-        Set<String> errors = validate(paymentDeclaration);
-        //then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("paidDate : may not be null");
+            .contains("explanation : size must be between 0 and 99000");
     }
 }

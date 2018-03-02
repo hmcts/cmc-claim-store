@@ -50,7 +50,9 @@ public class FullDefenceResponse extends Response {
         return defence;
     }
 
-    public Optional<PaymentDeclaration> getPaymentDeclaration() { return Optional.ofNullable(paymentDeclaration); }
+    public Optional<PaymentDeclaration> getPaymentDeclaration() {
+        return Optional.ofNullable(paymentDeclaration);
+    }
 
     @Override
     public boolean equals(Object obj) {
