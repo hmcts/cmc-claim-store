@@ -30,16 +30,18 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     @Autowired
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
-    public ClaimMapper(PersonalInjuryMapper personalInjuryMapper,
-                       HousingDisrepairMapper housingDisrepairMapper,
-                       StatementOfTruthMapper statementOfTruthMapper,
-                       PartyMapper partyMapper,
-                       TheirDetailsMapper theirDetailsMapper,
-                       AmountMapper amountMapper,
-                       PaymentMapper paymentMapper,
-                       InterestMapper interestMapper,
-                       InterestDateMapper interestDateMapper,
-                       TimelineMapper timelineMapper) {
+    public ClaimMapper(
+        PersonalInjuryMapper personalInjuryMapper,
+        HousingDisrepairMapper housingDisrepairMapper,
+        StatementOfTruthMapper statementOfTruthMapper,
+        PartyMapper partyMapper,
+        TheirDetailsMapper theirDetailsMapper,
+        AmountMapper amountMapper,
+        PaymentMapper paymentMapper,
+        InterestMapper interestMapper,
+        InterestDateMapper interestDateMapper,
+        TimelineMapper timelineMapper
+    ) {
 
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;

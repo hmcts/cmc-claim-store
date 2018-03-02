@@ -9,7 +9,6 @@ public class TimelineEventMapper implements Mapper<CCDTimelineEvent, TimelineEve
 
     @Override
     public CCDTimelineEvent to(TimelineEvent timelineEvent) {
-
         CCDTimelineEvent.CCDTimelineEventBuilder builder = CCDTimelineEvent.builder();
         return
             builder.date(timelineEvent.getDate())

@@ -110,8 +110,8 @@ public class ClaimData {
         String externalReferenceNumber,
         String preferredCourt,
         String feeCode,
-        Timeline timeline) {
-
+        Timeline timeline
+    ) {
         this.externalId = externalId != null ? externalId : UUID.randomUUID();
         this.claimants = claimants;
         this.defendants = defendants;
