@@ -42,7 +42,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         InterestDateMapper interestDateMapper,
         TimelineMapper timelineMapper
     ) {
-
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
         this.statementOfTruthMapper = statementOfTruthMapper;
