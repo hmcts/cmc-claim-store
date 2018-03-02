@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
@@ -65,7 +65,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
     }
 
     public SampleResponse<T> withStatementOfTruth(String signerName, String signerRole) {
-        this.statementOfTruth = new StatementOfTruth(signerName,signerRole);
+        this.statementOfTruth = new StatementOfTruth(signerName, signerRole);
         return this;
     }
 
