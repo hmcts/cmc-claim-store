@@ -33,11 +33,6 @@ withPipeline("java", product, component) {
     sh './gradlew migrateClaims'
   }
 
-  after('deploy:prod') {
-    sh './gradlew migrateClaims'
-  }
-
-  env.IDAM_API_URL = "http://betadevbccidamapplb.reform.hmcts.net"
   env.CLAIM_STORE_DB_PORT = 5432
   env.CLAIM_STORE_DB_NAME = claimstore
   env.CLAIM_STORE_DB_USERNAME = claimstore
