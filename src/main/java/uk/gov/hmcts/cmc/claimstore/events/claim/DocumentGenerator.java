@@ -4,44 +4,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.documents.CitizenSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService;
+import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Component
 public class DocumentGenerator {
 
-    private final CitizenSealedClaimPdfService citizenSealedClaimPdfService;
-    private final DefendantPinLetterPdfService defendantPinLetterPdfService;
+    private final CitizenServiceDocumentsService citizenServiceDocumentsService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
     private final ApplicationEventPublisher publisher;
+    private final PDFServiceClient pdfServiceClient;
 
     @Autowired
     public DocumentGenerator(
-        CitizenSealedClaimPdfService citizenSealedClaimPdfService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService,
+        CitizenServiceDocumentsService citizenServiceDocumentsService,
         LegalSealedClaimPdfService legalSealedClaimPdfService,
-        ApplicationEventPublisher publisher
+        ApplicationEventPublisher publisher,
+        PDFServiceClient pdfServiceClient
     ) {
-        this.citizenSealedClaimPdfService = citizenSealedClaimPdfService;
-        this.defendantPinLetterPdfService = defendantPinLetterPdfService;
+        this.citizenServiceDocumentsService = citizenServiceDocumentsService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
         this.publisher = publisher;
+        this.pdfServiceClient = pdfServiceClient;
     }
 
     @EventListener
     public void generateForNonRepresentedClaim(CitizenClaimIssuedEvent event) {
+        Document sealedClaimDocument = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
+
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            citizenSealedClaimPdfService.createPdf(event.getClaim()));
-        PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
-            defendantPinLetterPdfService.createPdf(event.getClaim(), event.getPin()
-                .orElseThrow(() -> new IllegalArgumentException("Defendant access PIN is missing"))));
+            createPdf(sealedClaimDocument));
+
+        Document defendantLetterDocument = citizenServiceDocumentsService.pinLetterDocument(
+            event.getClaim(),
+            event.getPin()
+        );
+        PDF defendantLetter = new PDF(
+            buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
+            createPdf(defendantLetterDocument)
+        );
+
+        bulkPrintService.print(defendantLetterDocument, sealedClaimDocument);
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter));
@@ -53,5 +66,11 @@ public class DocumentGenerator {
             legalSealedClaimPdfService.createPdf(event.getClaim()));
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
+    }
+
+    private byte[] createPdf(Document document) {
+        requireNonNull(document);
+
+        return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
     }
 }

@@ -20,10 +20,9 @@ public class CitizenClaimIssuedEvent extends ClaimIssuedEvent {
         this.pin = pin;
     }
 
-    public Optional<String> getPin() {
-        return Optional.ofNullable(pin);
+    public String getPin() {
+        return pin;
     }
-
 
     @Override
     public boolean equals(Object other) {
