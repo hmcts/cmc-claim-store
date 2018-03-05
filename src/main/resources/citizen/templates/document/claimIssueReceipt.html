@@ -40,6 +40,10 @@
       content: counter(section) ". ";
     }
 
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
     table {
       width: 100%;
       border-spacing: 0;
@@ -77,6 +81,7 @@
       margin: 0;
       padding: 0;
     }
+
   </style>
 </head>
 <body>
@@ -319,11 +324,11 @@
         </td>
       </tr>
       {% if claim.events is defined %}
-        <tr>
+        <tr class="no-border">
           <td colspan="2" style="white-space: pre-line">Timeline of what happened:</td>
         </tr>
         {% for event in claim.events %}
-        <tr>
+        <tr class="no-border">
           <td>
             {{ event.date | trim }}
           </td>
