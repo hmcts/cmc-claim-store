@@ -33,9 +33,9 @@ withPipeline("java", product, component) {
     sh './gradlew migrateClaims'
   }
 
-  env.CLAIM_STORE_DB_PORT = 5432
-  env.CLAIM_STORE_DB_NAME = claimstore
-  env.CLAIM_STORE_DB_USERNAME = claimstore
+  env.CLAIM_STORE_DB_PORT = '5432'
+  env.CLAIM_STORE_DB_NAME = 'claimstore'
+  env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
   loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-notification')
