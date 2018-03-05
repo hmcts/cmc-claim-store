@@ -10,6 +10,7 @@ provider "vault" {
 
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  ccdApiUrl = "http://ccd-data-store-api-${var.env}.service.${local.aseName}.internal"
 }
 
 data "vault_generic_secret" "notify_api_key" {
@@ -84,8 +85,7 @@ module "claim-store-api" {
     FRONTEND_BASE_URL = "${var.frontend_url}"
     PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
-    // CORE_CASE_DATA_API_URL = "http://ccd-data-store-api-${var.env}.service.${local.aseName}.internal"
-    CORE_CASE_DATA_API_URL = "false"
+    CORE_CASE_DATA_API_URL = "${var.env == "prod" ? "false" : local.ccdApiUrl}"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"
