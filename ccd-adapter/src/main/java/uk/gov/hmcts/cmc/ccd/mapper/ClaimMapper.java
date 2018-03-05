@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -29,7 +28,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final TimelineMapper timelineMapper;
 
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
-    @Autowired
     public ClaimMapper(
         PersonalInjuryMapper personalInjuryMapper,
         HousingDisrepairMapper housingDisrepairMapper,
