@@ -26,7 +26,7 @@ public class BulkPrintService {
     }
 
     @EventListener
-    public void uploadIntoDocumentManagementStore(DocumentReadyToPrintEvent event) {
+    public void print(DocumentReadyToPrintEvent event) {
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
             new Letter(event.getDocuments(), XEROX_TYPE_PARAMETER)
