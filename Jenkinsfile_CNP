@@ -29,14 +29,14 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline("java", product, component) {
-  after('smokeTest:aat') {
-    sh './gradlew migrateClaims'
-  }
-
+  env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
-
+  
+  after('smokeTest:aat') {
+    sh './gradlew migrateClaims'
+  }
   loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-notification')
 }
