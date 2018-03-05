@@ -22,6 +22,9 @@ public class TimelineMapper implements Mapper<CCDTimeline, Timeline> {
 
     @Override
     public CCDTimeline to(Timeline timeline) {
+        if (timeline == null) {
+            return null;
+        }
         CCDTimeline.CCDTimelineBuilder builder = CCDTimeline.builder();
         builder.events(
             timeline.getEvents()
