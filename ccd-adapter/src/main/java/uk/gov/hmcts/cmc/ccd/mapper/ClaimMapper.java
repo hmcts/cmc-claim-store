@@ -28,8 +28,8 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final InterestDateMapper interestDateMapper;
     private final TimelineMapper timelineMapper;
 
-    @Autowired
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
+    @Autowired
     public ClaimMapper(
         PersonalInjuryMapper personalInjuryMapper,
         HousingDisrepairMapper housingDisrepairMapper,
