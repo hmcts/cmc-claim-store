@@ -1,14 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
-import static java.util.Arrays.asList;
-
 @Service
+@ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService {
 
     private static final String XEROX_TYPE_PARAMETER = "CMC001";
@@ -24,10 +25,11 @@ public class BulkPrintService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public void print(Document... documents) {
+    @EventListener
+    public void uploadIntoDocumentManagementStore(DocumentReadyToPrintEvent event) {
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
-            new Letter(asList(documents), XEROX_TYPE_PARAMETER)
+            new Letter(event.getDocuments(), XEROX_TYPE_PARAMETER)
         );
     }
 }

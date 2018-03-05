@@ -12,4 +12,8 @@ public class DocumentReadyToPrintEvent {
     public DocumentReadyToPrintEvent(Document... documents) {
         this.documents = asList(documents);
     }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
 }

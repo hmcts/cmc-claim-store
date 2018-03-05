@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -54,8 +54,7 @@ public class DocumentGenerator {
             createPdf(defendantLetterDocument)
         );
 
-        bulkPrintService.print(defendantLetterDocument, sealedClaimDocument);
-
+        publisher.publishEvent(new DocumentReadyToPrintEvent(defendantLetterDocument, sealedClaimDocument));
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter));
     }
