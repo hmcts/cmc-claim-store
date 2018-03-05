@@ -37,7 +37,7 @@ public class SampleClaimData {
     private String externalReferenceNumber = "CLAIM234324";
     private String preferredCourt = "LONDON COUNTY COUNCIL";
     private String feeCode = "X0012";
-    private Timeline timeline;
+    private Timeline timeline = SampleTimeline.validDefaults();
 
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
@@ -204,7 +204,8 @@ public class SampleClaimData {
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
-                .individualDetails());
+                .individualDetails())
+            .withTimeline(SampleTimeline.validDefaults());
     }
 
     public static ClaimData submittedByLegalRepresentative() {
