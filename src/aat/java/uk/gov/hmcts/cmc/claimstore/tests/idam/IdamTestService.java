@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.idam.models.ActivationData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -12,6 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 
 import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 public class IdamTestService {
@@ -20,6 +23,7 @@ public class IdamTestService {
 
     private final IdamApi idamApi;
     private final IdamTestApi idamTestApi;
+    private final IdamTestEmailApi idamTestEmailApi;
     private final UserService userService;
     private final TestData testData;
     private final AATConfiguration aatConfiguration;
@@ -28,12 +32,14 @@ public class IdamTestService {
     public IdamTestService(
         IdamApi idamApi,
         IdamTestApi idamTestApi,
+        IdamTestEmailApi idamTestEmailApi,
         UserService userService,
         TestData testData,
         AATConfiguration aatConfiguration
     ) {
         this.idamApi = idamApi;
         this.idamTestApi = idamTestApi;
+        this.idamTestEmailApi = idamTestEmailApi;
         this.userService = userService;
         this.testData = testData;
         this.aatConfiguration = aatConfiguration;
@@ -45,18 +51,24 @@ public class IdamTestService {
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
-    public User createDefendant(int letterHolderId) {
+    public User createDefendant(String letterHolderId) {
         ResponseEntity<String> pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
-        String authorisation =  PIN + new String(Base64.getEncoder().encode(pin.getBody().getBytes()));
+        String authorisation = PIN + new String(Base64.getEncoder().encode(pin.getBody().getBytes()));
         AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(authorisation);
 
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
+        idamApi.register(new UserDetails(null, email, "john", "smith", null),
+            BEARER + authenticateUserResponse.getAccessToken());
 
-        User defendant = userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+        ResponseEntity<?> activationEmail = idamTestEmailApi.getActivationEmail();
+        String body = (String) activationEmail.getBody();
 
-        idamApi.register(defendant, BEARER + authenticateUserResponse.getAccessToken());
-        return defendant;
+        ActivationData data = new ActivationData(aatConfiguration.getSmokeTestCitizen().getPassword());
+        ResponseEntity<?> activate = idamApi.activate(data, BEARER + body.split("=")[1]);
+
+        Map result = (LinkedHashMap) activate.getBody();
+        String defendantAuth = BEARER + result.get("access_token");
+        return new User(defendantAuth, idamApi.retrieveUserDetails(defendantAuth));
     }
 
     private CreateUserRequest createCitizenRequest(String username, String password) {

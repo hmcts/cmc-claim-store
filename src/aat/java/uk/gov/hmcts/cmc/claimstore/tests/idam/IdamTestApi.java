@@ -15,5 +15,5 @@ public interface IdamTestApi {
     void createUser(CreateUserRequest createUserRequest);
 
     @RequestMapping(value = "/accounts/pin/{letterHolderId}", method = GET)
-    ResponseEntity<String> getPinByLetterHolderId(@PathVariable("letterHolderId") int letterHolderId);
+    ResponseEntity<String> getPinByLetterHolderId(@PathVariable("letterHolderId") String letterHolderId);
 }

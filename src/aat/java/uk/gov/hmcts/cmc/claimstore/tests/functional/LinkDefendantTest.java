@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class LinkDefendantTest extends BaseTest {
 
     @Autowired
@@ -17,19 +19,19 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
-        commonOperations.submitClaim(
+        Claim claim = commonOperations.submitClaim(
             functionalTestsUsers.getClaimant().getAuthorisation(),
             functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createCitizen();
+        User defendant = functionalTestsUsers.createDefendant();
 
         linkDefendant(defendant)
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        commonOperations
-            .testCasesRetrievalFor("/claims/defendant/" + defendant.getUserDetails().getId());
+        testCasesRetrievalFor("/claims/defendant/" + defendant.getUserDetails().getId(),
+            defendant.getAuthorisation(), claim);
     }
 
     private Response linkDefendant(User defendant) {
@@ -40,5 +42,17 @@ public class LinkDefendantTest extends BaseTest {
             .put("/claims/defendant/link");
     }
 
+    public void testCasesRetrievalFor(String uriPath, String authorisation, Claim input) {
+        Claim response = RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, authorisation)
+            .when()
+            .get(uriPath)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract().body().as(Claim.class);
 
+        assertThat(response).isNotNull().isEqualTo(input);
+    }
 }
