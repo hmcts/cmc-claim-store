@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantPinLetterContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
-
-import static java.util.Objects.requireNonNull;
 
 @Service
 public class CitizenServiceDocumentsService {
@@ -20,9 +17,9 @@ public class CitizenServiceDocumentsService {
     @Autowired
     public CitizenServiceDocumentsService(
         DocumentTemplates documentTemplates,
-        PDFServiceClient pdfServiceClient,
         ClaimContentProvider claimContentProvider,
-        DefendantPinLetterContentProvider letterContentProvider) {
+        DefendantPinLetterContentProvider letterContentProvider
+    ) {
         this.documentTemplates = documentTemplates;
         this.claimContentProvider = claimContentProvider;
         this.letterContentProvider = letterContentProvider;
