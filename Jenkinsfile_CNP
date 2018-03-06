@@ -9,7 +9,14 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('AatTestUserUsername', 'SMOKE_TEST_CITIZEN_USERNAME'),
   secret('AatTestUserUsername', 'SMOKE_TEST_SOLICITOR_USERNAME'),
   secret('AatTestUserPassword', 'SMOKE_TEST_USER_PASSWORD'),
-  secret('AatTestUserEmailPattern', 'GENERATED_USER_EMAIL_PATTERN')
+  secret('AatTestUserEmailPattern', 'GENERATED_USER_EMAIL_PATTERN'),
+  secret('ClaimStoreDbPassword', 'CLAIM_STORE_DB_PASSWORD'),
+  secret('ClaimStoreDbHost', 'CLAIM_STORE_DB_HOST'),
+  secret('IdamSystemUpdateUserUsername', 'IDAM_SYSTEM_UPDATE_USER_USERNAME'),
+  secret('IdamSystemUpdateUserPassword', 'IDAM_SYSTEM_UPDATE_USER_PASSWORD'),
+  secret('IdamAnonymousCaseworkerUsername', 'IDAM_ANONYMOUS_CASEWORKER_USERNAME'),
+  secret('IdamAnonymousCaseworkerPassword', 'IDAM_ANONYMOUS_CASEWORKER_PASSWORD'),
+  secret('CcdApiUrl', 'CORE_CASE_DATA_API_URL')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -23,6 +30,13 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline("java", product, component) {
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
+  env.CLAIM_STORE_DB_PORT = '5432'
+  env.CLAIM_STORE_DB_NAME = 'claimstore'
+  env.CLAIM_STORE_DB_USERNAME = 'claimstore'
+  
+  after('smokeTest:aat') {
+    sh './gradlew migrateClaims'
+  }
   loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-notification')
 }

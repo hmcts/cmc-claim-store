@@ -17,6 +17,8 @@ import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentState;
+import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -112,6 +115,11 @@ public class Assertions {
         return new PartyAssert(party);
     }
 
+
+    public static TheirDetailsAssert assertThat(TheirDetails party) {
+        return new TheirDetailsAssert(party);
+    }
+
     public static ClaimDataAssert assertThat(ClaimData claimData) {
         return new ClaimDataAssert(claimData);
     }
@@ -176,4 +184,11 @@ public class Assertions {
         return new PaymentDeclarationAssert(actual);
     }
 
+    public static TimelineEventAssert assertThat(TimelineEvent timelineEvent) {
+        return new TimelineEventAssert(timelineEvent);
+    }
+
+    public static TimelineAssert assertThat(Timeline timeline) {
+        return new TimelineAssert(timeline);
+    }
 }

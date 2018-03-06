@@ -7,6 +7,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
@@ -45,7 +47,7 @@ public class ClaimDataContentProvider {
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterestDate(),
                 ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
-                claim.getCreatedAt()
+                claim.getIssuedOn()
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());
         }
@@ -53,6 +55,12 @@ public class ClaimDataContentProvider {
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
         String signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         String signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
+
+        List<TimelineEvent> events = null;
+        Optional<Timeline> timeline = claim.getClaimData().getTimeline();
+        if (timeline.isPresent()) {
+            events = timeline.get().getEvents();
+        }
 
         return new ClaimContent(
             claim.getReferenceNumber(),
@@ -68,7 +76,8 @@ public class ClaimDataContentProvider {
                     .reduce(ZERO, BigDecimal::add)
             ),
             signerName,
-            signerRole
+            signerRole,
+            events
         );
     }
 
