@@ -28,13 +28,9 @@ public class PaymentTest {
         //when
         Set<String> errors = validate(payment);
         //then
-        assertThat(errors).hasSize(6).contains(
-            "id : may not be empty",
+        assertThat(errors).hasSize(2).contains(
             "reference : may not be empty",
-            "description : may not be empty",
-            "dateCreated : may not be empty",
-            "amount : may not be null",
-            "state : may not be null"
+            "amount : may not be null"
         );
     }
 

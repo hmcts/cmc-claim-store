@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPayment;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentState;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
@@ -208,7 +207,7 @@ public class SampleData {
             .reference("reference")
             .amount(BigDecimal.valueOf(7000))
             .dateCreated("2017-10-12")
-            .paymentState(CCDPaymentState.builder().status("Success").finished("YES").build())
+            .status("Success")
             .build();
     }
 
