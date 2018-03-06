@@ -40,6 +40,10 @@
       content: counter(section) ". ";
     }
 
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
     table {
       width: 100%;
       border-spacing: 0;
@@ -77,6 +81,7 @@
       margin: 0;
       padding: 0;
     }
+
   </style>
 </head>
 <body>
@@ -314,10 +319,25 @@
   <div class="section-body">
     <table>
       <tr>
-        <td style="white-space: pre-line">Reason for claim:<br/>
+        <td colspan="2" style="white-space: pre-line">Reason for claim:<br/>
           {{ claim.reason | trim }}
         </td>
       </tr>
+      {% if claim.events is defined %}
+        <tr>
+          <td colspan="2" style="white-space: pre-line">Timeline of what happened:</td>
+        </tr>
+        {% for event in claim.events %}
+        <tr class="no-border">
+          <td>
+            {{ event.date | trim }}
+          </td>
+          <td>
+            {{ event.description | trim }}
+          </td>
+        </tr>
+        {% endfor %}
+      {% endif %}
     </table>
   </div>
 </div>
