@@ -22,9 +22,9 @@ public class CCDPaymentAssert extends AbstractAssert<CCDPaymentAssert, CCDPaymen
                 payment.getId(), actual.getId());
         }
 
-        if (!Objects.equals(actual.getDescription(), payment.getDescription())) {
-            failWithMessage("Expected CCDPayment.description to be <%s> but was <%s>",
-                payment.getDescription(), actual.getDescription());
+        if (!Objects.equals(actual.getStatus(), payment.getStatus())) {
+            failWithMessage("Expected CCDPayment.status to be <%s> but was <%s>",
+                payment.getStatus(), actual.getDescription());
         }
 
         if (!Objects.equals(actual.getReference(), payment.getReference())) {
@@ -42,7 +42,7 @@ public class CCDPaymentAssert extends AbstractAssert<CCDPaymentAssert, CCDPaymen
                 payment.getDateCreated(), actual.getDateCreated());
         }
 
-        assertThat(actual.getPaymentState()).isEqualTo(payment.getState());
+        assertThat(actual.getPaymentState()).isEqualTo(payment.getStatus());
 
         return this;
     }

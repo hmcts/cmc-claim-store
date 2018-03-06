@@ -14,4 +14,5 @@ public class CCDPayment {
     private String description;
     private String dateCreated;
     private CCDPaymentState paymentState;
+    private String status;
 }
