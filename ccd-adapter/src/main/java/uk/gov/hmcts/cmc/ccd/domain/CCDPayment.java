@@ -13,6 +13,5 @@ public class CCDPayment {
     private String reference;
     private String description;
     private String dateCreated;
-    private CCDPaymentState paymentState;
     private String status;
 }

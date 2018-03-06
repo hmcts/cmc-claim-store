@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-
 public class CCDPaymentAssert extends AbstractAssert<CCDPaymentAssert, CCDPayment> {
 
     public CCDPaymentAssert(CCDPayment actual) {
@@ -41,8 +39,6 @@ public class CCDPaymentAssert extends AbstractAssert<CCDPaymentAssert, CCDPaymen
             failWithMessage("Expected CCDPayment.dateCreated to be <%s> but was <%s>",
                 payment.getDateCreated(), actual.getDateCreated());
         }
-
-        assertThat(actual.getPaymentState()).isEqualTo(payment.getStatus());
 
         return this;
     }
