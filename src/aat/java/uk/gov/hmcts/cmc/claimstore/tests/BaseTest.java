@@ -7,15 +7,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.claimstore.tests.functional.FunctionalTestsUsers;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.CommonOperations;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
 import uk.gov.hmcts.cmc.email.EmailService;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
