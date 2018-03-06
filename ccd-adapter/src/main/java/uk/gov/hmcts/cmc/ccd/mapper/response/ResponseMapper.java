@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.PaymentDeclarationMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Response;
@@ -17,14 +18,17 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
 
     private final StatementOfTruthMapper statementOfTruthMapper;
     private final PartyMapper partyMapper;
+    private final PaymentDeclarationMapper paymentDeclarationMapper;
 
     @Autowired
     public ResponseMapper(
         StatementOfTruthMapper statementOfTruthMapper,
-        PartyMapper partyMapper) {
+        PartyMapper partyMapper,
+        PaymentDeclarationMapper paymentDeclarationMapper) {
 
         this.statementOfTruthMapper = statementOfTruthMapper;
         this.partyMapper = partyMapper;
+        this.paymentDeclarationMapper = paymentDeclarationMapper;
     }
 
     @Override
@@ -47,6 +51,9 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
 
         builder.responseType(CCDDefenceType.valueOf(response.getDefenceType().name()));
         builder.defence(response.getDefence());
+
+        response.getPaymentDeclaration().ifPresent(paymentDeclaration ->
+            builder.paymentDeclaration(paymentDeclarationMapper.to(paymentDeclaration)));
 
         return builder.build();
     }
@@ -72,7 +79,7 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
             statementOfTruth,
             FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
             response.getDefence(),
-            null
+            paymentDeclarationMapper.from(response.getPaymentDeclaration())
         );
     }
 }
