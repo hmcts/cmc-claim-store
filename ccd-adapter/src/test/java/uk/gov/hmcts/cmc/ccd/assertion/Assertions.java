@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentState;
+import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
@@ -175,5 +177,13 @@ public class Assertions {
 
     public static OfferAssert assertThat(Offer offer) {
         return new OfferAssert(offer);
+    }
+
+    public static TimelineEventAssert assertThat(TimelineEvent timelineEvent) {
+        return new TimelineEventAssert(timelineEvent);
+    }
+
+    public static TimelineAssert assertThat(Timeline timeline) {
+        return new TimelineAssert(timeline);
     }
 }
