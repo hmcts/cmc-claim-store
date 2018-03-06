@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
+import java.util.List;
+
 public class CreateUserRequest {
 
     private final String email;

@@ -10,10 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class LinkDefendantTest extends BaseTest {
 
     @Autowired
@@ -21,39 +17,27 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
-        Claim createdCase = commonOperations.submitClaim(
+        commonOperations.submitClaim(
             functionalTestsUsers.getClaimant().getAuthorisation(),
             functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
         User defendant = idamTestService.createCitizen();
 
-        Claim claim = linkDefendant(defendant, createdCase.getExternalId())
+        linkDefendant(defendant)
             .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
+            .statusCode(HttpStatus.OK.value());
 
-        assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
+        commonOperations
+            .testCasesRetrievalFor("/claims/defendant/" + defendant.getUserDetails().getId());
     }
 
-    @Test
-    public void shouldReturnNotFoundResponseWhenGivenInvalidClaimExternalReference() {
-        User defendant = idamTestService.createCitizen();
-
-        String invalidCaseReference = UUID.randomUUID().toString();
-
-        linkDefendant(defendant, invalidCaseReference)
-            .then()
-            .statusCode(HttpStatus.NOT_FOUND.value());
-    }
-
-    private Response linkDefendant(User defendant, String externalId) {
+    private Response linkDefendant(User defendant) {
         return RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
             .when()
-            .put("/claims/" + externalId + "/defendant/" + defendant.getUserDetails().getId());
+            .put("/claims/defendant/link");
     }
 
 

@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class SubmitClaimTest extends BaseTest {
 
@@ -33,7 +34,7 @@ public class SubmitClaimTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        assertThat(createdCase.getClaimData()).isEqualTo(claimData);
+        assertThat(claimData).isEqualTo(createdCase.getClaimData());
         assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
     }
 

@@ -216,9 +216,7 @@ public class SettlementOfferTest extends BaseTest {
         );
 
         commonOperations.linkDefendant(
-            createdCase.getExternalId(),
-            defendant.getAuthorisation(),
-            defendant.getUserDetails().getId()
+            defendant.getAuthorisation()
         );
 
         Response response = SampleResponse.FullDefence.builder()

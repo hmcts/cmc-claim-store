@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,17 +40,20 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
+        String claimantId = functionalTestsUsers.getClaimant().getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
             functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimantId
         );
 
-        User defendant = idamTestService.createCitizen();
+
+        String letterHolderId = createdCase.getLetterHolderId();
+        Integer letterHolderUserId = StringUtils.isNotBlank(letterHolderId) ? Integer.valueOf(letterHolderId)
+            : Integer.valueOf(claimantId) + 1;
+        User defendant = idamTestService.createDefendant(letterHolderUserId);
 
         commonOperations.linkDefendant(
-            createdCase.getExternalId(),
-            defendant.getAuthorisation(),
-            defendant.getUserDetails().getId()
+            defendant.getAuthorisation()
         );
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
@@ -73,9 +77,7 @@ public class RespondToClaimTest extends BaseTest {
         User defendant = idamTestService.createCitizen();
 
         commonOperations.linkDefendant(
-            createdCase.getExternalId(),
-            defendant.getAuthorisation(),
-            defendant.getUserDetails().getId()
+            defendant.getAuthorisation()
         );
 
         Response invalidResponse = SampleResponse.FullDefence.builder()
