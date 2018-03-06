@@ -1,5 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+
+import java.util.List;
+
 public class ClaimContent {
 
     private final String referenceNumber;
@@ -12,6 +16,7 @@ public class ClaimContent {
     private final String claimTotalAmount;
     private final String signerName;
     private final String signerRole;
+    private final List<TimelineEvent> events;
 
     @SuppressWarnings("squid:S00107") // Suppressed due to MVP timelines, require more time to investigate and fix
     public ClaimContent(
@@ -24,7 +29,9 @@ public class ClaimContent {
         InterestContent interest,
         String claimTotalAmount,
         String signerName,
-        String signerRole) {
+        String signerRole,
+        List<TimelineEvent> events
+    ) {
         this.referenceNumber = referenceNumber;
         this.submittedOn = submittedOn;
         this.issuedOn = issuedOn;
@@ -35,6 +42,7 @@ public class ClaimContent {
         this.claimTotalAmount = claimTotalAmount;
         this.signerName = signerName;
         this.signerRole = signerRole;
+        this.events = events;
     }
 
     public String getReferenceNumber() {
@@ -77,4 +85,7 @@ public class ClaimContent {
         return signerRole;
     }
 
+    public List<TimelineEvent> getEvents() {
+        return events;
+    }
 }

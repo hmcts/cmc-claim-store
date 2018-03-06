@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.DIFFERENT;
@@ -269,5 +270,18 @@ public class ClaimDataTest {
     public void shouldConvertFeesToPound() {
         ClaimData claimData = SampleClaimData.builder().withFeeAmount(BigInteger.valueOf(456712)).build();
         assertThat(claimData.getFeesPaidInPound()).isEqualTo(new BigDecimal("4567.12"));
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenTooManyTimeLineEvents() {
+        ClaimData claimData = SampleClaimData.builder()
+            .withTimeline(new Timeline(asList(new TimelineEvent[21])))
+            .build();
+
+        Set<String> errors = validate(claimData);
+
+        assertThat(errors)
+            .hasSize(1)
+            .containsOnly("timeline.events : size must be between 0 and 20");
     }
 }
