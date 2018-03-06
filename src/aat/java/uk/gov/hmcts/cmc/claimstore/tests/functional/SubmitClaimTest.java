@@ -10,11 +10,14 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
@@ -25,7 +28,8 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
-        ClaimData claimData = testData.submittedByClaimantBuilder().build();
+        ClaimData claimData = testData.submittedByClaimantBuilder()
+            .build();
 
         Claim createdCase = submitClaim(claimData)
             .then()
@@ -61,6 +65,17 @@ public class SubmitClaimTest extends BaseTest {
         submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() {
+        ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
+            .withTimeline(SampleTimeline.builder().withEvents(asList(new TimelineEvent[21])).build())
+            .build();
+
+        submitClaim(invalidClaimData)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     private Response submitClaim(ClaimData claimData) {

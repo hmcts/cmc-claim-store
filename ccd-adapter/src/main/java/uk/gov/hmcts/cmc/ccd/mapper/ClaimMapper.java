@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -26,19 +25,21 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final PaymentMapper paymentMapper;
     private final InterestMapper interestMapper;
     private final InterestDateMapper interestDateMapper;
+    private final TimelineMapper timelineMapper;
 
-    @Autowired
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
-    public ClaimMapper(PersonalInjuryMapper personalInjuryMapper,
-                       HousingDisrepairMapper housingDisrepairMapper,
-                       StatementOfTruthMapper statementOfTruthMapper,
-                       PartyMapper partyMapper,
-                       TheirDetailsMapper theirDetailsMapper,
-                       AmountMapper amountMapper,
-                       PaymentMapper paymentMapper,
-                       InterestMapper interestMapper,
-                       InterestDateMapper interestDateMapper) {
-
+    public ClaimMapper(
+        PersonalInjuryMapper personalInjuryMapper,
+        HousingDisrepairMapper housingDisrepairMapper,
+        StatementOfTruthMapper statementOfTruthMapper,
+        PartyMapper partyMapper,
+        TheirDetailsMapper theirDetailsMapper,
+        AmountMapper amountMapper,
+        PaymentMapper paymentMapper,
+        InterestMapper interestMapper,
+        InterestDateMapper interestDateMapper,
+        TimelineMapper timelineMapper
+    ) {
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
         this.statementOfTruthMapper = statementOfTruthMapper;
@@ -48,6 +49,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         this.paymentMapper = paymentMapper;
         this.interestMapper = interestMapper;
         this.interestDateMapper = interestDateMapper;
+        this.timelineMapper = timelineMapper;
     }
 
     @Override
@@ -75,6 +77,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         builder.defendants(claimData.getDefendants().stream().map(theirDetailsMapper::to)
             .map(this::mapToValue)
             .collect(Collectors.toList()));
+
+        claimData.getTimeline()
+            .ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
 
         return builder
             .payment(paymentMapper.to(claimData.getPayment()))
@@ -123,6 +128,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             ccdClaim.getFeeAccountNumber(),
             ccdClaim.getExternalReferenceNumber(),
             ccdClaim.getPreferredCourt(),
-            ccdClaim.getFeeCode());
+            ccdClaim.getFeeCode(),
+            timelineMapper.from(ccdClaim.getTimeline()));
     }
 }
