@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.math.BigDecimal;
@@ -93,6 +94,7 @@ public class JsonMapperTest {
                 .withRepresentative(null)
                 .withServiceAddress(null)
                 .individualDetails())
+            .withTimeline(SampleTimeline.validDefaults())
             .build();
 
         assertThat(output).isEqualTo(expected);
@@ -112,18 +114,19 @@ public class JsonMapperTest {
             .withInterestDate(
                 SampleInterestDate.builder()
                     .withDate(LocalDate.of(2015, 2, 2))
-                    .build()
-            ).withAmount(
+                    .build())
+            .withAmount(
                 SampleAmountRange.builder()
                     .withHigherValue(BigDecimal.valueOf(123.56))
                     .withLowerValue(BigDecimal.valueOf(123.56))
-                    .build()
-            ).withDefendant(
+                    .build())
+            .withDefendant(
                 SampleTheirDetails.builder()
                     .withRepresentative(SampleRepresentative.builder().build())
                     .withServiceAddress(SampleAddress.validDefaults())
-                    .individualDetails()
-            ).build();
+                    .individualDetails())
+            .withTimeline(null)
+            .build();
         assertThat(output).isEqualTo(expected);
     }
 

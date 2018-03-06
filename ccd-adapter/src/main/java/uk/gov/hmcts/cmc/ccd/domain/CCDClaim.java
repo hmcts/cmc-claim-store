@@ -26,4 +26,5 @@ public class CCDClaim {
     private CCDStatementOfTruth statementOfTruth;
     private List<CCDCollectionElement<CCDParty>> claimants;
     private List<CCDCollectionElement<CCDParty>> defendants;
+    private CCDTimeline timeline;
 }
