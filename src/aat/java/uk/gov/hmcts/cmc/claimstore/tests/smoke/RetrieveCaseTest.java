@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 
 import java.util.regex.Pattern;
@@ -16,25 +17,29 @@ public class RetrieveCaseTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToRetrieveCasesBySubmitterId() {
-        testCasesRetrievalFor("/claims/claimant/" + bootstrap.getSmokeTestCitizen().getUserDetails().getId());
+        User citizen = bootstrap.getSmokeTestCitizen();
+        testCasesRetrievalFor("/claims/claimant/" + citizen.getUserDetails().getId(),
+            citizen.getAuthorisation());
     }
 
     @Test
     public void shouldBeAbleToRetrieveCasesByDefendantId() {
-        testCasesRetrievalFor("/claims/defendant/" + bootstrap.getSmokeTestCitizen().getUserDetails().getId());
+        User citizen = bootstrap.getSmokeTestCitizen();
+        testCasesRetrievalFor("/claims/defendant/" + citizen.getUserDetails().getId(),
+            citizen.getAuthorisation());
     }
 
-    private void testCasesRetrievalFor(String uriPath) {
+    private void testCasesRetrievalFor(String uriPath, String authorisation) {
         String response = RestAssured
             .given()
-            .header(HttpHeaders.AUTHORIZATION, bootstrap.getSmokeTestCitizen().getAuthorisation())
+            .header(HttpHeaders.AUTHORIZATION, authorisation)
             .when()
             .get(uriPath)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().asString();
+
         assertThat(response).matches(jsonListPattern);
     }
-
 }
