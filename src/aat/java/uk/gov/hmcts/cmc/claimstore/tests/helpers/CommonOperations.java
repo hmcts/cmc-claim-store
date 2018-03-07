@@ -50,11 +50,11 @@ public class CommonOperations {
             .post("/claims/" + userId);
     }
 
-    public void linkDefendant(String claimExternalId, String userAuthentication, String userId) {
+    public void linkDefendant(String userAuthentication) {
         RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
-            .put("/claims/" + claimExternalId + "/defendant/" + userId);
+            .put("/claims/defendant/link");
     }
 
     public Response submitResponse(
@@ -64,7 +64,7 @@ public class CommonOperations {
     ) {
         return RestAssured
             .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
             .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
             .body(jsonMapper.toJson(response))
             .when()

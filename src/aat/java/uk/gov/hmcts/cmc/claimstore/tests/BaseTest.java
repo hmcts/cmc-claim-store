@@ -39,5 +39,4 @@ public abstract class BaseTest {
 
     @Autowired
     protected TestData testData;
-
 }

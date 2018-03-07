@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
@@ -10,8 +11,9 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.penniesToPounds;
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonIgnoreProperties(value = "description")
+@JsonIgnoreProperties(value = {"description", "state"})
 public class Payment {
     private final String id;
     /**
@@ -23,7 +25,6 @@ public class Payment {
     private final String reference;
     @JsonProperty("date_created")
     private final String dateCreated;
-    private final PaymentState state;
     private final String status;
 
     public Payment(
@@ -31,14 +32,12 @@ public class Payment {
         BigDecimal amount,
         String reference,
         String dateCreated,
-        PaymentState state,
         String status
     ) {
         this.id = id;
         this.amount = amount;
         this.reference = reference;
         this.dateCreated = dateCreated;
-        this.state = state;
         this.status = status;
     }
 
@@ -67,10 +66,6 @@ public class Payment {
         return dateCreated;
     }
 
-    public PaymentState getState() {
-        return state;
-    }
-
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
     public boolean equals(Object obj) {
@@ -85,12 +80,16 @@ public class Payment {
             && Objects.equals(amount, payment.amount)
             && Objects.equals(reference, payment.reference)
             && Objects.equals(dateCreated, payment.dateCreated)
-            && Objects.equals(state, payment.state)
             && Objects.equals(status, payment.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, amount, reference, dateCreated, state, status);
+        return Objects.hash(id, amount, reference, dateCreated, status);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

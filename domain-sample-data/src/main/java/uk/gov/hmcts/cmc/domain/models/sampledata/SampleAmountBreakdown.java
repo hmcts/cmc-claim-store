@@ -7,16 +7,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 public class SampleAmountBreakdown {
 
-    private List<AmountRow> rows = asList(
-        new AmountRow("reason", new BigDecimal("40")),
-        new AmountRow(null, null),
-        new AmountRow(null, null),
-        new AmountRow(null, null)
-    );
+    private List<AmountRow> rows = singletonList(new AmountRow("reason", new BigDecimal("40")));
 
     public SampleAmountBreakdown clearRows() {
         this.rows = new ArrayList<>();
