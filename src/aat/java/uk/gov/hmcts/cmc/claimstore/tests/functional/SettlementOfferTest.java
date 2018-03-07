@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,18 +22,25 @@ import static org.assertj.core.api.Assertions.within;
 
 public class SettlementOfferTest extends BaseTest {
 
+    private User claimant;
+
     @Autowired
     private FunctionalTestsUsers functionalTestsUsers;
 
+    @Before
+    public void before() {
+        claimant = idamTestService.createCitizen();
+    }
+
     @Test
     public void shouldBeAbleToSuccessfullySubmitOffer() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -51,13 +59,13 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailForMultipleOfferFromOneUser() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -77,13 +85,13 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyAcceptOffer() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -109,13 +117,13 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         commonOperations
@@ -126,13 +134,13 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyRejectOffer() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -158,13 +166,13 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailRejectOfferWithoutExistingOfferFromUser() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         commonOperations
@@ -175,12 +183,13 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
 
         Claim caseWithCounterSign = countersignAnOffer(createdCase, defendant);
 
@@ -221,13 +230,13 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailRejectOfferWhenAlreadySettled() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
 
@@ -239,18 +248,18 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailAcceptOfferWhenAlreadySettled() {
-
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
 
         commonOperations
-            .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
     }

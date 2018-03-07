@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -14,17 +15,24 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class LinkDefendantTest extends BaseTest {
 
+    private User claimant;
+
     @Autowired
     private FunctionalTestsUsers functionalTestsUsers;
+
+    @Before
+    public void before() {
+        claimant = idamTestService.createCitizen();
+    }
 
     @Test
     public void shouldBeAbleToSuccessfullyLinkDefendant() {
         Claim claim = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimant.getUserDetails().getId()
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimant.getUserDetails().getId());
 
         linkDefendant(defendant)
             .then()

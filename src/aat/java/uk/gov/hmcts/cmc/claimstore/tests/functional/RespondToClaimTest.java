@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,15 @@ import static org.assertj.core.api.Assertions.within;
 
 public class RespondToClaimTest extends BaseTest {
 
+    private User claimant;
+
     @Autowired
     private FunctionalTestsUsers functionalTestsUsers;
+
+    @Before
+    public void before() {
+        claimant = idamTestService.createCitizen();
+    }
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
@@ -39,12 +47,13 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
@@ -60,12 +69,13 @@ public class RespondToClaimTest extends BaseTest {
 
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
+        User defendant = functionalTestsUsers.createDefendant(claimantId);
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Response invalidResponse = SampleResponse.FullDefence.builder()
