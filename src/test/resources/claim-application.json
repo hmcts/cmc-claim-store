@@ -62,7 +62,6 @@
     "id": "123",
     "amount": 4000,
     "reference": "reference",
-    "description": "description",
     "date_created": "2010-10-12",
     "state": {
       "status": "status",
@@ -71,5 +70,13 @@
   },
   "feeAmountInPennies": 4000,
   "reason": "reason",
-  "feeCode": "X0012"
+  "feeCode": "X0012",
+  "timeline": {
+    "rows": [
+      {
+        "date": "Last Year",
+        "description": "signed a contract"
+      }
+    ]
+  }
 }
