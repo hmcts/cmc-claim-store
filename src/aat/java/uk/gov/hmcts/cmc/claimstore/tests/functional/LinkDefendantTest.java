@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -16,9 +15,6 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 public class LinkDefendantTest extends BaseTest {
 
     private User claimant;
-
-    @Autowired
-    private FunctionalTestsUsers functionalTestsUsers;
 
     @Before
     public void before() {
@@ -32,7 +28,7 @@ public class LinkDefendantTest extends BaseTest {
             claimant.getUserDetails().getId()
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimant.getUserDetails().getId());
+        User defendant = idamTestService.createDefendant(claimant.getUserDetails().getId());
 
         linkDefendant(defendant)
             .then()

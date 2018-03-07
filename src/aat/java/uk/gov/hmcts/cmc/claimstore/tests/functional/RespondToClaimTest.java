@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
@@ -20,9 +19,6 @@ import static org.assertj.core.api.Assertions.within;
 public class RespondToClaimTest extends BaseTest {
 
     private User claimant;
-
-    @Autowired
-    private FunctionalTestsUsers functionalTestsUsers;
 
     @Before
     public void before() {
@@ -53,7 +49,7 @@ public class RespondToClaimTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
@@ -75,7 +71,7 @@ public class RespondToClaimTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Response invalidResponse = SampleResponse.FullDefence.builder()

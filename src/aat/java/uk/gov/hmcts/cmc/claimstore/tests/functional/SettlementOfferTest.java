@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
@@ -24,9 +23,6 @@ public class SettlementOfferTest extends BaseTest {
 
     private User claimant;
 
-    @Autowired
-    private FunctionalTestsUsers functionalTestsUsers;
-
     @Before
     public void before() {
         claimant = idamTestService.createCitizen();
@@ -40,7 +36,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -65,7 +61,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -91,7 +87,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -123,7 +119,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         commonOperations
@@ -140,7 +136,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.validDefaults();
@@ -172,7 +168,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
         commonOperations
@@ -189,7 +185,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
 
         Claim caseWithCounterSign = countersignAnOffer(createdCase, defendant);
 
@@ -236,7 +232,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
 
@@ -254,7 +250,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = functionalTestsUsers.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(claimantId);
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
 

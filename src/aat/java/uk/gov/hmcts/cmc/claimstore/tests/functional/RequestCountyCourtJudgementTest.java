@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,9 +23,6 @@ import static org.assertj.core.api.Assertions.within;
 public class RequestCountyCourtJudgementTest extends BaseTest {
 
     private User claimant;
-
-    @Autowired
-    private FunctionalTestsUsers functionalTestsUsers;
 
     @Before
     public void before() {
