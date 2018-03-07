@@ -12,8 +12,9 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService {
 
-    /* This is configured on Xerox end so they know its us printing and controls things like paper quality and resolution */
-    static final String XEROX_TYPE_PARAMETER = "CMC001";
+    /* This is configured on Xerox end so they know its us printing and controls things
+     like paper quality and resolution */
+    protected static final String XEROX_TYPE_PARAMETER = "CMC001";
 
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
