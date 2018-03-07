@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 public class BulkPrintService {
 
     /* This is configured on Xerox end so they know its us printing and controls things like paper quality and resolution */
-    private static final String XEROX_TYPE_PARAMETER = "CMC001";
+    static final String XEROX_TYPE_PARAMETER = "CMC001";
 
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;

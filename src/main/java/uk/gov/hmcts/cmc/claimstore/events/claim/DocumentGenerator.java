@@ -49,6 +49,7 @@ public class DocumentGenerator {
             event.getClaim(),
             event.getPin()
         );
+
         PDF defendantLetter = new PDF(
             buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
             createPdf(defendantLetterDocument)
