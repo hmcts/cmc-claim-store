@@ -6,10 +6,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.cmc.ccd.assertion.Assertions;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class LinkDefendantTest extends BaseTest {
 
@@ -29,8 +30,18 @@ public class LinkDefendantTest extends BaseTest {
             .then()
             .statusCode(HttpStatus.OK.value());
 
-        testCasesRetrievalFor("/claims/defendant/" + defendant.getUserDetails().getId(),
-            defendant.getAuthorisation(), claim);
+        Claim response = RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
+            .when()
+            .get("/claims/" + claim.getExternalId())
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .assertThat()
+            .and()
+            .extract().body().as(Claim.class);
+
+        assertThat(claim).isEqualTo(response);
     }
 
     private Response linkDefendant(User defendant) {
@@ -41,17 +52,4 @@ public class LinkDefendantTest extends BaseTest {
             .put("/claims/defendant/link");
     }
 
-    public void testCasesRetrievalFor(String uriPath, String authorisation, Claim input) {
-        Claim response = RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, authorisation)
-            .when()
-            .get(uriPath)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-
-        Assertions.assertThat(input).isEqualTo(response);
-    }
 }

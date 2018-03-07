@@ -15,7 +15,6 @@ import java.util.Base64;
 @Service
 public class IdamTestService {
     private static final String PIN_PREFIX = "Pin ";
-    private static final String BEARER_PREFIX = "Bearer ";
 
     private final IdamApi idamApi;
     private final IdamTestApi idamTestApi;
@@ -50,6 +49,8 @@ public class IdamTestService {
         idamTestApi.createUser(createCitizenRequest(email, password));
 
         ResponseEntity<String> pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
+        System.out.println(pin.getStatusCode());
+        System.out.println(pin.getBody());
         String authorisation = PIN_PREFIX + new String(Base64.getEncoder().encode(pin.getBody().getBytes()));
         AuthenticateUserResponse pinUser = idamApi.authenticateUser(authorisation);
 
