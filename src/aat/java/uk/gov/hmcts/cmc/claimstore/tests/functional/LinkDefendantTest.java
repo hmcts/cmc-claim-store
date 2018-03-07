@@ -36,6 +36,7 @@ public class LinkDefendantTest extends BaseTest {
 
         linkDefendant(defendant)
             .then()
+            .assertThat()
             .statusCode(HttpStatus.OK.value());
 
         Claim response = RestAssured
@@ -44,8 +45,8 @@ public class LinkDefendantTest extends BaseTest {
             .when()
             .get("/claims/" + claim.getExternalId())
             .then()
-            .statusCode(HttpStatus.OK.value())
             .assertThat()
+            .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
 
