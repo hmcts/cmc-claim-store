@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -32,9 +31,6 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
 
-        User defendant = functionalTestsUsers.createDefendant();
-        commonOperations.linkDefendant(defendant.getAuthorisation());
-
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
@@ -58,8 +54,6 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             functionalTestsUsers.getClaimant().getAuthorisation(),
             functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
-        User defendant = functionalTestsUsers.createDefendant();
-        commonOperations.linkDefendant(defendant.getAuthorisation());
 
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
@@ -78,8 +72,6 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             functionalTestsUsers.getClaimant().getAuthorisation(),
             functionalTestsUsers.getClaimant().getUserDetails().getId()
         );
-        User defendant = functionalTestsUsers.createDefendant();
-        commonOperations.linkDefendant(defendant.getAuthorisation());
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .withPaymentOptionImmediately()
