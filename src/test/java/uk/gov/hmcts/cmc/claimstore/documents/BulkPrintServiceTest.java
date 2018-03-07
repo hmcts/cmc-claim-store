@@ -50,6 +50,5 @@ public class BulkPrintServiceTest {
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 
         verify(sendLetterApi).sendLetter(eq(authValue), eq(new Letter(documents, XEROX_TYPE_PARAMETER)));
-        verify(authTokenGenerator).generate();
     }
 }

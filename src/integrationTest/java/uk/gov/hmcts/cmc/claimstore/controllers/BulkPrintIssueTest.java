@@ -7,7 +7,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static org.mockito.Mockito.verify;
@@ -23,9 +25,13 @@ public class BulkPrintIssueTest extends BaseSaveTest {
 
     @MockBean
     private BulkPrintService bulkPrintService;
+    @MockBean
+    private ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
 
     @Captor
     private ArgumentCaptor<DocumentReadyToPrintEvent> bulkPrintIssueEventArgument;
+    @Captor
+    private ArgumentCaptor<DocumentGeneratedEvent> documentGeneratedEventArgument;
 
     @Test
     public void shouldIssueBulkPrintEventIfEverythingIsFine() throws Exception {
@@ -34,6 +40,7 @@ public class BulkPrintIssueTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintService).print(bulkPrintIssueEventArgument.capture());
+        verify(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(documentGeneratedEventArgument.capture());
     }
 
 }

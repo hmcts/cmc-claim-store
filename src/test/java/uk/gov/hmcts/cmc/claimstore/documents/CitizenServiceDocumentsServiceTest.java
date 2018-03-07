@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CitizenServiceDocumentsServiceTest {
-    protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     private CitizenServiceDocumentsService citizenServiceDocumentsService;
     @Mock
@@ -49,8 +49,7 @@ public class CitizenServiceDocumentsServiceTest {
         //when
         Document result = citizenServiceDocumentsService.sealedClaimDocument(claim);
         //then
-        assertThat(result).isNotNull();
-        assertThat(result.template).isNotNull().isEqualTo(new String(PDF_BYTES));
+        assertThat(result.template).isEqualTo(new String(PDF_BYTES));
 
         //verify
         verify(claimContentProvider).createContent(eq(claim));
@@ -58,7 +57,7 @@ public class CitizenServiceDocumentsServiceTest {
     }
 
     @Test
-    public void pinLetterDocument() {
+    public void shouldReturnPinLetterDocument() {
         //given
         when(documentTemplates.getDefendantPinLetter()).thenReturn(PDF_BYTES);
 
@@ -70,8 +69,7 @@ public class CitizenServiceDocumentsServiceTest {
         //when
         Document result = citizenServiceDocumentsService.pinLetterDocument(claim, defendantPin);
         //then
-        assertThat(result).isNotNull();
-        assertThat(result.template).isNotNull().isEqualTo(new String(PDF_BYTES));
+        assertThat(result.template).isEqualTo(new String(PDF_BYTES));
 
         //verify
         verify(letterContentProvider).createContent(eq(claim), eq(defendantPin));
