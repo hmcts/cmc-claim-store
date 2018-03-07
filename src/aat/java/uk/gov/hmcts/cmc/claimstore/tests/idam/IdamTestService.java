@@ -43,10 +43,7 @@ public class IdamTestService {
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
-    public User createDefendant(final String hackHackHackClaimantId) {
-        // HACK no way to know the letter holder ID currently so we pray claimantId + 1 works for now
-        String letterHolderId = String.valueOf(Integer.valueOf(hackHackHackClaimantId) + 1);
-
+    public User createDefendant(final String letterHolderId) {
         String email = testData.nextUserEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
         idamTestApi.createUser(createCitizenRequest(email, password));

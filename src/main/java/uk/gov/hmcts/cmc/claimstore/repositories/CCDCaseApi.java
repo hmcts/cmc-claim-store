@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -39,6 +41,7 @@ public class CCDCaseApi {
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
     private final CaseAccessApi caseAccessApi;
+    private final CoreCaseDataService coreCaseDataService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
 
@@ -48,7 +51,8 @@ public class CCDCaseApi {
         UserService userService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
-        CaseAccessApi caseAccessApi
+        CaseAccessApi caseAccessApi,
+        CoreCaseDataService coreCaseDataService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -56,6 +60,7 @@ public class CCDCaseApi {
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
         this.caseAccessApi = caseAccessApi;
+        this.coreCaseDataService = coreCaseDataService;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -139,6 +144,12 @@ public class CCDCaseApi {
             CASE_TYPE_ID,
             caseId,
             letterHolderId
+        );
+
+        coreCaseDataService.update(
+            defendantUser.getAuthorisation(),
+            CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
+            CaseEvent.LINK_DEFENDANT
         );
     }
 
