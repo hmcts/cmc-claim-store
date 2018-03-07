@@ -6,11 +6,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.cmc.ccd.assertion.Assertions;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class LinkDefendantTest extends BaseTest {
 
@@ -53,6 +52,6 @@ public class LinkDefendantTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        assertThat(response).isNotNull().isEqualTo(input);
+        Assertions.assertThat(input).isEqualTo(response);
     }
 }
