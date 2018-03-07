@@ -49,7 +49,7 @@ public class RespondToClaimTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
@@ -71,7 +71,7 @@ public class RespondToClaimTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(claimantId);
+        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Response invalidResponse = SampleResponse.FullDefence.builder()
