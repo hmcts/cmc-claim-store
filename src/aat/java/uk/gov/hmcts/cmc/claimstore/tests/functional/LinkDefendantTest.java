@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LinkDefendantTest extends BaseTest {
 
@@ -28,7 +28,7 @@ public class LinkDefendantTest extends BaseTest {
             claimant.getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant(claimant.getUserDetails().getId());
+        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
 
         linkDefendant(defendant)
             .then()
@@ -46,7 +46,7 @@ public class LinkDefendantTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        assertThat(claim).isEqualTo(response);
+        assertThat(response.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
     }
 
     private Response linkDefendant(User defendant) {
