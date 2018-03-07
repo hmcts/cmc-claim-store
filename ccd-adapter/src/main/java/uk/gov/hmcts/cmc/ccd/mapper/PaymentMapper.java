@@ -34,7 +34,6 @@ public class PaymentMapper implements Mapper<CCDPayment, Payment> {
             ccdPayment.getAmount(),
             ccdPayment.getReference(),
             ccdPayment.getDateCreated(),
-            null,
             ccdPayment.getStatus()
         );
     }

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.ccd.assertion.Assertions;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -39,7 +38,7 @@ public class SubmitClaimTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        Assertions.assertThat(claimData).isEqualTo(createdCase.getClaimData());
+        assertThat(claimData).isEqualTo(createdCase.getClaimData());
         assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
     }
 
@@ -82,20 +81,14 @@ public class SubmitClaimTest extends BaseTest {
 
     private Response submitClaim(ClaimData claimData) {
         User claimant = functionalTestsUsers.getClaimant();
-        Response response = RestAssured
+
+        return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .body(jsonMapper.toJson(claimData))
             .when()
             .post("/claims/" + claimant.getUserDetails().getId());
-
-        if (response.getStatusCode() == HttpStatus.OK.value()) {
-            User defendant = functionalTestsUsers.createDefendant();
-            commonOperations.linkDefendant(defendant.getAuthorisation());
-        }
-
-        return response;
     }
 
 }

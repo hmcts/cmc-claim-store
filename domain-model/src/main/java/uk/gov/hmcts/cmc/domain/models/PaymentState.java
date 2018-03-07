@@ -1,9 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
+
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class PaymentState {
     @NotBlank
@@ -41,5 +44,10 @@ public class PaymentState {
     @Override
     public int hashCode() {
         return Objects.hash(status, finished);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

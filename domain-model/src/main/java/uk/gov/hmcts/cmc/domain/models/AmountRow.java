@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.ClaimantAmount;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 import javax.validation.constraints.DecimalMin;
+
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @ClaimantAmount
 public class AmountRow {
@@ -44,5 +47,10 @@ public class AmountRow {
     @Override
     public int hashCode() {
         return Objects.hash(reason, amount);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }
