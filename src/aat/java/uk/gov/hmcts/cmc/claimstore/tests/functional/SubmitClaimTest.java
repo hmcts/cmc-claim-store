@@ -2,11 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -23,8 +24,12 @@ import static org.assertj.core.api.Assertions.within;
 
 public class SubmitClaimTest extends BaseTest {
 
-    @Autowired
-    private FunctionalTestsUsers functionalTestsUsers;
+    private User claimant;
+
+    @Before
+    public void before() {
+        claimant = idamTestService.createCitizen();
+    }
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
@@ -37,7 +42,7 @@ public class SubmitClaimTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        assertThat(createdCase.getClaimData()).isEqualTo(claimData);
+        assertThat(claimData).isEqualTo(createdCase.getClaimData());
         assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
     }
 
@@ -82,10 +87,10 @@ public class SubmitClaimTest extends BaseTest {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, functionalTestsUsers.getClaimant().getAuthorisation())
+            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .body(jsonMapper.toJson(claimData))
             .when()
-            .post("/claims/" + functionalTestsUsers.getClaimant().getUserDetails().getId());
+            .post("/claims/" + claimant.getUserDetails().getId());
     }
 
 }
