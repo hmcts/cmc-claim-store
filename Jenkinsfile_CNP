@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@feature/add-idam-and-s2s-urls")
 
 def product = "cmc"
 def component = "claim-store"
