@@ -126,6 +126,7 @@ public class JsonMapperTest {
                     .withServiceAddress(SampleAddress.validDefaults())
                     .individualDetails())
             .withTimeline(null)
+            .withPayment(null)
             .build();
         assertThat(output).isEqualTo(expected);
     }

@@ -62,6 +62,14 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.settlementReachedAt(claim.getSettlementReachedAt());
         }
 
+        if (claim.getLetterHolderId() != null) {
+            builder.letterHolderId(claim.getLetterHolderId());
+        }
+
+        if (claim.getDefendantId() != null) {
+            builder.defendantId(claim.getDefendantId());
+        }
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -98,15 +106,15 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         return new Claim(
             ccdCase.getId(),
             ccdCase.getSubmitterId(),
-            null,
-            null,
+            ccdCase.getLetterHolderId(),
+            ccdCase.getDefendantId(),
             ccdCase.getExternalId(),
             ccdCase.getReferenceNumber(),
             claimMapper.from(ccdCase.getClaimData()),
             LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME),
             LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE),
             ccdCase.getResponseDeadline(),
-            ccdCase.getMoreTimeRequested() == YES ? true : false,
+            ccdCase.getMoreTimeRequested() == YES,
             ccdCase.getSubmitterEmail(),
             ccdCase.getRespondedAt(),
             response,

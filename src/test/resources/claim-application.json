@@ -26,12 +26,6 @@
       {
         "reason": "reason",
         "amount": 40
-      },
-      {
-      },
-      {
-      },
-      {
       }
     ]
   },
@@ -62,12 +56,8 @@
     "id": "123",
     "amount": 4000,
     "reference": "reference",
-    "description": "description",
     "date_created": "2010-10-12",
-    "state": {
-      "status": "status",
-      "finished": true
-    }
+    "status": "success"
   },
   "feeAmountInPennies": 4000,
   "reason": "reason",

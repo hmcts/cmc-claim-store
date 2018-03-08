@@ -30,12 +30,7 @@
         "id": "123",
         "amount": 4000,
         "reference": "reference",
-        "dateCreated": "2010-10-12",
-        "description": "description",
-        "paymentState": {
-          "status": "status",
-          "finished": "YES"
-        }
+        "dateCreated": "2010-10-12"
       },
       "interest": {
         "rate": 8,

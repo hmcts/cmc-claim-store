@@ -1,45 +1,44 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.penniesToPounds;
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@JsonIgnoreProperties(value = {"description", "state"})
 public class Payment {
-    @NotBlank
     private final String id;
-    /** The amount which was paid, in pennies. */
+    /**
+     * The amount which was paid, in pennies for payments v1 or pounds with payments v2.
+     */
     @NotNull
     private final BigDecimal amount;
     @NotBlank
     private final String reference;
-    @NotBlank
-    private final String description;
-    @NotBlank
     @JsonProperty("date_created")
     private final String dateCreated;
-    @NotNull
-    @Valid
-    private final PaymentState state;
+    private final String status;
 
-    public Payment(String id,
-                   BigDecimal amount,
-                   String reference,
-                   String description,
-                   String dateCreated,
-                   PaymentState state) {
+    public Payment(
+        String id,
+        BigDecimal amount,
+        String reference,
+        String dateCreated,
+        String status
+    ) {
         this.id = id;
         this.amount = amount;
         this.reference = reference;
-        this.description = description;
         this.dateCreated = dateCreated;
-        this.state = state;
+        this.status = status;
     }
 
     public String getId() {
@@ -59,38 +58,38 @@ public class Payment {
         return reference;
     }
 
-    public String getDescription() {
-        return description;
+    public String getStatus() {
+        return status;
     }
 
     public String getDateCreated() {
         return dateCreated;
     }
 
-    public PaymentState getState() {
-        return state;
-    }
-
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Payment payment = (Payment) other;
+        Payment payment = (Payment) obj;
         return Objects.equals(id, payment.id)
             && Objects.equals(amount, payment.amount)
             && Objects.equals(reference, payment.reference)
-            && Objects.equals(description, payment.description)
             && Objects.equals(dateCreated, payment.dateCreated)
-            && Objects.equals(state, payment.state);
+            && Objects.equals(status, payment.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, amount, reference, description, dateCreated, state);
+        return Objects.hash(id, amount, reference, dateCreated, status);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

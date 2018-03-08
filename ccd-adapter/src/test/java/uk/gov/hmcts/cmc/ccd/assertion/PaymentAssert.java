@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-
 public class PaymentAssert extends AbstractAssert<PaymentAssert, Payment> {
 
     public PaymentAssert(Payment actual) {
@@ -22,9 +20,9 @@ public class PaymentAssert extends AbstractAssert<PaymentAssert, Payment> {
                 payment.getId(), actual.getId());
         }
 
-        if (!Objects.equals(actual.getDescription(), payment.getDescription())) {
-            failWithMessage("Expected Payment.description to be <%s> but was <%s>",
-                payment.getDescription(), actual.getDescription());
+        if (!Objects.equals(actual.getStatus(), payment.getStatus())) {
+            failWithMessage("Expected Payment.status to be <%s> but was <%s>",
+                payment.getDescription(), actual.getStatus());
         }
 
         if (!Objects.equals(actual.getReference(), payment.getReference())) {
@@ -41,8 +39,6 @@ public class PaymentAssert extends AbstractAssert<PaymentAssert, Payment> {
             failWithMessage("Expected Payment.dateCreated to be <%s> but was <%s>",
                 payment.getDateCreated(), actual.getDateCreated());
         }
-
-        assertThat(actual.getState()).isEqualTo(payment.getPaymentState());
 
         return this;
     }

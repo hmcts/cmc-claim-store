@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
@@ -18,8 +18,12 @@ import static org.assertj.core.api.Assertions.within;
 
 public class RespondToClaimTest extends BaseTest {
 
-    @Autowired
-    private FunctionalTestsUsers functionalTestsUsers;
+    private User claimant;
+
+    @Before
+    public void before() {
+        claimant = idamTestService.createCitizen();
+    }
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
@@ -39,18 +43,14 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = idamTestService.createCitizen();
-
-        commonOperations.linkDefendant(
-            createdCase.getExternalId(),
-            defendant.getAuthorisation(),
-            defendant.getUserDetails().getId()
-        );
+        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
             .then()
@@ -65,18 +65,14 @@ public class RespondToClaimTest extends BaseTest {
 
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
+        String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
-            functionalTestsUsers.getClaimant().getAuthorisation(),
-            functionalTestsUsers.getClaimant().getUserDetails().getId()
+            claimant.getAuthorisation(),
+            claimantId
         );
 
-        User defendant = idamTestService.createCitizen();
-
-        commonOperations.linkDefendant(
-            createdCase.getExternalId(),
-            defendant.getAuthorisation(),
-            defendant.getUserDetails().getId()
-        );
+        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Response invalidResponse = SampleResponse.FullDefence.builder()
             .withDefence(null)
