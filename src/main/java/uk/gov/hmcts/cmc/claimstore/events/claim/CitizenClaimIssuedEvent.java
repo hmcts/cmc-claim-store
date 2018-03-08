@@ -4,7 +4,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -20,10 +19,9 @@ public class CitizenClaimIssuedEvent extends ClaimIssuedEvent {
         this.pin = pin;
     }
 
-    public Optional<String> getPin() {
-        return Optional.ofNullable(pin);
+    public String getPin() {
+        return pin;
     }
-
 
     @Override
     public boolean equals(Object other) {

@@ -79,15 +79,6 @@ public class ClaimIssuedCitizenActionsHandlerTest {
             );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void sendFailSendingNotificationToDefendantWhenPinIsMissing() throws NotificationClientException {
-
-        CitizenClaimIssuedEvent claimIssuedEvent
-            = new CitizenClaimIssuedEvent(CLAIM, null, SUBMITTER_NAME, AUTHORISATION);
-
-        claimIssuedCitizenActionsHandler.sendDefendantNotification(claimIssuedEvent);
-    }
-
     @Test
     public void sendNotificationsSendsNotificationToClaimantOnly() throws NotificationClientException {
 
