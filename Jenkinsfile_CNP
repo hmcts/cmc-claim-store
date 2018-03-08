@@ -34,9 +34,9 @@ withPipeline("java", product, component) {
   env.CLAIM_STORE_DB_NAME = 'claimstore'
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
-//  after('smokeTest:aat') {
-//    sh './gradlew :ccd-claim-migration:assemble migrateClaims'
-//  }
+  after('smokeTest:aat') {
+    sh './gradlew :ccd-claim-migration:assemble migrateClaims'
+  }
   loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-notification')
 }
