@@ -48,7 +48,7 @@ public class ClaimIssuedCitizenActionsHandler {
                     claimIssuedNotificationService.sendMail(
                         claim,
                         defendantEmail,
-                        event.getPin().orElseThrow(IllegalArgumentException::new),
+                        event.getPin(),
                         getEmailTemplates().getDefendantClaimIssued(),
                         "defendant-issue-notification-" + claim.getReferenceNumber(),
                         event.getSubmitterName()

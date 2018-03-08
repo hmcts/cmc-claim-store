@@ -13,13 +13,9 @@ public class DocumentGeneratedEvent {
     private final List<PDF> documents;
 
     public DocumentGeneratedEvent(Claim claim, String authorization, PDF... documents) {
-        this(claim, authorization, newArrayList(documents));
-    }
-
-    public DocumentGeneratedEvent(Claim claim, String authorization, List<PDF> documents) {
         this.claim = claim;
         this.authorization = authorization;
-        this.documents = documents;
+        this.documents = newArrayList(documents);
     }
 
     public Claim getClaim() {

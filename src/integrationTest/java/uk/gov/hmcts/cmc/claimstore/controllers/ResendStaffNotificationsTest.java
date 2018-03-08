@@ -15,8 +15,10 @@ import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,6 +90,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
+        given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());
