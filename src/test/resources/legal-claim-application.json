@@ -85,17 +85,6 @@
       }
     }
   ],
-  "payment": {
-    "id": "123",
-    "amount": 4000,
-    "reference": "reference",
-    "description": "description",
-    "date_created": "2010-10-12",
-    "state": {
-      "status": "status",
-      "finished": true
-    }
-  },
   "feeAmountInPennies": 4000,
   "feeAccountNumber": "PBA1234567",
   "reason": "reason",

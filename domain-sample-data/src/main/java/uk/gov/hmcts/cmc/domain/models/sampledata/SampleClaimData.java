@@ -108,6 +108,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withPayment(Payment payment) {
+        this.payment = payment;
+        return this;
+    }
+
     public SampleClaimData withDefendant(TheirDetails defendant) {
         this.defendants = singletonList(defendant);
         return this;

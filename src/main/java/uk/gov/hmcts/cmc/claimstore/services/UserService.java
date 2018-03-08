@@ -52,7 +52,7 @@ public class UserService {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }
 
-    private String getBasicAuthHeader(String username, String password) {
+    public String getBasicAuthHeader(String username, String password) {
         String auth = username + ":" + password;
         return "Basic " + new String(Base64.getEncoder().encode(auth.getBytes()));
     }
