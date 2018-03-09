@@ -53,11 +53,11 @@ public class ClaimMigrator {
                 if (ccdId.isPresent()) {
                     coreCaseDataService.overwrite(user, ccdId.get(), claim);
                     logger.info("\t\t claim exists - overwrite");
-                    migratedClaims.incrementAndGet();
+                    updatedClaims.incrementAndGet();
                 } else {
                     coreCaseDataService.create(user, claim);
                     logger.info("\t\t claim created in ccd");
-                    updatedClaims.incrementAndGet();
+                    migratedClaims.incrementAndGet();
                 }
 
                 claimRepository.markAsMigrated(claim.getId());
