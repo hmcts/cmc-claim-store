@@ -11,7 +11,6 @@ public class CCDPayment {
     private String id;
     private BigDecimal amount;
     private String reference;
-    private String description;
     private String dateCreated;
     private String status;
 }

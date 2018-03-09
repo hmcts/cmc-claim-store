@@ -22,7 +22,7 @@ public class CCDPaymentAssert extends AbstractAssert<CCDPaymentAssert, CCDPaymen
 
         if (!Objects.equals(actual.getStatus(), payment.getStatus())) {
             failWithMessage("Expected CCDPayment.status to be <%s> but was <%s>",
-                payment.getStatus(), actual.getDescription());
+                payment.getState(), actual.getStatus());
         }
 
         if (!Objects.equals(actual.getReference(), payment.getReference())) {

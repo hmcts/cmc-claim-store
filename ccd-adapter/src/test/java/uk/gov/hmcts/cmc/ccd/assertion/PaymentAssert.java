@@ -22,7 +22,7 @@ public class PaymentAssert extends AbstractAssert<PaymentAssert, Payment> {
 
         if (!Objects.equals(actual.getStatus(), payment.getStatus())) {
             failWithMessage("Expected Payment.status to be <%s> but was <%s>",
-                payment.getDescription(), actual.getStatus());
+                payment.getStatus(), actual.getStatus());
         }
 
         if (!Objects.equals(actual.getReference(), payment.getReference())) {
