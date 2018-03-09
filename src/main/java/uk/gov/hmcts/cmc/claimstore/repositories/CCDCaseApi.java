@@ -161,21 +161,11 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
-        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        List<String> caseIdsGivenUserIdHasAccessTo = caseAccessApi.findCaseIdsGivenUserIdHasAccessTo(
-            anonymousCaseWorker.getAuthorisation(),
-            authTokenGenerator.generate(),
-            anonymousCaseWorker.getUserDetails().getId(),
-            JURISDICTION_ID,
-            CASE_TYPE_ID,
-            id
-        );
-
         User defendant = userService.getUser(authorisation);
-        return caseIdsGivenUserIdHasAccessTo.stream()
-            .map(caseId -> readCase(defendant, caseId))
-            .filter((claim -> !claim.getSubmitterId().equals(id)))
-            .collect(Collectors.toList());
+
+        return extractClaims(
+            search(defendant, ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()))
+        );
     }
 
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
