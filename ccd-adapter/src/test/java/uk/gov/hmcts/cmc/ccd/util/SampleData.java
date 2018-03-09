@@ -203,7 +203,6 @@ public class SampleData {
     public static CCDPayment getCCDPayment() {
         return CCDPayment.builder()
             .id("paymentId")
-            .description("description")
             .reference("reference")
             .amount(BigDecimal.valueOf(7000))
             .dateCreated("2017-10-12")
