@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
@@ -167,6 +168,10 @@ public class Assertions {
 
     public static OfferAssert assertThat(Offer offer) {
         return new OfferAssert(offer);
+    }
+
+    public static PaymentDeclarationAssert assertThat(PaymentDeclaration actual) {
+        return new PaymentDeclarationAssert(actual);
     }
 
     public static TimelineEventAssert assertThat(TimelineEvent timelineEvent) {
