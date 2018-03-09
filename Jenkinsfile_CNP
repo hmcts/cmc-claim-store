@@ -16,6 +16,7 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('IdamSystemUpdateUserPassword', 'IDAM_SYSTEM_UPDATE_USER_PASSWORD'),
   secret('IdamAnonymousCaseworkerUsername', 'IDAM_ANONYMOUS_CASEWORKER_USERNAME'),
   secret('IdamAnonymousCaseworkerPassword', 'IDAM_ANONYMOUS_CASEWORKER_PASSWORD'),
+  secret('IdamS2sAuthTotpSecret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
   secret('CcdApiUrl', 'CORE_CASE_DATA_API_URL')
 ]
 
@@ -29,6 +30,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline("java", product, component) {
+  env.IDAM_S2S_AUTH_URL='http://betaDevBccidamS2SLB.reform.hmcts.net'
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
