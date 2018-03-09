@@ -23,7 +23,8 @@ public class HousingDisrepairMapper implements Mapper<CCDHousingDisrepair, Housi
         }
 
         DamagesExpectation costOfRepairs = DamagesExpectation.valueOf(ccdHousingDisrepair.getCostOfRepairsDamages());
-        DamagesExpectation otherDamages = DamagesExpectation.valueOf(ccdHousingDisrepair.getOtherDamages());
+        String ccdOtherDamages = ccdHousingDisrepair.getOtherDamages();
+        DamagesExpectation otherDamages = ccdOtherDamages != null ? DamagesExpectation.valueOf(ccdOtherDamages) : null;
         return new HousingDisrepair(costOfRepairs, otherDamages);
     }
 }

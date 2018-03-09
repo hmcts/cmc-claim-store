@@ -231,16 +231,30 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Defendant’s defence</strong>
+    <strong>Defendant's response to the claim</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Defence:</td>
+        <td>Defendant's response:</td>
         <td>
           {{ responseDefence }}
         </td>
       </tr>
+      {% if paymentDeclaration is defined %}
+      <tr>
+        <td>When they paid this amount:</td>
+        <td>
+          {{ paymentDeclaration.paidDate }}
+        </td>
+      </tr>
+      <tr>
+        <td>How they pay the amount claimed:</td>
+        <td>
+          {{ paymentDeclaration.explanation }}
+        </td>
+      </tr>
+      {% endif %}
     </table>
   </div>
 </div>
