@@ -79,4 +79,14 @@ public class DefendantResponseContentProviderTest {
             );
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldProvidePaymentDeclaration() {
+        Map<String, Object> content = provider.createContent(claim);
+
+        assertThat(content).containsKey("paymentDeclaration");
+        assertThat((Map<String, String>) content.get("paymentDeclaration"))
+            .containsOnlyKeys("paidDate", "explanation")
+            .containsValues("2 January 2016", "Paid cash");
+    }
 }
