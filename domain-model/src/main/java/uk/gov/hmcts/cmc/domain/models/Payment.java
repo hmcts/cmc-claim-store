@@ -15,7 +15,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class Payment {
     private final String id;
     /**
-     * The amount which was paid, in pennies regardless payments v1 or payments v2 is used.
+     * The amount which was paid, in pennies for payments v1 or pounds with payments v2.
      */
     @NotNull
     private final BigDecimal amount;
