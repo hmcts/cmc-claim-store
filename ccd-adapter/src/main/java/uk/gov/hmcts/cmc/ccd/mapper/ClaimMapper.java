@@ -129,6 +129,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             ccdClaim.getExternalReferenceNumber(),
             ccdClaim.getPreferredCourt(),
             ccdClaim.getFeeCode(),
-            timelineMapper.from(ccdClaim.getTimeline()));
+            timelineMapper.from(ccdClaim.getTimeline()),
+            null);
     }
 }
