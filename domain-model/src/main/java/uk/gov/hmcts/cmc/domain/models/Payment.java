@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -10,7 +9,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
-import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.penniesToPounds;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonIgnoreProperties(value = {"description", "state"})
@@ -47,11 +45,6 @@ public class Payment {
 
     public BigDecimal getAmount() {
         return amount;
-    }
-
-    @JsonIgnore
-    public BigDecimal getAmountInPounds() {
-        return penniesToPounds(amount);
     }
 
     public String getReference() {
