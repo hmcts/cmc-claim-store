@@ -30,7 +30,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline("java", product, component) {
-  env.IDAM_S2S_API_URL='http://betaDevBccidamS2SLB.reform.hmcts.net'
+  env.IDAM_S2S_AUTH_URL='http://betaDevBccidamS2SLB.reform.hmcts.net'
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
