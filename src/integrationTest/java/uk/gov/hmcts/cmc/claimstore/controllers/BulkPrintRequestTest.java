@@ -1,6 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +21,6 @@ import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,11 +33,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     properties = {
         "document_management.api_gateway.url=false",
         "core_case_data.api.url=false",
-        "send-letter.url=http://localhost:8089/send"
+        "send-letter.url=http://localhost:${wiremock.server.port}/send"
     }
 )
-@AutoConfigureWireMock(port = 8089)
+@AutoConfigureWireMock(port = 0)
 public class BulkPrintRequestTest extends BaseSaveTest {
+
+    @Autowired
+    WireMockServer wireMockServer;
+
+    @Value("${send-letter.url}")
+    private String url;
 
     @MockBean
     private BulkPrintStaffNotificationService bulkPrintNotificationService;
@@ -44,7 +52,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
     public void shouldNotSendNotificationWhenEverythingIsOk() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        stubFor(post(urlEqualTo("/send/letters"))
+        wireMockServer.stubFor(post(urlEqualTo("/send/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -64,7 +72,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
     public void shouldTrySendingLetterThreeTimesOnFailuresWhenBulkPrintFailsWithSendLetterException() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        stubFor(post(urlEqualTo("/send/letters"))
+        wireMockServer.stubFor(post(urlEqualTo("/send/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.BAD_REQUEST.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -81,11 +89,10 @@ public class BulkPrintRequestTest extends BaseSaveTest {
 
     @Test
     public void shouldTrySendingLetterThreeTimesOnFailuresWhenBulkPrintFailsWithRestClientException() throws Exception {
-        //given
 
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        stubFor(post(urlEqualTo("/send/letters"))
+        wireMockServer.stubFor(post(urlEqualTo("/send/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
