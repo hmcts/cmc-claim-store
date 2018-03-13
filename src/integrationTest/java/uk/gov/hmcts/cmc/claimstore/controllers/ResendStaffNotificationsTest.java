@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.time.LocalDate;
@@ -38,6 +40,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class ResendStaffNotificationsTest extends BaseIntegrationTest {
+
+    @MockBean
+    protected SendLetterApi sendLetterApi;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;

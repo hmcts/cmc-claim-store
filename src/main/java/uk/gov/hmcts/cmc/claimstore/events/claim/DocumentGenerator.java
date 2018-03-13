@@ -55,7 +55,8 @@ public class DocumentGenerator {
             createPdf(defendantLetterDocument)
         );
 
-        publisher.publishEvent(new DocumentReadyToPrintEvent(defendantLetterDocument, sealedClaimDocument));
+        publisher.publishEvent(new DocumentReadyToPrintEvent(event.getClaim(),
+            defendantLetterDocument, sealedClaimDocument));
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter));
     }
