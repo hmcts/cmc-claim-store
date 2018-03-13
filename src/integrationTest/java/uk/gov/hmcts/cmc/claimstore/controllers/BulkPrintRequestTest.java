@@ -3,7 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
@@ -20,7 +22,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
         stubFor(post(urlEqualTo("/send/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", "application/json")
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .withBody("{ \"letter_id\":\"" + UUID.randomUUID().toString() + "\" }")
             )
         );
@@ -66,7 +67,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
         stubFor(post(urlEqualTo("/send/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.BAD_REQUEST.value())
-                .withHeader("Content-Type", "application/json")
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             )
         );
 
@@ -74,7 +75,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        verify(bulkPrintNotificationService, atLeast(1))
+        verify(bulkPrintNotificationService)
             .notifyFailedBulkPrint(any(List.class), eq(deserializeObjectFrom(result, Claim.class)));
     }
 
@@ -87,14 +88,14 @@ public class BulkPrintRequestTest extends BaseSaveTest {
         stubFor(post(urlEqualTo("/send/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .withHeader("Content-Type", "application/json")
+                .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("Internal server error occurred")));
 
         MvcResult result = makeRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isOk())
             .andReturn();
 
-        verify(bulkPrintNotificationService, atLeast(1))
+        verify(bulkPrintNotificationService)
             .notifyFailedBulkPrint(any(List.class), eq(deserializeObjectFrom(result, Claim.class)));
     }
 }

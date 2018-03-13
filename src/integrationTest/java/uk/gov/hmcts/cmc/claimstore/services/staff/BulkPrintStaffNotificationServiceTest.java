@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
@@ -60,7 +61,12 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyFailedBulkPrint(null, null);
+        service.notifyFailedBulkPrint(documents, null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullDocuments() {
+        service.notifyFailedBulkPrint(null, claim);
     }
 
     @Test
@@ -108,7 +114,7 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
         String expectedSealedClaimFileName = DocumentNameUtils.buildSealedClaimFileBaseName(claim.getReferenceNumber());
 
-        assertThat(sealedClaimEmailAttachment.getContentType()).isEqualTo("application/pdf");
+        assertThat(sealedClaimEmailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(sealedClaimEmailAttachment.getFilename()).isEqualTo(expectedSealedClaimFileName);
     }
 }
