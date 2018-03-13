@@ -21,6 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,13 +47,15 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", "application/json")
-                .withBody(UUID.randomUUID().toString())));
+                .withBody("{ \"letter_id\":\"" + UUID.randomUUID().toString() + "\" }")
+            )
+        );
 
         MvcResult result = makeRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isOk())
             .andReturn();
 
-        verify(bulkPrintNotificationService)
+        verify(bulkPrintNotificationService, never())
             .notifyFailedBulkPrint(any(List.class), eq(deserializeObjectFrom(result, Claim.class)));
     }
 
@@ -64,7 +67,8 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .willReturn(aResponse()
                 .withStatus(HttpStatus.BAD_REQUEST.value())
                 .withHeader("Content-Type", "application/json")
-                .withBody("not found")));
+            )
+        );
 
         MvcResult result = makeRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isOk())
