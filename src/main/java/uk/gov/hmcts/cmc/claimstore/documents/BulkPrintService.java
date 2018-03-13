@@ -42,15 +42,10 @@ public class BulkPrintService {
         backoff = @Backoff(delay = 200)
     )
     public void print(DocumentReadyToPrintEvent event) {
-        try {
-            sendLetterApi.sendLetter(
-                authTokenGenerator.generate(),
-                new Letter(event.getDocuments(), XEROX_TYPE_PARAMETER)
-            );
-        }catch (Exception e){
-            e.printStackTrace();
-            throw e;
-        }
+        sendLetterApi.sendLetter(
+            authTokenGenerator.generate(),
+            new Letter(event.getDocuments(), XEROX_TYPE_PARAMETER)
+        );
     }
 
     @Recover
