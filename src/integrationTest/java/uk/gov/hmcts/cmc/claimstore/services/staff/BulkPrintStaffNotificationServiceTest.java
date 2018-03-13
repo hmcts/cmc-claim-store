@@ -105,7 +105,7 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
         String expectedPinLetterFileName
             = DocumentNameUtils.buildDefendantLetterFileBaseName(claim.getReferenceNumber());
 
-        assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
+        assertThat(emailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedPinLetterFileName);
 
         EmailAttachment sealedClaimEmailAttachment = emailDataArgument.getValue()
