@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BulkPrintRequestTest extends BaseSaveTest {
 
     @Autowired
-    WireMockServer wireMockServer;
+    private WireMockServer wireMockServer;
 
     @MockBean
     private BulkPrintStaffNotificationService bulkPrintNotificationService;

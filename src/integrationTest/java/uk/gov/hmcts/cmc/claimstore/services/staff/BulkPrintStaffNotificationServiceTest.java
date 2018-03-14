@@ -45,7 +45,7 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
     private Claim claim;
 
     @Before
-    public void setup() {
+    public void setUp() {
         defendantLetterDocument = new Document("defendantPinTemplate", new HashMap<>());
         sealedClaimDocument = new Document("sealedClaimTemplate", new HashMap<>());
 
