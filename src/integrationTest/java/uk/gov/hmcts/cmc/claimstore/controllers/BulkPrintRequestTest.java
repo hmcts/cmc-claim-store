@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     properties = {
         "document_management.api_gateway.url=false",
         "core_case_data.api.url=false",
-        "send-letter.url=http://localhost:${wiremock.server.port}/send"
+        "send-letter.url=http://localhost:${wiremock.server.port}"
     }
 )
 @AutoConfigureWireMock(port = 0)
@@ -48,7 +48,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
     public void shouldNotSendNotificationWhenEverythingIsOk() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        wireMockServer.stubFor(post(urlEqualTo("/send/letters"))
+        wireMockServer.stubFor(post(urlEqualTo("/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -65,10 +65,10 @@ public class BulkPrintRequestTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldTrySendingLetterThreeTimesOnFailuresWhenBulkPrintFailsWithSendLetterException() throws Exception {
+    public void shouldSendNotificationWhenBulkPrintFailsWithHttpClientError() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        wireMockServer.stubFor(post(urlEqualTo("/send/letters"))
+        wireMockServer.stubFor(post(urlEqualTo("/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.BAD_REQUEST.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -84,11 +84,11 @@ public class BulkPrintRequestTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldTrySendingLetterThreeTimesOnFailuresWhenBulkPrintFailsWithRestClientException() throws Exception {
+    public void shouldSendNotificationWhenBulkPrintFailsWithHttpServerError() throws Exception {
 
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        wireMockServer.stubFor(post(urlEqualTo("/send/letters"))
+        wireMockServer.stubFor(post(urlEqualTo("/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)

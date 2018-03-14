@@ -25,6 +25,8 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 @Service
 public class BulkPrintStaffNotificationService {
 
+    public static final int PIN_LETTER_DOCUMENT_INDEX = 0;
+    public static final int CLAIM_DOCUMENT_INDEX = 1;
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
     private final BulkPrintEmailContentProvider emailContentProvider;
@@ -47,12 +49,12 @@ public class BulkPrintStaffNotificationService {
         EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim));
 
         EmailAttachment defendantLetter = pdf(
-            createPdf(documents.get(0)),
+            createPdf(documents.get(PIN_LETTER_DOCUMENT_INDEX)),
             buildDefendantLetterFileBaseName(claim.getReferenceNumber())
         );
 
         EmailAttachment sealedClaim = pdf(
-            createPdf(documents.get(1)),
+            createPdf(documents.get(CLAIM_DOCUMENT_INDEX)),
             buildSealedClaimFileBaseName(claim.getReferenceNumber())
         );
 
