@@ -218,7 +218,8 @@ public class SampleClaimData {
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .individualDetails())
-            .withTimeline(SampleTimeline.validDefaults());
+            .withTimeline(SampleTimeline.validDefaults())
+            .withEvidence(SampleEvidence.validDefaults());
     }
 
     public static ClaimData submittedByLegalRepresentative() {
