@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
@@ -41,9 +40,6 @@ public class BulkPrintRequestTest extends BaseSaveTest {
 
     @Autowired
     WireMockServer wireMockServer;
-
-    @Value("${send-letter.url}")
-    private String url;
 
     @MockBean
     private BulkPrintStaffNotificationService bulkPrintNotificationService;
