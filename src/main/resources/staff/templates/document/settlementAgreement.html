@@ -5,13 +5,50 @@
   <style>
     @page {
       size: 8.5in 11in;
-      margin: 10%;
+      margin: 5%;
 
+      @top-right {
+        content: "Claim number: {{ claim.referenceNumber }}";
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+
+      @bottom-left {
+        content: "Settlement agreement form";
+        white-space: nowrap;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        white-space: nowrap;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+
+      @bottom-right {
+        content: "© Crown copyright Page " counter(page) " of " counter(pages);
+        white-space: nowrap;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+    }
+
+    @page :first {
+      @top-right {
+        content: "";
+      }
     }
 
     html {
       /*noinspection CssNoGenericFontName*/
       font-family: "Open Sans";
+      font-size: 17px;
     }
 
     body {
@@ -24,6 +61,7 @@
 
     .section .section-heading {
       margin-bottom: 10px;
+      font-size: 20px;
     }
 
     .section .section-heading strong:before {
@@ -38,7 +76,7 @@
 
     table td {
       border-top: 1px solid #999;
-      padding: 5px;
+      padding: 8px;
     }
     table tr:last-child td {
       border-bottom: 1px solid #999;
@@ -53,6 +91,10 @@
       width: auto;
     }
 
+    header table {
+      margin-top: 50px;
+    }
+
     header table td, header table tr:last-child td {
       border: none;
     }
@@ -65,45 +107,103 @@
 
     header td {
       margin: 0;
-      padding: 0;
+      padding: 8px 0;
     }
   </style>
 </head>
 <body>
 
 <header>
-
   <table>
     <tr>
-      <td colspan="3"><p>In the County Court Business Centre Online Court</p></td>
+      <td>
+        <h2 style="font-weight: normal;">Settlement agreement</h2>
+      </td>
     </tr>
     <tr>
-      <td colspan="2"><h2><strong>Claim number: </strong></h2></td>
-      <td><h2 style="font-weight: normal"> {{ claim.referenceNumber }}</h2></td>
+      <td>
+        <p>In the County Court Business Centre Online Court</p>
+      </td>
     </tr>
     <tr>
-      <td colspan="2"><p><strong>Date: </strong></p></td>
-      <td><p>{{ settlementReachedAt }}</p></td>
+      <td>
+        <p>
+          <strong>Claim number:</strong> {{ claim.referenceNumber }}<br/>
+          <strong>Date of settlement:</strong> {{ settlementReachedAt }}
+        </p>
+      </td>
     </tr>
   </table>
 </header>
 
-<h2>Settlement agreement</h2>
-
 <div class="section">
   <div class="section-heading">
-    <strong>Defendant details</strong>
+    <strong>Claimant’s details</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Full Name:</td>
+        <td><strong>Name:</strong></td>
+        <td>
+          {{ claimant.name }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Address:</strong></td>
+        <td>
+          {{ claimant.address.line1 }}
+          <br/>
+          {% if claimant.address.line2 is not empty %}
+          {{ claimant.address.line2 }}
+          <br/>
+          {% endif %}
+          {% if claimant.address.line3 is not empty %}
+          {{ claimant.address.line3 }}
+          <br/>
+          {% endif %}
+          {{ claimant.address.city }}
+          <br/>
+          {{ claimant.address.postcode }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Date of birth:</strong></td>
+        <td>
+          {{ claimant.dateOfBirth }}
+        </td>
+      </tr>
+      {% if claimant.mobilePhone is not empty %}
+      <tr>
+        <td><strong>Telephone:</strong></td>
+        <td>
+          {{ claimant.mobilePhone }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td><strong>Email:</strong></td>
+        <td>
+          {{ claim.submitterEmail }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Defendant’s details</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Name:</strong></td>
         <td>
           {{ defendant.fullName }}
         </td>
       </tr>
       <tr>
-        <td>Address:</td>
+        <td><strong>Address:</strong></td>
         <td>
           {{ defendant.address.line1 }}
           <br/>
@@ -122,7 +222,7 @@
       </tr>
       {% if defendant.email is defined %}
       <tr>
-        <td>Email:</td>
+        <td><strong>Email:</strong></td>
         <td>
           {{ defendant.email }}
         </td>
@@ -134,38 +234,20 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Claimant details</strong>
+    <strong>What was agreed</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Full Name:</td>
+        <td><strong>The agreement:</strong></td>
         <td>
-          {{ claimant.name }}
+          {{ defendant.fullName }}: {{ acceptedOffer }}
         </td>
       </tr>
       <tr>
-        <td>Address:</td>
+        <td><strong>To be completed by:</strong></td>
         <td>
-          {{ claimant.address.line1 }}
-          <br/>
-          {% if claimant.address.line2 is not empty %}
-          {{ claimant.address.line2 }}
-          <br/>
-          {% endif %}
-          {% if claimant.address.line3 is not empty %}
-          {{ claimant.address.line3 }}
-          <br/>
-          {% endif %}
-          {{ claimant.address.city }}
-          <br/>
-          {{ claimant.address.postcode }}
-        </td>
-      </tr>
-      <tr>
-        <td>Email:</td>
-        <td>
-          {{ claim.submitterEmail }}
+          {{ acceptedOfferCompletionDate }}
         </td>
       </tr>
     </table>
@@ -174,20 +256,40 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Settlement agreement</strong>
+    <strong>What this agreement means</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Agreement:</td>
         <td>
-          {{ acceptedOffer }}
+          <p>This agreement settles the claim made by Jan Clark against Mary Richards. This includes all money owed in the claim, for example court fees, expenses or interest.</p>
+          <p>This agreement puts the claim on hold. Neither party can make any further claims relating to this case, other than to enforce it.</p>
+          <p>Either party can view and download this agreement from their money claims account. Both parties should keep a copy of this agreement.</p>
         </td>
       </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>If this agreement is broken</strong>
+  </div>
+  <div class="section-body">
+    <table>
       <tr>
-        <td>Payment date:</td>
         <td>
-          {{ defendant.fullName }} will complete the settlement on or before {{ acceptedOfferCompletionDate }}
+          <p>
+            Either party can apply to:
+            <ul>
+              <li>request a judgment for any money still owed from this agreement</li>
+              <li>resume the original claim or counterclaim for the full amount of the claim</li>
+              <li>ask the court to enforce any of the steps to be taken</li>
+            </ul>
+          </p>
+          <p>
+            To apply, download and complete form N244 from HMCTS Formfinder and send it to the County Court Business Centre. You need to say on the form which of the 3 options you're applying for.
+          </p>
         </td>
       </tr>
     </table>
