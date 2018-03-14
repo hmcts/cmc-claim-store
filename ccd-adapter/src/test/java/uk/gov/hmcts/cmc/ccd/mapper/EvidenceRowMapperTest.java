@@ -7,10 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.domain.CCDEvidenceType;
-import uk.gov.hmcts.cmc.domain.models.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.EvidenceType;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 

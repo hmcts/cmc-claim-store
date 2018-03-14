@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.domain.CCDEvidence;
-import uk.gov.hmcts.cmc.domain.models.Evidence;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidence;
+import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 
 import java.util.Objects;
 

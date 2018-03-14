@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain;
+package uk.gov.hmcts.cmc.ccd.domain.evidence;
 
 import lombok.Builder;
 import lombok.Value;

@@ -3,9 +3,9 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDEvidence;
-import uk.gov.hmcts.cmc.ccd.domain.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.Evidence;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidence;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 
 import java.util.Objects;
 import java.util.stream.Collectors;

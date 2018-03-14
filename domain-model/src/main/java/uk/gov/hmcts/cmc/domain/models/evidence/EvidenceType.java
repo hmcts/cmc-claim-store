@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.evidence;
 
 public enum EvidenceType {
     CONTRACTS_AND_AGREEMENTS("Contracts and agreements"),

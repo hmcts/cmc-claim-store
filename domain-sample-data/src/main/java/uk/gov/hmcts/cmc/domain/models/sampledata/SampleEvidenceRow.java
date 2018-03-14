@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.EvidenceType;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
-import static uk.gov.hmcts.cmc.domain.models.EvidenceType.CORRESPONDENCE;
+import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.CORRESPONDENCE;
 
 public class SampleEvidenceRow {
 

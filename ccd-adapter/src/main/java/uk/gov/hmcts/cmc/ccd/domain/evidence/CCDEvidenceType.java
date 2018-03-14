@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain;
+package uk.gov.hmcts.cmc.ccd.domain.evidence;
 
 public enum CCDEvidenceType {
     CONTRACTS_AND_AGREEMENTS("Contracts and agreements"),
@@ -7,7 +7,7 @@ public enum CCDEvidenceType {
     PHOTO("Photo evidence"),
     RECEIPTS("Receipts"),
     STATEMENT_OF_ACCOUNT("Statements of account"),
-    OTHER("'Other'");
+    OTHER("Other");
 
     String description;
 

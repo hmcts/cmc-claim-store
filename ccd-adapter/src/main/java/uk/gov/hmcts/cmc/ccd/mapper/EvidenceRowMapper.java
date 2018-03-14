@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.domain.CCDEvidenceType;
-import uk.gov.hmcts.cmc.domain.models.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.EvidenceType;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
 @Component
 public class EvidenceRowMapper implements Mapper<CCDEvidenceRow, EvidenceRow> {
