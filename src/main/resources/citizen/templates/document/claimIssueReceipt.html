@@ -338,6 +338,22 @@
         </tr>
         {% endfor %}
       {% endif %}
+
+      {% if claim.evidences is defined %}
+      <tr>
+        <td colspan="2" style="white-space: pre-line">Evidence:</td>
+      </tr>
+      {% for row in claim.evidences %}
+      <tr class="no-border">
+        <td>
+          {{ row.type.description | trim }}
+        </td>
+        <td>
+          {{ row.description | trim }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
     </table>
   </div>
 </div>

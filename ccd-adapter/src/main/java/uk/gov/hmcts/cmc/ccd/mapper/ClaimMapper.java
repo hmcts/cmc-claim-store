@@ -26,6 +26,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final InterestMapper interestMapper;
     private final InterestDateMapper interestDateMapper;
     private final TimelineMapper timelineMapper;
+    private final EvidenceMapper evidenceMapper;
 
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
     public ClaimMapper(
@@ -38,7 +39,8 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         PaymentMapper paymentMapper,
         InterestMapper interestMapper,
         InterestDateMapper interestDateMapper,
-        TimelineMapper timelineMapper
+        TimelineMapper timelineMapper,
+        EvidenceMapper evidenceMapper
     ) {
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
@@ -50,6 +52,7 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         this.interestMapper = interestMapper;
         this.interestDateMapper = interestDateMapper;
         this.timelineMapper = timelineMapper;
+        this.evidenceMapper = evidenceMapper;
     }
 
     @Override
@@ -80,6 +83,9 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
         claimData.getTimeline()
             .ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
+
+        claimData.getEvidence()
+            .ifPresent(evidence -> builder.evidence((evidenceMapper.to(evidence))));
 
         return builder
             .payment(paymentMapper.to(claimData.getPayment()))
@@ -130,6 +136,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             ccdClaim.getPreferredCourt(),
             ccdClaim.getFeeCode(),
             timelineMapper.from(ccdClaim.getTimeline()),
-            null);
+            evidenceMapper.from(ccdClaim.getEvidence()));
     }
 }

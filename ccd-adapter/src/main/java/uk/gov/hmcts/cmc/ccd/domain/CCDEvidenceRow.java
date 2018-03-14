@@ -6,6 +6,6 @@ import lombok.Value;
 @Value
 @Builder
 public class CCDEvidenceRow {
-    private String type;
+    private CCDEvidenceType type;
     private String description;
 }

@@ -27,4 +27,5 @@ public class CCDClaim {
     private List<CCDCollectionElement<CCDParty>> claimants;
     private List<CCDCollectionElement<CCDParty>> defendants;
     private CCDTimeline timeline;
+    private CCDEvidence evidence;
 }

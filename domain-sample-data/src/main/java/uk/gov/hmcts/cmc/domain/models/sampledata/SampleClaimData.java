@@ -39,7 +39,7 @@ public class SampleClaimData {
     private String preferredCourt = "LONDON COUNTY COUNCIL";
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();
-    private Evidence evidence = null;
+    private Evidence evidence = SampleEvidence.validDefaults();
 
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
@@ -167,6 +167,11 @@ public class SampleClaimData {
 
     public SampleClaimData withTimeline(Timeline timeline) {
         this.timeline = timeline;
+        return this;
+    }
+
+    public SampleClaimData withEvidence(Evidence evidence) {
+        this.evidence = evidence;
         return this;
     }
 

@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvide
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Evidence;
+import uk.gov.hmcts.cmc.domain.models.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -62,6 +64,12 @@ public class ClaimDataContentProvider {
             events = timeline.get().getEvents();
         }
 
+        List<EvidenceRow> evidences = null;
+        Optional<Evidence> evidence = claim.getClaimData().getEvidence();
+        if (evidence.isPresent()) {
+            evidences = evidence.get().getRows();
+        }
+
         return new ClaimContent(
             claim.getReferenceNumber(),
             formatDateTime(claim.getCreatedAt()),
@@ -77,7 +85,8 @@ public class ClaimDataContentProvider {
             ),
             signerName,
             signerRole,
-            events
+            events,
+            evidences
         );
     }
 

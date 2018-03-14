@@ -1,17 +1,17 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.ccd.domain;
 
-public enum EvidenceType {
+public enum CCDEvidenceType {
     CONTRACTS_AND_AGREEMENTS("Contracts and agreements"),
     EXPERT_WITNESS("Expert witness"),
     CORRESPONDENCE("Letters, emails and other correspondence"),
     PHOTO("Photo evidence"),
     RECEIPTS("Receipts"),
     STATEMENT_OF_ACCOUNT("Statements of account"),
-    OTHER("Other");
+    OTHER("'Other'");
 
     String description;
 
-    EvidenceType(String description) {
+    CCDEvidenceType(String description) {
         this.description = description;
     }
 
