@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Evidence;
-import uk.gov.hmcts.cmc.domain.models.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
@@ -64,10 +65,13 @@ public class ClaimDataContentProvider {
             events = timeline.get().getEvents();
         }
 
-        List<EvidenceRow> evidences = null;
+        List<EvidenceContent> evidences = null;
         Optional<Evidence> evidence = claim.getClaimData().getEvidence();
         if (evidence.isPresent()) {
-            evidences = evidence.get().getRows();
+            evidences = evidence.get().getRows()
+                .stream()
+                .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
+                .collect(Collectors.toList());
         }
 
         return new ClaimContent(
