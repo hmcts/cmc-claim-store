@@ -16,9 +16,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,15 +39,15 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
     @Autowired
     private StaffEmailProperties emailProperties;
 
-    private List<Document> documents;
+    private Document defendantLetterDocument;
+    private Document sealedClaimDocument;
 
     private Claim claim;
 
     @Before
     public void setup() {
-        documents = new ArrayList<>();
-        documents.add(new Document("template1", new HashMap<>()));
-        documents.add(new Document("template2", new HashMap<>()));
+        defendantLetterDocument = new Document("defendantPinTemplate", new HashMap<>());
+        sealedClaimDocument = new Document("sealedClaimTemplate", new HashMap<>());
 
         claim = SampleClaim
             .builder()
@@ -61,17 +59,22 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyFailedBulkPrint(documents, null);
+        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, null);
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullDocuments() {
-        service.notifyFailedBulkPrint(null, claim);
+    public void shouldThrowNullPointerWhenGivenNullDefendantLetterDocument() {
+        service.notifyFailedBulkPrint(null, sealedClaimDocument, claim);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerWhenGivenNullSealedClaimDocument() {
+        service.notifyFailedBulkPrint(defendantLetterDocument, null, claim);
     }
 
     @Test
     public void shouldSendEmailToExpectedRecipient() {
-        service.notifyFailedBulkPrint(documents, claim);
+        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -80,7 +83,7 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedContent() {
-        service.notifyFailedBulkPrint(documents, claim);
+        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -94,7 +97,7 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        service.notifyFailedBulkPrint(documents, claim);
+        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 

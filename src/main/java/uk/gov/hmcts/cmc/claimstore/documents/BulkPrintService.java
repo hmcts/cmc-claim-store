@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
+import java.util.Arrays;
+
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService {
@@ -44,12 +46,19 @@ public class BulkPrintService {
     public void print(DocumentReadyToPrintEvent event) {
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
-            new Letter(event.getDocuments(), XEROX_TYPE_PARAMETER)
+            new Letter(
+                Arrays.asList(event.getDefendantLetterDocument(), event.getSealedClaimDocument()),
+                XEROX_TYPE_PARAMETER
+            )
         );
     }
 
     @Recover
     public void notifyStaffForBulkPrintFailure(DocumentReadyToPrintEvent event) {
-        bulkPrintStaffNotificationService.notifyFailedBulkPrint(event.getDocuments(), event.getClaim());
+        bulkPrintStaffNotificationService.notifyFailedBulkPrint(
+            event.getDefendantLetterDocument(),
+            event.getSealedClaimDocument(),
+            event.getClaim()
+        );
     }
 }

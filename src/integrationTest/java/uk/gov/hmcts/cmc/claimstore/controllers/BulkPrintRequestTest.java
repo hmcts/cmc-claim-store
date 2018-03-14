@@ -14,8 +14,8 @@ import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import java.util.List;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -61,7 +61,8 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintNotificationService, never())
-            .notifyFailedBulkPrint(any(List.class), eq(deserializeObjectFrom(result, Claim.class)));
+            .notifyFailedBulkPrint(any(Document.class), any(Document.class),
+                eq(deserializeObjectFrom(result, Claim.class)));
     }
 
     @Test
@@ -80,7 +81,8 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintNotificationService)
-            .notifyFailedBulkPrint(any(List.class), eq(deserializeObjectFrom(result, Claim.class)));
+            .notifyFailedBulkPrint(any(Document.class), any(Document.class),
+                eq(deserializeObjectFrom(result, Claim.class)));
     }
 
     @Test
@@ -99,6 +101,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintNotificationService)
-            .notifyFailedBulkPrint(any(List.class), eq(deserializeObjectFrom(result, Claim.class)));
+            .notifyFailedBulkPrint(any(Document.class), any(Document.class),
+                eq(deserializeObjectFrom(result, Claim.class)));
     }
 }

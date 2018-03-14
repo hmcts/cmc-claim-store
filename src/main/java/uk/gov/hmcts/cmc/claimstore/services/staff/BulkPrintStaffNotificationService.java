@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
@@ -25,8 +24,6 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 @Service
 public class BulkPrintStaffNotificationService {
 
-    public static final int PIN_LETTER_DOCUMENT_INDEX = 0;
-    public static final int CLAIM_DOCUMENT_INDEX = 1;
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
     private final BulkPrintEmailContentProvider emailContentProvider;
@@ -45,16 +42,16 @@ public class BulkPrintStaffNotificationService {
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    public void notifyFailedBulkPrint(List<Document> documents, Claim claim) {
+    public void notifyFailedBulkPrint(Document defendantLetterDocument, Document sealedClaimDocument, Claim claim) {
         EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim));
 
         EmailAttachment defendantLetter = pdf(
-            createPdf(documents.get(PIN_LETTER_DOCUMENT_INDEX)),
+            createPdf(defendantLetterDocument),
             buildDefendantLetterFileBaseName(claim.getReferenceNumber())
         );
 
         EmailAttachment sealedClaim = pdf(
-            createPdf(documents.get(CLAIM_DOCUMENT_INDEX)),
+            createPdf(sealedClaimDocument),
             buildSealedClaimFileBaseName(claim.getReferenceNumber())
         );
 
