@@ -113,4 +113,21 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
         }
     }
+
+    public static class AgreementCounterSigned {
+
+        public static final String TEMPLATE = "to-%s-agreement-counter-signed-by-claimant-notification-%s";
+
+        private AgreementCounterSigned() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+        }
+    }
 }
