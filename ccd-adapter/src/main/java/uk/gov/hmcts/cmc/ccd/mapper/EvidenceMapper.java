@@ -26,6 +26,7 @@ public class EvidenceMapper implements Mapper<CCDEvidence, Evidence> {
             return null;
         }
         CCDEvidence.CCDEvidenceBuilder builder = CCDEvidence.builder();
+
         builder.rows(
             evidence.getRows()
                 .stream()
