@@ -145,7 +145,7 @@
       <tr>
         <td><strong>Name:</strong></td>
         <td>
-          {{ claimant.name }}
+          {{ claimant.fullName }}
         </td>
       </tr>
       <tr>
@@ -172,7 +172,7 @@
           {{ claimant.dateOfBirth }}
         </td>
       </tr>
-      {% if claimant.mobilePhone is not empty %}
+      {% if claimant.mobilePhone is defined %}
       <tr>
         <td><strong>Telephone:</strong></td>
         <td>
