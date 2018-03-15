@@ -15,8 +15,8 @@ public class Evidence {
     @Size(max = 20)
     private final List<EvidenceRow> rows;
 
-    public Evidence(List<EvidenceRow> events) {
-        this.rows = events;
+    public Evidence(List<EvidenceRow> rows) {
+        this.rows = rows;
     }
 
     public List<EvidenceRow> getRows() {
