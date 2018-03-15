@@ -20,6 +20,15 @@ public class NotificationReferenceBuilder {
         return String.format(template, toWhom, claimReferenceNumber);
     }
 
+    private static String reference(
+        String template,
+        String toWhom,
+        String byWhom,
+        String claimReferenceNumber
+    ) {
+        return String.format(template, toWhom, byWhom, claimReferenceNumber);
+    }
+
     public static class MoreTimeRequested {
 
         public static final String TEMPLATE = "more-time-requested-notification-to-%s-%s";
@@ -116,18 +125,18 @@ public class NotificationReferenceBuilder {
 
     public static class AgreementCounterSigned {
 
-        public static final String TEMPLATE = "to-%s-agreement-counter-signed-by-claimant-notification-%s";
+        public static final String TEMPLATE = "to-%s-agreement-counter-signed-by-%s-notification-%s";
 
         private AgreementCounterSigned() {
             // do not instantiate
         }
 
         public static String referenceForClaimant(String claimReferenceNumber) {
-            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+            return reference(TEMPLATE, CLAIMANT, DEFENDANT, claimReferenceNumber);
         }
 
         public static String referenceForDefendant(String claimReferenceNumber) {
-            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+            return reference(TEMPLATE, DEFENDANT, CLAIMANT, claimReferenceNumber);
         }
     }
 }

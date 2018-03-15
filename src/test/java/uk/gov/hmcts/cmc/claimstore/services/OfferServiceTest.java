@@ -137,7 +137,7 @@ public class OfferServiceTest {
             .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
                 eq(CaseEvent.SETTLED_PRE_JUDGMENT.name()));
 
-        verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
+        verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy), eq(madeBy));
     }
 
     private static Claim buildClaimWithOffer() {

@@ -51,6 +51,7 @@ public class AgreementCounterSignedCitizenActionsHandler {
             aggregateParams(claim, event.party),
             reference
         );
+
     }
 
     @EventListener
@@ -59,12 +60,13 @@ public class AgreementCounterSignedCitizenActionsHandler {
         String targetEmail = null;
         String reference = null;
 
+
         if (event.party.equals(MadeBy.CLAIMANT)) {
             targetEmail = claim.getSubmitterEmail();
-            reference = AgreementCounterSigned.referenceForClaimant(claim.getReferenceNumber());
+            reference = AgreementCounterSigned.referenceForDefendant(claim.getReferenceNumber());
         } else {
             targetEmail = claim.getDefendantEmail();
-            reference = AgreementCounterSigned.referenceForDefendant(claim.getReferenceNumber());
+            reference = AgreementCounterSigned.referenceForClaimant(claim.getReferenceNumber());
         }
 
         offerMadeNotificationService.sendNotificationEmail(
@@ -73,6 +75,7 @@ public class AgreementCounterSignedCitizenActionsHandler {
             aggregateParams(claim, event.party),
             reference
         );
+
     }
 
     private Map<String, String> aggregateParams(Claim claim, MadeBy madeBy) {

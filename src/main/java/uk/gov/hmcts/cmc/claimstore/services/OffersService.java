@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.util.function.Supplier;
@@ -89,7 +90,9 @@ public class OffersService {
 
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
-        eventProducer.createAgreementCountersignedEvent(updated, party);
+        PartyStatement lastOfferStatement = settlement.getLastOfferStatement();
+        MadeBy offerOriginator = lastOfferStatement.getMadeBy();
+        eventProducer.createAgreementCountersignedEvent(updated, party, offerOriginator);
         return updated;
     }
 

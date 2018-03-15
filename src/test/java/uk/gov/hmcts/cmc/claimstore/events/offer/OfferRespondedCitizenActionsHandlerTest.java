@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.events.ccj;
+package uk.gov.hmcts.cmc.claimstore.events.offer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRespondedCitizenActionsHandler;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.OfferMadeNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
