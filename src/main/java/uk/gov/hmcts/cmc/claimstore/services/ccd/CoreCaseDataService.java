@@ -73,9 +73,10 @@ public class CoreCaseDataService {
     }
 
     public Claim save(String authorisation, Claim claim) {
+        boolean claimantRepresented = claim.getClaimData().isClaimantRepresented();
+        String referenceNumber = referenceNumberService.getReferenceNumber(claimantRepresented);
         try {
             CCDCase ccdCase = caseMapper.to(claim);
-            Boolean claimantRepresented = claim.getClaimData().isClaimantRepresented();
             ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(claimantRepresented));
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(claim.getSubmitterId())
@@ -97,7 +98,7 @@ public class CoreCaseDataService {
             return extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
-                .format("Failed storing claim in CCD store for claim %s", claim.getReferenceNumber()), exception);
+                .format("Failed storing claim in CCD store for claim %s", referenceNumber), exception);
         }
     }
 
