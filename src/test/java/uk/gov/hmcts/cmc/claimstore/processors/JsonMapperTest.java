@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
@@ -95,6 +96,7 @@ public class JsonMapperTest {
                 .withServiceAddress(null)
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
+            .withEvidence(SampleEvidence.validDefaults())
             .build();
 
         assertThat(output).isEqualTo(expected);
@@ -127,6 +129,7 @@ public class JsonMapperTest {
                     .individualDetails())
             .withTimeline(null)
             .withPayment(null)
+            .withEvidence(null)
             .build();
         assertThat(output).isEqualTo(expected);
     }
