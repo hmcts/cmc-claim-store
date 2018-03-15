@@ -25,6 +25,5 @@ static Map<String, Object> secret(String secretName, String envVar) {
 
 withParameterizedPipeline('java', 'cmc', 'claim-store', params.ENVIRONMENT, 'sandbox') {
   env.IDAM_API_URL="http://betadevbccidamapplb.reform.hmcts.net"
-  enableSlackNotifications('#cmc-tech-notification')
   loadVaultSecrets(secrets)
 }
