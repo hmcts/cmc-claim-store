@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidence;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -27,4 +28,5 @@ public class CCDClaim {
     private List<CCDCollectionElement<CCDParty>> claimants;
     private List<CCDCollectionElement<CCDParty>> defendants;
     private CCDTimeline timeline;
+    private CCDEvidence evidence;
 }
