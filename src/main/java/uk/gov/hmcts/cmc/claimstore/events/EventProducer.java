@@ -59,7 +59,7 @@ public class EventProducer {
         publisher.publishEvent(new OfferRejectedEvent(claim, party));
     }
 
-    public void createAgreementCountersignedEvent(Claim claim, MadeBy party, MadeBy offerOriginator) {
+    public void createAgreementCountersignedEvent(Claim claim, MadeBy party) {
         publisher.publishEvent(new AgreementCountersignedEvent(claim, party));
     }
 }
