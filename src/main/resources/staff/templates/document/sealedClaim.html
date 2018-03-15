@@ -258,13 +258,13 @@
   <div class="section-body">
     <table>
       <tr>
-        <td colspan="2" style="white-space: pre-line">Reason for claim:<br/>
+        <td colspan="2" style="white-space: pre-line"><strong>Reason for claim:</strong><br/>
           {{ claim.reason | trim }}
         </td>
       </tr>
       {% if claim.events is defined %}
       <tr>
-        <td colspan="2" style="white-space: pre-line">Timeline of what happened:</td>
+        <td colspan="2" style="white-space: pre-line"><strong>Timeline of what happened</strong>:</td>
       </tr>
       {% for event in claim.events %}
       <tr class="no-border">
@@ -273,6 +273,22 @@
         </td>
         <td>
           {{ event.description | trim }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+
+      {% if claim.evidences is defined %}
+      <tr>
+        <td colspan="2" style="white-space: pre-line"><strong>Evidence:</strong></td>
+      </tr>
+      {% for row in claim.evidences %}
+      <tr class="no-border">
+        <td>
+          {{ row.type | trim }}
+        </td>
+        <td>
+          {{ row.description | trim }}
         </td>
       </tr>
       {% endfor %}

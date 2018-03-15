@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
+import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
@@ -38,6 +39,7 @@ public class SampleClaimData {
     private String preferredCourt = "LONDON COUNTY COUNCIL";
     private String feeCode = "X0012";
     private Timeline timeline = SampleTimeline.validDefaults();
+    private Evidence evidence = SampleEvidence.validDefaults();
 
     private HousingDisrepair housingDisrepair = new HousingDisrepair(
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS,
@@ -168,6 +170,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withEvidence(Evidence evidence) {
+        this.evidence = evidence;
+        return this;
+    }
+
     public ClaimData build() {
         return new ClaimData(
             externalId,
@@ -186,7 +193,8 @@ public class SampleClaimData {
             externalReferenceNumber,
             preferredCourt,
             feeCode,
-            timeline);
+            timeline,
+            evidence);
     }
 
     public static ClaimData validDefaults() {
@@ -210,7 +218,8 @@ public class SampleClaimData {
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .individualDetails())
-            .withTimeline(SampleTimeline.validDefaults());
+            .withTimeline(SampleTimeline.validDefaults())
+            .withEvidence(SampleEvidence.validDefaults());
     }
 
     public static ClaimData submittedByLegalRepresentative() {
