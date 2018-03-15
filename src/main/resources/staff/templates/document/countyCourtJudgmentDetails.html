@@ -48,6 +48,10 @@
       border-bottom: 1px solid #999;
     }
 
+    .no-border td {
+      border: none;
+    }
+
     table td:first-child {
       width: 220px;
       vertical-align: top;
@@ -241,27 +245,27 @@
       </tr>
       {% if ccj.repaymentOption is not empty %}
         <tr>
-          <td>How do you want the defendant to pay:
+          <td>How do you want the defendant to pay:</td>
           <td>
-            {{ ccj.repaymentOption.firstPayment }}
+            {{ ccj.paymentOption }}
           </td>
         </tr>
-        <tr style="border-bottom: none">
+        <tr class="no-border">
           <td>Instalments of:</td>
           <td>
             {{ ccj.repaymentOption.instalmentAmount }}
           </td>
         </tr>
-        <tr style="border-bottom: none">
+        <tr class="no-border">
           <td>When you want them to make the first payment:</td>
           <td>
-            {{ ccj.repaymentOption.firstPaymentDate }}
+            {{ ccj.firstInstalmentPaymentDate}}
           </td>
         </tr>
-        <tr>
+        <tr class="no-border">
           <td>How often you want them to make this payment:</td>
           <td>
-            {{ ccj.repaymentOption.paymentSchedule }}
+            {{ ccj.paymentFrequency }}
           </td>
         </tr>
 

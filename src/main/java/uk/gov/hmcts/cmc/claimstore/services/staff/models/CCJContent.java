@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Am
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 
 import static java.util.Objects.requireNonNull;
@@ -19,6 +20,9 @@ public class CCJContent {
     private AmountContent amount;
     private RepaymentPlan repaymentOption;
     private String defendantDateOfBirth;
+    private PaymentOption paymentOption;
+    private String firstInstalmentPaymentDate;
+    private String paymentFrequency;
 
     public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
         requireNonNull(claim);
@@ -30,6 +34,9 @@ public class CCJContent {
         this.repaymentOption = RepaymentPlanContentProvider.create(claim.getCountyCourtJudgment()).orElse(null);
         this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
         this.requestedDate = formatDate(claim.getCountyCourtJudgmentRequestedAt());
+        this.paymentOption = claim.getCountyCourtJudgment().getPaymentOption();
+        this.firstInstalmentPaymentDate = formatDate(repaymentOption.getFirstPaymentDate());
+        this.paymentFrequency = repaymentOption.getPaymentSchedule().getDescription();
     }
 
     public Claim getClaim() {
@@ -56,4 +63,15 @@ public class CCJContent {
         return requestedAt;
     }
 
+    public PaymentOption getPaymentOption() {
+        return paymentOption;
+    }
+
+    public String getFirstInstalmentPaymentDate() {
+        return firstInstalmentPaymentDate;
+    }
+
+    public String getPaymentFrequency() {
+        return paymentFrequency;
+    }
 }
