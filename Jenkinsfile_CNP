@@ -35,9 +35,6 @@ withPipeline("java", product, component) {
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
   after('smokeTest:prod') {
-    env.IDAM_S2S_AUTH_URL='http://betaProdccidamAppLB.reform.hmcts.net'
-    env.IDAM_API_URL="http://betaProdccidamAppLB.reform.hmcts.net"
-
     sh './gradlew :ccd-claim-migration:assemble migrateClaims'
   }
   loadVaultSecrets(secrets)
