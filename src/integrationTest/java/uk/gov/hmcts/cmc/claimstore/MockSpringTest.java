@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClient;
 
 @RunWith(SpringRunner.class)
@@ -58,9 +57,6 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected PDFServiceClient pdfServiceClient;
-
-    @MockBean
-    protected SendLetterApi sendLetterApi;
 
     @MockBean
     protected AuthTokenGenerator authTokenGenerator;
