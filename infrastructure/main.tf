@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "~> 1.2"
+  version <= 1.2.0
 }
 
 provider "vault" {
