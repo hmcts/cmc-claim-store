@@ -9,15 +9,7 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('AatTestUserUsername', 'SMOKE_TEST_CITIZEN_USERNAME'),
   secret('AatTestUserUsername', 'SMOKE_TEST_SOLICITOR_USERNAME'),
   secret('AatTestUserPassword', 'SMOKE_TEST_USER_PASSWORD'),
-  secret('AatTestUserEmailPattern', 'GENERATED_USER_EMAIL_PATTERN'),
-  secret('ClaimStoreDbPassword', 'CLAIM_STORE_DB_PASSWORD'),
-  secret('ClaimStoreDbHost', 'CLAIM_STORE_DB_HOST'),
-  secret('IdamSystemUpdateUserUsername', 'IDAM_SYSTEM_UPDATE_USER_USERNAME'),
-  secret('IdamSystemUpdateUserPassword', 'IDAM_SYSTEM_UPDATE_USER_PASSWORD'),
-  secret('IdamAnonymousCaseworkerUsername', 'IDAM_ANONYMOUS_CASEWORKER_USERNAME'),
-  secret('IdamAnonymousCaseworkerPassword', 'IDAM_ANONYMOUS_CASEWORKER_PASSWORD'),
-  secret('IdamS2sAuthTotpSecret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
-  secret('CcdApiUrl', 'CORE_CASE_DATA_API_URL')
+  secret('AatTestUserEmailPattern', 'GENERATED_USER_EMAIL_PATTERN')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -34,9 +26,6 @@ withPipeline("java", product, component) {
   env.CLAIM_STORE_DB_NAME = 'claimstore'
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
-  after('smokeTest:aat') {
-    sh './gradlew :ccd-claim-migration:assemble migrateClaims'
-  }
   loadVaultSecrets(secrets)
   enableSlackNotifications('#cmc-tech-notification')
 }
