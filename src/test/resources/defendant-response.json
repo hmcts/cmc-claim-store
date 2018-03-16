@@ -29,5 +29,14 @@
     "dateOfBirth": "1968-01-02",
     "mobilePhone": "07873727165",
     "email": "test@example.com"
+  },
+  "timeline": {
+    "rows": [
+      {
+        "date": "Last Year",
+        "description": "signed a contract"
+      }
+    ],
+    "comment": "More information"
   }
 }

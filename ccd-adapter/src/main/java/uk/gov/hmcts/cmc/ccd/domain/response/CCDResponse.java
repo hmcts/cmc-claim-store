@@ -16,4 +16,5 @@ public class CCDResponse {
     private CCDYesNoOption moreTimeNeededOption;
     private CCDParty defendant;
     private CCDStatementOfTruth statementOfTruth;
+    private CCDDefendantTimeline timeline;
 }

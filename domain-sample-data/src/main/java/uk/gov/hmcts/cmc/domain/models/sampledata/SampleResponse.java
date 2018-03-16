@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.Response;
@@ -12,6 +13,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         private FullDefenceResponse.DefenceType defenceType = FullDefenceResponse.DefenceType.DISPUTE;
         private String defence = "defence string";
         private PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder().build();
+        private DefendantTimeline timeline = SampleDefendantTimeline.validDefaults();
 
         public static FullDefence builder() {
             return new FullDefence();
@@ -32,10 +34,15 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+        public FullDefence withTimeline(DefendantTimeline timeline) {
+            this.timeline = timeline;
+            return this;
+        }
+
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
                 freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,
-                defenceType, defence, paymentDeclaration
+                defenceType, defence, paymentDeclaration, timeline
             );
         }
     }

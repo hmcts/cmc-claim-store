@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -18,8 +19,8 @@ public class DefendantTimeline extends Timeline {
         this.comment = comment;
     }
 
-    public String getComment() {
-        return comment;
+    public Optional<String> getComment() {
+        return Optional.ofNullable(comment);
     }
 
     @Override

@@ -27,6 +27,9 @@ public class FullDefenceResponse extends Response {
     @Valid
     private final PaymentDeclaration paymentDeclaration;
 
+    @Valid
+    private final DefendantTimeline timeline;
+
     public FullDefenceResponse(
         FreeMediationOption freeMediation,
         MoreTimeNeededOption moreTimeNeeded,
@@ -34,12 +37,14 @@ public class FullDefenceResponse extends Response {
         StatementOfTruth statementOfTruth,
         DefenceType defenceType,
         String defence,
-        PaymentDeclaration paymentDeclaration
+        PaymentDeclaration paymentDeclaration,
+        DefendantTimeline timeline
     ) {
         super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.defenceType = defenceType;
         this.defence = defence;
         this.paymentDeclaration = paymentDeclaration;
+        this.timeline = timeline;
     }
 
     public DefenceType getDefenceType() {
@@ -52,6 +57,10 @@ public class FullDefenceResponse extends Response {
 
     public Optional<PaymentDeclaration> getPaymentDeclaration() {
         return Optional.ofNullable(paymentDeclaration);
+    }
+
+    public Optional<DefendantTimeline> getTimeline() {
+        return Optional.ofNullable(timeline);
     }
 
     @Override
@@ -68,13 +77,13 @@ public class FullDefenceResponse extends Response {
         return super.equals(other)
             && Objects.equals(defenceType, other.defenceType)
             && Objects.equals(defence, other.defence)
-            && Objects.equals(paymentDeclaration, other.paymentDeclaration);
-
+            && Objects.equals(paymentDeclaration, other.paymentDeclaration)
+            && Objects.equals(timeline, other.timeline);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), defenceType, defence, paymentDeclaration);
+        return Objects.hash(super.hashCode(), defenceType, defence, paymentDeclaration, timeline);
     }
 
 }
