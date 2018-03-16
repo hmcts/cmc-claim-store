@@ -87,7 +87,7 @@ module "claim-store-api" {
     PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
     CORE_CASE_DATA_API_URL = "${var.env == "prod" ? "false" : local.ccdApiUrl}"
-    SEND_LETTER_URL = "${var.env == "prod" ? "false" : local.sendLetterUrl}"
+    SEND_LETTER_URL = "${var.env == "prod" || var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"
