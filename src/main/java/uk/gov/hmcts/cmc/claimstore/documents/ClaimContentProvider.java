@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.PersonContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
@@ -52,7 +53,9 @@ public class ClaimContentProvider {
             null,
             defendant.getEmail().orElse(null),
             PartyUtils.getContactPerson(defendant).orElse(null),
-            PartyUtils.getBusinessName(defendant).orElse(null))
+            PartyUtils.getBusinessName(defendant).orElse(null),
+            null,
+            null)
         );
 
         map.put("claim", claimDataContentProvider.createContent(claim));
