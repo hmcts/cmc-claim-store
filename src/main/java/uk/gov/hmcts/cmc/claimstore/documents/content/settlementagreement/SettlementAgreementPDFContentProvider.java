@@ -33,7 +33,10 @@ public class SettlementAgreementPDFContentProvider {
         content.put("acceptedOffer", acceptedOffer.getContent());
         content.put("acceptedOfferCompletionDate", formatDate(acceptedOffer.getCompletionDate()));
         content.put("claim", claim);
-        content.put("claimant", claim.getClaimData().getClaimant());
+        content.put("claimant", partyDetailsContentProvider.createContent(
+            claim.getClaimData().getClaimant(),
+            claim.getSubmitterEmail()
+        ));
         content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant(),
             claim.getDefendantEmail()
