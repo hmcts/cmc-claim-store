@@ -72,7 +72,8 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
     }
 
     @Test
-    public void shouldSendEmailToDefendantWithExpectedTemplateAndReferenceWhenCounterSignedByDefendant() throws NotificationClientException {
+    public void shouldSendEmailToDefendantWithExpectedTemplateAndReferenceWhenCounterSignedByDefendant()
+        throws NotificationClientException {
         event = new AgreementCountersignedEvent(claim, MadeBy.DEFENDANT);
         handler.sendNotificationToOfferOriginator(event);
 
@@ -94,7 +95,8 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
 
     @Test
-    public void shouldSendEmailToClaimantWithExpectedTemplateAndReferenceWhenCounterSignedByDefendant() throws NotificationClientException {
+    public void shouldSendEmailToClaimantWithExpectedTemplateAndReferenceWhenCounterSignedByDefendant()
+        throws NotificationClientException {
         event = new AgreementCountersignedEvent(claim, MadeBy.DEFENDANT);
         handler.sendNotificationToOtherParty(event);
 
@@ -116,7 +118,8 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
 
     @Test
-    public void shouldSendEmailToClaimantWithExpectedTemplateAndReferenceWhenCounterSignedByClaimant() throws NotificationClientException {
+    public void shouldSendEmailToClaimantWithExpectedTemplateAndReferenceWhenCounterSignedByClaimant()
+        throws NotificationClientException {
         event = new AgreementCountersignedEvent(claim, MadeBy.CLAIMANT);
         handler.sendNotificationToOfferOriginator(event);
 
@@ -138,7 +141,8 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
 
     @Test
-    public void shouldSendEmailToDefendantWithExpectedTemplateAndReferenceWhenCounterSignedByClaimant() throws NotificationClientException {
+    public void shouldSendEmailToDefendantWithExpectedTemplateAndReferenceWhenCounterSignedByClaimant()
+        throws NotificationClientException {
         event = new AgreementCountersignedEvent(claim, MadeBy.CLAIMANT);
         handler.sendNotificationToOtherParty(event);
 
