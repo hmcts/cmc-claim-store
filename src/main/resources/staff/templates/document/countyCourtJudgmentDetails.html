@@ -243,29 +243,29 @@
           {{ ccj.amount.remainingAmount }}
         </td>
       </tr>
-      {% if ccj.repaymentOption is not empty %}
+      {% if ccj.repayment is not empty %}
         <tr>
           <td>How do you want the defendant to pay:</td>
           <td>
-            {{ ccj.paymentOption }}
+            {{ ccj.repayment.paymentOptionDesc }}
           </td>
         </tr>
         <tr class="no-border">
           <td>Instalments of:</td>
           <td>
-            {{ ccj.repaymentOption.instalmentAmount }}
+            {{ ccj.repayment.instalmentAmount }}
           </td>
         </tr>
         <tr class="no-border">
           <td>When you want them to make the first payment:</td>
           <td>
-            {{ ccj.firstInstalmentPaymentDate}}
+            {{ ccj.repayment.firstInstalmentPaymentDate}}
           </td>
         </tr>
         <tr class="no-border">
           <td>How often you want them to make this payment:</td>
           <td>
-            {{ ccj.paymentFrequency }}
+            {{ ccj.repayment.paymentFrequency }}
           </td>
         </tr>
 

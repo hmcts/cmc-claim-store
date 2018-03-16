@@ -70,7 +70,6 @@ public class RepaymentPlanMapperTest {
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .instalmentAmount(BigDecimal.valueOf(100))
             .firstPaymentDate(now())
-            .firstPayment(BigDecimal.valueOf(150))
             .build();
 
         //when
@@ -87,7 +86,6 @@ public class RepaymentPlanMapperTest {
             .paymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
             .instalmentAmount(BigDecimal.valueOf(100))
             .firstPaymentDate(now())
-            .firstPayment(BigDecimal.valueOf(150))
             .build();
 
         //when
@@ -104,7 +102,6 @@ public class RepaymentPlanMapperTest {
             .paymentSchedule(CCDPaymentSchedule.EVERY_TWO_WEEKS)
             .instalmentAmount(BigDecimal.valueOf(100))
             .firstPaymentDate(now())
-            .firstPayment(BigDecimal.valueOf(150))
             .build();
 
         //when

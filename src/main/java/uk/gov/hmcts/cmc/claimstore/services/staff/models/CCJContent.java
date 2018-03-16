@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Am
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -18,25 +16,19 @@ public class CCJContent {
     private String requestedAt;
     private String requestedDate;
     private AmountContent amount;
-    private RepaymentPlan repaymentOption;
     private String defendantDateOfBirth;
-    private PaymentOption paymentOption;
-    private String firstInstalmentPaymentDate;
-    private String paymentFrequency;
+    private RepaymentPlanContent repayment;
 
-    public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
+    public CCJContent(Claim claim, InterestCalculationService interestCalculationService, RepaymentPlanContentProvider repaymentPlanContentProvider) {
         requireNonNull(claim);
 
         this.claim = claim;
         this.amount = new AmountContentProvider(interestCalculationService).create(claim);
         claim.getCountyCourtJudgment().getDefendantDateOfBirth()
             .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
-        this.repaymentOption = RepaymentPlanContentProvider.create(claim.getCountyCourtJudgment()).orElse(null);
         this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
         this.requestedDate = formatDate(claim.getCountyCourtJudgmentRequestedAt());
-        this.paymentOption = claim.getCountyCourtJudgment().getPaymentOption();
-        this.firstInstalmentPaymentDate = formatDate(repaymentOption.getFirstPaymentDate());
-        this.paymentFrequency = repaymentOption.getPaymentSchedule().getDescription();
+        this.repayment = repaymentPlanContentProvider.create(claim.getCountyCourtJudgment());
     }
 
     public Claim getClaim() {
@@ -51,10 +43,6 @@ public class CCJContent {
         return defendantDateOfBirth;
     }
 
-    public RepaymentPlan getRepaymentOption() {
-        return repaymentOption;
-    }
-
     public String getRequestedDate() {
         return requestedDate;
     }
@@ -63,15 +51,7 @@ public class CCJContent {
         return requestedAt;
     }
 
-    public PaymentOption getPaymentOption() {
-        return paymentOption;
-    }
-
-    public String getFirstInstalmentPaymentDate() {
-        return firstInstalmentPaymentDate;
-    }
-
-    public String getPaymentFrequency() {
-        return paymentFrequency;
+    public RepaymentPlanContent getRepayment() {
+        return repayment;
     }
 }
