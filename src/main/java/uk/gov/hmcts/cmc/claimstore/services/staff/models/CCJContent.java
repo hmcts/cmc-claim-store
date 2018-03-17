@@ -19,7 +19,7 @@ public class CCJContent {
     private String defendantDateOfBirth;
     private RepaymentPlanContent repayment;
 
-    public CCJContent(Claim claim, InterestCalculationService interestCalculationService, RepaymentPlanContentProvider repaymentPlanContentProvider) {
+    public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
         requireNonNull(claim);
 
         this.claim = claim;
@@ -28,7 +28,7 @@ public class CCJContent {
             .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
         this.requestedAt = Formatting.formatDateTime(claim.getCountyCourtJudgmentRequestedAt());
         this.requestedDate = formatDate(claim.getCountyCourtJudgmentRequestedAt());
-        this.repayment = repaymentPlanContentProvider.create(claim.getCountyCourtJudgment());
+        this.repayment = new RepaymentPlanContentProvider(claim.getCountyCourtJudgment()).create();
     }
 
     public Claim getClaim() {

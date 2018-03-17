@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
+import org.springframework.util.StringUtils;
+
 public class RepaymentPlanContent {
     private String paymentType;
     private String instalmentAmount;
@@ -7,10 +9,10 @@ public class RepaymentPlanContent {
     private String paymentSchedule;
 
     public RepaymentPlanContent(String paymentType, String instalmentAmount, String firstPaymentDate, String paymentSchedule) {
-        this.paymentType = paymentType;
+        this.paymentType = StringUtils.capitalize(paymentType);
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
-        this.paymentSchedule = paymentSchedule;
+        this.paymentSchedule = StringUtils.capitalize(paymentSchedule);
     }
 
     public String getPaymentType() {
