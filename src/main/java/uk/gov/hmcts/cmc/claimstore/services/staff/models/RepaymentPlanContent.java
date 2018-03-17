@@ -18,7 +18,11 @@ public class RepaymentPlanContent {
         this.paySetByDate = paySetByDate;
     }
 
-    public RepaymentPlanContent(String repaymentOption, String instalmentAmount, String firstPaymentDate, String paymentSchedule) {
+    public RepaymentPlanContent(
+        String repaymentOption,
+        String instalmentAmount,
+        String firstPaymentDate,
+        String paymentSchedule) {
         this.repaymentOption = repaymentOption;
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
