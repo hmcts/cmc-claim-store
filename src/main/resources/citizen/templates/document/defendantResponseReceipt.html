@@ -1,22 +1,32 @@
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <title>Money Claim response receipt</title>
   <style>
     @page {
       size: 8.5in 11in;
       margin: 10%;
-
       @top-right {
-        content: "Page " counter(page) " of " counter(pages);
-        /*noinspection CssNoGenericFontName*/
+        content: "Defendant's response";
         font-family: "Open Sans";
       }
+
       @bottom-left {
-        content: "OCON11";
+        content: "OCON9B";
         /*noinspection CssNoGenericFontName*/
         font-family: "Open Sans";
       }
+
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        font-size: 11px;
+      }
+
+      @bottom-right {
+        content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
+        font-size: 11px;
+      }
+
     }
 
     html {
@@ -83,6 +93,14 @@
       padding: 0;
     }
 
+    .padding-bottom {
+      padding-bottom: 20px;
+    }
+
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
   </style>
 </head>
 <body>
@@ -90,80 +108,25 @@
 <header>
   <table>
     <tr>
-      <td colspan="2"><p>In the County Court Business Centre Online Court</p></td>
+      <td colspan="2" class="padding-bottom"><h2 style="font-weight: normal">Defendant's response</h2></td>
     </tr>
     <tr>
-      <td><h2><strong>Claim number: </strong></h2></td>
-      <td><h2 style="font-weight: normal"> {{ claim.referenceNumber }}</h2></td>
+      <td colspan="2" class="padding-bottom"><p>In the County Court Business Centre Online Court</p></td>
     </tr>
     <tr>
-      <td colspan="2">
-        <p>{{ defendant.fullName }}’s defence</p>
+      <td colspan="2"><p><strong>Claim number:</strong>{{ claim.referenceNumber }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="padding-bottom"><p><strong>Defence submitted on: </strong> {{ defenceSubmittedOn }}</p>
       </td>
-    </tr>
-    <tr>
-      <td colspan="2"><p><strong>Defence submitted on: </strong> {{ defenceSubmittedOn }}</p></td>
     </tr>
   </table>
 </header>
 
-<br />
-
-<div class="section">
-  <div class="section-heading">
-    <strong>Claimant’s details</strong>
-  </div>
-  <div class="section-body">
-    <table>
-      <tr>
-        <td>Name:</td>
-        <td>
-          {{ claimant.fullName }}
-        </td>
-      </tr>
-      {% if claimant.contactPerson is defined %}
-        <tr>
-          <td>Contact person:</td>
-          <td>
-            {{ claimant.contactPerson }}
-          </td>
-        </tr>
-      {% endif %}
-      {% if claimant.businessName is defined %}
-        <tr>
-          <td>Business name:</td>
-          <td>
-            {{ claimant.businessName }}
-          </td>
-        </tr>
-      {% endif %}
-      <tr>
-        <td>Address:</td>
-        <td>
-          {{ claimant.address.line1 }}
-          <br/>
-          {% if claimant.address.line2 is not empty %}
-            {{ claimant.address.line2 }}
-            <br/>
-          {% endif %}
-          {% if claimant.address.line3 is not empty %}
-          {{ claimant.address.line3 }}
-          <br/>
-          {% endif %}
-          {{ claimant.address.city }}
-          <br/>
-          {{ claimant.address.postcode }}
-        </td>
-      </tr>
-      <tr>
-        <td>Email:</td>
-        <td>
-          {{ claimant.email }}
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
+<br/>
 
 <div class="section">
   <div class="section-heading">
@@ -178,20 +141,20 @@
         </td>
       </tr>
       {% if defendant.contactPerson is defined %}
-        <tr>
-          <td>Contact person:</td>
-          <td>
-            {{ defendant.contactPerson }}
-          </td>
-        </tr>
+      <tr>
+        <td>Contact person:</td>
+        <td>
+          {{ defendant.contactPerson }}
+        </td>
+      </tr>
       {% endif %}
       {% if defendant.businessName is defined %}
-        <tr>
-          <td>Business name:</td>
-          <td>
-            {{ defendant.businessName }}
-          </td>
-        </tr>
+      <tr>
+        <td>Business name:</td>
+        <td>
+          {{ defendant.businessName }}
+        </td>
+      </tr>
       {% endif %}
       <tr>
         <td>Address:</td>
@@ -199,8 +162,8 @@
           {{ defendant.address.line1 }}
           <br/>
           {% if defendant.address.line2 is not empty %}
-            {{ defendant.address.line2 }}
-            <br/>
+          {{ defendant.address.line2 }}
+          <br/>
           {% endif %}
           {% if defendant.address.line3 is not empty %}
           {{ defendant.address.line3 }}
@@ -218,8 +181,8 @@
           {{ defendant.correspondenceAddress.line1 }}
           <br/>
           {% if defendant.correspondenceAddress.line2 is not empty %}
-            {{ defendant.correspondenceAddress.line2 }}
-            <br/>
+          {{ defendant.correspondenceAddress.line2 }}
+          <br/>
           {% endif %}
           {% if defendant.correspondenceAddress.line3 is not empty %}
           {{ defendant.correspondenceAddress.line3 }}
@@ -251,41 +214,31 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Claim</strong>
+    <strong>Defendant's response to the claim</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Reason for claim:</td>
-        <td>
-          {{ claim.reason }}
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
-
-<div class="section">
-  <div class="section-heading">
-    <strong>Defendant's response to the claim</strong>
-  </div>
-  <div class="section-body">
-    <table border="1">
-      <tr>
         <td>Defendant's response:</td>
         <td>
-          {{ responseDefence }}
+          {{ responseTypeSelected }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="white-space: pre-line"><strong>Why they dispute the claim:</strong>
+          {{ responseDefence | trim}}
         </td>
       </tr>
       {% if paymentDeclaration is defined %}
       <tr>
-        <td>When they paid this amount:</td>
+        <td colspan="2" style="white-space: pre-line">
+            <strong>Defendant's timeline of what happened:</strong>
+        </td>
+      </tr>
+      <tr class="no-border">
         <td>
           {{ paymentDeclaration.paidDate }}
         </td>
-      </tr>
-      <tr>
-        <td>How they pay the amount claimed:</td>
         <td>
           {{ paymentDeclaration.explanation }}
         </td>
@@ -366,14 +319,14 @@
       <tr>
         <td>Declaration:</td>
         {% if signerName is empty %}
-          <td>
-            I {{ defendant.fullName }} believe that the facts stated in this defence form are true.
-          </td>
+        <td>
+          I {{ defendant.fullName }} believe that the facts stated in this defence form are true.
+        </td>
         {% endif %}
         {% if signerName is not empty %}
-          <td>
-            The defendant believes that the facts stated in this defence form are true.
-          </td>
+        <td>
+          The defendant believes that the facts stated in this defence form are true.
+        </td>
         {% endif %}
 
       </tr>
@@ -387,36 +340,36 @@
       </tr>
       {% endif %}
       {% if signerName is not empty %}
-        <tr>
-          <td>
-           Name:
-          </td>
-          <td>{{ signerName }}</td>
-        </tr>
-        <tr>
-          <td>
-            Organisation:
-          </td>
-          {% if defendant.fullName is not empty %}
-            <td>{{ defendant.fullName }}</td>
-          {% endif %}
-          {% if defendant.businessName is not empty %}
-            <td>{{ defendant.businessName }}</td>
-          {% endif %}
-        </tr>
-        <tr>
-          <td>
-            Position held:
-          </td>
-          <td>{{ signerRole }}</td>
-        </tr>
+      <tr>
+        <td>
+          Name:
+        </td>
+        <td>{{ signerName }}</td>
+      </tr>
+      <tr>
+        <td>
+          Organisation:
+        </td>
+        {% if defendant.fullName is not empty %}
+        <td>{{ defendant.fullName }}</td>
+        {% endif %}
+        {% if defendant.businessName is not empty %}
+        <td>{{ defendant.businessName }}</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td>
+          Position held:
+        </td>
+        <td>{{ signerRole }}</td>
+      </tr>
       {% endif %}
     </table>
   </div>
 </div>
 
 <div class="section">
-    <h3>What happens next</h3>
+  <h3>What happens next</h3>
 </div>
 
 <div class="section next-steps">
@@ -446,12 +399,12 @@
         <td></td>
         <td>
           {% if freeMediation == 'yes' %}
-            <p>You have asked to use the mediation service. We’ll contact the claimant to ask if they want to mediate.
-              If they want to mediate then we’ll contact you to arrange a mediation appointment.</p>
+          <p>You have asked to use the mediation service. We’ll contact the claimant to ask if they want to mediate.
+            If they want to mediate then we’ll contact you to arrange a mediation appointment.</p>
           {% else %}
-            <p>You have chosen not to use the free mediation service.
-              The case will be reviewed by a judge and might go to a hearing.
-              We’ll contact you if a hearing date is scheduled and explain what you need to do to prepare.</p>
+          <p>You have chosen not to use the free mediation service.
+            The case will be reviewed by a judge and might go to a hearing.
+            We’ll contact you if a hearing date is scheduled and explain what you need to do to prepare.</p>
           {% endif %}
         </td>
       </tr>

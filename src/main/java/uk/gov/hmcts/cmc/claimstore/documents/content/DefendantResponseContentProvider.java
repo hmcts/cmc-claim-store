@@ -66,6 +66,7 @@ public class DefendantResponseContentProvider {
             FullDefenceResponse fullDefence = (FullDefenceResponse) defendantResponse;
 
             content.put("responseDefence", fullDefence.getDefence());
+            content.put("responseTypeSelected", fullDefence.getDefenceType().name());
 
             fullDefence.getPaymentDeclaration().ifPresent(paymentDeclaration ->
                 content.put("paymentDeclaration", createContentFor(paymentDeclaration))
