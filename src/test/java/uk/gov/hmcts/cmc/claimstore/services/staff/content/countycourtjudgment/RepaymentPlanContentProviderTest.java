@@ -19,6 +19,7 @@ public class RepaymentPlanContentProviderTest {
             .withPaymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
+
         assertThat(RepaymentPlanContentProvider.create(countyCourtJudgment)).isEqualTo("immediately");
     }
 

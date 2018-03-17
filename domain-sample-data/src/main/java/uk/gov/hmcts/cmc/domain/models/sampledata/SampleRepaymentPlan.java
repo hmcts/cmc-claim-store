@@ -38,6 +38,6 @@ public class SampleRepaymentPlan {
     }
 
     public RepaymentPlan build() {
-        return new RepaymentPlan(firstPayment, instalmentAmount, firstPaymentDate, paymentSchedule);
+        return new RepaymentPlan(instalmentAmount, firstPaymentDate, paymentSchedule);
     }
 }
