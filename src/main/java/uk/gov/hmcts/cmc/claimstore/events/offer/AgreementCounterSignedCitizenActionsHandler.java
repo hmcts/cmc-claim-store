@@ -79,11 +79,14 @@ public class AgreementCounterSignedCitizenActionsHandler {
     }
 
     private Map<String, String> aggregateParams(Claim claim, MadeBy madeBy) {
+        String counterSignParty = madeBy.name().equals(MadeBy.CLAIMANT.name())
+            ? claim.getClaimData().getClaimant().getName()
+            : claim.getClaimData().getDefendant().getName();
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put(COUNTER_SIGNING_PARTY, madeBy.name());
+        parameters.put(COUNTER_SIGNING_PARTY, counterSignParty);
 
         return parameters;
     }

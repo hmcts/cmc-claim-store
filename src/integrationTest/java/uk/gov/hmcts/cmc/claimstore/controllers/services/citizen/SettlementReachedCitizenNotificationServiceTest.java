@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.service.notify.NotificationClientException;
@@ -61,6 +62,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
         claim = SampleClaim
             .builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
             .withSettlementReachedAt(LocalDateTime.now())
             .withResponse(SampleResponse.validDefaults())
             .withSettlement(settlement)
@@ -87,7 +89,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
         Map<String, String> emailData = new HashMap<>();
         emailData.put("claimReferenceNumber", "000CM001");
-        emailData.put("counterSigningParty", "DEFENDANT");
+        emailData.put("counterSigningParty", claim.getClaimData().getDefendant().getName());
         emailData.put("frontendBaseUrl", "https://civil-money-claims.co.uk");
 
         assertThat(emailDataArgument.getValue()).isEqualTo(emailData);
@@ -110,7 +112,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
         Map<String, String> emailData = new HashMap<>();
         emailData.put("claimReferenceNumber", "000CM001");
-        emailData.put("counterSigningParty", "DEFENDANT");
+        emailData.put("counterSigningParty", claim.getClaimData().getDefendant().getName());
         emailData.put("frontendBaseUrl", "https://civil-money-claims.co.uk");
 
         assertThat(emailDataArgument.getValue()).isEqualTo(emailData);
@@ -133,7 +135,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
         Map<String, String> emailData = new HashMap<>();
         emailData.put("claimReferenceNumber", "000CM001");
-        emailData.put("counterSigningParty", "CLAIMANT");
+        emailData.put("counterSigningParty", claim.getClaimData().getClaimant().getName());
         emailData.put("frontendBaseUrl", "https://civil-money-claims.co.uk");
 
         assertThat(emailDataArgument.getValue()).isEqualTo(emailData);
@@ -156,7 +158,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
         Map<String, String> emailData = new HashMap<>();
         emailData.put("claimReferenceNumber", "000CM001");
-        emailData.put("counterSigningParty", "CLAIMANT");
+        emailData.put("counterSigningParty", claim.getClaimData().getClaimant().getName());
         emailData.put("frontendBaseUrl", "https://civil-money-claims.co.uk");
 
         assertThat(emailDataArgument.getValue()).isEqualTo(emailData);
