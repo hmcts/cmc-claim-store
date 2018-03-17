@@ -8,18 +8,12 @@ import java.time.LocalDate;
 
 public class SampleRepaymentPlan {
 
-    private BigDecimal firstPayment = BigDecimal.valueOf(100);
     private BigDecimal instalmentAmount = BigDecimal.valueOf(100);
     private LocalDate firstPaymentDate = LocalDate.of(2100, 10, 10);
     private PaymentSchedule paymentSchedule = PaymentSchedule.EACH_WEEK;
 
     public static SampleRepaymentPlan builder() {
         return new SampleRepaymentPlan();
-    }
-
-    public SampleRepaymentPlan withFirstPayment(BigDecimal firstPayment) {
-        this.firstPayment = firstPayment;
-        return this;
     }
 
     public SampleRepaymentPlan withInstalmentAmount(BigDecimal instalmentAmount) {
