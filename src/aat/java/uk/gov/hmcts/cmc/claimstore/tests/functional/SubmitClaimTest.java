@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 
 import java.time.LocalDateTime;
@@ -43,7 +45,7 @@ public class SubmitClaimTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(claimData).isEqualTo(createdCase.getClaimData());
-        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(2, ChronoUnit.MINUTES));
     }
 
     @Test
@@ -76,6 +78,17 @@ public class SubmitClaimTest extends BaseTest {
     public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() {
         ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
             .withTimeline(SampleTimeline.builder().withEvents(asList(new TimelineEvent[21])).build())
+            .build();
+
+        submitClaim(invalidClaimData)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenClaimWithInvalidEvidenceIsSubmitted() {
+        ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
+            .withEvidence(SampleEvidence.builder().withRows(asList(new EvidenceRow[21])).build())
             .build();
 
         submitClaim(invalidClaimData)

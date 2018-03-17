@@ -72,5 +72,13 @@
         "description": "signed a contract"
       }
     ]
+  },
+  "evidence": {
+    "rows": [
+      {
+        "type": "CORRESPONDENCE",
+        "description": "description"
+      }
+    ]
   }
 }
