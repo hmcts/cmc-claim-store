@@ -50,7 +50,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
     private AgreementCountersignedEvent event;
 
     @Before
-    public void setup() {
+    public void setUp() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
