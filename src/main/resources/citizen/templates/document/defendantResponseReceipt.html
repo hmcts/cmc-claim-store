@@ -297,12 +297,14 @@
       {% endfor %}
       {% endif %}
 
+      {% if timelineComment is not empty %}
       <tr class="no-border">
         <td><strong>Comments about claimant’s timeline:</strong></td>
         <td>
           {{ timelineComment }}
         </td>
       </tr>
+      {% endif %}
 
       {% if paymentDeclaration is defined %}
       <tr>
