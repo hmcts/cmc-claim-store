@@ -30,7 +30,8 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
         return new Interest(
             Interest.InterestType.valueOf(ccdInterest.getType().name()),
             ccdInterest.getRate(),
-            ccdInterest.getReason()
+            ccdInterest.getReason(),
+            ccdInterest.getOption()
         );
     }
 }

@@ -34,17 +34,24 @@ public class AmountContentProvider {
         BigDecimal interestRate = BigDecimal.ZERO;
         Interest interest = claim.getClaimData().getInterest();
         Optional<LocalDate> interestFromDate = Optional.empty();
+        LocalDate interestToDate;
         if (!interest.getType().equals(InterestType.NO_INTEREST)) {
             dailyAmount = interestCalculationService.calculateDailyAmountFor(
                 ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
                 interest.getRate()
             );
 
+            if (claim.getClaimData().getInterestDate().getEndDate().equals(InterestDate.InterestEndDateType.SUBMISSION)) {
+                interestToDate = claim.getIssuedOn();
+            } else {
+                interestToDate = claim.getCountyCourtJudgmentRequestedAt().toLocalDate();
+            }
+
             interestFromDate = Optional.of(getInterestFromDate(claim));
             interestRate = interest.getRate();
             interestAmount = getInterestAmount(
                 claim,
-                claim.getCountyCourtJudgmentRequestedAt().toLocalDate(),
+                interestToDate,
                 claimAmount
             );
         }

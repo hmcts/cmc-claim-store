@@ -21,6 +21,14 @@ public class InterestDate {
         SUBMISSION
     }
 
+    public enum InterestEndDateType {
+        @JsonProperty("settled_or_judgement")
+        SETTLED_OR_JUDGMENT,
+
+        @JsonProperty("submission")
+        SUBMISSION
+    }
+
     @NotNull
     private final InterestDateType type;
 
@@ -30,10 +38,13 @@ public class InterestDate {
 
     private final String reason;
 
-    public InterestDate(InterestDateType type, LocalDate date, String reason) {
+    private final InterestEndDateType endDate;
+
+    public InterestDate(InterestDateType type, LocalDate date, String reason, InterestEndDateType endDate) {
         this.type = type;
         this.date = date;
         this.reason = reason;
+        this.endDate = endDate;
     }
 
     public InterestDateType getType() {
@@ -47,6 +58,8 @@ public class InterestDate {
     public String getReason() {
         return reason;
     }
+
+    public InterestEndDateType getEndDate() { return endDate; }
 
     @JsonIgnore
     public boolean isValid() {
@@ -64,7 +77,8 @@ public class InterestDate {
         InterestDate that = (InterestDate) other;
         return Objects.equals(type, that.type)
             && Objects.equals(date, that.date)
-            && Objects.equals(reason, that.reason);
+            && Objects.equals(reason, that.reason)
+            && Objects.equals(endDate, that.endDate);
     }
 
     @Override
