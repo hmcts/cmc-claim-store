@@ -22,7 +22,7 @@ public class InterestDate {
     }
 
     public enum InterestEndDateType {
-        @JsonProperty("settled_or_judgement")
+        @JsonProperty("settled_or_judgment")
         SETTLED_OR_JUDGMENT,
 
         @JsonProperty("submission")
@@ -44,7 +44,7 @@ public class InterestDate {
         this.type = type;
         this.date = date;
         this.reason = reason;
-        this.endDate = endDate;
+        this.endDate = endDate == null ? InterestEndDateType.SUBMISSION : endDate;
     }
 
     public InterestDateType getType() {

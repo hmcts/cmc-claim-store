@@ -21,13 +21,6 @@ public class Interest {
         NO_INTEREST
     }
 
-    public enum InterestOption {
-        @JsonProperty("breakdown")
-        BREAKDOWN,
-        @JsonProperty("same")
-        SAME_RATE
-    }
-
     @NotNull
     private final InterestType type;
 
@@ -35,16 +28,13 @@ public class Interest {
 
     private final String reason;
 
-    private final InterestOption option;
 
     public Interest(InterestType type,
                     BigDecimal rate,
-                    String reason,
-                    InterestOption option) {
+                    String reason) {
         this.type = type;
         this.rate = rate;
         this.reason = reason;
-        this.option = option;
     }
 
     public String getReason() {
@@ -59,8 +49,6 @@ public class Interest {
         return rate;
     }
 
-    public InterestOption getOption() { return option; }
-
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -72,13 +60,12 @@ public class Interest {
         Interest interest = (Interest) other;
         return Objects.equals(type, interest.type)
             && Objects.equals(rate, interest.rate)
-            && Objects.equals(reason, interest.reason)
-            && Objects.equals(option, interest.option);
+            && Objects.equals(reason, interest.reason);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, rate, reason, option);
+        return Objects.hash(type, rate, reason);
     }
 
     @Override

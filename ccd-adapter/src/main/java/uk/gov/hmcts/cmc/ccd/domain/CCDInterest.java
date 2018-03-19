@@ -12,5 +12,4 @@ public class CCDInterest {
     private CCDInterestType type;
     private BigDecimal rate;
     private String reason;
-    private Interest.InterestOption option;
 }
