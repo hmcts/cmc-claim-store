@@ -4,14 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimantContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.PersonContent;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 
 @Component
@@ -27,7 +28,6 @@ public class ClaimantContentProvider {
     public ClaimantContent createContent(Party claimant, String submitterEmail) {
         requireNonNull(claimant);
         requireNonBlank(submitterEmail);
-        LocalDate dateOfBirth = claimant instanceof Individual ? ((Individual)claimant).getDateOfBirth() : null;
         PersonContent personContent = personContentProvider.createContent(
             PartyUtils.getType(claimant),
             claimant.getName(),
@@ -37,7 +37,7 @@ public class ClaimantContentProvider {
             PartyUtils.getContactPerson(claimant).orElse(null),
             PartyUtils.getBusinessName(claimant).orElse(null),
             claimant.getMobilePhone().orElse(null),
-            formatDate(dateOfBirth)
+            claimantDateOfBirth(claimant).map(Formatting::formatDate).orElse(null)
         );
         return new ClaimantContent(
             personContent.getPartyType(),
@@ -50,5 +50,12 @@ public class ClaimantContentProvider {
             personContent.getMobileNumber(),
             personContent.getDateOfBirth()
         );
+    }
+
+    private Optional<LocalDate> claimantDateOfBirth(Party party) {
+        if (party instanceof Individual) {
+            return Optional.of(((Individual) party).getDateOfBirth());
+        }
+        return Optional.empty();
     }
 }
