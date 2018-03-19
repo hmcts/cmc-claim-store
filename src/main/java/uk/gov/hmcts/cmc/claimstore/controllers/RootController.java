@@ -4,9 +4,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.Map;
-
 @RestController
 public class RootController {
 
@@ -15,8 +12,8 @@ public class RootController {
      * Application insights registers that as a 404 and adds it as an exception,
      * This is here to reduce the noise
      */
-    @GetMapping(value = "/", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Map root() {
-        return Collections.singletonMap("hello", "world!");
+    @GetMapping(value = "/", consumes = MediaType.ALL_VALUE)
+    public void root() {
+        // Only used for returning a 200 on /
     }
 }
