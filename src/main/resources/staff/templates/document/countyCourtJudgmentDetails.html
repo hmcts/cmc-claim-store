@@ -244,45 +244,45 @@
         </td>
       </tr>
 
-      {% if ccj.repaymentPlanContent.repaymentOption == "Immediately" %}
+      {% if ccj.repaymentPlan.repaymentOption == "Immediately" %}
         <tr>
           <td>When you want the defendant to pay:</td>
           <td>
-            {{ ccj.repaymentPlanContent.repaymentOption }}
+            {{ ccj.repaymentPlan.repaymentOption }}
           </td>
         </tr>
       {% else %}
         <tr>
           <td>How do you want the defendant to pay:</td>
           <td>
-            {{ ccj.repaymentPlanContent.repaymentOption }}
+            {{ ccj.repaymentPlan.repaymentOption }}
           </td>
         </tr>
-        {% if ccj.repaymentPlanContent.repaymentOption == "By a set date" %}
+        {% if ccj.repaymentPlan.repaymentOption == "By a set date" %}
           <tr class="no-border">
             <td>When do you want the defendant to pay:</td>
             <td>
-              {{ ccj.repaymentPlanContent.paySetByDate }}
+              {{ ccj.repaymentPlan.paySetByDate }}
             </td>
           </tr>
         {% endif %}
-        {% if ccj.repaymentPlanContent.repaymentOption == "By instalments" %}
+        {% if ccj.repaymentPlan.repaymentOption == "By instalments" %}
           <tr class="no-border">
             <td>Instalments of:</td>
             <td>
-              {{ ccj.repaymentPlanContent.instalmentAmount }}
+              {{ ccj.repaymentPlan.instalmentAmount }}
             </td>
           </tr>
           <tr class="no-border">
             <td>When you want them to make the first payment:</td>
             <td>
-              {{ ccj.repaymentPlanContent.firstPaymentDate}}
+              {{ ccj.repaymentPlan.firstPaymentDate}}
             </td>
           </tr>
           <tr class="no-border">
             <td>How often you want them to make this payment:</td>
             <td>
-              {{ ccj.repaymentPlanContent.paymentSchedule }}
+              {{ ccj.repaymentPlan.paymentSchedule }}
             </td>
           </tr>
         {% endif %}
