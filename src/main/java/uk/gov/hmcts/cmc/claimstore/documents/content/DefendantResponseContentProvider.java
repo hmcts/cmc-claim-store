@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.Response;
@@ -70,6 +71,12 @@ public class DefendantResponseContentProvider {
             fullDefence.getPaymentDeclaration().ifPresent(paymentDeclaration ->
                 content.put("paymentDeclaration", createContentFor(paymentDeclaration))
             );
+
+            if (fullDefence.getTimeline().isPresent()) {
+                DefendantTimeline defendantTimeline = fullDefence.getTimeline().get();
+                content.put("events", defendantTimeline.getEvents());
+                content.put("timelineComment", defendantTimeline.getComment().orElse(null));
+            }
         }
 
         return content;
