@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement;
+package uk.gov.hmcts.cmc.claimstore.documents.content.bulkprint;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.PartyDetailsContentProvider;
@@ -13,11 +13,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 
 @Component
-public class SettlementAgreementPDFContentProvider {
+public class BulkPrintPDFContentProvider {
 
     private final PartyDetailsContentProvider partyDetailsContentProvider;
 
-    public SettlementAgreementPDFContentProvider(
+    public BulkPrintPDFContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider
     ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
@@ -33,10 +33,7 @@ public class SettlementAgreementPDFContentProvider {
         content.put("acceptedOffer", acceptedOffer.getContent());
         content.put("acceptedOfferCompletionDate", formatDate(acceptedOffer.getCompletionDate()));
         content.put("claim", claim);
-        content.put("claimant", partyDetailsContentProvider.createContent(
-            claim.getClaimData().getClaimant(),
-            claim.getSubmitterEmail()
-        ));
+        content.put("claimant", claim.getClaimData().getClaimant());
         content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant(),
             claim.getDefendantEmail()

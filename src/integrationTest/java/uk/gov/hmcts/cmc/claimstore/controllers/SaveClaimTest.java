@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.UUID;
@@ -37,6 +39,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SaveClaimTest extends BaseSaveTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
+
+    @MockBean
+    protected SendLetterApi sendLetterApi;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;

@@ -34,6 +34,7 @@ public class PartyDetailsContentProvider {
             party.getAddress(),
             false,
             party.getCorrespondenceAddress().orElse(null),
+            party.getMobilePhone().orElse(null),
             defendantDateOfBirth(party).orElse(null),
             partyEmail
         );
@@ -66,6 +67,7 @@ public class PartyDetailsContentProvider {
             ownParty.getAddress(),
             addressAmended,
             ownParty.getCorrespondenceAddress().orElse(null),
+            ownParty.getMobilePhone().orElse(null),
             defendantDateOfBirth(ownParty).orElse(null),
             ownPartyEmail
         );
