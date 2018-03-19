@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationInsightsAgent>
+    <AgentLogger>INFO</AgentLogger>
+    <Instrumentation>
+        <BuiltIn enabled="true">
+            <HTTP enabled="true"/>
+        </BuiltIn>
+        <Class name="uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository">
+            <Method name="getBySubmitterId" />
+            <Method name="getClaimByExternalId" />
+            <Method name="getByClaimReferenceNumber" />
+            <Method name="saveCountyCourtJudgment" />
+            <Method name="saveDefendantResponse" />
+            <Method name="linkDefendantV1" />
+            <Method name="linkDefendantV2" />
+            <Method name="getByDefendantId" />
+            <Method name="getByLetterHolderId" />
+            <Method name="requestMoreTimeForResponse" />
+            <Method name="updateSettlement" />
+            <Method name="reachSettlementAgreement" />
+            <Method name="saveClaim" />
+        </Class>
+        <Class name="uk.gov.service.notify.NotificationClient">
+            <Method name="sendEmail"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient">
+            <Method name="generateFromHtml"/>
+        </Class>
+    </Instrumentation>
+</ApplicationInsightsAgent>
