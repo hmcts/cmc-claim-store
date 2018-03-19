@@ -297,6 +297,13 @@
       {% endfor %}
       {% endif %}
 
+      <tr class="no-border">
+        <td><strong>Comments about claimant's timeline:</strong></td>
+        <td>
+          {{ timelineComment }}
+        </td>
+      </tr>
+
       {% if paymentDeclaration is defined %}
       <tr>
         <td>When they paid this amount:</td>
