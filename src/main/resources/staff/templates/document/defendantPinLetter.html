@@ -5,7 +5,7 @@
   <style>
     @page {
       size: 8.5in 11in;
-      margin: 10%;
+      margin: 5% 10% 10%;
     }
 
     html {
@@ -20,12 +20,18 @@
       font-size: 23px
     }
 
-    .letter-content {
-      font-size: 20px;
+    .no-spacing {
+      margin: 0;
+      padding: 0;
     }
 
-    .footer {
-      font-size: 17px;
+    .small-spacing {
+      margin-top: 8px;
+      margin-bottom: 5px;
+    }
+
+    .address {
+      font-size: 12px;
     }
   </style>
 </head>
@@ -38,7 +44,7 @@
           <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIIAAAA7CAQAAAAdz5rLAAAABGdBTUEAALGPC/xhBQAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAABcRAAAXEQHKJvM/AAAAB3RJTUUH4QcaEBEfXr+E+QAAGbRJREFUaN7dendcVNfW9rPPmQIMTGOAoRdBVAQVUIMl9q5RMdbYEmM0aqIxV43exBbTiyVqNLH3JBrN1WgsURSxIAqoSJMiDGUYBqYxfc7+/gANibk3edX343ffxR/Mrmuv56y1115rbzA0ajV+R3WgoMzl0BOBtwRHUQ0VKN7Bxh7JmZ+PByjRw6xMnXOtFyVZ0OL/AvEer7JCJ/qlb/YUha10z+2zI8DysiO7W3OIh1YkvhJ92dyjHLXpV4qHGC39b33nfB1ft7QM/xsgFMHmVjoarYrFtqraUrZkd2LJeGLW+dgDcnpqIjne1cOLri3MmuT7zcuFosDrNnMtKhHX0nI8axDC4e/IKb8+ssTN9RpN/HV+YR+fcxEFRW244Oi0yJs1XgWjq0r8aw5cHt3vq32ex/vt9s5xN1jg3tKSPFsQzkLJHYg0cGw9jy3rceTFIJgDD3eVcCZfdUxGXGKWk4B3kb9pYvEAlR+dpevjPmtFSk5Ly/FUxPy+WIc6dMZgF+NeqfAwsJUm/tUhyrTcwYbJD6bkhF7uqep7JZnb76+6H6Z+vSEwNE9aX9r62Bggs6XleCr6gybIAMhBPSKYEpoXGHkbsIZ685yZ+f62igZO6ibwc+Tsu0dQo67eX9I/1y/fywljIGV/cOkhaWlZng0Ia3Aa7QMOttrI974R0CdPnN3DhUrP3IAIS466pnWDp8sRVh7ZsOr5FR4bBJWxrgA3b6mzgUSrwO52jUU5gltamicklqyUX6q7AAB1IBiDC2+cWVwrCCiw0ZIYOyGgPHvD1T4lvT04X0IkD2IqgonbnRdoq4zou2Eh6qgyhSnq59To9rYkrQirn3Y1LUTNNEGGgXi33dFJ0MkMDar7ZisBRPagkvI2qrhO1+Ib5BYe76owtYeqbUB16vA6nllwRhJ3b/CuYuWtwaYpoeME9Vp4t7Q8T0TNNsYtOMzTj+h1esAZBcsTqAZREDgFcs4a2Cq/q6MhxCKoDPblx2bbW1l841SePMDBslWRGeZqyUFpYNZzI/i0paV5ehBcKEHyidAbJvJiSuoiU6DIkXS5+5Uyf39rj9IGHxiYBsUDEWKqavkOmVgfe0BSzuB+h5NjeDHRuqHzPD3UHo6WlubpQZgLrdOpzmydtG17x+rnWXCswW3sTp9yMxWU2QqcpVphg6e71eEwuuks0suzvhu6PkBV53d9ctucenm9dMkJvYFtaWmeHgQdOBRKHW1OvFr+ool114Vl3E+4FJqQGayzO6xylyfPYvS1t5I6qECT9/Xydc8fW14TyIOnsTx++E1dXI1TQP8PgAD4IVJjuWRqbTUYINaJTK1Txm4XpaZHXW+nrKB+LqsbozAXialb4F0wJFpsj033N1tNembPUp7UVyD4L90WfweCDBao9Z8demlvlb+8rtsWI8sp7rVyKxA/KEmq42i5m57Wlpuud1NUDUs95BmWFVowaVNIFWnwO8ZcjDmM/9YNAQBhaKv3C5c/LA6BJP7abo/s/rvWp7/RI2NlnVhgDUyv6iykMoOP02ZOSXJ6jD5aY1aL6YOYKy+wpydk8s1lr/2qTdDvdd3f1NLSPCH94dh8ExGdDBEJS9ZfguurU1eKtnbW9glLGaTe2VMTVO4lcgXUJu10k5V2Gr5jxUk0pPYOvmv2utn/gVKRa3PYW1qWJ6ZmJ0YA6Iee0pLB2vbf977u2cHw0YiUmbn9Cgf5nVv6bq6KdBGdj1xjqzvyTmlsTqdTfOWDvrcdHjnjTcJhexJ2Fas/a2lZnpj+oAmvo+fN/ANXBoj8afjYsXcHctSvsjb0xPhRKR2Ci/P5BTMKJmy1hgVW1oSnffxm/86f9NdWsh3XTv8etnZ4FeEtLc2zAWEwYJyyUVKR0e/IHKOPvCjxcxpyeanIaiDEEcmj4hKhOyj1P9839cz8B/0rE9Ov9Lr9+j1irQP9r4XgsXyCHho6pMaR0mBlNG22jh59fAf/rEjtV7WzdbGqiui1X8X5akS15PTW7a+Obvexp8pT4vNzeBFH8F/rHhtR+EO2OR82UKbAd5kPdaPMfmwUh18QUCEnskptYrvQJaABd94Oeg/TQMkK72t+lNSCoqalxXgqeiy9Fg2KX7h9NRG4gXAMhAL2TXsLyyKgcDB8COu8ChN/WGmuRhqOUaLNR1d4g7S0FE9Lj987NKdK5BJKKFnp9ppsoHyGfJUHBVDOWlp62c+UeP+5mUBG63AfDVbWyoCBA3uhh8k1qqXX/f8TBP+WXl9LgKAHBQHQAA9IUQ8AoGABOB9ZvhyAHgDANAUM8kfjDSDgoMLn0GEYBkMG5/9aAvbh6miTi5M9KxDEAAseHOe4fo0MWDkhzlHYw3q7KIEHzC7amFe2ED+GuCgLAudvyxKBAQTtKCvgBHwEWomlDCbYm8H012SAFz6HHjwAK/9tr1JIAQaUUMoCt12tUf/EMPwBBILnxtoGDd34wU0dAA7eTMKkoA7yzabKrm/Iw7o/2Lf5suF5ADw8RzsGKOeEK9ocyvq1cawWIjDEIn138KlB6jZUdMOy/s7obcG3rE7W9T9cFeG8HCKqIc5/3yUUBK/H3JwU5pegGvbz6sx8e8QTQoDHvUPwV2KaPLgXdABiAUi3SuikPvnuYTdAlRV7eitRD4AC6L6ATxkqmeaGhyBQRqsYv9bbKKv2/T5yW9Apucm7ctZi6lWLQhSiAOdBYYC+yZgefvfGv3rUowIPUAs9qNvgZYHXI0JboR71qMcFXIIB2t/dgSdjcogyTW70S/fWhed+2ANPc0P+GAjrvVwvDOgDABgAQPK1xDGxd45byFWh08vRf0EjAOuw37PVBSkVcOKpD0GgoIIXp0ksUZlzelICFEuXvRlY61c+qW0yyjHyEQcKYBNCEAotToKCAkjExodKAAAIeZdf4xXmDkrwaE9pC+Dmo1kC0GuKJ9frvQrPPrPFXP8lgPqJMeD9vW4ElBGWejjyhu77Zq/5EFZD3F4bG3YrP/a3DPNatJZmz6YN8fM2pyXDBoHhgx23lTffrEpy5ga5JXXTdK4PtmuiMq5fe0vLuIUOVTpxIdoIHI5qFy/OVxQkDe5ger52ddeIIBRmdGTcBWMSiyqubVFsSzLGuOwhpeMuHsxJeMTNHQ4zcTHOAF9vlrg4498W5e9pgtg1rl/Qo7J0k8Qxsfc9t+B0jxvxX8h1i4ZTVguKsE+8K3qsEtp/04QEDOvsZfA/SAWU1KAWOlDyfdCs55YGUbcBkwOq5Eb/PEWFrKHDtnOh2wLCSnyPPRBsgQDDOorr4z9b5eOXH3M86qIX16EkpkBk5LnE2tan5ieFXvE2KfOU9+WO1mkzQ0c18arHciwMDM7wvT/mvdDyyHvbEwHds9MEQh3M1enGHlKmsWTvwuMeNnU4XTL58gCcXA9dUMMLnhccuc0DsDqwIS4vSS6xH0B/KFAPUIPKrjJiWde7n7hMA2f3uV6gOLe86JVV+fP3ccTqzHX+iCToXRxDiY06aeVA0fU2E7qXhtrWTVdPi5rcOzt1Wn3SC58N/bScf2RWwdKcIde3AIAWUqziwVR18aeFp1eHZM1Y9cqdGViIgTjzbEAAnLAOdrM+PBbYpJQDAAKL3ZAuTrvf+2X5rtqevZ1hcR9UO5pHDXZY3ACxA4iCLwAZxkOEDNxBwvOmgPavHfoJMFaPeu+bpKJRFcdBATe4wQzSxIoj1DB+xRcXWuEobGqX/V7+/cooOwdVq3MhbfLXfLOv1HlLgJ8AuOMUWimXL04ZJy00Bog0I++81/WFDjgQ9IR742MgUOLG9V7QJsXKAoAn3fShbfzDtmxL5PGbGzWD6XeRY4Slfc7t79l8pCekFqBeCiRCDQEoloKVi7u+Vv2vMGrwSu+Hg0hD95LtWfq4PDEoAHBg8dB/EsYta9L1z6GDDEoG4DExGHb64ODs4bf7uBWLb3c5+4+CToyOY6DHUAxPTpvd5szs5ZuS8xbNWewQ3hvW//STOgjmzypt6twKfhm/jF+2rtxm/C1IvM8MuCSsLBvzjy66nj6/LKzmfhc++sOtkK2zdD4kWgJfEFiwFRlJOUdThxGOUkrzYIEAIE4npRQglDZQT1yElEcBEIB4WOJtV/DbVluGf97dOXnU1DbbJfraET/tmPYG+FIAO3FQmDmCUQ9fOu3Wps1B+zOm3h3Nu9OxMvLJMPhzEEC0+BAf4gbq0TxOFpJ3iuSn1EnX51NeyJFYuLjmrfEYcl+Wru/288RP2CX4BAGkwad+gpORXvcpImJx/wp8g83YEMkkiCqCa+1WkWio+zAAiHB5NLEFwDUticDpUmHQxJljl6VcWXRv+IIZnqbSMS/xpwEgKBPYvAS2BBdFYs3SlZ6ZdeKwe/+wvIGSZwhCE50FGt16kzenAHqdd3pkJXtcm5bNe1TfSF9goeX5be6O0yv7TBOE3he9HDHkXc2kkF9nX33ukkR78dVxg0yyiPZ7l5uDE35dVsGVcvHz+lDF+I7Zs5w8QoHm17lefNZrSN/9reu7lax9Zexbiq/dhRJKReYxbAIkiMFic+A9Y8SXr3zb6hu/471tfm6uvGFTB3kzIU9mEX90keEbZK7kgQMAALWgvMDtcsfk3oXuETcE10NFI3HMO+S8O4191Q3hSBjnyfm93PQZUYY8UFHyHHmhxO5TLE33Vkls0Wfe70wFVDZ1obLa16S4pSjzcXTed6ENxZBZCpO31jfTvyL2mqQ28Yv3FL5FbY5T3mXoAfSaKDb62GLPLOjR7o7U7J3jk+mvD6gcOwXQADCB8jYOib4rdfoWBuT7mALOvDDXvzIwZ3FPyqt9Agwe2xjjj1bdiy3UNGoB4Gq1x5Dmne/pivnMn0zgJBilHb+6/FDCySR8g3G55PW2makoBQCEAEAD3fziuepR6jach+Ni+M35acmqLTTKvnvDils/P1co83Um3l6UdlTVm2w9sUiT1sks6FQx7daWVuLcDtaYlV5acDwA46A8KjaWBIs1C4u7z14XVxhqJ8G1yVn/zMiCAoALcM5NEUzd2bUwlGX9s5MvLKueW5Yd6WQgZJ1/V/T/oAnNqRYU7RGIV2GHxx+UH1gOQASgzaOaelBQtAcA0Kbd4gz0mNDMViMBnETBo/bGnv1BAbQFxWXom579EAB69jeOFCbGgloAlSjBjkf1BA9NaSroE5nDH67hdAA4ENDfBb8PI3c0AUHhBIEHADs4AL6/m7IeQtyBCtFQwglACcDQ1CaGAQCBo2k2BizssDfB+TBOaAyweDCDggEBBQ8EjbuwFABQDgIhJLA2zcuBAwEL8RNA8Jg5SP+00/8sTv+z3uI/+fXv6a/TMM/2iVgzEI7Die+g+V0zhRf6gMVUiPEKNBiBAuTBD0b88FRsPwcf58HhLGbiqz9p1wMQ40v8gGsAgK74JwZBg6C/zaEQkXgZtWgFFl/+fRD4IAJxV4cXaDM7Ix4m3nXWBoB4RduDvLOkQkmMKOtpLxpYsO6SrlTjm/PvNMPKiGmgSNgxvotAaXggyFTmCXSB3N9/GkYA4p3ocudd5f3lo4FmIBjglF3bUBpNOAKOB8I4KCjjWxo9iFcOgH9pumZuu+HZIVe2tpte870OQKP5/GbvzcnQBGPjoViO35Ie3gCqAOXFXY7jlW9kAcCjNIvk0Vxi7quO21eW9WMh4Cy8Ctcbv0xeNK/Mjf45N13Tf+mjGg/AM/2jspAhPXiPfbBaABRCUDjg+j0IbnDpBPP5IlCxyPCJ00P2tr6OMkyDu0aJiThp73nHcdyvvtq/QWjhuUMKb0xEHdxhxUgw+BAp4MDiBhx4A+/gG7wNkCTKII2AaiHHOqyEHj0xFdOQDpfQ6WVkgROYgyL0Qz2KQPHwSx/FQMGBJcXDE/Z0P+Ssylfkv3V37MaceavvoguAeAiRjBGYDmAbcjEIM3ABTszAR7BjBdbDHZuwxkzPegaK7DxQvIIssAjDcEyDFnwYmwyLwgTP5iAQEBu9xMEXH4jmLaPciDMp2mxmnY9WuNBxI6Kvf3hKQeqM6h3tAAFekoRF1bnYClkdnGZ2mMLMmNR8joLyOKXLSrUumYMP07IQoUc7e8r98ZY9GEQWMJqoMkWRkWj6qg+5QhtVFgSbpfVhNehj21QKq5xWQwlgD3bJchMkuYuXDlW/iwzMqVzfXp88a/0FXSEue0QGV4pirNML4AKEfk5uoOakrHdwB0OVRVKns59FMUSCeu+l5iHbzPwoYxcQHJbxw29wMMariI1iI+aR3f4/KsEc1E+8n0L/5JywGqslylvywil+U/GqIvxcny97vyuvCD+dsDQq5924pLEyZ//vwq5718q0yjsjF5UqCngRWzqm7PU9iA+w2r/91biNte4dDvRMGfS1T7GkVq6O2b4rjLr9mBS9ybtUqpHU+uQPWlkgXBMdqPXaTNnJIwLPeWvENYqqyO8/fA5NTm84hvpJCkMqPu4GhGMSKDNxWvKiU6GULOsefsCnSlrrV9F5w8/tgbiVsalz5yhSJcXPbw3O75HcEUcRg35DQvKGT+28MfL8Ah/KzBgedk5eI9F4q9rsm92WgjLDpgRel6glmoDsXlPtov+Yk6pBEVelZGMbqPCG8pQqyBSpcyOwM7dGKn6O3uQdkj3hwqoFpqM71L6ucBuPgwFOVh3EK6esKfRBN7lf4ve1WdoJZa9syJj27Sezq18K32E/5RNYtuDqvHlH+5sBcIvl51Y5fALXWEq8hhXP3OvSZ+xyAsACtDeMSrszbcPu1oeUNxtyv6s+uBs4wr4XuX8dFxr5lTnPNqJw1goenevtxet8OtKj1uOIINUw/sGosuMXHXfRdpRB4Xsnd7QunGUWdD6xnvGK3W66yQwpmPYv91mzlvZOX+tTqFxiZ01zctZNZf4jCAQ8gFPLE/5x9hu+xX8l4QgFXER2aff8JBVlXj75r2Ppk9d+D45woAADQgkllIBQh6Xnil0niPkfedu61cbf8NJ7KvdlvpXQkKKY0u7YLCaEdw8ATZUYQ4Kyj3wfVUUvdTcS8Y8ioR4AekJgm//BlyrVi9VvV/OZ+luFSceHH0DNiRd1bce++e0uHuc8Em4pHjtzC8+lE3pf+XDJ2LJMjL5kG/jP1vU5e/3qegVlbKtoTQgnot+NsYQ8P+P4YWLmLvTkq7ueSsx906NqxdRJhcDn6Z8ezpj/l3eRYN0z++1abQHsrkbHKaC+PyapAA23MyvsgnboYV9wfxxHGX6x+7nN5lmoqILRS9HZum/1VVf/Dtaw55PKh3G0aQAzU/Pxzcp+fX+MS+11o/v2D7SsxYaXUQ8BgImF9OM1Wy5G1sVq4029b39kHRK3SN2FcFmdEqI6kESX0N+qKOxIOYEj+tu198ciHr3+lT30184ZOd2eswWGfUlsAKjF09iNf7/jma1mir7at5bmuJcodG29Kr98OZ6h9Ee+kFfT4a9TtIRX9q7xDt5/VMFyUl1nnMCn+JyL0DiFVW7kkd48vKwj4Cy19l8hAgghFBDuHPXjCOLL6I2V7pVMQFNEQF4xeq5am1XcvXxa6bz8+nsH5q2qbXz/RdbGTYmbc16ouqcypBh5n8bs/DB/6JoO9YT1rBhJOYBlGSIpEhCh0Ky13RehDBMQeSm/omqIc1/4AGGV4kSj765mTW68WqchA5OwibStepHr7OUUmEJVE0EASgn1Kv0beWqdnnCnm+mGk1X73oIv+uIzXmSYwN7WVkMIRGwZziFO4GR5tDEF4YALHk1ZtDmhP7wuVfeeKcn8XJv0WnXnprnom8Iizfp1t9YURNyJz1ucOltwquy8AS4Q2r1d7s5271z+zEgaqNa1JDtpf9lQGuZttqmGj/SstpBoN3nEMcd83UvxVvMlE0UohuL9oiMna0ZM7mboKf9lV+VOFgCUnKetQVElkpnz0ZlO7BfXpdPtYqvo1NxlKuKiATxeW40789cgOF3AoGZlO/RTj8ZLMRQL+9X3kt17o9KbWr3sbZfgirxhuklJHn7mR2knwhUFWnyi0r89c7bmrETXz8nwOIYClMuOu/zzmgWzuR+yzx6KPev0dPplAwCS4HOb1hRPXdHL01MJb6JqYx8IymR7nbcqqnp/aSytXFC3Y0Tq5vNipxONGxJOoqcr8Cj1zFvCKBPOPWQta/C54Yqqe2mtZyKb2fHaO1VzW9XJblt6yuM31GRVtvLasfzoQl7jua75ZSYHgBJKKDi4QB/K1HiaJhQ8amn/1kafY37uhyYz/I5fD9H1uJqd/NGKwOj2HRxDPTiOPBxPwYMDlFC2TeXN6oyhrVe4TK/1bUgAVz3aZKWUY8ZVVJmuzGkro5mJ7dQTZTnKdAeMkAGgZaP2Xnpzy77Dp3xuRnu7v/CgU2za6pw0w3dZ6atj40w32yTWjPE9ujBj64uUcOBDDwn6Qn4jN+fuUPmlgAtLG1WNqLkh+/cOurIivp2tkIzQJ8VvXJx+9os7e9ZsWHfQUrd0pCk2fiUvRB1kLCS6ZomCIDAkRGM3R8AbAQyvTkyu8KscAWjn0KtkjhCHqTz2aEacbg3l83O6LPzhJwHmHv24vXqSs7u+InGbbgDrIPyQOhEvjnhgKT7j5dW4V6zPz34/f0n9Cp7d89dBq64s1SdbU4IqJfq5Vblv/bxIN905s8ImSR+x/rMHjcdsG2Bct/FNVfZrlTNNM62Q1Ydumru7n2aATrRk99u1E1zTHQ3BB8d9KLV0MYg1YUxjCug98IxpqRlRYafWGisB4q+VaFjuoyJuyanFldM5Pk8d/ul7O8A7e2HiorT56iWE5Rd2Wr7j6P8DXG9sSaafcMYAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTctMDctMjZUMTY6MTc6MzErMDI6MDBOei0pAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE3LTA3LTI2VDE2OjE3OjMxKzAyOjAwPyeVlQAAACh0RVh0Q29tbWVudABSZXNpemVkIHdpdGggZXpnaWYuY29tIEdJRiBtYWtlco8UFNsAAAASdEVYdFNvZnR3YXJlAGV6Z2lmLmNvbaDDs1gAAAAASUVORK5CYII=" alt="" />
         </td>
         <td>
-          <p class="letter-content" style="float:right;font-size: 12px">
+          <p class="address" style="float:right">
             County Court Business Centre Online Court<br/>
             St. Katharine's House<br/>
             21-27 St. Katharine's Street<br/>
@@ -52,7 +58,7 @@
   </section>
 
   <section class="letter-content">
-    <p>
+    <p class="address" style="margin-top: 45px">
       {{ defendantFullName }} <br/>
       {{ defendantAddress.line1 }} <br/>
       {% if defendantAddress.line2 is not empty %}
@@ -68,41 +74,47 @@
     <p style="margin-top: 4rem">
       Dear {{ defendantFullName }},
     </p>
-    <p>
-      We are contacting you because {{ claimantFullName }} has made a money claim against you for {{ claimTotalAmount }}.
-      The claim is attached to this letter.
+    <p class="no-spacing">
+      We are contacting you because {{ claimantFullName }} has made a money claim against you for {{ claimTotalAmount }},
+      including interest and claim fee. The claim is attached to this letter.
     </p>
-    <p>
-      <strong>View and respond to this claim</strong>
+    <p class="small-spacing">
+      <strong>Respond to this claim</strong>
     </p>
 
-    <p>The Civil Money Claims service is run by Her Majesty’s Courts &amp; Tribunal Service (HMCTS):</p>
+    <p class="no-spacing">The Civil Money Claims service is run by Her Majesty’s Courts &amp; Tribunal Service (HMCTS):</p>
 
-    <ol>
+    <ol style="margin-top: 6px">
       <li>Go to {{ frontendBaseURL }}/first-contact/start</li>
       <li>Enter this claim number: {{ claimReferenceNumber }}</li>
       <li>Enter this security code: {{ defendantPin }}</li>
     </ol>
-    <p>
-      If you don't respond on or before <strong>4pm, {{ responseDeadline }}</strong>, you could get a default County Court Judgment (CCJ).
-      This may make it harder to get credit, such as a credit card, mobile phone contract or mortgage.
+    <p class="no-spacing">
+      If you don't respond before <strong>4pm, {{ responseDeadline }}</strong> the claimant could request a
+      County Court Judgment (CCJ) against you. A CCJ may make it harder to get credit, for example credit cards,
+      mobile phone contracts or mortgages.
     </p>
 
-      <h4>Get help</h4>
-    <p>
-      If you don’t have a computer or can’t use one easily, phone HM Courts &amp; Tribunals Service on 0300 123 7050.
-      HM Courts &amp; Tribunals Service staff will help you respond to the claim.
+    <p class="small-spacing">
+      <strong>Get advice</strong>
+    </p>
+    <p class="no-spacing">
+      Citizens Advice can help you respond to this claim. They can also help if you have debt or other money worries.
+      Call Citizens Advice on 03444 111 444.
     </p>
   </section>
-  <section class="footer">
-    <p>
-      <strong>HM Courts &amp; Tribunals Service</strong>
+  <section>
+    <p class="small-spacing">
+      <strong>Help and support</strong>
     </p>
-    <p>
+    <p class="no-spacing">
       Telephone: 0300 123 7050<br/>
       Monday to Friday, 9am to 5pm<br/>
       Find out about call charges: https://www.gov.uk/call-charges<br/>
       Email: moneyclaims@hmcts.gsi.gov.uk
+    </p>
+    <p>
+      <strong>HM Courts &amp; Tribunals Service</strong>
     </p>
   </section>
 </body>
