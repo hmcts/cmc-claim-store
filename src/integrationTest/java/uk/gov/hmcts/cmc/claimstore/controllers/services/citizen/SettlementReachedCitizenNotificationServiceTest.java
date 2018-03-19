@@ -6,7 +6,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCounterSignedCitizenActionsHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -46,9 +45,6 @@ public class SettlementReachedCitizenNotificationServiceTest extends MockSpringT
 
     @Captor
     private ArgumentCaptor<Map<String, String>> emailDataArgument;
-
-    @Autowired
-    private NotificationsProperties notificationsProperties;
 
     private Claim claim;
     private AgreementCountersignedEvent event;
