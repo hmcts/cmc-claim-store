@@ -70,5 +70,7 @@ public class PersonContent {
         return mobileNumber;
     }
 
-    public String getDateOfBirth() { return dateOfBirth; }
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
 }

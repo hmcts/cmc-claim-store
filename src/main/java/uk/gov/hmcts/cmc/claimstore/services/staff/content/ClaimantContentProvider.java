@@ -27,7 +27,7 @@ public class ClaimantContentProvider {
     public ClaimantContent createContent(Party claimant, String submitterEmail) {
         requireNonNull(claimant);
         requireNonBlank(submitterEmail);
-        LocalDate dateOfBirth = claimant instanceof Individual?((Individual)claimant).getDateOfBirth(): null;
+        LocalDate dateOfBirth = claimant instanceof Individual ? ((Individual)claimant).getDateOfBirth() : null;
         PersonContent personContent = personContentProvider.createContent(
             PartyUtils.getType(claimant),
             claimant.getName(),
