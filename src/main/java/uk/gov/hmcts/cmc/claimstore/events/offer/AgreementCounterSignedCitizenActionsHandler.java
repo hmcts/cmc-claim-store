@@ -51,7 +51,6 @@ public class AgreementCounterSignedCitizenActionsHandler {
             aggregateParams(claim, event.party),
             reference
         );
-
     }
 
     @EventListener
@@ -59,7 +58,6 @@ public class AgreementCounterSignedCitizenActionsHandler {
         Claim claim = event.getClaim();
         String targetEmail = null;
         String reference = null;
-
 
         if (event.party.equals(MadeBy.CLAIMANT)) {
             targetEmail = claim.getSubmitterEmail();
@@ -75,7 +73,6 @@ public class AgreementCounterSignedCitizenActionsHandler {
             aggregateParams(claim, event.party),
             reference
         );
-
     }
 
     private Map<String, String> aggregateParams(Claim claim, MadeBy madeBy) {
