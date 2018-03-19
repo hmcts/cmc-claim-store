@@ -45,7 +45,7 @@ public class SubmitClaimTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(claimData).isEqualTo(createdCase.getClaimData());
-        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(2, ChronoUnit.MINUTES));
     }
 
     @Test

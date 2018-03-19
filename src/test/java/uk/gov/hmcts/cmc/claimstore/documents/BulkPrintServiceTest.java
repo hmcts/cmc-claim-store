@@ -6,6 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
@@ -28,10 +31,11 @@ public class BulkPrintServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     private BulkPrintService bulkPrintService;
+    private BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
 
     @Before
     public void beforeEachTest() {
-        bulkPrintService = new BulkPrintService(sendLetterApi, authTokenGenerator);
+        bulkPrintService = new BulkPrintService(sendLetterApi, authTokenGenerator, bulkPrintStaffNotificationService);
     }
 
     @Test
@@ -43,7 +47,11 @@ public class BulkPrintServiceTest {
         Document defendantLetterDocument = new Document("pinTemplate", pinContents);
         Map<String, Object> claimContents = new HashMap<>();
         Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
-        DocumentReadyToPrintEvent event = new DocumentReadyToPrintEvent(defendantLetterDocument, sealedClaimDocument);
+        Claim claim = SampleClaim.getDefault();
+
+        DocumentReadyToPrintEvent event
+            = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument);
+
         //when
         bulkPrintService.print(event);
         //then
