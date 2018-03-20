@@ -31,18 +31,20 @@ public abstract class BaseOfferTest extends BaseIntegrationTest {
         when(userService.getUserDetails(eq(CLAIMANT_AUTH_TOKEN))).thenReturn(
             SampleUserDetails.builder()
                 .withUserId(SUBMITTER_ID)
+                .withMail(SampleClaim.SUBMITTER_EMAIL)
                 .build()
         );
 
         when(userService.getUserDetails(eq(DEFENDANT_AUTH_TOKEN))).thenReturn(
             SampleUserDetails.builder()
                 .withUserId(DEFENDANT_ID)
+                .withMail(SampleClaim.DEFENDANT_EMAIL)
                 .build()
         );
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
         claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        claimStore.saveResponse(claim, SampleResponse.validDefaults(), DEFENDANT_ID,
+        claim = claimStore.saveResponse(claim, SampleResponse.validDefaults(), DEFENDANT_ID,
             SampleClaim.DEFENDANT_EMAIL);
 
         prepareDefendantOffer();

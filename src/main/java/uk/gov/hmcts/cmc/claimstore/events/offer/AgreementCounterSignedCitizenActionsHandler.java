@@ -36,8 +36,8 @@ public class AgreementCounterSignedCitizenActionsHandler {
     @EventListener
     public void sendNotificationToOtherParty(AgreementCountersignedEvent event) {
         Claim claim = event.getClaim();
-        String targetEmail = null;
-        String reference = null;
+        String targetEmail;
+        String reference;
 
         if (event.party == CLAIMANT) {
             targetEmail = claim.getDefendantEmail();
@@ -49,7 +49,7 @@ public class AgreementCounterSignedCitizenActionsHandler {
 
         notificationService.sendMail(
             targetEmail,
-            notificationsProperties.getTemplates().getEmail().getOfferCounterSignedEmailByOtherParty(),
+            notificationsProperties.getTemplates().getEmail().getOfferCounterSignedEmailToOtherParty(),
             aggregateParams(claim, event.party),
             reference
         );
@@ -58,8 +58,8 @@ public class AgreementCounterSignedCitizenActionsHandler {
     @EventListener
     public void sendNotificationToOfferOriginator(AgreementCountersignedEvent event) {
         Claim claim = event.getClaim();
-        String targetEmail = null;
-        String reference = null;
+        String targetEmail;
+        String reference;
 
         if (event.party == CLAIMANT) {
             targetEmail = claim.getSubmitterEmail();
@@ -71,7 +71,7 @@ public class AgreementCounterSignedCitizenActionsHandler {
 
         notificationService.sendMail(
             targetEmail,
-            notificationsProperties.getTemplates().getEmail().getOfferCounterSignedEmailByOriginator(),
+            notificationsProperties.getTemplates().getEmail().getOfferCounterSignedEmailToOriginator(),
             aggregateParams(claim, event.party),
             reference
         );

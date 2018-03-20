@@ -22,12 +22,12 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 
-public class SettlementReachedCitizenNotificationServiceTest extends BaseOfferTest {
+public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
 
     private static final String CLAIM_REFERENCE_NUMBER = CLAIM_REFERENCE_PATTERN.replace("^", "");
     private static final String FRONTEND_BASE_URL = "https://civil-money-claims.co.uk";
-    private static final String OFFER_COUNTER_SIGNED_EMAIL_BY_ORIGINATOR = "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1";
-    private static final String OFFER_COUNTERSIGNED_EMAIL_BY_OTHER_PARTY = "cfde3889-e202-4d70-bc64-f54048616be3";
+    private static final String OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR = "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1";
+    private static final String OFFER_COUNTERSIGNED_EMAIL_TO_OTHER_PARTY = "cfde3889-e202-4d70-bc64-f54048616be3";
     private static final String COUNTER_SIGNING_PARTY_KEY = "counterSigningParty";
     private static final String FRONTEND_BASE_URL_KEY = "frontendBaseUrl";
 
@@ -61,7 +61,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends BaseOfferTe
     }
 
     private void verifyConfirmationToDefendantOnDefendantCounterSign() {
-        assertThat(templateArgument.getValue()).isEqualTo(OFFER_COUNTER_SIGNED_EMAIL_BY_ORIGINATOR);
+        assertThat(templateArgument.getValue()).isEqualTo(OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR);
 
         assertThat(referenceArgument.getValue())
             .matches("to-defendant-agreement-counter-signed-by-defendant-notification-"
@@ -74,12 +74,11 @@ public class SettlementReachedCitizenNotificationServiceTest extends BaseOfferTe
 
         verifyEmailData(emailDataArgument.getValue(), emailData);
 
-        assertThat(senderArgument.getValue())
-            .isEqualTo(claim.getClaimData().getDefendant().getEmail().orElse(null));
+        assertThat(senderArgument.getValue()).isEqualTo(claim.getDefendantEmail());
     }
 
     private void verifyNotificationToClaimantOnDefendantCounterSign() {
-        assertThat(templateArgument.getAllValues().get(4)).isEqualTo(OFFER_COUNTERSIGNED_EMAIL_BY_OTHER_PARTY);
+        assertThat(templateArgument.getAllValues().get(4)).isEqualTo(OFFER_COUNTERSIGNED_EMAIL_TO_OTHER_PARTY);
 
         assertThat(referenceArgument.getAllValues().get(4))
             .matches("to-claimant-agreement-counter-signed-by-defendant-notification-"
@@ -113,7 +112,7 @@ public class SettlementReachedCitizenNotificationServiceTest extends BaseOfferTe
     }
 
     private void verifyConfirmationToClaimantOnClaimantCounterSign() {
-        assertThat(templateArgument.getValue()).isEqualTo(OFFER_COUNTER_SIGNED_EMAIL_BY_ORIGINATOR);
+        assertThat(templateArgument.getValue()).isEqualTo(OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR);
 
         assertThat(referenceArgument.getValue())
             .matches("to-claimant-agreement-counter-signed-by-claimant-notification-"
@@ -127,17 +126,8 @@ public class SettlementReachedCitizenNotificationServiceTest extends BaseOfferTe
         assertThat(senderArgument.getValue()).isEqualTo(claim.getSubmitterEmail());
     }
 
-    private void verifyEmailData(Map<String, String> output, Map<String, String> expected) {
-        output.entrySet().stream()
-            .filter(e -> !e.getKey().equals("claimReferenceNumber"))
-            .forEach(e -> assertThat(output.get(e.getKey())).isEqualTo(expected.get(e.getKey())));
-
-        assertThat(output.get("claimReferenceNumber")).matches(CLAIM_REFERENCE_PATTERN);
-
-    }
-
     private void verifyNotificationToDefendantOnClaimantCounterSign() {
-        assertThat(templateArgument.getAllValues().get(8)).isEqualTo(OFFER_COUNTERSIGNED_EMAIL_BY_OTHER_PARTY);
+        assertThat(templateArgument.getAllValues().get(8)).isEqualTo(OFFER_COUNTERSIGNED_EMAIL_TO_OTHER_PARTY);
 
         assertThat(referenceArgument.getAllValues().get(8))
             .matches("to-defendant-agreement-counter-signed-by-claimant-notification-"
@@ -150,8 +140,16 @@ public class SettlementReachedCitizenNotificationServiceTest extends BaseOfferTe
 
         verifyEmailData(emailDataArgument.getAllValues().get(8), emailData);
 
-        assertThat(senderArgument.getAllValues().get(8))
-            .isEqualTo(claim.getClaimData().getDefendant().getEmail().orElse(null));
+        assertThat(senderArgument.getAllValues().get(8)).isEqualTo(claim.getDefendantEmail());
+    }
+
+    private void verifyEmailData(Map<String, String> output, Map<String, String> expected) {
+        output.entrySet().stream()
+            .filter(e -> !e.getKey().equals("claimReferenceNumber"))
+            .forEach(e -> assertThat(output.get(e.getKey())).isEqualTo(expected.get(e.getKey())));
+
+        assertThat(output.get("claimReferenceNumber")).matches(CLAIM_REFERENCE_PATTERN);
+
     }
 
     private ResultActions claimantRequestFor(String endpoint) throws Exception {
