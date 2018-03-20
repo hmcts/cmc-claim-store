@@ -14,20 +14,20 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Map;
 
 @Service
-public class OfferMadeNotificationService {
-    private final Logger logger = LoggerFactory.getLogger(OfferMadeNotificationService.class);
+public class NotificationService {
+    private final Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
     private final NotificationClient notificationClient;
 
     @Autowired
-    public OfferMadeNotificationService(
+    public NotificationService(
         NotificationClient notificationClient
     ) {
         this.notificationClient = notificationClient;
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void sendNotificationEmail(
+    public void sendMail(
         String targetEmail,
         String emailTemplate,
         Map<String, String> parameters,
