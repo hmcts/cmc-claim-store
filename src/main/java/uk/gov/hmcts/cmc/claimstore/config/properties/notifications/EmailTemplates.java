@@ -55,10 +55,10 @@ public class EmailTemplates {
     private String offerRejectedByClaimantEmailToDefendant;
 
     @NotEmpty
-    private String offerCounterSignedByOriginator;
+    private String offerCounterSignedEmailByOriginator;
 
     @NotEmpty
-    private String offerCounterSignedByOtherParty;
+    private String offerCounterSignedEmailByOtherParty;
 
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
@@ -188,19 +188,19 @@ public class EmailTemplates {
         this.offerRejectedByClaimantEmailToDefendant = offerRejectedByClaimantEmailToDefendant;
     }
 
-    public String getOfferCounterSignedByOriginator() {
-        return offerCounterSignedByOriginator;
+    public String getOfferCounterSignedEmailByOriginator() {
+        return offerCounterSignedEmailByOriginator;
     }
 
-    public void setOfferCounterSignedByOriginator(String offerCounterSignedByOriginator) {
-        this.offerCounterSignedByOriginator = offerCounterSignedByOriginator;
+    public void setOfferCounterSignedEmailByOriginator(String offerCounterSignedEmailByOriginator) {
+        this.offerCounterSignedEmailByOriginator = offerCounterSignedEmailByOriginator;
     }
 
-    public String getOfferCounterSignedByOtherParty() {
-        return offerCounterSignedByOtherParty;
+    public String getOfferCounterSignedEmailByOtherParty() {
+        return offerCounterSignedEmailByOtherParty;
     }
 
-    public void setOfferCounterSignedByOtherParty(String offerCounterSignedByOtherParty) {
-        this.offerCounterSignedByOtherParty = offerCounterSignedByOtherParty;
+    public void setOfferCounterSignedEmailByOtherParty(String offerCounterSignedEmailByOtherParty) {
+        this.offerCounterSignedEmailByOtherParty = offerCounterSignedEmailByOtherParty;
     }
 }

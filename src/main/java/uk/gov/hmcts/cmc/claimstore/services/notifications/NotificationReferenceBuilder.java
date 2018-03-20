@@ -131,12 +131,12 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(String claimReferenceNumber) {
-            return reference(TEMPLATE, CLAIMANT, DEFENDANT, claimReferenceNumber);
+        public static String referenceForClaimant(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, CLAIMANT, otherParty.toLowerCase(), claimReferenceNumber);
         }
 
-        public static String referenceForDefendant(String claimReferenceNumber) {
-            return reference(TEMPLATE, DEFENDANT, CLAIMANT, claimReferenceNumber);
+        public static String referenceForDefendant(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
         }
     }
 }

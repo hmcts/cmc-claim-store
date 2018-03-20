@@ -81,8 +81,8 @@ notifications:
       offerAcceptedByClaimantEmailToDefendant: "aa5c927f-1a4c-47e3-94d9-6036b89d81b9"
       offerRejectedByClaimantEmailToClaimant: "13d8af14-ce13-4d87-940c-f86e0cb4d1f0"
       offerRejectedByClaimantEmailToDefendant: "46be31b4-6af8-46b2-9325-80ff63e78535"
-      offerCounterSignedByOriginator: "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1"
-      offerCounterSignedByOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
+      offerCounterSignedEmailByOriginator: "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1"
+      offerCounterSignedEmailByOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
 
 staff-notifications:
   sender:
