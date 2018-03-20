@@ -16,6 +16,7 @@ public class PartyDetailsContent {
     private final Address address;
     private final boolean addressAmended;
     private final Address correspondenceAddress;
+    private final String mobilePhone;
     private final String dateOfBirth;
     private final String email;
     private final String contactNumber;
@@ -33,6 +34,7 @@ public class PartyDetailsContent {
         Address address,
         Boolean addressAmended,
         Address correspondenceAddress,
+        String mobilePhone,
         String dateOfBirth,
         String email,
         String contactNumber,
@@ -47,6 +49,7 @@ public class PartyDetailsContent {
         this.address = address;
         this.addressAmended = addressAmended;
         this.correspondenceAddress = correspondenceAddress;
+        this.mobilePhone = mobilePhone;
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.contactNumber = contactNumber;
@@ -84,6 +87,10 @@ public class PartyDetailsContent {
 
     public Address getCorrespondenceAddress() {
         return correspondenceAddress;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone;
     }
 
     public String getDateOfBirth() {

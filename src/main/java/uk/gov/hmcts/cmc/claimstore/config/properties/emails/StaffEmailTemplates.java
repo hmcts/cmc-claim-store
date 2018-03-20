@@ -41,6 +41,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/settlementAgreement/subject.txt");
     }
 
+    public String getBulkPrintEmailBody() {
+        return readString("/staff/templates/email/bulkPrintFailure/body.txt");
+    }
+
+    public String getBulkPrintEmailSubject() {
+        return readString("/staff/templates/email/bulkPrintFailure/subject.txt");
+    }
+
     private String readString(String resourcePath) {
         return new String(
             readBytes(resourcePath),
