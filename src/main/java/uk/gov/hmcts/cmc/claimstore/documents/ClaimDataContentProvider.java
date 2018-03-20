@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,8 +69,10 @@ public class ClaimDataContentProvider {
         List<EvidenceContent> evidences = null;
         Optional<Evidence> evidence = claim.getClaimData().getEvidence();
         if (evidence.isPresent()) {
-            evidences = evidence.get().getRows()
+            evidences = Optional.ofNullable(evidence.get().getRows())
+                .orElseGet(Collections::emptyList)
                 .stream()
+                .filter(Objects::nonNull)
                 .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
                 .collect(Collectors.toList());
         }
