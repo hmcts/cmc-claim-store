@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.events.ccj;
+package uk.gov.hmcts.cmc.claimstore.events.offer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,10 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeCitizenActionsHandler;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.services.OfferResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.OfferMadeNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -34,7 +32,7 @@ public class OfferMadeCitizenActionsHandlerTest {
     private OfferMadeCitizenActionsHandler handler;
 
     @Mock
-    private OfferMadeNotificationService offerMadeNotificationService;
+    private NotificationService notificationService;
 
     @Mock
     private OfferResponseDeadlineCalculator offerResponseDeadlineCalculator;
@@ -57,7 +55,7 @@ public class OfferMadeCitizenActionsHandlerTest {
         when(emailTemplates.getClaimantOfferMade()).thenReturn(CLAIMANT_TEMPLATE_ID);
 
         handler = new OfferMadeCitizenActionsHandler(
-            offerMadeNotificationService,
+            notificationService,
             offerResponseDeadlineCalculator,
             notificationsProperties
         );
@@ -68,7 +66,7 @@ public class OfferMadeCitizenActionsHandlerTest {
 
         handler.sendClaimantNotification(event);
 
-        verify(offerMadeNotificationService).sendNotificationEmail(
+        verify(notificationService).sendMail(
             eq(event.getClaim().getSubmitterEmail()),
             eq(CLAIMANT_TEMPLATE_ID),
             anyMap(),
@@ -81,7 +79,7 @@ public class OfferMadeCitizenActionsHandlerTest {
 
         handler.sendDefendantNotification(event);
 
-        verify(offerMadeNotificationService).sendNotificationEmail(
+        verify(notificationService).sendMail(
             eq(event.getClaim().getDefendantEmail()),
             eq(DEFENDANT_TEMPLATE_ID),
             anyMap(),
