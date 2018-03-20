@@ -19,7 +19,7 @@ public class PersonContentProvider {
         String businessName,
         String mobileNumber,
         String dateOfBirth
-        ) {
+    ) {
         requireNonNull(name);
         requireNonNull(address);
 

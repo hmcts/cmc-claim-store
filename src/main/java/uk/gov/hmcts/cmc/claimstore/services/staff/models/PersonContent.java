@@ -26,7 +26,7 @@ public class PersonContent {
         String mobileNumber,
         String dateOfBirth
 
-        ) {
+    ) {
         this.partyType = partyType;
         this.fullName = fullName;
         this.address = address;
