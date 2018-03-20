@@ -101,6 +101,13 @@ public class InterestProviderTest {
     }
 
     @Test
+    public void shouldProvideInterestRateReason() {
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+
+        assertThat(content.getStartDateReason()).isEqualTo("Contract");
+    }
+
+    @Test
     public void shouldProvideAmountUpToNow() {
         InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, issuedOn);
 

@@ -37,6 +37,7 @@ public class InterestContentProvider {
 
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         String fromDate;
+        String interestDateReason = null;
         BigDecimal amountUpToNowRealValue = null;
         String amountUpToNow = null;
         if (customInterestDate) {
@@ -45,6 +46,7 @@ public class InterestContentProvider {
                 claimAmount, interest.getRate(), interestDate.getDate()
             );
             amountUpToNow = formatMoney(amountUpToNowRealValue);
+            interestDateReason = interestDate.getReason();
         } else {
             fromDate = formatDate(issuedOn);
         }
@@ -58,7 +60,9 @@ public class InterestContentProvider {
             fromDate,
             amountUpToNow,
             amountUpToNowRealValue,
-            formatMoney(dailyAmount)
+            formatMoney(dailyAmount),
+            interestDateReason,
+            interestDate.getEndDate().equals(InterestDate.InterestEndDateType.SUBMISSION)
         );
     }
 

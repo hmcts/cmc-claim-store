@@ -12,6 +12,8 @@ public class InterestContent {
     private String amount;
     private BigDecimal amountRealValue;
     private String dailyAmount;
+    private String startDateReason;
+    private Boolean submissionEndDate;
 
     @SuppressWarnings("squid:S00107")
     public InterestContent(
@@ -22,7 +24,9 @@ public class InterestContent {
         String fromDate,
         String amount,
         BigDecimal amountRealValue,
-        String dailyAmount) {
+        String dailyAmount,
+        String startDateReason,
+        Boolean submissionEndDate) {
         this.rate = rate;
         this.customRate = customRate;
         this.customRateReason = customRateReason;
@@ -31,6 +35,8 @@ public class InterestContent {
         this.amount = amount;
         this.amountRealValue = amountRealValue;
         this.dailyAmount = dailyAmount;
+        this.startDateReason = startDateReason;
+        this.submissionEndDate = submissionEndDate;
     }
 
     public InterestContent(
@@ -74,6 +80,14 @@ public class InterestContent {
 
     public String getDailyAmount() {
         return dailyAmount;
+    }
+
+    public String getStartDateReason() {
+        return startDateReason;
+    }
+
+    public Boolean getSubmissionEndDate() {
+        return submissionEndDate;
     }
 
 }

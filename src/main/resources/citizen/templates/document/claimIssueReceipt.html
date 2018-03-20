@@ -257,42 +257,45 @@
       </tr>
       {% if claim.interest is defined %}
       <tr>
-        <td>Interest rate:</td>
+        <td><strong>Interest rate claimed:</strong></td>
         <td>
-          {{ claim.interest.rate }} a year
+          {{ claim.interest.rate }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Explanation:</strong></td>
+        <td>
+          {% if claim.interest.customRateReason is defined %}
+            {{ claim.interest.customRateReason }}
+          {% else %}
+            The claimant reserves the right to claim interest under Section 69 of the County Courts Act 1984
+          {% endif %}
         </td>
       </tr>
       <tr>
-        <td>Explanation:</td>
+        <td><strong>Date interest is claimed from:</strong></td>
         <td>
-          The claimant reserves the right to claim interest under Section 69 of the County Courts Act 1984
+          {{ claim.fromDate }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Explanation:</strong></td>
+        <td>
+          {% if claim.interest.startDateReason is defined %}
+            {{ claim.interest.startDateReason }}
+          {% else %}
+            From the date the claim was issued
+          {% endif %}
         </td>
       </tr>
       <tr>
-        <td>Accrued interest:</td>
+        <td><strong>Interest end date:</strong></td>
         <td>
-          Interest will accrue at the daily rate of {{ claim.interest.dailyAmount }} up to the date of judgment
-        </td>
-      </tr>
-      <tr>
-        <td>Date interest is claimed from:</td>
-        <td>
-          {{ claim.interest.fromDate }}
-        </td>
-      </tr>
-      {% if claim.interest.customFromDate %}
-      <tr>
-        <td>Total interest claimed to the date of submission:</td>
-        <td>
-          {{ claim.interest.amount }}
-        </td>
-      </tr>
-      {% endif %}
-      {% else %}
-      <tr>
-        <td>Interest rate:</td>
-        <td>
-          I don’t want to claim interest
+          {% if claim.interest.submissionEndDate is defined %}
+            {{ claim.issuedOn }}
+          {% else %}
+            Interest will accrue at the daily rate of {{ claim.interest.dailyAmount }} up to the date of judgment
+          {% endif %}
         </td>
       </tr>
       {% endif %}
