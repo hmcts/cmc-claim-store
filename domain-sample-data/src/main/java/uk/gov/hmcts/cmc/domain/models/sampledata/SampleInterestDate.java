@@ -43,6 +43,11 @@ public class SampleInterestDate {
         return this;
     }
 
+    public SampleInterestDate withEndDate(InterestDate.InterestEndDateType endDate) {
+        this.endDate = endDate;
+        return this;
+    }
+
     public InterestDate build() {
         return new InterestDate(type, date, reason, endDate);
     }

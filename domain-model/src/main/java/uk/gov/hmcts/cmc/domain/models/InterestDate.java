@@ -59,7 +59,9 @@ public class InterestDate {
         return reason;
     }
 
-    public InterestEndDateType getEndDate() { return endDate; }
+    public InterestEndDateType getEndDate() {
+        return endDate;
+    }
 
     @JsonIgnore
     public boolean isValid() {
