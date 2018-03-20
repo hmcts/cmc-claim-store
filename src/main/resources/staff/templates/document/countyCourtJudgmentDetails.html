@@ -253,14 +253,14 @@
         </tr>
       {% else %}
         <tr>
-          <td>How do you want the defendant to pay:</td>
+          <td>How you want the defendant to pay:</td>
           <td>
             {{ ccj.repaymentPlan.repaymentOption }}
           </td>
         </tr>
         {% if ccj.repaymentPlan.repaymentOption == "By a set date" %}
           <tr class="no-border">
-            <td>When do you want the defendant to pay:</td>
+            <td>When you want the defendant to pay:</td>
             <td>
               {{ ccj.repaymentPlan.paySetByDate }}
             </td>
