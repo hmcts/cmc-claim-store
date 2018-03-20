@@ -1,6 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.models;
 
 import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+
+import java.util.List;
 
 public class PartyDetailsContent {
 
@@ -14,6 +18,9 @@ public class PartyDetailsContent {
     private final Address correspondenceAddress;
     private final String dateOfBirth;
     private final String email;
+    private final String contactNumber;
+    private final List<TimelineEvent> events;
+    private final List<EvidenceContent> evidences;
 
     @SuppressWarnings("squid:S00107")
     // Content providers are formatted values and aren't worth splitting into multiple models.
@@ -27,7 +34,10 @@ public class PartyDetailsContent {
         Boolean addressAmended,
         Address correspondenceAddress,
         String dateOfBirth,
-        String email
+        String email,
+        String contactNumber,
+        List<TimelineEvent> events,
+        List<EvidenceContent> evidences
     ) {
         this.type = type;
         this.fullName = fullName;
@@ -39,6 +49,9 @@ public class PartyDetailsContent {
         this.correspondenceAddress = correspondenceAddress;
         this.dateOfBirth = dateOfBirth;
         this.email = email;
+        this.contactNumber = contactNumber;
+        this.events = events;
+        this.evidences = evidences;
     }
 
     public String getType() {
@@ -80,4 +93,6 @@ public class PartyDetailsContent {
     public String getEmail() {
         return email;
     }
+
+    public String getContactNumber() { return contactNumber; }
 }

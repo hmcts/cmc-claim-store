@@ -41,7 +41,7 @@ public class DefendantResponseCopyServiceTest {
     public void shouldUseCorrectTemplateToCreateTheDocument() {
         service.createPdf(claim);
 
-        verify(documentTemplates).getDefendantResponseCopy();
+        verify(documentTemplates).getDefendantResponseReceipt();
     }
 
 }

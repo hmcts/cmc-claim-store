@@ -30,7 +30,7 @@ public class DefendantResponseCopyService {
     public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
         return pdfServiceClient.generateFromHtml(
-            documentTemplates.getDefendantResponseCopy(),
+            documentTemplates.getDefendantResponseReceipt(),
             contentProvider.createContent(claim));
     }
 }

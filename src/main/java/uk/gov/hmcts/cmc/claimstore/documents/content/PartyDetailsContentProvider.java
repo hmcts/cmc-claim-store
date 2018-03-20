@@ -1,12 +1,18 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
+import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -35,7 +41,10 @@ public class PartyDetailsContentProvider {
             false,
             party.getCorrespondenceAddress().orElse(null),
             defendantDateOfBirth(party).orElse(null),
-            partyEmail
+            partyEmail,
+            null,
+            null,
+            null
         );
     }
 
@@ -50,12 +59,16 @@ public class PartyDetailsContentProvider {
      *                      defendant email)
      * @return party details content
      */
-    public PartyDetailsContent createContent(TheirDetails oppositeParty, Party ownParty, String ownPartyEmail) {
+    public PartyDetailsContent createContent(TheirDetails oppositeParty, Party ownParty, String ownPartyEmail, List<TimelineEvent> events, List<EvidenceContent> evidences) {
         requireNonNull(oppositeParty);
         requireNonNull(ownParty);
 
         boolean nameAmended = !oppositeParty.getName().equals(ownParty.getName());
         boolean addressAmended = !oppositeParty.getAddress().equals(ownParty.getAddress());
+        String contactNumber = ownParty.getMobilePhone().orElse(null);
+        if (contactNumber == null) {
+            contactNumber = ownParty.getRepresentative().get().getOrganisationContactDetails().get().getPhone().orElse(null);
+        }
 
         return new PartyDetailsContent(
             PartyUtils.getType(ownParty),
@@ -67,7 +80,10 @@ public class PartyDetailsContentProvider {
             addressAmended,
             ownParty.getCorrespondenceAddress().orElse(null),
             defendantDateOfBirth(ownParty).orElse(null),
-            ownPartyEmail
+            ownPartyEmail,
+            contactNumber,
+            events,
+            evidences
         );
     }
 

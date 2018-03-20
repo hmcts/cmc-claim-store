@@ -13,8 +13,18 @@ import javax.validation.constraints.Size;
 public class FullDefenceResponse extends Response {
 
     public enum DefenceType {
-        DISPUTE,
-        ALREADY_PAID
+        DISPUTE("I dispute all the claim"),
+        ALREADY_PAID("Already paid");
+
+        private DefenceType(String description) {
+            this.description = description;
+        }
+
+        private String description;
+
+        public String getDescription(){
+            return this.description;
+        }
     }
 
     @NotNull

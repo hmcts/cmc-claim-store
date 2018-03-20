@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 @Service
 public class DefendantResponseStaffNotificationService {
 
-    public static final String FILE_NAME_FORMAT = "%s-defendant-response-copy.pdf";
+    public static final String FILE_NAME_FORMAT = "%s-claim-response.pdf";
 
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
