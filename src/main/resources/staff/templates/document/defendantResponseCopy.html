@@ -246,7 +246,7 @@
         </td>
       </tr>
 
-      {% if claim.events is defined %}
+      {% if events is defined %}
       <tr class="no-border">
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
       </tr>
@@ -271,11 +271,11 @@
       </tr>
       {% endif %}
 
-      {% if claim.evidences is defined %}
+      {% if evidences is defined %}
       <tr class="no-border">
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
       </tr>
-      {% for row in claim.evidences %}
+      {% for row in evidences %}
       <tr class="no-border">
         <td>
           {{ row.type | trim }}
