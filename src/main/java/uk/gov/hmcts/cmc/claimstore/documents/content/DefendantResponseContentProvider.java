@@ -13,9 +13,11 @@ import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,8 +86,10 @@ public class DefendantResponseContentProvider {
 
             if (fullDefence.getEvidence().isPresent()) {
                 DefendantEvidence defendantEvidence = fullDefence.getEvidence().get();
-                List<EvidenceContent> evidences = defendantEvidence.getRows()
+                List<EvidenceContent> evidences = Optional.ofNullable(defendantEvidence.getRows())
+                    .orElseGet(Collections::emptyList)
                     .stream()
+                    .filter(Objects::nonNull)
                     .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
                     .collect(Collectors.toList());
                 content.put("evidences", evidences);
