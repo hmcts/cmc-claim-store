@@ -28,6 +28,10 @@ public class Company extends Party {
         return Optional.ofNullable(contactPerson);
     }
 
+    public Optional<String> getBusinessName() {
+        return Optional.ofNullable(getName());
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

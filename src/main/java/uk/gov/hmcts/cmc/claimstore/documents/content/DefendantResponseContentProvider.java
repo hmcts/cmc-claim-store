@@ -26,6 +26,7 @@ public class DefendantResponseContentProvider {
     private final PartyDetailsContentProvider partyDetailsContentProvider;
     private final ClaimDataContentProvider claimDataContentProvider;
     private final NotificationsProperties notificationsProperties;
+    private static final Logger logger = LoggerFactory.getLogger(DefendantResponseContentProvider.class);
 
     public DefendantResponseContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider,
@@ -72,6 +73,9 @@ public class DefendantResponseContentProvider {
 
             content.put("responseDefence", fullDefence.getDefence());
             content.put("responseTypeSelected", fullDefence.getDefenceType().getDescription());
+            if(fullDefence.getDefenceType().equals(FullDefenceResponse.DefenceType.ALREADY_PAID)){
+                content.put("hasDefendantAlreadyPaid", "yes");
+            }
 
             fullDefence.getPaymentDeclaration().ifPresent(paymentDeclaration ->
                 content.put("paymentDeclaration", createContentFor(paymentDeclaration))

@@ -44,7 +44,6 @@ public class PartyDetailsContentProvider {
             defendantDateOfBirth(party).orElse(null),
             partyEmail,
             null,
-            null,
             null
         );
     }
@@ -67,9 +66,6 @@ public class PartyDetailsContentProvider {
         boolean nameAmended = !oppositeParty.getName().equals(ownParty.getName());
         boolean addressAmended = !oppositeParty.getAddress().equals(ownParty.getAddress());
         String contactNumber = ownParty.getMobilePhone().orElse(null);
-        if (contactNumber == null) {
-            contactNumber = ownParty.getRepresentative().get().getOrganisationContactDetails().get().getPhone().orElse(null);
-        }
 
         return new PartyDetailsContent(
             PartyUtils.getType(ownParty),
@@ -83,7 +79,6 @@ public class PartyDetailsContentProvider {
             ownParty.getMobilePhone().orElse(null),
             defendantDateOfBirth(ownParty).orElse(null),
             ownPartyEmail,
-            contactNumber,
             events,
             evidences
         );

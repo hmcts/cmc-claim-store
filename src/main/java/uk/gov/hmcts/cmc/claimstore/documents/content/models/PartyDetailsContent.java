@@ -19,7 +19,6 @@ public class PartyDetailsContent {
     private final String mobilePhone;
     private final String dateOfBirth;
     private final String email;
-    private final String contactNumber;
     private final List<TimelineEvent> events;
     private final List<EvidenceContent> evidences;
 
@@ -37,7 +36,6 @@ public class PartyDetailsContent {
         String mobilePhone,
         String dateOfBirth,
         String email,
-        String contactNumber,
         List<TimelineEvent> events,
         List<EvidenceContent> evidences
     ) {
@@ -52,7 +50,6 @@ public class PartyDetailsContent {
         this.mobilePhone = mobilePhone;
         this.dateOfBirth = dateOfBirth;
         this.email = email;
-        this.contactNumber = contactNumber;
         this.events = events;
         this.evidences = evidences;
     }
@@ -101,5 +98,4 @@ public class PartyDetailsContent {
         return email;
     }
 
-    public String getContactNumber() { return contactNumber; }
 }

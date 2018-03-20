@@ -14,7 +14,7 @@ public class FullDefenceResponse extends Response {
 
     public enum DefenceType {
         DISPUTE("I dispute all the claim"),
-        ALREADY_PAID("Already paid");
+        ALREADY_PAID("I have paid what I believe I owe");
 
         private DefenceType(String description) {
             this.description = description;

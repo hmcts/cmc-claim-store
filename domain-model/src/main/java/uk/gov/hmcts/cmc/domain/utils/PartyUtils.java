@@ -74,6 +74,10 @@ public class PartyUtils {
     public static Optional<String> getBusinessName(Party party) {
         if (party instanceof SoleTrader) {
             return ((SoleTrader) party).getBusinessName();
+        }else if(party instanceof Company){
+            return ((Company) party).getBusinessName();
+        } else if(party instanceof Organisation){
+            return ((Organisation) party).getBusinessName();
         }
         return Optional.empty();
     }

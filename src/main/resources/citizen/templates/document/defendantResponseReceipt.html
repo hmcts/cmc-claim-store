@@ -156,12 +156,22 @@
   </div>
   <div class="section-body">
     <table>
+      {% if defendant.businessName is not defined%}
       <tr>
         <td>Name:</td>
         <td>
           {{ defendant.fullName }}
         </td>
       </tr>
+      {% endif %}
+      {% if defendant.businessName is defined%}
+      <tr>
+        <td>Company:</td>
+        <td>
+          {{ defendant.businessName }}
+        </td>
+      </tr>
+      {% endif %}
       {% if defendant.contactPerson is defined %}
       <tr>
         <td>Contact person:</td>
@@ -224,11 +234,11 @@
         </td>
       </tr>
       {% endif %}
-      {% if defendant.contactNumber is not empty %}
+      {% if defendant.mobilePhone is not empty %}
       <tr>
         <td>Telephone:</td>
         <td>
-          {{ defendant.contactNumber }}
+          {{ defendant.mobilePhone }}
         </td>
       </tr>
       {% endif %}
@@ -323,7 +333,7 @@
       <tr>
         <td/>
         <td class="no-border">
-          Ix believe that the facts stated in this defence form are true.
+          I believe that the facts stated in this defence are true.
         </td>
       </tr>
       {% if signerName is empty %}
@@ -355,6 +365,7 @@
   </div>
 </div>
 
+{% if hasDefendantAlreadyPaid is not defined %}
 <div class="section">
   <h3>What happens next</h3>
 </div>
@@ -378,6 +389,6 @@
     </tr>
   </table>
 </div>
-
+{% endif %}
 </body>
 </html>
