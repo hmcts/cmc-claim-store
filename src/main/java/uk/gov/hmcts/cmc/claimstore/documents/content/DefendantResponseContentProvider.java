@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
@@ -69,6 +70,10 @@ public class DefendantResponseContentProvider {
             claim.getSubmitterEmail()
         ));
 
+        List<TimelineEvent> events = null;
+        List<EvidenceContent> evidences = null;
+        String timelineComment = null;
+        String evidenceComment = null;
         if (defendantResponse instanceof FullDefenceResponse) {
             FullDefenceResponse fullDefence = (FullDefenceResponse) defendantResponse;
 
@@ -80,22 +85,25 @@ public class DefendantResponseContentProvider {
 
             if (fullDefence.getTimeline().isPresent()) {
                 DefendantTimeline defendantTimeline = fullDefence.getTimeline().get();
-                content.put("events", defendantTimeline.getEvents());
-                content.put("timelineComment", defendantTimeline.getComment().orElse(null));
+                events = defendantTimeline.getEvents();
+                timelineComment = defendantTimeline.getComment().orElse(null);
             }
 
             if (fullDefence.getEvidence().isPresent()) {
                 DefendantEvidence defendantEvidence = fullDefence.getEvidence().get();
-                List<EvidenceContent> evidences = Optional.ofNullable(defendantEvidence.getRows())
+                evidences = Optional.ofNullable(defendantEvidence.getRows())
                     .orElseGet(Collections::emptyList)
                     .stream()
                     .filter(Objects::nonNull)
                     .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
                     .collect(Collectors.toList());
-                content.put("evidences", evidences);
-                content.put("evidenceComment", defendantEvidence.getComment().orElse(null));
+                evidenceComment = defendantEvidence.getComment().orElse(null);
             }
         }
+        content.put("events", events);
+        content.put("timelineComment", timelineComment);
+        content.put("evidences", evidences);
+        content.put("evidenceComment", evidenceComment);
 
         return content;
     }
