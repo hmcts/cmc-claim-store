@@ -281,6 +281,7 @@
           {{ responseDefence }}
         </td>
       </tr>
+
       {% if claim.events is defined %}
       <tr class="no-border">
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
@@ -302,6 +303,31 @@
         <td><strong>Comments about claimant’s timeline:</strong></td>
         <td>
           {{ timelineComment }}
+        </td>
+      </tr>
+      {% endif %}
+
+      {% if claim.evidences is defined %}
+      <tr class="no-border">
+        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
+      </tr>
+      {% for row in claim.evidences %}
+      <tr class="no-border">
+        <td>
+          {{ row.type | trim }}
+        </td>
+        <td>
+          {{ row.description | trim }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+
+      {% if evidenceComment is not empty %}
+      <tr class="no-border">
+        <td><strong>Comments about claimant’s evidence:</strong></td>
+        <td>
+          {{ evidenceComment }}
         </td>
       </tr>
       {% endif %}

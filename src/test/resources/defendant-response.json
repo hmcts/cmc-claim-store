@@ -38,5 +38,14 @@
       }
     ],
     "comment": "More information"
+  },
+  "evidence": {
+    "rows": [
+      {
+        "type": "CORRESPONDENCE",
+        "description": "description"
+      }
+    ],
+    "comment": "More information"
   }
 }

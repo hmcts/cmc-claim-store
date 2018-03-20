@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
@@ -195,5 +196,9 @@ public class Assertions {
 
     public static DefendantTimelineAssert assertThat(DefendantTimeline timeline) {
         return new DefendantTimelineAssert(timeline);
+    }
+
+    public static DefendantEvidenceAssert assertThat(DefendantEvidence evidence) {
+        return new DefendantEvidenceAssert(evidence);
     }
 }

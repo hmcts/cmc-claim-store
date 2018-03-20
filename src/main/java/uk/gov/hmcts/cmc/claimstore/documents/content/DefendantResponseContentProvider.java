@@ -4,16 +4,20 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -76,6 +80,16 @@ public class DefendantResponseContentProvider {
                 DefendantTimeline defendantTimeline = fullDefence.getTimeline().get();
                 content.put("events", defendantTimeline.getEvents());
                 content.put("timelineComment", defendantTimeline.getComment().orElse(null));
+            }
+
+            if (fullDefence.getEvidence().isPresent()) {
+                DefendantEvidence defendantEvidence = fullDefence.getEvidence().get();
+                List<EvidenceContent> evidences = defendantEvidence.getRows()
+                    .stream()
+                    .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
+                    .collect(Collectors.toList());
+                content.put("evidences", evidences);
+                content.put("evidenceComment", defendantEvidence.getComment().orElse(null));
             }
         }
 
