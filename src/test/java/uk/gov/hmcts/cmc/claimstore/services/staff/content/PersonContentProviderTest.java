@@ -38,7 +38,7 @@ public class PersonContentProviderTest {
             .build();
         emailAddress = "blah@blah.com";
         mobileNumber = "07786556746";
-        dateOfBirth = "I January 1987";
+        dateOfBirth = "1 January 1987";
     }
 
     @Test(expected = NullPointerException.class)
