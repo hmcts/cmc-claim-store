@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.ccj;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@JsonIgnoreProperties(value = {"firstPayment"})
 public class RepaymentPlan {
 
     @NotNull
