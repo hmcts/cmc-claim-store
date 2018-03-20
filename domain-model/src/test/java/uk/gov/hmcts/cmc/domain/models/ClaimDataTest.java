@@ -282,6 +282,6 @@ public class ClaimDataTest {
 
         assertThat(errors)
             .hasSize(1)
-            .containsOnly("timeline.events : size must be between 0 and 20");
+            .containsOnly("timeline.events : size must be between 1 and 20");
     }
 }

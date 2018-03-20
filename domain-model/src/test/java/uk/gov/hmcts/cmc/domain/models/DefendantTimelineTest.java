@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -41,7 +42,18 @@ public class DefendantTimelineTest {
 
         assertThat(response)
             .hasSize(1)
-            .contains("events : size must be between 0 and 20");
+            .contains("events : size must be between 1 and 20");
+    }
+
+    @Test
+    public void shouldFailValidationForNoEventInTimeline() {
+        DefendantTimeline timeline = new DefendantTimeline(Collections.emptyList(), "comments");
+
+        Set<String> response = validate(timeline);
+
+        assertThat(response)
+            .hasSize(1)
+            .contains("events : size must be between 1 and 20");
     }
 
     @Test
