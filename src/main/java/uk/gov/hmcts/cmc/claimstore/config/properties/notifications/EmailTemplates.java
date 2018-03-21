@@ -54,6 +54,12 @@ public class EmailTemplates {
     @NotEmpty
     private String offerRejectedByClaimantEmailToDefendant;
 
+    @NotEmpty
+    private String offerCounterSignedEmailToOriginator;
+
+    @NotEmpty
+    private String offerCounterSignedEmailToOtherParty;
+
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -180,5 +186,21 @@ public class EmailTemplates {
 
     public void setOfferRejectedByClaimantEmailToDefendant(String offerRejectedByClaimantEmailToDefendant) {
         this.offerRejectedByClaimantEmailToDefendant = offerRejectedByClaimantEmailToDefendant;
+    }
+
+    public String getOfferCounterSignedEmailToOriginator() {
+        return offerCounterSignedEmailToOriginator;
+    }
+
+    public void setOfferCounterSignedEmailToOriginator(String offerCounterSignedEmailToOriginator) {
+        this.offerCounterSignedEmailToOriginator = offerCounterSignedEmailToOriginator;
+    }
+
+    public String getOfferCounterSignedEmailToOtherParty() {
+        return offerCounterSignedEmailToOtherParty;
+    }
+
+    public void setOfferCounterSignedEmailToOtherParty(String offerCounterSignedEmailToOtherParty) {
+        this.offerCounterSignedEmailToOtherParty = offerCounterSignedEmailToOtherParty;
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.OfferMadeNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.HashMap;
@@ -19,15 +19,15 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 @Component
 public class OfferRespondedCitizenActionsHandler {
 
-    private final OfferMadeNotificationService offerMadeNotificationService;
+    private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
     public OfferRespondedCitizenActionsHandler(
-        OfferMadeNotificationService offerMadeNotificationService,
+        NotificationService notificationService,
         NotificationsProperties notificationsProperties
     ) {
-        this.offerMadeNotificationService = offerMadeNotificationService;
+        this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
     }
 
@@ -35,7 +35,7 @@ public class OfferRespondedCitizenActionsHandler {
     public void sendNotificationToClaimantOnOfferAcceptedByClaimant(OfferAcceptedEvent event) {
         Claim claim = event.getClaim();
 
-        offerMadeNotificationService.sendNotificationEmail(
+        notificationService.sendMail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getOfferAcceptedByClaimantEmailToClaimant(),
             aggregateParams(claim),
@@ -47,7 +47,7 @@ public class OfferRespondedCitizenActionsHandler {
     public void sendNotificationToDefendantOnOfferAcceptedByClaimant(OfferAcceptedEvent event) {
         Claim claim = event.getClaim();
 
-        offerMadeNotificationService.sendNotificationEmail(
+        notificationService.sendMail(
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getOfferAcceptedByClaimantEmailToDefendant(),
             aggregateParams(claim),
@@ -59,7 +59,7 @@ public class OfferRespondedCitizenActionsHandler {
     public void sendNotificationToClaimantOnOfferRejectedByClaimant(OfferRejectedEvent event) {
         Claim claim = event.getClaim();
 
-        offerMadeNotificationService.sendNotificationEmail(
+        notificationService.sendMail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getOfferRejectedByClaimantEmailToClaimant(),
             aggregateParams(claim),
@@ -71,7 +71,7 @@ public class OfferRespondedCitizenActionsHandler {
     public void sendNotificationToDefendantOnOfferRejectedByClaimant(OfferRejectedEvent event) {
         Claim claim = event.getClaim();
 
-        offerMadeNotificationService.sendNotificationEmail(
+        notificationService.sendMail(
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getOfferRejectedByClaimantEmailToDefendant(),
             aggregateParams(claim),

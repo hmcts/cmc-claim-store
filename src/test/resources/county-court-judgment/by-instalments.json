@@ -2,7 +2,6 @@
   "paymentOption": "INSTALMENTS",
   "paidAmount": 0,
   "repaymentPlan": {
-    "firstPayment": 100,
     "instalmentAmount": 100,
     "firstPaymentDate": "2100-10-10",
     "paymentSchedule": "EACH_WEEK"
