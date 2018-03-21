@@ -68,7 +68,6 @@ public class PartyDetailsContentProvider {
 
         boolean nameAmended = !oppositeParty.getName().equals(ownParty.getName());
         boolean addressAmended = !oppositeParty.getAddress().equals(ownParty.getAddress());
-        String contactNumber = ownParty.getMobilePhone().orElse(null);
 
         return new PartyDetailsContent(
             PartyUtils.getType(ownParty),
