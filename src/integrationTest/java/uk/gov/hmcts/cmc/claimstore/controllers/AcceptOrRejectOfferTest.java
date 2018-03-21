@@ -1,23 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseOfferTest;
 import uk.gov.hmcts.cmc.claimstore.services.OffersService;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
-
-import java.time.LocalDate;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +19,6 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,36 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "core_case_data.api.url=false"
     }
 )
-public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
-
-    private static final String DEFENDANT_AUTH_TOKEN = "defendant-authDataString";
-    private static final String CLAIMANT_AUTH_TOKEN = "claimant-authDataString";
+public class AcceptOrRejectOfferTest extends BaseOfferTest {
 
     @SpyBean
     private OffersService offersService;
-
-    private Claim claim;
-
-    @Before
-    public void beforeEachTest() throws Exception {
-        when(userService.getUserDetails(eq(CLAIMANT_AUTH_TOKEN))).thenReturn(
-            SampleUserDetails.builder()
-                .withUserId(SUBMITTER_ID)
-                .build()
-        );
-
-        when(userService.getUserDetails(eq(DEFENDANT_AUTH_TOKEN))).thenReturn(
-            SampleUserDetails.builder()
-                .withUserId(DEFENDANT_ID)
-                .build()
-        );
-
-        claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
-        claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
-        claimStore.saveResponse(claim, SampleResponse.validDefaults(), DEFENDANT_ID,
-            SampleClaim.DEFENDANT_EMAIL);
-        prepareDefendantOffer();
-    }
 
     @Test
     public void shouldAcceptExistingOfferAndReturn201Status() throws Exception {
@@ -137,16 +102,5 @@ public class AcceptOrRejectOfferTest extends BaseIntegrationTest {
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
             );
-    }
-
-    private void prepareDefendantOffer() throws Exception {
-        webClient
-            .perform(
-                post(format("/claims/%s/offers/%s", claim.getExternalId(), MadeBy.DEFENDANT.name()))
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, DEFENDANT_AUTH_TOKEN)
-                    .content(jsonMapper.toJson(SampleOffer.validDefaults()))
-            )
-            .andExpect(status().isCreated());
     }
 }

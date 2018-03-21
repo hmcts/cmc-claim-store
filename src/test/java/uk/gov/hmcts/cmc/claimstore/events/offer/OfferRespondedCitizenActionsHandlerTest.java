@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.events.ccj;
+package uk.gov.hmcts.cmc.claimstore.events.offer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,10 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRespondedCitizenActionsHandler;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.OfferMadeNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -37,7 +34,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
     private OfferRespondedCitizenActionsHandler handler;
 
     @Mock
-    private OfferMadeNotificationService offerMadeNotificationService;
+    private NotificationService notificationService;
 
     @Mock
     private NotificationsProperties notificationsProperties;
@@ -57,7 +54,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
         when(emailTemplates.getOfferRejectedByClaimantEmailToClaimant()).thenReturn(OFFER_REJECTED_TO_CLAIMANT);
 
 
-        handler = new OfferRespondedCitizenActionsHandler(offerMadeNotificationService, notificationsProperties);
+        handler = new OfferRespondedCitizenActionsHandler(notificationService, notificationsProperties);
     }
 
     @Test
@@ -67,7 +64,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
 
         handler.sendNotificationToClaimantOnOfferAcceptedByClaimant(event);
 
-        verify(offerMadeNotificationService).sendNotificationEmail(
+        verify(notificationService).sendMail(
             eq(event.getClaim().getSubmitterEmail()),
             eq(OFFER_ACCEPTED_TO_CLAIMANT),
             anyMap(),
@@ -82,7 +79,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
 
         handler.sendNotificationToDefendantOnOfferAcceptedByClaimant(event);
 
-        verify(offerMadeNotificationService).sendNotificationEmail(
+        verify(notificationService).sendMail(
             eq(event.getClaim().getDefendantEmail()),
             eq(OFFER_ACCEPTED_TO_DEFENDANT),
             anyMap(),
@@ -97,7 +94,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
 
         handler.sendNotificationToClaimantOnOfferRejectedByClaimant(event);
 
-        verify(offerMadeNotificationService).sendNotificationEmail(
+        verify(notificationService).sendMail(
             eq(event.getClaim().getSubmitterEmail()),
             eq(OFFER_REJECTED_TO_CLAIMANT),
             anyMap(),
@@ -112,7 +109,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
 
         handler.sendNotificationToDefendantOnOfferRejectedByClaimant(event);
 
-        verify(offerMadeNotificationService).sendNotificationEmail(
+        verify(notificationService).sendMail(
             eq(event.getClaim().getDefendantEmail()),
             eq(OFFER_REJECTED_TO_DEFENDANT),
             anyMap(),
