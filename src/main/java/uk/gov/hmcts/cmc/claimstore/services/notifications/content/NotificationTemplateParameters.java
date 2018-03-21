@@ -12,6 +12,7 @@ public final class NotificationTemplateParameters {
     public static final String EXTERNAL_ID = "externalId";
     public static final String FEES_PAID = "feesPaid";
     public static final String PIN = "pin";
+    public static final String COUNTER_SIGNING_PARTY = "counterSigningParty";
 
     private NotificationTemplateParameters() {
         // Utility class

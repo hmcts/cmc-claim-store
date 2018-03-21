@@ -15,7 +15,6 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
     public CCDRepaymentPlan to(RepaymentPlan repaymentPlan) {
         return CCDRepaymentPlan
             .builder()
-            .firstPayment(repaymentPlan.getFirstPayment())
             .instalmentAmount(repaymentPlan.getInstalmentAmount())
             .firstPaymentDate(repaymentPlan.getFirstPaymentDate())
             .paymentSchedule(valueOf(repaymentPlan.getPaymentSchedule().name()))
@@ -29,7 +28,6 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
         }
 
         return new RepaymentPlan(
-            ccdRepaymentPlan.getFirstPayment(),
             ccdRepaymentPlan.getInstalmentAmount(),
             ccdRepaymentPlan.getFirstPaymentDate(),
             PaymentSchedule.valueOf(ccdRepaymentPlan.getPaymentSchedule().name())

@@ -112,7 +112,6 @@ public class CountyCourtJudgmentMapperTest {
             .paymentSchedule(CCDPaymentSchedule.EVERY_TWO_WEEKS)
             .instalmentAmount(BigDecimal.valueOf(100))
             .firstPaymentDate(now())
-            .firstPayment(BigDecimal.valueOf(150))
             .build();
 
         final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
