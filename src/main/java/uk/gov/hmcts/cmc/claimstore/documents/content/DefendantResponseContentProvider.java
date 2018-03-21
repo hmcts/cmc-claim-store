@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
@@ -26,7 +24,6 @@ public class DefendantResponseContentProvider {
     private final PartyDetailsContentProvider partyDetailsContentProvider;
     private final ClaimDataContentProvider claimDataContentProvider;
     private final NotificationsProperties notificationsProperties;
-    private static final Logger logger = LoggerFactory.getLogger(DefendantResponseContentProvider.class);
 
     public DefendantResponseContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider,

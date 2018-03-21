@@ -19,6 +19,7 @@ public class PartyDetailsContent {
     private final String dateOfBirth;
     private final String email;
     private final List<TimelineEvent> events;
+
     private final List<EvidenceContent> evidences;
 
     @SuppressWarnings("squid:S00107")
@@ -95,6 +96,14 @@ public class PartyDetailsContent {
 
     public String getEmail() {
         return email;
+    }
+
+    public List<TimelineEvent> getEvents() {
+        return events;
+    }
+
+    public List<EvidenceContent> getEvidences() {
+        return evidences;
     }
 
 }
