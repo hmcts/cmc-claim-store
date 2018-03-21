@@ -72,7 +72,6 @@
     "paidAmount": 100,
     "paymentOption": "INSTALMENTS",
     "repaymentPlan": {
-      "firstPayment": 100,
       "paymentSchedule": "EACH_WEEK",
       "firstPaymentDate": "2018-05-02",
       "instalmentAmount": 100
