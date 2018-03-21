@@ -89,4 +89,12 @@ public class DefendantResponseContentProviderTest {
             .containsOnlyKeys("paidDate", "explanation")
             .containsValues("2 January 2016", "Paid cash");
     }
+
+    @Test
+    public void shouldProvideResponseTimeline() {
+        Map<String, Object> content = provider.createContent(claim);
+
+        assertThat(content)
+            .containsKeys("timelineComment", "events");
+    }
 }
