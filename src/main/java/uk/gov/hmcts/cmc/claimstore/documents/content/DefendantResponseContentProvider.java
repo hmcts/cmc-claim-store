@@ -83,14 +83,16 @@ public class DefendantResponseContentProvider {
                 content.put("paymentDeclaration", createContentFor(paymentDeclaration))
             );
 
-            if (fullDefence.getTimeline().isPresent()) {
-                DefendantTimeline defendantTimeline = fullDefence.getTimeline().get();
+            Optional<DefendantTimeline> defenceTimeline = fullDefence.getTimeline();
+            if (defenceTimeline.isPresent()) {
+                DefendantTimeline defendantTimeline = defenceTimeline.get();
                 events = defendantTimeline.getEvents();
                 timelineComment = defendantTimeline.getComment().orElse(null);
             }
 
-            if (fullDefence.getEvidence().isPresent()) {
-                DefendantEvidence defendantEvidence = fullDefence.getEvidence().get();
+            Optional<DefendantEvidence> defenceEvidence = fullDefence.getEvidence();
+            if (defenceEvidence.isPresent()) {
+                DefendantEvidence defendantEvidence = defenceEvidence.get();
                 evidences = Optional.ofNullable(defendantEvidence.getRows())
                     .orElseGet(Collections::emptyList)
                     .stream()
