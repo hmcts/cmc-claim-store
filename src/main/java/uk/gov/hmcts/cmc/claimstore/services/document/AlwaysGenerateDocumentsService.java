@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
@@ -19,7 +18,6 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     private final ClaimService claimService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
-    private final DefendantResponseCopyService defendantResponseCopyService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
@@ -29,14 +27,12 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
         ClaimService claimService,
         ClaimIssueReceiptService claimIssueReceiptService,
         LegalSealedClaimPdfService legalSealedClaimPdfService,
-        DefendantResponseCopyService defendantResponseCopyService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
-        this.defendantResponseCopyService = defendantResponseCopyService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;

@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -25,18 +25,18 @@ public class DefendantResponseStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
     private final DefendantResponseStaffNotificationEmailContentProvider emailContentProvider;
-    private final DefendantResponseCopyService defendantResponseCopyService;
+    private final DefendantResponseReceiptService defendantResponseReceiptService;
 
     @Autowired
     public DefendantResponseStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties emailProperties,
         DefendantResponseStaffNotificationEmailContentProvider emailContentProvider,
-        DefendantResponseCopyService defendantResponseCopyService) {
+        DefendantResponseReceiptService defendantResponseReceiptService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
-        this.defendantResponseCopyService = defendantResponseCopyService;
+        this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
     public void notifyStaffDefenceSubmittedFor(
@@ -46,7 +46,7 @@ public class DefendantResponseStaffNotificationService {
         EmailContent emailContent = emailContentProvider.createContent(
             wrapInMap(claim, defendantEmail)
         );
-        byte[] defendantResponseCopy = defendantResponseCopyService.createPdf(claim);
+        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
@@ -54,7 +54,7 @@ public class DefendantResponseStaffNotificationService {
                 emailContent.getSubject(),
                 emailContent.getBody(),
                 singletonList(pdf(
-                    defendantResponseCopy,
+                    defendantResponse,
                     format(FILE_NAME_FORMAT, claim.getReferenceNumber())
                 ))
             )
