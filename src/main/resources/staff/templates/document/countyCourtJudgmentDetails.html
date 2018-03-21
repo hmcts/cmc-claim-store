@@ -48,6 +48,10 @@
       border-bottom: 1px solid #999;
     }
 
+    .no-border td {
+      border: none;
+    }
+
     table td:first-child {
       width: 220px;
       vertical-align: top;
@@ -239,12 +243,51 @@
           {{ ccj.amount.remainingAmount }}
         </td>
       </tr>
-      <tr>
-        <td>When you want the defendant to pay:</td>
-        <td>
-          {{ ccj.repaymentOption }}
-        </td>
-      </tr>
+
+      {% if ccj.repaymentPlan.repaymentOption == "Immediately" %}
+        <tr>
+          <td>When you want the defendant to pay:</td>
+          <td>
+            {{ ccj.repaymentPlan.repaymentOption }}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td>How you want the defendant to pay:</td>
+          <td>
+            {{ ccj.repaymentPlan.repaymentOption }}
+          </td>
+        </tr>
+        {% if ccj.repaymentPlan.repaymentOption == "By a set date" %}
+          <tr class="no-border">
+            <td>When you want the defendant to pay:</td>
+            <td>
+              {{ ccj.repaymentPlan.paySetByDate }}
+            </td>
+          </tr>
+        {% endif %}
+        {% if ccj.repaymentPlan.repaymentOption == "By instalments" %}
+          <tr class="no-border">
+            <td>Instalments of:</td>
+            <td>
+              {{ ccj.repaymentPlan.instalmentAmount }}
+            </td>
+          </tr>
+          <tr class="no-border">
+            <td>When you want them to make the first payment:</td>
+            <td>
+              {{ ccj.repaymentPlan.firstPaymentDate}}
+            </td>
+          </tr>
+          <tr class="no-border">
+            <td>How often you want them to make this payment:</td>
+            <td>
+              {{ ccj.repaymentPlan.paymentSchedule }}
+            </td>
+          </tr>
+        {% endif %}
+      {% endif %}
+
     </table>
   </div>
 </div>
