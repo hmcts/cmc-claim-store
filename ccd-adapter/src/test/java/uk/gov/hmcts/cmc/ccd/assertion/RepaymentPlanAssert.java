@@ -15,11 +15,6 @@ public class RepaymentPlanAssert extends AbstractAssert<RepaymentPlanAssert, Rep
     public RepaymentPlanAssert isEqualTo(CCDRepaymentPlan ccdRepaymentPlan) {
         isNotNull();
 
-        if (!Objects.equals(actual.getFirstPayment(), ccdRepaymentPlan.getFirstPayment())) {
-            failWithMessage("Expected RepaymentPlan.firstPayment to be <%s> but was <%s>",
-                ccdRepaymentPlan.getFirstPayment(), actual.getFirstPayment());
-        }
-
         if (!Objects.equals(actual.getInstalmentAmount(), ccdRepaymentPlan.getInstalmentAmount())) {
             failWithMessage("Expected RepaymentPlan.instalmentAmount to be <%s> but was <%s>",
                 ccdRepaymentPlan.getInstalmentAmount(), actual.getInstalmentAmount());
