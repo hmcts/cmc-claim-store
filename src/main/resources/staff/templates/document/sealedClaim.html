@@ -311,13 +311,13 @@
       </tr>
       {% if claim.interest is defined %}
       <tr>
-        <td><strong>Interest rate claimed:</strong></td>
+        <td>Interest rate claimed:</td>
         <td>
           {{ claim.interest.rate }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Explanation:</strong></td>
+        <td>Explanation:</td>
         <td>
           {% if claim.interest.customRateReason is defined %}
           {{ claim.interest.customRateReason }}
@@ -327,13 +327,13 @@
         </td>
       </tr>
       <tr>
-        <td><strong>Date interest is claimed from:</strong></td>
+        <td>Date interest is claimed from:</td>
         <td>
           {{ claim.fromDate }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Explanation:</strong></td>
+        <td>Explanation:</td>
         <td>
           {% if claim.interest.startDateReason is defined %}
           {{ claim.interest.startDateReason }}
@@ -343,7 +343,7 @@
         </td>
       </tr>
       <tr>
-        <td><strong>Interest end date:</strong></td>
+        <td>Interest end date:</td>
         <td>
           {% if claim.interest.submissionEndDate is defined %}
           {{ claim.issuedOn }}
