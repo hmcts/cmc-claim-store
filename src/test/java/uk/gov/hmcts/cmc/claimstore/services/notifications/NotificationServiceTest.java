@@ -18,17 +18,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OfferMadeNotificationServiceTest extends BaseNotificationServiceTest {
+public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     private static final String REFERENCE = "reference";
     private static final String TEMPLATE_ID = "templateId";
     private static final Map<String, String> PARAMETERS = new HashMap<>();
 
-    private OfferMadeNotificationService service;
+    private NotificationService service;
 
     @Before
     public void beforeEachTest() {
-        service = new OfferMadeNotificationService(notificationClient);
+        service = new NotificationService(notificationClient);
     }
 
     @Test(expected = NotificationException.class)
@@ -36,12 +36,12 @@ public class OfferMadeNotificationServiceTest extends BaseNotificationServiceTes
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
-        service.sendNotificationEmail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        service.sendMail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
     }
 
     @Test
     public void shouldSendEmailUsingPredefinedTemplate() throws Exception {
-        service.sendNotificationEmail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        service.sendMail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
 
         verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(USER_EMAIL), eq(PARAMETERS), eq(REFERENCE));
     }
