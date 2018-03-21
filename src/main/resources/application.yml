@@ -63,6 +63,7 @@ dateCalculations:
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"
+  respondToClaimUrl: "${RESPOND_TO_CLAIM_URL:}"
   templates:
     email:
       claimantClaimIssued: "58e645b8-bcd6-4462-822c-f17da9dd3dc7"
