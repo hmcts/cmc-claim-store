@@ -44,7 +44,7 @@ public class InterestDate {
         this.type = type;
         this.date = date;
         this.reason = reason;
-        this.endDate = endDate == null ? InterestEndDateType.SUBMISSION : endDate;
+        this.endDate = endDate == null ? InterestEndDateType.SETTLED_OR_JUDGMENT : endDate;
     }
 
     public InterestDateType getType() {
