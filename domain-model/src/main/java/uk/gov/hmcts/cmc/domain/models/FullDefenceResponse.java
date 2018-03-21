@@ -22,7 +22,7 @@ public class FullDefenceResponse extends Response {
 
         private String description;
 
-        public String getDescription(){
+        public String getDescription() {
             return this.description;
         }
     }

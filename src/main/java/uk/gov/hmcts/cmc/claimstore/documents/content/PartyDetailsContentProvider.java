@@ -1,11 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
-import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
@@ -59,7 +56,13 @@ public class PartyDetailsContentProvider {
      *                      defendant email)
      * @return party details content
      */
-    public PartyDetailsContent createContent(TheirDetails oppositeParty, Party ownParty, String ownPartyEmail, List<TimelineEvent> events, List<EvidenceContent> evidences) {
+    public PartyDetailsContent createContent(
+        TheirDetails oppositeParty,
+        Party ownParty,
+        String ownPartyEmail,
+        List<TimelineEvent> events,
+        List<EvidenceContent> evidences
+    ) {
         requireNonNull(oppositeParty);
         requireNonNull(ownParty);
 
