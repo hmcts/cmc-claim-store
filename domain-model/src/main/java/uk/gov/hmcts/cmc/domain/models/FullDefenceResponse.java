@@ -16,11 +16,11 @@ public class FullDefenceResponse extends Response {
         DISPUTE("I dispute all the claim"),
         ALREADY_PAID("I have paid what I believe I owe");
 
-        private DefenceType(String description) {
+        DefenceType(String description) {
             this.description = description;
         }
 
-        private String description;
+        String description;
 
         public String getDescription() {
             return this.description;

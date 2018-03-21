@@ -85,7 +85,6 @@
     table td:first-child {
       width: 220px;
       vertical-align: top;
-      /*font-weight: 700;*/
     }
 
     table td:last-child {
@@ -160,22 +159,12 @@
   </div>
   <div class="section-body">
     <table>
-      {% if defendant.businessName is not defined%}
       <tr>
         <td>Name:</td>
         <td>
           {{ defendant.fullName }}
         </td>
       </tr>
-      {% endif %}
-      {% if defendant.businessName is defined%}
-      <tr>
-        <td>Company:</td>
-        <td>
-          {{ defendant.businessName }}
-        </td>
-      </tr>
-      {% endif %}
       {% if defendant.contactPerson is defined %}
       <tr>
         <td>Contact person:</td>
@@ -188,7 +177,7 @@
       <tr>
         <td>Business name:</td>
         <td>
-          {{ defendant.businessName }}
+          Trading as {{ defendant.businessName }}
         </td>
       </tr>
       {% endif %}
@@ -293,7 +282,7 @@
       {% if defendant.events is defined %}
       <tr>
         <td colspan="2">
-          <strong>Defendant's timeline of what happened:</strong>
+          <strong>Defendant’s timeline of what happened:</strong>
         </td>
       </tr>
       {% for event in defendant.events %}
@@ -310,7 +299,7 @@
       {% if defendant.evidences is defined %}
       <tr>
         <td colspan="2">
-          <strong>Defendant's evidence:</strong>
+          <strong>Defendant’s evidence:</strong>
         </td>
       </tr>
       {% for evidence in defendant.evidences %}
@@ -386,8 +375,8 @@
     <tr>
       <td><strong>Mediation</strong></td>
       <td>
-        <p>If the defendant has asked for mediation then we'll contact you to ask if you want to mediate.</p>
-        <p>If the defendant doesn't want to mediate then the case will be reviewed by a judge and might go to a hearing.
+        <p>If the defendant has asked for mediation then we’ll contact you to ask if you want to mediate.</p>
+        <p>If the defendant doesn’t want to mediate then the case will be reviewed by a judge and might go to a hearing.
           We'll contact you if a hearing date is scheduled and explain what you need to do to prepare.</p>
       </td>
     </tr>

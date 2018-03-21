@@ -71,7 +71,7 @@ public class DefendantResponseContentProvider {
             content.put("responseDefence", fullDefence.getDefence());
             content.put("responseTypeSelected", fullDefence.getDefenceType().getDescription());
             if (fullDefence.getDefenceType().equals(FullDefenceResponse.DefenceType.ALREADY_PAID)) {
-                content.put("hasDefendantAlreadyPaid", "yes");
+                content.put("hasDefendantAlreadyPaid", true);
             }
 
             fullDefence.getPaymentDeclaration().ifPresent(paymentDeclaration ->

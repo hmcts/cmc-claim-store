@@ -35,10 +35,6 @@ public class Organisation extends Party {
         return Optional.ofNullable(companiesHouseNumber);
     }
 
-    public Optional<String> getBusinessName() {
-        return Optional.ofNullable(getName());
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
