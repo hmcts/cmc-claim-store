@@ -61,8 +61,7 @@ public class InterestTest {
 
     @Test
     public void shouldBeInvalidForBreakdownInterestWithNullBreakdown() {
-        Interest interest = SampleInterest.builder()
-            .withType(Interest.InterestType.BREAKDOWN)
+        Interest interest = SampleInterest.breakdownInterestBuilder()
             .withInterestBreakdown(null)
             .build();
 
@@ -73,8 +72,7 @@ public class InterestTest {
 
     @Test
     public void shouldBeInvalidForBreakdownInterestWithInvalidBreakdown() {
-        Interest interest = SampleInterest.builder()
-            .withType(Interest.InterestType.BREAKDOWN)
+        Interest interest = SampleInterest.breakdownInterestBuilder()
             .withInterestBreakdown(
                 SampleInterestBreakdown.builder()
                     .withTotalAmount(null)
@@ -93,8 +91,7 @@ public class InterestTest {
 
     @Test
     public void shouldBeValidForBreakdownInterestWithValidBreakdown() {
-        Interest interest = SampleInterest.builder()
-            .withType(Interest.InterestType.BREAKDOWN)
+        Interest interest = SampleInterest.breakdownInterestBuilder()
             .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
             .build();
 

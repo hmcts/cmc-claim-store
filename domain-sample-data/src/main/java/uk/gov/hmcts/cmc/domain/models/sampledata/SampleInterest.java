@@ -17,6 +17,13 @@ public class SampleInterest {
         return new SampleInterest();
     }
 
+    public static SampleInterest breakdownInterestBuilder() {
+        return new SampleInterest()
+            .withType(Interest.InterestType.BREAKDOWN)
+            .withRate(null)
+            .withReason(null);
+    }
+
     public static Interest standard() {
         return builder()
             .withType(Interest.InterestType.STANDARD)

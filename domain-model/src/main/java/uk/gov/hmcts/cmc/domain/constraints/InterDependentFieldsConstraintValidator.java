@@ -19,6 +19,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.BREAKDOWN;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestDateType.SUBMISSION;
 
@@ -61,6 +62,10 @@ public class InterDependentFieldsConstraintValidator implements ConstraintValida
             fieldObj.setAccessible(true);
             dependentFieldObj.setAccessible(true);
 
+            if (isBreakdownInterest(validateThis)) {
+                return true;
+            }
+
             switch (field) {
                 case "interestDate":
                     return validateInterestDate(validateThis, ctx, fieldObj, dependentFieldObj);
@@ -79,6 +84,10 @@ public class InterDependentFieldsConstraintValidator implements ConstraintValida
             logger.trace(e.getMessage(), e);
             throw new IllegalArgumentException("Can't validate object", e);
         }
+    }
+
+    private boolean isBreakdownInterest(Object input) {
+        return input instanceof Interest && ((Interest) input).getType() == BREAKDOWN;
     }
 
     private boolean validateRate(Object validateThis,
