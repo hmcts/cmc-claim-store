@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.constraints.ValidInterest;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -66,8 +67,8 @@ public class Interest {
         return reason;
     }
 
-    public BigDecimal getSpecificDailyAmount() {
-        return specificDailyAmount;
+    public Optional<BigDecimal> getSpecificDailyAmount() {
+        return Optional.ofNullable(specificDailyAmount);
     }
 
     @Override

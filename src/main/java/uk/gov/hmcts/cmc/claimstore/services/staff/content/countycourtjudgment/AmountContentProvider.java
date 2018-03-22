@@ -57,6 +57,7 @@ public class AmountContentProvider {
             );
         }
         InterestContent interestContent = new InterestContent(
+            interest.getType().name(),
             formatPercent(interestRate),
             interestFromDate.map(Formatting::formatDate)
                 .orElse("No interest claimed"),

@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 
 public class InterestContent {
 
+    private String type;
     private String rate;
     private Boolean customRate;
     private String customRateReason;
+    private InterestBreakdownContent interestBreakdown;
     private Boolean customFromDate;
     private String fromDate;
     private String amount;
@@ -14,9 +16,11 @@ public class InterestContent {
     private String dailyAmount;
     private String startDateReason;
     private Boolean submissionEndDate;
+    private String interestEndDateType;
 
     @SuppressWarnings("squid:S00107")
     public InterestContent(
+        String type,
         String rate,
         Boolean customRate,
         String customRateReason,
@@ -26,7 +30,9 @@ public class InterestContent {
         BigDecimal amountRealValue,
         String dailyAmount,
         String startDateReason,
-        Boolean submissionEndDate) {
+        Boolean submissionEndDate
+    ) {
+        this.type = type;
         this.rate = rate;
         this.customRate = customRate;
         this.customRateReason = customRateReason;
@@ -40,14 +46,41 @@ public class InterestContent {
     }
 
     public InterestContent(
+        String type,
         String rate,
         String fromDate,
         String amount,
-        String dailyAmount) {
+        String dailyAmount
+    ) {
+        this.type = type;
         this.rate = rate;
         this.fromDate = fromDate;
         this.amount = amount;
         this.dailyAmount = dailyAmount;
+    }
+
+    public InterestContent(
+        String type,
+        InterestBreakdownContent interestBreakdown,
+        String dailyAmount,
+        String interestEndDateType
+    ) {
+        this.type = type;
+        this.interestBreakdown = interestBreakdown;
+        this.dailyAmount = dailyAmount;
+        this.interestEndDateType = interestEndDateType;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public InterestBreakdownContent getInterestBreakdown() {
+        return interestBreakdown;
+    }
+
+    public String getInterestEndDateType() {
+        return interestEndDateType;
     }
 
     public String getRate() {
