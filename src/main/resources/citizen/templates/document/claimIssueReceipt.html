@@ -368,7 +368,7 @@
       <tr>
         <td><strong>Interest end date:</strong></td>
         <td>
-          {% if claim.interest.submissionEndDate is defined %}
+          {% if claim.interest.submissionEndDate %}
             {{ claim.issuedOn }}
           {% else %}
             Interest will accrue at the daily rate of {{ claim.interest.dailyAmount }} up to the date of judgment
@@ -376,6 +376,28 @@
         </td>
       </tr>
       {% endif %}
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Total amount</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Claim amount:</strong></td>
+        <td>
+          {{ claim.claimAmount }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Total interest claimed to the date of submission:</strong></td>
+        <td>
+          {{ claim.interest.amount }}
+        </td>
+      </tr>
       <tr>
         <td><strong>Claim fee:</strong></td>
         <td>
@@ -383,9 +405,9 @@
         </td>
       </tr>
       <tr>
-        <td><strong>Total claim amount:</strong></td>
+        <td><strong>Total:</strong></td>
         <td>
-          <strong>{{ claim.claimTotalAmount }}</strong>
+          {{ claim.claimTotalAmount }}
         </td>
       </tr>
     </table>
