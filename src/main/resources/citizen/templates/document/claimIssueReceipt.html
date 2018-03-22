@@ -107,6 +107,12 @@
       padding: 0;
     }
 
+    @media print {
+      .new-page {
+        page-break-before: always;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -282,33 +288,35 @@
   </div>
 </div>
 
-<div class="section">
-  <div class="section-heading">
-    <strong>Claim</strong>
-  </div>
-  <div class="section-body">
-    <table>
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Reason for claim:</strong><br/>
-          {{ claim.reason | trim }}
-        </td>
-      </tr>
-      {% if claim.events is defined %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Timeline of what happened:</strong></td>
-      </tr>
-      {% for event in claim.events %}
-      <tr class="no-border">
-        <td>
-          {{ event.date | trim }}
-        </td>
-        <td>
-          {{ event.description | trim }}
-        </td>
-      </tr>
-      {% endfor %}
-      {% endif %}
-    </table>
+<div class="new-page">
+  <div class="section">
+    <div class="section-heading">
+      <strong>Claim</strong>
+    </div>
+    <div class="section-body">
+      <table>
+        <tr>
+          <td colspan="2" class="keep-white-space"><strong>Reason for claim:</strong><br/>
+            {{ claim.reason | trim }}
+          </td>
+        </tr>
+        {% if claim.events is defined %}
+        <tr>
+          <td colspan="2" class="keep-white-space"><strong>Timeline of what happened:</strong></td>
+        </tr>
+        {% for event in claim.events %}
+        <tr class="no-border">
+          <td>
+            {{ event.date | trim }}
+          </td>
+          <td>
+            {{ event.description | trim }}
+          </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+      </table>
+    </div>
   </div>
 </div>
 
