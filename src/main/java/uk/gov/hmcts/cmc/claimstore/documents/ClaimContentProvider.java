@@ -52,7 +52,9 @@ public class ClaimContentProvider {
             null,
             defendant.getEmail().orElse(null),
             PartyUtils.getContactPerson(defendant).orElse(null),
-            PartyUtils.getBusinessName(defendant).orElse(null))
+            PartyUtils.getBusinessName(defendant).orElse(null),
+            null,
+            null)
         );
 
         map.put("claim", claimDataContentProvider.createContent(claim));

@@ -11,6 +11,9 @@ public class PersonContent {
     private final String email;
     private final String contactPerson;
     private final String businessName;
+    private final String mobileNumber;
+    private final String dateOfBirth;
+
 
     public PersonContent(
         String partyType,
@@ -19,7 +22,10 @@ public class PersonContent {
         Address correspondenceAddress,
         String email,
         String contactPerson,
-        String businessName
+        String businessName,
+        String mobileNumber,
+        String dateOfBirth
+
     ) {
         this.partyType = partyType;
         this.fullName = fullName;
@@ -28,6 +34,8 @@ public class PersonContent {
         this.email = email;
         this.contactPerson = contactPerson;
         this.businessName = businessName;
+        this.mobileNumber = mobileNumber;
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getFullName() {
@@ -56,5 +64,13 @@ public class PersonContent {
 
     public String getBusinessName() {
         return businessName;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
     }
 }

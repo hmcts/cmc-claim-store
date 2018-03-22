@@ -11,13 +11,13 @@ public class DocumentNameUtils {
     public static String buildSealedClaimFileBaseName(String number) {
         requireNonBlank(number);
 
-        return format("%s-sealed-claim", number);
+        return format("%s-claim-form", number);
     }
 
     public static boolean isSealedClaim(String filename) {
         requireNonBlank(filename);
 
-        return filename.contains("sealed-claim");
+        return filename.contains("claim-form");
     }
 
     public static String buildDefendantLetterFileBaseName(String number) {
