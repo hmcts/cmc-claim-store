@@ -115,14 +115,14 @@ public class PartyUtilsTest {
     }
 
     @Test
-    public void getBusinessName() {
+    public void getBusinessNameWhenSoleTrader() {
         SoleTrader claimant = SampleParty.builder().soleTrader();
         assertThat(PartyUtils.getBusinessName(claimant))
             .isEqualTo(claimant.getBusinessName());
     }
 
     @Test
-    public void getBusinessNameReturnsEmptyOptionalWhenNotSoleTraderType() {
+    public void getBusinessNameReturnsEmptyOptionalWhenAnIndividual() {
         Individual claimant = SampleParty.builder().individual();
         assertThat(PartyUtils.getBusinessName(claimant))
             .isEqualTo(Optional.empty());

@@ -1,12 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -36,7 +39,9 @@ public class PartyDetailsContentProvider {
             party.getCorrespondenceAddress().orElse(null),
             party.getMobilePhone().orElse(null),
             defendantDateOfBirth(party).orElse(null),
-            partyEmail
+            partyEmail,
+            null,
+            null
         );
     }
 
@@ -51,7 +56,13 @@ public class PartyDetailsContentProvider {
      *                      defendant email)
      * @return party details content
      */
-    public PartyDetailsContent createContent(TheirDetails oppositeParty, Party ownParty, String ownPartyEmail) {
+    public PartyDetailsContent createContent(
+        TheirDetails oppositeParty,
+        Party ownParty,
+        String ownPartyEmail,
+        List<TimelineEvent> events,
+        List<EvidenceContent> evidences
+    ) {
         requireNonNull(oppositeParty);
         requireNonNull(ownParty);
 
@@ -69,7 +80,9 @@ public class PartyDetailsContentProvider {
             ownParty.getCorrespondenceAddress().orElse(null),
             ownParty.getMobilePhone().orElse(null),
             defendantDateOfBirth(ownParty).orElse(null),
-            ownPartyEmail
+            ownPartyEmail,
+            events,
+            evidences
         );
     }
 
