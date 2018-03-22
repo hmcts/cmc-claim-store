@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class ClaimantContentProviderTest {
 
@@ -51,6 +52,21 @@ public class ClaimantContentProviderTest {
         ClaimantContent content = provider.createContent(claimant, EMAIL);
 
         assertThat(content.getAddress()).isNotNull();
+    }
+
+    @Test
+    public void shouldProvideDateOfBirth() {
+        ClaimantContent content = provider.createContent(claimant, EMAIL);
+
+        assertThat(content.getDateOfBirth()).isEqualTo(formatDate(claimant.getDateOfBirth()));
+
+    }
+
+    @Test
+    public void shouldProvideMobileNumber() {
+        ClaimantContent content = provider.createContent(claimant, EMAIL);
+
+        assertThat(content.getMobileNumber()).isNotNull();
     }
 
 }
