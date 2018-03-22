@@ -29,7 +29,8 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDate issuedOn) {
+        LocalDate issuedOn
+    ) {
         requireNonNull(interest);
         requireNonNull(interestDate);
         requireNonNull(claimAmount);

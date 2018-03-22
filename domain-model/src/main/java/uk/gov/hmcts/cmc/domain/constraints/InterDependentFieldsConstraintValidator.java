@@ -165,10 +165,6 @@ public class InterDependentFieldsConstraintValidator implements ConstraintValida
         InterestDate interestDate = (InterestDate) fieldObj.get(validateThis);
         Interest interest = (Interest) dependentFieldObj.get(validateThis);
 
-        if (interest != null && interest.getType() == BREAKDOWN) {
-            return true;
-        }
-
         if (interest != null && !interestTypeIsNoInterest(interest.getType())) {
             Set<ConstraintViolation<Object>> violations = validator.validate(interestDate);
             if (!violations.isEmpty()) {
