@@ -123,7 +123,7 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
         assertThat(emailData.getAttachments()).hasSize(2)
             .extracting(EmailAttachment::getFilename)
-            .containsExactly(savedClaim.getReferenceNumber() + "-sealed-claim.pdf",
+            .containsExactly(savedClaim.getReferenceNumber() + "-claim-form.pdf",
                 savedClaim.getReferenceNumber() + "-defendant-pin-letter.pdf");
     }
 
@@ -143,7 +143,7 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
         assertThat(emailData.getAttachments()).hasSize(1)
             .first().extracting(EmailAttachment::getFilename)
-            .containsExactly(savedClaim.getReferenceNumber() + "-sealed-claim.pdf");
+            .containsExactly(savedClaim.getReferenceNumber() + "-claim-form.pdf");
     }
 
     @Test
