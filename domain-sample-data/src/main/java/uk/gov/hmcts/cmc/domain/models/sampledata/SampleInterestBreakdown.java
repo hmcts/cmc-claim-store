@@ -21,4 +21,14 @@ public class SampleInterestBreakdown {
         return new InterestBreakdown(totalAmount, explanation);
     }
 
+    public SampleInterestBreakdown withTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+        return this;
+    }
+
+    public SampleInterestBreakdown withExplanation(String explanation) {
+        this.explanation = explanation;
+        return this;
+    }
+
 }

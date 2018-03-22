@@ -38,6 +38,11 @@ public class SampleInterest {
         return this;
     }
 
+    public SampleInterest withInterestBreakdown(InterestBreakdown interestBreakdown) {
+        this.interestBreakdown = interestBreakdown;
+        return this;
+    }
+
     public SampleInterest withRate(BigDecimal rate) {
         this.rate = rate;
         return this;

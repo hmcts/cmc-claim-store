@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestBreakdown;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -55,6 +56,50 @@ public class InterestTest {
         //when
         Set<String> errors = validate(interest);
         //then
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeInvalidForBreakdownInterestWithNullBreakdown() {
+        Interest interest = SampleInterest.builder()
+            .withType(Interest.InterestType.BREAKDOWN)
+            .withInterestBreakdown(null)
+            .build();
+
+        Set<String> errors = validate(interest);
+
+        assertThat(errors).containsOnly("interestBreakdown : may not be null");
+    }
+
+    @Test
+    public void shouldBeInvalidForBreakdownInterestWithInvalidBreakdown() {
+        Interest interest = SampleInterest.builder()
+            .withType(Interest.InterestType.BREAKDOWN)
+            .withInterestBreakdown(
+                SampleInterestBreakdown.builder()
+                    .withTotalAmount(null)
+                    .withExplanation(null)
+                    .build()
+            )
+            .build();
+
+        Set<String> errors = validate(interest);
+
+        assertThat(errors).containsOnly(
+            "interestBreakdown : totalAmount : may not be null",
+            "interestBreakdown : explanation : may not be empty"
+        );
+    }
+
+    @Test
+    public void shouldBeValidForBreakdownInterestWithValidBreakdown() {
+        Interest interest = SampleInterest.builder()
+            .withType(Interest.InterestType.BREAKDOWN)
+            .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+            .build();
+
+        Set<String> errors = validate(interest);
+
         assertThat(errors).isEmpty();
     }
 

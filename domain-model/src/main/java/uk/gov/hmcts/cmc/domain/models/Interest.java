@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.InterDependentFields;
+import uk.gov.hmcts.cmc.domain.constraints.ValidInterest;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@ValidInterest
 @InterDependentFields(field = "rate", dependentField = "type")
 public class Interest {
     public enum InterestType {
