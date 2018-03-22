@@ -62,10 +62,6 @@ public class InterDependentFieldsConstraintValidator implements ConstraintValida
             fieldObj.setAccessible(true);
             dependentFieldObj.setAccessible(true);
 
-            if (isBreakdownInterest(validateThis)) {
-                return true;
-            }
-
             switch (field) {
                 case "interestDate":
                     return validateInterestDate(validateThis, ctx, fieldObj, dependentFieldObj);
@@ -86,16 +82,17 @@ public class InterDependentFieldsConstraintValidator implements ConstraintValida
         }
     }
 
-    private boolean isBreakdownInterest(Object input) {
-        return input instanceof Interest && ((Interest) input).getType() == BREAKDOWN;
-    }
-
     private boolean validateRate(Object validateThis,
                                  ConstraintValidatorContext ctx,
                                  Field fieldObj,
                                  Field dependentFieldObj) throws IllegalAccessException {
         BigDecimal rate = (BigDecimal) fieldObj.get(validateThis);
         Interest.InterestType type = (Interest.InterestType) dependentFieldObj.get(validateThis);
+
+        if (type == BREAKDOWN) {
+            return true;
+        }
+
         if ((type == null || !interestTypeIsNoInterest(type)) && rate == null) {
             ctx.disableDefaultConstraintViolation();
             ctx.buildConstraintViolationWithTemplate("may not be null")
@@ -167,6 +164,11 @@ public class InterDependentFieldsConstraintValidator implements ConstraintValida
                                          Field dependentFieldObj) throws IllegalAccessException {
         InterestDate interestDate = (InterestDate) fieldObj.get(validateThis);
         Interest interest = (Interest) dependentFieldObj.get(validateThis);
+
+        if (interest != null && interest.getType() == BREAKDOWN) {
+            return true;
+        }
+
         if (interest != null && !interestTypeIsNoInterest(interest.getType())) {
             Set<ConstraintViolation<Object>> violations = validator.validate(interestDate);
             if (!violations.isEmpty()) {
