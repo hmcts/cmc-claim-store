@@ -45,6 +45,10 @@
       content: "";
     }
 
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
     table {
       width: 100%;
       border-spacing: 0;
@@ -241,6 +245,57 @@
           {{ responseDefence }}
         </td>
       </tr>
+
+      {% if events is defined %}
+      <tr class="no-border">
+        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
+      </tr>
+      {% for event in events %}
+      <tr class="no-border">
+        <td>
+          {{ event.date | trim }}
+        </td>
+        <td>
+          {{ event.description | trim }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+
+      {% if timelineComment is not empty %}
+      <tr class="no-border">
+        <td><strong>Comments about claimant’s timeline:</strong></td>
+        <td>
+          {{ timelineComment }}
+        </td>
+      </tr>
+      {% endif %}
+
+      {% if evidences is defined %}
+      <tr class="no-border">
+        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
+      </tr>
+      {% for row in evidences %}
+      <tr class="no-border">
+        <td>
+          {{ row.type | trim }}
+        </td>
+        <td>
+          {{ row.description | trim }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+
+      {% if evidenceComment is not empty %}
+      <tr class="no-border">
+        <td><strong>Comments about claimant’s evidence:</strong></td>
+        <td>
+          {{ evidenceComment }}
+        </td>
+      </tr>
+      {% endif %}
+
       {% if paymentDeclaration is defined %}
       <tr>
         <td>When they paid this amount:</td>
