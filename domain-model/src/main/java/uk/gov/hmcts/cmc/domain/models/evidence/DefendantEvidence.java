@@ -1,28 +1,26 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.evidence;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
+import java.util.Optional;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-public class Timeline {
+public class DefendantEvidence extends Evidence {
 
-    @Valid
-    @Size(min = 1, max = 20)
-    @JsonProperty("rows")
-    private final List<TimelineEvent> events;
+    @Size(max = 99000)
+    private final String comment;
 
-    public Timeline(List<TimelineEvent> events) {
-        this.events = events;
+    public DefendantEvidence(List<EvidenceRow> rows, String comment) {
+        super(rows);
+        this.comment = comment;
     }
 
-    public List<TimelineEvent> getEvents() {
-        return events;
+    public Optional<String> getComment() {
+        return Optional.ofNullable(comment);
     }
 
     @Override
@@ -33,13 +31,16 @@ public class Timeline {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        Timeline timeline = (Timeline) other;
-        return Objects.equals(events, timeline.events);
+        if (!super.equals(other)) {
+            return false;
+        }
+        DefendantEvidence that = (DefendantEvidence) other;
+        return Objects.equals(comment, that.comment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(events);
+        return Objects.hash(super.hashCode(), comment);
     }
 
     @Override
