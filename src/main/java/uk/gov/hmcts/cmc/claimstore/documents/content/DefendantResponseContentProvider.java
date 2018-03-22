@@ -54,6 +54,7 @@ public class DefendantResponseContentProvider {
 
         content.put("claim", claimDataContentProvider.createContent(claim));
         content.put("defenceSubmittedOn", formatDateTime(claim.getRespondedAt()));
+        content.put("defenceSubmittedDate", formatDate(claim.getRespondedAt()));
         content.put("freeMediation", defendantResponse.getFreeMediation()
             .orElse(Response.FreeMediationOption.NO)
             .name()
@@ -63,7 +64,9 @@ public class DefendantResponseContentProvider {
         content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getClaimData().getDefendant(),
             defendantResponse.getDefendant(),
-            claim.getDefendantEmail()
+            claim.getDefendantEmail(),
+            null,
+            null
         ));
         content.put("claimant", partyDetailsContentProvider.createContent(
             claim.getClaimData().getClaimant(),
@@ -78,6 +81,10 @@ public class DefendantResponseContentProvider {
             FullDefenceResponse fullDefence = (FullDefenceResponse) defendantResponse;
 
             content.put("responseDefence", fullDefence.getDefence());
+            content.put("responseTypeSelected", fullDefence.getDefenceType().getDescription());
+            if (fullDefence.getDefenceType().equals(FullDefenceResponse.DefenceType.ALREADY_PAID)) {
+                content.put("hasDefendantAlreadyPaid", true);
+            }
 
             fullDefence.getPaymentDeclaration().ifPresent(paymentDeclaration ->
                 content.put("paymentDeclaration", createContentFor(paymentDeclaration))
