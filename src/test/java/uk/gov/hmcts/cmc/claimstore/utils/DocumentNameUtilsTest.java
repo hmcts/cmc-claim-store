@@ -22,7 +22,7 @@ public class DocumentNameUtilsTest {
     @Test
     public void shouldBuildSealedClaimFileBaseName() {
         assertThat(buildSealedClaimFileBaseName("000MC001"))
-            .isEqualTo("000MC001-sealed-claim");
+            .isEqualTo("000MC001-claim-form");
     }
 
     @Test(expected = NullPointerException.class)

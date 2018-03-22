@@ -128,4 +128,11 @@ public class PartyUtilsTest {
             .isEqualTo(Optional.empty());
     }
 
+    @Test
+    public void getClaimantDateOfBirth() {
+        Individual claimant = SampleParty.builder().individual();
+        assertThat(PartyUtils.claimantDateOfBirth(claimant))
+            .isEqualTo(Optional.of(claimant.getDateOfBirth()));
+    }
+
 }
