@@ -9,19 +9,19 @@
 
       @bottom-center {
         content: "For further details of the courts www.gov.uk/find-court-tribunal";
-        font-size: 10px;
+        font-size: 8px;
       }
 
       @bottom-right {
         content: "© Crown copyright Page " counter(page) " of " counter(pages);
         /*noinspection CssNoGenericFontName*/
-        font-size: 10px;
+        font-size: 8px;
       }
 
       @bottom-left {
         content: "OCON225";
         /*noinspection CssNoGenericFontName*/
-        font-size: 10px;
+        font-size: 8px;
       }
 
       @top-right {
@@ -110,8 +110,8 @@
 
 <header>
   <table>
-    <tr>
-      <td colspan="3"><h2 class="row-spacing">Request for judgment by default</h2></td>
+    <tr align="right">
+      <td colspan="3"><h3 class="row-spacing">Request for judgment by default</h3></td>
     </tr>
     <tr>
       <td colspan="3"><p class="row-spacing">In the County Court Business Centre Online Court</p></td>
@@ -138,7 +138,7 @@
     <table>
       {% if claimant.businessName is not empty %}
       <tr>
-        <td>Company name:</td>
+        <td><strong>Company name:</strong></td>
         <td>
           {{ claimant.businessName }}
         </td>
@@ -146,14 +146,14 @@
       {% endif %}
       {% if claimant.name is not empty %}
       <tr>
-        <td>Contact name:</td>
+        <td><strong>Contact name:</strong></td>
         <td>
           {{ claimant.name }}
         </td>
       </tr>
       {% endif %}
       <tr>
-        <td>Address:</td>
+        <td><strong>Address:</strong></td>
         <td>
           {{ claimant.address.line1 }}
           <br/>
@@ -171,7 +171,7 @@
         </td>
       </tr>
       <tr>
-        <td>Telephone:</td>
+        <td><strong>Telephone:</strong></td>
         <td>
           {{ claimant.mobilePhone | default('Unable to provide') }}
         </td>
@@ -188,20 +188,20 @@
     <table>
       {% if defendant.businessName is not empty %}
       <tr>
-        <td>Organisation name:</td>
+        <td><strong>Organisation name:</strong></td>
         <td>
           {{ defendant.businessName }}
         </td>
       </tr>
       {% endif %}
       <tr>
-        <td>Contact Name:</td>
+        <td><strong>Contact Name:</strong></td>
         <td>
           {{ defendant.name }}
         </td>
       </tr>
       <tr>
-        <td>Address:</td>
+        <td><strong>Address:</strong></td>
         <td>
           {{ defendant.address.line1 }}
           <br/>
@@ -220,14 +220,14 @@
       </tr>
       {% if defendant.email is defined %}
       <tr>
-        <td>Email:</td>
+        <td><strong>Email:</strong></td>
         <td>
           {{ defendant.email }}
         </td>
       </tr>
       {% endif %}
       <tr>
-        <td>Date of birth:</td>
+        <td><strong>Date of birth:</strong></td>
         <td>
           {{ ccj.defendantDateOfBirth | default('Unable to provide') }}
         </td>
@@ -243,31 +243,31 @@
   <div class="section-body">
     <table>
       <tr>
-        <td>Claim amount:</td>
+        <td><strong>Claim amount:</strong></td>
         <td>
           {{ ccj.amount.totalAmount }}
         </td>
       </tr>
       <tr>
-        <td>Amount already paid by defendant to pay:</td>
+        <td><strong>Amount already paid by defendant to pay:</strong></td>
         <td>
           {{ ccj.amount.paidAmount }}
         </td>
       </tr>
       <tr>
-        <td>Interest rate claimed:</td>
+        <td><strong>Interest rate claimed:</strong></td>
         <td>
           {{ ccj.amount.interest.rate }}
         </td>
       </tr>
       <tr>
-        <td>Date interest is claimed from:</td>
+        <td><strong>Date interest is claimed from:</strong></td>
         <td>
           {{ ccj.amount.interest.fromDate }}
         </td>
       </tr>
       <tr>
-        <td>Interest daily amount:</td>
+        <td><strong>Interest daily amount:</strong></td>
         <td>
           {{ ccj.amount.interest.dailyAmount }}
         </td>
@@ -275,21 +275,21 @@
 
       {% if ccj.repaymentPlan.repaymentOption == "Immediately" %}
         <tr>
-          <td>When you want the defendant to pay:</td>
+          <td><strong>When you want the defendant to pay:</strong></td>
           <td>
             {{ ccj.repaymentPlan.repaymentOption }}
           </td>
         </tr>
       {% else %}
         <tr>
-          <td>How you want the defendant to pay:</td>
+          <td><strong>How you want the defendant to pay:</strong></td>
           <td>
             {{ ccj.repaymentPlan.repaymentOption }}
           </td>
         </tr>
         {% if ccj.repaymentPlan.repaymentOption == "By a set date" %}
           <tr class="no-border">
-            <td>When you want the defendant to pay:</td>
+            <td><strong>When you want the defendant to pay:</strong></td>
             <td>
               {{ ccj.repaymentPlan.paySetByDate }}
             </td>
@@ -297,19 +297,19 @@
         {% endif %}
         {% if ccj.repaymentPlan.repaymentOption == "By instalments" %}
           <tr class="no-border">
-            <td>Instalments of:</td>
+            <td><strong>Instalments of:</strong></td>
             <td>
               {{ ccj.repaymentPlan.instalmentAmount }}
             </td>
           </tr>
           <tr class="no-border">
-            <td>When you want them to make the first payment:</td>
+            <td><strong>When you want them to make the first payment:</strong></td>
             <td>
               {{ ccj.repaymentPlan.firstPaymentDate}}
             </td>
           </tr>
           <tr class="no-border">
-            <td>How often you want them to make this payment:</td>
+            <td><strong>How often you want them to make this payment:</strong></td>
             <td>
               {{ ccj.repaymentPlan.paymentSchedule }}
             </td>
@@ -326,25 +326,25 @@
       <div class="section-body">
           <table>
         <tr>
-          <td>Claim amount:</td>
+          <td><strong>Claim amount:</strong></td>
           <td>
             {{ ccj.amount.totalAmount }}
           </td>
         </tr>
         <tr>
-          <td>Interest to date of judgment:</td>
+          <td><strong>Interest to date of judgment:</strong></td>
           <td>
             {{ ccj.amount.interest.rate }}
           </td>
         </tr>
         <tr>
-          <td>Claim fee:</td>
+          <td><strong>Claim fee:</strong></td>
           <td>
             {{ ccj.amount.feeAmount }}
           </td>
         </tr>
         <tr>
-          <td>Total:</td>
+          <td><strong>Total:</strong></td>
           <td>
             {{ ccj.amount.totalAmount }}
           </td>
