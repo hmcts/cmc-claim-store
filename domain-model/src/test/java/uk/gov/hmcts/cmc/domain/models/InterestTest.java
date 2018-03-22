@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -13,7 +14,11 @@ public class InterestTest {
     @Test
     public void shouldHaveValidationMessagesWhenInterestAttributesAreNull() {
         //given
-        Interest interest = new Interest(null, null, null);
+        Interest interest = SampleInterest.builder()
+            .withType(null)
+            .withRate(null)
+            .withReason(null)
+            .build();
         //when
         Set<String> errors = validate(interest);
         //then
@@ -28,7 +33,11 @@ public class InterestTest {
     @Test
     public void shouldBeSuccessfulValidationForInterestDate1() {
         //given
-        Interest interest = new Interest(Interest.InterestType.STANDARD, new BigDecimal(8), "reason");
+        Interest interest = SampleInterest.builder()
+            .withType(Interest.InterestType.STANDARD)
+            .withRate(new BigDecimal(8))
+            .withReason("reason")
+            .build();
         //when
         Set<String> errors = validate(interest);
         //then
@@ -38,7 +47,11 @@ public class InterestTest {
     @Test
     public void shouldBeSuccessfulValidationForNoInterestType() {
         //given
-        Interest interest = new Interest(Interest.InterestType.NO_INTEREST, null, "reason");
+        Interest interest = SampleInterest.builder()
+            .withType(Interest.InterestType.NO_INTEREST)
+            .withRate(null)
+            .withReason(null)
+            .build();
         //when
         Set<String> errors = validate(interest);
         //then

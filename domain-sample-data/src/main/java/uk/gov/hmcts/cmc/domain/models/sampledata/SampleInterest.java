@@ -1,14 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 
 import java.math.BigDecimal;
 
 public class SampleInterest {
 
     private Interest.InterestType type = Interest.InterestType.DIFFERENT;
+    private InterestBreakdown interestBreakdown = null;
     private BigDecimal rate = new BigDecimal(11);
     private String reason = "A reason";
+    private BigDecimal specificDailyAmount = null;
 
     public static SampleInterest builder() {
         return new SampleInterest();
@@ -46,7 +49,13 @@ public class SampleInterest {
     }
 
     public Interest build() {
-        return new Interest(type, rate, reason);
+        return new Interest(
+            type,
+            interestBreakdown,
+            rate,
+            reason,
+            specificDailyAmount
+        );
     }
 
 }

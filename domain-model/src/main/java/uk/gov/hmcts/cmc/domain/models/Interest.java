@@ -17,6 +17,8 @@ public class Interest {
         STANDARD,
         @JsonProperty("different")
         DIFFERENT,
+        @JsonProperty("breakdown")
+        BREAKDOWN,
         @JsonProperty("no interest")
         NO_INTEREST
     }
@@ -24,29 +26,46 @@ public class Interest {
     @NotNull
     private final InterestType type;
 
+    private final InterestBreakdown interestBreakdown;
+
     private final BigDecimal rate;
 
     private final String reason;
 
+    private final BigDecimal specificDailyAmount;
 
-    public Interest(InterestType type,
-                    BigDecimal rate,
-                    String reason) {
+    public Interest(
+        InterestType type,
+        InterestBreakdown interestBreakdown,
+        BigDecimal rate,
+        String reason,
+        BigDecimal specificDailyAmount
+    ) {
         this.type = type;
+        this.interestBreakdown = interestBreakdown;
         this.rate = rate;
         this.reason = reason;
-    }
-
-    public String getReason() {
-        return reason;
+        this.specificDailyAmount = specificDailyAmount;
     }
 
     public InterestType getType() {
         return type;
     }
 
+    public InterestBreakdown getInterestBreakdown() {
+        return interestBreakdown;
+    }
+
     public BigDecimal getRate() {
         return rate;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public BigDecimal getSpecificDailyAmount() {
+        return specificDailyAmount;
     }
 
     @Override
@@ -59,13 +78,15 @@ public class Interest {
         }
         Interest interest = (Interest) other;
         return Objects.equals(type, interest.type)
+            && Objects.equals(interestBreakdown, interest.interestBreakdown)
             && Objects.equals(rate, interest.rate)
-            && Objects.equals(reason, interest.reason);
+            && Objects.equals(reason, interest.reason)
+            && Objects.equals(specificDailyAmount, interest.specificDailyAmount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, rate, reason);
+        return Objects.hash(type, interestBreakdown, rate, reason, specificDailyAmount);
     }
 
     @Override

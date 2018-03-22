@@ -12,7 +12,10 @@ public class InterestBreakdownTest {
 
     @Test
     public void shouldBeValidWhenCorrectDataIsProvided() {
-        InterestBreakdown interestBreakdown = new InterestBreakdown(BigDecimal.valueOf(100.75), "It's like that because...");
+        InterestBreakdown interestBreakdown = new InterestBreakdown(
+            BigDecimal.valueOf(100.75),
+            "It's like that because..."
+        );
 
         Set<String> validationErrors = validate(interestBreakdown);
 
@@ -21,7 +24,10 @@ public class InterestBreakdownTest {
 
     @Test
     public void shouldBeInvalidIfTotalAmountIsNull() {
-        InterestBreakdown interestBreakdown = new InterestBreakdown(null, "It's like that because...");
+        InterestBreakdown interestBreakdown = new InterestBreakdown(
+            null,
+            "It's like that because..."
+        );
 
         Set<String> validationErrors = validate(interestBreakdown);
 
@@ -30,7 +36,10 @@ public class InterestBreakdownTest {
 
     @Test
     public void shouldBeInvalidIfExplanationIsNull() {
-        InterestBreakdown interestBreakdown = new InterestBreakdown(BigDecimal.TEN, null);
+        InterestBreakdown interestBreakdown = new InterestBreakdown(
+            BigDecimal.TEN,
+            null
+        );
 
         Set<String> validationErrors = validate(interestBreakdown);
 
@@ -39,7 +48,10 @@ public class InterestBreakdownTest {
 
     @Test
     public void shouldBeInvalidIfExplanationIsEmpty() {
-        InterestBreakdown interestBreakdown = new InterestBreakdown(BigDecimal.TEN, "");
+        InterestBreakdown interestBreakdown = new InterestBreakdown(
+            BigDecimal.TEN,
+            ""
+        );
 
         Set<String> validationErrors = validate(interestBreakdown);
 
@@ -48,7 +60,10 @@ public class InterestBreakdownTest {
 
     @Test
     public void shouldBeInvalidWhenNegativeAmountIsProvided() {
-        InterestBreakdown interestBreakdown = new InterestBreakdown(BigDecimal.valueOf(-1), "It's like that because...");
+        InterestBreakdown interestBreakdown = new InterestBreakdown(
+            BigDecimal.valueOf(-1),
+            "It's like that because..."
+        );
 
         Set<String> validationErrors = validate(interestBreakdown);
 
@@ -57,7 +72,10 @@ public class InterestBreakdownTest {
 
     @Test
     public void shouldBeValidWhenZeroIsProvidedForAmount() {
-        InterestBreakdown interestBreakdown = new InterestBreakdown(BigDecimal.ZERO, "It's like that because...");
+        InterestBreakdown interestBreakdown = new InterestBreakdown(
+            BigDecimal.ZERO,
+            "It's like that because..."
+        );
 
         Set<String> validationErrors = validate(interestBreakdown);
 
@@ -66,7 +84,10 @@ public class InterestBreakdownTest {
 
     @Test
     public void shouldBeInValidWhenTooManyFractionDigitsAreProvided() {
-        InterestBreakdown interestBreakdown = new InterestBreakdown(BigDecimal.valueOf(123.456), "It's like that because...");
+        InterestBreakdown interestBreakdown = new InterestBreakdown(
+            BigDecimal.valueOf(123.456),
+            "It's like that because..."
+        );
 
         Set<String> validationErrors = validate(interestBreakdown);
 

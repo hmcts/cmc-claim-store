@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
@@ -190,5 +191,9 @@ public class Assertions {
 
     public static EvidenceAssert assertThat(Evidence evidence) {
         return new EvidenceAssert(evidence);
+    }
+
+    public static InterestBreakdownAssert assertThat(InterestBreakdown interestBreakdown) {
+        return new InterestBreakdownAssert(interestBreakdown);
     }
 }
