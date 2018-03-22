@@ -58,17 +58,22 @@ public class PartyDetailsContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendant() {
-        provider.createContent(null, amendedDetails(), null);
+        provider.createContent(null, amendedDetails(), null, null, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendantDetails() {
-        provider.createContent(defendant, null, null);
+        provider.createContent(defendant, null, null, null, null);
     }
 
     @Test
     public void nameShouldBeAsGivenByClaimantWhenNotAmended() {
-        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(
+            defendant,
+            notAmendedDetails(),
+            DEFENDANT_EMAIL,
+            null,
+            null);
 
         assertThat(content.getNameAmended()).isFalse();
         assertThat(content.getFullName()).isEqualTo(defendant.getName());
@@ -77,7 +82,12 @@ public class PartyDetailsContentProviderTest {
     @Test
     public void nameShouldBeAsGivenByDefendantWhenAmended() {
         Individual party = amendedDetails();
-        PartyDetailsContent content = provider.createContent(defendant, party, DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(
+            defendant,
+            party,
+            DEFENDANT_EMAIL,
+            null,
+            null);
 
         assertThat(content.getNameAmended()).isTrue();
         assertThat(content.getFullName()).isEqualTo(party.getName());
@@ -85,7 +95,11 @@ public class PartyDetailsContentProviderTest {
 
     @Test
     public void addressShouldBeAsGivenByClaimantWhenNotAmended() {
-        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant,
+            notAmendedDetails(),
+            DEFENDANT_EMAIL,
+            null,
+            null);
 
         assertThat(content.getAddressAmended()).isFalse();
         assertThat(content.getAddress()).isEqualTo(defendant.getAddress());
@@ -94,7 +108,11 @@ public class PartyDetailsContentProviderTest {
     @Test
     public void addressShouldBeAsGivenByDefendantWhenAmended() {
         Individual party = amendedDetails();
-        PartyDetailsContent content = provider.createContent(defendant, party, DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(defendant,
+            party,
+            DEFENDANT_EMAIL,
+            null,
+            null);
 
         assertThat(content.getAddressAmended()).isTrue();
         assertThat(content.getAddress()).isEqualTo(party.getAddress());
@@ -102,14 +120,25 @@ public class PartyDetailsContentProviderTest {
 
     @Test
     public void shouldProvideDateOfBirth() {
-        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(
+            defendant,
+            notAmendedDetails(),
+            DEFENDANT_EMAIL,
+            null,
+            null);
 
         assertThat(content.getDateOfBirth()).isEqualTo(formatDate(DATE_OF_BIRTH));
     }
 
     @Test
     public void shouldProvideCorrespondenceAddress() {
-        PartyDetailsContent content = provider.createContent(defendant, notAmendedDetails(), DEFENDANT_EMAIL);
+        PartyDetailsContent content = provider.createContent(
+            defendant,
+            notAmendedDetails(),
+            DEFENDANT_EMAIL,
+            null,
+            null
+        );
 
         assertThat(content.getCorrespondenceAddress()).isEqualTo(correspondenceAddress);
     }

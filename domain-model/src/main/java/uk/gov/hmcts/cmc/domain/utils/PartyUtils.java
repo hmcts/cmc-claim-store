@@ -64,7 +64,7 @@ public class PartyUtils {
     }
 
     public static Optional<String> getContactPerson(TheirDetails party) {
-        if (party instanceof CompanyDetails)  {
+        if (party instanceof CompanyDetails) {
             return ((CompanyDetails) party).getContactPerson();
         } else if (party instanceof OrganisationDetails) {
             return ((OrganisationDetails) party).getContactPerson();

@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
@@ -25,7 +24,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final DocumentManagementService documentManagementService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final LegalSealedClaimPdfService legalSealedClaimPdfService;
-    private final DefendantResponseCopyService defendantResponseCopyService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
@@ -38,7 +36,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DocumentManagementService documentManagementService,
         ClaimIssueReceiptService claimIssueReceiptService,
         LegalSealedClaimPdfService legalSealedClaimPdfService,
-        DefendantResponseCopyService defendantResponseCopyService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService) {
@@ -46,7 +43,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.documentManagementService = documentManagementService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.legalSealedClaimPdfService = legalSealedClaimPdfService;
-        this.defendantResponseCopyService = defendantResponseCopyService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
@@ -61,11 +57,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public byte[] getLegalSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
         return downloadOrGenerateAndUpload(claim, () -> legalSealedClaimPdfService.createPdf(claim), authorisation);
-    }
-
-    @Override
-    public byte[] generateDefendantResponseCopy(String externalId, String authorisation) {
-        return defendantResponseCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
