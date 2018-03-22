@@ -23,15 +23,19 @@
         /*noinspection CssNoGenericFontName*/
         font-size: 10px;
       }
+
+      @top-right {
+        content: "Claim number: {{ ccj.claim.referenceNumber }}";
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
     }
 
-    /*@page :first {*/
-      /*@top-right {*/
-        /*content: "{{ ccj.claim.referenceNumber }}";*/
-        /*!*noinspection CssNoGenericFontName*!*/
-        /*font-family: "Open Sans";*/
-      /*}*/
-    /*}*/
+    @page :first {
+      @top-right {
+      }
+    }
 
     html {
       /*noinspection CssNoGenericFontName*/
