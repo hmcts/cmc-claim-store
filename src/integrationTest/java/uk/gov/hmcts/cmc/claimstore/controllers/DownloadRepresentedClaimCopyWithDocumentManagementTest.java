@@ -51,7 +51,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(content().bytes(PDF_BYTES));
 
         verify(documentUploadClient).upload(AUTHORISATION_TOKEN, newArrayList(new InMemoryMultipartFile("files",
-            claim.getReferenceNumber() + "-sealed-claim.pdf", "application/pdf", PDF_BYTES)));
+            claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)));
     }
 
     @Test
