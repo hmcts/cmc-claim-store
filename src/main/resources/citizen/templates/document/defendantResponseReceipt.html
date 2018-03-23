@@ -274,8 +274,8 @@
         </td>
       </tr>
 
-      {% if events is defined and events is not empty %}
-      <tr class="no-border">
+      {% if events is not empty %}
+      <tr>
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
       </tr>
       {% for event in events %}
@@ -299,8 +299,8 @@
       </tr>
       {% endif %}
 
-      {% if evidences is defined and evidences is not empty %}
-      <tr class="no-border">
+      {% if evidences is not empty %}
+      <tr>
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
       </tr>
       {% for row in evidences %}
