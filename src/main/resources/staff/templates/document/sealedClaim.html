@@ -428,12 +428,14 @@
           {{ claim.claimAmount }}
         </td>
       </tr>
+      {% if claim.interest is defined %}
       <tr>
         <td><strong>Total interest claimed to the date of submission:</strong></td>
         <td>
           {{ claim.interest.amount }}
         </td>
       </tr>
+      {% endif %}
       <tr>
         <td><strong>Claim fee:</strong></td>
         <td>
