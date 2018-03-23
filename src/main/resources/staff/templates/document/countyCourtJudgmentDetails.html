@@ -201,6 +201,7 @@
           {{ ccj.amount.totalAmount }}
         </td>
       </tr>
+      {% if ccj.amount.interest is defined %}
       <tr>
         <td>Interest rate claimed:</td>
         <td>
@@ -210,11 +211,7 @@
       <tr>
         <td>Date interest is claimed from:</td>
         <td>
-          {% if ccj.amount.interest.fromDate is defined %}
           {{ ccj.amount.interest.fromDate }}
-          {% else %}
-          No interest claimed
-          {% endif %}
         </td>
       </tr>
       <tr>
@@ -229,6 +226,14 @@
           {{ ccj.amount.interest.amount }}
         </td>
       </tr>
+      {% else %}
+      <tr>
+        <td>Interest:</td>
+        <td>
+          No interest claimed
+        </td>
+      </tr>
+      {% endif %}
       <tr>
         <td>Fee amount:</td>
         <td>
