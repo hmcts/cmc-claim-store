@@ -30,7 +30,8 @@ public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate>
         return new InterestDate(
             InterestDate.InterestDateType.valueOf(ccdInterestDate.getType().name()),
             ccdInterestDate.getDate(),
-            ccdInterestDate.getReason()
+            ccdInterestDate.getReason(),
+            ccdInterestDate.getEndDate()
         );
     }
 }

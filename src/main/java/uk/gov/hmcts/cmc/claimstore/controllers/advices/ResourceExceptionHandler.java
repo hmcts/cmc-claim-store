@@ -93,11 +93,16 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(value = {
         HttpMediaTypeNotSupportedException.class,
-        InvalidApplicationException.class,
         ServletRequestBindingException.class})
     public ResponseEntity<Object> badRequest(Exception exception) {
         logger.trace(exception.getMessage(), exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = InvalidApplicationException.class)
+    public ResponseEntity<Object> invalidApplicationException(InvalidApplicationException exception) {
+        logger.error(exception.getMessage(), exception);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

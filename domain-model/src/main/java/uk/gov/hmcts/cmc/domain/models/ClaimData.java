@@ -6,7 +6,6 @@ import cz.jirutka.validator.collection.constraints.EachNotNull;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
-import uk.gov.hmcts.cmc.domain.constraints.InterDependentFields;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -31,7 +30,6 @@ import javax.validation.constraints.Size;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@InterDependentFields(field = "interestDate", dependentField = "interest")
 public class ClaimData {
     @Valid
     private final UUID externalId;

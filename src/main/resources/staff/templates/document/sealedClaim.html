@@ -115,7 +115,7 @@
         page-break-before: always;
       }
     }
-    
+
   </style>
 </head>
 <body>
@@ -356,48 +356,114 @@
   <div class="section-body">
     <table>
       <tr>
-        <td><strong>Claim amount:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Claim amount items:</strong></td>
+      </tr>
+      {% for row in claim.amountBreakdown %}
+      <tr class="no-border">
         <td>
-          {{ claim.claimAmount }}
+          {{ row.reason | trim }}
+        </td>
+        <td>
+          {{ row.amount }}
         </td>
       </tr>
-      {% if claim.interest is not empty %}
+      {% endfor %}
+      {% if claim.interest is defined %}
+      {% if claim.interest.type equals "BREAKDOWN" %}
+      <tr>
+        <td><strong>Total interest amount:</strong></td>
+        <td>
+          {{ claim.interest.interestBreakdown.totalAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>How the interest was calculated:</strong></td>
+        <td>
+          {{ claim.interest.interestBreakdown.explanation }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Interest end date:</strong></td>
+        <td>
+          {% if claim.interest.interestEndDateType equals "SUBMISSION" %}
+          {{ claim.issuedOn }}
+          {% else %}
+          {{ claim.interest.dailyAmount }} per day until the claim is settled or judgment made.
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
       <tr>
         <td><strong>Interest rate claimed:</strong></td>
         <td>
           {{ claim.interest.rate }}
         </td>
       </tr>
-      <tr>
+      <tr class="no-border">
         <td><strong>Explanation:</strong></td>
         <td>
-          {% if claim.interest.customRate %}
-            {{ claim.interest.customRateReason }}
+          {% if claim.interest.customRateReason is defined %}
+          {{ claim.interest.customRateReason }}
           {% else %}
-            The claimant reserves the right to claim interest under Section 69 of the County Courts Act 1984
+          The claimant reserves the right to claim interest under Section 69 of the County Courts Act 1984
           {% endif %}
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Daily rate of interest claimed:</strong></td>
-        <td>
-          Interest will accrue at the daily rate of {{ claim.interest.dailyAmount }} up to the date of judgment.
         </td>
       </tr>
       <tr>
         <td><strong>Date interest is claimed from:</strong></td>
         <td>
-          {{ claim.interest.fromDate }}
+          {{ claim.fromDate }}
         </td>
       </tr>
-      {% if claim.interest.customFromDate %}
-      <tr>
-        <td><strong>Total interest claimed to the date of submission:</strong></td>
+      <tr class="no-border">
+        <td><strong>Explanation:</strong></td>
         <td>
-          {{ claim.interest.amount }}
+          {% if claim.interest.startDateReason is defined %}
+          {{ claim.interest.startDateReason }}
+          {% else %}
+          From the date the claim was issued
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Interest end date:</strong></td>
+        <td>
+          {% if claim.interest.submissionEndDate %}
+          {{ claim.issuedOn }}
+          {% else %}
+          Interest will accrue at the daily rate of {{ claim.interest.dailyAmount }} up to the date of judgment
+          {% endif %}
         </td>
       </tr>
       {% endif %}
+      {% endif %}
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Total amount</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Claim amount:</strong></td>
+        <td>
+          {{ claim.claimAmount }}
+        </td>
+      </tr>
+      {% if claim.interest is defined %}
+      <tr>
+        <td><strong>Total interest claimed to the date of submission:</strong></td>
+        <td>
+          {% if claim.interest.type equals "BREAKDOWN" %}
+          {{ claim.interest.interestBreakdown.totalAmount }}
+          {% else %}
+          {{ claim.interest.amount }}
+          {% endif %}
+        </td>
+      </tr>
       {% endif %}
       <tr>
         <td><strong>Claim fee:</strong></td>
@@ -408,7 +474,7 @@
       <tr>
         <td><strong>Total:</strong></td>
         <td>
-          <strong>{{ claim.claimTotalAmount }}</strong>
+          {{ claim.claimTotalAmount }}
         </td>
       </tr>
     </table>
