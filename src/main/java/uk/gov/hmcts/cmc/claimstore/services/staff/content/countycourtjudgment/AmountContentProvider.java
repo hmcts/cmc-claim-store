@@ -41,7 +41,7 @@ public class AmountContentProvider {
                 interest.getRate()
             );
 
-            if (claim.getClaimData().getInterestDate().getEndDate()
+            if (claim.getClaimData().getInterestDate().getEndDateType()
                 .equals(InterestDate.InterestEndDateType.SUBMISSION)) {
                 interestToDate = claim.getIssuedOn();
             } else {
