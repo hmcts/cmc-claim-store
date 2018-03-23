@@ -38,7 +38,7 @@ public class DocumentsController {
         @PathVariable("externalId") @NotBlank String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.generateDefendantResponseCopy(externalId, authorisation);
+        byte[] pdfDocument = documentsService.generateDefendantResponseReceipt(externalId, authorisation);
 
         return ResponseEntity
             .ok()

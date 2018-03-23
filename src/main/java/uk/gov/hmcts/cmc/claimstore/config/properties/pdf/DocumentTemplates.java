@@ -9,10 +9,6 @@ import java.io.InputStream;
 @Component
 public class DocumentTemplates {
 
-    public byte[] getDefendantResponseCopy() {
-        return readBytes("/staff/templates/document/defendantResponseCopy.html");
-    }
-
     public byte[] getDefendantResponseReceipt() {
         return readBytes("/citizen/templates/document/defendantResponseReceipt.html");
     }
