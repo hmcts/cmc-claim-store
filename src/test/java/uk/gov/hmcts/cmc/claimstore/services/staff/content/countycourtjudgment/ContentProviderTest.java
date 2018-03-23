@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -32,7 +33,9 @@ public class ContentProviderTest {
     public void setup() {
         this.provider = new ContentProvider(
             new AmountContentProvider(
-                new InterestCalculationService(Clock.systemDefaultZone())
+                new InterestContentProvider(
+                    new InterestCalculationService(Clock.systemDefaultZone())
+                )
             )
         );
     }

@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
+import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -15,7 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AmountContentProviderTest {
 
-    private InterestCalculationService interestCalculationService = new InterestCalculationService(Clock.systemUTC());
+    private AmountContentProvider provider;
+
+    @Before
+    public void beforeEachTest() {
+        provider = new AmountContentProvider(
+            new InterestContentProvider(
+                new InterestCalculationService(Clock.systemUTC())
+            )
+        );
+    }
 
     private Claim noInterest = SampleClaim.builder()
         .withClaimData(SampleClaimData.noInterest())
@@ -32,13 +43,13 @@ public class AmountContentProviderTest {
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
+        assertThat(provider.create(claim).getRemainingAmount())
             .isEqualTo("£80.89");
     }
 
     @Test
     public void calculateWithNoInterest() {
-        assertThat(new AmountContentProvider(interestCalculationService).create(noInterest).getRemainingAmount())
+        assertThat(provider.create(noInterest).getRemainingAmount())
             .isEqualTo("£80.00");
     }
 
@@ -51,13 +62,8 @@ public class AmountContentProviderTest {
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        assertThat(new AmountContentProvider(interestCalculationService).create(claim).getRemainingAmount())
+        assertThat(provider.create(claim).getRemainingAmount())
             .isEqualTo("£70.89");
     }
 
-    @Test
-    public void interestShouldSayNoInterestIfNoneClaimed() {
-        assertThat(new AmountContentProvider(interestCalculationService).create(noInterest).getInterest().getFromDate())
-            .isEqualTo("No interest claimed");
-    }
 }

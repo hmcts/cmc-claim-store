@@ -210,7 +210,11 @@
       <tr>
         <td>Date interest is claimed from:</td>
         <td>
+          {% if ccj.amount.interest.fromDate is defined %}
           {{ ccj.amount.interest.fromDate }}
+          {% else %}
+          No interest claimed
+          {% endif %}
         </td>
       </tr>
       <tr>

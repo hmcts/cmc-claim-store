@@ -135,11 +135,9 @@ public class InterestContentProvider {
         }
 
         BigDecimal dailyAmount;
-        if (interest.getSpecificDailyAmount().isPresent()) {
-            dailyAmount = interest.getSpecificDailyAmount().get();
-        } else {
-            dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
-        }
+        dailyAmount = interest.getSpecificDailyAmount().orElseGet(
+            () -> interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate())
+        );
         return Optional.of(dailyAmount);
     }
 
