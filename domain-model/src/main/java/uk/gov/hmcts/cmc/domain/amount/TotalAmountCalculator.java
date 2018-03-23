@@ -56,16 +56,16 @@ public class TotalAmountCalculator {
         );
     }
 
-    private static BigDecimal calculateDailyAmount(BigDecimal claimAmount, BigDecimal interestRate) {
-        return claimAmount
-            .multiply(asFraction(interestRate))
-            .divide(NUMBER_OF_DAYS_IN_YEAR, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP);
-    }
-
     private static BigDecimal calculateInterest(BigDecimal dailyAmount, BigDecimal numberOfDays) {
         return dailyAmount
             .multiply(numberOfDays)
             .setScale(TO_FULL_PENNIES, RoundingMode.HALF_UP);
+    }
+
+    private static BigDecimal calculateDailyAmount(BigDecimal claimAmount, BigDecimal interestRate) {
+        return claimAmount
+            .multiply(asFraction(interestRate))
+            .divide(NUMBER_OF_DAYS_IN_YEAR, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP);
     }
 
     public static BigDecimal calculateBreakdownInterest(Claim claim, LocalDate toDate) {
@@ -75,7 +75,13 @@ public class TotalAmountCalculator {
         return calculateBreakdownInterest(interest, interestDate, claimAmount, claim.getIssuedOn(), toDate);
     }
 
-    public static BigDecimal calculateBreakdownInterest(Interest interest, InterestDate interestDate, BigDecimal claimAmount, LocalDate issuedOn, LocalDate toDate) {
+    public static BigDecimal calculateBreakdownInterest(
+        Interest interest,
+        InterestDate interestDate,
+        BigDecimal claimAmount,
+        LocalDate issuedOn,
+        LocalDate toDate
+    ) {
         BigDecimal accruedInterest = BigDecimal.ZERO;
         if (interestDate.getEndDateType() == SETTLED_OR_JUDGMENT) {
             if (interest.getSpecificDailyAmount().isPresent()) {

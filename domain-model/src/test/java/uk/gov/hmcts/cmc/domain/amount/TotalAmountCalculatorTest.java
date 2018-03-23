@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 
 import java.math.BigDecimal;

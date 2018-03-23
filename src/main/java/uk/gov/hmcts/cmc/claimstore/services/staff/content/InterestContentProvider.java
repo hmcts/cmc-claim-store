@@ -69,8 +69,8 @@ public class InterestContentProvider {
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         LocalDate fromDate;
         String interestDateReason = null;
-        BigDecimal amountUpToNowRealValue;
-        String amountUpToNow;
+        BigDecimal amountUpToNowRealValue = null;
+        String amountUpToNow = null;
         if (customInterestDate) {
             fromDate = interestDate.getDate();
             interestDateReason = interestDate.getReason();
@@ -78,14 +78,13 @@ public class InterestContentProvider {
             fromDate = issuedOn;
         }
 
-        if (fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
-            fromDate = LocalDateTimeFactory.nowInLocalZone().toLocalDate();
+        if (!fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
+            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToNow(
+                claimAmount, interest.getRate(), fromDate
+            );
+            amountUpToNow = formatMoney(amountUpToNowRealValue);
         }
 
-        amountUpToNowRealValue = interestCalculationService.calculateInterestUpToNow(
-            claimAmount, interest.getRate(), fromDate
-        );
-        amountUpToNow = formatMoney(amountUpToNowRealValue);
         BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
 
         return new InterestContent(
@@ -126,7 +125,11 @@ public class InterestContentProvider {
         );
     }
 
-    private Optional<BigDecimal> inferDailyInterestAmount(Interest interest, InterestDate interestDate, BigDecimal claimAmount) {
+    private Optional<BigDecimal> inferDailyInterestAmount(
+        Interest interest,
+        InterestDate interestDate,
+        BigDecimal claimAmount
+    ) {
         if (interestDate.getEndDateType() == SUBMISSION) {
             return Optional.empty();
         }
