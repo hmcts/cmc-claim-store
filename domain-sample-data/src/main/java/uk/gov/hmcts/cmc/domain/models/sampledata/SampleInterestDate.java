@@ -28,6 +28,24 @@ public class SampleInterestDate {
             .build();
     }
 
+    public static InterestDate submissionToSubmission() {
+        return builder()
+            .withType(InterestDate.InterestDateType.SUBMISSION)
+            .withEndDateType(InterestDate.InterestEndDateType.SUBMISSION)
+            .withDate(null)
+            .withReason(null)
+            .build();
+    }
+
+    public static InterestDate submissionToSettledOrJudgement() {
+        return builder()
+            .withType(InterestDate.InterestDateType.SUBMISSION)
+            .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
+            .withDate(null)
+            .withReason(null)
+            .build();
+    }
+
     public SampleInterestDate withType(InterestDate.InterestDateType type) {
         this.type = type;
         return this;

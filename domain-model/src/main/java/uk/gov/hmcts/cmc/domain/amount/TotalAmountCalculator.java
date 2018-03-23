@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import static java.math.BigDecimal.valueOf;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT;
 
 public class TotalAmountCalculator {
 
@@ -49,11 +50,44 @@ public class TotalAmountCalculator {
         requireNonNull(fromDate);
         requireNonNull(toDate);
 
+        return calculateInterest(
+            calculateDailyAmount(claimAmount, interestRate),
+            daysBetween(fromDate, toDate)
+        );
+    }
+
+    private static BigDecimal calculateDailyAmount(BigDecimal claimAmount, BigDecimal interestRate) {
         return claimAmount
             .multiply(asFraction(interestRate))
-            .multiply(daysBetween(fromDate, toDate))
-            .divide(NUMBER_OF_DAYS_IN_YEAR, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP)
+            .divide(NUMBER_OF_DAYS_IN_YEAR, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP);
+    }
+
+    private static BigDecimal calculateInterest(BigDecimal dailyAmount, BigDecimal numberOfDays) {
+        return dailyAmount
+            .multiply(numberOfDays)
             .setScale(TO_FULL_PENNIES, RoundingMode.HALF_UP);
+    }
+
+    private static BigDecimal calculateBreakdownInterest(Claim claim, LocalDate toDate) {
+        Interest interest = claim.getClaimData().getInterest();
+        InterestDate interestDate = claim.getClaimData().getInterestDate();
+        BigDecimal accruedInterest = BigDecimal.ZERO;
+        if (interestDate.getEndDateType() == SETTLED_OR_JUDGMENT) {
+            if (interest.getSpecificDailyAmount().isPresent()) {
+                accruedInterest = calculateInterest(
+                    interest.getSpecificDailyAmount().get(),
+                    daysBetween(claim.getIssuedOn(), toDate)
+                );
+            } else {
+                BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+                accruedInterest = calculateInterest(
+                    calculateDailyAmount(claimAmount, interest.getRate()),
+                    daysBetween(claim.getIssuedOn(), toDate)
+                );
+            }
+        }
+        BigDecimal interestValue = interest.getInterestBreakdown().getTotalAmount();
+        return interestValue.add(accruedInterest);
     }
 
     public static BigDecimal asFraction(BigDecimal interestRate) {
@@ -66,19 +100,27 @@ public class TotalAmountCalculator {
 
         if (data.getAmount() instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
-            BigDecimal rate = data.getInterest().getRate();
+            BigDecimal interest = BigDecimal.ZERO;
+            BigDecimal feesPaid = data.getFeesPaidInPound();
 
-            if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
-                LocalDate fromDate = getFromDate(claim);
-                return claimAmount
-                    .add(data.getFeesPaidInPound())
-                    .add(calculateInterest(claimAmount, rate, fromDate, getLatestDate(toDate, claim.getIssuedOn())));
+            if (data.getInterest().getType() == Interest.InterestType.BREAKDOWN) {
+                interest = calculateBreakdownInterest(claim, toDate);
+            } else if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
+                interest = calculateFixedRateInterest(claim, toDate);
             }
 
-            return claimAmount.add(data.getFeesPaidInPound());
+            return claimAmount.add(interest.add(feesPaid));
         }
 
         return null;
+    }
+
+    private static BigDecimal calculateFixedRateInterest(Claim claim, LocalDate toDate) {
+        ClaimData data = claim.getClaimData();
+        BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
+        BigDecimal rate = data.getInterest().getRate();
+        LocalDate fromDate = getFromDate(claim);
+        return calculateInterest(claimAmount, rate, fromDate, getLatestDate(toDate, claim.getIssuedOn()));
     }
 
     private static LocalDate getLatestDate(LocalDate firstDate, LocalDate secondDate) {

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class SampleInterestBreakdown {
 
-    private BigDecimal totalAmount = BigDecimal.valueOf(1065.50);
+    private BigDecimal totalAmount = new BigDecimal("40.00");
     private String explanation = "I've given this amount because...";
 
     public static InterestBreakdown validDefaults() {

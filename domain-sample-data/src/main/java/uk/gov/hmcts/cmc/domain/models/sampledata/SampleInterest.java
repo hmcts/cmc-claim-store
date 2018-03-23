@@ -20,6 +20,7 @@ public class SampleInterest {
     public static SampleInterest breakdownInterestBuilder() {
         return new SampleInterest()
             .withType(Interest.InterestType.BREAKDOWN)
+            .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
             .withRate(null)
             .withReason(null);
     }
@@ -40,6 +41,11 @@ public class SampleInterest {
             .build();
     }
 
+    public static Interest breakdownOnly() {
+        return breakdownInterestBuilder()
+            .build();
+    }
+
     public SampleInterest withType(Interest.InterestType type) {
         this.type = type;
         return this;
@@ -57,6 +63,11 @@ public class SampleInterest {
 
     public SampleInterest withReason(String reason) {
         this.reason = reason;
+        return this;
+    }
+
+    public SampleInterest withSpecificDailyAmount(BigDecimal specificDailyAmount) {
+        this.specificDailyAmount = specificDailyAmount;
         return this;
     }
 
