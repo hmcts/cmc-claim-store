@@ -3,9 +3,26 @@
   <meta charset="UTF-8"/>
   <title>{{ ccj.claim.referenceNumber }}</title>
   <style>
+    @page :first {
+      @top-right {
+        content: "";
+      }
+    }
+
     @page {
       size: 8.5in 11in;
       margin: 10%;
+
+      @top-right {
+        content: "Claim number: {{ ccj.claim.referenceNumber }}";
+        font-size: 18px;
+        font-family: "Open Sans";
+      }
+
+      @bottom-left {
+        content: "OCON225";
+        font-size: 11px;
+      }
 
       @bottom-center {
         content: "For further details of the courts www.gov.uk/find-court-tribunal";
@@ -15,23 +32,6 @@
       @bottom-right {
         content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
         font-size: 11px;
-      }
-
-      @bottom-left {
-        content: "OCON225";
-        font-size: 11px;
-      }
-
-      @top-right {
-        content: "Claim number: {{ ccj.claim.referenceNumber }}";
-        font-size: 18px;
-        font-family: "Open Sans";
-      }
-    }
-
-    @page :first {
-      @top-right {
-        content: "";
       }
     }
 
@@ -168,12 +168,14 @@
           {{ claimant.address.postcode }}
         </td>
       </tr>
+      {% if claimant.mobilePhone is not empty %}
       <tr>
         <td><strong>Telephone:</strong></td>
         <td>
-          {{ claimant.mobilePhone | default('Unable to provide') }}
+          {{ claimant.mobilePhone }}
         </td>
       </tr>
+      {% endif %}
     </table>
   </div>
 </div>
@@ -224,12 +226,14 @@
         </td>
       </tr>
       {% endif %}
+      {% if claimant.defendantDateOfBirth is not empty %}
       <tr>
         <td><strong>Date of birth:</strong></td>
         <td>
-          {{ ccj.defendantDateOfBirth | default('Unable to provide') }}
+          {{ ccj.defendantDateOfBirth }}
         </td>
       </tr>
+      {% endif %}
     </table>
   </div>
 </div>
