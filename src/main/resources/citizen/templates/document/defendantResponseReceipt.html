@@ -274,17 +274,17 @@
         </td>
       </tr>
 
-      {% if events is defined %}
-      <tr class="no-border">
+      {% if events is not empty %}
+      <tr>
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
       </tr>
       {% for event in events %}
-      <tr class="no-border">
-        <td>
-          {{ event.date | trim }}
+      <tr class="subsection no-border">
+        <td class="no-border single-cell">
+        {{ event.date | trim }}
         </td>
-        <td>
-          {{ event.description | trim }}
+        <td class="no-border single-cell">
+        {{ event.description | trim }}
         </td>
       </tr>
       {% endfor %}
@@ -299,17 +299,17 @@
       </tr>
       {% endif %}
 
-      {% if evidences is defined %}
-      <tr class="no-border">
+      {% if evidences is not empty %}
+      <tr>
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
       </tr>
       {% for row in evidences %}
-      <tr class="no-border">
-        <td>
-          {{ row.type | trim }}
+      <tr class="subsection no-border">
+        <td class="no-border single-cell">
+        {{ row.type | trim }}
         </td>
-        <td>
-          {{ row.description | trim }}
+        <td class="no-border single-cell">
+        {{ row.description | trim }}
         </td>
       </tr>
       {% endfor %}
@@ -338,40 +338,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if defendant.events is defined %}
-      <tr>
-        <td colspan="2">
-          <strong>Defendant’s timeline of what happened:</strong>
-        </td>
-      </tr>
-      {% for event in defendant.events %}
-      <tr class="subsection no-border">
-        <td class="no-border single-cell">
-          {{ event.date | trim }}
-        </td>
-        <td class="no-border single-cell">
-          {{ event.description | trim }}
-        </td>
-      </tr>
-      {% endfor %}
-      {% endif %}
-      {% if defendant.evidences is defined %}
-      <tr>
-        <td colspan="2">
-          <strong>Defendant’s evidence:</strong>
-        </td>
-      </tr>
-      {% for evidence in defendant.evidences %}
-      <tr class="subsection no-border">
-        <td class="no-border single-cell">
-          {{ evidence.type }}
-        </td>
-        <td class="no-border single-cell">
-          {{ evidence.description | trim }}
-        </td>
-      </tr>
-      {% endfor %}
-      {% endif %}
+
     </table>
   </div>
 </div>
@@ -434,9 +401,10 @@
     <tr>
       <td><strong>Mediation</strong></td>
       <td>
-        <p>If the defendant has asked for mediation then we’ll contact you to ask if you want to mediate.</p>
-        <p>If the defendant doesn’t want to mediate then the case will be reviewed by a judge and might go to a hearing.
-          We'll contact you if a hearing date is scheduled and explain what you need to do to prepare.</p>
+        <p>If the defendant has asked for mediation then the claimant will be asked if they want to mediate.</p>
+        <p>
+          If the defendant hasn’t asked for mediation then the case will be reviewed by a judge and might go to a hearing. The claimant and defendant will be contacted if a hearing date is scheduled and it will be explained what they need to do to prepare.
+        </p>
       </td>
     </tr>
   </table>
