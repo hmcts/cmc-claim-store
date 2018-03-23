@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
@@ -17,6 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatPercent;
 import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.calculateInterest;
 
+@Component
 public class AmountContentProvider {
 
     private final InterestCalculationService interestCalculationService;

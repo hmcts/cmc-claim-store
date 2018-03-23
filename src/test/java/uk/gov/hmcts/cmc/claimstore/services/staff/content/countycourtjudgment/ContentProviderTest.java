@@ -30,7 +30,11 @@ public class ContentProviderTest {
 
     @Before
     public void setup() {
-        this.provider = new ContentProvider(new InterestCalculationService(Clock.systemDefaultZone()));
+        this.provider = new ContentProvider(
+            new AmountContentProvider(
+                new InterestCalculationService(Clock.systemDefaultZone())
+            )
+        );
     }
 
     @Test(expected = NullPointerException.class)
