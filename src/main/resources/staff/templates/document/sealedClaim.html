@@ -115,7 +115,7 @@
         page-break-before: always;
       }
     }
-    
+
   </style>
 </head>
 <body>
@@ -356,11 +356,18 @@
   <div class="section-body">
     <table>
       <tr>
-        <td><strong>Claim amount:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Claim amount items:</strong></td>
+      </tr>
+      {% for row in claim.amountBreakdown %}
+      <tr class="no-border">
         <td>
-          {{ claim.claimAmount }}
+          {{ row.reason | trim }}
+        </td>
+        <td>
+          {{ row.amount }}
         </td>
       </tr>
+      {% endfor %}
       {% if claim.interest is not empty %}
       <tr>
         <td><strong>Interest rate claimed:</strong></td>
@@ -399,6 +406,22 @@
       </tr>
       {% endif %}
       {% endif %}
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Total amount</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Claim amount:</strong></td>
+        <td>
+          {{ claim.claimAmount }}
+        </td>
+      </tr>
       <tr>
         <td><strong>Claim fee:</strong></td>
         <td>
