@@ -109,8 +109,14 @@ public class InterestContentProvider {
         LocalDate issuedOn
     ) {
         Optional<BigDecimal> dailyAmount = inferDailyInterestAmount(interest, interestDate, claimAmount);
+        LocalDate toDate = LocalDateTimeFactory.nowInLocalZone().toLocalDate();
+
         BigDecimal amountUpToNowRealValue = TotalAmountCalculator.calculateBreakdownInterest(
-            interest, interestDate, claimAmount, issuedOn, LocalDateTimeFactory.nowInLocalZone().toLocalDate()
+            interest,
+            interestDate,
+            claimAmount,
+            issuedOn.isAfter(toDate) ? toDate : issuedOn,
+            toDate
         );
 
         return new InterestContent(
