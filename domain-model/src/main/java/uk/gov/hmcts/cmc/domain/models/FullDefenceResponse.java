@@ -17,8 +17,18 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class FullDefenceResponse extends Response {
 
     public enum DefenceType {
-        DISPUTE,
-        ALREADY_PAID
+        DISPUTE("I dispute all the claim"),
+        ALREADY_PAID("I have paid what I believe I owe");
+
+        String description;
+
+        DefenceType(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return this.description;
+        }
     }
 
     @NotNull

@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -64,20 +65,25 @@ public class InterestContentProvider {
         LocalDate issuedOn
     ) {
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
-        String fromDate;
+        LocalDate fromDate;
         String interestDateReason = null;
-        BigDecimal amountUpToNowRealValue = null;
-        String amountUpToNow = null;
+        BigDecimal amountUpToNowRealValue;
+        String amountUpToNow;
         if (customInterestDate) {
-            fromDate = formatDate(interestDate.getDate());
-            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToNow(
-                claimAmount, interest.getRate(), interestDate.getDate()
-            );
-            amountUpToNow = formatMoney(amountUpToNowRealValue);
+            fromDate = interestDate.getDate();
             interestDateReason = interestDate.getReason();
         } else {
-            fromDate = formatDate(issuedOn);
+            fromDate = issuedOn;
         }
+
+        if (fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
+            fromDate = LocalDateTimeFactory.nowInLocalZone().toLocalDate();
+        }
+
+        amountUpToNowRealValue = interestCalculationService.calculateInterestUpToNow(
+            claimAmount, interest.getRate(), fromDate
+        );
+        amountUpToNow = formatMoney(amountUpToNowRealValue);
         BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
 
         return new InterestContent(
@@ -86,7 +92,7 @@ public class InterestContentProvider {
             interest.getType().equals(Interest.InterestType.DIFFERENT),
             interest.getReason(),
             customInterestDate,
-            fromDate,
+            formatDate(fromDate),
             amountUpToNow,
             amountUpToNowRealValue,
             formatMoney(dailyAmount),
