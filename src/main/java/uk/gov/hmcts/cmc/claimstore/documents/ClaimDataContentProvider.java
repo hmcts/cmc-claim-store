@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.AmountRowContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
@@ -42,7 +43,8 @@ public class ClaimDataContentProvider {
         requireNonNull(claim);
 
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
-        totalAmountComponents.add(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount());
+        AmountBreakDown amountBreakDown = (AmountBreakDown) claim.getClaimData().getAmount();
+        totalAmountComponents.add(amountBreakDown.getTotalAmount());
         totalAmountComponents.add(claim.getClaimData().getFeesPaidInPound());
 
         InterestContent interestContent = null;
@@ -50,7 +52,7 @@ public class ClaimDataContentProvider {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterestDate(),
-                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
+                amountBreakDown.getTotalAmount(),
                 claim.getIssuedOn()
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());
@@ -82,7 +84,7 @@ public class ClaimDataContentProvider {
             formatDateTime(claim.getCreatedAt()),
             formatDate(claim.getIssuedOn()),
             claim.getClaimData().getReason(),
-            formatMoney(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()),
+            formatMoney(amountBreakDown.getTotalAmount()),
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             interestContent,
             formatMoney(
@@ -93,7 +95,12 @@ public class ClaimDataContentProvider {
             signerName,
             signerRole,
             events,
-            evidences
+            evidences,
+            amountBreakDown.getRows()
+                .stream()
+            .filter(row -> row != null && row.getAmount() != null)
+            .map(AmountRowContent::new)
+            .collect(Collectors.toList())
         );
     }
 
