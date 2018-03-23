@@ -12,8 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-
 @Component
 public class DefendantTimelineMapper implements Mapper<CCDDefendantTimeline, DefendantTimeline> {
 
@@ -32,7 +30,6 @@ public class DefendantTimelineMapper implements Mapper<CCDDefendantTimeline, Def
         CCDDefendantTimeline.CCDDefendantTimelineBuilder builder = CCDDefendantTimeline.builder();
         builder.events(
             timeline.getEvents()
-                .orElse(emptyList())
                 .stream()
                 .map(timelineEventMapper::to)
                 .filter(Objects::nonNull)

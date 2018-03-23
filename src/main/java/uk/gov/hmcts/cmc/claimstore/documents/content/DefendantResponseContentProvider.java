@@ -93,7 +93,7 @@ public class DefendantResponseContentProvider {
             Optional<DefendantTimeline> defenceTimeline = fullDefence.getTimeline();
             if (defenceTimeline.isPresent()) {
                 DefendantTimeline defendantTimeline = defenceTimeline.get();
-                events = defendantTimeline.getEvents().orElse(null);
+                events = defendantTimeline.getEvents();
                 timelineComment = defendantTimeline.getComment().orElse(null);
             }
 
