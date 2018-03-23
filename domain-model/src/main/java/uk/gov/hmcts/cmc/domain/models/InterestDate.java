@@ -4,14 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
-import uk.gov.hmcts.cmc.domain.constraints.InterDependentFields;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
-@InterDependentFields.List({@InterDependentFields(field = "date", dependentField = "type"),
-    @InterDependentFields(field = "reason", dependentField = "type")})
 public class InterestDate {
     public enum InterestDateType {
         @JsonProperty("custom")
