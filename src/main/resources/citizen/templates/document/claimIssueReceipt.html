@@ -348,7 +348,7 @@
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>How the interest was calculated:	:</strong></td>
+        <td><strong>How the interest was calculated:</strong></td>
         <td>
           {{ claim.interest.interestBreakdown.explanation }}
         </td>
@@ -359,7 +359,7 @@
           {% if claim.interest.interestEndDateType equals "SUBMISSION" %}
           {{ claim.issuedOn }}
           {% else %}
-          {{ claim.interest.dailyAmount }} per d ay until the claim is settled or judgment made.
+          {{ claim.interest.dailyAmount }} per day until the claim is settled or judgment made.
           {% endif %}
         </td>
       </tr>
