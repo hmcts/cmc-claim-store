@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class DefendantTimelineAssert extends AbstractAssert<DefendantTimelineAssert, DefendantTimeline> {
@@ -21,9 +22,9 @@ public class DefendantTimelineAssert extends AbstractAssert<DefendantTimelineAss
     public DefendantTimelineAssert isEqualTo(CCDDefendantTimeline ccdTimeline) {
         isNotNull();
 
-        if (!Objects.equals(actual.getEvents().size(), ccdTimeline.getEvents().size())) {
+        if (!Objects.equals(actual.getEvents().orElse(emptyList()).size(), ccdTimeline.getEvents().size())) {
             failWithMessage("Expected DefendantTimeline.size to be <%s> but was <%s>",
-                actual.getEvents().size(), ccdTimeline.getEvents().size());
+                actual.getEvents().orElse(emptyList()).size(), ccdTimeline.getEvents().size());
         }
 
         if (!Objects.equals(actual.getComment().orElse(null), ccdTimeline.getComment())) {
@@ -32,6 +33,7 @@ public class DefendantTimelineAssert extends AbstractAssert<DefendantTimelineAss
         }
 
         actual.getEvents()
+            .orElse(emptyList())
             .forEach(event -> assertTimelineEvent(event, ccdTimeline.getEvents()));
 
         return this;

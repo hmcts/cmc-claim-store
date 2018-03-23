@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
@@ -93,7 +94,7 @@ public class DefendantResponseContentProvider {
             Optional<DefendantTimeline> defenceTimeline = fullDefence.getTimeline();
             if (defenceTimeline.isPresent()) {
                 DefendantTimeline defendantTimeline = defenceTimeline.get();
-                events = defendantTimeline.getEvents();
+                events = defendantTimeline.getEvents().orElse(null);
                 timelineComment = defendantTimeline.getComment().orElse(null);
             }
 
