@@ -1,68 +1,41 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
-import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.Interest.InterestType;
-import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Optional;
 
+import static java.math.BigDecimal.ZERO;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatPercent;
-import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.calculateInterest;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 
+@Component
 public class AmountContentProvider {
 
-    private final InterestCalculationService interestCalculationService;
+    private final InterestContentProvider interestContentProvider;
 
-    public AmountContentProvider(InterestCalculationService interestCalculationService) {
-        this.interestCalculationService = interestCalculationService;
+    public AmountContentProvider(InterestContentProvider interestContentProvider) {
+        this.interestContentProvider = interestContentProvider;
     }
 
     public AmountContent create(Claim claim) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-        BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(BigDecimal.ZERO);
+        BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
+        InterestContent interestContent = null;
+        BigDecimal interestRealValue = ZERO;
 
-        BigDecimal dailyAmount = BigDecimal.ZERO;
-        BigDecimal interestAmount = BigDecimal.ZERO;
-        BigDecimal interestRate = BigDecimal.ZERO;
-        Interest interest = claim.getClaimData().getInterest();
-        Optional<LocalDate> interestFromDate = Optional.empty();
-        LocalDate interestToDate;
-        if (!interest.getType().equals(InterestType.NO_INTEREST)) {
-            dailyAmount = interestCalculationService.calculateDailyAmountFor(
-                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
-                interest.getRate()
+        if (claim.getClaimData().getInterest().getType() != NO_INTEREST) {
+            interestContent = interestContentProvider.createContent(
+                claim.getClaimData().getInterest(),
+                claim.getClaimData().getInterestDate(),
+                claimAmount,
+                claim.getIssuedOn()
             );
-
-            if (claim.getClaimData().getInterestDate().getEndDateType()
-                .equals(InterestDate.InterestEndDateType.SUBMISSION)) {
-                interestToDate = claim.getIssuedOn();
-            } else {
-                interestToDate = claim.getCountyCourtJudgmentRequestedAt().toLocalDate();
-            }
-
-            interestFromDate = Optional.of(getInterestFromDate(claim));
-            interestRate = interest.getRate();
-            interestAmount = getInterestAmount(
-                claim,
-                interestToDate,
-                claimAmount
-            );
+            interestRealValue = interestContent.getAmountRealValue();
         }
-        InterestContent interestContent = new InterestContent(
-            formatPercent(interestRate),
-            interestFromDate.map(Formatting::formatDate)
-                .orElse("No interest claimed"),
-            formatMoney(interestAmount),
-            formatMoney(dailyAmount)
-        );
 
         return new AmountContent(
             formatMoney(claimAmount),
@@ -71,35 +44,10 @@ public class AmountContentProvider {
             formatMoney(paidAmount),
             formatMoney(claimAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
-                .add(interestAmount)
+                .add(interestRealValue)
                 .subtract(paidAmount))
         );
 
     }
 
-    private static BigDecimal getInterestAmount(
-        Claim claim,
-        LocalDate toDate,
-        BigDecimal claimAmount
-    ) {
-        if (!claim.getClaimData().getInterest().getType()
-            .equals(InterestType.NO_INTEREST)) {
-            return calculateInterest(
-                claimAmount,
-                claim.getClaimData().getInterest().getRate(),
-                getInterestFromDate(claim),
-                toDate
-            );
-        }
-        return BigDecimal.ZERO;
-    }
-
-    private static LocalDate getInterestFromDate(Claim claim) {
-        if (claim.getClaimData().getInterestDate().getType().equals(InterestDate.InterestDateType.CUSTOM)) {
-            InterestDate interestDate = claim.getClaimData().getInterestDate();
-            return interestDate.getDate();
-        } else {
-            return claim.getIssuedOn();
-        }
-    }
 }

@@ -7,16 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import javax.validation.constraints.Digits;
 
-@Digits(integer = 7, fraction = 2, message = "can not be more than {fraction} fractions")
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE_USE})
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {})
+@Constraint(validatedBy = { ValidInterestConstraintValidator.class })
 @Documented
-public @interface Money {
-
-    String message() default "";
+public @interface ValidInterest {
+    String message() default "Invalid interest";
 
     Class<?>[] groups() default {};
 
