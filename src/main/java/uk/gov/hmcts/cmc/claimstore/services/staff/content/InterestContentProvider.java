@@ -68,7 +68,7 @@ public class InterestContentProvider {
             amountUpToNowRealValue,
             formatMoney(dailyAmount),
             interestDateReason,
-            interestDate.getEndDate().equals(InterestDate.InterestEndDateType.SUBMISSION)
+            interestDate.getEndDateType().equals(InterestDate.InterestEndDateType.SUBMISSION)
         );
     }
 
