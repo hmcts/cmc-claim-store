@@ -356,11 +356,18 @@
   <div class="section-body">
     <table>
       <tr>
-        <td><strong>Claim amount:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Claim amount items:</strong></td>
+      </tr>
+      {% for row in claim.amountBreakdown %}
+      <tr class="no-border">
         <td>
-          {{ claim.claimAmount }}
+          {{ row.reason | trim }}
+        </td>
+        <td>
+          {{ row.amount }}
         </td>
       </tr>
+      {% endfor %}
       {% if claim.interest is defined %}
       <tr>
         <td><strong>Interest rate claimed:</strong></td>
