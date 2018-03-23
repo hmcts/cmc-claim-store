@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT;
@@ -82,7 +83,7 @@ public class TotalAmountCalculator {
         LocalDate issuedOn,
         LocalDate toDate
     ) {
-        BigDecimal accruedInterest = BigDecimal.ZERO;
+        BigDecimal accruedInterest = ZERO;
         if (interestDate.getEndDateType() == SETTLED_OR_JUDGMENT) {
             Optional<BigDecimal> specificDailyAmount = interest.getSpecificDailyAmount();
             if (specificDailyAmount.isPresent()) {
@@ -111,7 +112,7 @@ public class TotalAmountCalculator {
 
         if (data.getAmount() instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
-            BigDecimal interest = BigDecimal.ZERO;
+            BigDecimal interest = ZERO;
             BigDecimal feesPaid = data.getFeesPaidInPound();
 
             if (data.getInterest().getType() == Interest.InterestType.BREAKDOWN) {
@@ -146,20 +147,24 @@ public class TotalAmountCalculator {
     }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
-        requireValidOrderOfDates(startDate, endDate);
-        return valueOf(Duration.between(
-            startDate.atStartOfDay(),
-            endDate.atStartOfDay()
-        ).toDays());
-    }
+        // This should be enabled back and fixed properly
+        // requireValidOrderOfDates(startDate, endDate);
+        Duration duration = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
 
-    private static void requireValidOrderOfDates(LocalDate startDate, LocalDate endDate) {
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException(
-                String.format("StartDate %s cannot be after endDate %s", startDate, endDate)
-            );
+        if (duration.isNegative()) {
+            return ZERO;
+        } else {
+            return valueOf(duration.toDays());
         }
     }
+
+    //    private static void requireValidOrderOfDates(LocalDate startDate, LocalDate endDate) {
+    //        if (startDate.isAfter(endDate)) {
+    //            throw new IllegalArgumentException(
+    //                String.format("StartDate %s cannot be after endDate %s", startDate, endDate)
+    //            );
+    //        }
+    //    }
 
     private static void requireNonNegative(BigDecimal value) {
         requireNonNull(value);
