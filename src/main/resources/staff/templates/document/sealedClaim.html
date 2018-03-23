@@ -369,6 +369,30 @@
       </tr>
       {% endfor %}
       {% if claim.interest is defined %}
+      {% if claim.interest.type equals "BREAKDOWN" %}
+      <tr>
+        <td><strong>Total interest amount:</strong></td>
+        <td>
+          {{ claim.interest.interestBreakdown.totalAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>How the interest was calculated:</strong></td>
+        <td>
+          {{ claim.interest.interestBreakdown.explanation }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Interest end date:</strong></td>
+        <td>
+          {% if claim.interest.interestEndDateType equals "SUBMISSION" %}
+          {{ claim.issuedOn }}
+          {% else %}
+          {{ claim.interest.dailyAmount }} per day until the claim is settled or judgment made.
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
       <tr>
         <td><strong>Interest rate claimed:</strong></td>
         <td>
@@ -412,6 +436,7 @@
         </td>
       </tr>
       {% endif %}
+      {% endif %}
     </table>
   </div>
 </div>
@@ -432,7 +457,11 @@
       <tr>
         <td><strong>Total interest claimed to the date of submission:</strong></td>
         <td>
+          {% if claim.interest.type equals "BREAKDOWN" %}
+          {{ claim.interest.interestBreakdown.totalAmount }}
+          {% else %}
           {{ claim.interest.amount }}
+          {% endif %}
         </td>
       </tr>
       {% endif %}

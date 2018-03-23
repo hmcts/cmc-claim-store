@@ -4,14 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
-import uk.gov.hmcts.cmc.domain.constraints.InterDependentFields;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
-@InterDependentFields.List({@InterDependentFields(field = "date", dependentField = "type"),
-    @InterDependentFields(field = "reason", dependentField = "type")})
 public class InterestDate {
     public enum InterestDateType {
         @JsonProperty("custom")
@@ -38,13 +35,13 @@ public class InterestDate {
 
     private final String reason;
 
-    private final InterestEndDateType endDate;
+    private final InterestEndDateType endDateType;
 
-    public InterestDate(InterestDateType type, LocalDate date, String reason, InterestEndDateType endDate) {
+    public InterestDate(InterestDateType type, LocalDate date, String reason, InterestEndDateType endDateType) {
         this.type = type;
         this.date = date;
         this.reason = reason;
-        this.endDate = endDate == null ? InterestEndDateType.SETTLED_OR_JUDGMENT : endDate;
+        this.endDateType = endDateType == null ? InterestEndDateType.SETTLED_OR_JUDGMENT : endDateType;
     }
 
     public InterestDateType getType() {
@@ -59,8 +56,8 @@ public class InterestDate {
         return reason;
     }
 
-    public InterestEndDateType getEndDate() {
-        return endDate;
+    public InterestEndDateType getEndDateType() {
+        return endDateType;
     }
 
     @JsonIgnore
@@ -80,7 +77,7 @@ public class InterestDate {
         return Objects.equals(type, that.type)
             && Objects.equals(date, that.date)
             && Objects.equals(reason, that.reason)
-            && Objects.equals(endDate, that.endDate);
+            && Objects.equals(endDateType, that.endDateType);
     }
 
     @Override
