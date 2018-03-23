@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestBreakdownContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
+import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -46,7 +47,8 @@ public class InterestContentProvider {
             return createBreakdownInterestContent(
                 interest,
                 interestDate,
-                claimAmount
+                claimAmount,
+                issuedOn
             );
         } else {
             return createSameRateForWholePeriodInterestContent(
@@ -104,9 +106,13 @@ public class InterestContentProvider {
     private InterestContent createBreakdownInterestContent(
         Interest interest,
         InterestDate interestDate,
-        BigDecimal claimAmount
+        BigDecimal claimAmount,
+        LocalDate issuedOn
     ) {
         Optional<BigDecimal> dailyAmount = inferDailyInterestAmount(interest, interestDate, claimAmount);
+        BigDecimal amountUpToNowRealValue = TotalAmountCalculator.calculateBreakdownInterest(
+            interest, interestDate, claimAmount, issuedOn, LocalDateTimeFactory.nowInLocalZone().toLocalDate()
+        );
 
         return new InterestContent(
             interest.getType().name(),
@@ -115,7 +121,8 @@ public class InterestContentProvider {
                 interest.getInterestBreakdown().getExplanation()
             ),
             dailyAmount.map(Formatting::formatMoney).orElse(null),
-            interestDate.getEndDateType().name()
+            interestDate.getEndDateType().name(),
+            amountUpToNowRealValue
         );
     }
 

@@ -63,12 +63,14 @@ public class InterestContent {
         String type,
         InterestBreakdownContent interestBreakdown,
         String dailyAmount,
-        String interestEndDateType
+        String interestEndDateType,
+        BigDecimal amountRealValue
     ) {
         this.type = type;
         this.interestBreakdown = interestBreakdown;
         this.dailyAmount = dailyAmount;
         this.interestEndDateType = interestEndDateType;
+        this.amountRealValue = amountRealValue;
     }
 
     public String getType() {
