@@ -101,6 +101,14 @@ public class InterestProviderTest {
     }
 
     @Test
+    public void shouldProvideInterestRateReason() {
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+
+        assertThat(content.getStartDateReason())
+            .isEqualTo("I want to claim from this date because that's when that happened");
+    }
+
+    @Test
     public void shouldProvideAmountUpToNow() {
         InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, issuedOn);
 
@@ -111,7 +119,8 @@ public class InterestProviderTest {
         return new InterestDate(
                 InterestDate.InterestDateType.CUSTOM,
                 LocalDate.now().minusDays(101),
-                "testing");
+                "testing",
+                InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT);
     }
 
     @Test
@@ -132,7 +141,8 @@ public class InterestProviderTest {
         return new InterestDate(
             InterestDate.InterestDateType.SUBMISSION,
             claim.getIssuedOn(),
-            "testing"
+            "testing",
+            InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT
         );
     }
 
