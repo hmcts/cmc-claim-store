@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
-import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContent;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -19,11 +17,12 @@ public class CCJContent {
     private String defendantDateOfBirth;
     private RepaymentPlanContent repaymentPlan;
 
-    public CCJContent(Claim claim, InterestCalculationService interestCalculationService) {
+    public CCJContent(Claim claim, AmountContent amount) {
         requireNonNull(claim);
+        requireNonNull(amount);
 
         this.claim = claim;
-        this.amount = new AmountContentProvider(interestCalculationService).create(claim);
+        this.amount = amount;
         claim.getCountyCourtJudgment().getDefendantDateOfBirth()
             .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
         this.repaymentPlan = RepaymentPlanContentProvider.create(claim.getCountyCourtJudgment());
