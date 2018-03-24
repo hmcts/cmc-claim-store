@@ -20,6 +20,10 @@ public class NotificationsProperties {
     @NotEmpty
     private String frontendBaseUrl;
 
+    @URL
+    @NotEmpty
+    private String respondToClaimUrl;
+
     @Valid
     private NotificationTemplates templates;
 
@@ -47,4 +51,11 @@ public class NotificationsProperties {
         this.templates = templates;
     }
 
+    public String getRespondToClaimUrl() {
+        return respondToClaimUrl;
+    }
+
+    public void setRespondToClaimUrl(String respondToClaimUrl) {
+        this.respondToClaimUrl = respondToClaimUrl;
+    }
 }
