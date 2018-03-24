@@ -30,6 +30,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.ISSUED_ON;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.PIN;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPOND_TO_CLAIM_URL;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
 
 @Service
@@ -99,6 +100,7 @@ public class ClaimIssuedNotificationService {
         parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+        parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
         parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPound().toString());
         Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
