@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class PartyUtils {
@@ -63,7 +64,7 @@ public class PartyUtils {
     }
 
     public static Optional<String> getContactPerson(TheirDetails party) {
-        if (party instanceof CompanyDetails)  {
+        if (party instanceof CompanyDetails) {
             return ((CompanyDetails) party).getContactPerson();
         } else if (party instanceof OrganisationDetails) {
             return ((OrganisationDetails) party).getContactPerson();
@@ -81,6 +82,13 @@ public class PartyUtils {
     public static Optional<String> getBusinessName(TheirDetails party) {
         if (party instanceof SoleTraderDetails) {
             return ((SoleTraderDetails) party).getBusinessName();
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<LocalDate> claimantDateOfBirth(Party party) {
+        if (party instanceof Individual) {
+            return Optional.of(((Individual) party).getDateOfBirth());
         }
         return Optional.empty();
     }

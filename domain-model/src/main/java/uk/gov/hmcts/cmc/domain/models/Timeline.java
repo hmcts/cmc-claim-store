@@ -13,7 +13,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class Timeline {
 
     @Valid
-    @Size(max = 20)
+    @Size(min = 1, max = 20)
     @JsonProperty("rows")
     private final List<TimelineEvent> events;
 

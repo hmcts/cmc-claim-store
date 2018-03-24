@@ -10,8 +10,10 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
@@ -190,5 +193,17 @@ public class Assertions {
 
     public static EvidenceAssert assertThat(Evidence evidence) {
         return new EvidenceAssert(evidence);
+    }
+
+    public static InterestBreakdownAssert assertThat(InterestBreakdown interestBreakdown) {
+        return new InterestBreakdownAssert(interestBreakdown);
+    }
+
+    public static DefendantTimelineAssert assertThat(DefendantTimeline timeline) {
+        return new DefendantTimelineAssert(timeline);
+    }
+
+    public static DefendantEvidenceAssert assertThat(DefendantEvidence evidence) {
+        return new DefendantEvidenceAssert(evidence);
     }
 }
