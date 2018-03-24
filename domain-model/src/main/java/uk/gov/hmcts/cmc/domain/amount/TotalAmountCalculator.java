@@ -10,9 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
@@ -25,8 +23,6 @@ public class TotalAmountCalculator {
     public static final BigDecimal NUMBER_OF_DAYS_IN_YEAR = new BigDecimal(365L);
     public static final int DIVISION_DECIMAL_SCALE = 10;
     private static final BigDecimal HUNDRED = valueOf(100);
-
-    private static final Comparator<LocalDate> LOCAL_DATE_COMPARATOR = Comparator.comparing(LocalDate::toEpochDay);
 
     private TotalAmountCalculator() {
         // do not instantiate
@@ -132,18 +128,13 @@ public class TotalAmountCalculator {
         BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
         BigDecimal rate = data.getInterest().getRate();
         LocalDate fromDate = getFromDate(claim);
-        return calculateInterest(claimAmount, rate, fromDate, getLatestDate(toDate, claim.getIssuedOn()));
-    }
-
-    private static LocalDate getLatestDate(LocalDate firstDate, LocalDate secondDate) {
-        return Stream.of(firstDate, secondDate).max(LOCAL_DATE_COMPARATOR)
-            .orElseThrow(() -> new IllegalArgumentException("One of the dates is not correct"));
+        return calculateInterest(claimAmount, rate, fromDate, toDate);
     }
 
     private static LocalDate getFromDate(Claim claim) {
-        return (claim.getClaimData().getInterestDate().getType() == InterestDate.InterestDateType.SUBMISSION)
-            ? claim.getIssuedOn()
-            : claim.getClaimData().getInterestDate().getDate();
+        return (claim.getClaimData().getInterestDate().getType() == InterestDate.InterestDateType.CUSTOM)
+            ? claim.getClaimData().getInterestDate().getDate()
+            : claim.getIssuedOn();
     }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {
