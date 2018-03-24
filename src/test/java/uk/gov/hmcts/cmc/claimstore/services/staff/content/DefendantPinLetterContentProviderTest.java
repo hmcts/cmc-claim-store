@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 public class DefendantPinLetterContentProviderTest {
 
     private static final String DEFENDANT_PIN = "dsf4dd2";
-    private static final String FRONTEND_BASE_URL = "https://moneyclaim.hmcts.net";
+    private static final String RESPOND_TO_CLAIM_URL = "https://moneyclaim.hmcts.net/first-contact/start";
 
     private final Claim claim = SampleClaim.getDefault();
 
@@ -38,7 +38,7 @@ public class DefendantPinLetterContentProviderTest {
                 new InterestCalculationService(Clock.systemDefaultZone())
             )
         );
-        when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
+        when(notificationsProperties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
     }
 
     @Test(expected = NullPointerException.class)
@@ -78,10 +78,10 @@ public class DefendantPinLetterContentProviderTest {
     }
 
     @Test
-    public void shouldProvideFrontendBaseUrl() {
+    public void shouldProvideRespondToClaimUrl() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        assertThat(content).containsEntry("frontendBaseURL", FRONTEND_BASE_URL);
+        assertThat(content).containsEntry("respondToClaimUrl", RESPOND_TO_CLAIM_URL);
     }
 
     @Test
