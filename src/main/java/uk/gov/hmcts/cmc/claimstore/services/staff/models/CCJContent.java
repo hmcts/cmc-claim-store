@@ -20,8 +20,13 @@ public class CCJContent {
     private String defendantDateOfBirth;
     private RepaymentPlanContent repaymentPlan;
 
-    public CCJContent(Map<String, Object> claim, CountyCourtJudgment countyCourtJudgment, LocalDateTime countyCourtJudgmentRequestedAt, AmountContent amount) {
+    public CCJContent(Map<String, Object> claim,
+                      CountyCourtJudgment countyCourtJudgment,
+                      LocalDateTime countyCourtJudgmentRequestedAt,
+                      AmountContent amount) {
         requireNonNull(claim);
+        requireNonNull(countyCourtJudgment);
+        requireNonNull(countyCourtJudgmentRequestedAt);
         requireNonNull(amount);
 
         this.claim = claim;
