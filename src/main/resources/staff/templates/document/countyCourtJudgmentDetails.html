@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title>{{ ccj.claim.referenceNumber }}</title>
+  <title>{{ ccj.claim.claim.referenceNumber }}</title>
   <style>
     @page :first {
       @top-right {
@@ -14,8 +14,8 @@
       margin: 10%;
 
       @top-right {
-        content: "Claim number: {{ ccj.claim.referenceNumber }}";
-        font-size: 18px;
+        content: "Claim number: {{ ccj.claim.claim.referenceNumber }}";
+        font-size: 12px;
         font-family: "Open Sans";
       }
 
@@ -118,17 +118,17 @@
     </tr>
     <tr align="right">
       <td></td>
-      <td><strong>Claim number: </strong> {{ ccj.claim.referenceNumber }}</td>
+      <td><strong>Claim number:</strong> {{ ccj.claim.claim.referenceNumber }}</td>
     </tr>
     <tr>
       <td></td>
-      <td><p><strong>Requested: </strong>{{ ccj.requestedAt }}</p></td>
+      <td><p><strong>Requested:</strong> {{ ccj.requestedAt }}</p></td>
     </tr>
   </table>
 </header>
 
-{% set claimant = ccj.claim.claim.claimants[0] %}
-{% set defendant = ccj.claim.claim.defendants[0] %}
+{% set claimant = ccj.claim.claimant %}
+{% set defendant = ccj.claim.defendant %}
 
 <div class="section">
   <div class="section-heading">
@@ -144,11 +144,11 @@
         </td>
       </tr>
       {% endif %}
-      {% if claimant.name is not empty %}
+      {% if claimant.fullName is not empty %}
       <tr>
         <td><strong>Contact name:</strong></td>
         <td>
-          {{ claimant.name }}
+          {{ claimant.fullName }}
         </td>
       </tr>
       {% endif %}
@@ -170,11 +170,19 @@
           {{ claimant.address.postcode }}
         </td>
       </tr>
-      {% if claimant.mobilePhone is not empty %}
+      {% if claimant.dateOfBirth is not empty %}
+      <tr>
+        <td><strong>Date of birth:</strong></td>
+        <td>
+          {{ claimant.dateOfBirth }}
+        </td>
+      </tr>
+      {% endif %}
+      {% if claimant.mobileNumber is not empty %}
       <tr>
         <td><strong>Telephone:</strong></td>
         <td>
-          {{ claimant.mobilePhone }}
+          {{ claimant.mobileNumber }}
         </td>
       </tr>
       {% endif %}
@@ -199,7 +207,7 @@
       <tr>
         <td><strong>Contact Name:</strong></td>
         <td>
-          {{ defendant.name }}
+          {{ defendant.fullName }}
         </td>
       </tr>
       <tr>
@@ -228,7 +236,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if claimant.defendantDateOfBirth is not empty %}
+      {% if ccj.defendantDateOfBirth is not empty %}
       <tr>
         <td><strong>Date of birth:</strong></td>
         <td>
@@ -252,22 +260,28 @@
           {{ ccj.amount.totalAmount }}
         </td>
       </tr>
+      <tr>
+        <td><strong>Amount already paid by defendant:</strong></td>
+        <td>
+          {{ ccj.amount.paidAmount }}
+        </td>
+      </tr>
       {% if ccj.amount.interest is defined %}
       {% if ccj.amount.interest.type equals "BREAKDOWN" %}
       <tr>
-        <td>Total interest amount:</td>
+        <td><strong>Total interest amount:</strong></td>
         <td>
           {{ ccj.amount.interest.interestBreakdown.totalAmount }}
         </td>
       </tr>
       <tr>
-        <td>How the interest was calculated:</td>
+        <td><strong>How the interest was calculated:</strong></td>
         <td>
           {{ ccj.amount.interest.interestBreakdown.explanation }}
         </td>
       </tr>
       <tr>
-        <td>Interest end date:</td>
+        <td><strong>Interest end date:</strong></td>
         <td>
           {% if ccj.amount.interest.interestEndDateType equals "SUBMISSION" %}
           {{ ccj.claim.issuedOn }}
@@ -277,21 +291,6 @@
         </td>
       </tr>
       {% else %}
-      <tr>
-        <td><strong>Amount already paid by defendant:</strong></td>
-        <td>
-          {{ ccj.amount.paidAmount }}
-        </td>
-      </tr>
-      {% endif %}
-      {% else %}
-      <tr>
-        <td>Interest:</td>
-        <td>
-          No interest claimed
-        </td>
-      </tr>
-      {% endif %}
       <tr>
         <td><strong>Interest rate claimed:</strong></td>
         <td>
@@ -310,7 +309,15 @@
           {{ ccj.amount.interest.dailyAmount }}
         </td>
       </tr>
-
+      {% endif %}
+      {% else %}
+      <tr>
+        <td><strong>Interest:</strong></td>
+        <td>
+          No interest claimed
+        </td>
+      </tr>
+      {% endif %}
       {% if ccj.repaymentPlan.repaymentOption == "Immediately" %}
         <tr>
           <td><strong>When you want the defendant to pay:</strong></td>
@@ -356,7 +363,8 @@
       {% endif %}
     </table>
   </div>
-</div>
+
+  </div>
     <div class="section">
       <div class="section-heading">
         <strong>Total amount</strong>
@@ -401,7 +409,6 @@
         <td></td>
         <td>I declare that the details I have given are true to the best of my knowledge.</td>
       </tr>
-
       {% if ccj.claim.countyCourtJudgment.statementOfTruth is defined %}
       <tr class="no-border">
         <td></td>
@@ -412,7 +419,6 @@
         <td></td>
         <td><strong>Name:</strong> {{ ccj.claim.countyCourtJudgment.statementOfTruth.signerName }}</td>
       </tr>
-
       <tr class="no-border">
         <td></td>
         <td><strong>Role:</strong> {{ ccj.claim.countyCourtJudgment.statementOfTruth.signerRole }}</td>
@@ -423,10 +429,9 @@
         <td>{{ claimant.name }}</td>
       </tr>
       {% endif %}
-
       <tr class="no-border">
         <td></td>
-        <td>{{ ccj.requestedDate}}</td>
+        <td>{{ ccj.requestedDate }}</td>
       </tr>
     </table>
   </div>
