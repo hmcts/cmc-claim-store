@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvide
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 
@@ -32,7 +33,8 @@ public class AmountContentProvider {
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterestDate(),
                 claimAmount,
-                claim.getIssuedOn()
+                claim.getIssuedOn(),
+                LocalDateTimeFactory.nowInLocalZone().toLocalDate()
             );
             interestRealValue = interestContent.getAmountRealValue();
         }
