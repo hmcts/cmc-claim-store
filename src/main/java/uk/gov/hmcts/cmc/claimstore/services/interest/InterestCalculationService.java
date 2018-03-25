@@ -42,8 +42,8 @@ public class InterestCalculationService {
         BigDecimal claimAmount,
         BigDecimal interestRate,
         LocalDate fromDate,
-        LocalDate issueDate
+        LocalDate toDate
     ) {
-        return calculateInterest(claimAmount, interestRate, fromDate, issueDate);
+        return calculateInterest(claimAmount, interestRate, fromDate, toDate);
     }
 }
