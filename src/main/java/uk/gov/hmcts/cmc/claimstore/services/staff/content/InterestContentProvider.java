@@ -82,7 +82,7 @@ public class InterestContentProvider {
             fromDate = issuedOn;
         }
 
-        if (interestDate.getEndDateType() == InterestDate.InterestEndDateType.SUBMISSION) {
+        if (interestDate.getEndDateType() == SUBMISSION) {
             endDate = issuedOn;
         } else {
             endDate = interestEndDate;
