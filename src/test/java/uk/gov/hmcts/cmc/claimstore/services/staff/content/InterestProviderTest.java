@@ -40,69 +40,69 @@ public class InterestProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerForNullInterest() {
-        provider.createContent(null, interestDate, claimAmount, issuedOn);
+        provider.createContent(null, interestDate, claimAmount, issuedOn, issuedOn);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerForNullInterestDate() {
-        provider.createContent(interest, null, claimAmount, issuedOn);
+        provider.createContent(interest, null, claimAmount, issuedOn, issuedOn);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerForNullClaimAmount() {
-        provider.createContent(interest, interestDate, null, issuedOn);
+        provider.createContent(interest, interestDate, null, issuedOn, issuedOn);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerForNullIssuedOn() {
-        provider.createContent(interest, interestDate, claimAmount, null);
+        provider.createContent(interest, interestDate, claimAmount, null, null);
     }
 
     @Test
     public void shouldProvideExpectedRate() {
-        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getRate()).isEqualTo("8%");
     }
 
     @Test
     public void shouldNotClaimCustomRate() {
-        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn, issuedOn);
 
         assertThat(content.isCustomRate()).isFalse();
     }
 
     @Test
     public void customRateReasonShouldBeBlank() {
-        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getCustomRateReason()).isNullOrEmpty();
     }
 
     @Test
     public void shouldClaimFromCustomDate() {
-        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn, issuedOn);
 
         assertThat(content.isCustomFromDate()).isTrue();
     }
 
     @Test
     public void shouldProvideInterestFromDate() {
-        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getFromDate()).isEqualTo(formatDate(interestDate.getDate()));
     }
 
     @Test
     public void shouldProvideDailyAmount() {
-        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getDailyAmount()).isEqualTo("£0.01");
     }
 
     @Test
     public void shouldProvideInterestRateReason() {
-        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, interestDate, claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getStartDateReason())
             .isEqualTo("I want to claim from this date because that's when that happened");
@@ -110,7 +110,7 @@ public class InterestProviderTest {
 
     @Test
     public void shouldProvideAmountUpToNow() {
-        InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getAmount()).isEqualTo("£0.89");
     }
@@ -125,14 +125,14 @@ public class InterestProviderTest {
 
     @Test
     public void shouldProvideAmountUpToNowRealValue() {
-        InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getAmountRealValue()).isEqualByComparingTo("0.89");
     }
 
     @Test
     public void customInterestDateShouldBeFalseIfSubmissionDateIsUsed() {
-        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn, issuedOn);
 
         assertThat(content.isCustomFromDate()).isFalse();
     }
@@ -148,7 +148,7 @@ public class InterestProviderTest {
 
     @Test
     public void amountUpToNowShouldBeNullWhenSubmissionDateIsUsed() {
-        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getAmount()).isNull();
         assertThat(content.getAmountRealValue()).isNull();
@@ -156,7 +156,7 @@ public class InterestProviderTest {
 
     @Test
     public void dateFromShouldBeClaimCreatedOnWhenSubmissionDateIsUsed() {
-        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn);
+        InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn, issuedOn);
 
         assertThat(content.getFromDate()).isEqualTo(formatDate(issuedOn));
     }
