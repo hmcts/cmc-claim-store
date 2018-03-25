@@ -36,7 +36,8 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDate issuedOn
+        LocalDate issuedOn,
+        LocalDate interestEndDate
     ) {
         requireNonNull(interest);
         requireNonNull(interestDate);
@@ -55,7 +56,8 @@ public class InterestContentProvider {
                 interest,
                 interestDate,
                 claimAmount,
-                issuedOn
+                issuedOn,
+                interestEndDate
             );
         }
     }
@@ -64,13 +66,15 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDate issuedOn
+        LocalDate issuedOn,
+        LocalDate interestEndDate
     ) {
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         LocalDate fromDate;
         String interestDateReason = null;
         BigDecimal amountUpToNowRealValue = null;
         String amountUpToNow = null;
+        LocalDate endDate;
         if (customInterestDate) {
             fromDate = interestDate.getDate();
             interestDateReason = interestDate.getReason();
@@ -78,9 +82,15 @@ public class InterestContentProvider {
             fromDate = issuedOn;
         }
 
+        if (interestDate.getEndDateType() == InterestDate.InterestEndDateType.SUBMISSION) {
+            endDate = issuedOn;
+        } else {
+            endDate = interestEndDate;
+        }
+
         if (!fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
-            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToIssueDate(
-                claimAmount, interest.getRate(), fromDate, issuedOn
+            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToDate(
+                claimAmount, interest.getRate(), fromDate, endDate
             );
             amountUpToNow = formatMoney(amountUpToNowRealValue);
         }
