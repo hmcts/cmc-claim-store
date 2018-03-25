@@ -24,6 +24,10 @@ variable "frontend_url" {
   default = "https://moneyclaim.nonprod.platform.hmcts.net"
 }
 
+variable "respond_to_claim_url" {
+  default = "https://moneyclaim.nonprod.platform.hmcts.net/first-contact/start"
+}
+
 variable "database-name" {
   default = "claimstore"
 }

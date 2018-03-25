@@ -23,7 +23,7 @@ import java.time.LocalDate;
 public class InterestRatesController {
 
     @GetMapping("/calculate")
-    @ApiOperation("Calculates interest rate")
+    @ApiOperation("Calculates the interest amount accrued between provided dates")
     public InterestAmount calculateInterest(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("from_date") LocalDate from,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("to_date") LocalDate to,

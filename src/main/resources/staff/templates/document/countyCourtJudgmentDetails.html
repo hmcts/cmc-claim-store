@@ -252,12 +252,46 @@
           {{ ccj.amount.totalAmount }}
         </td>
       </tr>
+      {% if ccj.amount.interest is defined %}
+      {% if ccj.amount.interest.type equals "BREAKDOWN" %}
+      <tr>
+        <td>Total interest amount:</td>
+        <td>
+          {{ ccj.amount.interest.interestBreakdown.totalAmount }}
+        </td>
+      </tr>
+      <tr>
+        <td>How the interest was calculated:</td>
+        <td>
+          {{ ccj.amount.interest.interestBreakdown.explanation }}
+        </td>
+      </tr>
+      <tr>
+        <td>Interest end date:</td>
+        <td>
+          {% if ccj.amount.interest.interestEndDateType equals "SUBMISSION" %}
+          {{ ccj.claim.issuedOn }}
+          {% else %}
+          {{ ccj.amount.interest.dailyAmount }} per day from issue date until the claim is settled or judgment made.
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
       <tr>
         <td><strong>Amount already paid by defendant to pay:</strong></td>
         <td>
           {{ ccj.amount.paidAmount }}
         </td>
       </tr>
+      {% endif %}
+      {% else %}
+      <tr>
+        <td>Interest:</td>
+        <td>
+          No interest claimed
+        </td>
+      </tr>
+      {% endif %}
       <tr>
         <td><strong>Interest rate claimed:</strong></td>
         <td>

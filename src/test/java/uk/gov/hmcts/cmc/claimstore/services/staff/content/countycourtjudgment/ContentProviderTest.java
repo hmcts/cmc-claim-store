@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -30,7 +31,13 @@ public class ContentProviderTest {
 
     @Before
     public void setup() {
-        this.provider = new ContentProvider(new InterestCalculationService(Clock.systemDefaultZone()));
+        this.provider = new ContentProvider(
+            new AmountContentProvider(
+                new InterestContentProvider(
+                    new InterestCalculationService(Clock.systemDefaultZone())
+                )
+            )
+        );
     }
 
     @Test(expected = NullPointerException.class)
