@@ -37,4 +37,13 @@ public class InterestCalculationService {
     public BigDecimal calculateInterestUpToNow(BigDecimal claimAmount, BigDecimal interestRate, LocalDate fromDate) {
         return calculateInterest(claimAmount, interestRate, fromDate, LocalDate.now(clock));
     }
+
+    public BigDecimal calculateInterestUpToIssueDate(
+        BigDecimal claimAmount,
+        BigDecimal interestRate,
+        LocalDate fromDate,
+        LocalDate issueDate
+    ) {
+        return calculateInterest(claimAmount, interestRate, fromDate, issueDate);
+    }
 }

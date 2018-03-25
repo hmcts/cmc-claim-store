@@ -79,8 +79,8 @@ public class InterestContentProvider {
         }
 
         if (!fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
-            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToNow(
-                claimAmount, interest.getRate(), fromDate
+            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToIssueDate(
+                claimAmount, interest.getRate(), fromDate, issuedOn
             );
             amountUpToNow = formatMoney(amountUpToNowRealValue);
         }
