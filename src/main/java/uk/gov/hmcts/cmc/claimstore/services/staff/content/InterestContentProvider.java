@@ -72,9 +72,6 @@ public class InterestContentProvider {
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         LocalDate fromDate;
         String interestDateReason = null;
-        BigDecimal amountUpToNowRealValue;
-        String amountUpToNow;
-        LocalDate endDate;
         if (customInterestDate) {
             fromDate = interestDate.getDate();
             interestDateReason = interestDate.getReason();
@@ -82,12 +79,15 @@ public class InterestContentProvider {
             fromDate = issuedOn;
         }
 
+        LocalDate endDate;
         if (interestDate.getEndDateType() == SUBMISSION) {
             endDate = issuedOn;
         } else {
             endDate = interestEndDate;
         }
 
+        BigDecimal amountUpToNowRealValue;
+        String amountUpToNow;
         if (!fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
             amountUpToNowRealValue = interestCalculationService.calculateInterestUpToDate(
                 claimAmount, interest.getRate(), fromDate, endDate
