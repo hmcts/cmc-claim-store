@@ -35,7 +35,8 @@ public class CCJContent {
 
         this.claim = claim;
         this.amount = amount;
-        this.defendantDateOfBirth = countyCourtJudgment.getDefendantDateOfBirth().map(Formatting::formatDate).orElse(null);
+        this.defendantDateOfBirth = countyCourtJudgment.getDefendantDateOfBirth()
+            .map(Formatting::formatDate).orElse(null);
         this.repaymentPlan = RepaymentPlanContentProvider.create(countyCourtJudgment);
         this.requestedAt = Formatting.formatDateTime(countyCourtJudgmentRequestedAt);
         this.requestedDate = formatDate(countyCourtJudgmentRequestedAt);
