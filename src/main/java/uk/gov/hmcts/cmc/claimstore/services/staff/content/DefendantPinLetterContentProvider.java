@@ -57,6 +57,7 @@ public class DefendantPinLetterContentProvider {
                 ((AmountBreakDown)claim.getClaimData()
                     .getAmount())
                     .getTotalAmount(),
+                claim.getIssuedOn(),
                 claim.getIssuedOn()
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());
