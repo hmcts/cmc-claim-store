@@ -53,6 +53,7 @@ public class ClaimDataContentProvider {
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterestDate(),
                 amountBreakDown.getTotalAmount(),
+                claim.getIssuedOn(),
                 claim.getIssuedOn()
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());

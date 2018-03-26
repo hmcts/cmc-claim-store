@@ -36,7 +36,8 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDate issuedOn
+        LocalDate issuedOn,
+        LocalDate interestEndDate
     ) {
         requireNonNull(interest);
         requireNonNull(interestDate);
@@ -55,7 +56,8 @@ public class InterestContentProvider {
                 interest,
                 interestDate,
                 claimAmount,
-                issuedOn
+                issuedOn,
+                interestEndDate
             );
         }
     }
@@ -64,13 +66,12 @@ public class InterestContentProvider {
         Interest interest,
         InterestDate interestDate,
         BigDecimal claimAmount,
-        LocalDate issuedOn
+        LocalDate issuedOn,
+        LocalDate interestEndDate
     ) {
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         LocalDate fromDate;
         String interestDateReason = null;
-        BigDecimal amountUpToNowRealValue = null;
-        String amountUpToNow = null;
         if (customInterestDate) {
             fromDate = interestDate.getDate();
             interestDateReason = interestDate.getReason();
@@ -78,12 +79,23 @@ public class InterestContentProvider {
             fromDate = issuedOn;
         }
 
-        if (!fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
-            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToNow(
-                claimAmount, interest.getRate(), fromDate
-            );
-            amountUpToNow = formatMoney(amountUpToNowRealValue);
+        LocalDate endDate;
+        if (interestDate.getEndDateType() == SUBMISSION) {
+            endDate = issuedOn;
+        } else {
+            endDate = interestEndDate;
         }
+
+        BigDecimal amountUpToNowRealValue;
+        String amountUpToNow;
+        if (!fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
+            amountUpToNowRealValue = interestCalculationService.calculateInterestUpToDate(
+                claimAmount, interest.getRate(), fromDate, endDate
+            );
+        } else {
+            amountUpToNowRealValue = BigDecimal.ZERO;
+        }
+        amountUpToNow = formatMoney(amountUpToNowRealValue);
 
         BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
 

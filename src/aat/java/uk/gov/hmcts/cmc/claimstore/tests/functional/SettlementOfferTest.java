@@ -12,8 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -193,7 +193,7 @@ public class SettlementOfferTest extends BaseTest {
         assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
 
         assertThat(caseWithCounterSign.getSettlementReachedAt())
-            .isCloseTo(LocalDateTime.now(), within(2, ChronoUnit.MINUTES));
+            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
     }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {
