@@ -4,21 +4,25 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Am
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class CCJContent {
 
-    private Map<String, Object> claim;
-    private String requestedAt;
-    private String requestedDate;
-    private AmountContent amount;
-    private String defendantDateOfBirth;
-    private RepaymentPlanContent repaymentPlan;
+    private final Map<String, Object> claim;
+    private final String requestedAt;
+    private final String requestedDate;
+    private final AmountContent amount;
+    private final String defendantDateOfBirth;
+    private final RepaymentPlanContent repaymentPlan;
+    private final String signerName;
+    private final String signerRole;
 
     public CCJContent(Map<String, Object> claim,
                       CountyCourtJudgment countyCourtJudgment,
@@ -31,11 +35,14 @@ public class CCJContent {
 
         this.claim = claim;
         this.amount = amount;
-        countyCourtJudgment.getDefendantDateOfBirth()
-            .ifPresent((dateOfBirth -> this.defendantDateOfBirth = formatDate(dateOfBirth)));
+        this.defendantDateOfBirth = countyCourtJudgment.getDefendantDateOfBirth().map(Formatting::formatDate).orElse(null);
         this.repaymentPlan = RepaymentPlanContentProvider.create(countyCourtJudgment);
         this.requestedAt = Formatting.formatDateTime(countyCourtJudgmentRequestedAt);
         this.requestedDate = formatDate(countyCourtJudgmentRequestedAt);
+
+        Optional<StatementOfTruth> optionalStatementOfTruth = countyCourtJudgment.getStatementOfTruth();
+        this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
+        this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
     }
 
     public Map<String, Object> getClaim() {
@@ -60,5 +67,13 @@ public class CCJContent {
 
     public RepaymentPlanContent getRepaymentPlan() {
         return repaymentPlan;
+    }
+
+    public String getSignerName() {
+        return signerName;
+    }
+
+    public String getSignerRole() {
+        return signerRole;
     }
 }

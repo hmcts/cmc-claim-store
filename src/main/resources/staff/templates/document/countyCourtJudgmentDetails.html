@@ -15,7 +15,7 @@
 
       @top-right {
         content: "Claim number: {{ ccj.claim.claim.referenceNumber }}";
-        font-size: 12px;
+        font-size: 11px;
         font-family: "Open Sans";
       }
 
@@ -73,10 +73,15 @@
       border-spacing: 0;
     }
 
+    table tr {
+      page-break-inside: avoid;
+    }
+
     table td {
       border-top: 1px solid #999;
       padding: 5px;
     }
+
     table tr:last-child td {
       border-bottom: 1px solid #999;
     }
@@ -424,24 +429,30 @@
         <td></td>
         <td>I declare that the details I have given are true to the best of my knowledge.</td>
       </tr>
-      {% if ccj.claim.countyCourtJudgment.statementOfTruth is defined %}
+      {% if ccj.signerName is not empty %}
       <tr class="no-border">
         <td></td>
-        <td><strong>Company:</strong> {{ claimant.name }}
+        <td>
+          {% if claimant.partyType == 'on behalf of a company' %}
+            {% set nameLabel = 'Company' %}
+          {% elseif claimant.partyType == 'on behalf of an organisation' %}
+            {% set nameLabel = 'Organisation' %}
+          {% endif %}
+          <strong>{{ nameLabel }}:</strong> {{ claimant.fullName }}
         </td>
       </tr>
       <tr class="no-border">
         <td></td>
-        <td><strong>Name:</strong> {{ ccj.claim.countyCourtJudgment.statementOfTruth.signerName }}</td>
+        <td><strong>Name:</strong> {{ ccj.signerName }}</td>
       </tr>
       <tr class="no-border">
         <td></td>
-        <td><strong>Role:</strong> {{ ccj.claim.countyCourtJudgment.statementOfTruth.signerRole }}</td>
+        <td><strong>Role:</strong> {{ ccj.signerRole }}</td>
       </tr>
       {% else %}
       <tr class="no-border">
         <td></td>
-        <td>{{ claimant.name }}</td>
+        <td>{{ claimant.fullName }}</td>
       </tr>
       {% endif %}
       <tr class="no-border">
