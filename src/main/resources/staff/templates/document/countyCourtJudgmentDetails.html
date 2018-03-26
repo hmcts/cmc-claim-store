@@ -297,7 +297,7 @@
         <td><strong>Interest end date:</strong></td>
         <td>
           {% if ccj.amount.interest.interestEndDateType equals "SUBMISSION" %}
-          {{ ccj.claim.issuedOn }}
+          {{ ccj.claim.claim.issuedOn }}
           {% else %}
           {{ ccj.amount.interest.dailyAmount }} per day from issue date until the claim is settled or judgment made.
           {% endif %}
