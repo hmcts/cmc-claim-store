@@ -69,8 +69,8 @@ public class InterestContentProvider {
         boolean customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
         LocalDate fromDate;
         String interestDateReason = null;
-        BigDecimal amountUpToNowRealValue = null;
-        String amountUpToNow = null;
+        BigDecimal amountUpToNowRealValue;
+        String amountUpToNow;
         if (customInterestDate) {
             fromDate = interestDate.getDate();
             interestDateReason = interestDate.getReason();
@@ -82,8 +82,10 @@ public class InterestContentProvider {
             amountUpToNowRealValue = interestCalculationService.calculateInterestUpToNow(
                 claimAmount, interest.getRate(), fromDate
             );
-            amountUpToNow = formatMoney(amountUpToNowRealValue);
+        } else {
+            amountUpToNowRealValue = BigDecimal.ZERO;
         }
+        amountUpToNow = formatMoney(amountUpToNowRealValue);
 
         BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
 
