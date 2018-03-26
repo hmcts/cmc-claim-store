@@ -15,8 +15,8 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
@@ -45,7 +45,8 @@ public class SubmitClaimTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(claimData).isEqualTo(createdCase.getClaimData());
-        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTime.now(), within(2, ChronoUnit.MINUTES));
+        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTimeFactory.nowInUTC(),
+            within(2, ChronoUnit.MINUTES));
     }
 
     @Test
