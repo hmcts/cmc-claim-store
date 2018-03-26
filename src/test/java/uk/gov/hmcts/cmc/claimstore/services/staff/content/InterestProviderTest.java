@@ -149,11 +149,11 @@ public class InterestProviderTest {
     }
 
     @Test
-    public void amountUpToNowShouldBeNullWhenSubmissionDateIsUsed() {
+    public void amountUpToNowShouldBeZeroWhenSubmissionDateIsUsed() {
         InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn, issuedOn);
 
-        assertThat(content.getAmount()).isNull();
-        assertThat(content.getAmountRealValue()).isNull();
+        assertThat(content.getAmount()).isEqualTo("£0.00");
+        assertThat(content.getAmountRealValue()).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
