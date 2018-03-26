@@ -60,7 +60,8 @@ public class RespondToClaimTest extends BaseTest {
 
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
-        assertThat(updatedCase.getRespondedAt()).isCloseTo(LocalDateTimeFactory.nowInUTC(), within(2, ChronoUnit.MINUTES));
+        assertThat(updatedCase.getRespondedAt()).isCloseTo(LocalDateTimeFactory.nowInUTC(),
+            within(2, ChronoUnit.MINUTES));
     }
 
     @Test
