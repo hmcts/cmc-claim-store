@@ -394,7 +394,11 @@
         <tr>
           <td><strong>Interest to date of judgment:</strong></td>
           <td>
-            {{ ccj.amount.interest.amount }}
+            {% if ccj.amount.interest.type equals "BREAKDOWN" %}
+              {{ ccj.amount.interest.interestBreakdown.totalAmount }}
+            {% else %}
+              {{ ccj.amount.interest.amount }}
+            {% endif %}
           </td>
         </tr>
         {% endif %}
