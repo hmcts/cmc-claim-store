@@ -53,6 +53,7 @@ module "claim-store-api" {
   ilbIp = "${var.ilbIp}"
   is_frontend = false
   subscription = "${var.subscription}"
+  additional_host_name = "add-hostname-to-work-around-bug-temporarily"
 
   app_settings = {
     //    logging vars
