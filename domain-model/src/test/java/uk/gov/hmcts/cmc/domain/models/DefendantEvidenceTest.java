@@ -38,13 +38,13 @@ public class DefendantEvidenceTest {
 
     @Test
     public void shouldFailValidationForRowsLimitExceeds() {
-        DefendantEvidence defendantEvidence = new DefendantEvidence(asList(new EvidenceRow[21]), "comments");
+        DefendantEvidence defendantEvidence = new DefendantEvidence(asList(new EvidenceRow[1001]), "comments");
 
         Set<String> response = validate(defendantEvidence);
 
         assertThat(response)
             .hasSize(1)
-            .contains("rows : size must be between 0 and 20");
+            .contains("rows : size must be between 0 and 1000");
     }
 
     @Test
