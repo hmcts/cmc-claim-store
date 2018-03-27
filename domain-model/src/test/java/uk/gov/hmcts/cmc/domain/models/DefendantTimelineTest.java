@@ -36,13 +36,13 @@ public class DefendantTimelineTest {
 
     @Test
     public void shouldFailValidationForEventLimitExceeds() {
-        DefendantTimeline timeline = new DefendantTimeline(asList(new TimelineEvent[21]), "comments");
+        DefendantTimeline timeline = new DefendantTimeline(asList(new TimelineEvent[1001]), "comments");
 
         Set<String> response = validate(timeline);
 
         assertThat(response)
             .hasSize(1)
-            .contains("events : size must be between 0 and 20");
+            .contains("events : size must be between 0 and 1000");
     }
 
     @Test
