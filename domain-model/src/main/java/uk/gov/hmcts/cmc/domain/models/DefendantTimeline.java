@@ -15,7 +15,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class DefendantTimeline {
 
     @Valid
-    @Size(max = 20)
+    @Size(max = 1000)
     @JsonProperty("rows")
     private final List<TimelineEvent> events;
 
