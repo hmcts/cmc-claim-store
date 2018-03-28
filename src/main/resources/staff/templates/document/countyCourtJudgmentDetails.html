@@ -391,7 +391,7 @@
           </td>
         </tr>
         {% if ccj.amount.interest is defined %}
-        <tr>
+        <tr class="no-border">
           <td><strong>Interest to date of judgment:</strong></td>
           <td>
             {% if ccj.amount.interest.type equals "BREAKDOWN" %}
@@ -401,11 +401,24 @@
             {% endif %}
           </td>
         </tr>
+        {% else %}
+          <tr class="no-border">
+            <td><strong>Interest:</strong></td>
+            <td>
+              No interest claimed
+            </td>
+          </tr>
         {% endif %}
-        <tr>
+        <tr class="no-border">
           <td><strong>Claim fee:</strong></td>
           <td>
             {{ ccj.amount.feeAmount }}
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Subtotal:</strong></td>
+          <td>
+            {{ ccj.amount.subTotalAmount }}
           </td>
         </tr>
         <tr>
