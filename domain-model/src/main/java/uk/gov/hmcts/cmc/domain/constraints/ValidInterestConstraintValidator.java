@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.constraints;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -28,9 +29,20 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
         switch (interest.getType()) {
             case BREAKDOWN:
                 return validateBreakdownInterest(interest, validatorContext);
+            case DIFFERENT:
+                return validateDifferentInterestCriteria(interest.getRate(), interest.getReason());
             default:
                 return true;
         }
+    }
+
+    private boolean validateDifferentInterestCriteria(BigDecimal rate, String reason) {
+        if (rate == null || (reason == null || reason.isEmpty())) {
+            return false;
+        } else if (rate.compareTo(BigDecimal.ZERO) != 1) {
+            return false;
+        }
+        return true;
     }
 
     private boolean validateBreakdownInterest(Interest interest, ConstraintValidatorContext validatorContext) {
@@ -62,7 +74,7 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
     }
 
     private String[] toArray(Set<String> set) {
-        return set.toArray(new String[] { });
+        return set.toArray(new String[]{});
     }
 
 }

@@ -48,20 +48,6 @@ public class InterestTest {
     }
 
     @Test
-    public void shouldBeSuccessfulValidationForNoInterestType() {
-        //given
-        Interest interest = SampleInterest.builder()
-            .withType(Interest.InterestType.NO_INTEREST)
-            .withRate(null)
-            .withReason(null)
-            .build();
-        //when
-        Set<String> errors = validate(interest);
-        //then
-        assertThat(errors).isEmpty();
-    }
-
-    @Test
     public void shouldBeInvalidForBreakdownInterestWithNullBreakdown() {
         Interest interest = SampleInterest.breakdownInterestBuilder()
             .withInterestBreakdown(null)
@@ -99,6 +85,20 @@ public class InterestTest {
 
         Set<String> errors = validate(interest);
 
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeSuccessfulValidationForNoInterestType() {
+        //given
+        Interest interest = SampleInterest.builder()
+            .withType(Interest.InterestType.NO_INTEREST)
+            .withRate(null)
+            .withReason(null)
+            .build();
+        //when
+        Set<String> errors = validate(interest);
+        //then
         assertThat(errors).isEmpty();
     }
 

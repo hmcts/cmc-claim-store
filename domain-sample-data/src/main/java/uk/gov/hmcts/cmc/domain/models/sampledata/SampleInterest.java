@@ -41,6 +41,14 @@ public class SampleInterest {
             .build();
     }
 
+    public static Interest differentInterest(BigDecimal rate, String reason) {
+        return builder()
+            .withType(Interest.InterestType.DIFFERENT)
+            .withRate(rate)
+            .withReason(reason)
+            .build();
+    }
+
     public static Interest breakdownOnly() {
         return breakdownInterestBuilder()
             .build();
