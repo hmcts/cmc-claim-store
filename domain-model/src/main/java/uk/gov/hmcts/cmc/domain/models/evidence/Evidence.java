@@ -12,7 +12,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class Evidence {
 
     @Valid
-    @Size(max = 20)
+    @Size(max = 1000)
     private final List<EvidenceRow> rows;
 
     public Evidence(List<EvidenceRow> rows) {
