@@ -136,8 +136,8 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    public static BigDecimal calculateInterestTillToday(Claim claim) {
-        return calculateInterest(claim, LocalDate.now());
+    public static BigDecimal calculateInterestForClaim(Claim claim) {
+        return calculateInterest(claim, getToDate(claim));
     }
 
     private static BigDecimal calculateFixedRateInterest(Claim claim, LocalDate toDate) {
@@ -152,6 +152,10 @@ public class TotalAmountCalculator {
         return (claim.getClaimData().getInterestDate().getType() == InterestDate.InterestDateType.CUSTOM)
             ? claim.getClaimData().getInterestDate().getDate()
             : claim.getIssuedOn();
+    }
+
+    private static LocalDate getToDate(Claim claim) {
+        return LocalDate.now().isAfter(claim.getIssuedOn()) ? LocalDate.now() : claim.getIssuedOn();
     }
 
     private static BigDecimal daysBetween(LocalDate startDate, LocalDate endDate) {

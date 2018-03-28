@@ -59,6 +59,6 @@ public class InterestRatesController {
 
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
-        return new InterestAmount(TotalAmountCalculator.calculateInterestTillToday(claim));
+        return new InterestAmount(TotalAmountCalculator.calculateInterestForClaim(claim));
     }
 }
