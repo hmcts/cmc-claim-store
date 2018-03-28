@@ -55,18 +55,12 @@ public class TotalAmountCalculator {
 
     private static BigDecimal calculateInterest(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
-        BigDecimal interest;
-        switch (data.getInterest().getType()) {
-            case BREAKDOWN:
-                interest = calculateBreakdownInterest(claim, toDate);
-                break;
-            case STANDARD: // intentional fall-through
-            case DIFFERENT:
-                interest = calculateFixedRateInterest(claim, toDate);
-                break;
-            case NO_INTEREST: // intentional fall-through
-            default:
-                interest = ZERO;
+        BigDecimal interest = ZERO;
+
+        if (data.getInterest().getType() == Interest.InterestType.BREAKDOWN) {
+            interest = calculateBreakdownInterest(claim, toDate);
+        } else if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
+            interest = calculateFixedRateInterest(claim, toDate);
         }
 
         return interest;
