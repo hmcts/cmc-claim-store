@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@pr-preview-deployment")
+@Library("Infrastructure@preview-deployments-api")
 
 def product = "cmc"
 def component = "claim-store"
