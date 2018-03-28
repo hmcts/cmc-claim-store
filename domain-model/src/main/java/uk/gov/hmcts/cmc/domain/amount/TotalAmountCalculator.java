@@ -60,11 +60,11 @@ public class TotalAmountCalculator {
             case BREAKDOWN:
                 interest = calculateBreakdownInterest(claim, toDate);
                 break;
-            case STANDARD:
+            case STANDARD: // intentional fall-through
             case DIFFERENT:
                 interest = calculateFixedRateInterest(claim, toDate);
                 break;
-            case NO_INTEREST:
+            case NO_INTEREST: // intentional fall-through
             default:
                 interest = ZERO;
         }
