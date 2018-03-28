@@ -17,7 +17,10 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
-@JsonIgnoreProperties(value = {"totalAmountTillToday", "totalAmountTillDateOfIssue"}, allowGetters = true)
+@JsonIgnoreProperties(
+    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue", "totalInterest"},
+    allowGetters = true
+)
 @Builder
 public class Claim {
 
@@ -175,6 +178,10 @@ public class Claim {
 
     public Optional<BigDecimal> getTotalAmountTillDateOfIssue() {
         return TotalAmountCalculator.totalTillDateOfIssue(this);
+    }
+
+    public Optional<BigDecimal> getTotalInterest() {
+        return Optional.ofNullable(TotalAmountCalculator.calculateInterestForClaim(this));
     }
 
     @Override
