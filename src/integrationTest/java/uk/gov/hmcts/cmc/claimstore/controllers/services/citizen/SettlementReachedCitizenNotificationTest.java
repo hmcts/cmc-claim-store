@@ -14,7 +14,6 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,23 +36,19 @@ public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
         defendantRequestFor("countersign");
 
         verify(notificationClient).sendEmail(
-            eq(OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR),
-            eq(claim.getDefendantEmail()),
-            eq(counterSignedByDefendantEmailData()),
-            eq(
-                NotificationReferenceBuilder.AgreementCounterSigned
-                    .referenceForDefendant(claim.getReferenceNumber(), DEFENDANT.name())
-            )
+            OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR,
+            claim.getDefendantEmail(),
+            counterSignedByDefendantEmailData(),
+            NotificationReferenceBuilder.AgreementCounterSigned
+                .referenceForDefendant(claim.getReferenceNumber(), DEFENDANT.name())
         );
 
         verify(notificationClient).sendEmail(
-            eq(OFFER_COUNTER_SIGNED_EMAIL_TO_OTHER_PARTY),
-            eq(claim.getSubmitterEmail()),
-            eq(counterSignedByDefendantEmailData()),
-            eq(
-                NotificationReferenceBuilder.AgreementCounterSigned
-                    .referenceForClaimant(claim.getReferenceNumber(), DEFENDANT.name())
-            )
+            OFFER_COUNTER_SIGNED_EMAIL_TO_OTHER_PARTY,
+            claim.getSubmitterEmail(),
+            counterSignedByDefendantEmailData(),
+            NotificationReferenceBuilder.AgreementCounterSigned
+                .referenceForClaimant(claim.getReferenceNumber(), DEFENDANT.name())
         );
     }
 
@@ -79,23 +74,19 @@ public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
         claimantRequestFor("countersign");
 
         verify(notificationClient).sendEmail(
-            eq(OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR),
-            eq(claim.getSubmitterEmail()),
-            eq(counterSignedByClaimantEmailData()),
-            eq(
-                NotificationReferenceBuilder.AgreementCounterSigned
-                    .referenceForClaimant(claim.getReferenceNumber(), CLAIMANT.name())
-            )
+            OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR,
+            claim.getSubmitterEmail(),
+            counterSignedByClaimantEmailData(),
+            NotificationReferenceBuilder.AgreementCounterSigned
+                .referenceForClaimant(claim.getReferenceNumber(), CLAIMANT.name())
         );
 
         verify(notificationClient).sendEmail(
-            eq(OFFER_COUNTER_SIGNED_EMAIL_TO_OTHER_PARTY),
-            eq(claim.getDefendantEmail()),
-            eq(counterSignedByClaimantEmailData()),
-            eq(
-                NotificationReferenceBuilder.AgreementCounterSigned
-                    .referenceForDefendant(claim.getReferenceNumber(), CLAIMANT.name())
-            )
+            OFFER_COUNTER_SIGNED_EMAIL_TO_OTHER_PARTY,
+            claim.getDefendantEmail(),
+            counterSignedByClaimantEmailData(),
+            NotificationReferenceBuilder.AgreementCounterSigned
+                .referenceForDefendant(claim.getReferenceNumber(), CLAIMANT.name())
         );
     }
 
