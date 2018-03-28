@@ -38,7 +38,7 @@ public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
         verify(notificationClient).sendEmail(
             OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR,
             claim.getDefendantEmail(),
-            counterSignedByDefendantEmailData(),
+            counterSignedEmailDataFor(claim.getClaimData().getDefendant().getName()),
             NotificationReferenceBuilder.AgreementCounterSigned
                 .referenceForDefendant(claim.getReferenceNumber(), DEFENDANT.name())
         );
@@ -46,17 +46,17 @@ public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
         verify(notificationClient).sendEmail(
             OFFER_COUNTER_SIGNED_EMAIL_TO_OTHER_PARTY,
             claim.getSubmitterEmail(),
-            counterSignedByDefendantEmailData(),
+            counterSignedEmailDataFor(claim.getClaimData().getDefendant().getName()),
             NotificationReferenceBuilder.AgreementCounterSigned
                 .referenceForClaimant(claim.getReferenceNumber(), DEFENDANT.name())
         );
     }
 
-    private Map<String, String> counterSignedByDefendantEmailData() {
+    private Map<String, String> counterSignedEmailDataFor(String counterSigningPartyName) {
         Map<String, String> emailData = new HashMap<>();
         emailData.put(
             NotificationTemplateParameters.COUNTER_SIGNING_PARTY,
-            claim.getClaimData().getDefendant().getName()
+            counterSigningPartyName
         );
         emailData.put(NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         emailData.put(NotificationTemplateParameters.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
@@ -76,7 +76,7 @@ public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
         verify(notificationClient).sendEmail(
             OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR,
             claim.getSubmitterEmail(),
-            counterSignedByClaimantEmailData(),
+            counterSignedEmailDataFor(claim.getClaimData().getClaimant().getName()),
             NotificationReferenceBuilder.AgreementCounterSigned
                 .referenceForClaimant(claim.getReferenceNumber(), CLAIMANT.name())
         );
@@ -84,21 +84,10 @@ public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
         verify(notificationClient).sendEmail(
             OFFER_COUNTER_SIGNED_EMAIL_TO_OTHER_PARTY,
             claim.getDefendantEmail(),
-            counterSignedByClaimantEmailData(),
+            counterSignedEmailDataFor(claim.getClaimData().getClaimant().getName()),
             NotificationReferenceBuilder.AgreementCounterSigned
                 .referenceForDefendant(claim.getReferenceNumber(), CLAIMANT.name())
         );
-    }
-
-    private Map<String, String> counterSignedByClaimantEmailData() {
-        Map<String, String> emailData = new HashMap<>();
-        emailData.put(
-            NotificationTemplateParameters.COUNTER_SIGNING_PARTY,
-            claim.getClaimData().getClaimant().getName()
-        );
-        emailData.put(NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        emailData.put(NotificationTemplateParameters.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
-        return emailData;
     }
 
     private void claimantRequestFor(String endpoint) throws Exception {
