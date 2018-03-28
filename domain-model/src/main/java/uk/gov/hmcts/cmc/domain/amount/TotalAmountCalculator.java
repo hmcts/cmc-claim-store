@@ -53,6 +53,25 @@ public class TotalAmountCalculator {
         );
     }
 
+    private static BigDecimal calculateInterest(Claim claim, LocalDate toDate) {
+        ClaimData data = claim.getClaimData();
+        BigDecimal interest;
+        switch (data.getInterest().getType()) {
+            case BREAKDOWN:
+                interest = calculateBreakdownInterest(claim, toDate);
+                break;
+            case STANDARD:
+            case DIFFERENT:
+                interest = calculateFixedRateInterest(claim, toDate);
+                break;
+            case NO_INTEREST:
+            default:
+                interest = ZERO;
+        }
+
+        return interest;
+    }
+
     private static BigDecimal calculateInterest(BigDecimal dailyAmount, BigDecimal numberOfDays) {
         return dailyAmount
             .multiply(numberOfDays)
@@ -108,19 +127,17 @@ public class TotalAmountCalculator {
 
         if (data.getAmount() instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
-            BigDecimal interest = ZERO;
             BigDecimal feesPaid = data.getFeesPaidInPound();
-
-            if (data.getInterest().getType() == Interest.InterestType.BREAKDOWN) {
-                interest = calculateBreakdownInterest(claim, toDate);
-            } else if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
-                interest = calculateFixedRateInterest(claim, toDate);
-            }
+            BigDecimal interest = calculateInterest(claim, toDate);
 
             return claimAmount.add(interest.add(feesPaid));
         }
 
         return null;
+    }
+
+    public static BigDecimal calculateInterestTillToday(Claim claim) {
+        return calculateInterest(claim, LocalDate.now());
     }
 
     private static BigDecimal calculateFixedRateInterest(Claim claim, LocalDate toDate) {
