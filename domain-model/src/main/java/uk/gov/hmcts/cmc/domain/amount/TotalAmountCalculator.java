@@ -62,7 +62,7 @@ public class TotalAmountCalculator {
         ClaimData data = claim.getClaimData();
         Interest interest = data.getInterest();
         if (interest == null) {
-            return ZERO;
+            return null;
         }
         if (interest.getType() == Interest.InterestType.BREAKDOWN) {
             return calculateBreakdownInterest(claim, toDate);
