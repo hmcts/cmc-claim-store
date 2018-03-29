@@ -181,7 +181,7 @@ public class Claim {
     }
 
     public Optional<BigDecimal> getTotalInterest() {
-        return Optional.ofNullable(TotalAmountCalculator.calculateInterestForClaim(this));
+        return TotalAmountCalculator.calculateInterestForClaim(this);
     }
 
     @Override
