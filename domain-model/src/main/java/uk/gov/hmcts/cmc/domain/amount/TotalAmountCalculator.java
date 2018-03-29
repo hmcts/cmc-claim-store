@@ -37,6 +37,10 @@ public class TotalAmountCalculator {
         return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn()));
     }
 
+    public static BigDecimal calculateInterestForClaim(Claim claim) {
+        return calculateInterest(claim, getToDate(claim));
+    }
+
     public static BigDecimal calculateInterest(
         BigDecimal claimAmount,
         BigDecimal interestRate,
@@ -136,10 +140,6 @@ public class TotalAmountCalculator {
         }
 
         return null;
-    }
-
-    public static BigDecimal calculateInterestForClaim(Claim claim) {
-        return calculateInterest(claim, getToDate(claim));
     }
 
     private static BigDecimal calculateFixedRateInterest(Claim claim, LocalDate toDate) {
