@@ -56,15 +56,17 @@ public class TotalAmountCalculator {
 
     private static BigDecimal calculateInterest(Claim claim, LocalDate toDate) {
         ClaimData data = claim.getClaimData();
-        BigDecimal interest = ZERO;
-
-        if (data.getInterest().getType() == Interest.InterestType.BREAKDOWN) {
-            interest = calculateBreakdownInterest(claim, toDate);
-        } else if (data.getInterest().getType() != Interest.InterestType.NO_INTEREST) {
-            interest = calculateFixedRateInterest(claim, toDate);
+        Interest interest = data.getInterest();
+        if (interest == null) {
+            return ZERO;
         }
-
-        return interest;
+        if (interest.getType() == Interest.InterestType.BREAKDOWN) {
+            return calculateBreakdownInterest(claim, toDate);
+        } else if (interest.getType() != Interest.InterestType.NO_INTEREST) {
+            return calculateFixedRateInterest(claim, toDate);
+        } else {
+            return ZERO;
+        }
     }
 
     private static BigDecimal calculateInterest(BigDecimal dailyAmount, BigDecimal numberOfDays) {

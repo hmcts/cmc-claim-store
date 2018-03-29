@@ -36,5 +36,4 @@ public class InterestRatesController {
             throw new BadRequestException(e.getMessage(), e);
         }
     }
-
 }
