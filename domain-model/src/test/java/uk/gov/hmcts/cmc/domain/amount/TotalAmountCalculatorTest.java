@@ -323,7 +323,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claimStandardInterest))
-            .isEqualTo(format(new BigDecimal("0.00")));
+            .isEqualTo(Optional.of(format(new BigDecimal("0.00"))));
     }
 
     @Test
@@ -341,7 +341,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claimStandardInterest))
-            .isEqualTo(format(new BigDecimal("0.00")));
+            .isEqualTo(Optional.of(format(new BigDecimal("0.00"))));
     }
 
     @Test
@@ -359,7 +359,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claimStandardInterest))
-            .isEqualTo(format(new BigDecimal("0.01")));
+            .isEqualTo(Optional.of(format(new BigDecimal("0.01"))));
     }
 
     @Test
@@ -381,7 +381,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claim))
-            .isEqualTo(format(new BigDecimal("70.00")));
+            .isEqualTo(Optional.of(format(new BigDecimal("70.00"))));
     }
 
     @Test
@@ -403,7 +403,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claim))
-            .isEqualTo(format(new BigDecimal("40.02")));
+            .isEqualTo(Optional.of(format(new BigDecimal("40.02"))));
     }
 
 
