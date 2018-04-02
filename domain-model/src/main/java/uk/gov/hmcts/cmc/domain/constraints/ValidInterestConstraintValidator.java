@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.constraints;
 
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -15,6 +16,9 @@ import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
  * Validates the BREAKDOWN interest type only for now.
  */
 public class ValidInterestConstraintValidator implements ConstraintValidator<ValidInterest, Interest> {
+
+    private static final String partialMessage = "is not provided";
+
     @Override
     public void initialize(ValidInterest constraintAnnotation) {
         // Nothing to do
@@ -30,16 +34,34 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
             case BREAKDOWN:
                 return validateBreakdownInterest(interest, validatorContext);
             case DIFFERENT:
-                return validateDifferentInterestCriteria(interest.getRate(), interest.getReason());
+                return validateDifferentInterestCriteria(interest.getRate(), interest.getReason(), validatorContext);
+            case STANDARD:
+                return validateStandardRate(interest.getInterestDate(), validatorContext);
             default:
                 return true;
         }
     }
 
-    private boolean validateDifferentInterestCriteria(BigDecimal rate, String reason) {
-        if (rate == null || (reason == null || reason.isEmpty())) {
+    private boolean validateStandardRate(InterestDate interestDate, ConstraintValidatorContext validatorContext) {
+        if(interestDate == null) {
+            setValidationErrors(validatorContext, "interestDate", partialMessage);
             return false;
-        } else if (rate.compareTo(BigDecimal.ZERO) != 1) {
+        }
+        return true;
+    }
+
+    private boolean validateDifferentInterestCriteria(BigDecimal rate,
+                                                      String reason,
+                                                      ConstraintValidatorContext validatorContext) {
+        if (rate == null || (reason == null || reason.isEmpty())) {
+            setValidationErrors(validatorContext, "rate", partialMessage);
+            return false;
+        } else if((reason == null || reason.isEmpty())) {
+            setValidationErrors(validatorContext, "reason", partialMessage);
+            return false;
+        }
+        else if (rate.compareTo(BigDecimal.ZERO) != 1) {
+            setValidationErrors(validatorContext, "rate", "has to be positive value");
             return false;
         }
         return true;
