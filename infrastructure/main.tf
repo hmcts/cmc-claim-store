@@ -46,7 +46,7 @@ data "vault_generic_secret" "system_update_password" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:contino/moj-module-webapp.git"
+  source = "git@github.com:contino/moj-module-webapp.git?ref=feature/ROC-3460-One-app-insights-per-product"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
