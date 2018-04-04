@@ -56,7 +56,6 @@ public class ClaimDataContentProvider {
                 claim.getIssuedOn(),
                 claim.getIssuedOn()
             );
-            totalAmountComponents.add(interestContent.getAmountRealValue());
         }
 
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
