@@ -118,7 +118,6 @@ public class ValidInterestConstraintValidatorTest {
 
     @Test
     public void shouldBeInvalidWhenBreakdownInterestAndContinueToClaimWithInterestOnly() {
-        String templateMessage = "either rate or specific amount should be claimed";
         Interest interest = SampleInterest.breakdownInterestBuilder()
             .withRate(new BigDecimal(8)).build();
 
