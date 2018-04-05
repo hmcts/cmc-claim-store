@@ -280,13 +280,13 @@ public class ClaimDataTest {
     @Test
     public void shouldBeInvalidWhenGivenTooManyTimeLineEvents() {
         ClaimData claimData = SampleClaimData.builder()
-            .withTimeline(new Timeline(asList(new TimelineEvent[21])))
+            .withTimeline(new Timeline(asList(new TimelineEvent[1001])))
             .build();
 
         Set<String> errors = validate(claimData);
 
         assertThat(errors)
             .hasSize(1)
-            .containsOnly("timeline.events : size must be between 1 and 20");
+            .containsOnly("timeline.events : size must be between 1 and 1000");
     }
 }

@@ -78,7 +78,7 @@ public class SubmitClaimTest extends BaseTest {
     @Test
     public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() {
         ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
-            .withTimeline(SampleTimeline.builder().withEvents(asList(new TimelineEvent[21])).build())
+            .withTimeline(SampleTimeline.builder().withEvents(asList(new TimelineEvent[1001])).build())
             .build();
 
         submitClaim(invalidClaimData)
@@ -89,7 +89,7 @@ public class SubmitClaimTest extends BaseTest {
     @Test
     public void shouldReturnUnprocessableEntityWhenClaimWithInvalidEvidenceIsSubmitted() {
         ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
-            .withEvidence(SampleEvidence.builder().withRows(asList(new EvidenceRow[21])).build())
+            .withEvidence(SampleEvidence.builder().withRows(asList(new EvidenceRow[1001])).build())
             .build();
 
         submitClaim(invalidClaimData)
