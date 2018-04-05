@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.function.Function;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -17,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
  */
 public class ValidInterestConstraintValidator implements ConstraintValidator<ValidInterest, Interest> {
 
-    private static final String partialMessage = "is not provided";
+    private static final String notProvidedMessage = "is not provided";
 
     @Override
     public void initialize(ValidInterest constraintAnnotation) {
@@ -34,7 +35,7 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
             case BREAKDOWN:
                 return validateBreakdownInterest(interest, validatorContext);
             case DIFFERENT:
-                return validateDifferentInterestCriteria(interest.getRate(), interest.getReason(), validatorContext);
+                return validateDifferentInterestCriteria(interest, validatorContext);
             case STANDARD:
                 return validateStandardRate(interest.getInterestDate(), validatorContext);
             default:
@@ -43,26 +44,41 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
     }
 
     private boolean validateStandardRate(InterestDate interestDate, ConstraintValidatorContext validatorContext) {
-        if(interestDate == null) {
-            setValidationErrors(validatorContext, "interestDate", partialMessage);
+        if (interestDate == null) {
+            setValidationErrors(validatorContext, "interestDate", notProvidedMessage);
             return false;
         }
         return true;
     }
 
-    private boolean validateDifferentInterestCriteria(BigDecimal rate,
-                                                      String reason,
+    private boolean validateDifferentInterestCriteria(Interest interest,
                                                       ConstraintValidatorContext validatorContext) {
-        if (rate == null || (reason == null || reason.isEmpty())) {
-            setValidationErrors(validatorContext, "rate", partialMessage);
+        BigDecimal rate = interest.getRate();
+        String reason = interest.getReason();
+        boolean flag = true;
+        if (rate == null) {
+            setValidationErrors(validatorContext, "rate", notProvidedMessage);
             return false;
-        } else if((reason == null || reason.isEmpty())) {
-            setValidationErrors(validatorContext, "reason", partialMessage);
-            return false;
+        } else {
+            final Function<String, Boolean> checkReason = reason1 -> reason1 == null || reason1.isEmpty();
+            if (checkReason.apply(reason)) {
+                setValidationErrors(validatorContext, "reason", notProvidedMessage);
+                return false;
+            } else if (rate.compareTo(BigDecimal.ZERO) != 1 && !checkReason.apply(reason)) {
+                setValidationErrors(validatorContext, "rate", "has to be greater than zero value");
+                return false;
+            }
+            flag = validateInterestDate(interest.getInterestDate(), validatorContext);
         }
-        else if (rate.compareTo(BigDecimal.ZERO) != 1) {
-            setValidationErrors(validatorContext, "rate", "has to be positive value");
-            return false;
+        return flag;
+    }
+
+    private boolean validateInterestDate(InterestDate interestDate, ConstraintValidatorContext validatorContext) {
+        if (interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM)) {
+            if (interestDate.getDate() == null || interestDate.getReason().isEmpty()) {
+                setValidationErrors(validatorContext, "interestDate.Date, interestDate.reason", notProvidedMessage);
+                return false;
+            }
         }
         return true;
     }
@@ -73,8 +89,23 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
             setValidationErrors(validatorContext, "interestBreakdown", "may not be null");
             return false;
         } else {
-            return validateField(validatorContext, interestBreakdown, "interestBreakdown");
+            return validateEitherInterestRateOrSpecificAmountIsPresent(interest, validatorContext)
+                && validateField(validatorContext, interestBreakdown, "interestBreakdown");
         }
+    }
+
+    private boolean validateEitherInterestRateOrSpecificAmountIsPresent(
+        Interest interest,
+        ConstraintValidatorContext validatorContext) {
+
+        if (interest.getSpecificDailyAmount().isPresent() && interest.getRate() != null) {
+            setValidationErrors(
+                validatorContext,
+                "rate",
+                "either rate or specific amount should be claimed");
+            return false;
+        }
+        return true;
     }
 
     private void setValidationErrors(ConstraintValidatorContext validatorContext, String fieldName, String... errors) {

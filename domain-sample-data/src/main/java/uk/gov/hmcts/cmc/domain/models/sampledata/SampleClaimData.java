@@ -29,7 +29,6 @@ public class SampleClaimData {
     private Payment payment = SamplePayment.validDefaults();
     private Amount amount = SampleAmountBreakdown.validDefaults();
     private Interest interest = SampleInterest.standard();
-    private InterestDate interestDate = SampleInterestDate.validDefaults();
     private String reason = "reason";
     private BigInteger feeAmount = new BigInteger("4000");
     private String feeAccountNumber = "PBA1234567";
@@ -130,8 +129,8 @@ public class SampleClaimData {
         return this;
     }
 
-    public SampleClaimData withInterestDate(InterestDate interestDate) {
-        this.interestDate = interestDate;
+    public SampleClaimData withStanderdRateAndInterestDate(InterestDate interestDate) {
+        this.interest = SampleInterest.standardWithSpecificInterestDate(interestDate);
         return this;
     }
 
@@ -184,7 +183,6 @@ public class SampleClaimData {
             amount,
             feeAmount,
             interest,
-            interestDate,
             personalInjury,
             housingDisrepair,
             reason,
@@ -234,11 +232,6 @@ public class SampleClaimData {
     public static ClaimData noInterest() {
         return builder()
             .withInterest(SampleInterest.noInterest())
-            .withInterestDate(SampleInterestDate.builder()
-                .withType(null)
-                .withDate(null)
-                .withReason(null)
-                .build())
             .withAmount(SampleAmountBreakdown.validDefaults())
             .build();
     }

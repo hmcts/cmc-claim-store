@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.ValidInterest;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;

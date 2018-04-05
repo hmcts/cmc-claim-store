@@ -67,19 +67,18 @@ public class TotalAmountCalculator {
 
     private static BigDecimal calculateBreakdownInterest(Claim claim, LocalDate toDate) {
         Interest interest = claim.getClaimData().getInterest();
-        InterestDate interestDate = claim.getClaimData().getInterestDate();
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
-        return calculateBreakdownInterest(interest, interestDate, claimAmount, claim.getIssuedOn(), toDate);
+        return calculateBreakdownInterest(interest, claimAmount, claim.getIssuedOn(), toDate);
     }
 
     public static BigDecimal calculateBreakdownInterest(
         Interest interest,
-        InterestDate interestDate,
         BigDecimal claimAmount,
         LocalDate issuedOn,
         LocalDate toDate
     ) {
         BigDecimal accruedInterest = ZERO;
+        InterestDate interestDate = interest.getInterestDate();
         if (interestDate.getEndDateType() == SETTLED_OR_JUDGMENT) {
             Optional<BigDecimal> specificDailyAmount = interest.getSpecificDailyAmount();
             if (specificDailyAmount.isPresent()) {
@@ -132,8 +131,9 @@ public class TotalAmountCalculator {
     }
 
     private static LocalDate getFromDate(Claim claim) {
-        return (claim.getClaimData().getInterestDate().getType() == InterestDate.InterestDateType.CUSTOM)
-            ? claim.getClaimData().getInterestDate().getDate()
+        InterestDate interestDate = claim.getClaimData().getInterest().getInterestDate();
+        return (interestDate.getType() == InterestDate.InterestDateType.CUSTOM)
+            ? interestDate.getDate()
             : claim.getIssuedOn();
     }
 

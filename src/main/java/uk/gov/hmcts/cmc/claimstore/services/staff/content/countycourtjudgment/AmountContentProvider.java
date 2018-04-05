@@ -31,7 +31,6 @@ public class AmountContentProvider {
         if (claim.getClaimData().getInterest().getType() != NO_INTEREST) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
-                claim.getClaimData().getInterestDate(),
                 claimAmount,
                 claim.getIssuedOn(),
                 LocalDateTimeFactory.nowInLocalZone().toLocalDate()

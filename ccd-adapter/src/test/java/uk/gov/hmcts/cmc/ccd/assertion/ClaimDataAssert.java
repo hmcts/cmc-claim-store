@@ -61,8 +61,8 @@ public class ClaimDataAssert extends AbstractAssert<ClaimDataAssert, ClaimData> 
             .ifPresent(interest -> assertThat(interest).isEqualTo(ccdClaim.getInterest())
             );
 
-        Optional.ofNullable(actual.getInterestDate())
-            .ifPresent(interestDate -> assertThat(interestDate).isEqualTo(ccdClaim.getInterestDate())
+        Optional.ofNullable(actual.getInterest().getInterestDate())
+            .ifPresent(interestDate -> assertThat(interestDate).isEqualTo(ccdClaim.getInterest().getInterestDate())
             );
 
         Optional.ofNullable(actual.getPayment())
