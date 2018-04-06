@@ -114,7 +114,7 @@ module "claim-store-api" {
 
 module "claim-store-vault" {
   source = "git@github.com:contino/moj-module-key-vault?ref=master"
-  name = "${var.product}-claim-store-${var.env}"
+  name = "${local.vaultName}"
   product = "${var.product}"
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
