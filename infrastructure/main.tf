@@ -11,6 +11,9 @@ provider "vault" {
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
   sendLetterUrl = "http://send-letter-producer-${var.env}.service.${local.aseName}.internal"
+  sendLetterUrl = "${var.env == "preview" ? "false" : "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"}"
+  pdfserviceUrl =  "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.aat.internal" : "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"}"
+
 }
 
 data "vault_generic_secret" "notify_api_key" {
@@ -84,7 +87,7 @@ module "claim-store-api" {
     // urls
     FRONTEND_BASE_URL = "${var.frontend_url}"
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
-    PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
+    PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
     CORE_CASE_DATA_API_URL = "false"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
