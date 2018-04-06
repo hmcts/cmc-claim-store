@@ -93,8 +93,8 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
         String expectedFileName = String.format(
             CCJStaffNotificationService.FILE_NAME_FORMAT,
-            claim.getClaimData().getDefendant().getName(),
-            claim.getReferenceNumber()
+            claim.getReferenceNumber(),
+            claim.getClaimData().getDefendant().getName()
         );
 
         assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
