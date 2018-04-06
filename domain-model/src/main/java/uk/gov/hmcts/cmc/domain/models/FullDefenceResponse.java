@@ -34,7 +34,6 @@ public class FullDefenceResponse extends Response {
     @NotNull
     private final DefenceType defenceType;
 
-    @NotBlank
     @Size(max = 99000)
     private final String defence;
 
@@ -70,8 +69,8 @@ public class FullDefenceResponse extends Response {
         return defenceType;
     }
 
-    public String getDefence() {
-        return defence;
+    public Optional<String> getDefence() {
+        return Optional.ofNullable(defence);
     }
 
     public Optional<PaymentDeclaration> getPaymentDeclaration() {
