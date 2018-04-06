@@ -33,7 +33,7 @@ public class FullDefenceResponse extends Response {
     @NotNull
     private final DefenceType defenceType;
 
-    @Size(max = 99000)
+    @Size(min = 1, max = 99000)
     private final String defence;
 
     @Valid
