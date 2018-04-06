@@ -103,4 +103,26 @@ public class InterestDateTest {
         assertThat(errors).isEmpty();
     }
 
+    @Test
+    public void shouldIsCustomReturnTrueWhenInterestDateTypeIsEqualCustom() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.CUSTOM)
+            .withDate(LocalDate.of(2015, 2, 5))
+            .build();
+
+        //then
+        assertThat(interestDate.isCustom()).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldIsCustomReturnFalseWhenInterestDateTypeIsEqualSubmission() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.SUBMISSION)
+            .build();
+
+        //then
+        assertThat(interestDate.isCustom()).isEqualTo(false);
+    }
 }
