@@ -16,6 +16,9 @@ locals {
   localPdfServiceUrl = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
   pdfserviceUrl =  "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.core-compute-aat.internal" : local.localPdfServiceUrl}"
 
+  previewVaultName = "${product}-claim-store"
+  nonPreviewVaultName = "${product}-claim-store-${env}"
+  vaultName = "${var.env == "preview" ? local.previewVaultName : local.nonPreviewVaultName}"
 }
 
 data "vault_generic_secret" "notify_api_key" {
@@ -111,7 +114,7 @@ module "claim-store-api" {
 
 module "claim-store-vault" {
   source = "git@github.com:contino/moj-module-key-vault?ref=master"
-  name = "cmc-claim-store-${var.env}"
+  name = "${var.product}-claim-store-${var.env}"
   product = "${var.product}"
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
