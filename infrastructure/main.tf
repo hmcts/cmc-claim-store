@@ -10,7 +10,7 @@ provider "vault" {
 
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
-  localSendLetterUrl =  "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
+  localSendLetterUrl = "http://send-letter-producer-${var.env}.service.${local.aseName}.internal"
   sendLetterUrl = "${var.env == "preview" ? "false" : local.localSendLetterUrl}"
 
   localPdfServiceUrl = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
