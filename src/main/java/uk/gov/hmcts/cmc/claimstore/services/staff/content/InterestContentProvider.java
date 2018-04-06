@@ -115,7 +115,7 @@ public class InterestContentProvider {
         return new InterestContent(
             interest.getType().name(),
             new InterestBreakdownContent(
-                formatMoney(interest.getInterestBreakdown().getTotalAmount()),
+                formatMoney(amountUpToNowRealValue),
                 interest.getInterestBreakdown().getExplanation()
             ),
             dailyAmount.map(Formatting::formatMoney).orElse(null),
