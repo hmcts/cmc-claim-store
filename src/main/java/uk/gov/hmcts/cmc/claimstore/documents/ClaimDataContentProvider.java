@@ -99,11 +99,11 @@ public class ClaimDataContentProvider {
             signerRole,
             events,
             evidences,
-            removeEmptyRows(amountBreakDown.getRows())
+            mapToAmountRowContent(amountBreakDown.getRows())
         );
     }
 
-    private static List<AmountRowContent> removeEmptyRows(List<AmountRow> rows) {
+    private static List<AmountRowContent> mapToAmountRowContent(List<AmountRow> rows) {
         return rows
             .stream()
             .filter(row -> row != null && row.getAmount() != null)
