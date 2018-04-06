@@ -10,8 +10,11 @@ provider "vault" {
 
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
-  sendLetterUrl = "${var.env == "preview" ? "false" : "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"}"
-  pdfserviceUrl =  "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.aat.internal" : "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"}"
+  localSendLetterUrl =  "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
+  sendLetterUrl = "${var.env == "preview" ? "false" : local.localSendLetterUrl}"
+
+  localPdfServiceUrl = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
+  pdfserviceUrl =  "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.core-compute-aat.internal" : local.localPdfServiceUrl}"
 
 }
 
