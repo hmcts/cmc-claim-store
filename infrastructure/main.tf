@@ -16,8 +16,8 @@ locals {
   localPdfServiceUrl = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
   pdfserviceUrl =  "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.core-compute-aat.internal" : local.localPdfServiceUrl}"
 
-  previewVaultName = "${product}-claim-store"
-  nonPreviewVaultName = "${product}-claim-store-${env}"
+  previewVaultName = "${var.product}-claim-store"
+  nonPreviewVaultName = "${var.product}-claim-store-${var.env}"
   vaultName = "${var.env == "preview" ? local.previewVaultName : local.nonPreviewVaultName}"
 }
 
