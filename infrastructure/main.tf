@@ -52,7 +52,8 @@ module "claim-store-api" {
   env = "${var.env}"
   ilbIp = "${var.ilbIp}"
   is_frontend = false
-  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+//  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+  appinsights_instrumentation_key = ""
   subscription = "${var.subscription}"
 
   app_settings = {
