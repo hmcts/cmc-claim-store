@@ -1,14 +1,38 @@
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title>{{ ccj.claim.referenceNumber }}</title>
+  <title>{{ ccj.claim.claim.referenceNumber }}</title>
   <style>
+    @page :first {
+      @top-right {
+        content: "";
+      }
+    }
+
     @page {
       size: 8.5in 11in;
       margin: 10%;
 
+      @top-right {
+        content: "Claim number: {{ ccj.claim.claim.referenceNumber }}";
+        font-size: 11px;
+        font-family: "Open Sans";
+      }
+
       @bottom-left {
-        content: "OCON205A Request for judgment by default (07.17)";
+        content: "OCON225";
+        font-size: 11px;
+      }
+
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        font-size: 11px;
+      }
+
+      @bottom-right {
+        content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
+        white-space: nowrap;
+        font-family: "Open Sans";
         font-size: 11px;
       }
     }
@@ -35,21 +59,31 @@
       content: counter(section) ". ";
     }
 
+    .no-border td {
+      border: none;
+    }
+
+    .row-spacing {
+      margin-bottom: 10px;
+
+    }
+
     table {
       width: 100%;
       border-spacing: 0;
+    }
+
+    table tr {
+      page-break-inside: avoid;
     }
 
     table td {
       border-top: 1px solid #999;
       padding: 5px;
     }
+
     table tr:last-child td {
       border-bottom: 1px solid #999;
-    }
-
-    .no-border td {
-      border: none;
     }
 
     table td:first-child {
@@ -80,26 +114,26 @@
 <body>
 
 <header>
-
   <table>
-    <tr>
-      <td colspan="3"><p>In the County Court Business Centre Online Court</p></td>
+    <tr align="right">
+      <td colspan="2"><h3 class="row-spacing">Request for judgment by default</h3></td>
     </tr>
     <tr>
-      <td colspan="2"><h2><strong>Claim number: </strong></h2></td>
-      <td><h2 style="font-weight: normal"> {{ ccj.claim.referenceNumber }}</h2></td>
+      <td colspan="2"><p class="row-spacing">In the County Court Business Centre Online Court</p></td>
+    </tr>
+    <tr align="right">
+      <td></td>
+      <td><strong>Claim number:</strong> {{ ccj.claim.claim.referenceNumber }}</td>
     </tr>
     <tr>
-      <td colspan="2"><p><strong>County court judgment requested at: </strong></p></td>
-      <td><p>{{ ccj.requestedAt }}</p></td>
+      <td></td>
+      <td><p><strong>Requested:</strong> {{ ccj.requestedAt }}</p></td>
     </tr>
   </table>
 </header>
 
-{% set claimant = ccj.claim.claim.claimants[0] %}
-{% set defendant = ccj.claim.claim.defendants[0] %}
-<h2>Request for judgment by default</h2>
-<p>The defendant has not filed an admission or defence to my claim.</p>
+{% set claimant = ccj.claim.claimant %}
+{% set defendant = ccj.claim.defendant %}
 
 <div class="section">
   <div class="section-heading">
@@ -108,13 +142,33 @@
   <div class="section-body">
     <table>
       <tr>
-        <td>Full Name:</td>
         <td>
-          {{ claimant.name }}
+          {% if claimant.partyType == 'on behalf of a company' %}
+            {% set claimantNameLabel = 'Company name' %}
+          {% elseif claimant.partyType == 'on behalf of an organisation' %}
+            {% set claimantNameLabel = 'Organisation name' %}
+          {% else %}
+            {% set claimantNameLabel = 'Name' %}
+          {% endif %}
+          <strong>{{ claimantNameLabel }}:</strong>
+        </td>
+        <td>
+          {{ claimant.fullName }}
+          {% if claimant.businessName is not empty %}
+            Trading as {{ claimant.businessName }}
+          {% endif %}
         </td>
       </tr>
+      {% if claimant.contactPerson is not empty %}
       <tr>
-        <td>Address:</td>
+        <td><strong>Contact name:</strong></td>
+        <td>
+          {{ claimant.contactPerson }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td><strong>Address:</strong></td>
         <td>
           {{ claimant.address.line1 }}
           <br/>
@@ -131,12 +185,14 @@
           {{ claimant.address.postcode }}
         </td>
       </tr>
+      {% if claimant.mobileNumber is not empty %}
       <tr>
-        <td>Email:</td>
+        <td><strong>Telephone:</strong></td>
         <td>
-          {{ ccj.claim.submitterEmail }}
+          {{ claimant.mobileNumber }}
         </td>
       </tr>
+      {% endif %}
     </table>
   </div>
 </div>
@@ -148,13 +204,33 @@
   <div class="section-body">
     <table>
       <tr>
-        <td>Full Name:</td>
         <td>
-          {{ defendant.name }}
+          {% if defendant.partyType == 'on behalf of a company' %}
+            {% set defendantNameLabel = 'Company name' %}
+          {% elseif defendant.partyType == 'on behalf of an organisation' %}
+            {% set defendantNameLabel = 'Organisation name' %}
+          {% else %}
+            {% set defendantNameLabel = 'Name' %}
+          {% endif %}
+          <strong>{{ defendantNameLabel }}:</strong>
+        </td>
+        <td>
+          {{ defendant.fullName }}
+          {% if defendant.businessName is not empty %}
+            Trading As {{ defendant.businessName }}
+          {% endif %}
         </td>
       </tr>
+      {% if defendant.contactPerson is not empty %}
       <tr>
-        <td>Address:</td>
+        <td><strong>Contact name:</strong></td>
+        <td>
+          {{ defendant.contactPerson }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td><strong>Address:</strong></td>
         <td>
           {{ defendant.address.line1 }}
           <br/>
@@ -173,30 +249,32 @@
       </tr>
       {% if defendant.email is defined %}
       <tr>
-        <td>Email:</td>
+        <td><strong>Email:</strong></td>
         <td>
           {{ defendant.email }}
         </td>
       </tr>
       {% endif %}
+      {% if ccj.defendantDateOfBirth is not empty %}
       <tr>
-        <td>Date of birth:</td>
+        <td><strong>Date of birth:</strong></td>
         <td>
-          {{ ccj.defendantDateOfBirth | default('Unable to provide') }}
+          {{ ccj.defendantDateOfBirth }}
         </td>
       </tr>
+      {% endif %}
     </table>
   </div>
 </div>
 
 <div class="section">
   <div class="section-heading">
-    <strong>Claim amount</strong>
+    <strong>Claim amount details</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Amount:</td>
+        <td><strong>Claim amount:</strong></td>
         <td>
           {{ ccj.amount.totalAmount }}
         </td>
@@ -204,22 +282,22 @@
       {% if ccj.amount.interest is defined %}
       {% if ccj.amount.interest.type equals "BREAKDOWN" %}
       <tr>
-        <td>Total interest amount:</td>
+        <td><strong>Total interest amount:</strong></td>
         <td>
           {{ ccj.amount.interest.interestBreakdown.totalAmount }}
         </td>
       </tr>
       <tr>
-        <td>How the interest was calculated:</td>
+        <td><strong>How the interest was calculated:</strong></td>
         <td>
           {{ ccj.amount.interest.interestBreakdown.explanation }}
         </td>
       </tr>
       <tr>
-        <td>Interest end date:</td>
+        <td><strong>Interest end date:</strong></td>
         <td>
           {% if ccj.amount.interest.interestEndDateType equals "SUBMISSION" %}
-          {{ ccj.claim.issuedOn }}
+          {{ ccj.claim.claim.issuedOn }}
           {% else %}
           {{ ccj.amount.interest.dailyAmount }} per day from issue date until the claim is settled or judgment made.
           {% endif %}
@@ -227,74 +305,49 @@
       </tr>
       {% else %}
       <tr>
-        <td>Interest rate claimed:</td>
+        <td><strong>Interest rate claimed:</strong></td>
         <td>
           {{ ccj.amount.interest.rate }}
         </td>
       </tr>
       <tr>
-        <td>Date interest is claimed from:</td>
+        <td><strong>Date interest is claimed from:</strong></td>
         <td>
           {{ ccj.amount.interest.fromDate }}
         </td>
       </tr>
       <tr>
-        <td>Interest daily amount:</td>
+        <td><strong>Interest daily amount:</strong></td>
         <td>
           {{ ccj.amount.interest.dailyAmount }}
-        </td>
-      </tr>
-      <tr>
-        <td>Interest:</td>
-        <td>
-          {{ ccj.amount.interest.amount }}
         </td>
       </tr>
       {% endif %}
       {% else %}
       <tr>
-        <td>Interest:</td>
+        <td><strong>Interest:</strong></td>
         <td>
           No interest claimed
         </td>
       </tr>
       {% endif %}
-      <tr>
-        <td>Fee amount:</td>
-        <td>
-          {{ ccj.amount.feeAmount }}
-        </td>
-      </tr>
-      <tr>
-        <td>Amount already paid:</td>
-        <td>
-          {{ ccj.amount.paidAmount }}
-        </td>
-      </tr>
-      <tr>
-        <td>Amount to be paid by defendant:</td>
-        <td>
-          {{ ccj.amount.remainingAmount }}
-        </td>
-      </tr>
-
       {% if ccj.repaymentPlan.repaymentOption == "Immediately" %}
         <tr>
-          <td>When you want the defendant to pay:</td>
+          <td><strong>When you want the defendant to pay:</strong></td>
           <td>
             {{ ccj.repaymentPlan.repaymentOption }}
           </td>
         </tr>
       {% else %}
         <tr>
-          <td>How you want the defendant to pay:</td>
+          <td><strong>How you want the defendant to pay:</strong></td>
           <td>
             {{ ccj.repaymentPlan.repaymentOption }}
           </td>
         </tr>
         {% if ccj.repaymentPlan.repaymentOption == "By a set date" %}
           <tr class="no-border">
-            <td>When you want the defendant to pay:</td>
+            <td><strong>When you want the defendant to pay:</strong></td>
             <td>
               {{ ccj.repaymentPlan.paySetByDate }}
             </td>
@@ -302,26 +355,84 @@
         {% endif %}
         {% if ccj.repaymentPlan.repaymentOption == "By instalments" %}
           <tr class="no-border">
-            <td>Instalments of:</td>
+            <td><strong>Instalments of:</strong></td>
             <td>
               {{ ccj.repaymentPlan.instalmentAmount }}
             </td>
           </tr>
           <tr class="no-border">
-            <td>When you want them to make the first payment:</td>
+            <td><strong>When you want them to make the first payment:</strong></td>
             <td>
               {{ ccj.repaymentPlan.firstPaymentDate}}
             </td>
           </tr>
           <tr class="no-border">
-            <td>How often you want them to make this payment:</td>
+            <td><strong>How often you want them to make this payment:</strong></td>
             <td>
               {{ ccj.repaymentPlan.paymentSchedule }}
             </td>
           </tr>
         {% endif %}
       {% endif %}
+    </table>
+  </div>
 
+  </div>
+    <div class="section">
+      <div class="section-heading">
+        <strong>Total amount</strong>
+      </div>
+      <div class="section-body">
+          <table>
+        <tr>
+          <td><strong>Claim amount:</strong></td>
+          <td>
+            {{ ccj.amount.totalAmount }}
+          </td>
+        </tr>
+        {% if ccj.amount.interest is defined %}
+        <tr class="no-border">
+          <td><strong>Interest to date of judgment:</strong></td>
+          <td>
+            {% if ccj.amount.interest.type equals "BREAKDOWN" %}
+              {{ ccj.amount.interest.interestBreakdown.totalAmount }}
+            {% else %}
+              {{ ccj.amount.interest.amount }}
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+          <tr class="no-border">
+            <td><strong>Interest:</strong></td>
+            <td>
+              No interest claimed
+            </td>
+          </tr>
+        {% endif %}
+        <tr class="no-border">
+          <td><strong>Claim fee:</strong></td>
+          <td>
+            {{ ccj.amount.feeAmount }}
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Subtotal:</strong></td>
+          <td>
+            {{ ccj.amount.subTotalAmount }}
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Amount already paid by defendant:</strong></td>
+          <td>
+            {{ ccj.amount.paidAmount }}
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Total:</strong></td>
+          <td>
+            {{ ccj.amount.remainingAmount }}
+          </td>
+        </tr>
     </table>
   </div>
 </div>
@@ -331,45 +442,39 @@
   </div>
   <div class="section-body">
     <table>
-      {% if ccj.claim.countyCourtJudgment.statementOfTruth is not defined %}
-        <tr>
-          <td>
-            Name:
-          </td>
-          <td>{{ claimant.name }}</td>
-        </tr>
-      {% endif %}
-
-      {% if ccj.claim.countyCourtJudgment.statementOfTruth is defined %}
-        <tr>
-          <td>
-            Organisation:
-          </td>
-          <td>{{ claimant.name }}</td>
-        </tr>
-
-        <tr>
-          <td>
-            Name:
-          </td>
-          <td>{{ ccj.claim.countyCourtJudgment.statementOfTruth.signerName }}</td>
-        </tr>
-
-        <tr>
-          <td>
-            Position held:
-          </td>
-          <td>{{ ccj.claim.countyCourtJudgment.statementOfTruth.signerRole }}</td>
-        </tr>
-      {% endif %}
-
       <tr>
         <td></td>
         <td>I declare that the details I have given are true to the best of my knowledge.</td>
       </tr>
-      <tr>
+      {% if ccj.signerName is not empty %}
+      <tr class="no-border">
         <td></td>
-        <td>{{ ccj.requestedDate}}</td>
+        <td>
+          {% if claimant.partyType == 'on behalf of a company' %}
+            {% set nameLabel = 'Company' %}
+          {% elseif claimant.partyType == 'on behalf of an organisation' %}
+            {% set nameLabel = 'Organisation' %}
+          {% endif %}
+          <strong>{{ nameLabel }}:</strong> {{ claimant.fullName }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td></td>
+        <td><strong>Name:</strong> {{ ccj.signerName }}</td>
+      </tr>
+      <tr class="no-border">
+        <td></td>
+        <td><strong>Role:</strong> {{ ccj.signerRole }}</td>
+      </tr>
+      {% else %}
+      <tr class="no-border">
+        <td></td>
+        <td>{{ claimant.fullName }}</td>
+      </tr>
+      {% endif %}
+      <tr class="no-border">
+        <td></td>
+        <td>{{ ccj.requestedDate }}</td>
       </tr>
     </table>
   </div>

@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.AmountRowContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
+import uk.gov.hmcts.cmc.domain.models.AmountRow;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
@@ -56,6 +57,8 @@ public class ClaimDataContentProvider {
                 claim.getIssuedOn(),
                 claim.getIssuedOn()
             );
+
+            totalAmountComponents.add(interestContent.getAmountRealValue());
         }
 
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
@@ -96,12 +99,15 @@ public class ClaimDataContentProvider {
             signerRole,
             events,
             evidences,
-            amountBreakDown.getRows()
-                .stream()
-            .filter(row -> row != null && row.getAmount() != null)
-            .map(AmountRowContent::new)
-            .collect(Collectors.toList())
+            mapToAmountRowContent(amountBreakDown.getRows())
         );
     }
 
+    private static List<AmountRowContent> mapToAmountRowContent(List<AmountRow> rows) {
+        return rows
+            .stream()
+            .filter(row -> row != null && row.getAmount() != null)
+            .map(AmountRowContent::new)
+            .collect(Collectors.toList());
+    }
 }

@@ -41,6 +41,9 @@ public class AmountContentProvider {
 
         return new AmountContent(
             formatMoney(claimAmount),
+            formatMoney(claimAmount
+                .add(claim.getClaimData().getFeesPaidInPound())
+                .add(interestRealValue)),
             interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
