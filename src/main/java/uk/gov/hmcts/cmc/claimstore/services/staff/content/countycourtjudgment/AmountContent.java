@@ -8,6 +8,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class AmountContent {
 
     private String totalAmount;
+    private String subTotalAmount;
     private InterestContent interest;
     private String feeAmount;
     private String paidAmount;
@@ -15,12 +16,14 @@ public class AmountContent {
 
     public AmountContent(
         String totalAmount,
+        String subTotalAmount,
         InterestContent interest,
         String feeAmount,
         String paidAmount,
         String remainingAmount
     ) {
         this.totalAmount = totalAmount;
+        this.subTotalAmount = subTotalAmount;
         this.interest = interest;
         this.feeAmount = feeAmount;
         this.paidAmount = paidAmount;
@@ -33,6 +36,10 @@ public class AmountContent {
 
     public String getTotalAmount() {
         return totalAmount;
+    }
+
+    public String getSubTotalAmount() {
+        return subTotalAmount;
     }
 
     public String getFeeAmount() {
