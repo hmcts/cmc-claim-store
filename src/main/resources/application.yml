@@ -63,10 +63,11 @@ dateCalculations:
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
   frontendBaseUrl: "${FRONTEND_BASE_URL:}"
+  respondToClaimUrl: "${RESPOND_TO_CLAIM_URL:}"
   templates:
     email:
       claimantClaimIssued: "58e645b8-bcd6-4462-822c-f17da9dd3dc7"
-      defendantClaimIssued: "c38550a0-a981-4698-a644-481ad3dd8228"
+      defendantClaimIssued: "49027a97-412e-45ee-86df-bf2fa6df6d8c"
       defendantResponseIssuedToIndividual: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseIssuedToCompany: "611ee21b-0063-4fee-a344-393b73868486"
       claimantResponseIssued: "c82ab455-4786-4199-a0f3-e9e159b345f1"
@@ -81,6 +82,8 @@ notifications:
       offerAcceptedByClaimantEmailToDefendant: "aa5c927f-1a4c-47e3-94d9-6036b89d81b9"
       offerRejectedByClaimantEmailToClaimant: "13d8af14-ce13-4d87-940c-f86e0cb4d1f0"
       offerRejectedByClaimantEmailToDefendant: "46be31b4-6af8-46b2-9325-80ff63e78535"
+      offerCounterSignedEmailToOriginator: "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1"
+      offerCounterSignedEmailToOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
 
 staff-notifications:
   sender:

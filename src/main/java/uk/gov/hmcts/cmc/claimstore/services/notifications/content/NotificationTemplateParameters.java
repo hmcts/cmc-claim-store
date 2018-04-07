@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.notifications.content;
 
 public final class NotificationTemplateParameters {
     public static final String FRONTEND_BASE_URL = "frontendBaseUrl";
+    public static final String RESPOND_TO_CLAIM_URL = "respondToClaimUrl";
     public static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
     public static final String CLAIMANT_NAME = "claimantName";
     public static final String SUBMITTER_NAME = "submitterName";
@@ -12,6 +13,7 @@ public final class NotificationTemplateParameters {
     public static final String EXTERNAL_ID = "externalId";
     public static final String FEES_PAID = "feesPaid";
     public static final String PIN = "pin";
+    public static final String COUNTER_SIGNING_PARTY = "counterSigningParty";
 
     private NotificationTemplateParameters() {
         // Utility class

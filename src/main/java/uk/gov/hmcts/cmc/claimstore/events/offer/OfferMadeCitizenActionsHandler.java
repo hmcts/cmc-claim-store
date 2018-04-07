@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.OfferResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.OfferMadeNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -22,17 +22,17 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 @Component
 public class OfferMadeCitizenActionsHandler {
 
-    private final OfferMadeNotificationService offerMadeNotificationService;
+    private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
     private final OfferResponseDeadlineCalculator offerResponseDeadlineCalculator;
 
     @Autowired
     public OfferMadeCitizenActionsHandler(
-        OfferMadeNotificationService offerMadeNotificationService,
+        NotificationService notificationService,
         OfferResponseDeadlineCalculator offerResponseDeadlineCalculator,
         NotificationsProperties notificationsProperties
     ) {
-        this.offerMadeNotificationService = offerMadeNotificationService;
+        this.notificationService = notificationService;
         this.offerResponseDeadlineCalculator = offerResponseDeadlineCalculator;
         this.notificationsProperties = notificationsProperties;
     }
@@ -41,7 +41,7 @@ public class OfferMadeCitizenActionsHandler {
     public void sendClaimantNotification(OfferMadeEvent event) {
         Claim claim = event.getClaim();
 
-        offerMadeNotificationService.sendNotificationEmail(
+        notificationService.sendMail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantOfferMade(),
             aggregateParams(claim),
@@ -53,7 +53,7 @@ public class OfferMadeCitizenActionsHandler {
     public void sendDefendantNotification(OfferMadeEvent event) {
         Claim claim = event.getClaim();
 
-        offerMadeNotificationService.sendNotificationEmail(
+        notificationService.sendMail(
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getDefendantOfferMade(),
             aggregateParams(claim),

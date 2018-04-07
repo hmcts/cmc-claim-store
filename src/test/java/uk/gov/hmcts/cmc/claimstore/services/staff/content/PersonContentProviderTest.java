@@ -15,6 +15,8 @@ public class PersonContentProviderTest {
     private Address address;
     private Address correspondenceAddress;
     private String emailAddress;
+    private String mobileNumber;
+    private String dateOfBirth;
 
     private PersonContentProvider provider = new PersonContentProvider();
 
@@ -35,6 +37,8 @@ public class PersonContentProviderTest {
             .withPostcode("CQ9 6FS")
             .build();
         emailAddress = "blah@blah.com";
+        mobileNumber = "07786556746";
+        dateOfBirth = "1 January 1987";
     }
 
     @Test(expected = NullPointerException.class)
@@ -45,6 +49,8 @@ public class PersonContentProviderTest {
             address,
             correspondenceAddress,
             emailAddress,
+            null,
+            null,
             null,
             null
         );
@@ -59,7 +65,9 @@ public class PersonContentProviderTest {
             correspondenceAddress,
             emailAddress,
             null,
-            null
+            null,
+            mobileNumber,
+            dateOfBirth
         );
     }
 
@@ -72,7 +80,9 @@ public class PersonContentProviderTest {
             correspondenceAddress,
             null,
             null,
-            null
+            null,
+            mobileNumber,
+            dateOfBirth
         );
 
         assertThat(content.getFullName()).isEqualTo(name);
@@ -87,7 +97,9 @@ public class PersonContentProviderTest {
             correspondenceAddress,
             emailAddress,
             null,
-            null
+            null,
+            mobileNumber,
+            dateOfBirth
         );
 
         assertThat(content.getAddress().getLine1()).isEqualTo(address.getLine1());
@@ -106,7 +118,9 @@ public class PersonContentProviderTest {
             correspondenceAddress,
             emailAddress,
             null,
-            null
+            null,
+            mobileNumber,
+            dateOfBirth
         );
 
         assertThat(content.getCorrespondenceAddress().getLine1()).isEqualTo(correspondenceAddress.getLine1());
@@ -125,7 +139,9 @@ public class PersonContentProviderTest {
             correspondenceAddress,
             emailAddress,
             null,
-            null
+            null,
+            mobileNumber,
+            dateOfBirth
         );
 
         assertThat(content.getEmail()).isEqualTo(emailAddress);
@@ -140,9 +156,47 @@ public class PersonContentProviderTest {
             correspondenceAddress,
             null,
             null,
-            null
+            null,
+            mobileNumber,
+            dateOfBirth
         );
 
         assertThat(content.getEmail()).isEqualTo(null);
+    }
+
+    @Test
+    public void shouldProvideExpectedMobileNumberAndDateOfBirth() {
+        PersonContent content = provider.createContent(
+            partyType,
+            name,
+            address,
+            correspondenceAddress,
+            emailAddress,
+            null,
+            null,
+            mobileNumber,
+            dateOfBirth
+        );
+
+        assertThat(content.getMobileNumber()).isEqualTo(mobileNumber);
+        assertThat(content.getDateOfBirth()).isEqualTo(dateOfBirth);
+    }
+
+    @Test
+    public void shouldAcceptNullMobileNumberAndDateOfBirth() {
+        PersonContent content = provider.createContent(
+            partyType,
+            name,
+            address,
+            correspondenceAddress,
+            emailAddress,
+            null,
+            null,
+            null,
+            null
+        );
+
+        assertThat(content.getDateOfBirth()).isEqualTo(null);
+        assertThat(content.getMobileNumber()).isEqualTo(null);
     }
 }

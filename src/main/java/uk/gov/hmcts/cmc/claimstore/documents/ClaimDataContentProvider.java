@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.AmountRowContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,7 +43,8 @@ public class ClaimDataContentProvider {
         requireNonNull(claim);
 
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
-        totalAmountComponents.add(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount());
+        AmountBreakDown amountBreakDown = (AmountBreakDown) claim.getClaimData().getAmount();
+        totalAmountComponents.add(amountBreakDown.getTotalAmount());
         totalAmountComponents.add(claim.getClaimData().getFeesPaidInPound());
 
         InterestContent interestContent = null;
@@ -49,7 +52,8 @@ public class ClaimDataContentProvider {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterestDate(),
-                ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount(),
+                amountBreakDown.getTotalAmount(),
+                claim.getIssuedOn(),
                 claim.getIssuedOn()
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());
@@ -68,8 +72,10 @@ public class ClaimDataContentProvider {
         List<EvidenceContent> evidences = null;
         Optional<Evidence> evidence = claim.getClaimData().getEvidence();
         if (evidence.isPresent()) {
-            evidences = evidence.get().getRows()
+            evidences = Optional.ofNullable(evidence.get().getRows())
+                .orElseGet(Collections::emptyList)
                 .stream()
+                .filter(Objects::nonNull)
                 .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
                 .collect(Collectors.toList());
         }
@@ -79,7 +85,7 @@ public class ClaimDataContentProvider {
             formatDateTime(claim.getCreatedAt()),
             formatDate(claim.getIssuedOn()),
             claim.getClaimData().getReason(),
-            formatMoney(((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount()),
+            formatMoney(amountBreakDown.getTotalAmount()),
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             interestContent,
             formatMoney(
@@ -90,7 +96,12 @@ public class ClaimDataContentProvider {
             signerName,
             signerRole,
             events,
-            evidences
+            evidences,
+            amountBreakDown.getRows()
+                .stream()
+            .filter(row -> row != null && row.getAmount() != null)
+            .map(AmountRowContent::new)
+            .collect(Collectors.toList())
         );
     }
 

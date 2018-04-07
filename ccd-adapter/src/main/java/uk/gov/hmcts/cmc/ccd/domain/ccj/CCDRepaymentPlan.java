@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Builder
 public class CCDRepaymentPlan {
 
-    private BigDecimal firstPayment;
     private BigDecimal instalmentAmount;
     private LocalDate firstPaymentDate;
     private CCDPaymentSchedule paymentSchedule;

@@ -11,8 +11,11 @@ public class ClaimantContent extends PersonContent {
         Address correspondenceAddress,
         String email,
         String contactPerson,
-        String businessName
+        String businessName,
+        String mobileNumber,
+        String dateOfBirth
     ) {
-        super(cliamantType, fullName, address, correspondenceAddress, email, contactPerson, businessName);
+        super(cliamantType, fullName, address, correspondenceAddress, email, contactPerson,
+            businessName, mobileNumber, dateOfBirth);
     }
 }

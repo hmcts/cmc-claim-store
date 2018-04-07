@@ -16,7 +16,7 @@ import javax.validation.constraints.Digits;
 @Documented
 public @interface Money {
 
-    String message() default "Money must be greater than or equal to {value}";
+    String message() default "";
 
     Class<?>[] groups() default {};
 

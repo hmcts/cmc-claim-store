@@ -83,10 +83,11 @@ module "claim-store-api" {
 
     // urls
     FRONTEND_BASE_URL = "${var.frontend_url}"
+    RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
     CORE_CASE_DATA_API_URL = "false"
-    SEND_LETTER_URL = "${var.env == "prod" || var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
+    SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"

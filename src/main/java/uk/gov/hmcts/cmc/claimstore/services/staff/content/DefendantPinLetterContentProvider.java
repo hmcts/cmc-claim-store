@@ -57,6 +57,7 @@ public class DefendantPinLetterContentProvider {
                 ((AmountBreakDown)claim.getClaimData()
                     .getAmount())
                     .getTotalAmount(),
+                claim.getIssuedOn(),
                 claim.getIssuedOn()
             );
             totalAmountComponents.add(interestContent.getAmountRealValue());
@@ -76,7 +77,7 @@ public class DefendantPinLetterContentProvider {
                 .filter(Objects::nonNull)
                 .reduce(ZERO, BigDecimal::add))
         );
-        content.put("frontendBaseURL", notificationsProperties.getFrontendBaseUrl());
+        content.put("respondToClaimUrl", notificationsProperties.getRespondToClaimUrl());
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("defendantPin", defendantPin);
         content.put("responseDeadline", formatDate(claim.getResponseDeadline()));
