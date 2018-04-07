@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationInsightsAgent>
+  <Instrumentation>
+
+    <!-- Collect remote dependency data -->
+    <BuiltIn enabled="true">
+           <!-- Set SQL query duration above which query plan is reported (MySQL, PostgreSQL). Default is 10000 ms. -->
+           <MaxStatementQueryLimitInMS>1000</MaxStatementQueryLimitInMS>
+         </BuiltIn>
+
+        <Class name="com.myCompany.MyClass">
+          <Method name="methodOne"
+            reportCaughtExceptions="true"
+            reportExecutionTime="true"
+            />
+
+          <!-- Report on the particular signature
+                void methodTwo(String, int) -->
+           <Method name="methodTwo"
+             reportExecutionTime="true"
+             signature="(Ljava/lang/String;I)V" />
+         </Class>
+
+       </Instrumentation>
+     </ApplicationInsightsAgent>

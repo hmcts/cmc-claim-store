@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -23,6 +24,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_SUBMITTED;
 
 @Component
 public class ClaimService {
@@ -34,6 +39,7 @@ public class ClaimService {
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
     private final MoreTimeRequestRule moreTimeRequestRule;
+    private final AppInsights appInsights;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -44,7 +50,8 @@ public class ClaimService {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         EventProducer eventProducer,
         CaseRepository caseRepository,
-        MoreTimeRequestRule moreTimeRequestRule
+        MoreTimeRequestRule moreTimeRequestRule,
+        AppInsights appInsights
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -53,6 +60,7 @@ public class ClaimService {
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
         this.moreTimeRequestRule = moreTimeRequestRule;
+        this.appInsights = appInsights;
     }
 
     public Claim getClaimById(long claimId) {
@@ -137,7 +145,9 @@ public class ClaimService {
             authorisation
         );
 
-        return getClaimByExternalId(externalId, authorisation);
+        Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
+        appInsights.trackEvent(CLAIM_ISSUED, retrievedClaim.getReferenceNumber());
+        return retrievedClaim;
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
@@ -153,6 +163,7 @@ public class ClaimService {
         UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 
+        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, claim.getReferenceNumber());
         return claim;
     }
 
@@ -177,6 +188,7 @@ public class ClaimService {
 
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
     }
 
     public void saveDefendantResponse(
@@ -187,5 +199,6 @@ public class ClaimService {
         String authorization
     ) {
         caseRepository.saveDefendantResponse(claim, defendantId, defendantEmail, response, authorization);
+        appInsights.trackEvent(RESPONSE_SUBMITTED, claim.getReferenceNumber());
     }
 }
