@@ -8,6 +8,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
 import java.util.Arrays;
+
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
@@ -27,15 +30,18 @@ public class BulkPrintService {
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
+    private final AppInsights appInsights;
 
     public BulkPrintService(
         SendLetterApi sendLetterApi,
         AuthTokenGenerator authTokenGenerator,
-        BulkPrintStaffNotificationService bulkPrintStaffNotificationService
+        BulkPrintStaffNotificationService bulkPrintStaffNotificationService,
+        AppInsights appInsights
     ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
         this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
+        this.appInsights = appInsights;
     }
 
     @EventListener
@@ -60,5 +66,6 @@ public class BulkPrintService {
             event.getSealedClaimDocument(),
             event.getClaim()
         );
+        appInsights.trackEvent(BULK_PRINT_FAILED, event.getClaim().getReferenceNumber());
     }
 }
