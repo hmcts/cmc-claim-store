@@ -5,7 +5,7 @@
         <BuiltIn enabled="true">
             <HTTP enabled="true"/>
         </BuiltIn>
-        <Class name="uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository">
+        <Class name="uk.gov.hmcts.cmc.claimstore.repositories.DBCaseRepository">
             <Method name="getBySubmitterId" />
             <Method name="getClaimByExternalId" />
             <Method name="getByClaimReferenceNumber" />
@@ -21,6 +21,9 @@
             <Method name="saveClaim" />
         </Class>
         <Class name="uk.gov.service.notify.NotificationClient">
+            <Method name="sendEmail"/>
+        </Class>
+        <Class name="uk.gov.hmcts.cmc.email.EmailService">
             <Method name="sendEmail"/>
         </Class>
         <Class name="uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient">
