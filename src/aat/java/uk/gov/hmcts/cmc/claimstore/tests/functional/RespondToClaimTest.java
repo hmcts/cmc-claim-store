@@ -76,7 +76,7 @@ public class RespondToClaimTest extends BaseTest {
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
         Response invalidResponse = SampleResponse.FullDefence.builder()
-            .withDefence(null)
+            .withDefenceType(null)
             .build();
 
         commonOperations.submitResponse(invalidResponse, createdCase.getExternalId(), defendant)
