@@ -13,7 +13,6 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class InterestTest {
 
-    private static final BigDecimal STANDARD_INTEREST_RATE = new BigDecimal(8);
     private static final String REASON = "Any reason";
     private static final String MAY_NOT_BE_NULL_OR_EMPTY = "may not be null or empty";
     private static final BigDecimal NON_STANDARD_INTEREST_RATE = new BigDecimal(10);
@@ -198,7 +197,6 @@ public class InterestTest {
 
     @Test
     public void shouldBeInvalidWhenBreakdownInterestAndContinueToClaimAmountAndInterest() {
-        final String templateMessage = "either rate or specific amount should be claimed";
         Interest interest = SampleInterest.breakdownInterestBuilder()
             .withRate(new BigDecimal(8))
             .withSpecificDailyAmount(new BigDecimal(1000)).build();
@@ -225,7 +223,6 @@ public class InterestTest {
 
     @Test
     public void shouldReturnInValidWithNoInterestDateAndStandardInterestRate() {
-        String fieldName = "interestDate";
         Interest interest = SampleInterest.standardWithNoInterestDate();
 
         //when
@@ -240,7 +237,6 @@ public class InterestTest {
 
     @Test
     public void shouldBeInValidWithZeroRateOfInterestOnDifferentRate() {
-        String message = "has to be greater than zero value";
         Interest interest = SampleInterest.differentInterest(BigDecimal.ZERO, "some reason");
 
         //when
