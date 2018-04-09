@@ -75,7 +75,8 @@ public class DefendantResponseContentProviderTest {
 
         assertThat(content)
             .containsEntry("responseDefence",
-                ((FullDefenceResponse) claim.getResponse().orElseThrow(IllegalStateException::new)).getDefence()
+                ((FullDefenceResponse) claim.getResponse().orElseThrow(IllegalStateException::new))
+                    .getDefence().orElse(null)
             );
     }
 

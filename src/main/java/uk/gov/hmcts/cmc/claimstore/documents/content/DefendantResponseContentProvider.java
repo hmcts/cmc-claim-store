@@ -80,7 +80,7 @@ public class DefendantResponseContentProvider {
         if (defendantResponse instanceof FullDefenceResponse) {
             FullDefenceResponse fullDefence = (FullDefenceResponse) defendantResponse;
 
-            content.put("responseDefence", fullDefence.getDefence());
+            content.put("responseDefence", fullDefence.getDefence().orElse(null));
             content.put("responseTypeSelected", fullDefence.getDefenceType().getDescription());
             if (fullDefence.getDefenceType().equals(FullDefenceResponse.DefenceType.ALREADY_PAID)) {
                 content.put("hasDefendantAlreadyPaid", true);
