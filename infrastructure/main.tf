@@ -14,11 +14,15 @@ locals {
   sendLetterUrl = "${var.env == "preview" ? "false" : local.localSendLetterUrl}"
 
   localPdfServiceUrl = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
-  pdfserviceUrl =  "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.core-compute-aat.internal" : local.localPdfServiceUrl}"
+  pdfserviceUrl = "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.core-compute-aat.internal" : local.localPdfServiceUrl}"
 
   previewVaultName = "${var.product}-claim-store"
   nonPreviewVaultName = "${var.product}-claim-store-${var.env}"
   vaultName = "${var.env == "preview" ? local.previewVaultName : local.nonPreviewVaultName}"
+
+  nonPreviewVaultUri = "${module.claim-store-vault.key_vault_uri}"
+  previewVaultUri = "https://cmc-claim-store-aat.vault.azure.net/"
+  vaultUri = "${var.env == "preview"? local.previewVaultUri : local.nonPreviewVaultUri}"
 }
 
 data "vault_generic_secret" "notify_api_key" {
