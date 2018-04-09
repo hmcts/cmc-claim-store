@@ -58,7 +58,7 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
 
         builder.responseType(CCDDefenceType.valueOf(response.getDefenceType().name()));
-        builder.defence(response.getDefence());
+        response.getDefence().ifPresent(builder::defence);
 
         response.getPaymentDeclaration().ifPresent(paymentDeclaration ->
             builder.paymentDeclaration(paymentDeclarationMapper.to(paymentDeclaration)));
