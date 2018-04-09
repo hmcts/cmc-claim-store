@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -34,8 +33,7 @@ public class FullDefenceResponse extends Response {
     @NotNull
     private final DefenceType defenceType;
 
-    @NotBlank
-    @Size(max = 99000)
+    @Size(min = 1, max = 99000)
     private final String defence;
 
     @Valid
@@ -70,8 +68,8 @@ public class FullDefenceResponse extends Response {
         return defenceType;
     }
 
-    public String getDefence() {
-        return defence;
+    public Optional<String> getDefence() {
+        return Optional.ofNullable(defence);
     }
 
     public Optional<PaymentDeclaration> getPaymentDeclaration() {

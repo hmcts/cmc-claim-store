@@ -106,23 +106,6 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .andExpect(status().isInternalServerError());
     }
 
-    @Test
-    public void shouldFailForEmptyDefence() throws Exception {
-        String anyExternalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
-        String anyDefendantId = "500";
-        Response response = SampleResponse.FullDefence.builder()
-            .withDefence("")
-            .build();
-
-        MvcResult result = makeRequest(anyExternalId, anyDefendantId, response)
-            .andExpect(status().isUnprocessableEntity())
-            .andReturn();
-
-        assertThat(extractErrors(result))
-            .hasSize(1)
-            .contains("defence : may not be empty");
-    }
-
     private ResultActions makeRequest(String externalId, String defendantId, Response response) throws Exception {
         return webClient
             .perform(post("/responses/claim/" + externalId + "/defendant/" + defendantId)
