@@ -45,8 +45,7 @@ public class ClaimDataTest {
     public void shouldBeInvalidWhenGivenStandardInterestWithInvalidDate() {
         //given
         ClaimData claimData = SampleClaimData.builder()
-            .withInterest(SampleInterest.standard())
-            .withStanderdRateAndInterestDate(invalidDate)
+            .withInterest(SampleInterest.standardWithSpecificInterestDate(invalidDate))
             .build();
         //when
         Set<String> response = validate(claimData);
@@ -70,7 +69,7 @@ public class ClaimDataTest {
         //then
         assertThat(response)
             .hasSize(1)
-            .contains("interest.interestDate.Date, interestDate.reason : is not provided");
+            .contains("interest.interestDate.Date or interest.interestDate.reason : may not be null or empty");
     }
 
     @Test

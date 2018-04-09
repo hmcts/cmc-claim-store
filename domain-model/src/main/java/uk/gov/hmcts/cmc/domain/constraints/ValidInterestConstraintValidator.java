@@ -13,12 +13,11 @@ import javax.validation.ConstraintValidatorContext;
 import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
 
 /**
- * Intended to replace {@link InterDependentFieldsConstraintValidator}.
- * Validates the BREAKDOWN interest type only for now.
+ * Validates the Interest.
  */
 public class ValidInterestConstraintValidator implements ConstraintValidator<ValidInterest, Interest> {
 
-    private static final String notProvidedMessage = "is not provided";
+    private static final String MAY_NOT_BE_NULL_OR_EMPTY = "may not be null or empty";
 
     @Override
     public void initialize(ValidInterest constraintAnnotation) {
@@ -27,8 +26,12 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
 
     @Override
     public boolean isValid(Interest interest, ConstraintValidatorContext validatorContext) {
-        if (interest == null || interest.getType() == null) {
+        if (interest == null || (interest.getType() != null
+            && interest.getType().equals(Interest.InterestType.NO_INTEREST))) {
             return true;
+        } else if (interest != null && interest.getType() == null) {
+            setValidationErrors(validatorContext, "type", MAY_NOT_BE_NULL_OR_EMPTY);
+            return false;
         }
 
         switch (interest.getType()) {
@@ -45,38 +48,34 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
 
     private boolean validateStandardRate(InterestDate interestDate, ConstraintValidatorContext validatorContext) {
         if (interestDate == null) {
-            setValidationErrors(validatorContext, "interestDate", notProvidedMessage);
+            setValidationErrors(validatorContext, "interestDate", MAY_NOT_BE_NULL_OR_EMPTY);
             return false;
         }
-        return true;
+        return validateInterestDate(interestDate, validatorContext);
     }
 
     private boolean validateDifferentInterestCriteria(Interest interest,
                                                       ConstraintValidatorContext validatorContext) {
         BigDecimal rate = interest.getRate();
         String reason = interest.getReason();
-        boolean flag = true;
-        if (rate == null) {
-            setValidationErrors(validatorContext, "rate", notProvidedMessage);
+        final Function<String, Boolean> checkReason = reason1 -> reason1 == null || reason1.isEmpty();
+        if (rate == null || checkReason.apply(reason)) {
+            setValidationErrors(validatorContext, "rate or reason", MAY_NOT_BE_NULL_OR_EMPTY);
             return false;
-        } else {
-            final Function<String, Boolean> checkReason = reason1 -> reason1 == null || reason1.isEmpty();
-            if (checkReason.apply(reason)) {
-                setValidationErrors(validatorContext, "reason", notProvidedMessage);
-                return false;
-            } else if (rate.compareTo(BigDecimal.ZERO) != 1 && !checkReason.apply(reason)) {
-                setValidationErrors(validatorContext, "rate", "has to be greater than zero value");
-                return false;
-            }
-            flag = validateInterestDate(interest.getInterestDate(), validatorContext);
+        } else if (rate.compareTo(BigDecimal.ZERO) != 1) {
+            setValidationErrors(validatorContext, "rate", "has to be greater than zero value");
+            return false;
         }
-        return flag;
+
+        return validateInterestDate(interest.getInterestDate(), validatorContext);
     }
 
     private boolean validateInterestDate(InterestDate interestDate, ConstraintValidatorContext validatorContext) {
-        if (interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM)) {
+        InterestDate.InterestDateType interestDateType = interestDate.getType();
+        if (interestDateType != null && interestDateType.equals(InterestDate.InterestDateType.CUSTOM)) {
             if (interestDate.getDate() == null || interestDate.getReason().isEmpty()) {
-                setValidationErrors(validatorContext, "interestDate.Date, interestDate.reason", notProvidedMessage);
+                setValidationErrors(validatorContext,
+                    "interestDate.Date or interest.interestDate.reason", MAY_NOT_BE_NULL_OR_EMPTY);
                 return false;
             }
         }

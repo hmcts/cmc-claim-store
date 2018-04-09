@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 
@@ -13,7 +12,6 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 public class InterestDateTest {
 
     @Test
-    @Ignore // To be enabled after new validators are implemented
     public void shouldFailWhenInterestDateAttributesAreNull() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
@@ -25,9 +23,8 @@ public class InterestDateTest {
         Set<String> errors = validate(interestDate);
         //then
         assertThat(errors)
-            .hasSize(2)
+            .hasSize(1)
             .contains(
-                "reason : may not be empty",
                 "type : may not be null"
             );
     }
@@ -72,22 +69,6 @@ public class InterestDateTest {
         assertThat(errors)
             .hasSize(1)
             .contains("date : is in the future");
-    }
-
-    @Test
-    @Ignore // To be enabled after new validators are implemented
-    public void shouldReturnValidationMessageForCustomTypeAndBlankReason() {
-        //given
-        InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.CUSTOM)
-            .withReason("")
-            .build();
-        //when
-        Set<String> errors = validate(interestDate);
-        //then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("reason : may not be empty");
     }
 
     @Test
