@@ -84,4 +84,77 @@ public class InterestDateTest {
         assertThat(errors).isEmpty();
     }
 
+    @Test
+    public void shouldIsCustomReturnTrueWhenInterestDateTypeIsEqualCustom() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.CUSTOM)
+            .withDate(LocalDate.of(2015, 2, 5))
+            .build();
+
+        //then
+        assertThat(interestDate.isCustom()).isEqualTo(true);
+    }
+
+    @Test
+    public void shouldIsCustomReturnFalseWhenInterestDateTypeIsEqualSubmission() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.SUBMISSION)
+            .build();
+
+        //then
+        assertThat(interestDate.isCustom()).isEqualTo(false);
+    }
+
+    @Test
+    public void shouldIsEndDateOnSubmissionReturnFalseWhenInterestDateTypeIsEqualCustom() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.CUSTOM)
+            .withDate(LocalDate.of(2015, 2, 5))
+            .build();
+
+        //then
+        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);
+    }
+
+    @Test
+    public void shouldIsEndDateOnClaimCompleteReturnTrueWhenInterestEndDateTypeIsEqualSettledOrJudgment() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.SUBMISSION)
+            .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
+            .build();
+
+        //then
+        assertThat(interestDate.isEndDateOnClaimComplete()).isEqualTo(true);
+        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);
+    }
+
+    @Test
+    public void shouldIsEndDateOnClaimCompleteReturnFalseWhenInterestEndDateTypeIsEqualSubmission() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.SUBMISSION)
+            .withEndDateType(InterestDate.InterestEndDateType.SUBMISSION)
+            .build();
+
+        //then
+        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(true);
+        assertThat(interestDate.isEndDateOnClaimComplete()).isEqualTo(false);
+    }
+
+    @Test
+    public void shouldIsEndDateOnClaimCompleteReturnFalseWhenInterestEndDateTypeIsSetNull() {
+        //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withType(InterestDate.InterestDateType.SUBMISSION)
+            .withEndDateType(null)
+            .build();
+
+        //then
+        assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);
+        assertThat(interestDate.isEndDateOnClaimComplete()).isEqualTo(true);
+    }
 }

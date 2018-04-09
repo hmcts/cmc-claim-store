@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
-public class InterestProviderTest {
+public class InterestContentProviderTest {
 
     private Claim claim = SampleClaim.getDefault();
 

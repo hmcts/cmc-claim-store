@@ -61,6 +61,21 @@ public class InterestDate {
     }
 
     @JsonIgnore
+    public boolean isEndDateOnClaimComplete() {
+        return endDateType.equals(InterestEndDateType.SETTLED_OR_JUDGMENT);
+    }
+
+    @JsonIgnore
+    public boolean isEndDateOnSubmission() {
+        return endDateType.equals(InterestEndDateType.SUBMISSION);
+    }
+
+    @JsonIgnore
+    public boolean isCustom() {
+        return type.equals(InterestDate.InterestDateType.CUSTOM);
+    }
+
+    @JsonIgnore
     public boolean isValid() {
         return type != null || date != null || reason != null;
     }

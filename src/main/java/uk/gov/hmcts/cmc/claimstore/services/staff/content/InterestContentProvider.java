@@ -20,7 +20,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatPercent;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.BREAKDOWN;
-import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SUBMISSION;
 
 @Component
 public class InterestContentProvider {
@@ -46,7 +45,8 @@ public class InterestContentProvider {
             return createBreakdownInterestContent(
                 interest,
                 claimAmount,
-                issuedOn
+                issuedOn,
+                interestEndDate
             );
         } else {
             return createSameRateForWholePeriodInterestContent(
@@ -56,6 +56,7 @@ public class InterestContentProvider {
                 interestEndDate
             );
         }
+
     }
 
     private InterestContent createSameRateForWholePeriodInterestContent(
@@ -65,73 +66,52 @@ public class InterestContentProvider {
         LocalDate interestEndDate
     ) {
         InterestDate interestDate = interest.getInterestDate();
-        boolean customInterestDate = false;
-        if (interestDate != null) {
-            customInterestDate = interestDate.getType().equals(InterestDate.InterestDateType.CUSTOM);
-        }
-        LocalDate fromDate;
-        String interestDateReason = null;
-        if (customInterestDate) {
-            fromDate = interestDate.getDate();
-            interestDateReason = interestDate.getReason();
-        } else {
-            fromDate = issuedOn;
-        }
 
-        LocalDate endDate;
-        if (interestDate.getEndDateType() == SUBMISSION) {
-            endDate = issuedOn;
-        } else {
-            endDate = interestEndDate;
-        }
+        LocalDate fromDate = interestDate.isCustom() ? interestDate.getDate() : issuedOn;
+        LocalDate endDate = interestDate.isEndDateOnSubmission() ? issuedOn : interestEndDate;
+        BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
+        BigDecimal amountUpToNowRealValue = BigDecimal.ZERO;
 
-        BigDecimal amountUpToNowRealValue;
-        String amountUpToNow;
         if (!fromDate.isAfter(LocalDateTimeFactory.nowInLocalZone().toLocalDate())) {
             amountUpToNowRealValue = interestCalculationService.calculateInterestUpToDate(
                 claimAmount, interest.getRate(), fromDate, endDate
             );
-        } else {
-            amountUpToNowRealValue = BigDecimal.ZERO;
         }
-        amountUpToNow = formatMoney(amountUpToNowRealValue);
-
-        BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
 
         return new InterestContent(
             interest.getType().name(),
             formatPercent(interest.getRate()),
             interest.getType().equals(Interest.InterestType.DIFFERENT),
             interest.getReason(),
-            customInterestDate,
+            interestDate.isCustom(),
             formatDate(fromDate),
-            amountUpToNow,
+            formatMoney(amountUpToNowRealValue),
             amountUpToNowRealValue,
             formatMoney(dailyAmount),
-            interestDateReason,
-            interestDate.getEndDateType().equals(SUBMISSION)
+            interestDate.getReason(),
+            interestDate.isEndDateOnSubmission()
         );
     }
 
     private InterestContent createBreakdownInterestContent(
         Interest interest,
         BigDecimal claimAmount,
-        LocalDate issuedOn
+        LocalDate issuedOn,
+        LocalDate endDate
     ) {
         Optional<BigDecimal> dailyAmount = inferDailyInterestAmount(interest, claimAmount);
-        LocalDate toDate = LocalDateTimeFactory.nowInLocalZone().toLocalDate();
 
         BigDecimal amountUpToNowRealValue = TotalAmountCalculator.calculateBreakdownInterest(
             interest,
             claimAmount,
-            issuedOn.isAfter(toDate) ? toDate : issuedOn,
-            toDate
+            issuedOn,
+            endDate
         );
 
         return new InterestContent(
             interest.getType().name(),
             new InterestBreakdownContent(
-                formatMoney(interest.getInterestBreakdown().getTotalAmount()),
+                formatMoney(amountUpToNowRealValue),
                 interest.getInterestBreakdown().getExplanation()
             ),
             dailyAmount.map(Formatting::formatMoney).orElse(null),
@@ -144,14 +124,14 @@ public class InterestContentProvider {
         Interest interest,
         BigDecimal claimAmount
     ) {
-        if (interest.getInterestDate().getEndDateType() == SUBMISSION) {
+        if (interest.getInterestDate().isEndDateOnSubmission()) {
             return Optional.empty();
         }
 
-        BigDecimal dailyAmount;
-        dailyAmount = interest.getSpecificDailyAmount().orElseGet(
+        BigDecimal dailyAmount = interest.getSpecificDailyAmount().orElseGet(
             () -> interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate())
         );
+
         return Optional.of(dailyAmount);
     }
 
