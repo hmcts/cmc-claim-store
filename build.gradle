@@ -90,7 +90,7 @@ def versions = [
   springBoot       : springBootVersion,
   jackson          : dependencyManagement.importedProperties['jackson.version'],
   springfoxSwagger : '2.8.0',
-  reformJavaLogging: '2.0.0'
+  reformJavaLogging: '2.1.0'
 ]
 
 configurations {
