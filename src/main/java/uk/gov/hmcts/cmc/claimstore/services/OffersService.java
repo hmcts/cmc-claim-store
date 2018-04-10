@@ -3,9 +3,10 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
-import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -15,6 +16,9 @@ import java.util.function.Supplier;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_MADE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJECTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_REACHED;
 
 @Service
 public class OffersService {
@@ -22,16 +26,19 @@ public class OffersService {
     private final ClaimService claimService;
     private final CaseRepository caseRepository;
     private final EventProducer eventProducer;
+    private final AppInsights appInsights;
 
     @Autowired
     public OffersService(
         ClaimService claimService,
         CaseRepository caseRepository,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        AppInsights appInsights
     ) {
         this.claimService = claimService;
         this.caseRepository = caseRepository;
         this.eventProducer = eventProducer;
+        this.appInsights = appInsights;
     }
 
     @Transactional
@@ -44,6 +51,7 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_MADE_BY", party.name()));
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
+        appInsights.trackEvent(OFFER_MADE, updated.getReferenceNumber());
         return updated;
     }
 
@@ -76,6 +84,7 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
+        appInsights.trackEvent(OFFER_REJECTED, updated.getReferenceNumber());
         return updated;
     }
 
@@ -90,6 +99,7 @@ public class OffersService {
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
+        appInsights.trackEvent(SETTLEMENT_REACHED, updated.getReferenceNumber());
         return updated;
     }
 
