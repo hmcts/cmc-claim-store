@@ -1,7 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.appinsights;
 
 public enum AppInsightsEvent {
-    CLAIM_ISSUED("Claim issued"),
+    CLAIM_ISSUED_LEGAL("Claim issued - Legal"),
+    CLAIM_ISSUED_CITIZEN("Claim issued - Citizen"),
     RESPONSE_SUBMITTED("Response submitted"),
     OFFER_MADE("Offer made"),
     OFFER_REJECTED("Offer rejected"),

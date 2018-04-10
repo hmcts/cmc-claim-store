@@ -25,7 +25,8 @@ import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_SUBMITTED;
 
@@ -146,8 +147,16 @@ public class ClaimService {
         );
 
         Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
-        appInsights.trackEvent(CLAIM_ISSUED, retrievedClaim.getReferenceNumber());
+        trackClaimIssued(retrievedClaim.getReferenceNumber(), claim.getClaimData().isClaimantRepresented());
         return retrievedClaim;
+    }
+
+    private void trackClaimIssued(String referenceNumber, boolean represented) {
+        if (represented) {
+            appInsights.trackEvent(CLAIM_ISSUED_LEGAL, referenceNumber);
+        } else {
+            appInsights.trackEvent(CLAIM_ISSUED_CITIZEN, referenceNumber);
+        }
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
