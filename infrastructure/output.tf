@@ -1,9 +1,9 @@
 output "vaultUri" {
-  value = "${module.claim-store-vault.key_vault_uri}"
+  value = "${local.vaultUri}"
 }
 
 output "vaultName" {
-  value = "${module.claim-store-vault.key_vault_name}"
+  value = "${local.vaultName}"
 }
 
 output "idam_api_url" {
