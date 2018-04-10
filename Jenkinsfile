@@ -13,6 +13,9 @@ properties(
   ],
 )
 @Library('Reform')
+import uk.gov.hmcts.Versioner
+
+Versioner versioner = new Versioner(this)
 
 def channel = '#cmc-tech-notification'
 
