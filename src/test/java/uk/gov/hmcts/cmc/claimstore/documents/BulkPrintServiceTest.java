@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,6 +29,10 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.XEROX_TYPE_
 public class BulkPrintServiceTest {
     @Mock
     private SendLetterApi sendLetterApi;
+
+    @Mock
+    private AppInsights appInsights;
+
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     private BulkPrintService bulkPrintService;
@@ -35,7 +40,9 @@ public class BulkPrintServiceTest {
 
     @Before
     public void beforeEachTest() {
-        bulkPrintService = new BulkPrintService(sendLetterApi, authTokenGenerator, bulkPrintStaffNotificationService);
+        bulkPrintService = new BulkPrintService(
+            sendLetterApi, authTokenGenerator, bulkPrintStaffNotificationService, appInsights
+        );
     }
 
     @Test
