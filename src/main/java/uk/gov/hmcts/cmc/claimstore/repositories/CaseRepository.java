@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.search;
+package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
