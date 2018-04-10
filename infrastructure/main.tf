@@ -10,7 +10,19 @@ provider "vault" {
 
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
-  sendLetterUrl = "http://send-letter-producer-${var.env}.service.${local.aseName}.internal"
+  localSendLetterUrl = "http://send-letter-producer-${var.env}.service.${local.aseName}.internal"
+  sendLetterUrl = "${var.env == "preview" ? "false" : local.localSendLetterUrl}"
+
+  localPdfServiceUrl = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
+  pdfserviceUrl = "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.core-compute-aat.internal" : local.localPdfServiceUrl}"
+
+  previewVaultName = "${var.product}-claim-store"
+  nonPreviewVaultName = "${var.product}-claim-store-${var.env}"
+  vaultName = "${var.env == "preview" ? local.previewVaultName : local.nonPreviewVaultName}"
+
+  nonPreviewVaultUri = "${module.claim-store-vault.key_vault_uri}"
+  previewVaultUri = "https://cmc-claim-store-aat.vault.azure.net/"
+  vaultUri = "${var.env == "preview"? local.previewVaultUri : local.nonPreviewVaultUri}"
 }
 
 data "vault_generic_secret" "notify_api_key" {
@@ -84,7 +96,7 @@ module "claim-store-api" {
     // urls
     FRONTEND_BASE_URL = "${var.frontend_url}"
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
-    PDF_SERVICE_URL = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
+    PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
     CORE_CASE_DATA_API_URL = "false"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
@@ -106,7 +118,7 @@ module "claim-store-api" {
 
 module "claim-store-vault" {
   source = "git@github.com:contino/moj-module-key-vault?ref=master"
-  name = "cmc-claim-store-${var.env}"
+  name = "${local.vaultName}"
   product = "${var.product}"
   env = "${var.env}"
   tenant_id = "${var.tenant_id}"
