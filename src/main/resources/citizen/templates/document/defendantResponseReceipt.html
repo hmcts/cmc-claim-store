@@ -265,6 +265,7 @@
           {{ responseTypeSelected }}
         </td>
       </tr>
+      {% if responseDefence is not empty %}
       <tr>
         <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
       </tr>
@@ -273,6 +274,7 @@
           <p>{{ responseDefence | trim}}</p>
         </td>
       </tr>
+      {% endif %}
 
       {% if events is not empty %}
       <tr>

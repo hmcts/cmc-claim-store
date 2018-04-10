@@ -29,10 +29,12 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, FullDefenceRe
                 ccdResponse.getMoreTimeNeededOption(), actual.getMoreTimeNeeded().name());
         }
 
-        if (!Objects.equals(actual.getDefence(), ccdResponse.getDefence())) {
-            failWithMessage("Expected FullDefenceResponse.defence to be <%s> but was <%s>",
-                ccdResponse.getDefence(), actual.getDefence());
-        }
+        actual.getDefence().ifPresent(defence -> {
+            if (!Objects.equals(defence, ccdResponse.getDefence())) {
+                failWithMessage("Expected FullDefenceResponse.defence to be <%s> but was <%s>",
+                    ccdResponse.getDefence(), defence);
+            }
+        });
 
         if (!Objects.equals(actual.getDefenceType().name(), ccdResponse.getResponseType().name())) {
             failWithMessage("Expected FullDefenceResponse.defenceType to be <%s> but was <%s>",
