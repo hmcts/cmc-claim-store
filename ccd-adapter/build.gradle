@@ -3,7 +3,7 @@ plugins {
   id 'jacoco'
 }
 
-def springBootVersion = '1.5.10.RELEASE'
+def springBootVersion = '2.0.1.RELEASE'
 
 def versions = [
   springBoot: springBootVersion

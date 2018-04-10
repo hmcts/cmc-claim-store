@@ -63,4 +63,11 @@
         <gav regex="true">^org\.apache\.tomcat:tomcat-annotations-api:.*$</gav>
         <cve>CVE-2016-5425</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Related to PostgreSQL server startup script, also up to 9.4 while we are using 9.6
+        ]]></notes>
+        <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
+        <cve>CVE-2017-14798</cve>
+    </suppress>
 </suppressions>

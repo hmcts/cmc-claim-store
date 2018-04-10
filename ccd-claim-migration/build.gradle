@@ -4,7 +4,7 @@ buildscript {
   repositories { mavenCentral() }
 }
 
-def springBootVersion = '1.5.10.RELEASE'
+def springBootVersion = '2.0.1.RELEASE'
 
 def versions = [
   springBoot: springBootVersion
@@ -25,7 +25,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '0.4.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '2.5.0'
 
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
 }
 
 sourceCompatibility = 1.8
