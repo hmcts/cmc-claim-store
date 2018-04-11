@@ -1,5 +1,5 @@
 #!groovy
-@Library("Infrastructure@feature/ROC-3460-One-app-insights-per-product") _
+@Library("Infrastructure") _
 
 properties([
 		parameters([
