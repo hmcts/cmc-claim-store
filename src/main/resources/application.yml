@@ -5,6 +5,9 @@ server:
 management:
   security:
     enabled: false
+  endpoints:
+    web:
+      base-path: /
 
 database:
   driverClassName: org.postgresql.Driver
@@ -47,6 +50,9 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
+
+pdf-service:
+  url: "${PDF_SERVICE_URL:}"
 
 bankHolidays:
   api:

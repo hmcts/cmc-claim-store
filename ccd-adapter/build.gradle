@@ -11,6 +11,7 @@ def versions = [
 
 dependencies {
   compile project(':domain-model')
+
   compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: versions.springBoot
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
   apt group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
@@ -19,7 +20,6 @@ dependencies {
   testCompile group: 'junit', name: 'junit', version: '4.12'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
   testCompile project(':domain-sample-data')
-
 }
 
 configurations {
@@ -33,8 +33,4 @@ task testJar (type: Jar) {
 
 artifacts {
   testArtifacts testJar
-}
-
-bootRepackage {
-  enabled false
 }

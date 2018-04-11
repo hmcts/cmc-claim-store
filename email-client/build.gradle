@@ -1,7 +1,9 @@
 apply plugin: 'jacoco'
 
 buildscript {
-  repositories { mavenCentral() }
+  repositories {
+    mavenCentral()
+  }
 }
 
 def springBootVersion = '2.0.1.RELEASE'
@@ -29,11 +31,5 @@ dependencies {
   testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.7'
 
   testCompile group: 'org.mockito', name: 'mockito-core', version: '2.15.0'
-
 }
 
-dependencyManagement {
-  imports {
-    mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
-  }
-}
