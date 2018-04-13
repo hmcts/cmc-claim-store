@@ -23,7 +23,7 @@ public class JacksonConfiguration {
             .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
             .registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS).disable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES);
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
 
 }
