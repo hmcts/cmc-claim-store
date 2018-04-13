@@ -127,8 +127,6 @@ dependencies {
 
   compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
-  compile group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
-
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
