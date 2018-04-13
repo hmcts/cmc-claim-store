@@ -111,6 +111,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-properties-migrator', version: versions.springBoot
 
   compile group: 'org.flywaydb', name: 'flyway-core', version: '4.2.0'
 
