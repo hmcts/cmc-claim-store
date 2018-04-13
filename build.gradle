@@ -25,6 +25,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = '2.0.1.RELEASE'
+def springCloudVersion = 'Finchley.M9'
 
 allprojects {
   apply plugin: 'application'
@@ -81,6 +82,7 @@ allprojects {
   dependencyManagement {
     imports {
       mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+      mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
   }
 }
