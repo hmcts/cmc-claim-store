@@ -90,7 +90,7 @@ def versions = [
   springBoot       : springBootVersion,
   jackson          : dependencyManagement.importedProperties['jackson.version'],
   springfoxSwagger : '2.8.0',
-  reformJavaLogging: '2.0.0'
+  reformJavaLogging: '2.1.1'
 ]
 
 configurations {
@@ -134,8 +134,7 @@ dependencies {
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.8.0-RELEASE'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: versions.reformJavaLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-httpcomponents', version: versions.reformJavaLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '5.0.0'
@@ -226,6 +225,8 @@ task functional(type: Test) {
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 task smoke(type: Test) {
@@ -234,6 +235,8 @@ task smoke(type: Test) {
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 compileIntegrationTestJava {

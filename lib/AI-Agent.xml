@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationInsightsAgent>
+    <AgentLogger>INFO</AgentLogger>
+    <Instrumentation>
+        <BuiltIn enabled="true">
+            <HTTP enabled="true"/>
+        </BuiltIn>
+        <Class name="uk.gov.hmcts.cmc.claimstore.repositories.DBCaseRepository">
+            <Method name="getBySubmitterId"/>
+            <Method name="getClaimByExternalId"/>
+            <Method name="getByClaimReferenceNumber"/>
+            <Method name="saveCountyCourtJudgment"/>
+            <Method name="saveDefendantResponse"/>
+            <Method name="linkDefendantV1"/>
+            <Method name="linkDefendantV2"/>
+            <Method name="getByDefendantId"/>
+            <Method name="getByLetterHolderId"/>
+            <Method name="requestMoreTimeForResponse"/>
+            <Method name="updateSettlement"/>
+            <Method name="reachSettlementAgreement"/>
+            <Method name="saveClaim"/>
+        </Class>
+        <Class name="uk.gov.service.notify.NotificationClient">
+            <!--
+                Notify client delegates to an overloaded method straight away which shows
+                up twice in appinsights without the signature
+                Signature generated with `javap -s NotificationClient.class | grep sendEmail -A2`
+            -->
+            <Method name="sendEmail"
+                    signature="(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;)Luk/gov/service/notify/SendEmailResponse;"/>
+        </Class>
+        <Class name="uk.gov.hmcts.cmc.email.EmailService">
+            <Method name="sendEmail"/>
+        </Class>
+    </Instrumentation>
+</ApplicationInsightsAgent>

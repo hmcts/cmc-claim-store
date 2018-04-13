@@ -5,16 +5,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.search.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -73,6 +74,8 @@ public class ClaimServiceTest {
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
     private EventProducer eventProducer;
+    @Mock
+    private AppInsights appInsights;
 
     @Before
     public void setup() {
@@ -85,7 +88,9 @@ public class ClaimServiceTest {
             responseDeadlineCalculator,
             eventProducer,
             caseRepository,
-            new MoreTimeRequestRule());
+            new MoreTimeRequestRule(),
+            appInsights
+        );
     }
 
     @Test
