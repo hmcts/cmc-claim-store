@@ -8,6 +8,9 @@ management:
   endpoints:
     web:
       base-path: /
+  endpoint:
+    health:
+      show-details: always
 
 database:
   driverClassName: org.postgresql.Driver
