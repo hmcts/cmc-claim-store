@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.validation.ConstraintValidatorContext;
 
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
