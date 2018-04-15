@@ -226,6 +226,8 @@ task functional(type: Test) {
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 task smoke(type: Test) {
@@ -234,6 +236,8 @@ task smoke(type: Test) {
   setTestClassesDirs(sourceSets.aat.output.classesDirs)
   setClasspath(sourceSets.aat.runtimeClasspath)
   include "uk/gov/hmcts/cmc/claimstore/tests/smoke/**"
+
+  environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 compileIntegrationTestJava {
