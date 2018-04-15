@@ -157,6 +157,11 @@ dependencies {
 
   compile group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: '2.0.0-BETA'
 
+  // Lots of dependencies use it and have different versions
+  // checkstyle was throwing an error because another dep was requesting an old version
+  compile group: 'com.google.guava', name: 'guava', version: '24.1-jre'
+
+
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
   testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'

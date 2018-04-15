@@ -39,7 +39,7 @@ public class JsonMapperTest {
     private JsonMapper processor = JsonMapperFactory.create();
 
     @Test
-    public void shouldProcessClaimDataToJson() {
+    public void shouldProcessClaimDataToJson() throws Exception {
         //given
         ClaimData input = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
@@ -70,7 +70,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessFromJson() {
+    public void shouldProcessFromJson() throws Exception {
         //given
         String input = new ResourceReader().read("/claim-application.json");
 
@@ -103,7 +103,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessLegalClaimFromJson() {
+    public void shouldProcessLegalClaimFromJson() throws Exception {
         //given
         String input = new ResourceReader().read("/legal-claim-application.json");
 
@@ -135,7 +135,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessDependantResponseFromJson() {
+    public void shouldProcessDependantResponseFromJson() throws Exception {
         //given
         String input = new ResourceReader().read("/defendant-response.json");
 
