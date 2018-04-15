@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.idam;
 
-
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
