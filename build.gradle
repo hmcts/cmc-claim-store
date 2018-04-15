@@ -84,6 +84,11 @@ allprojects {
       mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
+    dependencies {
+      dependencySet(group: 'com.google.guava', version: '24.1-jre') {
+        entry 'guava'
+      }
+    }
   }
 }
 
@@ -156,11 +161,6 @@ dependencies {
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.1'
 
   compile group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: '2.0.0-BETA'
-
-  // Lots of dependencies use it and have different versions
-  // checkstyle was throwing an error because another dep was requesting an old version
-  compile group: 'com.google.guava', name: 'guava', version: '24.1-jre'
-
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
