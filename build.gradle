@@ -85,7 +85,9 @@ allprojects {
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-      dependencySet(group: 'com.google.guava', version: '24.1-jre') {
+      // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
+      // fun times...
+      dependencySet(group: 'com.google.guava', version: '20.0') {
         entry 'guava'
       }
     }

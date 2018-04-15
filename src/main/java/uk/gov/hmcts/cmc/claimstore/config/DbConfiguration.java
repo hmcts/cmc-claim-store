@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 public class DbConfiguration {
 
     @Bean
-    @ConfigurationProperties(prefix = "database")
+    @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create()
             .build();
