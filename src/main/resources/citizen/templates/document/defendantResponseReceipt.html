@@ -357,14 +357,14 @@
           I believe that the facts stated in this defence are true.
         </td>
       </tr>
-      {% if signerName is empty %}
+      {% if signerName is not defined or signerName is empty %}
       <tr class="no-border">
         <td/>
         <td class="no-border">{{ defendant.fullName }}</td>
       </tr>
       {% endif %}
 
-      {% if signerName is not empty %}
+      {% if signerName is defined and signerName is not empty %}
       <tr class="no-border">
         <td class="no-border"/>
         <td class="no-border"><strong>Company: </strong> {{ defendant.businessName }}</td>
