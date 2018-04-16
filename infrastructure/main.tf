@@ -57,6 +57,10 @@ data "vault_generic_secret" "system_update_password" {
   path = "secret/${var.vault_section}/ccidam/idam-api/cmc/systemupdate/password"
 }
 
+data "vault_generic_secret" "oauth_client_secret" {
+  path = "secret/${var.vault_section}/ccidam/idam-api/oauth2/client-secrets/cmc-citizen"
+}
+
 module "claim-store-api" {
   source = "git@github.com:contino/moj-module-webapp.git"
   product = "${var.product}-${var.microservice}"
@@ -90,6 +94,7 @@ module "claim-store-api" {
     IDAM_ANONYMOUS_CASEWORKER_PASSWORD = "${data.vault_generic_secret.anonymous_citizen_password.data["value"]}"
     IDAM_SYSTEM_UPDATE_USER_USERNAME = "${data.vault_generic_secret.system_update_username.data["value"]}"
     IDAM_SYSTEM_UPDATE_USER_PASSWORD = "${data.vault_generic_secret.system_update_password.data["value"]}"
+    OAUTH2_CLIENT_SECRET = "${data.vault_generic_secret.oauth_client_secret.data["value"]}"
 
     // notify
     GOV_NOTIFY_API_KEY = "${data.vault_generic_secret.notify_api_key.data["value"]}"
