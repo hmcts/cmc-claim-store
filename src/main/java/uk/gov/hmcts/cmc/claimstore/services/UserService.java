@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
+import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
@@ -66,22 +67,22 @@ public class UserService {
         String authorisation = username + ":" + password;
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
 
-        AuthenticateUserResponse authorize = idamApi.authorizeCodeType(
+        AuthenticateUserResponse authenticateUserResponse = idamApi.authenticateUser(
             BASIC + base64Authorisation,
             CODE,
             oauth2.getClientId(),
             oauth2.getRedirectUrl()
         );
 
-        AuthenticateUserResponse authorizeToken = idamApi.authorizeToken(
-            authorize.getCode(),
+        TokenExchangeResponse tokenExchangeResponse = idamApi.exchangeCode(
+            authenticateUserResponse.getCode(),
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
             oauth2.getClientId(),
             oauth2.getClientSecret()
         );
 
-        return BEARER + authorizeToken.getAccessToken();
+        return BEARER + tokenExchangeResponse.getAccessToken();
     }
 
 }
