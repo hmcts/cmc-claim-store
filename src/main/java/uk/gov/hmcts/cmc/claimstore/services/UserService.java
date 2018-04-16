@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinRequest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
@@ -19,11 +20,13 @@ public class UserService {
     private static final String BEARER = "Bearer ";
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
+    private final Oauth2 oauth2;
 
     @Autowired
-    public UserService(IdamApi idamApi, IdamCaseworkerProperties idamCaseworkerProperties) {
+    public UserService(IdamApi idamApi, IdamCaseworkerProperties idamCaseworkerProperties, Oauth2 oauth2) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;
+        this.oauth2 = oauth2;
     }
 
     public UserDetails getUserDetails(String authorisation) {
@@ -35,10 +38,8 @@ public class UserService {
     }
 
     public User authenticateUser(String username, String password) {
-        AuthenticateUserResponse authenticateUserResponse = idamApi
-            .authenticateUser(getBasicAuthHeader(username, password));
 
-        String authorisation = BEARER + authenticateUserResponse.getAccessToken();
+        String authorisation = getIdamOauth2Token(username, password);
         UserDetails userDetails = idamApi.retrieveUserDetails(authorisation);
         return new User(authorisation, userDetails);
     }
@@ -55,6 +56,28 @@ public class UserService {
     public String getBasicAuthHeader(String username, String password) {
         String auth = username + ":" + password;
         return "Basic " + new String(Base64.getEncoder().encode(auth.getBytes()));
+    }
+
+    public String getIdamOauth2Token(String username, String password) {
+        String authorisation = username + ":" + password;
+        String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
+
+        AuthenticateUserResponse authorize = idamApi.authorizeCodeType(
+            "Basic " + base64Authorisation,
+            "code",
+            oauth2.getClientId(),
+            oauth2.getRedirectUrl()
+        );
+
+        AuthenticateUserResponse authorizeToken = idamApi.authorizeToken(
+            authorize.getCode(),
+            "authorization_code",
+            oauth2.getRedirectUrl(),
+            oauth2.getClientId(),
+            oauth2.getClientSecret()
+        );
+
+        return "Bearer " + authorizeToken.getAccessToken();
     }
 
 }
