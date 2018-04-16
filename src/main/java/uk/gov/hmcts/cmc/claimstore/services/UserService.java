@@ -20,6 +20,7 @@ public class UserService {
     private static final String BEARER = "Bearer ";
     private static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
+    public static final String BASIC = "Basic ";
 
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
@@ -58,7 +59,7 @@ public class UserService {
 
     public String getBasicAuthHeader(String username, String password) {
         String auth = username + ":" + password;
-        return "Basic " + new String(Base64.getEncoder().encode(auth.getBytes()));
+        return BASIC + new String(Base64.getEncoder().encode(auth.getBytes()));
     }
 
     public String getIdamOauth2Token(String username, String password) {
@@ -66,7 +67,7 @@ public class UserService {
         String base64Authorisation = Base64.getEncoder().encodeToString(authorisation.getBytes());
 
         AuthenticateUserResponse authorize = idamApi.authorizeCodeType(
-            "Basic " + base64Authorisation,
+            BASIC + base64Authorisation,
             CODE,
             oauth2.getClientId(),
             oauth2.getRedirectUrl()

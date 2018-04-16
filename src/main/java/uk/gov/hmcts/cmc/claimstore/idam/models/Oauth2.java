@@ -12,9 +12,11 @@ public class Oauth2 {
     private String clientSecret;
 
     @Autowired
-    public Oauth2(@Value("${frontend.base.url}") String baseUrl,
-                  @Value("${oauth2.client.id:cmc_citizen}") String clientId,
-                  @Value("${oauth2.s2s.top.secret}") String clientSecret) {
+    public Oauth2(
+        @Value("${frontend.base.url}") String baseUrl,
+        @Value("${oauth2.client.id}") String clientId,
+        @Value("${oauth2.s2s.top.secret}") String clientSecret
+    ) {
         this.baseUrl = baseUrl;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
