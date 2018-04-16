@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.idam;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,7 +45,8 @@ public interface IdamApi {
 
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/oauth2/token"
+        value = "/oauth2/token",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     AuthenticateUserResponse authorizeToken(
         @RequestParam("code") final String code,

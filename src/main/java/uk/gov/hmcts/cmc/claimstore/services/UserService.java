@@ -18,6 +18,9 @@ import java.util.Base64;
 public class UserService {
 
     private static final String BEARER = "Bearer ";
+    private static final String AUTHORIZATION_CODE = "authorization_code";
+    public static final String CODE = "code";
+
     private final IdamApi idamApi;
     private final IdamCaseworkerProperties idamCaseworkerProperties;
     private final Oauth2 oauth2;
@@ -64,20 +67,20 @@ public class UserService {
 
         AuthenticateUserResponse authorize = idamApi.authorizeCodeType(
             "Basic " + base64Authorisation,
-            "code",
+            CODE,
             oauth2.getClientId(),
             oauth2.getRedirectUrl()
         );
 
         AuthenticateUserResponse authorizeToken = idamApi.authorizeToken(
             authorize.getCode(),
-            "authorization_code",
+            AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
             oauth2.getClientId(),
             oauth2.getClientSecret()
         );
 
-        return "Bearer " + authorizeToken.getAccessToken();
+        return BEARER + authorizeToken.getAccessToken();
     }
 
 }
