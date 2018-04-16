@@ -15,7 +15,7 @@ public class Oauth2 {
     public Oauth2(
         @Value("${frontend.base.url}") String baseUrl,
         @Value("${oauth2.client.id}") String clientId,
-        @Value("${oauth2.s2s.top.secret}") String clientSecret
+        @Value("${oauth2.client.secret}") String clientSecret
     ) {
         this.baseUrl = baseUrl;
         this.clientId = clientId;
