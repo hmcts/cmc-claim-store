@@ -10,17 +10,10 @@ repositories {
   mavenCentral()
 }
 
-def versions = [
-  jackson: dependencyManagement.importedProperties['jackson.version']
-]
-
 dependencies {
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
   compile group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
   apt group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
 

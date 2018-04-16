@@ -6,27 +6,19 @@ buildscript {
   }
 }
 
-def springBootVersion = '2.0.1.RELEASE'
-
 def versions = [
-  springBoot: springBootVersion,
-  jackson: dependencyManagement.importedProperties['jackson.version'],
   hibernateValidator: dependencyManagement.importedProperties['hibernate-validator.version']
 ]
 
 dependencies {
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: versions.springBoot
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.2.RELEASE'
 
   compile group: 'org.hibernate', name: 'hibernate-validator', version: versions.hibernateValidator
 
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
-
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
   testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.7'
 

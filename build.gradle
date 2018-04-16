@@ -49,7 +49,7 @@ allprojects {
   dependencyCheck {
     // Specifies if the build should be failed if a CVSS score above a specified level is identified.
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
-    failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
+    failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'false' ? 11 : 0
     suppressionFile = 'dependency-check-suppressions.xml'
     analyzers {
       // Disable scanning of .NET related binaries
@@ -97,7 +97,6 @@ allprojects {
 def versions = [
   logback          : '1.2.3',
   springBoot       : springBootVersion,
-  jackson          : dependencyManagement.importedProperties['jackson.version'],
   springfoxSwagger : '2.8.0',
   reformJavaLogging: '3.0.0'
 ]
@@ -116,21 +115,16 @@ dependencies {
   compile project(':ccd-adapter')
   compile project(':domain-sample-data')
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: versions.springBoot
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
-  compile group: 'org.springframework.boot', name: 'spring-boot-properties-migrator', version: versions.springBoot
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
   compile group: 'org.flywaydb', name: 'flyway-core', version: '4.2.0'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
-
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson
-  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
 
   compile group: 'com.mitchellbosecke', name: 'pebble', version: '2.4.0'
 
@@ -168,7 +162,7 @@ dependencies {
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
   testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.3'
