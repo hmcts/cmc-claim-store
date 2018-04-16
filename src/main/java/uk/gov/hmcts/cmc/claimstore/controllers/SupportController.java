@@ -68,7 +68,7 @@ public class SupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
     ) throws ServletRequestBindingException {
 
-        Claim claim = claimService.getClaimByReference(referenceNumber, authorisation)
+        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 
         switch (event) {
