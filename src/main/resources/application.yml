@@ -5,6 +5,8 @@ server:
 management:
   endpoints:
     web:
+      exposure:
+        include: '*'
       base-path: /
   endpoint:
     health:
@@ -76,6 +78,10 @@ notifications:
       offerRejectedByClaimantEmailToDefendant: "46be31b4-6af8-46b2-9325-80ff63e78535"
       offerCounterSignedEmailToOriginator: "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1"
       offerCounterSignedEmailToOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
+
+staff-notifications:
+  sender:
+  recipient:
 
 feature_toggles:
   watermark_pdf: false
