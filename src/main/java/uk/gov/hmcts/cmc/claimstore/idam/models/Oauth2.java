@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Oauth2 {
 
-    private String baseUrl;
     private String clientId;
+    private String redirectUrl;
     private String clientSecret;
 
     @Autowired
@@ -17,13 +17,13 @@ public class Oauth2 {
         @Value("${oauth2.client.id}") String clientId,
         @Value("${oauth2.client.secret}") String clientSecret
     ) {
-        this.baseUrl = baseUrl;
         this.clientId = clientId;
+        this.redirectUrl = baseUrl + "/receiver";
         this.clientSecret = clientSecret;
     }
 
     public String getRedirectUrl() {
-        return baseUrl + "/receiver";
+        return redirectUrl;
     }
 
     public String getClientId() {
