@@ -1,6 +1,12 @@
+FROM gradle:jdk8 as builder
+
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle installDist
+
 FROM openjdk:8-jre-alpine
 
-COPY build/install/claim-store /opt/app/
+COPY --from=builder /home/gradle/src/build/install/claim-store /opt/app/
 
 WORKDIR /opt/app
 
