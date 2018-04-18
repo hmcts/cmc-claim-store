@@ -27,7 +27,8 @@ public class RespondToClaimTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
-        Response fullDefenceDisputeResponse = SampleResponse.FullDefence.builder()
+        Response fullDefenceDisputeResponse = SampleResponse.FullDefence
+            .builder()
             .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
             .build();
         shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
