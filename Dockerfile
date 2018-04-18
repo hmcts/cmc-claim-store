@@ -1,6 +1,10 @@
 FROM gradle:jdk8 as builder
 
-COPY --chown=gradle:gradle . /home/gradle/src
+COPY . /home/gradle/src
+USER root
+RUN chown -R gradle:gradle /home/gradle/src
+USER gradle
+
 WORKDIR /home/gradle/src
 RUN gradle installDist
 
