@@ -67,12 +67,7 @@ public class ClaimStore {
     public Claim saveResponse(Claim claim, Response response, String defendantId, String defendantEmail) {
         logger.debug("Saving response data with claim : {}", claim.getExternalId());
 
-        this.claimRepository.saveDefendantResponse(
-            claim.getExternalId(),
-            defendantId,
-            defendantEmail,
-            jsonMapper.toJson(response)
-        );
+        this.claimRepository.saveDefendantResponse(claim.getExternalId(), defendantEmail, jsonMapper.toJson(response));
 
         logger.debug("Saved response data");
 

@@ -202,12 +202,11 @@ public class ClaimService {
 
     public void saveDefendantResponse(
         Claim claim,
-        String defendantId,
         String defendantEmail,
         Response response,
         String authorization
     ) {
-        caseRepository.saveDefendantResponse(claim, defendantId, defendantEmail, response, authorization);
+        caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
         appInsights.trackEvent(RESPONSE_SUBMITTED, claim.getReferenceNumber());
     }
 }
