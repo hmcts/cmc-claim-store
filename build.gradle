@@ -90,6 +90,28 @@ allprojects {
       dependencySet(group: 'com.google.guava', version: '20.0') {
         entry 'guava'
       }
+      dependencySet(
+        group: 'com.fasterxml.jackson.core',
+        version: dependencyManagement.importedProperties['jackson.version']
+      ) {
+        entry 'jackson-core'
+        entry 'jackson-databind'
+      }
+      dependencySet(
+        group: 'com.fasterxml.jackson.datatype',
+        version: dependencyManagement.importedProperties['jackson.version']
+      ) {
+        entry 'jackson-datatype-jdk8'
+        entry 'jackson-datatype-jsr310'
+      }
+      dependencySet(
+        group: 'com.fasterxml.jackson.module',
+        version: dependencyManagement.importedProperties['jackson.version']
+      ) {
+        entry 'jackson-module-parameter-names'
+      }
+
+
     }
   }
 }
