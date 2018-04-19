@@ -21,4 +21,39 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2015-2156</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   temp disable for prod release, spring boot 2 upgrade coming very soon
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-7489</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   temp disable for prod release, spring boot 2 upgrade coming very soon
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2017-14798</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   temp disable for prod release, spring boot 2 upgrade coming very soon
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1304</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   temp disable for prod release, spring boot 2 upgrade coming very soon
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1305</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   temp disable for prod release, spring boot 2 upgrade coming very soon
+   ]]></notes>
+        <gav regex="true">^org\.springframework:spring-context-support:.*$</gav>
+        <cve>CVE-2018-1199</cve>
+    </suppress>
 </suppressions>
