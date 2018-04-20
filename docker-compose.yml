@@ -9,7 +9,7 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: docker.artifactory.reform.hmcts.net/cmc/claim-store-api
+    image: hmcts/cmc-claim-store
     environment:
       - CLAIM_STORE_DB_HOST=claim-store-database
       - CLAIM_STORE_DB_PORT=5432
@@ -38,7 +38,7 @@ services:
   claim-store-database:
     build:
       context: docker/database
-    image: docker.artifactory.reform.hmcts.net/cmc/claim-store-database
+    image: hmcts/cmc-claim-store-database
     healthcheck:
       interval: 10s
       timeout: 10s
