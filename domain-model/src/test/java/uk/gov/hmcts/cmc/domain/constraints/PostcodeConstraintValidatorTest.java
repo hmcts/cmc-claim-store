@@ -11,6 +11,7 @@ import javax.validation.ConstraintValidatorContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class PostcodeConstraintValidatorTest {
 
     @Mock
