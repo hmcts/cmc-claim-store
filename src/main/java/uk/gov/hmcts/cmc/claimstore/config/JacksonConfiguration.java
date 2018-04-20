@@ -16,7 +16,6 @@ public class JacksonConfiguration {
 
     @Bean
     @Primary
-    // TODO try remove all the config and use the spring one
     public ObjectMapper objectMapper() {
         return new ObjectMapper()
             .registerModule(new Jdk8Module())
