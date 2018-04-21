@@ -10,8 +10,6 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
     private static final String PATTERN = "^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y]"
         + "[0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))[0-9][A-Za-z]{2})$";
 
-    private static Pattern pattern = Pattern.compile(PATTERN);
-
     @Override
     public void initialize(Postcode constraintAnnotation) {
         // nothing to do here
@@ -23,6 +21,6 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
             return true;
         }
         String normalised = value.replaceAll(" ", "");
-        return pattern.matcher(normalised).matches();
+        return Pattern.matches(PATTERN, normalised);
     }
 }
