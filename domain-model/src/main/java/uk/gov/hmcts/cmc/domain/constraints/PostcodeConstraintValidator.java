@@ -1,7 +1,6 @@
 
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -10,6 +9,8 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
 
     private static final String PATTERN = "^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y]"
         + "[0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))[0-9][A-Za-z]{2})$";
+
+    private static Pattern pattern = Pattern.compile(PATTERN);
 
     @Override
     public void initialize(Postcode constraintAnnotation) {
@@ -22,8 +23,6 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
             return true;
         }
         String normalised = value.replaceAll(" ", "");
-        Pattern pattern = Pattern.compile(PATTERN);
-        Matcher matcher = pattern.matcher(normalised);
-        return matcher.matches();
+        return pattern.matcher(normalised).matches();
     }
 }
