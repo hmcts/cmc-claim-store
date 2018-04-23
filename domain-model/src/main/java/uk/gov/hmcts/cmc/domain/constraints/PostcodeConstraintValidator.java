@@ -22,7 +22,7 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
         if (value == null) {
             return true;
         }
-        String normalised = value.replaceAll(" ", "");
+        String normalised = value.replaceAll("\\s", "");
         return pattern.matcher(normalised).matches();
     }
 }
