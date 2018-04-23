@@ -114,7 +114,11 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
-        offersRepository.reachSettlement(claim.getExternalId(), jsonMapper.toJson(settlement), LocalDateTimeFactory.nowInUTC());
+        offersRepository.reachSettlement(
+            claim.getExternalId(),
+            jsonMapper.toJson(settlement),
+            LocalDateTimeFactory.nowInUTC()
+        );
     }
 
     @Override
