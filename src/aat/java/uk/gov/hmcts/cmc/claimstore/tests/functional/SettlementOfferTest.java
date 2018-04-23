@@ -86,7 +86,6 @@ public class SettlementOfferTest extends BaseTest {
             claimant.getAuthorisation(),
             claimantId
         );
-
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         Claim updatedCase = createClaimWithResponse(createdCase, defendant);
 
