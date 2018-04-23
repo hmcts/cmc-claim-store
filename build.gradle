@@ -1,7 +1,6 @@
 import java.util.stream.Collectors
 
 plugins {
-  id 'application'
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.5.RELEASE'
   id 'org.springframework.boot' version '2.0.1.RELEASE'
@@ -28,7 +27,6 @@ def springBootVersion = '2.0.1.RELEASE'
 def springCloudVersion = 'Finchley.M9'
 
 allprojects {
-  apply plugin: 'application'
   apply plugin: 'checkstyle'
   apply plugin: 'io.spring.dependency-management'
   apply plugin: 'org.owasp.dependencycheck'
@@ -176,8 +174,6 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.1'
 
-  compile group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: '2.0.0-BETA'
-
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
   testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
@@ -310,10 +306,9 @@ sonarqube {
   }
 }
 
-jar {
+bootJar {
   archiveName = 'claim-store.jar'
   manifest {
-
     attributes 'Implementation-Title': project.name,
       'Implementation-Version': project.version
   }
