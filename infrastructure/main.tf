@@ -117,6 +117,9 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.staff_email.data["value"]}"
 
+    // robot notifications
+    RPA_NOTIFICATIONS_SENDER = "no-reply@reform.hmcts.net"
+    RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.staff_email.data["value"]}"
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
   }

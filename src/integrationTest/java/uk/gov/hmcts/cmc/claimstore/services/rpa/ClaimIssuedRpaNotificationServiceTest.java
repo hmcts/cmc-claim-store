@@ -43,9 +43,6 @@ public class ClaimIssuedRpaNotificationServiceTest extends MockSpringTest {
     @Autowired
     private StaffEmailProperties emailProperties;
 
-    private PDF defendantLetterDocument;
-    private PDF sealedClaimDocument;
-
     private Claim claim;
     private DocumentGeneratedEvent event;
 
@@ -56,8 +53,8 @@ public class ClaimIssuedRpaNotificationServiceTest extends MockSpringTest {
             .builder()
             .build();
 
-        sealedClaimDocument = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
-        defendantLetterDocument = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
+        PDF sealedClaimDocument = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
+        PDF defendantLetterDocument = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
 
         event = new DocumentGeneratedEvent(claim, "AUTH_CODE", defendantLetterDocument, sealedClaimDocument);
 
