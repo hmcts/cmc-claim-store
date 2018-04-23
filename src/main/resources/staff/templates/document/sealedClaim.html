@@ -163,7 +163,7 @@
           {{ claimant.fullName }}
         </td>
       </tr>
-      {% if claimant.contactPerson is not empty %}
+      {% if claimant.contactPerson is defined and claimant.contactPerson is not empty %}
       <tr>
         <td><strong>Contact person:</strong></td>
         <td>
@@ -171,7 +171,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if claimant.businessName is not empty %}
+      {% if claimant.businessName is defined and claimant.businessName is not empty %}
       <tr>
         <td><strong>Business name:</strong></td>
         <td>
@@ -184,11 +184,11 @@
         <td>
           {{ claimant.address.line1 }}
           <br/>
-          {% if claimant.address.line2 is not empty %}
+          {% if claimant.address.line2 is defined and claimant.address.line2 is not empty %}
           {{ claimant.address.line2 }}
           <br/>
           {% endif %}
-          {% if claimant.address.line3 is not empty %}
+          {% if claimant.address.line3 is defined and claimant.address.line3 is not empty %}
           {{ claimant.address.line3 }}
           <br/>
           {% endif %}
@@ -197,17 +197,17 @@
           {{ claimant.address.postcode }}
         </td>
       </tr>
-      {% if claimant.correspondenceAddress is not empty %}
+      {% if claimant.correspondenceAddress is defined and claimant.correspondenceAddress is not empty %}
       <tr>
         <td><strong>Correspondence address:</strong></td>
         <td>
-          {{ claimant.correspondenceAddress.line1 }}
+          {{ claimant.correspondenceAddress.line1}}
           <br/>
-          {% if claimant.correspondenceAddress.line2 is not empty %}
+          {% if claimant.correspondenceAddress.line2 is defined and claimant.correspondenceAddress.line2 is not empty %}
           {{ claimant.correspondenceAddress.line2 }}
           <br/>
           {% endif %}
-          {% if claimant.correspondenceAddress.line3 is not empty %}
+          {% if claimant.correspondenceAddress.line3 is defined and claimant.correspondenceAddress.line3 is not empty %}
           {{ claimant.correspondenceAddress.line3 }}
           <br/>
           {% endif %}
@@ -217,7 +217,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if claimant.dateOfBirth is not empty %}
+      {% if claimant.dateOfBirth is defined and claimant.dateOfBirth is not empty %}
       <tr>
         <td><strong>Date of birth:</strong></td>
         <td>
@@ -225,7 +225,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if claimant.mobileNumber is not empty %}
+      {% if claimant.mobileNumber is defined and claimant.mobileNumber is not empty %}
       <tr>
         <td><strong>Telephone:</strong></td>
         <td>
@@ -255,7 +255,7 @@
           {{ defendant.fullName }}
         </td>
       </tr>
-      {% if defendant.contactPerson is not empty %}
+      {% if defendant.contactPerson is defined and defendant.contactPerson is not empty %}
       <tr>
         <td><strong>Contact person:</strong></td>
         <td>
@@ -263,7 +263,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if defendant.businessName is not empty %}
+      {% if defendant.businessName is defined and defendant.businessName is not empty %}
       <tr>
         <td><strong>Business name:</strong></td>
         <td>
@@ -276,11 +276,11 @@
         <td>
           {{ defendant.address.line1 }}
           <br/>
-          {% if defendant.address.line2 is not empty %}
+          {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
           {{ defendant.address.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.address.line3 is not empty %}
+          {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
           {{ defendant.address.line3 }}
           <br/>
           {% endif %}
@@ -289,7 +289,7 @@
           {{ defendant.address.postcode }}
         </td>
       </tr>
-      {% if defendant.email is not empty %}
+      {% if defendant.email is defined and defendant.email is not empty %}
       <tr>
         <td><strong>Email:</strong></td>
         <td>
@@ -489,19 +489,19 @@
     <table>
       <tr>
         <td></td>
-        {% if claim.signerName is empty %}
+        {% if claim.signerName is not defined or claim.signerName is empty %}
           <td>
             I believe that the facts stated in this claim form are true.
           </td>
         {% endif %}
-        {% if claim.signerName is not empty %}
+        {% if claim.signerName is defined and claim.signerName is not empty %}
           <td>
             The claimant believes that the facts stated in this claim are true.
           </td>
         {% endif %}
       </tr>
 
-      {% if claim.signerName is empty %}
+      {% if claim.signerName is not defined or claim.signerName is empty %}
       <tr>
         <td></td>
         <td>
@@ -515,7 +515,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if claim.signerName is not empty %}
+      {% if claim.signerName is defined and claim.signerName is not empty %}
       <tr>
         <td>
           <strong>Name:</strong>
@@ -526,10 +526,10 @@
         <td>
           <strong>Organisation:</strong>
         </td>
-        {% if claimant.fullName is not empty %}
+        {% if claimant.fullName is defined and claimant.fullName is not empty %}
         <td>{{ claimant.fullName }}</td>
         {% endif %}
-        {% if claimant.businessName is not empty %}
+        {% if claimant.businessName is defined and claimant.businessName is not empty %}
         <td>{{ claimant.businessName }}</td>
         {% endif %}
       </tr>
