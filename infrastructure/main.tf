@@ -10,19 +10,21 @@ provider "vault" {
 
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
-  localSendLetterUrl = "http://send-letter-producer-${var.env}.service.${local.aseName}.internal"
-  sendLetterUrl = "${var.env == "preview" ? "false" : local.localSendLetterUrl}"
 
-  localPdfServiceUrl = "http://cmc-pdf-service-${var.env}.service.${local.aseName}.internal"
-  pdfserviceUrl = "${var.env == "preview" ? "http://cmc-pdf-service-aat.service.core-compute-aat.internal" : local.localPdfServiceUrl}"
+  local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
+  local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
+
+  s2sUrl = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
+  sendLetterUrl = "http://send-letter-producer-${local.local_env}.service.${local.local_ase}.internal"
+  pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
   previewVaultName = "${var.product}-claim-store"
   nonPreviewVaultName = "${var.product}-claim-store-${var.env}"
-  vaultName = "${var.env == "preview" ? local.previewVaultName : local.nonPreviewVaultName}"
+  vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
 
   nonPreviewVaultUri = "${module.claim-store-vault.key_vault_uri}"
   previewVaultUri = "https://cmc-claim-store-aat.vault.azure.net/"
-  vaultUri = "${var.env == "preview"? local.previewVaultUri : local.nonPreviewVaultUri}"
+  vaultUri = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultUri : local.nonPreviewVaultUri}"
 }
 
 data "vault_generic_secret" "notify_api_key" {
@@ -87,7 +89,7 @@ module "claim-store-api" {
 
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
-    IDAM_S2S_AUTH_URL = "${var.s2s_url}"
+    IDAM_S2S_AUTH_URL = "${local.s2sUrl}"
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
     IDAM_ANONYMOUS_CASEWORKER_USERNAME = "${data.vault_generic_secret.anonymous_citizen_username.data["value"]}"
