@@ -14,6 +14,12 @@ public class DocumentNameUtils {
         return format("%s-claim-form", number);
     }
 
+    public static String buildJsonClaimFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-claim", number);
+    }
+
     public static boolean isSealedClaim(String filename) {
         requireNonBlank(filename);
 

@@ -105,6 +105,7 @@ dependencies {
   compile project(':email-client')
   compile project(':domain-model')
   compile project(':ccd-adapter')
+  compile project(':rpa-adapter')
   compile project(':domain-sample-data')
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
@@ -158,6 +159,7 @@ dependencies {
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
+  testCompile project(path: ":rpa-adapter", configuration: 'testArtifacts')
   testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot

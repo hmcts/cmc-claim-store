@@ -89,6 +89,10 @@ staff-notifications:
   sender:
   recipient:
 
+rpa-notifications:
+  sender:
+  recipient:
+
 feature_toggles:
   watermark_pdf: false
 
