@@ -50,11 +50,13 @@ public class CommonOperations {
             .post("/claims/" + userId);
     }
 
-    public void linkDefendant(String userAuthentication) {
+    public void linkDefendant(String externalId, String defendantId, String userAuthentication) {
         RestAssured
             .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
-            .put("/claims/defendant/link");
+            .when()
+            .put(String.format("claims/%s/defendant/%s", externalId, defendantId));
     }
 
     public Response submitResponse(

@@ -42,7 +42,7 @@ public class LinkDefendantTest extends BaseTest {
 
     @Test
     @Ignore("Disabled due to not using CCD integration currently")
-    public void shouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
+    public void shouldBeAbleToSuccessfullySubmitAlreadyPaidDefenceshouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
         Claim claim = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimant.getUserDetails().getId()
