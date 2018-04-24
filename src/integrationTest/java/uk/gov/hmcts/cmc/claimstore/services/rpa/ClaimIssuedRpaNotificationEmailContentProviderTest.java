@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.services.rpa.ClaimIssuedRpaNotificationEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -19,5 +20,11 @@ public class ClaimIssuedRpaNotificationEmailContentProviderTest extends MockSpri
     public void shouldFormatEmailSubjectToExpectedValue() {
         EmailContent emailContent = provider.createContent(wrapInMap(SampleClaim.getDefault()));
         assertThat(emailContent.getSubject()).isEqualTo("J new claim 000CM001");
+    }
+
+    @Test
+    public void shouldFormatEmailBodyToExpectedValue() {
+        EmailContent emailContent = provider.createContent(wrapInMap(SampleClaim.getDefault()));
+        assertThat(emailContent.getBody()).isEqualTo("Please find attached claim.");
     }
 }

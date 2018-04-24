@@ -57,9 +57,6 @@ public class ClaimIssuedRpaNotificationService {
         requireNonNull(event);
 
         EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
-        logger.info("no of attachments are {}", emailData.getAttachments().size());
-        logger.info("json attachments is {}",
-            emailData.getAttachments().stream().map(EmailAttachment::getFilename).collect(Collectors.toList()));
         emailService.sendEmail(rpaEmailProperties.getSender(), emailData);
     }
 

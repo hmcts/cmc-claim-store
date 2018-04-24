@@ -86,7 +86,7 @@ public class ClaimIssuedRpaNotificationServiceTest extends MockSpringTest {
         assertThat(emailDataArgument.getValue()
             .getSubject()).startsWith("J new claim 000CM001");
         assertThat(emailDataArgument.getValue()
-            .getMessage()).isNull();
+            .getMessage()).isEqualTo("Please find attached claim.");
     }
 
     @Test

@@ -26,7 +26,7 @@ public class ClaimIssuedRpaNotificationEmailContentProvider implements EmailCont
     public EmailContent createContent(Map<String, Object> claim) {
         return new EmailContent(
             evaluateTemplate(rpaEmailTemplates.getClaimIssuedEmailSubject(), claim),
-            null
+            rpaEmailTemplates.getClaimIssuedEmailBody().trim()
         );
     }
 

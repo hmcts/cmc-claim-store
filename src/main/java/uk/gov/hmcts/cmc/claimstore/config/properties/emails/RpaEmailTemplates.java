@@ -13,6 +13,10 @@ public class RpaEmailTemplates {
         return readString("/rpa/templates/email/claimIssued/subject.txt");
     }
 
+    public String getClaimIssuedEmailBody() {
+        return readString("/rpa/templates/email/claimIssued/body.txt");
+    }
+
     private String readString(String resourcePath) {
         return new String(
             readBytes(resourcePath),
