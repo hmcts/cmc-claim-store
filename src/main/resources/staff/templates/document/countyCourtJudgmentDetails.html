@@ -154,12 +154,12 @@
         </td>
         <td>
           {{ claimant.fullName }}
-          {% if claimant.businessName is not empty %}
+          {% if claimant.businessName is defined and claimant.businessName is not empty %}
             Trading as {{ claimant.businessName }}
           {% endif %}
         </td>
       </tr>
-      {% if claimant.contactPerson is not empty %}
+      {% if claimant.contactPerson is defined and claimant.contactPerson is not empty %}
       <tr>
         <td><strong>Contact name:</strong></td>
         <td>
@@ -172,11 +172,11 @@
         <td>
           {{ claimant.address.line1 }}
           <br/>
-          {% if claimant.address.line2 is not empty %}
+          {% if claimant.address.line2 is defined and claimant.address.line2 is not empty %}
           {{ claimant.address.line2 }}
           <br/>
           {% endif %}
-          {% if claimant.address.line3 is not empty %}
+          {% if claimant.address.line3 is defined and claimant.address.line3 is not empty %}
           {{ claimant.address.line3 }}
           <br/>
           {% endif %}
@@ -185,7 +185,7 @@
           {{ claimant.address.postcode }}
         </td>
       </tr>
-      {% if claimant.mobileNumber is not empty %}
+      {% if claimant.mobileNumber is defined and claimant.mobileNumber is not empty %}
       <tr>
         <td><strong>Telephone:</strong></td>
         <td>
@@ -216,12 +216,12 @@
         </td>
         <td>
           {{ defendant.fullName }}
-          {% if defendant.businessName is not empty %}
+          {% if defendant.businessName is defined and defendant.businessName is not empty %}
             Trading As {{ defendant.businessName }}
           {% endif %}
         </td>
       </tr>
-      {% if defendant.contactPerson is not empty %}
+      {% if defendant.contactPerson is defined and defendant.contactPerson is not empty %}
       <tr>
         <td><strong>Contact name:</strong></td>
         <td>
@@ -234,11 +234,11 @@
         <td>
           {{ defendant.address.line1 }}
           <br/>
-          {% if defendant.address.line2 is not empty %}
+          {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
           {{ defendant.address.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.address.line3 is not empty %}
+          {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
           {{ defendant.address.line3 }}
           <br/>
           {% endif %}
@@ -255,7 +255,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if ccj.defendantDateOfBirth is not empty %}
+      {% if ccj.defendantDateOfBirth is defined and ccj.defendantDateOfBirth is not empty %}
       <tr>
         <td><strong>Date of birth:</strong></td>
         <td>
@@ -446,7 +446,7 @@
         <td></td>
         <td>I declare that the details I have given are true to the best of my knowledge.</td>
       </tr>
-      {% if ccj.signerName is not empty %}
+      {% if ccj.signerName is defined and ccj.signerName is not empty %}
       <tr class="no-border">
         <td></td>
         <td>

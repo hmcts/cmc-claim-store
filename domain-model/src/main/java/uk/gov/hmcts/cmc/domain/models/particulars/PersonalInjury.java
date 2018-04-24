@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.particulars;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
@@ -8,6 +10,7 @@ public class PersonalInjury {
     @NotNull
     private final DamagesExpectation generalDamages;
 
+    @JsonCreator
     public PersonalInjury(DamagesExpectation generalDamages) {
         this.generalDamages = generalDamages;
     }
