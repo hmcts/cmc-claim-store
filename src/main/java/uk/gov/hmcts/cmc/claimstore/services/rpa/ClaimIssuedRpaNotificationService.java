@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.rpa;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,9 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 public class ClaimIssuedRpaNotificationService {
+    private final Logger logger = LoggerFactory.getLogger(ClaimIssuedRpaNotificationService.class);
 
-    public static final String JSON_EXTENSION = ".json";
+    static final String JSON_EXTENSION = ".json";
     private final EmailService emailService;
     private final RpaEmailProperties rpaEmailProperties;
     private final ClaimIssuedRpaNotificationEmailContentProvider provider;
@@ -50,10 +53,13 @@ public class ClaimIssuedRpaNotificationService {
     }
 
     @EventListener
-    public void notifyRobortOfClaimIssue(DocumentGeneratedEvent event) {
+    public void notifyRobotOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
         EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
+        logger.info("no of attachments are {}", emailData.getAttachments().size());
+        logger.info("json attachments is {}",
+            emailData.getAttachments().stream().map(EmailAttachment::getFilename).collect(Collectors.toList()));
         emailService.sendEmail(rpaEmailProperties.getSender(), emailData);
     }
 
@@ -76,10 +82,10 @@ public class ClaimIssuedRpaNotificationService {
     }
 
     private void addJsonFileToAttachments(Claim claim, List<EmailAttachment> attachments) {
-        Case aCase = rpaCaseMapper.to(claim);
+        Case result = rpaCaseMapper.to(claim);
 
-        attachments.add(EmailAttachment.json(jsonMapper.toJson(aCase).getBytes(),
-            DocumentNameUtils.buildJsonClaimFileBaseName(claim.getReferenceNumber())+ JSON_EXTENSION));
+        attachments.add(EmailAttachment.json(jsonMapper.toJson(result).getBytes(),
+            DocumentNameUtils.buildJsonClaimFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION));
     }
 
     static Map<String, Object> wrapInMap(Claim claim) {

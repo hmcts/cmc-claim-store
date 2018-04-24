@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -100,7 +101,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());
 
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+        verify(emailService, atLeast(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");

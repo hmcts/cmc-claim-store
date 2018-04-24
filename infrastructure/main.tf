@@ -41,6 +41,10 @@ data "vault_generic_secret" "staff_email" {
   path = "secret/${var.vault_section}/cmc/claim-store/staff_email"
 }
 
+data "vault_generic_secret" "rpa_email" {
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email"
+}
+
 data "vault_generic_secret" "anonymous_citizen_username" {
   path = "secret/${var.vault_section}/ccidam/idam-api/cmc/anonymouscitizen/user"
 }
@@ -119,7 +123,7 @@ module "claim-store-api" {
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "no-reply@reform.hmcts.net"
-    RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.staff_email.data["value"]}"
+    RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.rpa_email.data["value"]}"
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
   }

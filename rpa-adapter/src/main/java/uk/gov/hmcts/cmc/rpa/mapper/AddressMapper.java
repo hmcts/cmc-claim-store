@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
-
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.rpa.domain.Address;
 

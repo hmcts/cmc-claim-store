@@ -54,7 +54,9 @@ public class ClaimIssuedRpaNotificationServiceTest extends MockSpringTest {
             .build();
 
         PDF sealedClaimDocument = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
-        PDF defendantLetterDocument = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
+
+        PDF defendantLetterDocument
+            = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
 
         event = new DocumentGeneratedEvent(claim, "AUTH_CODE", defendantLetterDocument, sealedClaimDocument);
 
@@ -64,12 +66,12 @@ public class ClaimIssuedRpaNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyRobortOfClaimIssue(null);
+        service.notifyRobotOfClaimIssue(null);
     }
 
     @Test
     public void shouldSendEmailToExpectedRecipient() {
-        service.notifyRobortOfClaimIssue(event);
+        service.notifyRobotOfClaimIssue(event);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -78,7 +80,7 @@ public class ClaimIssuedRpaNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedContent() {
-        service.notifyRobortOfClaimIssue(event);
+        service.notifyRobotOfClaimIssue(event);
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue()
@@ -89,7 +91,7 @@ public class ClaimIssuedRpaNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        service.notifyRobortOfClaimIssue(event);
+        service.notifyRobotOfClaimIssue(event);
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
 
