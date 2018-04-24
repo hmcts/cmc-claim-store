@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.rpa;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -28,8 +26,6 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 public class ClaimIssuedRpaNotificationService {
-    private final Logger logger = LoggerFactory.getLogger(ClaimIssuedRpaNotificationService.class);
-
     static final String JSON_EXTENSION = ".json";
     private final EmailService emailService;
     private final RpaEmailProperties rpaEmailProperties;
