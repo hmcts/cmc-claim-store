@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -17,6 +18,7 @@ public class Timeline {
     @JsonProperty("rows")
     private final List<TimelineEvent> events;
 
+    @JsonCreator
     public Timeline(List<TimelineEvent> events) {
         this.events = events;
     }

@@ -16,10 +16,6 @@ variable "idam_api_url" {
   default = "http://betaDevBccidamAppLB.reform.hmcts.net"
 }
 
-variable "s2s_url" {
-  default = "http://betaDevBccidamS2SLB.reform.hmcts.net"
-}
-
 variable "frontend_url" {
   default = "https://moneyclaim.nonprod.platform.hmcts.net"
 }

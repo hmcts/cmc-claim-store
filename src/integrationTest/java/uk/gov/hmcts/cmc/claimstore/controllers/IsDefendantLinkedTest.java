@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
+
     @Test
     public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinked() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
