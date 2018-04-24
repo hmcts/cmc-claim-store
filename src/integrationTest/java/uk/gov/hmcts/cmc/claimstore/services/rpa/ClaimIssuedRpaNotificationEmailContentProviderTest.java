@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.rpa;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.services.rpa.ClaimIssuedRpaNotificationEmailContentProvider;
-import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
