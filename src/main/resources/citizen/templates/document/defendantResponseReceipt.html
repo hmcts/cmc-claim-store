@@ -194,11 +194,11 @@
         <td>
           {{ defendant.address.line1 }}
           <br/>
-          {% if defendant.address.line2 is not empty %}
+          {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
           {{ defendant.address.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.address.line3 is not empty %}
+          {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
           {{ defendant.address.line3 }}
           <br/>
           {% endif %}
@@ -207,17 +207,17 @@
           {{ defendant.address.postcode }}
         </td>
       </tr>
-      {% if defendant.correspondenceAddress is not empty %}
+      {% if defendant.correspondenceAddress is defined and defendant.correspondenceAddress is not empty %}
       <tr class="no-border">
         <td>Correspondence address:</td>
         <td>
           {{ defendant.correspondenceAddress.line1 }}
           <br/>
-          {% if defendant.correspondenceAddress.line2 is not empty %}
+          {% if defendant.correspondenceAddress.line2 is defined and defendant.correspondenceAddress.line2 is not empty %}
           {{ defendant.correspondenceAddress.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.correspondenceAddress.line3 is not empty %}
+          {% if defendant.correspondenceAddress.line3 is defined and defendant.correspondenceAddress.line3 is not empty %}
           {{ defendant.correspondenceAddress.line3 }}
           <br/>
           {% endif %}
@@ -227,7 +227,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if defendant.dateOfBirth is not empty %}
+      {% if defendant.dateOfBirth is defined and defendant.dateOfBirth is not empty %}
       <tr>
         <td>Date of birth:</td>
         <td>
@@ -235,7 +235,7 @@
         </td>
       </tr>
       {% endif %}
-      {% if defendant.mobilePhone is not empty %}
+      {% if defendant.mobilePhone is defined and defendant.mobilePhone is not empty %}
       <tr>
         <td>Telephone:</td>
         <td>
@@ -265,7 +265,7 @@
           {{ responseTypeSelected }}
         </td>
       </tr>
-      {% if responseDefence is not empty %}
+      {% if responseDefence is defined and responseDefence is not empty %}
       <tr>
         <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
       </tr>
@@ -276,7 +276,7 @@
       </tr>
       {% endif %}
 
-      {% if events is not empty %}
+      {% if events is defined and events is not empty %}
       <tr>
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
       </tr>
@@ -292,7 +292,7 @@
       {% endfor %}
       {% endif %}
 
-      {% if timelineComment is not empty %}
+      {% if timelineComment is defined and timelineComment is not empty %}
       <tr class="no-border">
         <td><strong>Comments about claimant’s timeline:</strong></td>
         <td>
@@ -301,7 +301,7 @@
       </tr>
       {% endif %}
 
-      {% if evidences is not empty %}
+      {% if evidences is defined and evidences is not empty %}
       <tr>
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
       </tr>
@@ -317,7 +317,7 @@
       {% endfor %}
       {% endif %}
 
-      {% if evidenceComment is not empty %}
+      {% if evidenceComment is defined and evidenceComment is not empty %}
       <tr class="no-border">
         <td><strong>Comments about claimant’s evidence:</strong></td>
         <td>
@@ -357,14 +357,14 @@
           I believe that the facts stated in this defence are true.
         </td>
       </tr>
-      {% if signerName is empty %}
+      {% if signerName is not defined or signerName is empty %}
       <tr class="no-border">
         <td/>
         <td class="no-border">{{ defendant.fullName }}</td>
       </tr>
       {% endif %}
 
-      {% if signerName is not empty %}
+      {% if signerName is defined and signerName is not empty %}
       <tr class="no-border">
         <td class="no-border"/>
         <td class="no-border"><strong>Company: </strong> {{ defendant.businessName }}</td>
