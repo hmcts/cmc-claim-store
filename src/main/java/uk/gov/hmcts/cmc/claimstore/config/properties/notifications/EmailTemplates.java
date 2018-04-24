@@ -1,9 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.notifications;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotEmpty;
 
 @Component
+@Validated
 public class EmailTemplates {
 
     @NotEmpty

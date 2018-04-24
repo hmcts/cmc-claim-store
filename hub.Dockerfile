@@ -6,11 +6,11 @@ RUN chown -R gradle:gradle /home/gradle/src
 USER gradle
 
 WORKDIR /home/gradle/src
-RUN gradle installDist
+RUN gradle assemble
 
 FROM openjdk:8-jre-alpine
 
-COPY --from=builder /home/gradle/src/build/install/claim-store /opt/app/
+COPY --from=builder /home/gradle/src/build/libs/claim-store.jar /opt/app/
 
 WORKDIR /opt/app
 
@@ -18,5 +18,4 @@ HEALTHCHECK --interval=10s --timeout=10s --retries=10 CMD http_proxy="" wget -q 
 
 EXPOSE 4400
 
-ENTRYPOINT ["/opt/app/bin/claim-store"]
-
+ENTRYPOINT ["/usr/bin/java", "-jar", "/opt/app/claim-store.jar"]
