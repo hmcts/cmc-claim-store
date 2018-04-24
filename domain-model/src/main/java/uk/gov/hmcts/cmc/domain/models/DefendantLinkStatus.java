@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
@@ -10,6 +11,7 @@ public class DefendantLinkStatus {
 
     private final boolean linked;
 
+    @JsonCreator
     public DefendantLinkStatus(boolean linked) {
         this.linked = linked;
     }

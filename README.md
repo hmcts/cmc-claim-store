@@ -46,24 +46,16 @@ Before you run an application you have to define `CLAIM_STORE_DB_USERNAME` and `
 When environment variables has been defined, you need to create distribution by executing following command:
 
 ```bash
-$ ./gradlew installDist
+$ ./gradlew assemble
 ```
 
 If you want your code to become available to other Docker projects (e.g. for local environment testing), you need to build the image:
 
 ```bash
-$ docker-compose build
-```
-
-The above will build both the application and database images.  
-If you want to build only one of them just specify the name assigned in docker compose file, e.g.:
-
-```bash
 $ docker-compose build claim-store-api
 ```
 
-When the distribution has been created in `build/install/claim-store` directory, 
-you can run it by executing following command:
+When the code has been compiled you can execute it by running the following command:
 
 ```bash
 $ docker-compose up
