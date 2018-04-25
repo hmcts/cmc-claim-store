@@ -10,14 +10,9 @@ import javax.validation.ConstraintValidatorContext;
 import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
 
 /**
- * Intended to replace {@link InterDependentFieldsConstraintValidator}.
  * Validates the BREAKDOWN interest type only for now.
  */
 public class ValidInterestConstraintValidator implements ConstraintValidator<ValidInterest, Interest> {
-    @Override
-    public void initialize(ValidInterest constraintAnnotation) {
-        // Nothing to do
-    }
 
     @Override
     public boolean isValid(Interest interest, ConstraintValidatorContext validatorContext) {
@@ -62,7 +57,7 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
     }
 
     private String[] toArray(Set<String> set) {
-        return set.toArray(new String[] { });
+        return set.toArray(new String[]{});
     }
 
 }
