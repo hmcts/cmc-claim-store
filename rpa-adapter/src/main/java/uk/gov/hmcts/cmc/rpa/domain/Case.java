@@ -11,10 +11,10 @@ import java.util.List;
 @Builder
 public class Case {
     private String caseNumber;
-    private LocalDate issueDate;
+    private String issueDate;
     private BigDecimal courtFee;
     private BigDecimal amountWithInterest;
     private List<Party> claimants;
     private List<Party> defendants;
-    private LocalDate serviceDate;
+    private String serviceDate;
 }
