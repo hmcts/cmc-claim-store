@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,7 +58,7 @@ public class SealedClaimPdfTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         byte[] getPdf = claimIssueReceiptService.createPdf(createdCase);
-        System.out.println(getPdf);
+        System.out.println(Arrays.toString(getPdf));
 
         assertThat(textContentOf(fileName).contains("999MC042"));
     }

@@ -155,6 +155,7 @@ dependencies {
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.1'
 
   compile group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: '2.0.0-BETA'
+  compile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
