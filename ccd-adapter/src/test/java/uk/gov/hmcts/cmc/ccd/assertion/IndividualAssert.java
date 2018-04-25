@@ -23,9 +23,9 @@ public class IndividualAssert extends AbstractAssert<IndividualAssert, Individua
                 ccdIndividual.getName(), actual.getName());
         }
 
-        if (!Objects.equals(actual.getMobilePhone().orElse(null), ccdIndividual.getPhoneNumber())) {
-            failWithMessage("Expected CCDIndividual.mobilePhone to be <%s> but was <%s>",
-                ccdIndividual.getPhoneNumber(), actual.getMobilePhone().orElse(null));
+        if (!Objects.equals(actual.getPhone().orElse(null), ccdIndividual.getPhoneNumber())) {
+            failWithMessage("Expected CCDIndividual.phone to be <%s> but was <%s>",
+                ccdIndividual.getPhoneNumber(), actual.getPhone().orElse(null));
         }
 
         if (actual.getDateOfBirth() != null) {
