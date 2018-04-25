@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -11,6 +10,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.RpaAdapterConfig;
 import uk.gov.hmcts.cmc.rpa.domain.Case;
@@ -26,7 +27,7 @@ public class CaseMapperTest {
     private CaseMapper rpaCaseMapper;
 
     @Test
-    public void shouldMapCitizenClaimToRPA() throws JsonProcessingException {
+    public void shouldMapIndividualCitizenClaimToRPA() throws JsonProcessingException {
         //given
         Claim claim = SampleClaim.getDefault();
 
@@ -35,10 +36,64 @@ public class CaseMapperTest {
 
         String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
 
-        String expected = new ResourceReader().read("/rpa_case.json").trim();
+        String expected = new ResourceReader().read("/individual_rpa_case.json").trim();
 
         //then
         assertThat(result).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldMapCompanyCitizenClaimToRPA() throws JsonProcessingException {
+        //given
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().company()).build())
+            .build();
+
+        //when
+        Case rpaCase = rpaCaseMapper.to(claim);
+
+        String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
+
+        String expected = new ResourceReader().read("/company_rpa_case.json").trim();
+
+        //then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMapSoleTraderCitizenClaimToRPA() throws JsonProcessingException {
+        //given
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().soleTrader()).build())
+            .build();
+
+        //when
+        Case rpaCase = rpaCaseMapper.to(claim);
+
+        String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
+
+        String expected = new ResourceReader().read("/sole_trader_rpa_case.json").trim();
+
+        //then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMapOrganisationCitizenClaimToRPA() throws JsonProcessingException {
+        //given
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().organisation()).build())
+            .build();
+
+        //when
+        Case rpaCase = rpaCaseMapper.to(claim);
+
+        String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
+        System.out.println(result);
+
+        String expected = new ResourceReader().read("/organisation_rpa_case.json").trim();
+
+        //then
+        assertThat(result).isEqualTo(expected);
+    }
 }
