@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 public class ClaimIssuedRpaNotificationService {
-    static final String JSON_EXTENSION = ".json";
+    public static final String JSON_EXTENSION = ".json";
     private final EmailService emailService;
     private final RpaEmailProperties rpaEmailProperties;
     private final ClaimIssuedRpaNotificationEmailContentProvider provider;
@@ -81,7 +81,7 @@ public class ClaimIssuedRpaNotificationService {
             DocumentNameUtils.buildJsonClaimFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION));
     }
 
-    static Map<String, Object> wrapInMap(Claim claim) {
+    public static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> map = new HashMap<>();
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         return map;
