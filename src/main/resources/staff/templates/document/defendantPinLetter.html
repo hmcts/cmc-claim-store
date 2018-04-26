@@ -67,10 +67,10 @@
     <p class="address defendant-address">
       {{ defendantFullName }} <br/>
       {{ defendantAddress.line1 }} <br/>
-      {% if defendantAddress.line2 is not empty %}
+      {% if defendantAddress.line2 is defined and defendantAddress.line2 is not empty %}
         {{ defendantAddress.line2 }} <br/>
       {% endif %}
-      {% if defendantAddress.line3 is not empty %}
+      {% if defendantAddress.line3 is defined and defendantAddress.line3 is not empty %}
       {{ defendantAddress.line3 }} <br/>
       {% endif %}
       {{ defendantAddress.city }} <br/>

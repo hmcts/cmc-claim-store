@@ -10,9 +10,9 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,7 +108,11 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
-        offersRepository.reachSettlement(claim.getExternalId(), jsonMapper.toJson(settlement), LocalDateTime.now());
+        offersRepository.reachSettlement(
+            claim.getExternalId(),
+            jsonMapper.toJson(settlement),
+            LocalDateTimeFactory.nowInUTC()
+        );
     }
 
     @Override
