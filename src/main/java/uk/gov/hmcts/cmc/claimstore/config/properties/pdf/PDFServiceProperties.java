@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Component
 @Validated
-@ConfigurationProperties(prefix = "pdf_service")
+@ConfigurationProperties(prefix = "pdf-service")
 public class PDFServiceProperties {
 
     @NotNull
