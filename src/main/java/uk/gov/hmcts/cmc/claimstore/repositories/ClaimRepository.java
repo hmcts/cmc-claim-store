@@ -158,14 +158,12 @@ public interface ClaimRepository {
     @SqlUpdate(
         "UPDATE CLAIM SET "
             + "response = :response::JSONB, "
-            + "defendant_id = :defendantId, "
             + "defendant_email = :defendantEmail, "
             + "responded_at = now() AT TIME ZONE 'utc' "
             + "WHERE external_id = :externalId"
     )
     void saveDefendantResponse(
         @Bind("externalId") String externalId,
-        @Bind("defendantId") String defendantId,
         @Bind("defendantEmail") String defendantEmail,
         @Bind("response") String response
     );
