@@ -38,11 +38,11 @@ public class LinkDefendantTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
-    }
+    }ClaimRepository.java
 
     @Test
     @Ignore("Disabled due to not using CCD integration currently")
-    public void shouldBeAbleToSuccessfullySubmitAlreadyPaidDefenceshouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
+    public void shouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
         Claim claim = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimant.getUserDetails().getId()
