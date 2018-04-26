@@ -15,7 +15,7 @@ locals {
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
 
   s2sUrl = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
-  sendLetterUrl = "http://send-letter-producer-${local.local_env}.service.${local.local_ase}.internal"
+  sendLetterUrl = "http://pr-164-rpe-send-letter-service-preview.service.core-compute-preview.internal"
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
   previewVaultName = "${var.product}-claim-store"
