@@ -5,6 +5,8 @@ public interface DocumentsService {
 
     byte[] getLegalSealedClaim(String externalId, String authorisation);
 
+    byte[] getSealedClaim(String externalId, String authorisation);
+
     byte[] generateDefendantResponseReceipt(String externalId, String authorisation);
 
     byte[] generateCountyCourtJudgement(String externalId, String authorisation);

@@ -135,4 +135,22 @@ public class DocumentsController {
             .contentLength(pdfDocument.length)
             .body(new ByteArrayResource(pdfDocument));
     }
+
+    @ApiOperation("Returns a sealed claim copy for a given claim external id")
+    @GetMapping(
+        value = "/sealedClaim/{externalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> sealedClaim(
+        @ApiParam("Claim external id")
+        @PathVariable("externalId") @NotBlank String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        byte[] pdfDocument = documentsService.getSealedClaim(externalId, authorisation);
+
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
 }
