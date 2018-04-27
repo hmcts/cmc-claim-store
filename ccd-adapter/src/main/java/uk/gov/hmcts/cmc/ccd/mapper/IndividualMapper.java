@@ -24,7 +24,7 @@ public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
     public CCDIndividual to(Individual individual) {
 
         CCDIndividual.CCDIndividualBuilder builder = CCDIndividual.builder();
-        individual.getMobilePhone().ifPresent(builder::phoneNumber);
+        individual.getPhoneNumber().ifPresent(builder::phoneNumber);
 
         individual.getCorrespondenceAddress()
             .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));

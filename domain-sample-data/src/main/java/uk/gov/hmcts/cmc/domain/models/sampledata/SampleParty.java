@@ -20,7 +20,7 @@ public class SampleParty {
     private Address address = SampleAddress.validDefaults();
     private Address correspondenceAddress = SampleAddress.validDefaults();
     private String title = "Dr.";
-    private String mobilePhone = "07873727165";
+    private String phoneNumber = "07873727165";
     private LocalDate dateOfBirth = LocalDate.of(1968, 1, 2);
     private Representative representative = SampleRepresentative.builder()
         .build();
@@ -60,8 +60,8 @@ public class SampleParty {
         return this;
     }
 
-    public SampleParty withMobilePhone(String mobilePhone) {
-        this.mobilePhone = mobilePhone;
+    public SampleParty withPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
         return this;
     }
 
@@ -81,33 +81,33 @@ public class SampleParty {
     }
 
     public Party party() {
-        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth);
+        return new Individual(name, address, correspondenceAddress, phoneNumber, representative, dateOfBirth);
     }
 
     public Individual individual() {
-        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth);
+        return new Individual(name, address, correspondenceAddress, phoneNumber, representative, dateOfBirth);
     }
 
     public List<Party> individualDetails(int count) {
         List<Party> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth)
+                new Individual(name, address, correspondenceAddress, phoneNumber, representative, dateOfBirth)
             );
         }
         return individualDetailsList;
     }
 
     public SoleTrader soleTrader() {
-        return new SoleTrader(name, address, correspondenceAddress, mobilePhone, representative, title, businessName);
+        return new SoleTrader(name, address, correspondenceAddress, phoneNumber, representative, title, businessName);
     }
 
     public Company company() {
-        return new Company(name, address, correspondenceAddress, mobilePhone, representative, contactPerson);
+        return new Company(name, address, correspondenceAddress, phoneNumber, representative, contactPerson);
     }
 
     public Organisation organisation() {
-        return new Organisation(name, address, correspondenceAddress, mobilePhone, representative, contactPerson,
+        return new Organisation(name, address, correspondenceAddress, phoneNumber, representative, contactPerson,
             companiesHouseNumber);
     }
 

@@ -17,7 +17,7 @@ public class PersonContentProvider {
         String email,
         String contactPerson,
         String businessName,
-        String mobileNumber,
+        String phoneNumber,
         String dateOfBirth
     ) {
         requireNonNull(name);
@@ -31,7 +31,7 @@ public class PersonContentProvider {
             email,
             contactPerson,
             businessName,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
     }

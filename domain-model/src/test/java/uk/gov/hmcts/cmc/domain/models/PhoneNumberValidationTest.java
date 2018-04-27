@@ -9,28 +9,28 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
-public class MobilePhoneNumberValidationTest {
+public class PhoneNumberValidationTest {
 
     @Test
     public void shouldBeSuccessfulValidationForPhoneNumberOfType1() {
         //given
-        Individual party = individualWithMobilePhone("(+44) (0)7931232313");
+        Individual party = individualWithPhoneNumber("(+44) (0)7931232313");
         //when
         Set<String> errors = validate(party);
         //then
         assertThat(errors).isEmpty();
     }
 
-    private Individual individualWithMobilePhone(String mobilePhone) {
+    private Individual individualWithPhoneNumber(String phoneNumber) {
         return SampleParty.builder()
-            .withMobilePhone(mobilePhone)
+            .withPhoneNumber(phoneNumber)
             .individual();
     }
 
     @Test
     public void shouldBeSuccessfulValidationForPhoneNumberOfType2() {
         //given
-        Individual party = individualWithMobilePhone("004407931232313");
+        Individual party = individualWithPhoneNumber("004407931232313");
         //when
         Set<String> errors = validate(party);
         //then
@@ -40,7 +40,7 @@ public class MobilePhoneNumberValidationTest {
     @Test
     public void shouldBeSuccessfulValidationForPhoneNumberOfType3() {
         //given
-        Individual party = individualWithMobilePhone("07931232313");
+        Individual party = individualWithPhoneNumber("07931232313");
         //when
         Set<String> errors = validate(party);
         //then
@@ -50,7 +50,7 @@ public class MobilePhoneNumberValidationTest {
     @Test
     public void shouldBeSuccessfulValidationForPhoneNumbeWithRandomCharacter() {
         //given
-        Individual party = individualWithMobilePhone("0793123231*");
+        Individual party = individualWithPhoneNumber("0793123231*");
         //when
         Set<String> errors = validate(party);
         //then
@@ -60,7 +60,7 @@ public class MobilePhoneNumberValidationTest {
     @Test
     public void shouldBeSuccessfulValidationForPhoneNumberOfType4() {
         //given
-        Individual party = individualWithMobilePhone("(0044) (0)7931232313");
+        Individual party = individualWithPhoneNumber("(0044) (0)7931232313");
         //when
         Set<String> errors = validate(party);
         //then
@@ -70,7 +70,7 @@ public class MobilePhoneNumberValidationTest {
     @Test
     public void shouldBeValidWhenNumberIsNull() {
         //given
-        Individual party = individualWithMobilePhone(null);
+        Individual party = individualWithPhoneNumber(null);
         //when
         Set<String> errors = validate(party);
         //then
