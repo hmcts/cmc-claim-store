@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
+@ConditionalOnProperty(prefix = "feature_toggle", name = "emailToStaff")
 @Service
 public class ClaimIssuedStaffNotificationService {
 
