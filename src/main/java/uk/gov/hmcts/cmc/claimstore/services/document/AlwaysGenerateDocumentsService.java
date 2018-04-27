@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 public class AlwaysGenerateDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
-    private final DocumentManagementService documentManagementService;
     private final PDFServiceClient pdfServiceClient;
     private final CitizenServiceDocumentsService citizenServiceDocumentsService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
@@ -26,7 +25,6 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     @Autowired
     public AlwaysGenerateDocumentsService(
         ClaimService claimService,
-        DocumentManagementService documentManagementService,
         PDFServiceClient pdfServiceClient,
         CitizenServiceDocumentsService citizenServiceDocumentsService,
         ClaimIssueReceiptService claimIssueReceiptService,
@@ -35,7 +33,6 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
-        this.documentManagementService = documentManagementService;
         this.pdfServiceClient = pdfServiceClient;
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
         this.claimIssueReceiptService = claimIssueReceiptService;
