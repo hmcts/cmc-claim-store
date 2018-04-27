@@ -155,14 +155,16 @@ public class EndpointErrorsTest extends MockSpringTest {
         Exception duplicateKeyError = new UnableToExecuteStatementException(new PSQLException(
             "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
 
-        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.builder()
-            .withUserId(claimantId)
-            .withMail("claimant@email.com")
-            .build());
+        given(userService.getUserDetails(anyString())).willReturn(
+            SampleUserDetails.builder()
+                .withUserId(claimantId)
+                .withMail("claimant@email.com")
+                .build()
+        );
 
-        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
-            any(LocalDate.class), anyString(), anyString()))
-            .willThrow(duplicateKeyError);
+        given(claimRepository.saveRepresented(
+            anyString(), anyString(), any(LocalDate.class), any(LocalDate.class), anyString(), anyString())
+        ).willThrow(duplicateKeyError);
 
         webClient
             .perform(post("/claims/" + claimantId)
@@ -182,8 +184,7 @@ public class EndpointErrorsTest extends MockSpringTest {
         given(caseRepository.getClaimByExternalId(externalId, anyString()))
             .willReturn(Optional.of(claim));
 
-        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyString(), anyString(), anyString(),
-            anyString());
+        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyString(), anyString(), anyString());
 
         webClient
             .perform(post("/responses/claim/" + externalId + "/defendant/" + DEFENDANT_ID)
