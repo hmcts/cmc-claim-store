@@ -155,7 +155,6 @@ dependencies {
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.1'
 
   compile group: 'com.microsoft.azure', name: 'applicationinsights-logging-logback', version: '2.0.0-BETA'
-  compile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
@@ -166,6 +165,7 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.3'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '2.15.0'
+  testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
 
 }
 

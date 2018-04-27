@@ -45,14 +45,14 @@ public class SealedClaimPdfTest extends BaseTest {
     }
 
     private void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
-        assertThat(pdfAsText.contains(createdCase.getReferenceNumber())).isTrue();
-        assertThat(pdfAsText.contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()))).isTrue();
-        assertThat(pdfAsText.contains("Name: " + createdCase.getClaimData().getClaimant().getName())).isTrue();
-        assertThat(pdfAsText.contains(createdCase.getClaimData().getClaimant().getAddress().getPostcode())).isTrue();
-        assertThat(pdfAsText.contains("Name: " + createdCase.getClaimData().getDefendant().getName())).isTrue();
-        assertThat(pdfAsText.contains(createdCase.getClaimData().getDefendant().getAddress().getPostcode())).isTrue();
-//        assertThat(pdfAsText.contains(Formatting.formatMoney(createdCase.getClaimData().getAmount()))).isTrue();
-        assertThat(pdfAsText.contains(Formatting.formatDate(createdCase.getResponseDeadline()))).isTrue();
+        assertThat(pdfAsText).contains(createdCase.getReferenceNumber());
+        assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
+        assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
+        assertThat(pdfAsText).contains(createdCase.getClaimData().getClaimant().getAddress().getPostcode());
+        assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getDefendant().getName());
+        assertThat(pdfAsText).contains(createdCase.getClaimData().getDefendant().getAddress().getPostcode());
+//        assertThat(pdfAsText).contains(Formatting.formatMoney(createdCase.getClaimData().getAmount());
+        assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
     }
 
     private Claim getTestClaim() {
