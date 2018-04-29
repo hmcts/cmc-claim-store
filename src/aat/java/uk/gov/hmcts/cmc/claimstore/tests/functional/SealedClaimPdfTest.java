@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,13 +46,24 @@ public class SealedClaimPdfTest extends BaseTest {
     }
 
     private void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
-        assertThat(pdfAsText).contains(createdCase.getReferenceNumber());
+        assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
         assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
-        assertThat(pdfAsText).contains(createdCase.getClaimData().getClaimant().getAddress().getPostcode());
+        assertThat(pdfAsText).contains("Address: " +
+            createdCase.getClaimData().getClaimant().getAddress().getLine1() + " \n" +
+            createdCase.getClaimData().getClaimant().getAddress().getLine2() + " \n" +
+            createdCase.getClaimData().getClaimant().getAddress().getLine3() + " \n" +
+            createdCase.getClaimData().getClaimant().getAddress().getCity() + " \n" +
+            createdCase.getClaimData().getClaimant().getAddress().getPostcode());
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getDefendant().getName());
-        assertThat(pdfAsText).contains(createdCase.getClaimData().getDefendant().getAddress().getPostcode());
-//        assertThat(pdfAsText).contains(Formatting.formatMoney(createdCase.getClaimData().getAmount());
+        assertThat(pdfAsText).contains("Address: " +
+            createdCase.getClaimData().getDefendant().getAddress().getLine1() + " \n" +
+            createdCase.getClaimData().getDefendant().getAddress().getLine2() + " \n" +
+            createdCase.getClaimData().getDefendant().getAddress().getLine3() + " \n" +
+            createdCase.getClaimData().getDefendant().getAddress().getCity() + " \n" +
+            createdCase.getClaimData().getDefendant().getAddress().getPostcode());
+        assertThat(pdfAsText).contains("Claim amount: " +
+            Formatting.formatMoney(((AmountBreakDown) createdCase.getClaimData().getAmount()).getTotalAmount()));
         assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
     }
 
