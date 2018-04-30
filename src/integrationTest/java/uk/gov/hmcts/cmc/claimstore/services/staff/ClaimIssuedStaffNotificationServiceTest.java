@@ -1,47 +1,28 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.email.EmailData;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
-public class ClaimIssuedStaffNotificationServiceTest extends MockSpringTest {
+public class ClaimIssuedStaffNotificationServiceTest extends BaseSaveTest {
 
-    @Autowired
+    @SpyBean
     private ClaimIssuedStaffNotificationService service;
-    @Captor
-    private ArgumentCaptor<String> senderArgument;
-    @Captor
-    private ArgumentCaptor<EmailData> emailDataArgument;
-    @Autowired
-    private StaffEmailProperties emailProperties;
-
-    private Claim claim;
-
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
         service.notifyStaffOfClaimIssue(null);
     }
 
-
-
     @Test
-    public void claimIssuedEmailShouldBeSentToStaff() {
-        /*
-        Mock Claim
-        Use notifyStaffOfClaimIssue method
-        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
-         */
+    public void claimIssuedEmailShouldBeSentToStaff() throws Exception {
+        makeRequest(SampleClaimData.submittedByClaimantBuilder().build());
 
-    }
-
-    @Test
-    public void claimIssuedEmailShouldNotBeSentToStaff() throws Exception {
+        verify(service, never()).notifyStaffOfClaimIssue(any());
     }
 }
