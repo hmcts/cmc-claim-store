@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
-@ConditionalOnProperty(prefix = "feature_toggle", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 @Service
 public class ClaimIssuedStaffNotificationService {
 

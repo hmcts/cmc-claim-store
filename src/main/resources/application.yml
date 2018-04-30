@@ -85,7 +85,7 @@ staff-notifications:
 
 feature_toggles:
   watermark_pdf: false
-  emailToStaff: true
+  emailToStaff: fasle
 
 feign:
   httpclient:
