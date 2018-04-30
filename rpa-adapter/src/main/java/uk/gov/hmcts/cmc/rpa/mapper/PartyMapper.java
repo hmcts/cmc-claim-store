@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.domain.Party;
 
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import static java.time.format.FormatStyle.MEDIUM;
 
