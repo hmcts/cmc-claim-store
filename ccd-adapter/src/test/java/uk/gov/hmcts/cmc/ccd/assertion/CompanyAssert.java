@@ -22,9 +22,9 @@ public class CompanyAssert extends AbstractAssert<CompanyAssert, Company> {
                 ccdCompany.getName(), actual.getName());
         }
 
-        if (!Objects.equals(actual.getPhone().orElse(null), ccdCompany.getPhoneNumber())) {
-            failWithMessage("Expected CCDCompany.phone to be <%s> but was <%s>",
-                ccdCompany.getPhoneNumber(), actual.getPhone().orElse(null));
+        if (!Objects.equals(actual.getPhoneNumber().orElse(null), ccdCompany.getPhoneNumber())) {
+            failWithMessage("Expected CCDCompany.phoneNumber to be <%s> but was <%s>",
+                ccdCompany.getPhoneNumber(), actual.getPhoneNumber().orElse(null));
         }
 
         if (!Objects.equals(actual.getContactPerson().orElse(null), ccdCompany.getContactPerson())) {

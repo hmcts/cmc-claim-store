@@ -107,9 +107,9 @@ public class PartyTest {
     }
 
     @Test
-    public void shouldReturnNoValidationErrorsWhenGivenNullPhone() {
+    public void shouldReturnNoValidationErrorsWhenGivenNullPhoneNumber() {
         Party party = SampleParty.builder()
-            .withPhone(null)
+            .withPhoneNumber(null)
             .party();
 
         Set<String> validationErrors = validate(party);
@@ -119,9 +119,9 @@ public class PartyTest {
     }
 
     @Test
-    public void shouldReturnNoValidationErrorsWhenGivenValidPhone() {
+    public void shouldReturnNoValidationErrorsWhenGivenValidPhoneNumber() {
         Party party = SampleParty.builder()
-            .withPhone("07987654321")
+            .withPhoneNumber("07987654321")
             .party();
 
         Set<String> validationErrors = validate(party);
@@ -131,16 +131,16 @@ public class PartyTest {
     }
 
     @Test
-    public void shouldReturnValidationErrorsWhenGivenInvalidPhone() {
+    public void shouldReturnValidationErrorsWhenGivenInvalidPhoneNumber() {
         Party party = SampleParty.builder()
-            .withPhone("1234567890123456789012345678901")
+            .withPhoneNumber("1234567890123456789012345678901")
             .party();
 
         Set<String> validationErrors = validate(party);
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("phone : may not be longer than 30 characters");
+            .contains("phoneNumber : may not be longer than 30 characters");
     }
 
 }

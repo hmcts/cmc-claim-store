@@ -17,12 +17,12 @@ public class Organisation extends Party {
         String name,
         Address address,
         Address correspondenceAddress,
-        String phone,
+        String phoneNumber,
         Representative representative,
         String contactPerson,
         String companiesHouseNumber
     ) {
-        super(name, address, correspondenceAddress, phone, representative);
+        super(name, address, correspondenceAddress, phoneNumber, representative);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;
     }

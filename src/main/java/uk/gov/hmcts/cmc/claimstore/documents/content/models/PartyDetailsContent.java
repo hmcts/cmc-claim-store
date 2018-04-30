@@ -15,7 +15,7 @@ public class PartyDetailsContent {
     private final Address address;
     private final boolean addressAmended;
     private final Address correspondenceAddress;
-    private final String phone;
+    private final String phoneNumber;
     private final String dateOfBirth;
     private final String email;
     private final List<TimelineEvent> events;
@@ -33,7 +33,7 @@ public class PartyDetailsContent {
         Address address,
         Boolean addressAmended,
         Address correspondenceAddress,
-        String phone,
+        String phoneNumber,
         String dateOfBirth,
         String email,
         List<TimelineEvent> events,
@@ -47,7 +47,7 @@ public class PartyDetailsContent {
         this.address = address;
         this.addressAmended = addressAmended;
         this.correspondenceAddress = correspondenceAddress;
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.events = events;
@@ -86,8 +86,8 @@ public class PartyDetailsContent {
         return correspondenceAddress;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public String getDateOfBirth() {

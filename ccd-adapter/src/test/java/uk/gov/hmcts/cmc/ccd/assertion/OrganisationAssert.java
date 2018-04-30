@@ -22,9 +22,9 @@ public class OrganisationAssert extends AbstractAssert<OrganisationAssert, Organ
                 ccdOrganisation.getName(), actual.getName());
         }
 
-        if (!Objects.equals(actual.getPhone().orElse(null), ccdOrganisation.getPhoneNumber())) {
-            failWithMessage("Expected CCDOrganisation.phone to be <%s> but was <%s>",
-                ccdOrganisation.getPhoneNumber(), actual.getPhone().orElse(null));
+        if (!Objects.equals(actual.getPhoneNumber().orElse(null), ccdOrganisation.getPhoneNumber())) {
+            failWithMessage("Expected CCDOrganisation.phoneNumber to be <%s> but was <%s>",
+                ccdOrganisation.getPhoneNumber(), actual.getPhoneNumber().orElse(null));
         }
 
         if (!Objects.equals(actual.getContactPerson().orElse(null), ccdOrganisation.getContactPerson())) {

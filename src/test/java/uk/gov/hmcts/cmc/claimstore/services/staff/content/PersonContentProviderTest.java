@@ -178,7 +178,7 @@ public class PersonContentProviderTest {
             dateOfBirth
         );
 
-        assertThat(content.getPhone()).isEqualTo(phoneNumber);
+        assertThat(content.getPhoneNumber()).isEqualTo(phoneNumber);
         assertThat(content.getDateOfBirth()).isEqualTo(dateOfBirth);
     }
 
@@ -197,6 +197,6 @@ public class PersonContentProviderTest {
         );
 
         assertThat(content.getDateOfBirth()).isEqualTo(null);
-        assertThat(content.getPhone()).isEqualTo(null);
+        assertThat(content.getPhoneNumber()).isEqualTo(null);
     }
 }

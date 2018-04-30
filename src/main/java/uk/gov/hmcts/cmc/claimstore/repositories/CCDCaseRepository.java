@@ -73,7 +73,6 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void saveDefendantResponse(
         Claim claim,
-        String defendantId,
         String defendantEmail,
         Response response,
         String authorization) {

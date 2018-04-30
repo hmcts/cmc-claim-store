@@ -17,8 +17,8 @@ Defendant's details can be found on the attached defence copy. Additional contac
 
 Email: {{ defendantEmail }}
 
-{% if defendantPhone is not empty %}
-Phone number: {{ defendantPhone }}
+{% if defendantPhoneNumber is not empty %}
+Phone number: {{ defendantPhoneNumber }}
 {% else %}
 Phone number: not given
 {% endif %}

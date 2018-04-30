@@ -11,7 +11,7 @@ public class PersonContent {
     private final String email;
     private final String contactPerson;
     private final String businessName;
-    private final String phone;
+    private final String phoneNumber;
     private final String dateOfBirth;
 
 
@@ -23,7 +23,7 @@ public class PersonContent {
         String email,
         String contactPerson,
         String businessName,
-        String phone,
+        String phoneNumber,
         String dateOfBirth
 
     ) {
@@ -34,7 +34,7 @@ public class PersonContent {
         this.email = email;
         this.contactPerson = contactPerson;
         this.businessName = businessName;
-        this.phone = phone;
+        this.phoneNumber = phoneNumber;
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -66,8 +66,8 @@ public class PersonContent {
         return businessName;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public String getDateOfBirth() {

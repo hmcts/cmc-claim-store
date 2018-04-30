@@ -25,9 +25,9 @@ public class SoleTraderAssert extends AbstractAssert<SoleTraderAssert, SoleTrade
                 ccdSoleTrader.getName(), actual.getName());
         }
 
-        if (!Objects.equals(actual.getPhone().orElse(null), ccdSoleTrader.getPhoneNumber())) {
-            failWithMessage("Expected CCDSoleTrader.phone to be <%s> but was <%s>",
-                ccdSoleTrader.getPhoneNumber(), actual.getPhone().orElse(null));
+        if (!Objects.equals(actual.getPhoneNumber().orElse(null), ccdSoleTrader.getPhoneNumber())) {
+            failWithMessage("Expected CCDSoleTrader.phoneNumber to be <%s> but was <%s>",
+                ccdSoleTrader.getPhoneNumber(), actual.getPhoneNumber().orElse(null));
         }
 
         if (!Objects.equals(actual.getBusinessName().orElse(null), ccdSoleTrader.getBusinessName())) {

@@ -43,7 +43,7 @@
           "individual": {
             "title": "Dr.",
             "name": "John Rambo",
-            "phone": "07873727165",
+            "phoneNumber": "07873727165",
             "address": {
               "line1": "52",
               "line2": "Down Street",

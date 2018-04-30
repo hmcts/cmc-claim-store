@@ -53,7 +53,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
             .contains("Phone number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
-                .getPhone().orElseThrow(IllegalStateException::new));
+                .getPhoneNumber().orElseThrow(IllegalStateException::new));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
             SampleResponse.FullDefence.builder()
                 .withDefendantDetails(
                     SampleParty.builder()
-                        .withPhone(null)
+                        .withPhoneNumber(null)
                         .individual())
                 .build())
             .build();

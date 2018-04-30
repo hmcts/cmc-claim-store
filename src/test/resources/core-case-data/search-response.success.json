@@ -166,7 +166,7 @@
                       "classification": "PUBLIC"
                     },
                     "dateOfBirth": "PUBLIC",
-                    "phone": "PUBLIC",
+                    "phoneNumber": "PUBLIC",
                     "correspondenceAddress": {
                       "value": {
                         "city": "PUBLIC",

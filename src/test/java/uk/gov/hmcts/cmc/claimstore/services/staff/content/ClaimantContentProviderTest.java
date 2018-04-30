@@ -66,7 +66,7 @@ public class ClaimantContentProviderTest {
     public void shouldProvidePhoneNumber() {
         ClaimantContent content = provider.createContent(claimant, EMAIL);
 
-        assertThat(content.getPhone()).isNotNull();
+        assertThat(content.getPhoneNumber()).isNotNull();
     }
 
 }
