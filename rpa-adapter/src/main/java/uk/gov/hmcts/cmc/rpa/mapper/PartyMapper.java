@@ -7,9 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.domain.Party;
 
-import java.time.format.DateTimeFormatter;
-
-import static java.time.format.FormatStyle.MEDIUM;
+import static uk.gov.hmcts.cmc.rpa.mapper.CaseMapper.MEDIUM_DATE_FORMAT;
 
 @Component("rpaPartyMapper")
 public class PartyMapper {
@@ -65,7 +63,7 @@ public class PartyMapper {
 
     private void updateIndividualDetails(Party.PartyBuilder builder, Individual individual) {
         if (individual.getDateOfBirth() != null) {
-            builder.dateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ofLocalizedDate(MEDIUM)));
+            builder.dateOfBirth(individual.getDateOfBirth().format(MEDIUM_DATE_FORMAT));
         }
     }
 }

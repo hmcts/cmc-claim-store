@@ -11,6 +11,7 @@ import static java.time.format.FormatStyle.MEDIUM;
 
 @Component("rpaCaseMapper")
 public class CaseMapper {
+    public static final DateTimeFormatter MEDIUM_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
     private final PartyMapper rpaPartyMapper;
     private final TheirDetailsMapper rpaTheirDetailsMapper;
 
@@ -24,8 +25,8 @@ public class CaseMapper {
         claim.getTotalAmountTillToday().ifPresent(builder::amountWithInterest);
         builder.caseNumber(claim.getReferenceNumber());
         builder.courtFee(claim.getClaimData().getFeesPaidInPound());
-        builder.issueDate(claim.getIssuedOn().format(DateTimeFormatter.ofLocalizedDate(MEDIUM)));
-        builder.serviceDate(claim.getIssuedOn().plusDays(5).format(DateTimeFormatter.ofLocalizedDate(MEDIUM)));
+        builder.issueDate(claim.getIssuedOn().format(MEDIUM_DATE_FORMAT));
+        builder.serviceDate(claim.getIssuedOn().plusDays(5).format(MEDIUM_DATE_FORMAT));
 
         builder.claimants(claim.getClaimData().getClaimants().stream()
             .map(rpaPartyMapper::to)
