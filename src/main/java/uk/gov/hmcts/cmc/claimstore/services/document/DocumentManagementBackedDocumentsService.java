@@ -3,12 +3,14 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.documents.*;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.function.Supplier;
 
@@ -20,8 +22,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
-    private final PDFServiceClient pdfServiceClient;
-    private final CitizenServiceDocumentsService citizenServiceDocumentsService;
+    private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
@@ -33,16 +34,14 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public DocumentManagementBackedDocumentsService(
         ClaimService claimService,
         DocumentManagementService documentManagementService,
-        PDFServiceClient pdfServiceClient,
-        CitizenServiceDocumentsService citizenServiceDocumentsService,
+        SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
-        this.pdfServiceClient = pdfServiceClient;
-        this.citizenServiceDocumentsService = citizenServiceDocumentsService;
+        this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
@@ -57,10 +56,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] getSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-        return downloadOrGenerateAndUpload(claim, () -> {
-            Document document = citizenServiceDocumentsService.sealedClaimDocument(claim);
-            return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
-        }, authorisation);
+        return downloadOrGenerateAndUpload(claim, () -> sealedClaimPdfService.createPdf(claim), authorisation);
     }
 
     @Override

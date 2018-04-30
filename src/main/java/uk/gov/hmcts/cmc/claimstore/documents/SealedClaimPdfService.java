@@ -41,8 +41,7 @@ public class SealedClaimPdfService {
             );
         } else {
             Document document = citizenServiceDocumentsService.sealedClaimDocument(claim);
-            return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values
-            );
+            return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
         }
     }
 }

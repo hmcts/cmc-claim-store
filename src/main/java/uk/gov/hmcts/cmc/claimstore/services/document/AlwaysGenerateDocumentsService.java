@@ -3,19 +3,20 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.documents.*;
+import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url", havingValue = "false")
 public class AlwaysGenerateDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
-    private final PDFServiceClient pdfServiceClient;
-    private final CitizenServiceDocumentsService citizenServiceDocumentsService;
+    private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
@@ -24,15 +25,13 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     @Autowired
     public AlwaysGenerateDocumentsService(
         ClaimService claimService,
-        PDFServiceClient pdfServiceClient,
-        CitizenServiceDocumentsService citizenServiceDocumentsService,
+        SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
-        this.pdfServiceClient = pdfServiceClient;
-        this.citizenServiceDocumentsService = citizenServiceDocumentsService;
+        this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
@@ -46,9 +45,7 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
 
     @Override
     public byte[] getSealedClaim(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
-        Document document = citizenServiceDocumentsService.sealedClaimDocument(claim);
-        return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
+        return sealedClaimPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
