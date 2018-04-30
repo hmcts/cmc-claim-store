@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.pdfbox.pdmodel.PDDocument;
@@ -32,17 +31,16 @@ public class SealedClaimPdfTest extends BaseTest {
         claimant = idamTestService.createCitizen();
     }
 
-
     @Test
     public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
-        Claim createdCase = getTestClaim();
+        Claim createdCase = createCase();
         String pdfAsText = textContentOf(retrievePdf("claimIssueReceipt", createdCase.getExternalId()));
         assertionsOnClaimPdf(createdCase, pdfAsText);
     }
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
-        Claim createdCase = getTestClaim();
+        Claim createdCase = createCase();
         String pdfAsText = textContentOf(retrievePdf("sealedClaim", createdCase.getExternalId()));
         assertionsOnClaimPdf(createdCase, pdfAsText);
     }
@@ -61,7 +59,6 @@ public class SealedClaimPdfTest extends BaseTest {
         assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
     }
 
-    @NotNull
     private String getFullAddressString(Address address) {
         return address.getLine1() + " \n"
             + address.getLine2() + " \n"
@@ -70,7 +67,7 @@ public class SealedClaimPdfTest extends BaseTest {
             + address.getPostcode();
     }
 
-    private Claim getTestClaim() {
+    private Claim createCase() {
         ClaimData claimData = testData.submittedByClaimantBuilder()
             .build();
 
@@ -79,16 +76,6 @@ public class SealedClaimPdfTest extends BaseTest {
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
-    }
-
-    private static String textContentOf(InputStream inputStream) throws IOException {
-        PDDocument pdDocument = PDDocument.load(inputStream);
-
-        try {
-            return new PDFTextStripper().getText(pdDocument);
-        } finally {
-            pdDocument.close();
-        }
     }
 
     private Response submitClaim(ClaimData claimData) {
@@ -107,5 +94,15 @@ public class SealedClaimPdfTest extends BaseTest {
             .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .get("/documents/" + pdfName + "/" + externalId)
             .asInputStream();
+    }
+
+    private static String textContentOf(InputStream inputStream) throws IOException {
+        PDDocument document = PDDocument.load(inputStream);
+
+        try {
+            return new PDFTextStripper().getText(document);
+        } finally {
+            document.close();
+        }
     }
 }
