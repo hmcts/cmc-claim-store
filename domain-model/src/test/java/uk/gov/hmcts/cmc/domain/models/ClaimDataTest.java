@@ -113,7 +113,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants[0] : may not be null");
+        assertThat(errors).containsOnly("defendants : each element must be not null");
     }
 
     @Test
@@ -200,7 +200,7 @@ public class ClaimDataTest {
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("claimants[0] : may not be null");
+        assertThat(errors).containsOnly("claimants : each element must be not null");
     }
 
     @Test

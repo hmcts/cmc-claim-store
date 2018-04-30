@@ -1,9 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.emails;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotBlank;
 
 @Component
 @Validated

@@ -56,11 +56,8 @@
     }
   ],
   "payment": {
-    "id": "123",
     "amount": 4000,
-    "reference": "reference",
-    "description": "description",
-    "date_created": "2010-10-12",
+    "reference": "RC-1524-6488-1670-7520",
     "status": "success"
   },
   "feeAmountInPennies": 4000,

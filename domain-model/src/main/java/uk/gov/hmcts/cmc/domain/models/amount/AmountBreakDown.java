@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.amount;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.MinTotalAmount;
@@ -22,6 +23,7 @@ public class AmountBreakDown implements Amount {
     @MinTotalAmount("0.01")
     private final List<AmountRow> rows;
 
+    @JsonCreator
     public AmountBreakDown(List<AmountRow> rows) {
         this.rows = rows;
     }

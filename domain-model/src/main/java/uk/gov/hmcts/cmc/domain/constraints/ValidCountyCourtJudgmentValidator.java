@@ -12,12 +12,7 @@ import static uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption.INSTALMENTS;
 
 public class ValidCountyCourtJudgmentValidator
     implements ConstraintValidator<ValidCountyCourtJudgment, CountyCourtJudgment> {
-
-    @Override
-    public void initialize(ValidCountyCourtJudgment constraintAnnotation) {
-        // nothing to do here
-    }
-
+    
     @Override
     public boolean isValid(CountyCourtJudgment ccj, ConstraintValidatorContext context) {
         if (!isEligibleForThisValidator(ccj)) {

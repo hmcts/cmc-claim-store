@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.idam;
 
-import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotBlank;
+
+@Validated
 public class IdamCaseworker {
     @NotBlank
     private String username;
