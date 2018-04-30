@@ -3,12 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.*;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,7 +23,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final PDFServiceClient pdfServiceClient;
     private final CitizenServiceDocumentsService citizenServiceDocumentsService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
-    private final LegalSealedClaimPdfService legalSealedClaimPdfService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
@@ -42,7 +36,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         PDFServiceClient pdfServiceClient,
         CitizenServiceDocumentsService citizenServiceDocumentsService,
         ClaimIssueReceiptService claimIssueReceiptService,
-        LegalSealedClaimPdfService legalSealedClaimPdfService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService) {
@@ -51,7 +44,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.pdfServiceClient = pdfServiceClient;
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
         this.claimIssueReceiptService = claimIssueReceiptService;
-        this.legalSealedClaimPdfService = legalSealedClaimPdfService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
@@ -60,12 +52,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
         return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
-    }
-
-    @Override
-    public byte[] getLegalSealedClaim(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
-        return downloadOrGenerateAndUpload(claim, () -> legalSealedClaimPdfService.createPdf(claim), authorisation);
     }
 
     @Override

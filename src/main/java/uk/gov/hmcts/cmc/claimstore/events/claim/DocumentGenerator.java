@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
-import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
@@ -21,19 +21,19 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedCla
 public class DocumentGenerator {
 
     private final CitizenServiceDocumentsService citizenServiceDocumentsService;
-    private final LegalSealedClaimPdfService legalSealedClaimPdfService;
+    private final SealedClaimPdfService sealedClaimPdfService;
     private final ApplicationEventPublisher publisher;
     private final PDFServiceClient pdfServiceClient;
 
     @Autowired
     public DocumentGenerator(
         CitizenServiceDocumentsService citizenServiceDocumentsService,
-        LegalSealedClaimPdfService legalSealedClaimPdfService,
+        SealedClaimPdfService sealedClaimPdfService,
         ApplicationEventPublisher publisher,
         PDFServiceClient pdfServiceClient
     ) {
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
-        this.legalSealedClaimPdfService = legalSealedClaimPdfService;
+        this.sealedClaimPdfService = sealedClaimPdfService;
         this.publisher = publisher;
         this.pdfServiceClient = pdfServiceClient;
     }
@@ -64,7 +64,7 @@ public class DocumentGenerator {
     @EventListener
     public void generateForRepresentedClaim(RepresentedClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            legalSealedClaimPdfService.createPdf(event.getClaim()));
+            sealedClaimPdfService.createPdf(event.getClaim()));
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
     }

@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
-import uk.gov.hmcts.cmc.claimstore.documents.LegalSealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -30,7 +30,7 @@ public class DocumentGeneratorTest {
     @Mock
     private CitizenServiceDocumentsService citizenDocumentService;
     @Mock
-    private LegalSealedClaimPdfService legalPdfservice;
+    private SealedClaimPdfService claimPdfService;
     @Mock
     private ApplicationEventPublisher publisher;
     @Mock
@@ -38,7 +38,7 @@ public class DocumentGeneratorTest {
 
     @Before
     public void before() {
-        documentGenerator = new DocumentGenerator(citizenDocumentService, legalPdfservice, publisher, pdfServiceClient);
+        documentGenerator = new DocumentGenerator(citizenDocumentService, claimPdfService, publisher, pdfServiceClient);
     }
 
     @Test

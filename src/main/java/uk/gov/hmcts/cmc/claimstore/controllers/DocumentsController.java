@@ -57,7 +57,7 @@ public class DocumentsController {
         @PathVariable("externalId") @NotBlank String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.getLegalSealedClaim(externalId, authorisation);
+        byte[] pdfDocument = documentsService.getSealedClaim(externalId, authorisation);
 
         return ResponseEntity
             .ok()
