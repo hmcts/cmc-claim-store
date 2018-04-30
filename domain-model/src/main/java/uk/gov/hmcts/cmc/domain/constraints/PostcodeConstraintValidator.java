@@ -13,11 +13,6 @@ public class PostcodeConstraintValidator implements ConstraintValidator<Postcode
     private static final Pattern pattern = Pattern.compile(REGEX);
 
     @Override
-    public void initialize(Postcode constraintAnnotation) {
-        // nothing to do here
-    }
-
-    @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) {
             return true;
