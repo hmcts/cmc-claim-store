@@ -6,7 +6,7 @@ import java.time.ZoneId;
 public class LocalDateTimeFactory {
 
     private static final ZoneId UTC_ZONE = ZoneId.of("UTC");
-    private static final ZoneId LOCAL_ZONE = ZoneId.of("Europe/London");
+    public static final ZoneId LOCAL_ZONE = ZoneId.of("Europe/London");
 
     private LocalDateTimeFactory() {}
 

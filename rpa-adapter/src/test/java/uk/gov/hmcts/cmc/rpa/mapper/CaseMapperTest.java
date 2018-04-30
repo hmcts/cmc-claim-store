@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.rpa.domain.Case;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.LOCAL_ZONE;
 
 @SpringBootTest
 @ContextConfiguration(classes = RpaAdapterConfig.class)
@@ -32,6 +33,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapIndividualCitizenClaimToRPA() throws JsonProcessingException {
         //given
+        LocalDate issuedOn = LocalDate.of(2018, 4, 26).atStartOfDay(LOCAL_ZONE).toLocalDate();
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
@@ -39,7 +41,7 @@ public class CaseMapperTest {
                     .withPaymentOptionImmediately()
                     .build()
             )
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withIssuedOn(issuedOn)
             .build();
 
         //when
