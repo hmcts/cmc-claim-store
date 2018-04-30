@@ -57,7 +57,7 @@ public class DocumentGeneratorTest {
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
         when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
 
-        when(pdfServiceClient.generateFromHtml(sealedClaimTemplate.getBytes(), sealedClaimDocument.values))
+        when(claimPdfService.createPdf(claim))
             .thenReturn(PDF_CONTENT);
 
         when(pdfServiceClient.generateFromHtml(pinTemplate.getBytes(), defendantLetterDocument.values))

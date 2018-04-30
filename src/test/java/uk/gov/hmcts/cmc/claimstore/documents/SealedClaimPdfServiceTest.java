@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.LegalSealedClaimContentProvider;
-import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static org.mockito.Mockito.verify;
@@ -24,9 +24,6 @@ public class SealedClaimPdfServiceTest {
     @Mock
     private CitizenServiceDocumentsService documentsService;
 
-    @Mock
-    private Claim claim;
-
     private SealedClaimPdfService service;
 
     @Before
@@ -41,7 +38,7 @@ public class SealedClaimPdfServiceTest {
 
     @Test
     public void shouldUseCorrectTemplateToCreateTheDocument() {
-        service.createPdf(claim);
+        service.createPdf(SampleClaim.getDefaultForLegal());
         verify(documentTemplates).getLegalSealedClaim();
     }
 
