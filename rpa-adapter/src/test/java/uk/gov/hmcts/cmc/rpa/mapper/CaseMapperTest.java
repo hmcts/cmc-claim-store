@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,6 +20,7 @@ import uk.gov.hmcts.cmc.rpa.domain.Case;
 
 import java.time.LocalDate;
 
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
 @SpringBootTest
@@ -52,7 +52,7 @@ public class CaseMapperTest {
         String expected = new ResourceReader().read("/individual_rpa_case.json").trim();
 
         //then
-        JSONAssert.assertEquals(expected, result, STRICT);
+        assertEquals(expected, result, STRICT);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CaseMapperTest {
         String expected = new ResourceReader().read("/company_rpa_case.json").trim();
 
         //then
-        JSONAssert.assertEquals(expected, result, STRICT);
+        assertEquals(expected, result, STRICT);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class CaseMapperTest {
         String expected = new ResourceReader().read("/sole_trader_rpa_case.json").trim();
 
         //then
-        JSONAssert.assertEquals(expected, result, STRICT);
+        assertEquals(expected, result, STRICT);
     }
 
     @Test
@@ -110,6 +110,6 @@ public class CaseMapperTest {
         String expected = new ResourceReader().read("/organisation_rpa_case.json").trim();
 
         //then
-        JSONAssert.assertEquals(expected, result, STRICT);
+        assertEquals(expected, result, STRICT);
     }
 }
