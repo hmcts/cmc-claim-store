@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.domain.Party;
 
-import static uk.gov.hmcts.cmc.rpa.mapper.CaseMapper.MEDIUM_DATE_FORMAT;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.MEDIUM_DATE_FORMAT;
 
 @Component("rpaPartyMapper")
 public class PartyMapper {

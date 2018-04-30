@@ -4,12 +4,12 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.rpa.domain.Case;
 
-import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.MEDIUM_DATE_FORMAT;
 
 @Component("rpaCaseMapper")
 public class CaseMapper {
-    public static final DateTimeFormatter MEDIUM_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
     private final PartyMapper rpaPartyMapper;
     private final TheirDetailsMapper rpaTheirDetailsMapper;
 
