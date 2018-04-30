@@ -7,8 +7,6 @@ import uk.gov.hmcts.cmc.rpa.domain.Case;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
-import static java.time.format.FormatStyle.MEDIUM;
-
 @Component("rpaCaseMapper")
 public class CaseMapper {
     public static final DateTimeFormatter MEDIUM_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
