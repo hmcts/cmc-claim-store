@@ -51,9 +51,11 @@ public class SealedClaimPdfTest extends BaseTest {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
         assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
-        assertThat(pdfAsText).contains("Address: " + getFullAddressString(createdCase.getClaimData().getClaimant().getAddress()));
+        assertThat(pdfAsText).contains("Address: "
+            + getFullAddressString(createdCase.getClaimData().getClaimant().getAddress()));
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getDefendant().getName());
-        assertThat(pdfAsText).contains("Address: " + getFullAddressString(createdCase.getClaimData().getDefendant().getAddress()));
+        assertThat(pdfAsText).contains("Address: "
+            + getFullAddressString(createdCase.getClaimData().getDefendant().getAddress()));
         assertThat(pdfAsText).contains("Claim amount: "
             + Formatting.formatMoney(((AmountBreakDown) createdCase.getClaimData().getAmount()).getTotalAmount()));
         assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
