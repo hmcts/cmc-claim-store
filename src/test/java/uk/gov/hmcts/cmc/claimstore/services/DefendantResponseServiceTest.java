@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -70,6 +71,33 @@ public class DefendantResponseServiceTest {
         //then
         verify(eventProducer, once())
             .createDefendantResponseEvent(eq(claim));
+    }
+
+    @Test(expected = DefendantLinkingException.class)
+    public void saveShouldThrowDefendantLinkingExceptionWhenClaimIsLinkedToOtherDefendant() {
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(SampleClaim.builder().withDefendantId("not-mine-claim").build());
+
+        responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+    }
+
+    @Test(expected = DefendantLinkingException.class)
+    public void saveShouldThrowDefendantLinkingExceptionWhenClaimIsNotLinkedToAnyUser() {
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(SampleClaim.builder().withDefendantId(null).build());
+
+        responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+    }
+
+    @Test(expected = DefendantLinkingException.class)
+    public void saveShouldThrowDefendantLinkingExceptionWhenClaimDefendantIdIsNullAndGivenDefendantIdIsNull() {
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(SampleClaim.builder().withDefendantId(null).build());
+
+        responseService.save(EXTERNAL_ID, null, VALID_APP, AUTHORISATION);
     }
 
     @Test(expected = ResponseAlreadySubmittedException.class)
