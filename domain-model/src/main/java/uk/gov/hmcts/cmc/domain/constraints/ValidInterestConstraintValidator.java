@@ -72,12 +72,11 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
 
     private boolean validateInterestDate(InterestDate interestDate, ConstraintValidatorContext validatorContext) {
         InterestDate.InterestDateType interestDateType = interestDate.getType();
-        if (interestDateType != null && interestDateType.equals(InterestDate.InterestDateType.CUSTOM)) {
-            if (interestDate.getDate() == null || interestDate.getReason().isEmpty()) {
-                setValidationErrors(validatorContext,
-                    "interestDate.Date or interest.interestDate.reason", MAY_NOT_BE_NULL_OR_EMPTY);
-                return false;
-            }
+        if (interestDateType != null && interestDateType.equals(InterestDate.InterestDateType.CUSTOM)
+            && (interestDate.getDate() == null || interestDate.getReason().isEmpty())) {
+            setValidationErrors(validatorContext,
+                "interestDate.Date or interest.interestDate.reason", MAY_NOT_BE_NULL_OR_EMPTY);
+            return false;
         }
         return true;
     }
