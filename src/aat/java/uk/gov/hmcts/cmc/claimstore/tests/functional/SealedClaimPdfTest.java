@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.pdfbox.pdmodel.PDDocument;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
+import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -49,22 +51,21 @@ public class SealedClaimPdfTest extends BaseTest {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
         assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
-        assertThat(pdfAsText).contains("Address: "
-            + createdCase.getClaimData().getClaimant().getAddress().getLine1() + " \n"
-            + createdCase.getClaimData().getClaimant().getAddress().getLine2() + " \n"
-            + createdCase.getClaimData().getClaimant().getAddress().getLine3() + " \n"
-            + createdCase.getClaimData().getClaimant().getAddress().getCity() + " \n"
-            + createdCase.getClaimData().getClaimant().getAddress().getPostcode());
+        assertThat(pdfAsText).contains("Address: " + getFullAddressString(createdCase.getClaimData().getClaimant().getAddress()));
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getDefendant().getName());
-        assertThat(pdfAsText).contains("Address: "
-            + createdCase.getClaimData().getDefendant().getAddress().getLine1() + " \n"
-            + createdCase.getClaimData().getDefendant().getAddress().getLine2() + " \n"
-            + createdCase.getClaimData().getDefendant().getAddress().getLine3() + " \n"
-            + createdCase.getClaimData().getDefendant().getAddress().getCity() + " \n"
-            + createdCase.getClaimData().getDefendant().getAddress().getPostcode());
+        assertThat(pdfAsText).contains("Address: " + getFullAddressString(createdCase.getClaimData().getDefendant().getAddress()));
         assertThat(pdfAsText).contains("Claim amount: "
             + Formatting.formatMoney(((AmountBreakDown) createdCase.getClaimData().getAmount()).getTotalAmount()));
         assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
+    }
+
+    @NotNull
+    private String getFullAddressString(Address address) {
+        return address.getLine1() + " \n"
+            + address.getLine2() + " \n"
+            + address.getLine3() + " \n"
+            + address.getCity() + " \n"
+            + address.getPostcode();
     }
 
     private Claim getTestClaim() {
