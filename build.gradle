@@ -179,7 +179,6 @@ dependencies {
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
-  testCompile project(path: ":rpa-adapter", configuration: 'testArtifacts')
   testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
