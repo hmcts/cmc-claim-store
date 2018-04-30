@@ -245,7 +245,7 @@
           {% endif %}
           <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
           <td>
-            {% if defendant.businessName is not empty %}
+            {% if defendant.businessName is defined and defendant.businessName is not empty %}
               {{ defendant.name }} trading as {{ defendant.businessName }}
             {% else %}
               {{ defendant.name }}
@@ -294,7 +294,7 @@
                 {{ defendant.representative.organisationContactDetails.email }}
               {% endif %}
             {% elseif defendant.serviceAddress is defined %}
-              {% if defendant.businessName is not empty %}
+              {% if defendant.businessName is defined and defendant.businessName is not empty %}
                 {{ defendant.name }} trading as {{ defendant.businessName }}
               {% else %}
                 {{ defendant.name }}
@@ -310,7 +310,7 @@
               <br/>
               {{ defendant.serviceAddress.postcode }}
             {% else %}
-              {% if defendant.businessName is not empty %}
+              {% if defendant.businessName is defined and defendant.businessName is not empty %}
                 {{ defendant.name }} trading as {{ defendant.businessName }}
               {% else %}
                 {{ defendant.name }}
@@ -367,10 +367,10 @@
     <tr>
       <td><h4>Statement of value</h4></td>
       <td>
-        {% if statementOfValue.personalInjury is not empty %}
+        {% if statementOfValue.personalInjury is defined and statementOfValue.personalInjury is not empty %}
           <span>{{ statementOfValue.personalInjury }} </span> <br/><br/>
         {% endif %}
-        {% if statementOfValue.housingDisrepair is not empty %}
+        {% if statementOfValue.housingDisrepair is defined and statementOfValue.housingDisrepair is not empty %}
           <span>{{ statementOfValue.housingDisrepair }} </span> <br/> <br/>
         {% endif %}
         <span>{{ statementOfValue.claimValue }} </span>
@@ -508,7 +508,7 @@
         {% set defendantHeading = 'Defendant ' + (loop.index +1) %}
         <td class="two-per-row"><h4>{{ defendantHeading }}</h4></td>
         <td>
-          {% if defendant.businessName is not empty %}
+          {% if defendant.businessName is defined and defendant.businessName is not empty %}
             {{ defendant.name }} trading as {{ defendant.businessName }}
           {% else %}
             {{ defendant.name }}
@@ -557,7 +557,7 @@
               Email: {{ defendant.representative.organisationContactDetails.email }}
             {% endif %}
           {% elseif defendant.serviceAddress is defined %}
-            {% if defendant.businessName is not empty %}
+            {% if defendant.businessName is defined and defendant.businessName is not empty %}
               {{ defendant.name }} trading as {{ defendant.businessName }}
             {% else %}
               {{ defendant.name }}
@@ -573,7 +573,7 @@
             <br/>
             {{ defendant.serviceAddress.postcode }}
           {% else %}
-            {% if defendant.businessName is not empty %}
+            {% if defendant.businessName is defined and defendant.businessName is not empty %}
               {{ defendant.name }} trading as {{ defendant.businessName }}
             {% else %}
               {{ defendant.name }}

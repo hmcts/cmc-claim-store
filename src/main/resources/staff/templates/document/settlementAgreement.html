@@ -153,11 +153,11 @@
         <td>
           {{ claimant.address.line1 }}
           <br/>
-          {% if claimant.address.line2 is not empty %}
+          {% if claimant.address.line2 is defined and claimant.address.line2 is not empty %}
           {{ claimant.address.line2 }}
           <br/>
           {% endif %}
-          {% if claimant.address.line3 is not empty %}
+          {% if claimant.address.line3 is defined and claimant.address.line3 is not empty %}
           {{ claimant.address.line3 }}
           <br/>
           {% endif %}
@@ -207,11 +207,11 @@
         <td>
           {{ defendant.address.line1 }}
           <br/>
-          {% if defendant.address.line2 is not empty %}
+          {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
           {{ defendant.address.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.address.line3 is not empty %}
+          {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
           {{ defendant.address.line3 }}
           <br/>
           {% endif %}

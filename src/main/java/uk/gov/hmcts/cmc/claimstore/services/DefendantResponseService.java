@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Response;
@@ -34,6 +35,12 @@ public class DefendantResponseService {
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
 
+        if (!isClaimLinkedWithDefendant(claim, defendantId)) {
+            throw new DefendantLinkingException(
+                String.format("Claim %s is not linked with defendant %s", claim.getReferenceNumber(), defendantId)
+            );
+        }
+
         if (isResponseAlreadySubmitted(claim)) {
             throw new ResponseAlreadySubmittedException(claim.getId());
         }
@@ -43,7 +50,7 @@ public class DefendantResponseService {
         }
 
         String defendantEmail = userService.getUserDetails(authorization).getEmail();
-        claimService.saveDefendantResponse(claim, defendantId, defendantEmail, response, authorization);
+        claimService.saveDefendantResponse(claim, defendantEmail, response, authorization);
 
         Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
@@ -52,8 +59,12 @@ public class DefendantResponseService {
         return claimAfterSavingResponse;
     }
 
+    private boolean isClaimLinkedWithDefendant(Claim claim, String defendantId) {
+        return claim.getDefendantId() != null && claim.getDefendantId().equals(defendantId);
+    }
+
     private boolean isResponseAlreadySubmitted(Claim claim) {
-        return null != claim.getRespondedAt();
+        return claim.getRespondedAt() != null;
     }
 
     private boolean isCCJAlreadyRequested(Claim claim) {

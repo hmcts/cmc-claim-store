@@ -6,10 +6,8 @@ import java.math.BigDecimal;
 
 public class SamplePayment {
 
-    private String id = "123";
     private BigDecimal amount = new BigDecimal("4000");
-    private String reference = "reference";
-    private String dateCreated = "2010-10-12";
+    private String reference = "RC-1524-6488-1670-7520";
     private String status = "success";
 
     public static SamplePayment builder() {
@@ -21,7 +19,7 @@ public class SamplePayment {
     }
 
     public Payment build() {
-        return new Payment(id, amount, reference, dateCreated, status);
+        return new Payment(null, amount, reference, null, status);
     }
 
 }
