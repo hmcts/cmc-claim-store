@@ -18,8 +18,7 @@ public interface CaseRepository {
 
     void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);
 
-    void saveDefendantResponse(Claim claim, String defendantId, String defendantEmail,
-                               Response response, String authorization);
+    void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
     Claim linkDefendantV1(String externalId, String defendantId, String authorisation);
 

@@ -7,11 +7,6 @@ import javax.validation.ConstraintValidatorContext;
 public class FutureDateConstraintValidator implements ConstraintValidator<FutureDate, LocalDate> {
 
     @Override
-    public void initialize(FutureDate constraintAnnotation) {
-        // Nothing to do here
-    }
-
-    @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
         return value == null || value.isAfter(LocalDate.now());
     }
