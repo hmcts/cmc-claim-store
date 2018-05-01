@@ -1,8 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.hmcts.cmc.domain.constraints.Postcode;
 
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class Address {
@@ -21,8 +23,8 @@ public class Address {
     @Size(max = 100, message = "City should not be longer than {max} characters")
     private final String city;
 
-    @NotBlank(message = "Postcode should not be empty")
-    @Size(max = 8, message = "Postcode should not be longer than {max} characters")
+    @NotNull
+    @Postcode
     private final String postcode;
 
     public Address(String line1,
