@@ -130,7 +130,7 @@ public class AddressTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("postcode : Postcode should not be empty");
+            .contains("postcode : may not be null");
     }
 
     @Test
@@ -144,21 +144,21 @@ public class AddressTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("postcode : Postcode should not be empty");
+            .contains("postcode : Postcode is not of valid format");
     }
 
     @Test
-    public void shouldBeInvalidForTooLongPostcode() {
+    public void shouldBeInvalidForInvalidPostcode() {
         //given
         Address address = SampleAddress.builder()
-            .withPostcode(StringUtils.repeat("A", 9))
+            .withPostcode("SW123456")
             .build();
         //when
         Set<String> errors = validate(address);
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("postcode : Postcode should not be longer than 8 characters");
+            .contains("postcode : Postcode is not of valid format");
     }
 
 }
