@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
