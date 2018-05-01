@@ -23,6 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class SaveClaimWithStaffNotificationDisabledTest extends BaseSaveTest {
+    @MockBean
+    protected SendLetterApi sendLetterApi;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
