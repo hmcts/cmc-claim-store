@@ -69,21 +69,23 @@ public class SaveCCJWithStaffNotificationDisabledTest extends BaseSaveTest {
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     @Test
-    public void shouldNotSendStaffNotificationWhenCCJRequestSubmitted () {
+    public void shouldNotSendStaffNotificationWhenCCJRequestSubmitted () throws Exception {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
 
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
+        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
-        verify(ccjStaffNotificationService, never()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
+        makeRequest(claim.getExternalId(), countyCourtJudgment);
+
+        verify(emailService, never()).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
     }
-
-
-    private ResultActions makeRequest(String externalId, Claim claim) throws Exception {
+    
+    private ResultActions makeRequest(String externalId, CountyCourtJudgment countyCourtJudgment) throws Exception {
         return webClient
             .perform(post("/claims/" + externalId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
-                .
-                .content(jsonMapper.toJson(claim))
+                .content(jsonMapper.toJson(countyCourtJudgment))
             );
     }
 }
