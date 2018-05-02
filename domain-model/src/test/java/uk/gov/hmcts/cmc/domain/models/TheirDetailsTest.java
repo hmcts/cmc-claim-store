@@ -77,7 +77,7 @@ public class TheirDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("address.postcode : Postcode should not be empty");
+            .contains("address.postcode : Postcode is not of valid format");
     }
 
     @Test
@@ -177,6 +177,6 @@ public class TheirDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("serviceAddress.postcode : Postcode should not be empty");
+            .contains("serviceAddress.postcode : Postcode is not of valid format");
     }
 }
