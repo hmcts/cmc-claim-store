@@ -15,7 +15,7 @@ locals {
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
 
   s2sUrl = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
-  sendLetterUrl = "http://send-letter-producer-${local.local_env}.service.${local.local_ase}.internal"
+  sendLetterUrl = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
   previewVaultName = "${var.product}-claim-store"
@@ -107,7 +107,7 @@ module "claim-store-api" {
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
     CORE_CASE_DATA_API_URL = "false"
-    SEND_LETTER_URL = "${var.env == "demo" || var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
+    SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"
