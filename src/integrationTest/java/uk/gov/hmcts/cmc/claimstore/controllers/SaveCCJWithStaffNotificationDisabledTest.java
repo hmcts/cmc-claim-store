@@ -79,7 +79,7 @@ public class SaveCCJWithStaffNotificationDisabledTest extends BaseSaveTest {
 
         verify(emailService, never()).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
     }
-    
+
     private ResultActions makeRequest(String externalId, CountyCourtJudgment countyCourtJudgment) throws Exception {
         return webClient
             .perform(post("/claims/" + externalId + "/county-court-judgment")
