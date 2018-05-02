@@ -11,7 +11,7 @@ import java.io.IOException;
 @Service
 public class JsonMapper {
 
-    private static final String SERIALISATION_ERROR_MESSAGE = "Failed to serialize '%s' to JSON";
+    public static final String SERIALISATION_ERROR_MESSAGE = "Failed to serialize '%s' to JSON";
     private static final String DESERIALIZATION_ERROR_MESSAGE = "Failed to deserialize '%s' from JSON";
 
     private final ObjectMapper objectMapper;
