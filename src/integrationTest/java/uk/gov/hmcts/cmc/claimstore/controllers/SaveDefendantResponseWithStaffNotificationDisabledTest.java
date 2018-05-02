@@ -39,7 +39,7 @@ public class SaveDefendantResponseWithStaffNotificationDisabledTest extends Base
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     @Before
-    public void setup() {
+    public void setUp() {
         given(userService.getUserDetails(anyString())).willReturn(getDefault());
     }
 
