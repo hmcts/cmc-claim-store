@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @RestController
 @RequestMapping("/support")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class SupportController {
 
     private static final String CLAIM = "Claim ";
