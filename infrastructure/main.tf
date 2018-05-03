@@ -64,7 +64,7 @@ data "vault_generic_secret" "oauth_client_secret" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:contino/moj-module-webapp.git"
+  source = "git@github.com:hmcts/moj-module-webapp.git?ref=RPE-389/local-cache"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
@@ -127,7 +127,7 @@ module "claim-store-api" {
 }
 
 module "claim-store-vault" {
-  source = "git@github.com:contino/moj-module-key-vault?ref=master"
+  source = "git@github.com:hmcts/moj-module-key-vault?ref=master"
   name = "${local.vaultName}"
   product = "${var.product}"
   env = "${var.env}"
