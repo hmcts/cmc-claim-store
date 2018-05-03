@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -50,9 +51,21 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     @Captor
     private ArgumentCaptor<String> senderArgument;
 
+    private Claim claim;
+
     @Before
     public void setUp() {
         given(userService.getUserDetails(anyString())).willReturn(getDefault());
+        claim = SampleClaim.builder()
+            .withExternalId(UUID.randomUUID().toString())
+            .withClaimData(SampleClaimData.validDefaults())
+            .withIssuedOn(LocalDate.now().minusDays(3))
+            .withResponseDeadline(LocalDate.now().minusDays(1))
+            .withSubmitterId("1")
+            .withDefendantId(DEFENDANT_ID)
+            .build();
+
+        claim = caseRepository.saveClaim(BEARER_TOKEN, claim);
     }
 
     @Test
@@ -67,9 +80,6 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     @Test
     public void shouldNotSendStaffNotificationWhenCCJRequestSubmitted() throws Exception {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getExternalId(), countyCourtJudgment).andExpect(status().isOk());
 
@@ -87,27 +97,21 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationWhenCounterSignRequestSubmitted() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-        Response response = SampleResponse.validDefaults();
-
-        caseRepository.saveDefendantResponse(claim, SampleClaim.DEFENDANT_EMAIL, response, BEARER_TOKEN);
-
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT);
-        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, "OFFER_MADE_BY_DEFENDANT");
+        claim = claimStore.makeOffer(claim.getExternalId(), settlement);
 
         settlement.accept(MadeBy.CLAIMANT);
-        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, "OFFER_ACCEPTED_BY_CLAIMANT");
+        claim = claimStore.acceptOffer(claim.getExternalId(), settlement);
 
-        makeCounterOfferSignedRequest(claim.getExternalId()).andExpect(status().isOk());
+        makeCounterOfferSignedRequest(claim.getExternalId()).andExpect(status().isCreated());
 
         verify(emailService, never()).sendEmail(senderArgument.capture(), emailDataArgument.capture());
     }
 
     private ResultActions makeCounterOfferSignedRequest(String externalId) throws Exception {
         return webClient
-            .perform(post("/claims/" + externalId + "/offers/CLAIMANT/countersign")
+            .perform(post("/claims/" + externalId + "/offers/DEFENDANT/countersign")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, "token")
             );
@@ -117,8 +121,8 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     public void shouldNotInvokeStaffActionsHandlerAfterSuccessfulDefendantResponseSave() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-        Response response = SampleResponse.validDefaults();
 
+        Response response = SampleResponse.validDefaults();
         makeDefendantResponseRequest(claim.getExternalId(), response).andExpect(status().isOk());
 
         verify(emailService, never()).sendEmail(senderArgument.capture(), emailDataArgument.capture());
@@ -126,15 +130,18 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationsForDefendantRequestedMoreTimeEvent() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        Claim claim = SampleClaim.builder()
+            .withExternalId(UUID.randomUUID().toString())
+            .withClaimData(SampleClaimData.validDefaults())
+            .withIssuedOn(LocalDate.now().minusDays(3))
+            .withResponseDeadline(RESPONSE_DEADLINE.plusDays(20))
+            .withSubmitterId("1")
+            .withDefendantId(DEFENDANT_ID)
+            .build();
 
-        LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
-        Claim updated = SampleClaim.builder().withResponseDeadline(newDeadline).withClaimData(claim.getClaimData())
-            .withReferenceNumber(claim.getReferenceNumber())
-            .withExternalId(claim.getExternalId()).build();
+        claim = caseRepository.saveClaim(BEARER_TOKEN, claim);
 
-        makeRequestForMoreTimeToRespond(claim.getExternalId(), updated)
+        makeRequestForMoreTimeToRespond(claim.getExternalId(), claim)
             .andExpect(status().isOk());
 
         verify(emailService, never()).sendEmail(senderArgument.capture(), emailDataArgument.capture());
