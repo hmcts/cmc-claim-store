@@ -32,4 +32,5 @@ public class CCDCase {
     private LocalDateTime respondedAt;
     private CCDSettlement settlement;
     private LocalDateTime settlementReachedAt;
+    private Long internalId;
 }

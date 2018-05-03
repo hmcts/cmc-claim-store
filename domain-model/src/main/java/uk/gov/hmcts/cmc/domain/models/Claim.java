@@ -45,6 +45,7 @@ public class Claim {
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
     private final String sealedClaimDocumentSelfPath;
+    private final Long internalId;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -68,7 +69,8 @@ public class Claim {
         LocalDateTime countyCourtJudgmentRequestedAt,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
-        String sealedClaimDocumentSelfPath
+        String sealedClaimDocumentSelfPath,
+        Long internalId
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -90,6 +92,7 @@ public class Claim {
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
         this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
+        this.internalId = internalId;
     }
 
     public Long getId() {
@@ -183,6 +186,8 @@ public class Claim {
     public Optional<BigDecimal> getTotalInterest() {
         return TotalAmountCalculator.calculateInterestForClaim(this);
     }
+
+    public Optional<Long> getInternalId() { return Optional.ofNullable(internalId); }
 
     @Override
     @SuppressWarnings("squid:S1067") // Its generated code for equals sonar

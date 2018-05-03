@@ -11,11 +11,14 @@ import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
@@ -54,7 +57,7 @@ public class BulkPrintService {
             authTokenGenerator.generate(),
             new Letter(
                 Arrays.asList(event.getDefendantLetterDocument(), event.getSealedClaimDocument()),
-                XEROX_TYPE_PARAMETER
+                XEROX_TYPE_PARAMETER, wrapInMap(event.getClaim())
             )
         );
     }
@@ -67,5 +70,15 @@ public class BulkPrintService {
             event.getClaim()
         );
         appInsights.trackEvent(BULK_PRINT_FAILED, event.getClaim().getReferenceNumber());
+    }
+
+    private static Map<String, Object> wrapInMap(
+        Claim claim
+    ) {
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put("caseReferenceNumber", claim.getReferenceNumber());
+        additionalData.put("letterType", claim.getLetterHolderId());
+        additionalData.put("ccdReferenceNumber", claim.getInternalId());
+        return additionalData;
     }
 }
