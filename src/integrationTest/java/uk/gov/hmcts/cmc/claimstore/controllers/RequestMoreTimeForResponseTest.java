@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.assertj.core.util.Maps;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -39,9 +40,10 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         .withUserId(DEFENDANT_ID)
         .withMail("defendant@example.com")
         .build();
-    
+
     @Test
-    public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
+    @Ignore("Disabled due to using CCD")
+    public void shouldUpdatedResponseDeadlineWhenEverythingIsOkV1() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
@@ -57,7 +59,24 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
+    public void shouldUpdatedResponseDeadlineWhenEverythingIsOkV2() throws Exception {
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
+
+        assertThat(updatedClaim.isMoreTimeRequested()).isTrue();
+    }
+
+    @Test
+    @Ignore("Disabled due to using CCD")
+    public void shouldSendNotificationsWhenEverythingIsOkV1() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
@@ -71,7 +90,23 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldRetrySendNotifications() throws Exception {
+    public void shouldSendNotificationsWhenEverythingIsOkV2() throws Exception {
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isOk());
+
+        verify(notificationClient, times(3))
+            .sendEmail(anyString(), anyString(), anyMap(), anyString());
+    }
+
+
+    @Test
+    @Ignore("Disabled due to using CCD")
+    public void shouldRetrySendNotificationsV1() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
@@ -92,6 +127,28 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldRetrySendNotificationsV2() throws Exception {
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
+
+        given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+            .willThrow(new NotificationClientException(new RuntimeException("first attempt fails")))
+            .willReturn(null) // first notification sent successfully on second attempt
+            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 1st attempt fails")))
+            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 2nd attempt fails")))
+            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 3rd attempt fails, stop")));
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isOk());
+
+        verify(notificationClient, times(8))
+            .sendEmail(anyString(), anyString(), anyMap(), anyString());
+    }
+
+
+    @Test
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
@@ -102,7 +159,8 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTime() throws Exception {
+    @Ignore("Disabled due to using CCD")
+    public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTimeV1() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
@@ -115,11 +173,37 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgain() throws Exception {
+    public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTimeV2() throws Exception {
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+
+        LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
+
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", responseDeadlineInThePast);
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Ignore("Disabled due to using CCD")
+    public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgainV1() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgainV2() throws Exception {
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
         claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())
