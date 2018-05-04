@@ -123,8 +123,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             ccdCase.getCountyCourtJudgmentRequestedAt(),
             settlement,
             ccdCase.getSettlementReachedAt(),
-            null,
-            ccdCase.getInternalId()
+            null
         );
     }
 }
