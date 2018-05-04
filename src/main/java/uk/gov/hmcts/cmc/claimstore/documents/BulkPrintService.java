@@ -30,10 +30,10 @@ public class BulkPrintService {
      like paper quality and resolution */
     protected static final String XEROX_TYPE_PARAMETER = "CMC001";
 
-    static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
-    static final String ADDITIONAL_DATA_LETTER_TYPE_VALUE = "first-contact-pack";
-    static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
-    static final String ADDITIONAL_DATA_CCD_REFERENCE_NUMBER_KEY = "ccdReferenceNumber";
+    protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
+    protected static final String ADDITIONAL_DATA_LETTER_TYPE_VALUE = "first-contact-pack";
+    protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
+    protected static final String ADDITIONAL_DATA_CCD_REFERENCE_NUMBER_KEY = "ccdReferenceNumber";
 
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
