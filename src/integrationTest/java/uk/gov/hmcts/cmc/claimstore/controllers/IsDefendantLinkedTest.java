@@ -22,10 +22,24 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
 
     @Test
-    public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinked() throws Exception {
+    public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinkedV1() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         caseRepository.linkDefendantV1(claim.getExternalId(), "1", BEARER_TOKEN);
+
+        MvcResult result = makeRequest(claim.getReferenceNumber())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(result, DefendantLinkStatus.class))
+            .isEqualTo(new DefendantLinkStatus(true));
+    }
+
+    @Test
+    public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinkedV2() throws Exception {
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
 
         MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())
