@@ -106,5 +106,3 @@ smoke-test-citizen:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
-
-send_letter_url: 'http://localhost:4400'
