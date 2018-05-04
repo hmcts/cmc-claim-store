@@ -32,8 +32,8 @@ public class BulkPrintService {
 
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_VALUE = "first-contact-pack";
+    protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
     protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
-    protected static final String ADDITIONAL_DATA_CCD_REFERENCE_NUMBER_KEY = "ccdReferenceNumber";
 
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -80,8 +80,8 @@ public class BulkPrintService {
     private static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
+        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
-        additionalData.put(ADDITIONAL_DATA_CCD_REFERENCE_NUMBER_KEY, claim.getId());
         return additionalData;
     }
 }
