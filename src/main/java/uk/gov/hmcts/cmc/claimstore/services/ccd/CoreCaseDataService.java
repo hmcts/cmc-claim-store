@@ -94,6 +94,7 @@ public class CoreCaseDataService {
                     claimantRepresented,
                     claim.getLetterHolderId()
                 );
+
             return extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String

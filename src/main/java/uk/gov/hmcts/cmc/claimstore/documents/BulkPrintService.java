@@ -30,6 +30,11 @@ public class BulkPrintService {
      like paper quality and resolution */
     protected static final String XEROX_TYPE_PARAMETER = "CMC001";
 
+    static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
+    static final String ADDITIONAL_DATA_LETTER_TYPE_VALUE = "first-contact-pack";
+    static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
+    static final String ADDITIONAL_DATA_CCD_REFERENCE_NUMBER_KEY = "ccdReferenceNumber";
+
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
@@ -74,9 +79,9 @@ public class BulkPrintService {
 
     private static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put("caseReferenceNumber", claim.getReferenceNumber());
-        additionalData.put("letterType", claim.getLetterHolderId());
-        additionalData.put("ccdReferenceNumber", claim.getId());
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
+        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
+        additionalData.put(ADDITIONAL_DATA_CCD_REFERENCE_NUMBER_KEY, claim.getId());
         return additionalData;
     }
 }
