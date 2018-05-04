@@ -42,6 +42,24 @@ public class LinkDefendantTest extends BaseTest {
     }
 
     @Test
+    public void shouldBeAbleToSuccessfullyLinkDefendantV2() {
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimant.getUserDetails().getId()
+        );
+
+        User defendant = idamTestService.createCitizen();
+
+        Claim claim = linkDefendantV2(defendant)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract().body().as(Claim.class);
+
+        assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
+    }
+
+    @Test
     public void shouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
         Claim claim = commonOperations.submitClaim(
             claimant.getAuthorisation(),
