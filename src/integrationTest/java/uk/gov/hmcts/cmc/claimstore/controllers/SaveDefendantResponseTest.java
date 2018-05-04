@@ -53,7 +53,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnNewlyCreatedDefendantResponse() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         MvcResult result = makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
@@ -69,7 +69,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
@@ -84,7 +84,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
@@ -97,7 +97,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnInternalServerErrorWhenStaffNotificationFails() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendantV2(BEARER_TOKEN);
         Response response = SampleResponse.validDefaults();
 
         doThrow(new RuntimeException()).when(staffActionsHandler).onDefendantResponseSubmitted(any());
