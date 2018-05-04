@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -22,6 +23,7 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
 
     @Test
+    @Ignore("Disabled due to using CCD")
     public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinkedV1() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
