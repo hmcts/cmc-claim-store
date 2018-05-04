@@ -72,13 +72,11 @@ public class BulkPrintService {
         appInsights.trackEvent(BULK_PRINT_FAILED, event.getClaim().getReferenceNumber());
     }
 
-    private static Map<String, Object> wrapInMap(
-        Claim claim
-    ) {
+    private static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put("caseReferenceNumber", claim.getReferenceNumber());
         additionalData.put("letterType", claim.getLetterHolderId());
-        additionalData.put("ccdReferenceNumber", claim.getInternalId());
+        additionalData.put("ccdReferenceNumber", claim.getId());
         return additionalData;
     }
 }

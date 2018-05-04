@@ -56,6 +56,11 @@ public class BulkPrintServiceTest {
         Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
         Claim claim = SampleClaim.getDefault();
 
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put("caseReferenceNumber", claim.getReferenceNumber());
+        additionalData.put("letterType", claim.getLetterHolderId());
+        additionalData.put("ccdReferenceNumber", claim.getId());
+
         DocumentReadyToPrintEvent event
             = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument);
 
@@ -64,6 +69,6 @@ public class BulkPrintServiceTest {
         //then
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 
-        verify(sendLetterApi).sendLetter(eq(authValue), eq(new Letter(documents, XEROX_TYPE_PARAMETER)));
+        verify(sendLetterApi).sendLetter(eq(authValue), eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData)));
     }
 }
