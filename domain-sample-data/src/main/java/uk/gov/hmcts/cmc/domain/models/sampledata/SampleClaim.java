@@ -27,7 +27,6 @@ public final class SampleClaim {
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
-    public static final Long CCD_ID = 1513612248831166L;
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -49,7 +48,6 @@ public final class SampleClaim {
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
     private String sealedClaimDocumentSelfPath = null;
-    private Long ccdId = CCD_ID;
 
     private SampleClaim() {
     }
@@ -102,8 +100,7 @@ public final class SampleClaim {
             null,
             null,
             null,
-            null,
-             CCD_ID
+            null
         );
     }
 
@@ -154,8 +151,7 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocumentSelfPath,
-            ccdId
+            sealedClaimDocumentSelfPath
         );
     }
 
