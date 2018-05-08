@@ -74,7 +74,7 @@ public class IdamTestService {
 
         idamApi.upliftUser(
             userService.getBasicAuthHeader(email, password),
-            BEARER + exchangeResponse.getAccessToken(),
+            exchangeResponse.getAccessToken(),
             UserService.CODE,
             oauth2.getClientId(),
             oauth2.getRedirectUrl()
