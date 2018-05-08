@@ -75,7 +75,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Ignore("Disabled due to using CCD")
     public void shouldSendNotificationsWhenEverythingIsOkV1() throws Exception {
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
 
