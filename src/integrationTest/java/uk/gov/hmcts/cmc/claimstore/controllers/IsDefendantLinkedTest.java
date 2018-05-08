@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
