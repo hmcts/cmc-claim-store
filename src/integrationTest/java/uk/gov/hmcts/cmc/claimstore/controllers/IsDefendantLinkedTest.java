@@ -23,7 +23,6 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
 
     @Test
-    @Ignore("Disabled due to using CCD")
     public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinkedV1() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 

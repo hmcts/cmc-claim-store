@@ -1,9 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service("caseRepository")
@@ -66,8 +68,29 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     public void linkDefendantV2(String authorisation) {
-        throw new NotImplementedException("Will not be implemented for DB");
+        User defendantUser = userService.getUser(authorisation);
+
+        defendantUser.getUserDetails().getRoles()
+            .stream()
+            .filter(this::isLetterHolderRole)
+            .map(this::extractLetterHolderId)
+            .forEach(letterHolderId -> claimRepository.linkDefendantV2(
+                letterHolderId,
+                defendantUser.getUserDetails().getId())
+            );
     }
+
+    private String extractLetterHolderId(String role) {
+        return StringUtils.remove(role, "letter-");
+    }
+
+    private boolean isLetterHolderRole(String role) {
+        Objects.requireNonNull(role);
+        return role.startsWith("letter")
+            && !role.equals("letter-holder")
+            && !role.endsWith("loa1");
+    }
+
 
     @Override
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
