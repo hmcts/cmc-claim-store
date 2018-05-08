@@ -177,10 +177,8 @@ public interface ClaimRepository {
         @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
     );
 
-    // Update claim set defendantId =  defendantUser.getUserDetails().getId() where letterHolderId = letterId;
-
     @SqlUpdate(
-        "UPDATE claim SET defendant_id = :defendantId WHERE letter_holder_id = :letterHolderId AND defendant_id is not null"
+        "UPDATE claim SET defendant_id = :defendantId WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
     )
     void linkDefendantV2(
         @Bind("letterHolderId") String letterHolderId,
