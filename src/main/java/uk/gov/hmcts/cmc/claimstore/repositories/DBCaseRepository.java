@@ -69,15 +69,12 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void linkDefendantV2(String authorisation) {
         User defendantUser = userService.getUser(authorisation);
+        String defendantId = defendantUser.getUserDetails().getId();
 
-        defendantUser.getUserDetails().getRoles()
-            .stream()
+        defendantUser.getUserDetails().getRoles().stream()
             .filter(this::isLetterHolderRole)
             .map(this::extractLetterHolderId)
-            .forEach(letterHolderId -> claimRepository.linkDefendantV2(
-                letterHolderId,
-                defendantUser.getUserDetails().getId())
-            );
+            .forEach(letterHolderId -> claimRepository.linkDefendantV2(letterHolderId, defendantId));
     }
 
     private String extractLetterHolderId(String role) {
@@ -90,7 +87,6 @@ public class DBCaseRepository implements CaseRepository {
             && !"letter-holder".equals(role)
             && !role.endsWith("loa1");
     }
-
 
     @Override
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
