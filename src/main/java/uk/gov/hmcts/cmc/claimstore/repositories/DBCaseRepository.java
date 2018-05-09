@@ -77,7 +77,7 @@ public class DBCaseRepository implements CaseRepository {
             .forEach(letterHolderId -> claimRepository.linkDefendantV2(
                 letterHolderId,
                 defendantUser.getUserDetails().getId())
-            );
+        );
     }
 
     private String extractLetterHolderId(String role) {
