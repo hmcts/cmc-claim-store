@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.assertj.core.util.Maps;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -161,6 +160,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
+
         fail("Returns 409 HTTP status when too late to respond - using V1");
     }
 
@@ -173,7 +173,8 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
-    fail("Returns 409 HTTP status when too late to respond - using V2");
+
+        fail("Returns 409 HTTP status when too late to respond - using V2");
     }
 
     @Test
@@ -184,6 +185,8 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
+
+        fail("Returns 409 HTTP status when user is trying to request for more time again - using V1");
     }
 
     @Test
@@ -194,6 +197,8 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
+
+        fail("Returns 409 HTTP status when user is trying to request for more time again - using V1");
     }
 
     @Test
