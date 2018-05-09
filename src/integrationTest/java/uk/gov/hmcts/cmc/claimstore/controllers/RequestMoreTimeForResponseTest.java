@@ -18,8 +18,8 @@ import uk.gov.service.notify.NotificationClientException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,21 +38,24 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_ID = "100";
 
-    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withUserId(DEFENDANT_ID)
-        .withMail("defendant@example.com")
-        .withRoles("letter-99")
-        .build();
+    private Claim claim;
 
     @Before
     public void before() {
-        given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, USER_DETAILS));
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
+        claim = claimStore.saveClaim(SampleClaimData.builder().withExternalId(UUID.randomUUID()).build());
+
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withMail("defendant@example.com")
+            .withRoles("letter-" + claim.getLetterHolderId())
+            .build();
+
+        given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
     }
 
     @Test
     public void shouldUpdatedResponseDeadlineWhenEverythingIsOkV1() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
@@ -66,7 +69,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldUpdatedResponseDeadlineWhenEverythingIsOkV2() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV2(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
@@ -80,7 +82,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOkV1() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
@@ -92,7 +93,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOkV2() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV2(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
@@ -105,7 +105,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRetrySendNotificationsV1() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
 
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
@@ -124,8 +123,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRetrySendNotificationsV2() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-
         caseRepository.linkDefendantV2(BEARER_TOKEN);
 
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
@@ -160,8 +157,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
-
-        fail("Returns 409 HTTP status when too late to respond - using V1");
     }
 
     @Test
@@ -173,32 +168,26 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
-
-        fail("Returns 409 HTTP status when too late to respond - using V2");
     }
 
     @Test
     public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgainV1() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
         claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
 
-        fail("Returns 409 HTTP status when user is trying to request for more time again - using V1");
     }
 
     @Test
     public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgainV2() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV2(BEARER_TOKEN);
         claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
 
-        fail("Returns 409 HTTP status when user is trying to request for more time again - using V1");
     }
 
     @Test
