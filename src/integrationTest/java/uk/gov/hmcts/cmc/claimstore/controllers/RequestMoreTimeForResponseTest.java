@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -152,7 +153,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Ignore("Disabled due to using CCD")
     public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTimeV1() throws Exception {
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
 
@@ -161,6 +161,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
+        fail("Returns 409 HTTP status when too late to respond - using V1");
     }
 
     @Test
@@ -172,10 +173,10 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
+    fail("Returns 409 HTTP status when too late to respond - using V2");
     }
 
     @Test
-    @Ignore("Disabled due to using CCD")
     public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgainV1() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
