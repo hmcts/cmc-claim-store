@@ -5,11 +5,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.DefendantLinkStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,6 +41,9 @@ public class IsDefendantLinkedTest extends BaseIntegrationTest {
     @Test
     public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinkedV2() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+
+        when(userService.getUser(BEARER_TOKEN)).thenReturn(new User(BEARER_TOKEN,
+            SampleUserDetails.builder().withRoles("letter-" + claim.getLetterHolderId()).build()));
 
         caseRepository.linkDefendantV2(BEARER_TOKEN);
 
