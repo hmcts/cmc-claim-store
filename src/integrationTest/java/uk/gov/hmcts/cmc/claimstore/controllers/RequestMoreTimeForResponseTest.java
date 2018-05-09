@@ -160,8 +160,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
-
-        fail("Returns 409 HTTP status when too late to respond - using V1");
     }
 
     @Test
@@ -174,7 +172,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
 
-        fail("Returns 409 HTTP status when too late to respond - using V2");
     }
 
     @Test
@@ -185,8 +182,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
-
-        fail("Returns 409 HTTP status when user is trying to request for more time again - using V1");
     }
 
     @Test
@@ -197,8 +192,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
-
-        fail("Returns 409 HTTP status when user is trying to request for more time again - using V1");
     }
 
     @Test
