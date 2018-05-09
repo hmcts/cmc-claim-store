@@ -87,7 +87,7 @@ public class DBCaseRepository implements CaseRepository {
     private boolean isLetterHolderRole(String role) {
         Objects.requireNonNull(role);
         return role.startsWith("letter")
-            && !role.equals("letter-holder")
+            && !"letter-holder".equals(role)
             && !role.endsWith("loa1");
     }
 
