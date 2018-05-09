@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 import java.util.Base64;
 
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
-import static uk.gov.hmcts.cmc.claimstore.services.UserService.BEARER;
 
 @Service
 public class IdamTestService {
@@ -65,7 +64,8 @@ public class IdamTestService {
             oauth2.getRedirectUrl()
         );
 
-        TokenExchangeResponse exchangeResponse = idamApi.exchangeCode(pinUser.getCode(),
+        TokenExchangeResponse exchangeResponse = idamApi.exchangeCode(
+            pinUser.getCode(),
             AUTHORIZATION_CODE,
             oauth2.getRedirectUrl(),
             oauth2.getClientId(),
