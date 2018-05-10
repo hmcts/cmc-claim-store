@@ -2,9 +2,6 @@ plugins {
   id 'net.ltgt.apt' version '0.14'
 }
 
-apply plugin: 'java'
-apply plugin: 'org.springframework.boot'
-
 def versions = [
   logback          : '1.2.3',
   reformJavaLogging: '3.0.0'
