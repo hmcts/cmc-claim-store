@@ -28,7 +28,11 @@ public class UserService {
     private final Oauth2 oauth2;
 
     @Autowired
-    public UserService(IdamApi idamApi, IdamCaseworkerProperties idamCaseworkerProperties, Oauth2 oauth2) {
+    public UserService(
+        IdamApi idamApi,
+        IdamCaseworkerProperties idamCaseworkerProperties,
+        Oauth2 oauth2
+    ) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;
         this.oauth2 = oauth2;
