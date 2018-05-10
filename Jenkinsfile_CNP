@@ -23,6 +23,19 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline("java", product, component) {
+  afterCheckout {
+    onMaster {
+      try {
+        sh """
+          git fetch origin demo:demo
+          git push --force origin HEAD:demo
+        """
+      } catch (err) {
+        notifyBuildEvent channel: '#cmc-tech-notification', color: 'warning', message: 'Failed to update demo branch'
+      }
+    }
+  }
+
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
