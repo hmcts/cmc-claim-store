@@ -11,11 +11,14 @@ import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
@@ -26,6 +29,11 @@ public class BulkPrintService {
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
     protected static final String XEROX_TYPE_PARAMETER = "CMC001";
+
+    protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
+    protected static final String ADDITIONAL_DATA_LETTER_TYPE_VALUE = "first-contact-pack";
+    protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
+    protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
 
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -54,7 +62,7 @@ public class BulkPrintService {
             authTokenGenerator.generate(),
             new Letter(
                 Arrays.asList(event.getDefendantLetterDocument(), event.getSealedClaimDocument()),
-                XEROX_TYPE_PARAMETER
+                XEROX_TYPE_PARAMETER, wrapInMap(event.getClaim())
             )
         );
     }
@@ -67,5 +75,13 @@ public class BulkPrintService {
             event.getClaim()
         );
         appInsights.trackEvent(BULK_PRINT_FAILED, event.getClaim().getReferenceNumber());
+    }
+
+    private static Map<String, Object> wrapInMap(Claim claim) {
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
+        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
+        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
+        return additionalData;
     }
 }
