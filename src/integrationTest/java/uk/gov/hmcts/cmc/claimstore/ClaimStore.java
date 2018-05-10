@@ -100,6 +100,19 @@ public class ClaimStore {
         return getClaimByExternalId(externalId);
     }
 
+    public Claim acceptOffer(String externalId, Settlement settlement) {
+        logger.debug("Accept offer with claim : {}", externalId);
+
+        this.offersRepository.updateSettlement(
+            externalId,
+            jsonMapper.toJson(settlement)
+        );
+
+        logger.debug("Accepted offer");
+
+        return getClaimByExternalId(externalId);
+    }
+
     public Claim countersignAgreement(String externalId, Settlement settlement) {
         this.offersRepository.reachSettlement(
             externalId,
