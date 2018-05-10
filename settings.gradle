@@ -5,3 +5,5 @@ include 'domain-model'
 include 'domain-sample-data'
 include 'ccd-adapter'
 include 'ccd-claim-migration'
+include 'job-scheduler'
+

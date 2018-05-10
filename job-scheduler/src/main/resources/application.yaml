@@ -1,0 +1,18 @@
+quartzProperties:
+  org.quartz:
+    scheduler:
+      instanceId: AUTO
+    dataSource:
+      jobscheduler:
+        driver: org.postgresql.Driver
+        URL: jdbc:postgresql://${CLAIM_STORE_DB_HOST:}:${CLAIM_STORE_DB_PORT:}/${CLAIM_STORE_DB_NAME:claimstore}${CLAIM_STORE_DB_CONNECTION_OPTIONS:}
+        user: ${CLAIM_STORE_DB_USERNAME:-}
+        password: ${CLAIM_STORE_DB_PASSWORD:-}
+    jobStore:
+      isClustered: true
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+      dataSource: jobscheduler
+    threadPool:
+      class: org.quartz.simpl.SimpleThreadPool
+      threadCount: 8

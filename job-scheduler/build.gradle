@@ -1,0 +1,23 @@
+plugins {
+  id 'net.ltgt.apt' version '0.14'
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+def versions = [
+  logback          : '1.2.3',
+  reformJavaLogging: '3.0.0'
+]
+
+
+dependencies {
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+
+  compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
+  compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
+}

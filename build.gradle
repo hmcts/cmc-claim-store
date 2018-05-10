@@ -134,6 +134,7 @@ dependencies {
   compile project(':domain-model')
   compile project(':ccd-adapter')
   compile project(':domain-sample-data')
+  compile project(':job-scheduler')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
