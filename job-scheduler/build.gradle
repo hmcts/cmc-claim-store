@@ -10,9 +10,10 @@ def versions = [
   reformJavaLogging: '3.0.0'
 ]
 
-
 dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+  compile group: 'org.springframework.retry', name: 'spring-retry'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '4.2.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'

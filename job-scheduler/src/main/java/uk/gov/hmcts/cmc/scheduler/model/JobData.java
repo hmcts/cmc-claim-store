@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.model;
+package uk.gov.hmcts.cmc.scheduler.model;
 
 import lombok.Builder;
 import lombok.Value;

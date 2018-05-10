@@ -8,20 +8,30 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.scheduler.jobs.NotificationEmailJob;
+import uk.gov.hmcts.cmc.scheduler.model.JobData;
+import uk.gov.hmcts.cmc.scheduler.services.JobService;
+
+import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class ClaimIssuedCitizenActionsHandler {
 
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
+    private final JobService jobService;
 
     @Autowired
     public ClaimIssuedCitizenActionsHandler(
         ClaimIssuedNotificationService claimIssuedNotificationService,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        JobService jobService
     ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
+        this.jobService = jobService;
     }
 
     @EventListener
@@ -54,6 +64,35 @@ public class ClaimIssuedCitizenActionsHandler {
                         event.getSubmitterName()
                     ));
         }
+    }
+
+    // This is added for spike, the actual implementation may vary based on the requirements in story
+    @EventListener
+    public void scheduleReminderEmails(CitizenClaimIssuedEvent event) {
+        Claim claim = event.getClaim();
+        Map<String, Object> data = new HashMap<>();
+        data.put("Email", claim.getDefendantEmail()); // we can add whatever data we want to pass to job.
+
+        JobData fiveDaysReminder = JobData.builder()
+            .startDateTime(claim.getResponseDeadline().minusDays(5).atStartOfDay(ZoneOffset.UTC))
+            .group("Reminders")
+            .description("Defendant reminder email 5 days before response deadline")
+            .jobClass(NotificationEmailJob.class)
+            .data(data)
+            .build();
+
+        this.jobService.scheduleJob(fiveDaysReminder);
+
+        JobData oneDayReminder = JobData.builder()
+            .startDateTime(claim.getResponseDeadline().minusDays(1).atStartOfDay(ZoneOffset.UTC))
+            .group("Reminders")
+            .description("Defendant reminder email 1 days before response deadline")
+            .jobClass(NotificationEmailJob.class)
+            .data(data)
+            .build();
+
+        this.jobService.scheduleJob(oneDayReminder);
+
     }
 
     private EmailTemplates getEmailTemplates() {

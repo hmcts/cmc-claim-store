@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.config;
+package uk.gov.hmcts.cmc.scheduler.config;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

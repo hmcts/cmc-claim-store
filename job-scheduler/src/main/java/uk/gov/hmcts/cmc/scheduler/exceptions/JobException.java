@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.exceptions;
+package uk.gov.hmcts.cmc.scheduler.exceptions;
 
 import uk.gov.hmcts.reform.logging.exception.AbstractLoggingException;
 

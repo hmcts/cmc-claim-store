@@ -1,12 +1,12 @@
-package uk.gov.hmcts.cmc.services;
+package uk.gov.hmcts.cmc.scheduler.services;
 
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.exceptions.JobException;
-import uk.gov.hmcts.cmc.model.JobData;
+import uk.gov.hmcts.cmc.scheduler.exceptions.JobException;
+import uk.gov.hmcts.cmc.scheduler.model.JobData;
 
 import java.util.Date;
 import java.util.UUID;
