@@ -184,7 +184,4 @@ public interface ClaimRepository {
         @Bind("letterHolderId") String letterHolderId,
         @Bind("defendantId") String defendantId
     );
-
-
-
 }
