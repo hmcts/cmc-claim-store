@@ -15,7 +15,7 @@ locals {
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
 
   s2sUrl = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
-  sendLetterUrl = "http://send-letter-producer-${local.local_env}.service.${local.local_ase}.internal"
+  sendLetterUrl = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
   previewVaultName = "${var.product}-claim-store"
@@ -64,7 +64,7 @@ data "vault_generic_secret" "oauth_client_secret" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:contino/moj-module-webapp.git"
+  source = "git@github.com:hmcts/moj-module-webapp.git?ref=RPE-389/local-cache"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
@@ -122,11 +122,12 @@ module "claim-store-api" {
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
+    FEATURE_TOGGLES_EMAILTOSTAFF = "${var.env == "demo" ? "false" : "true"}"
   }
 }
 
 module "claim-store-vault" {
-  source = "git@github.com:contino/moj-module-key-vault?ref=master"
+  source = "git@github.com:hmcts/moj-module-key-vault?ref=master"
   name = "${local.vaultName}"
   product = "${var.product}"
   env = "${var.env}"

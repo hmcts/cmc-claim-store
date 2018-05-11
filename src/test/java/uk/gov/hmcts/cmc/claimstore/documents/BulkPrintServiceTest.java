@@ -23,6 +23,10 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_IDENTIFIER_KEY;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_LETTER_TYPE_KEY;
+import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_LETTER_TYPE_VALUE;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.XEROX_TYPE_PARAMETER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,6 +60,11 @@ public class BulkPrintServiceTest {
         Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
         Claim claim = SampleClaim.getDefault();
 
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
+        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
+        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
+
         DocumentReadyToPrintEvent event
             = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument);
 
@@ -64,6 +73,7 @@ public class BulkPrintServiceTest {
         //then
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 
-        verify(sendLetterApi).sendLetter(eq(authValue), eq(new Letter(documents, XEROX_TYPE_PARAMETER)));
+        verify(sendLetterApi).sendLetter(eq(authValue),
+            eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData)));
     }
 }
