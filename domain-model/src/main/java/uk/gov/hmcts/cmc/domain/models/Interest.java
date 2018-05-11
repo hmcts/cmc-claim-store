@@ -79,15 +79,19 @@ public class Interest {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Interest interest = (Interest) o;
-        return Objects.equals(type, interest.type) &&
-                Objects.equals(interestBreakdown, interest.interestBreakdown) &&
-                Objects.equals(rate, interest.rate) &&
-                Objects.equals(reason, interest.reason) &&
-                Objects.equals(specificDailyAmount, interest.specificDailyAmount) &&
-                Objects.equals(interestDate, interest.interestDate);
+        return Objects.equals(type, interest.type)
+                && Objects.equals(interestBreakdown, interest.interestBreakdown)
+                && Objects.equals(rate, interest.rate)
+                && Objects.equals(reason, interest.reason)
+                && Objects.equals(specificDailyAmount, interest.specificDailyAmount)
+                && Objects.equals(interestDate, interest.interestDate);
     }
 
     @Override
