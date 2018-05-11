@@ -10,6 +10,10 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Component
 public class NotificationEmailJob implements Job {
 
@@ -22,7 +26,11 @@ public class NotificationEmailJob implements Job {
         backoff = @Backoff(delay = 5000, maxDelay = 10000))
     public void execute(JobExecutionContext context) throws JobExecutionException {
         //Note: This implementation is just for spike, the actual implementation needs to be implemented afterwards
-        logger.info("Executing NotificationEmailJob");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+        logger.info("Executing NotificationEmailJob:: " + context.getJobDetail().getKey());
+        logger.info("Now: " + ZonedDateTime.now());
+        logger.info("Fire Time: " + formatter.format(context.getFireTime()));
+        logger.info("Scheduled Fire Time: " + formatter.format(context.getScheduledFireTime()));
     }
 
     @Recover

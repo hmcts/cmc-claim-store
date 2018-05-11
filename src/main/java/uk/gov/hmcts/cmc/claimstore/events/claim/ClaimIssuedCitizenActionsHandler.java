@@ -12,9 +12,11 @@ import uk.gov.hmcts.cmc.scheduler.jobs.NotificationEmailJob;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.time.ZoneOffset.UTC;
 
 @Component
 public class ClaimIssuedCitizenActionsHandler {
@@ -73,25 +75,25 @@ public class ClaimIssuedCitizenActionsHandler {
         Map<String, Object> data = new HashMap<>();
         data.put("Email", claim.getDefendantEmail()); // we can add whatever data we want to pass to job.
 
+        ZonedDateTime fiveDaysBefore = claim.getResponseDeadline().minusDays(5).atStartOfDay(UTC);
         JobData fiveDaysReminder = JobData.builder()
-            .startDateTime(claim.getResponseDeadline().minusDays(5).atStartOfDay(ZoneOffset.UTC))
             .group("Reminders")
             .description("Defendant reminder email 5 days before response deadline")
             .jobClass(NotificationEmailJob.class)
             .data(data)
             .build();
 
-        this.jobService.scheduleJob(fiveDaysReminder);
+        this.jobService.scheduleJob(fiveDaysReminder, fiveDaysBefore);
 
+        ZonedDateTime oneDayBefore = claim.getResponseDeadline().minusDays(1).atStartOfDay(UTC);
         JobData oneDayReminder = JobData.builder()
-            .startDateTime(claim.getResponseDeadline().minusDays(1).atStartOfDay(ZoneOffset.UTC))
             .group("Reminders")
             .description("Defendant reminder email 1 days before response deadline")
             .jobClass(NotificationEmailJob.class)
             .data(data)
             .build();
 
-        this.jobService.scheduleJob(oneDayReminder);
+        this.jobService.scheduleJob(oneDayReminder, oneDayBefore);
 
     }
 

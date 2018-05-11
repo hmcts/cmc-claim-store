@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.scheduler.exceptions.JobException;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.UUID;
 
 import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 @Service
@@ -24,7 +26,7 @@ public class JobService {
         this.scheduler = scheduler;
     }
 
-    public String scheduleJob(JobData jobData) {
+    public String scheduleJob(JobData jobData, ZonedDateTime startDateTime) {
         try {
             String id = UUID.randomUUID().toString();
 
@@ -36,7 +38,11 @@ public class JobService {
                     .requestRecovery()
                     .build(),
                 newTrigger()
-                    .startAt(Date.from(jobData.getStartDateTime().toInstant()))
+                    .startAt(Date.from(startDateTime.toInstant()))
+                    .withSchedule(
+                        simpleSchedule()
+                            .withMisfireHandlingInstructionNowWithExistingCount()
+                    )
                     .build()
             );
 

@@ -14,5 +14,4 @@ public class JobData {
     private String group;
     private String description;
     private Map<String, Object> data;
-    private ZonedDateTime startDateTime;
 }
