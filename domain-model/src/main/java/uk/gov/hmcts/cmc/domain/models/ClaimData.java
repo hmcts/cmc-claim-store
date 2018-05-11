@@ -62,7 +62,6 @@ public class ClaimData {
     @Valid
     private final Interest interest;
 
-    // Validated by InterDependentFields
     private final InterestDate interestDate;
 
     @Valid
