@@ -22,6 +22,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   ]
 }
 
+String notificationsChannel = '#cmc-tech-notification'
+
 withPipeline("java", product, component) {
   afterCheckout {
     onMaster {
@@ -31,7 +33,7 @@ withPipeline("java", product, component) {
           git push --force origin HEAD:demo
         """
       } catch (err) {
-        notifyBuildEvent channel: '#cmc-tech-notification', color: 'warning', message: 'Failed to update demo branch'
+        notifyBuildEvent channel: notificationsChannel, color: 'warning', message: 'Failed to update demo branch'
       }
     }
   }
@@ -41,5 +43,5 @@ withPipeline("java", product, component) {
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
   loadVaultSecrets(secrets)
-  enableSlackNotifications('#cmc-tech-notification')
+  enableSlackNotifications(notificationsChannel)
 }
