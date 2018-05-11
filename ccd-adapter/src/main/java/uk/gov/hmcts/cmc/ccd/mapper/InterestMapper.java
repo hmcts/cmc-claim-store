@@ -10,10 +10,15 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 public class InterestMapper implements Mapper<CCDInterest, Interest> {
 
     private InterestBreakdownMapper interestBreakdownMapper;
+    private InterestDateMapper interestDateMapper;
 
     @Autowired
-    public InterestMapper(InterestBreakdownMapper interestBreakdownMapper) {
+    public InterestMapper(
+        InterestBreakdownMapper interestBreakdownMapper,
+        InterestDateMapper interestDateMapper
+    ) {
         this.interestBreakdownMapper = interestBreakdownMapper;
+        this.interestDateMapper = interestDateMapper;
     }
 
     @Override
@@ -23,9 +28,11 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
         }
 
         CCDInterest.CCDInterestBuilder builder = CCDInterest.builder();
-        return builder.type(CCDInterestType.valueOf(interest.getType().name()))
+        return builder
+            .type(CCDInterestType.valueOf(interest.getType().name()))
             .rate(interest.getRate())
             .reason(interest.getReason())
+            .interestDate(interestDateMapper.to(interest.getInterestDate()))
             .build();
     }
 
@@ -41,7 +48,7 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
             ccdInterest.getRate(),
             ccdInterest.getReason(),
             ccdInterest.getSpecificDailyAmount(),
-            null
+            interestDateMapper.from(ccdInterest.getInterestDate())
         );
     }
 }
