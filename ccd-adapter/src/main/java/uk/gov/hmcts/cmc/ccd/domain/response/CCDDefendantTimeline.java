@@ -18,7 +18,7 @@ public class CCDDefendantTimeline {
     public CCDDefendantTimeline(
         List<CCDCollectionElement<CCDTimelineEvent>> events,
         String comment
-    ){
+    ) {
         this.events = events;
         this.comment = comment;
     }
