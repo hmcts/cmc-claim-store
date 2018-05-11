@@ -73,6 +73,10 @@ public class Interest {
         return Optional.ofNullable(specificDailyAmount);
     }
 
+    public InterestDate getInterestDate() {
+        return interestDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

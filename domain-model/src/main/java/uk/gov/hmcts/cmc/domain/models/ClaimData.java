@@ -151,7 +151,13 @@ public class ClaimData {
     }
 
     public InterestDate getInterestDate() {
-        return interestDate;
+        if (interestDate != null) {
+            return interestDate;
+        } else if (interest != null) {
+            return interest.getInterestDate();
+        } else {
+            return null;
+        }
     }
 
     @JsonIgnore

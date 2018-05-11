@@ -13,7 +13,7 @@ public class ClaimDataDeprecableTest {
     private InterestDate interestDate = SampleInterestDate.validDefaults();
 
     @Test
-    public void shouldGetTheInterestDateFromClaimDataObject() {
+    public void shouldReturnTheInterestDateFromClaimDataObject() {
         Interest interest = SampleInterest
                 .builder()
                 .withInterestDate(null)
@@ -27,7 +27,7 @@ public class ClaimDataDeprecableTest {
     }
 
     @Test
-    public void shouldGetTheInterestDateFromInterestObject() {
+    public void shouldReturnTheInterestDateFromInterestObject() {
         Interest interest = SampleInterest
                 .builder()
                 .withInterestDate(interestDate)
@@ -41,7 +41,7 @@ public class ClaimDataDeprecableTest {
     }
 
     @Test
-    public void shouldGetTheInterestDateFromClaimDataObjectWhenInBothPlaces() {
+    public void shouldReturnTheInterestDateFromClaimDataObjectWhenInBothPlaces() {
         InterestDate anotherInterestDate = SampleInterestDate.validDefaults();
 
         Interest interest = SampleInterest
@@ -55,4 +55,15 @@ public class ClaimDataDeprecableTest {
                 .build();
         assertThat(claimData.getInterestDate()).isEqualTo(interestDate);
     }
+
+    @Test
+    public void shouldReturnNullWhenInterestDateAndInterestAreNull() {
+        ClaimData claimData = SampleClaimData
+            .builder()
+            .withInterestDate(null)
+            .withInterest(null)
+            .build();
+        assertThat(claimData.getInterestDate()).isNull();
+    }
+
 }
