@@ -68,7 +68,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldSendNotificationsWhenEverythingIsOkV2() throws Exception {
+    public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         caseRepository.linkDefendantV2(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
