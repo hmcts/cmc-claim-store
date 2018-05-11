@@ -40,7 +40,8 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
             interestBreakdownMapper.from(ccdInterest.getInterestBreakdown()),
             ccdInterest.getRate(),
             ccdInterest.getReason(),
-            ccdInterest.getSpecificDailyAmount()
+            ccdInterest.getSpecificDailyAmount(),
+            null
         );
     }
 }
