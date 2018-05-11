@@ -55,20 +55,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdatedResponseDeadlineWhenEverythingIsOkV1() throws Exception {
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-
-        makeRequest(claim.getExternalId())
-            .andExpect(status().isOk())
-            .andReturn();
-
-        Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
-
-        assertThat(updatedClaim.isMoreTimeRequested()).isTrue();
-    }
-
-    @Test
-    public void shouldUpdatedResponseDeadlineWhenEverythingIsOkV2() throws Exception {
+    public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
         caseRepository.linkDefendantV2(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
@@ -78,17 +65,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
 
         assertThat(updatedClaim.isMoreTimeRequested()).isTrue();
-    }
-
-    @Test
-    public void shouldSendNotificationsWhenEverythingIsOkV1() throws Exception {
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-
-        makeRequest(claim.getExternalId())
-            .andExpect(status().isOk());
-
-        verify(notificationClient, times(3))
-            .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
     @Test
@@ -102,27 +78,8 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
-
     @Test
-    public void shouldRetrySendNotificationsV1() throws Exception {
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-
-        given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
-            .willThrow(new NotificationClientException(new RuntimeException("first attempt fails")))
-            .willReturn(null) // first notification sent successfully on second attempt
-            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 1st attempt fails")))
-            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 2nd attempt fails")))
-            .willThrow(new NotificationClientException(new RuntimeException("2nd email, 3rd attempt fails, stop")));
-
-        makeRequest(claim.getExternalId())
-            .andExpect(status().isOk());
-
-        verify(notificationClient, times(8))
-            .sendEmail(anyString(), anyString(), anyMap(), anyString());
-    }
-
-    @Test
-    public void shouldRetrySendNotificationsV2() throws Exception {
+    public void shouldRetrySendNotifications() throws Exception {
         caseRepository.linkDefendantV2(BEARER_TOKEN);
 
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
