@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class NotificationEmailJob implements Job {

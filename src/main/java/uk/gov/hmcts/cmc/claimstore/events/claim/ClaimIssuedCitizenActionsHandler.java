@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.time.ZoneOffset.UTC;
 
@@ -77,6 +78,7 @@ public class ClaimIssuedCitizenActionsHandler {
 
         ZonedDateTime fiveDaysBefore = claim.getResponseDeadline().minusDays(5).atStartOfDay(UTC);
         JobData fiveDaysReminder = JobData.builder()
+            .id(UUID.randomUUID().toString())
             .group("Reminders")
             .description("Defendant reminder email 5 days before response deadline")
             .jobClass(NotificationEmailJob.class)
@@ -87,6 +89,7 @@ public class ClaimIssuedCitizenActionsHandler {
 
         ZonedDateTime oneDayBefore = claim.getResponseDeadline().minusDays(1).atStartOfDay(UTC);
         JobData oneDayReminder = JobData.builder()
+            .id(UUID.randomUUID().toString())
             .group("Reminders")
             .description("Defendant reminder email 1 days before response deadline")
             .jobClass(NotificationEmailJob.class)
