@@ -42,31 +42,22 @@ public class LinkDefendantTest extends BaseTest {
     }
 
     @Test
-    public void shouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
-        Claim claim = commonOperations.submitClaim(
+    public void shouldBeAbleToSuccessfullyLinkDefendantV2() {
+        Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimant.getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
+        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
 
         linkDefendantV2(defendant)
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value());
 
-        Claim response = RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
-            .when()
-            .get("/claims/" + claim.getExternalId())
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
+        Claim claim = commonOperations.retrieveClaim(createdCase.getExternalId(), claimant.getAuthorisation());
 
-        assertThat(response.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
+        assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
     }
 
     private Response linkDefendantV1(User defendant, String externalId) {

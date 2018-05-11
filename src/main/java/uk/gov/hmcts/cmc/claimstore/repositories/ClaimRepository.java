@@ -176,4 +176,12 @@ public interface ClaimRepository {
         @Bind("externalId") String externalId,
         @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
     );
+
+    @SqlUpdate(
+        "UPDATE claim SET defendant_id = :defendantId WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
+    )
+    void linkDefendantV2(
+        @Bind("letterHolderId") String letterHolderId,
+        @Bind("defendantId") String defendantId
+    );
 }

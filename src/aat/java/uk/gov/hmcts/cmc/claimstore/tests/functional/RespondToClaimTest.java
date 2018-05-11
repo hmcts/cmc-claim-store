@@ -51,9 +51,7 @@ public class RespondToClaimTest extends BaseTest {
         );
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendant(
-            createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
-        );
+        commonOperations.linkDefendantV2(defendant.getAuthorisation());
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
             .then()
@@ -76,7 +74,7 @@ public class RespondToClaimTest extends BaseTest {
         );
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendant(
+        commonOperations.linkDefendantV1(
             createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
         );
 
