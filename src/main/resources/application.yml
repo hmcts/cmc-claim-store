@@ -89,6 +89,7 @@ rpa-notifications:
 
 feature_toggles:
   watermark_pdf: false
+  emailToStaff: true
 
 feign:
   httpclient:

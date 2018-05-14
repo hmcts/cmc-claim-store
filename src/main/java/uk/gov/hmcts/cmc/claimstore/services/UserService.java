@@ -18,8 +18,8 @@ import java.util.Base64;
 @Component
 public class UserService {
 
-    private static final String BEARER = "Bearer ";
-    private static final String AUTHORIZATION_CODE = "authorization_code";
+    public static final String BEARER = "Bearer ";
+    public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final String CODE = "code";
     public static final String BASIC = "Basic ";
 
@@ -28,7 +28,11 @@ public class UserService {
     private final Oauth2 oauth2;
 
     @Autowired
-    public UserService(IdamApi idamApi, IdamCaseworkerProperties idamCaseworkerProperties, Oauth2 oauth2) {
+    public UserService(
+        IdamApi idamApi,
+        IdamCaseworkerProperties idamCaseworkerProperties,
+        Oauth2 oauth2
+    ) {
         this.idamApi = idamApi;
         this.idamCaseworkerProperties = idamCaseworkerProperties;
         this.oauth2 = oauth2;
@@ -59,8 +63,8 @@ public class UserService {
     }
 
     public String getBasicAuthHeader(String username, String password) {
-        String auth = username + ":" + password;
-        return BASIC + new String(Base64.getEncoder().encode(auth.getBytes()));
+        String authorisation = username + ":" + password;
+        return BASIC + Base64.getEncoder().encodeToString(authorisation.getBytes());
     }
 
     public String getIdamOauth2Token(String username, String password) {
