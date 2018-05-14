@@ -219,7 +219,13 @@ public class CCDCaseApi {
         return search(user, searchString, 1, new ArrayList<>(), null);
     }
 
-    private List<CaseDetails> search(User user, Map<String, String> searchString, Integer page, List<CaseDetails> results, Integer numOfPages) {
+    private List<CaseDetails> search(
+        User user,
+        Map<String, String> searchString,
+        Integer page,
+        List<CaseDetails> results,
+        Integer numOfPages
+    ) {
         Map<String, String> searchCriteria = new HashMap<>(searchString);
         searchCriteria.put("page", page.toString());
 
