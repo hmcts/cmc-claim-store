@@ -23,26 +23,7 @@ public class LinkDefendantTest extends BaseTest {
     }
 
     @Test
-    public void shouldBeAbleToSuccessfullyLinkDefendantV1() {
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimant.getUserDetails().getId()
-        );
-
-        User defendant = idamTestService.createCitizen();
-
-        Claim claim = linkDefendantV1(defendant, createdCase.getExternalId())
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-
-        assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
-    }
-
-    @Test
-    @Ignore("Disabled due to not using CCD integration currently")
-    public void shouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
+    public void shouldBeAbleToSuccessfullyLinkDefendantV2() {
         Claim claim = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimant.getUserDetails().getId()
@@ -67,14 +48,6 @@ public class LinkDefendantTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(response.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
-    }
-
-    private Response linkDefendantV1(User defendant, String externalId) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
-            .when()
-            .put("/claims/" + externalId + "/defendant/" + defendant.getUserDetails().getId());
     }
 
     private Response linkDefendantV2(User defendant) {
