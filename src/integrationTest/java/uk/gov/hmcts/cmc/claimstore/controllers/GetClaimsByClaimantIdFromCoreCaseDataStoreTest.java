@@ -11,18 +11,22 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.util.Collections;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.caseWithReferenceNumber;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 
 @TestPropertySource(
     properties = {
@@ -59,7 +63,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.submitterId", submitterId))
             )
-        ).willReturn(successfulCoreCaseDataSearchResponse());
+        ).willReturn(listOfCaseDetails());
 
         MvcResult result = makeRequest("/claims/claimant/" + submitterId)
             .andExpect(status().isOk())
@@ -78,6 +82,38 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
                 eq(CASE_TYPE_ID),
                 eq(ImmutableMap.of("case.submitterId", submitterId))
             );
+    }
+
+    @Test
+    public void shouldPreserveOrderReturnedFromCCD() throws Exception {
+        String submitterId = "1";
+
+        CaseDetails caseDetails = caseWithReferenceNumber("000MC001");
+        CaseDetails caseDetails1 = caseWithReferenceNumber("000MC002");
+        CaseDetails caseDetails2 = caseWithReferenceNumber("000MC003");
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+            )
+        ).willReturn(
+            asList(
+                caseDetails,
+                caseDetails1,
+                caseDetails2
+            )
+        );
+
+        MvcResult result = makeRequest("/claims/claimant/" + submitterId)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeListFrom(result))
+            .extracting(Claim::getReferenceNumber)
+            .isEqualTo(asList("000MC001", "000MC002", "000MC003"));
     }
 
     @Test
