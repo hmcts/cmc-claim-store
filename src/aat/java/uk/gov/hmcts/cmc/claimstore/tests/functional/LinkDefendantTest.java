@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
