@@ -146,6 +146,7 @@ public class SampleData {
             .externalId(UUID.randomUUID().toString())
             .feeAccountNumber("PBA1234567")
             .feeCode("X1202")
+            .interest(getCCDInterest())
             .reason("Reason for the case")
             .preferredCourt("London Court")
             .claimants(singletonList(CCDCollectionElement.<CCDParty>builder().value(getCCDPartyIndividual()).build()))
@@ -172,7 +173,6 @@ public class SampleData {
                     .build())
             .payment(getCCDPayment())
             .interest(getCCDInterest())
-            .interestDate(getCCDInterestDate())
             .statementOfTruth(getCCDStatementOfTruth())
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
@@ -197,6 +197,7 @@ public class SampleData {
             .rate(BigDecimal.valueOf(2))
             .reason("reason")
             .type(CCDInterestType.DIFFERENT)
+            .interestDate(getCCDInterestDate())
             .build();
     }
 

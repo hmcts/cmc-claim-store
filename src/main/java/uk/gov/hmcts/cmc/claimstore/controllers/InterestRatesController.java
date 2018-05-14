@@ -31,6 +31,9 @@ public class InterestRatesController {
         @RequestParam("amount") BigDecimal amount
     ) {
         try {
+            if (from.isAfter(to)) {
+                throw new IllegalArgumentException("From date cannot be after to date");
+            }
             return new InterestAmount(TotalAmountCalculator.calculateInterest(amount, rate, from, to));
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new BadRequestException(e.getMessage(), e);

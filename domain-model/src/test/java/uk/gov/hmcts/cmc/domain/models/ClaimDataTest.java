@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
@@ -16,9 +15,15 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.DIFFERENT;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterest;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestWithSpecificInterestDate;
 
 public class ClaimDataTest {
+
+    private InterestDate invalidDateWithValidType = SampleInterestDate.builder()
+        .withType(InterestDate.InterestDateType.CUSTOM)
+        .withDate(null)
+        .withReason(null)
+        .build();
 
     private InterestDate invalidDate = SampleInterestDate.builder()
         .withType(null)
@@ -37,44 +42,40 @@ public class ClaimDataTest {
     }
 
     @Test
-    @Ignore // To be enabled after new validators are implemented
     public void shouldBeInvalidWhenGivenStandardInterestWithInvalidDate() {
         //given
         ClaimData claimData = SampleClaimData.builder()
-            .withInterest(SampleInterest.standard())
-            .withInterestDate(invalidDate)
+            .withInterest(SampleInterest.standardWithSpecificInterestDate(invalidDate))
             .build();
         //when
         Set<String> response = validate(claimData);
         //then
         assertThat(response)
             .hasSize(1)
-            .contains("interestDate : reason : may not be empty, type : may not be null");
+            .contains("interest.interestDate.type : may not be null");
     }
 
     @Test
-    @Ignore // To be enabled after new validators are implemented
     public void shouldBeInvalidWhenGivenCustomInterestWithInvalidDate() {
         //given
         ClaimData claimData = SampleClaimData.builder()
             .withInterest(SampleInterest.builder()
                 .withType(DIFFERENT)
+                .withInterestDate(invalidDateWithValidType)
                 .build())
-            .withInterestDate(invalidDate)
             .build();
         //when
         Set<String> response = validate(claimData);
         //then
         assertThat(response)
             .hasSize(1)
-            .contains("interestDate : reason : may not be empty, type : may not be null");
+            .contains("interest.interestDate.Date or interest.interestDate.reason : may not be null or empty");
     }
 
     @Test
     public void shouldBeValidWhenGivenNoInterestWithInvalidInterestDate() {
         ClaimData claimData = SampleClaimData.builder()
-            .withInterest(noInterest())
-            .withInterestDate(invalidDate)
+            .withInterest(noInterestWithSpecificInterestDate(invalidDateWithValidType))
             .build();
 
         Set<String> errors = validate(claimData);

@@ -88,24 +88,24 @@ public class TotalAmountCalculator {
 
     private static BigDecimal calculateBreakdownInterest(Claim claim, LocalDate toDate) {
         Interest interest = claim.getClaimData().getInterest();
-        InterestDate interestDate = claim.getClaimData().getInterestDate();
         Amount amount = claim.getClaimData().getAmount();
         if (amount instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
-            return calculateBreakdownInterest(interest, interestDate, claimAmount, claim.getIssuedOn(), toDate);
+            return calculateBreakdownInterest(interest, claimAmount, claim.getIssuedOn(), toDate);
+        } else {
+            return ZERO;
         }
 
-        return ZERO;
     }
 
     public static BigDecimal calculateBreakdownInterest(
         Interest interest,
-        InterestDate interestDate,
         BigDecimal claimAmount,
         LocalDate issuedOn,
         LocalDate toDate
     ) {
         BigDecimal accruedInterest = ZERO;
+        InterestDate interestDate = interest.getInterestDate();
 
         if (interestDate.isEndDateOnClaimComplete()) {
             accruedInterest = calculateInterest(
@@ -154,8 +154,8 @@ public class TotalAmountCalculator {
     }
 
     private static LocalDate getFromDate(Claim claim) {
-        return claim.getClaimData().getInterestDate().isCustom()
-            ? claim.getClaimData().getInterestDate().getDate()
+        return claim.getClaimData().getInterest().getInterestDate().isCustom()
+            ? claim.getClaimData().getInterest().getInterestDate().getDate()
             : claim.getIssuedOn();
     }
 

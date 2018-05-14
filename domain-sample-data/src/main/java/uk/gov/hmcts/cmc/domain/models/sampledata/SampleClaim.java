@@ -107,7 +107,7 @@ public final class SampleClaim {
     public static Claim getWithSubmissionInterestDate() {
         return builder()
             .withClaimData(
-                SampleClaimData.builder().withInterestDate(SampleInterestDate.submission()).build()
+                SampleClaimData.builder().withStanderdRateAndInterestDate(SampleInterestDate.submission()).build()
             )
             .build();
     }

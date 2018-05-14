@@ -11,9 +11,12 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
 
     private InterestBreakdownMapper interestBreakdownMapper;
 
+    private InterestDateMapper interestDateMapper;
+
     @Autowired
-    public InterestMapper(InterestBreakdownMapper interestBreakdownMapper) {
+    public InterestMapper(InterestBreakdownMapper interestBreakdownMapper, InterestDateMapper interestDateMapper) {
         this.interestBreakdownMapper = interestBreakdownMapper;
+        this.interestDateMapper = interestDateMapper;
     }
 
     @Override
@@ -26,6 +29,7 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
         return builder.type(CCDInterestType.valueOf(interest.getType().name()))
             .rate(interest.getRate())
             .reason(interest.getReason())
+            .interestDate(interestDateMapper.to(interest.getInterestDate()))
             .build();
     }
 
@@ -40,7 +44,8 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
             interestBreakdownMapper.from(ccdInterest.getInterestBreakdown()),
             ccdInterest.getRate(),
             ccdInterest.getReason(),
-            ccdInterest.getSpecificDailyAmount()
+            ccdInterest.getSpecificDailyAmount(),
+            interestDateMapper.from(ccdInterest.getInterestDate())
         );
     }
 }

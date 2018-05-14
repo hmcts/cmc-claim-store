@@ -90,7 +90,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         return builder
             .payment(paymentMapper.to(claimData.getPayment()))
             .interest(interestMapper.to(claimData.getInterest()))
-            .interestDate(interestDateMapper.to(claimData.getInterestDate()))
             .reason(claimData.getReason())
             .amount(amountMapper.to(claimData.getAmount()))
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
@@ -126,7 +125,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             amountMapper.from(ccdClaim.getAmount()),
             ccdClaim.getFeeAmountInPennies(),
             interestMapper.from(ccdClaim.getInterest()),
-            interestDateMapper.from(ccdClaim.getInterestDate()),
             personalInjuryMapper.from(ccdClaim.getPersonalInjury()),
             housingDisrepairMapper.from(ccdClaim.getHousingDisrepair()),
             ccdClaim.getReason(),

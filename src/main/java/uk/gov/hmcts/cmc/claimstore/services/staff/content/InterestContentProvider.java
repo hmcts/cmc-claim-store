@@ -33,42 +33,40 @@ public class InterestContentProvider {
 
     public InterestContent createContent(
         Interest interest,
-        InterestDate interestDate,
         BigDecimal claimAmount,
         LocalDate issuedOn,
         LocalDate interestEndDate
     ) {
         requireNonNull(interest);
-        requireNonNull(interestDate);
         requireNonNull(claimAmount);
         requireNonNull(issuedOn);
 
         if (interest.getType() == BREAKDOWN) {
             return createBreakdownInterestContent(
                 interest,
-                interestDate,
+                claimAmount,
+                issuedOn,
+                interestEndDate
+            );
+        } else {
+            return createSameRateForWholePeriodInterestContent(
+                interest,
                 claimAmount,
                 issuedOn,
                 interestEndDate
             );
         }
 
-        return createSameRateForWholePeriodInterestContent(
-            interest,
-            interestDate,
-            claimAmount,
-            issuedOn,
-            interestEndDate
-        );
     }
 
     private InterestContent createSameRateForWholePeriodInterestContent(
         Interest interest,
-        InterestDate interestDate,
         BigDecimal claimAmount,
         LocalDate issuedOn,
         LocalDate interestEndDate
     ) {
+        InterestDate interestDate = interest.getInterestDate();
+
         LocalDate fromDate = interestDate.isCustom() ? interestDate.getDate() : issuedOn;
         LocalDate endDate = interestDate.isEndDateOnSubmission() ? issuedOn : interestEndDate;
         BigDecimal dailyAmount = interestCalculationService.calculateDailyAmountFor(claimAmount, interest.getRate());
@@ -97,16 +95,14 @@ public class InterestContentProvider {
 
     private InterestContent createBreakdownInterestContent(
         Interest interest,
-        InterestDate interestDate,
         BigDecimal claimAmount,
         LocalDate issuedOn,
         LocalDate endDate
     ) {
-        Optional<BigDecimal> dailyAmount = inferDailyInterestAmount(interest, interestDate, claimAmount);
+        Optional<BigDecimal> dailyAmount = inferDailyInterestAmount(interest, claimAmount);
 
         BigDecimal amountUpToNowRealValue = TotalAmountCalculator.calculateBreakdownInterest(
             interest,
-            interestDate,
             claimAmount,
             issuedOn,
             endDate
@@ -119,17 +115,16 @@ public class InterestContentProvider {
                 interest.getInterestBreakdown().getExplanation()
             ),
             dailyAmount.map(Formatting::formatMoney).orElse(null),
-            interestDate.getEndDateType().name(),
+            interest.getInterestDate().getEndDateType().name(),
             amountUpToNowRealValue
         );
     }
 
     private Optional<BigDecimal> inferDailyInterestAmount(
         Interest interest,
-        InterestDate interestDate,
         BigDecimal claimAmount
     ) {
-        if (interestDate.isEndDateOnSubmission()) {
+        if (interest.getInterestDate().isEndDateOnSubmission()) {
             return Optional.empty();
         }
 

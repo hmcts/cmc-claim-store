@@ -12,4 +12,5 @@ public class CCDInterest {
     private BigDecimal rate;
     private String reason;
     private BigDecimal specificDailyAmount;
+    private CCDInterestDate interestDate;
 }

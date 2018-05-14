@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
@@ -39,7 +38,6 @@ public class CalculateInterestAmountTest extends BaseSaveTest {
     }
 
     @Test
-    @Ignore // Enable back after fixing the dates problem correctly
     public void shouldReturnBadRequestWhenDateToIsBeforeDateFrom() throws Exception {
         makeRequest("2010-10-10", "2010-01-01", 30, 8000)
             .andExpect(status().isBadRequest());

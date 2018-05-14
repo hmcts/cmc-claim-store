@@ -3,10 +3,10 @@ package uk.gov.hmcts.cmc.domain.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.ValidInterest;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -35,18 +35,23 @@ public class Interest {
 
     private final BigDecimal specificDailyAmount;
 
+    @Valid
+    private final InterestDate interestDate;
+
     public Interest(
         InterestType type,
         InterestBreakdown interestBreakdown,
         BigDecimal rate,
         String reason,
-        BigDecimal specificDailyAmount
+        BigDecimal specificDailyAmount,
+        InterestDate interestDate
     ) {
         this.type = type;
         this.interestBreakdown = interestBreakdown;
         this.rate = rate;
         this.reason = reason;
         this.specificDailyAmount = specificDailyAmount;
+        this.interestDate = interestDate;
     }
 
     public InterestType getType() {
@@ -55,6 +60,10 @@ public class Interest {
 
     public InterestBreakdown getInterestBreakdown() {
         return interestBreakdown;
+    }
+
+    public InterestDate getInterestDate() {
+        return interestDate;
     }
 
     public BigDecimal getRate() {
@@ -82,12 +91,13 @@ public class Interest {
             && Objects.equals(interestBreakdown, interest.interestBreakdown)
             && Objects.equals(rate, interest.rate)
             && Objects.equals(reason, interest.reason)
-            && Objects.equals(specificDailyAmount, interest.specificDailyAmount);
+            && Objects.equals(specificDailyAmount, interest.specificDailyAmount)
+            && Objects.equals(interestDate, interest.interestDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, interestBreakdown, rate, reason, specificDailyAmount);
+        return Objects.hash(type, interestBreakdown, rate, reason, specificDailyAmount, interestDate);
     }
 
     @Override

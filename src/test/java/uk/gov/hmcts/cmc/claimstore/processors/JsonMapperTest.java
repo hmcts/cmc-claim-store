@@ -43,7 +43,7 @@ public class JsonMapperTest {
         //given
         ClaimData input = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
-            .withInterestDate(SampleInterestDate.builder()
+            .withStanderdRateAndInterestDate(SampleInterestDate.builder()
                 .withDate(LocalDate.of(2015, 2, 2))
                 .build())
             .withExternalReferenceNumber(null)
@@ -80,7 +80,7 @@ public class JsonMapperTest {
         //then
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
-            .withInterestDate(SampleInterestDate.builder()
+            .withStanderdRateAndInterestDate(SampleInterestDate.builder()
                 .withDate(LocalDate.of(2015, 2, 2))
                 .build())
             .withExternalReferenceNumber(null)
@@ -113,7 +113,7 @@ public class JsonMapperTest {
         //then
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
-            .withInterestDate(
+            .withStanderdRateAndInterestDate(
                 SampleInterestDate.builder()
                     .withDate(LocalDate.of(2015, 2, 2))
                     .build())
