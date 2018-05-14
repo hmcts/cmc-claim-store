@@ -2,11 +2,10 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.domain.Case;
 
 import java.util.stream.Collectors;
-
-import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.MEDIUM_DATE_FORMAT;
 
 @Component("rpaCaseMapper")
 public class CaseMapper {
@@ -23,8 +22,8 @@ public class CaseMapper {
         claim.getTotalAmountTillToday().ifPresent(builder::amountWithInterest);
         builder.caseNumber(claim.getReferenceNumber());
         builder.courtFee(claim.getClaimData().getFeesPaidInPound());
-        builder.issueDate(claim.getIssuedOn().format(MEDIUM_DATE_FORMAT));
-        builder.serviceDate(claim.getIssuedOn().plusDays(5).format(MEDIUM_DATE_FORMAT));
+        builder.issueDate(DateFormatter.format(claim.getIssuedOn()));
+        builder.serviceDate(DateFormatter.format(claim.getIssuedOn().plusDays(5)));
 
         builder.claimants(claim.getClaimData().getClaimants().stream()
             .map(rpaPartyMapper::to)

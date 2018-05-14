@@ -5,9 +5,8 @@ import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
+import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.domain.Party;
-
-import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.MEDIUM_DATE_FORMAT;
 
 @Component("rpaPartyMapper")
 public class PartyMapper {
@@ -63,7 +62,7 @@ public class PartyMapper {
 
     private void updateIndividualDetails(Party.PartyBuilder builder, Individual individual) {
         if (individual.getDateOfBirth() != null) {
-            builder.dateOfBirth(individual.getDateOfBirth().format(MEDIUM_DATE_FORMAT));
+            builder.dateOfBirth(DateFormatter.format(individual.getDateOfBirth()));
         }
     }
 }
