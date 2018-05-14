@@ -6,12 +6,15 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
+import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 
 import java.util.Base64;
+
+import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
 
 @Service
 public class IdamTestService {
@@ -61,9 +64,17 @@ public class IdamTestService {
             oauth2.getRedirectUrl()
         );
 
+        TokenExchangeResponse exchangeResponse = idamApi.exchangeCode(
+            pinUser.getCode(),
+            AUTHORIZATION_CODE,
+            oauth2.getRedirectUrl(),
+            oauth2.getClientId(),
+            oauth2.getClientSecret()
+        );
+
         idamApi.upliftUser(
             userService.getBasicAuthHeader(email, password),
-            pinUser.getAccessToken(),
+            exchangeResponse.getAccessToken(),
             UserService.CODE,
             oauth2.getClientId(),
             oauth2.getRedirectUrl()

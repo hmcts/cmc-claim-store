@@ -59,6 +59,19 @@ public class CommonOperations {
             .put("/claims/defendant/link");
     }
 
+    public Claim retrieveClaim(String externalId, String userAuthentication) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .when()
+            .get(String.format("claims/%s", externalId))
+        .then()
+        .extract()
+        .body()
+        .as(Claim.class);
+    }
+
     public Response submitResponse(
         uk.gov.hmcts.cmc.domain.models.Response response,
         String claimExternalId,
