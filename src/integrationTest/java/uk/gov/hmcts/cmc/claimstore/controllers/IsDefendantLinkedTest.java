@@ -23,29 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 public class IsDefendantLinkedTest extends BaseIntegrationTest {
 
-
     @Test
-    public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinkedV1() throws Exception {
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-
-        caseRepository.linkDefendantV1(claim.getExternalId(), "1", BEARER_TOKEN);
-
-        MvcResult result = makeRequest(claim.getReferenceNumber())
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeObjectFrom(result, DefendantLinkStatus.class))
-            .isEqualTo(new DefendantLinkStatus(true));
-    }
-
-    @Test
-    public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinkedV2() throws Exception {
+    public void shouldReturn200HttpStatusAndStatusTrueWhenClaimFoundAndIsLinked() throws Exception {
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         when(userService.getUser(BEARER_TOKEN)).thenReturn(new User(BEARER_TOKEN,
             SampleUserDetails.builder().withRoles("letter-" + claim.getLetterHolderId()).build()));
 
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         MvcResult result = makeRequest(claim.getReferenceNumber())
             .andExpect(status().isOk())

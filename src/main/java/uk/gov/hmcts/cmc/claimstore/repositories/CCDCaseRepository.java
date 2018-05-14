@@ -46,12 +46,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim linkDefendantV1(String externalId, String defendantId, String authorisation) {
-        throw new NotImplementedException("Will not be implemented for CCD");
-    }
-
-    @Override
-    public void linkDefendantV2(String authorisation) {
+    public void linkDefendant(String authorisation) {
         ccdCaseApi.linkDefendant(authorisation);
     }
 

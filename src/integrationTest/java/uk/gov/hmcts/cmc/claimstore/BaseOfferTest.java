@@ -43,7 +43,7 @@ public abstract class BaseOfferTest extends BaseIntegrationTest {
         );
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
-        claimRepository.linkDefendant(claim.getId(), DEFENDANT_ID);
+        claimRepository.linkDefendant(claim.getLetterHolderId(), DEFENDANT_ID);
         claim = claimStore.saveResponse(claim, SampleResponse.validDefaults(), DEFENDANT_ID,
             SampleClaim.DEFENDANT_EMAIL);
 
