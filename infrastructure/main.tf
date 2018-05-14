@@ -122,7 +122,7 @@ module "claim-store-api" {
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
-    FEATURE_TOGGLES_EMAILTOSTAFF = "${var.env == "demo" ? "false" : "true"}"
+    FEATURE_TOGGLES_EMAILTOSTAFF = "true"
   }
 }
 
