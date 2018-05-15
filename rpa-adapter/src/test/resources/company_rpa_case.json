@@ -5,8 +5,8 @@
   "amountWithInterest": 80.89,
   "claimants": [
     {
-      "type": "company",
-      "fullName": null,
+      "type": "Company",
+      "fullName": "John Rambo",
       "title": null,
       "businessName": null,
       "companiesHouseNumber": null,
@@ -19,7 +19,6 @@
         "postcode": "DF1 3LJ"
       },
       "phoneNumber": "07873727165",
-      "emailAddress": null,
       "dateOfBirth": null,
       "correspondenceAddress": {
         "line1": "52",
@@ -32,7 +31,7 @@
   ],
   "defendants": [
     {
-      "type": "individual",
+      "type": "Individual",
       "fullName": "John Smith",
       "title": null,
       "businessName": null,
@@ -45,9 +44,7 @@
         "city": "Manchester",
         "postcode": "DF1 3LJ"
       },
-      "phoneNumber": null,
-      "emailAddress": null,
-      "dateOfBirth": null,
+      "emailAddress": "j.smith@example.com",
       "correspondenceAddress": null
     }
   ],

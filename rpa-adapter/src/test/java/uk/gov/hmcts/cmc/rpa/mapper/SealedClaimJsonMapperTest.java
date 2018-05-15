@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
-import uk.gov.hmcts.cmc.rpa.config.RpaAdapterConfig;
-import uk.gov.hmcts.cmc.rpa.domain.Case;
+import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
 import java.time.LocalDate;
 
@@ -24,16 +21,15 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
 @SpringBootTest
-@ContextConfiguration(classes = RpaAdapterConfig.class)
+@ContextConfiguration(classes = ModuleConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class CaseMapperTest {
+public class SealedClaimJsonMapperTest {
 
     @Autowired
-    private CaseMapper rpaCaseMapper;
+    private SealedClaimJsonMapper mapper;
 
     @Test
-    public void shouldMapIndividualCitizenClaimToRPA() throws JsonProcessingException, JSONException {
-        //given
+    public void shouldMapIndividualCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
@@ -44,72 +40,45 @@ public class CaseMapperTest {
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        //when
-        Case rpaCase = rpaCaseMapper.to(claim);
-
-        String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
-
         String expected = new ResourceReader().read("/individual_rpa_case.json").trim();
 
-        //then
-        assertEquals(expected, result, STRICT);
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
     @Test
-    public void shouldMapCompanyCitizenClaimToRPA() throws JsonProcessingException, JSONException {
-        //given
-        Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().company()).build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
-            .build();
-
-        //when
-        Case rpaCase = rpaCaseMapper.to(claim);
-
-        String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
-
-        String expected = new ResourceReader().read("/company_rpa_case.json").trim();
-
-        //then
-        assertEquals(expected, result, STRICT);
-    }
-
-    @Test
-    public void shouldMapSoleTraderCitizenClaimToRPA() throws JsonProcessingException, JSONException {
-        //given
+    public void shouldMapSoleTraderCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().soleTrader()).build())
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        //when
-        Case rpaCase = rpaCaseMapper.to(claim);
-
-        String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
-
         String expected = new ResourceReader().read("/sole_trader_rpa_case.json").trim();
 
-        //then
-        assertEquals(expected, result, STRICT);
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
     @Test
-    public void shouldMapOrganisationCitizenClaimToRPA() throws JsonProcessingException, JSONException {
-        //given
+    public void shouldMapCompanyCitizenClaimToRPA() throws JSONException {
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().company()).build())
+            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .build();
+
+        String expected = new ResourceReader().read("/company_rpa_case.json").trim();
+
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapOrganisationCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().organisation()).build())
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        //when
-        Case rpaCase = rpaCaseMapper.to(claim);
-
-        String result = new ObjectMapper().writeValueAsString(rpaCase).trim();
-        System.out.println(result);
-
         String expected = new ResourceReader().read("/organisation_rpa_case.json").trim();
 
         //then
-        assertEquals(expected, result, STRICT);
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 }
