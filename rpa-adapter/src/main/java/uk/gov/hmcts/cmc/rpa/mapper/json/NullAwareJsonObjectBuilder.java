@@ -9,9 +9,12 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
+/**
+ * A {@link JsonObjectBuilder} implementation that accepts null values in builder methods.
+ */
 public class NullAwareJsonObjectBuilder implements JsonObjectBuilder {
 
-    private JsonObjectBuilder delegate;
+    private final JsonObjectBuilder delegate;
 
     public NullAwareJsonObjectBuilder() {
         delegate = JsonProvider.provider().createObjectBuilder();

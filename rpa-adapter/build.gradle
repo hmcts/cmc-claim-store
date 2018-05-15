@@ -21,16 +21,3 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
   testCompile project(':domain-sample-data')
 }
-
-configurations {
-  testArtifacts.extendsFrom testRuntime
-}
-
-task testJar (type: Jar) {
-  classifier 'test'
-  from sourceSets.test.output
-}
-
-artifacts {
-  testArtifacts testJar
-}

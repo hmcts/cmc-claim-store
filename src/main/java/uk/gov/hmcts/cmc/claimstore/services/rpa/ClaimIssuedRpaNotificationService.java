@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.rpa;
 
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -14,33 +15,32 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.SealedClaimJsonMapper;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 public class ClaimIssuedRpaNotificationService {
+
     public static final String JSON_EXTENSION = ".json";
+
     private final EmailService emailService;
-    private final RpaEmailProperties rpaEmailProperties;
-    private final ClaimIssuedRpaNotificationEmailContentProvider provider;
-    private final SealedClaimJsonMapper mapper;
+    private final RpaEmailProperties emailProperties;
+    private final ClaimIssuedRpaNotificationEmailContentProvider emailContentProvider;
+    private final SealedClaimJsonMapper jsonMapper;
 
     @Autowired
     public ClaimIssuedRpaNotificationService(
         EmailService emailService,
-        RpaEmailProperties rpaEmailProperties,
-        ClaimIssuedRpaNotificationEmailContentProvider provider,
-        SealedClaimJsonMapper mapper
+        RpaEmailProperties emailProperties,
+        ClaimIssuedRpaNotificationEmailContentProvider emailContentProvider,
+        SealedClaimJsonMapper jsonMapper
     ) {
         this.emailService = emailService;
-        this.rpaEmailProperties = rpaEmailProperties;
-        this.provider = provider;
-        this.mapper = mapper;
+        this.emailProperties = emailProperties;
+        this.emailContentProvider = emailContentProvider;
+        this.jsonMapper = jsonMapper;
     }
 
     @EventListener
@@ -48,35 +48,27 @@ public class ClaimIssuedRpaNotificationService {
         requireNonNull(event);
 
         EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
-        emailService.sendEmail(rpaEmailProperties.getSender(), emailData);
+        emailService.sendEmail(emailProperties.getSender(), emailData);
     }
 
-    private EmailData prepareEmailData(
-        Claim claim,
-        List<PDF> documents) {
-        EmailContent content = provider.createContent(wrapInMap(claim));
+    private EmailData prepareEmailData(Claim claim, List<PDF> documents) {
+        EmailContent content = emailContentProvider.createContent(claim);
 
-        List<EmailAttachment> attachments = documents.stream()
+        EmailAttachment sealedClaimPdfAttachment = documents.stream()
             .filter(document -> document.getFilename().contains("claim-form"))
             .map(document -> pdf(document.getBytes(), document.getFilename()))
-            .collect(Collectors.toList());
+            .findFirst().orElseThrow(() -> new RuntimeException("Cannot find sealed claim PDF"));
 
-        addJsonFileToAttachments(claim, attachments);
-
-        return new EmailData(rpaEmailProperties.getRecipient(),
+        return new EmailData(emailProperties.getRecipient(),
             content.getSubject(),
             content.getBody(),
-            attachments);
+            Lists.newArrayList(sealedClaimPdfAttachment, createSealedClaimJsonAttachment(claim))
+        );
     }
 
-    private void addJsonFileToAttachments(Claim claim, List<EmailAttachment> attachments) {
-        attachments.add(EmailAttachment.json(mapper.map(claim).toString().getBytes(),
-            DocumentNameUtils.buildJsonClaimFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION));
+    private EmailAttachment createSealedClaimJsonAttachment(Claim claim) {
+        return EmailAttachment.json(jsonMapper.map(claim).toString().getBytes(),
+            DocumentNameUtils.buildJsonClaimFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
     }
 
-    public static Map<String, Object> wrapInMap(Claim claim) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("claimReferenceNumber", claim.getReferenceNumber());
-        return map;
-    }
 }
