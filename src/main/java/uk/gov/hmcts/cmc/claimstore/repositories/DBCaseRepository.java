@@ -53,28 +53,14 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim linkDefendantV1(String externalId, String defendantId, String authorisation) {
-        String notFoundErrorMessage = "Claim not found by external id: " + externalId;
-
-        Claim claim = claimRepository.getClaimByExternalId(externalId)
-            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
-        claimRepository.linkDefendant(claim.getId(), defendantId);
-
-        claim = claimRepository.getClaimByExternalId(externalId)
-            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
-        return claim;
-
-    }
-
-    @Override
-    public void linkDefendantV2(String authorisation) {
+    public void linkDefendant(String authorisation) {
         User defendantUser = userService.getUser(authorisation);
         String defendantId = defendantUser.getUserDetails().getId();
 
         defendantUser.getUserDetails().getRoles().stream()
             .filter(this::isLetterHolderRole)
             .map(this::extractLetterHolderId)
-            .forEach(letterHolderId -> claimRepository.linkDefendantV2(letterHolderId, defendantId));
+            .forEach(letterHolderId -> claimRepository.linkDefendant(letterHolderId, defendantId));
     }
 
     private String extractLetterHolderId(String role) {

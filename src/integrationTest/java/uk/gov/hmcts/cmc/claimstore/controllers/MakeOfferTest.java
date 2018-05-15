@@ -53,7 +53,7 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
         when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(userDetails);
         given(userService.getUser(DEFENDANT_AUTH_TOKEN)).willReturn(new User(DEFENDANT_AUTH_TOKEN, userDetails));
-        caseRepository.linkDefendantV2(DEFENDANT_AUTH_TOKEN);
+        caseRepository.linkDefendant(DEFENDANT_AUTH_TOKEN);
     }
 
     @Test
