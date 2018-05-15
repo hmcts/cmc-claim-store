@@ -88,7 +88,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
             .build();
 
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isConflict());

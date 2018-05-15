@@ -65,7 +65,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(userDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
     }
 
     @Test
