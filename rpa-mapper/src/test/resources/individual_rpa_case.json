@@ -6,12 +6,12 @@
   "claimants": [
     {
       "type": "Individual",
-      "fullName": "John Rambo",
+      "name": "John Rambo",
       "title": null,
       "businessName": null,
       "companiesHouseNumber": null,
       "contactPerson": null,
-      "fullAddress": {
+      "address": {
         "line1": "52",
         "line2": "Down Street",
         "line3": "Salford",
@@ -32,12 +32,12 @@
   "defendants": [
     {
       "type": "Individual",
-      "fullName": "John Smith",
+      "name": "John Smith",
       "title": null,
       "businessName": null,
       "companiesHouseNumber": null,
       "contactPerson": null,
-      "fullAddress": {
+      "address": {
         "line1": "52",
         "line2": "Down Street",
         "line3": "Salford",

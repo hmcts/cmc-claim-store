@@ -6,12 +6,12 @@
   "claimants": [
     {
       "type": "SoleTrader",
-      "fullName": "John Rambo",
+      "name": "John Rambo",
       "title": "Dr.",
       "businessName": "Trading as name",
       "companiesHouseNumber": null,
       "contactPerson": null,
-      "fullAddress": {
+      "address": {
         "line1": "52",
         "line2": "Down Street",
         "line3": "Salford",
@@ -32,12 +32,12 @@
   "defendants": [
     {
       "type": "SoleTrader",
-      "fullName": "John Smith",
+      "name": "John Smith",
       "title": "Dr.",
       "businessName": "Sole Trading & Sons",
       "companiesHouseNumber": null,
       "contactPerson": null,
-      "fullAddress": {
+      "address": {
         "line1": "52",
         "line2": "Down Street",
         "line3": "Salford",

@@ -6,12 +6,12 @@
   "claimants": [
     {
       "type": "Organisation",
-      "fullName": "John Rambo",
+      "name": "John Rambo",
       "title": null,
       "businessName": null,
       "companiesHouseNumber": "09047000",
       "contactPerson": "Steven Seagal",
-      "fullAddress": {
+      "address": {
         "line1": "52",
         "line2": "Down Street",
         "line3": "Salford",
@@ -32,12 +32,12 @@
   "defendants": [
     {
       "type": "Organisation",
-      "fullName": "John Smith",
+      "name": "John Smith",
       "title": null,
       "businessName": null,
       "companiesHouseNumber": "09047000",
       "contactPerson": "Arnold Schwarzenegger",
-      "fullAddress": {
+      "address": {
         "line1": "52",
         "line2": "Down Street",
         "line3": "Salford",
