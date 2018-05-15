@@ -7,7 +7,6 @@
     {
       "type": "Organisation",
       "name": "John Rambo",
-      "title": null,
       "businessName": null,
       "companiesHouseNumber": "09047000",
       "contactPerson": "Steven Seagal",
@@ -33,7 +32,6 @@
     {
       "type": "Organisation",
       "name": "John Smith",
-      "title": null,
       "businessName": null,
       "companiesHouseNumber": "09047000",
       "contactPerson": "Arnold Schwarzenegger",

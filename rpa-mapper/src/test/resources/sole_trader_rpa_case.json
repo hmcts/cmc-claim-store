@@ -7,7 +7,6 @@
     {
       "type": "SoleTrader",
       "name": "John Rambo",
-      "title": "Dr.",
       "businessName": "Trading as name",
       "companiesHouseNumber": null,
       "contactPerson": null,
@@ -33,7 +32,6 @@
     {
       "type": "SoleTrader",
       "name": "John Smith",
-      "title": "Dr.",
       "businessName": "Sole Trading & Sons",
       "companiesHouseNumber": null,
       "contactPerson": null,

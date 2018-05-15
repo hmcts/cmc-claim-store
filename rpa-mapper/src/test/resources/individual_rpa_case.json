@@ -7,7 +7,6 @@
     {
       "type": "Individual",
       "name": "John Rambo",
-      "title": null,
       "businessName": null,
       "companiesHouseNumber": null,
       "contactPerson": null,
@@ -33,7 +32,6 @@
     {
       "type": "Individual",
       "name": "John Smith",
-      "title": null,
       "businessName": null,
       "companiesHouseNumber": null,
       "contactPerson": null,

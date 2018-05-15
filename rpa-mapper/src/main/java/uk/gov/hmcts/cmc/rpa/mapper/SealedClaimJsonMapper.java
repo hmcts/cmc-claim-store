@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
-import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
@@ -44,7 +43,6 @@ public class SealedClaimJsonMapper {
         return claimants.stream()
             .map(claimant -> new NullAwareJsonObjectBuilder()
                 .add("type", claimant.getClass().getSimpleName())
-                .add("title", extractOptionalFromSubclass(claimant, TitledParty.class, TitledParty::getTitle))
                 .add("name", claimant.getName())
                 .add("address", mapAddress(claimant.getAddress()))
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
@@ -61,7 +59,6 @@ public class SealedClaimJsonMapper {
         return defendants.stream()
             .map(defendant -> new NullAwareJsonObjectBuilder()
                 .add("type", defendant.getClass().getSimpleName().replace("Details", ""))
-                .add("title", extractOptionalFromSubclass(defendant, TitledParty.class, TitledParty::getTitle))
                 .add("name", defendant.getName())
                 .add("address", mapAddress(defendant.getAddress()))
                 .add("correspondenceAddress", defendant.getServiceAddress().map(this::mapAddress).orElse(null))
