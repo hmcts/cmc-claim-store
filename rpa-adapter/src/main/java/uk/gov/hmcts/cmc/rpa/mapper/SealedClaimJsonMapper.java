@@ -21,10 +21,12 @@ import javax.json.JsonObject;
 import javax.json.stream.JsonCollectors;
 
 import static javax.json.Json.createObjectBuilder;
+import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
+import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
 
 @Component
 @SuppressWarnings({"LineLength"})
-public class SealedClaimJsonMapper extends BaseMapper {
+public class SealedClaimJsonMapper {
 
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
