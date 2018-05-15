@@ -56,7 +56,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
@@ -69,7 +69,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk());
@@ -80,7 +80,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRetrySendNotifications() throws Exception {
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .willThrow(new NotificationClientException(new RuntimeException("first attempt fails")))
@@ -106,40 +106,19 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTimeV1() throws Exception {
+    public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTime() throws Exception {
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", responseDeadlineInThePast);
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
     }
 
     @Test
-    public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTimeV2() throws Exception {
-        LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", responseDeadlineInThePast);
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
-
-        makeRequest(claim.getExternalId())
-            .andExpect(status().isConflict());
-    }
-
-    @Test
-    public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgainV1() throws Exception {
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
-        claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
-
-        makeRequest(claim.getExternalId())
-            .andExpect(status().isConflict());
-
-    }
-
-    @Test
-    public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgainV2() throws Exception {
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+    public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgain() throws Exception {
+        caseRepository.linkDefendant(BEARER_TOKEN);
         claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())

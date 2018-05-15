@@ -51,7 +51,9 @@ public class RespondToClaimTest extends BaseTest {
         );
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendantV2(defendant.getAuthorisation());
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation()
+        );
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
             .then()
@@ -74,8 +76,8 @@ public class RespondToClaimTest extends BaseTest {
         );
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendantV1(
-            createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation()
         );
 
         Response invalidResponse = SampleResponse.FullDefence.builder()

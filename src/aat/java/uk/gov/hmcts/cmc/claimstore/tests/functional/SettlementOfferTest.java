@@ -192,7 +192,7 @@ public class SettlementOfferTest extends BaseTest {
         assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
 
         assertThat(caseWithCounterSign.getSettlementReachedAt())
-            .isCloseTo(LocalDateTimeFactory.nowInUTC(), within(2, ChronoUnit.MINUTES));
+            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
     }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {
@@ -250,8 +250,8 @@ public class SettlementOfferTest extends BaseTest {
         );
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendantV1(
-            createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation()
         );
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
@@ -264,7 +264,9 @@ public class SettlementOfferTest extends BaseTest {
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
 
-        commonOperations.linkDefendantV2(defendant.getAuthorisation());
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation()
+        );
 
         Response response = SampleResponse.FullDefence.builder()
             .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
