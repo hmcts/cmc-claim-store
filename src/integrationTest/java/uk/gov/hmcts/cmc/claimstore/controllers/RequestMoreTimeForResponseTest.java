@@ -1,12 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.assertj.core.util.Maps;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -16,6 +18,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -35,17 +38,25 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_ID = "100";
 
-    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withUserId(DEFENDANT_ID)
-        .withMail("defendant@example.com")
-        .build();
-    
+    private Claim claim;
+
+    @Before
+    public void before() {
+        claim = claimStore.saveClaim(SampleClaimData.builder().withExternalId(UUID.randomUUID()).build());
+
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withMail("defendant@example.com")
+            .withRoles("letter-" + claim.getLetterHolderId())
+            .build();
+
+        given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
+    }
+
     @Test
     public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
@@ -58,10 +69,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk());
@@ -72,10 +80,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRetrySendNotifications() throws Exception {
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .willThrow(new NotificationClientException(new RuntimeException("first attempt fails")))
@@ -91,10 +96,9 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
+
     @Test
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
-
         String nonExistingClaim = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
         makeRequest(nonExistingClaim)
@@ -103,12 +107,10 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTime() throws Exception {
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
-
         LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", responseDeadlineInThePast);
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
@@ -116,14 +118,12 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgain() throws Exception {
-        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(USER_DETAILS);
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
         claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isConflict());
+
     }
 
     @Test

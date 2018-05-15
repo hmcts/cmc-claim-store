@@ -20,9 +20,7 @@ public interface CaseRepository {
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
-    Claim linkDefendantV1(String externalId, String defendantId, String authorisation);
-
-    void linkDefendantV2(String authorisation);
+    void linkDefendant(String authorisation);
 
     List<Claim> getByDefendantId(String id, String authorisation);
 
