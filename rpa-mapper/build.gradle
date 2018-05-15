@@ -1,5 +1,4 @@
 plugins {
-  id 'net.ltgt.apt' version '0.14'
   id 'jacoco'
 }
 
