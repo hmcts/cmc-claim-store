@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.rpa;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.RpaEmailProperties;
@@ -21,6 +22,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class ClaimIssuedRpaNotificationService {
 
     public static final String JSON_EXTENSION = ".json";
