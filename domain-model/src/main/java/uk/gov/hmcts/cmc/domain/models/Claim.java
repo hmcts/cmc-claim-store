@@ -172,6 +172,10 @@ public class Claim {
         return Optional.ofNullable(sealedClaimDocumentSelfPath);
     }
 
+    public LocalDate getServiceDate() {
+        return issuedOn.plusDays(5);
+    }
+
     public Optional<BigDecimal> getTotalAmountTillToday() {
         return TotalAmountCalculator.totalTillToday(this);
     }
