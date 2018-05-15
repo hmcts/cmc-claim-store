@@ -134,6 +134,10 @@
       padding-right: 0px;
     }
 
+    .keep-formatting {
+      white-space: pre-line;
+    }
+
   </style>
 </head>
 <body>
@@ -190,7 +194,10 @@
       </tr>
       {% endif %}
       <tr>
-        <td>Address:</td>
+        <td class="keep-formatting">Address:
+          {% if defendant.addressAmended %}
+          (as amended)
+          {% endif %}</td>
         <td>
           {{ defendant.address.line1 }}
           <br/>
