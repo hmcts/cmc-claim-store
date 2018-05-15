@@ -11,11 +11,9 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,15 +56,13 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
     public void shouldFindClaimFromCCDForClaimantId() throws Exception {
         String submitterId = "20";
 
-        claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
-
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.submitterId", submitterId))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
             )
         ).willReturn(listOfCaseDetails());
 
@@ -85,7 +81,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.submitterId", submitterId))
+                eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
             );
     }
 
@@ -202,7 +198,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId))
+                eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId, "page", "1"))
             );
     }
 }
