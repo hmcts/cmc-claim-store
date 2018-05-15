@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
 
@@ -12,6 +13,7 @@ public class SampleInterest {
     private BigDecimal rate = new BigDecimal(11);
     private String reason = "A reason";
     private BigDecimal specificDailyAmount = null;
+    private InterestDate interestDate = null;
 
     public static SampleInterest builder() {
         return new SampleInterest();
@@ -19,31 +21,31 @@ public class SampleInterest {
 
     public static SampleInterest breakdownInterestBuilder() {
         return new SampleInterest()
-            .withType(Interest.InterestType.BREAKDOWN)
-            .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
-            .withRate(null)
-            .withReason(null);
+                .withType(Interest.InterestType.BREAKDOWN)
+                .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+                .withRate(null)
+                .withReason(null);
     }
 
     public static Interest standard() {
         return builder()
-            .withType(Interest.InterestType.STANDARD)
-            .withRate(new BigDecimal("8"))
-            .withReason(null)
-            .build();
+                .withType(Interest.InterestType.STANDARD)
+                .withRate(new BigDecimal("8"))
+                .withReason(null)
+                .build();
     }
 
     public static Interest noInterest() {
         return builder()
-            .withType(Interest.InterestType.NO_INTEREST)
-            .withRate(null)
-            .withReason(null)
-            .build();
+                .withType(Interest.InterestType.NO_INTEREST)
+                .withRate(null)
+                .withReason(null)
+                .build();
     }
 
     public static Interest breakdownOnly() {
         return breakdownInterestBuilder()
-            .build();
+                .build();
     }
 
     public SampleInterest withType(Interest.InterestType type) {
@@ -71,13 +73,20 @@ public class SampleInterest {
         return this;
     }
 
+    public SampleInterest withInterestDate(InterestDate interestDate) {
+        this.interestDate = interestDate;
+        return this;
+    }
+
     public Interest build() {
         return new Interest(
-            type,
-            interestBreakdown,
-            rate,
-            reason,
-            specificDailyAmount
+                type,
+                interestBreakdown,
+                rate,
+                reason,
+                specificDailyAmount,
+                interestDate
+
         );
     }
 
