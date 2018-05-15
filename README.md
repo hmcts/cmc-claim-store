@@ -94,6 +94,12 @@ Database will get initiated when you run `docker-compose up` for the first time 
 
 You don't need to migrate database manually since migrations are executed every time `docker-compose up` is executed.
 
+When you need to make ad-hoc connect to the database you can execute following command:
+
+```
+docker exec -it cmc-integration-tests_shared-database_1 psql -U postgres -d claimstore
+```
+
 ### API documentation
 
 API documentation is provided with Swagger:
