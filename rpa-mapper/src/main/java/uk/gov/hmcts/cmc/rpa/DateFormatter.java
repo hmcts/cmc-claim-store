@@ -8,7 +8,7 @@ public class DateFormatter {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
 
     private DateFormatter() {
-        // needed for utility class
+        // NO-OP
     }
 
     public static String format(TemporalAccessor date) {
