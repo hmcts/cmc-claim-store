@@ -31,10 +31,10 @@
   ],
   "defendants": [
     {
-      "type": "Individual",
+      "type": "SoleTrader",
       "fullName": "John Smith",
-      "title": null,
-      "businessName": null,
+      "title": "Dr.",
+      "businessName": "Sole Trading & Sons",
       "companiesHouseNumber": null,
       "contactPerson": null,
       "fullAddress": {

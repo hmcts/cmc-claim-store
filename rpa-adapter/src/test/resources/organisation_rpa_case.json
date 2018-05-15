@@ -9,7 +9,7 @@
       "fullName": "John Rambo",
       "title": null,
       "businessName": null,
-      "companiesHouseNumber": null,
+      "companiesHouseNumber": "09047000",
       "contactPerson": "Steven Seagal",
       "fullAddress": {
         "line1": "52",
@@ -31,12 +31,12 @@
   ],
   "defendants": [
     {
-      "type": "Individual",
+      "type": "Organisation",
       "fullName": "John Smith",
       "title": null,
       "businessName": null,
-      "companiesHouseNumber": null,
-      "contactPerson": null,
+      "companiesHouseNumber": "09047000",
+      "contactPerson": "Arnold Schwarzenegger",
       "fullAddress": {
         "line1": "52",
         "line2": "Down Street",

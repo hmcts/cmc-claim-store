@@ -10,8 +10,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
@@ -31,12 +31,10 @@ public class SealedClaimJsonMapperTest {
     @Test
     public void shouldMapIndividualCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.submittedByClaimant())
-            .withCountyCourtJudgment(
-                SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
-                    .build()
-            )
+            .withClaimData(SampleClaimData.builder()
+                .withClaimant(SampleParty.builder().individual())
+                .withDefendant(SampleTheirDetails.builder().individualDetails())
+                .build())
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
@@ -48,7 +46,10 @@ public class SealedClaimJsonMapperTest {
     @Test
     public void shouldMapSoleTraderCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().soleTrader()).build())
+            .withClaimData(SampleClaimData.builder()
+                .withClaimant(SampleParty.builder().soleTrader())
+                .withDefendant(SampleTheirDetails.builder().soleTraderDetails())
+                .build())
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
@@ -60,7 +61,10 @@ public class SealedClaimJsonMapperTest {
     @Test
     public void shouldMapCompanyCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().company()).build())
+            .withClaimData(SampleClaimData.builder()
+                .withClaimant(SampleParty.builder().company())
+                .withDefendant(SampleTheirDetails.builder().companyDetails())
+                .build())
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
@@ -72,7 +76,14 @@ public class SealedClaimJsonMapperTest {
     @Test
     public void shouldMapOrganisationCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder().withClaimant(SampleParty.builder().organisation()).build())
+            .withClaimData(SampleClaimData.builder()
+                .withClaimant(SampleParty.builder()
+                    .withCompaniesHouseNumber("09047000")
+                    .organisation())
+                .withDefendant(SampleTheirDetails.builder()
+                    .withCompaniesHouseNumber("09047000")
+                    .organisationDetails())
+                .build())
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
