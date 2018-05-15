@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Response;
@@ -119,8 +121,17 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotInvokeStaffActionsHandlerAfterSuccessfulDefendantResponseSave() throws Exception {
+        given(userService.getUser(anyString())).willReturn(SampleUser.builder()
+            .withAuthorisation(BEARER_TOKEN)
+            .withUserDetails(SampleUserDetails.builder()
+                .withUserId(DEFENDANT_ID)
+                .withRoles("citizen", "letter-" + SampleClaim.LETTER_HOLDER_ID)
+                .build())
+            .build()
+        );
+
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         Response response = SampleResponse.validDefaults();
         makeDefendantResponseRequest(claim.getExternalId(), response).andExpect(status().isOk());

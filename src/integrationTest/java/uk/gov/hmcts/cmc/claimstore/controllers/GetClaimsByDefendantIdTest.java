@@ -28,7 +28,7 @@ public class GetClaimsByDefendantIdTest extends BaseGetTest {
         when(userService.getUser(BEARER_TOKEN)).thenReturn(new User(BEARER_TOKEN,
             SampleUserDetails.builder().withRoles("letter-" + claim.getLetterHolderId()).build()));
 
-        caseRepository.linkDefendantV2(BEARER_TOKEN);
+        caseRepository.linkDefendant(BEARER_TOKEN);
 
         MvcResult result = makeRequest("/claims/defendant/" + defendantId)
             .andExpect(status().isOk())
