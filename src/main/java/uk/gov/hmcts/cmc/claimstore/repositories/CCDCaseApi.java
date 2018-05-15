@@ -218,7 +218,8 @@ public class CCDCaseApi {
     private List<CaseDetails> search(User user, Map<String, String> searchString) {
         return search(user, searchString, 1, new ArrayList<>(), null);
     }
-
+    
+    @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
     private List<CaseDetails> search(
         User user,
         Map<String, String> searchString,
