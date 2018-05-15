@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.config.properties.emails;
+package uk.gov.hmcts.cmc.claimstore.rpa.email;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
@@ -8,12 +8,12 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 @Component
-public class RpaEmailTemplates {
-    public String getClaimIssuedEmailSubject() {
+public class EmailTemplates {
+    String getClaimIssuedEmailSubject() {
         return readString("/rpa/templates/email/claimIssued/subject.txt");
     }
 
-    public String getClaimIssuedEmailBody() {
+    String getClaimIssuedEmailBody() {
         return readString("/rpa/templates/email/claimIssued/body.txt");
     }
 

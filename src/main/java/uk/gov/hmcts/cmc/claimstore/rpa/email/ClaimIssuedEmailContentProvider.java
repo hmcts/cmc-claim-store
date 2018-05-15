@@ -1,8 +1,7 @@
-package uk.gov.hmcts.cmc.claimstore.services.rpa;
+package uk.gov.hmcts.cmc.claimstore.rpa.email;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.RpaEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
@@ -11,13 +10,13 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.Map;
 
 @Component
-public class ClaimIssuedRpaNotificationEmailContentProvider implements EmailContentProvider<Claim> {
+public class ClaimIssuedEmailContentProvider implements EmailContentProvider<Claim> {
 
-    private final RpaEmailTemplates emailTemplates;
+    private final EmailTemplates emailTemplates;
     private final TemplateService templateService;
 
-    public ClaimIssuedRpaNotificationEmailContentProvider(
-        RpaEmailTemplates emailTemplates,
+    public ClaimIssuedEmailContentProvider(
+        EmailTemplates emailTemplates,
         TemplateService templateService
     ) {
         this.emailTemplates = emailTemplates;

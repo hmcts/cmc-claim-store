@@ -1,13 +1,14 @@
-package uk.gov.hmcts.cmc.claimstore.services.rpa;
+package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.RpaEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
+import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
+import uk.gov.hmcts.cmc.claimstore.rpa.email.ClaimIssuedEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -23,20 +24,20 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
-public class ClaimIssuedRpaNotificationService {
+public class ClaimIssuedNotificationService {
 
-    public static final String JSON_EXTENSION = ".json";
+    static final String JSON_EXTENSION = ".json";
 
     private final EmailService emailService;
-    private final RpaEmailProperties emailProperties;
-    private final ClaimIssuedRpaNotificationEmailContentProvider emailContentProvider;
+    private final EmailProperties emailProperties;
+    private final ClaimIssuedEmailContentProvider emailContentProvider;
     private final SealedClaimJsonMapper jsonMapper;
 
     @Autowired
-    public ClaimIssuedRpaNotificationService(
+    public ClaimIssuedNotificationService(
         EmailService emailService,
-        RpaEmailProperties emailProperties,
-        ClaimIssuedRpaNotificationEmailContentProvider emailContentProvider,
+        EmailProperties emailProperties,
+        ClaimIssuedEmailContentProvider emailContentProvider,
         SealedClaimJsonMapper jsonMapper
     ) {
         this.emailService = emailService;

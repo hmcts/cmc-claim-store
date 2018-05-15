@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.config.properties.emails;
+package uk.gov.hmcts.cmc.claimstore.rpa.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Component
 @Validated
 @ConfigurationProperties(prefix = "rpa-notifications")
-public class RpaEmailProperties {
+public class EmailProperties {
 
     @NotBlank
     private String sender;
