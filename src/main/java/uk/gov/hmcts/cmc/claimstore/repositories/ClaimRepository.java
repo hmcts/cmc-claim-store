@@ -139,14 +139,6 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET defendant_id = :defendantId WHERE id = :claimId"
-    )
-    Integer linkDefendant(
-        @Bind("claimId") Long claimId,
-        @Bind("defendantId") String defendantId
-    );
-
-    @SqlUpdate(
         "UPDATE claim SET more_time_requested = TRUE, response_deadline = :responseDeadline "
             + "WHERE external_id = :externalId AND more_time_requested = FALSE"
     )
@@ -180,7 +172,7 @@ public interface ClaimRepository {
     @SqlUpdate(
         "UPDATE claim SET defendant_id = :defendantId WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
     )
-    void linkDefendantV2(
+    Integer linkDefendant(
         @Bind("letterHolderId") String letterHolderId,
         @Bind("defendantId") String defendantId
     );
