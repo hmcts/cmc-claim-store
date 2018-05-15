@@ -155,7 +155,6 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             )
         ).willReturn(searchMetadata);
 
-
         MvcResult result = makeRequest("/claims/claimant/" + submitterId)
             .andExpect(status().isOk())
             .andReturn();
