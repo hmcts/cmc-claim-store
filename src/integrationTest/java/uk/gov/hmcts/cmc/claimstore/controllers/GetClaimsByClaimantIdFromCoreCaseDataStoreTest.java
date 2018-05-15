@@ -9,12 +9,17 @@ import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,6 +119,59 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
         assertThat(deserializeListFrom(result))
             .extracting(Claim::getReferenceNumber)
             .isEqualTo(asList("000MC001", "000MC002", "000MC003"));
+    }
+
+    @Test
+    public void shouldUseCCDPaginationApi() throws Exception {
+        String submitterId = "1";
+
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            )
+        ).willReturn(numberOfClaimDetailsResults(11));
+
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
+            )
+        ).willReturn(numberOfClaimDetailsResults(5));
+
+        PaginatedSearchMetadata searchMetadata = new PaginatedSearchMetadata();
+        searchMetadata.setTotalPagesCount(2);
+        searchMetadata.setTotalResultsCount(16);
+
+        given(coreCaseDataApi.getPaginationInfoForSearchForCitizens(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+            )
+        ).willReturn(searchMetadata);
+
+
+        MvcResult result = makeRequest("/claims/claimant/" + submitterId)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeListFrom(result))
+            .hasSize(16);
+    }
+
+    private List<CaseDetails> numberOfClaimDetailsResults(final int number) {
+        return Stream.generate(ResourceLoader::successfulCoreCaseDataStoreSubmitResponse)
+            .limit(number)
+            .collect(Collectors.toList());
     }
 
     @Test
