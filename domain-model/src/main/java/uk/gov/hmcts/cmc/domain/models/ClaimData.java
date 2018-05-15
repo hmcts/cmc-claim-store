@@ -62,7 +62,6 @@ public class ClaimData {
     @Valid
     private final Interest interest;
 
-    // Validated by InterDependentFields
     private final InterestDate interestDate;
 
     @Valid
@@ -152,7 +151,13 @@ public class ClaimData {
     }
 
     public InterestDate getInterestDate() {
-        return interestDate;
+        if (interestDate != null) {
+            return interestDate;
+        } else if (interest != null) {
+            return interest.getInterestDate();
+        } else {
+            return null;
+        }
     }
 
     @JsonIgnore
