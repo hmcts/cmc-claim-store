@@ -15,10 +15,7 @@ public class CCDDefendantTimeline {
     private String comment;
 
     @JsonCreator
-    public CCDDefendantTimeline(
-        List<CCDCollectionElement<CCDTimelineEvent>> events,
-        String comment
-    ) {
+    public CCDDefendantTimeline(List<CCDCollectionElement<CCDTimelineEvent>> events, String comment) {
         this.events = events;
         this.comment = comment;
     }

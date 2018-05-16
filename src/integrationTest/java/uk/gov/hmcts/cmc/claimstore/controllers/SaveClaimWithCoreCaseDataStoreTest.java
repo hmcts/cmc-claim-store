@@ -42,7 +42,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -108,7 +108,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -176,7 +176,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -211,7 +211,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
             )
         ).willReturn(Collections.emptyList());
 
@@ -257,7 +257,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId()))
+            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
             )
         ).willReturn(Collections.emptyList());
 
