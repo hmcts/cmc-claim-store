@@ -54,11 +54,3 @@ FROM
   subquery
 WHERE
   claim.id = subquery.id;
-
-
-
-
-
-
-
-
