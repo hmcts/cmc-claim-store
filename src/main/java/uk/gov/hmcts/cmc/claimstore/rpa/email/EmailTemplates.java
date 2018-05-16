@@ -9,11 +9,11 @@ import java.nio.charset.Charset;
 
 @Component("rpa/email-templates")
 public class EmailTemplates {
-    String getClaimIssuedEmailSubject() {
+    public String getClaimIssuedEmailSubject() {
         return readString("/rpa/templates/email/claimIssued/subject.txt");
     }
 
-    String getClaimIssuedEmailBody() {
+    public String getClaimIssuedEmailBody() {
         return readString("/rpa/templates/email/claimIssued/body.txt");
     }
 

@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class ClaimIssuedNotificationService {
 
-    static final String JSON_EXTENSION = ".json";
+    public static final String JSON_EXTENSION = ".json";
 
     private final EmailService emailService;
     private final EmailProperties emailProperties;
