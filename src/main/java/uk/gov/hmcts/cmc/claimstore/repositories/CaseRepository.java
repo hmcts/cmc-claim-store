@@ -35,5 +35,7 @@ public interface CaseRepository {
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
 
     Claim saveClaim(String authorisation, Claim claim);
+
+    Optional<Claim> getByClaimReferenceNumberAnonymous(String reference);
 }
 

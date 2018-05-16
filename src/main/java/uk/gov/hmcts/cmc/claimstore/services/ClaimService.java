@@ -92,7 +92,7 @@ public class ClaimService {
     }
 
     public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
-        return claimRepository
+        return caseRepository
             .getByClaimReferenceNumberAnonymous(reference);
     }
 

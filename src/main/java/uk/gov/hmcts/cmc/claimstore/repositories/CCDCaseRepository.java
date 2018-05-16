@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -20,14 +23,17 @@ import java.util.Optional;
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
+    private final UserService userService;
 
     @Autowired
     public CCDCaseRepository(
         CCDCaseApi ccdCaseApi,
-        CoreCaseDataService coreCaseDataService
+        CoreCaseDataService coreCaseDataService,
+        UserService userService
     ) {
         this.ccdCaseApi = ccdCaseApi;
         this.coreCaseDataService = coreCaseDataService;
+        this.userService = userService;
     }
 
     @Override
@@ -102,6 +108,14 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim saveClaim(String authorisation, Claim claim) {
         return coreCaseDataService.save(authorisation, claim);
+    }
+
+    @Override
+    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+
+        return ccdCaseApi.getByReferenceNumber(reference, authorisation);
     }
 
 }
