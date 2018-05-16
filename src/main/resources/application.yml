@@ -41,6 +41,9 @@ idam:
   anonymous-caseworker:
     username: "${IDAM_ANONYMOUS_CASEWORKER_USERNAME}"
     password: "${IDAM_ANONYMOUS_CASEWORKER_PASSWORD}"
+  system-update-user:
+    username: "${IDAM_SYSTEM_UPDATE_USER_USERNAME}"
+    password: "${IDAM_SYSTEM_UPDATE_USER_PASSWORD}"
 
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
