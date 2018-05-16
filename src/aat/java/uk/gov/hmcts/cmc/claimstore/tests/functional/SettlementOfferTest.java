@@ -192,7 +192,7 @@ public class SettlementOfferTest extends BaseTest {
         assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
 
         assertThat(caseWithCounterSign.getSettlementReachedAt())
-            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
+            .isCloseTo(LocalDateTimeFactory.nowInUTC(), within(2, ChronoUnit.MINUTES));
     }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {

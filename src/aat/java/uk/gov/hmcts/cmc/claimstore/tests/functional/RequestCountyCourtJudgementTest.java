@@ -51,7 +51,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
         assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
         assertThat(updatedCase.getCountyCourtJudgmentRequestedAt())
-            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
+            .isCloseTo(LocalDateTimeFactory.nowInUTC(), within(2, ChronoUnit.MINUTES));
     }
 
     @Test
