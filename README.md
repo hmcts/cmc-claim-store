@@ -92,13 +92,7 @@ $ ./gradlew functional
 
 Database will get initiated when you run `docker-compose up` for the first time by execute all scripts from `database` directory.
 
-You don't need to migrate database manually since migrations are executed every time `docker-compose up` is executed.
-
-When you need to make ad-hoc connect to the database you can execute following command:
-
-```
-docker-compose exec claim-store-api psql -U postgres -d claimstore
-```
+You don't need to migrate database manually since migrations are executed every time the application bootstraps.
 
 ### API documentation
 
