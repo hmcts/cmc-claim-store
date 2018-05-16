@@ -44,7 +44,8 @@
 
 WITH subquery AS (
     SELECT id, jsonb_extract_path(claim::JSONB, 'interestDate') as interestDate
-    FROM claim
+      FROM claim
+     WHERE jsonb_extract_path(claim::JSONB, 'interestDate') IS NOT NULL
 )
 UPDATE
   claim
