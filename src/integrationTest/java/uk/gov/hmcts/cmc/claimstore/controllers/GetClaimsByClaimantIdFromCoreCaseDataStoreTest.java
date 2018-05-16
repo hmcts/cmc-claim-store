@@ -41,20 +41,29 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
     private static final String SERVICE_TOKEN = "S2S token";
     private static final String USER_ID = "1";
 
-    private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
+    private static final UserDetails CITIZEN_USER_DETAILS = SampleUserDetails.builder()
         .withUserId(USER_ID)
         .withMail("submitter@example.com")
         .build();
 
+    private static final UserDetails SOLICITOR_USER_DETAILS = SampleUserDetails.builder()
+        .withUserId(USER_ID)
+        .withRoles("solicitor")
+        .withMail("submitter@example.com")
+        .build();
+
+    private static final User CITIZEN_USER = new User(AUTHORISATION_TOKEN, CITIZEN_USER_DETAILS);
+    private static final User SOLICITOR_USER = new User(AUTHORISATION_TOKEN, SOLICITOR_USER_DETAILS);
+
     @Before
     public void before() {
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
     @Test
     public void shouldFindClaimFromCCDForClaimantId() throws Exception {
         String submitterId = "20";
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -89,6 +98,8 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
     public void shouldPreserveOrderReturnedFromCCD() throws Exception {
         String submitterId = "1";
 
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
+
         CaseDetails caseDetails = caseWithReferenceNumber("000MC001");
         CaseDetails caseDetails1 = caseWithReferenceNumber("000MC002");
         CaseDetails caseDetails2 = caseWithReferenceNumber("000MC003");
@@ -118,8 +129,56 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
     }
 
     @Test
-    public void shouldUseCCDPaginationApi() throws Exception {
+    public void shouldUseCCDPaginationApiSolicitor() throws Exception {
         String submitterId = "1";
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(SOLICITOR_USER);
+
+        given(coreCaseDataApi.searchForCaseworker(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            )
+        ).willReturn(numberOfClaimDetailsResults(11));
+
+        given(coreCaseDataApi.searchForCaseworker(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
+            )
+        ).willReturn(numberOfClaimDetailsResults(5));
+
+        PaginatedSearchMetadata searchMetadata = new PaginatedSearchMetadata();
+        searchMetadata.setTotalPagesCount(2);
+        searchMetadata.setTotalResultsCount(16);
+
+        given(coreCaseDataApi.getPaginationInfoForSearchForCaseworkers(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            any()
+            )
+        ).willReturn(searchMetadata);
+
+        MvcResult result = makeRequest("/claims/claimant/" + submitterId)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeListFrom(result))
+            .hasSize(16);
+    }
+
+    @Test
+    public void shouldUseCCDPaginationApiCitizen() throws Exception {
+        String submitterId = "1";
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
 
         given(coreCaseDataApi.searchForCitizen(
             any(),
@@ -163,6 +222,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             .hasSize(16);
     }
 
+
     private List<CaseDetails> numberOfClaimDetailsResults(final int number) {
         return Stream.generate(ResourceLoader::successfulCoreCaseDataStoreSubmitResponse)
             .limit(number)
@@ -172,6 +232,8 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
     @Test
     public void shouldSearchCCDEvenWhenNoClaimFoundInDB() throws Exception {
         String nonExistingSubmitterId = "12";
+
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
