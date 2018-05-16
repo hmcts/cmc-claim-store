@@ -60,7 +60,7 @@ public class ClaimIssuedNotificationService {
         EmailAttachment sealedClaimPdfAttachment = documents.stream()
             .filter(document -> document.getFilename().contains("claim-form"))
             .map(document -> pdf(document.getBytes(), document.getFilename()))
-            .findFirst().orElseThrow(() -> new RuntimeException("Cannot find sealed claim PDF"));
+            .findFirst().orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
 
         return new EmailData(emailProperties.getRecipient(),
             content.getSubject(),
