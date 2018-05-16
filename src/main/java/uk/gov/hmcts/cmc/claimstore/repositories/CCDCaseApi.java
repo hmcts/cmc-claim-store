@@ -297,7 +297,7 @@ public class CCDCaseApi {
                     searchCriteria
                 ).getTotalPagesCount();
         }
-      
+
         return result;
     }
 
