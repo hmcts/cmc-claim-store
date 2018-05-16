@@ -3,6 +3,8 @@
   "issueDate": "26-Apr-2018",
   "courtFee": 40.00,
   "amountWithInterest": 80.89,
+  "reason": "reason",
+  "submitterEmail": "claimant@mail.com",
   "claimants": [
     {
       "type": "Individual",
