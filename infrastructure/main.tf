@@ -123,6 +123,8 @@ module "claim-store-api" {
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_EMAILTOSTAFF = "true"
+
+    ROOT_APPENDER = "CMC"
   }
 }
 

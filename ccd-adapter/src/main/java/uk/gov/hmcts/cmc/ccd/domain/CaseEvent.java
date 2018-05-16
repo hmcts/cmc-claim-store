@@ -5,7 +5,7 @@ public enum CaseEvent {
     SUBMIT_CLAIM("submitClaimEvent"),
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
     DEFENCE_SUBMITTED("DefenceSubmitted"),
-    MORE_TIME_REQUESTED("MoreTimeRequested"),
+    MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
     OFFER_REJECTED_BY_CLAIMANT("OfferRejectedByClaimant"),
     OFFER_REJECTED_BY_DEFENDANT("OfferRejectedByDefendant"),
