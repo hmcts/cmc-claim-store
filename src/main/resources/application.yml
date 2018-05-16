@@ -38,6 +38,9 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
+  anonymous-caseworker:
+    username: "${IDAM_ANONYMOUS_CASEWORKER_USERNAME}"
+    password: "${IDAM_ANONYMOUS_CASEWORKER_PASSWORD}"
 
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
