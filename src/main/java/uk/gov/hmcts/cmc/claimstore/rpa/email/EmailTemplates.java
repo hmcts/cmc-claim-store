@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-@Component
+@Component("rpa/email-templates")
 public class EmailTemplates {
     String getClaimIssuedEmailSubject() {
         return readString("/rpa/templates/email/claimIssued/subject.txt");

@@ -22,7 +22,7 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
-@Service
+@Service("rpa/claim-issued-notification-service")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class ClaimIssuedNotificationService {
 
