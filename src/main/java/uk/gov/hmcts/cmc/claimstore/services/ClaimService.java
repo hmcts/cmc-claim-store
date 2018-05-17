@@ -229,8 +229,6 @@ public class ClaimService {
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, claim.getReferenceNumber());
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("Hey Charlie")
-            .confirmationBody("What's up *doc?*")
             .build();
     }
 
