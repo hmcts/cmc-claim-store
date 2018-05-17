@@ -6,13 +6,15 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +58,7 @@ public class DefendantResponseContentProvider {
         content.put("defenceSubmittedOn", formatDateTime(claim.getRespondedAt()));
         content.put("defenceSubmittedDate", formatDate(claim.getRespondedAt()));
         content.put("freeMediation", defendantResponse.getFreeMediation()
-            .orElse(Response.FreeMediationOption.NO)
+            .orElse(YesNoOption.NO)
             .name()
             .toLowerCase());
         content.put("responseDashboardUrl", notificationsProperties.getFrontendBaseUrl());
@@ -82,7 +84,7 @@ public class DefendantResponseContentProvider {
 
             content.put("responseDefence", fullDefence.getDefence().orElse(null));
             content.put("responseTypeSelected", fullDefence.getDefenceType().getDescription());
-            if (fullDefence.getDefenceType().equals(FullDefenceResponse.DefenceType.ALREADY_PAID)) {
+            if (fullDefence.getDefenceType().equals(DefenceType.ALREADY_PAID)) {
                 content.put("hasDefendantAlreadyPaid", true);
             }
 

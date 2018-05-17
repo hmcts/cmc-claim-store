@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 
 import java.util.List;
 

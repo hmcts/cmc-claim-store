@@ -8,8 +8,8 @@ import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -78,7 +78,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     public void shouldUseFullDefenceTextIfFullDefenceSelected() {
         Claim claim = SampleClaim.builder().withResponse(
             SampleResponse.FullDefence.builder()
-                .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
+                .withDefenceType(DefenceType.DISPUTE)
                 .build())
             .build();
 
@@ -99,7 +99,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
                     .withResponse(
                         SampleResponse.FullDefence
                             .builder()
-                            .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
+                            .withDefenceType(DefenceType.ALREADY_PAID)
                             .withMediation(null)
                             .build()
                     ).build(),
@@ -124,7 +124,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     public void shouldUseAlternativeTextIfFreeMediationIsNotRequested() {
         Claim claim = SampleClaim.builder().withResponse(
             SampleResponse.FullDefence.builder()
-                .withMediation(Response.FreeMediationOption.NO)
+                .withMediation(YesNoOption.NO)
                 .build())
             .build();
 
@@ -140,8 +140,8 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     public void shouldShowQuestionnaireTextIfMediationNotRequestedAndIsFullDefence() {
         Claim claim = SampleClaim.builder().withResponse(
             SampleResponse.FullDefence.builder()
-                .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
-                .withMediation(Response.FreeMediationOption.NO)
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YesNoOption.NO)
                 .build())
             .build();
 
@@ -159,7 +159,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
                 SampleClaim.builder()
                     .withResponse(
                         SampleResponse.FullDefence.builder()
-                            .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
+                            .withDefenceType(DefenceType.ALREADY_PAID)
                             .withMediation(null)
                             .build()
                     ).build(),
