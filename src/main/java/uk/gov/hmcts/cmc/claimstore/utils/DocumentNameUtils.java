@@ -20,6 +20,12 @@ public class DocumentNameUtils {
         return format("%s-json-claim", number);
     }
 
+    public static String buildJsonRequestForJudgementFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-request-for-judgement", number);
+    }
+
     public static String buildJsonMoreTimeRequestedFileBaseName(String number) {
         requireNonBlank(number);
 
