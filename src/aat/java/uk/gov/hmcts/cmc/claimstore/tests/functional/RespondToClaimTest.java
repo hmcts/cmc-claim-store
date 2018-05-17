@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -29,7 +29,7 @@ public class RespondToClaimTest extends BaseTest {
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
-            .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
+            .withDefenceType(DefenceType.DISPUTE)
             .build();
         shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
     }
@@ -37,7 +37,7 @@ public class RespondToClaimTest extends BaseTest {
     @Test
     public void shouldBeAbleToSuccessfullySubmitAlreadyPaidDefence() {
         Response fullDefenceAlreadyPaidResponse = SampleResponse.FullDefence.builder()
-            .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
+            .withDefenceType(DefenceType.ALREADY_PAID)
             .withMediation(null)
             .build();
         shouldBeAbleToSuccessfullySubmit(fullDefenceAlreadyPaidResponse);
