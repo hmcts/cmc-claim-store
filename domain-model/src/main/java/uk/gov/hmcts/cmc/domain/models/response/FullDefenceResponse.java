@@ -32,8 +32,8 @@ public class FullDefenceResponse extends Response {
     private final DefendantEvidence evidence;
 
     public FullDefenceResponse(
-        FreeMediationOption freeMediation,
-        MoreTimeNeededOption moreTimeNeeded,
+        YesNoOption freeMediation,
+        YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
         DefenceType defenceType,

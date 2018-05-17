@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class DefendantResponseContentProvider {
         content.put("defenceSubmittedOn", formatDateTime(claim.getRespondedAt()));
         content.put("defenceSubmittedDate", formatDate(claim.getRespondedAt()));
         content.put("freeMediation", defendantResponse.getFreeMediation()
-            .orElse(Response.FreeMediationOption.NO)
+            .orElse(YesNoOption.NO)
             .name()
             .toLowerCase());
         content.put("responseDashboardUrl", notificationsProperties.getFrontendBaseUrl());

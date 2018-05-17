@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
@@ -40,8 +40,8 @@ public class ResponseMapperTest {
         //given
         FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) SampleResponse.FullDefence.builder()
             .withDefenceType(DefenceType.ALREADY_PAID)
-            .withMediation(Response.FreeMediationOption.NO)
-            .withMoreTimeNeededOption(Response.MoreTimeNeededOption.NO)
+            .withMediation(YesNoOption.NO)
+            .withMoreTimeNeededOption(YesNoOption.NO)
             .build();
 
         //when

@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
@@ -55,8 +56,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         }
     }
 
-    protected Response.FreeMediationOption freeMediationOption = Response.FreeMediationOption.YES;
-    protected Response.MoreTimeNeededOption moreTimeNeededOption = Response.MoreTimeNeededOption.YES;
+    protected YesNoOption freeMediationOption = YesNoOption.YES;
+    protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
     protected Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
     protected StatementOfTruth statementOfTruth;
 
@@ -64,12 +65,12 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         return FullDefence.builder().build();
     }
 
-    public SampleResponse<T> withMediation(Response.FreeMediationOption freeMediationOption) {
+    public SampleResponse<T> withMediation(YesNoOption freeMediationOption) {
         this.freeMediationOption = freeMediationOption;
         return this;
     }
 
-    public SampleResponse<T> withMoreTimeNeededOption(Response.MoreTimeNeededOption moreTimeNeededOption) {
+    public SampleResponse<T> withMoreTimeNeededOption(YesNoOption moreTimeNeededOption) {
         this.moreTimeNeededOption = moreTimeNeededOption;
         return this;
     }

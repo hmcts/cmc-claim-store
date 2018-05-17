@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaff
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -124,7 +124,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
     public void shouldUseAlternativeTextIfFreeMediationIsNotRequested() {
         Claim claim = SampleClaim.builder().withResponse(
             SampleResponse.FullDefence.builder()
-                .withMediation(Response.FreeMediationOption.NO)
+                .withMediation(YesNoOption.NO)
                 .build())
             .build();
 
@@ -141,7 +141,7 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
         Claim claim = SampleClaim.builder().withResponse(
             SampleResponse.FullDefence.builder()
                 .withDefenceType(DefenceType.DISPUTE)
-                .withMediation(Response.FreeMediationOption.NO)
+                .withMediation(YesNoOption.NO)
                 .build())
             .build();
 

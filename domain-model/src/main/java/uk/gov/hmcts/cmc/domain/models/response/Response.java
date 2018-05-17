@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -23,24 +22,10 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 })
 public abstract class Response {
 
-    public enum FreeMediationOption {
-        @JsonProperty("yes")
-        YES,
-        @JsonProperty("no")
-        NO
-    }
-
-    public enum MoreTimeNeededOption {
-        @JsonProperty("yes")
-        YES,
-        @JsonProperty("no")
-        NO
-    }
-
-    private final FreeMediationOption freeMediation;
+    private final YesNoOption freeMediation;
 
     @JsonUnwrapped
-    private final MoreTimeNeededOption moreTimeNeeded;
+    private final YesNoOption moreTimeNeeded;
 
     @Valid
     @NotNull
@@ -50,10 +35,10 @@ public abstract class Response {
     private final StatementOfTruth statementOfTruth;
 
     public Response(
-            FreeMediationOption freeMediation,
-            MoreTimeNeededOption moreTimeNeeded,
-            Party defendant,
-            StatementOfTruth statementOfTruth
+        YesNoOption freeMediation,
+        YesNoOption moreTimeNeeded,
+        Party defendant,
+        StatementOfTruth statementOfTruth
     ) {
         this.freeMediation = freeMediation;
         this.moreTimeNeeded = moreTimeNeeded;
@@ -61,11 +46,11 @@ public abstract class Response {
         this.statementOfTruth = statementOfTruth;
     }
 
-    public Optional<FreeMediationOption> getFreeMediation() {
+    public Optional<YesNoOption> getFreeMediation() {
         return Optional.ofNullable(freeMediation);
     }
 
-    public MoreTimeNeededOption getMoreTimeNeeded() {
+    public YesNoOption getMoreTimeNeeded() {
         return moreTimeNeeded;
     }
 
