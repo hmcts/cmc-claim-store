@@ -39,8 +39,7 @@
         "interestDate": {
           "date": "2015-02-02",
           "type": "CUSTOM",
-          "reason": "I want to claim from this date because that's when that happened",
-          "endDateType": "settled_or_judgment"
+          "reason": "I want to claim from this date because that's when that happened"
         }
       },
       "claimants": [
