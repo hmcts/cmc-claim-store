@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -15,10 +14,10 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
-import java.util.List;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.stream.JsonCollectors;
+import java.util.List;
 
 import static javax.json.Json.createObjectBuilder;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
@@ -38,7 +37,6 @@ public class SealedClaimJsonMapper {
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
             .add("defendants", mapDefendants(claim.getClaimData().getDefendants()))
-            .add("defendantResponse", mapDefendantResponse(claim.getResponse().isPresent()))
             .build();
     }
 
@@ -82,38 +80,5 @@ public class SealedClaimJsonMapper {
             .add("postcode", address.getPostcode())
             .build();
     }
-
-    private JsonArray mapDefendantResponse(List<Claim> claims) {
-        return claims.stream()
-            .map(claim -> {
-                Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-                new NullAwareJsonObjectBuilder()
-                .add("defence", claim.getClaimData().getReason())
-                .add("evidence", claim.getClaimData().getEvidence().ifPresent())
-                .add("timeline", claim.getClaimData().getTimeline().isPresent())
-                .add("defendant", mapDefendants(claim.getClaimData().getDefendants()))
-                .add("dateOfBirth", mapDefendants(claim.getClaimData().getDefendant().getDateOfBirth()))
-                .add("defenceType", claim.getClaimData().getDefendant().getDefenceType)
-                .add("responseType", claim.getClaimData().getDefendant().getResponseType)
-                .add("freeMediation", response.getFreeMediation()
-                    .orElse(Response.FreeMediationOption.NO)
-                    .name()
-                    .toLowerCase())
-                .add("moreTimeNeeded", response.getMoreTimeNeeded())
-                .build()
-            })
-            .collect(JsonCollectors.toJsonArray());
-    }
-
-    private JsonObject mapMoreTimeNeeded(Response response) {
-        return createObjectBuilder()
-            .add("moreTimeNeeded", response.getMoreTimeNeeded().toString())
-            .build();
-    }
-
-
-
-
-
 
 }
