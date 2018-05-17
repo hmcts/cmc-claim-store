@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 
 import java.util.Objects;
 
@@ -37,7 +37,7 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, FullDefenceRe
         });
 
         if (!Objects.equals(actual.getDefenceType().name(), ccdResponse.getResponseType().name())) {
-            failWithMessage("Expected FullDefenceResponse.defenceType to be <%s> but was <%s>",
+            failWithMessage("Expected defenceType to be <%s> but was <%s>",
                 ccdResponse.getResponseType().name(), actual.getDefenceType().name());
         }
 
