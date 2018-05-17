@@ -32,6 +32,7 @@ public class SampleInterest {
                 .withType(Interest.InterestType.STANDARD)
                 .withRate(new BigDecimal("8"))
                 .withReason(null)
+                .withInterestDate(SampleInterestDate.validDefaults())
                 .build();
     }
 

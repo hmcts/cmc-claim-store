@@ -37,6 +37,7 @@ public class InterestAssert extends AbstractAssert<InterestAssert, Interest> {
                 ccdInterest.getSpecificDailyAmount(), actual.getSpecificDailyAmount().orElse(null));
         }
 
+
         assertThat(actual.getInterestBreakdown()).isEqualTo(ccdInterest.getInterestBreakdown());
         assertThat(actual.getInterestDate()).isEqualTo(ccdInterest.getInterestDate());
 

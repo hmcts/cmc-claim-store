@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
+import uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType;
 
 @Component
 public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate> {
@@ -29,11 +30,15 @@ public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate>
             return null;
         }
 
+        InterestEndDateType endDateType = ccdInterestDate.getEndDateType() != null
+            ? InterestEndDateType.valueOf(ccdInterestDate.getEndDateType().name())
+            : null;
+
         return new InterestDate(
             InterestDate.InterestDateType.valueOf(ccdInterestDate.getType().name()),
             ccdInterestDate.getDate(),
             ccdInterestDate.getReason(),
-            InterestDate.InterestEndDateType.valueOf(ccdInterestDate.getEndDateType().name())
+            endDateType
         );
     }
 }
