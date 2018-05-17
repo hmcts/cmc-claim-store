@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestBuilder;
 
 public class SampleClaimData {
 
@@ -29,7 +30,6 @@ public class SampleClaimData {
     private Payment payment = SamplePayment.validDefaults();
     private Amount amount = SampleAmountBreakdown.validDefaults();
     private Interest interest = SampleInterest.standard();
-    private InterestDate interestDate = SampleInterestDate.validDefaults();
     private String reason = "reason";
     private BigInteger feeAmount = new BigInteger("4000");
     private String feeAccountNumber = "PBA1234567";
@@ -130,11 +130,6 @@ public class SampleClaimData {
         return this;
     }
 
-    public SampleClaimData withInterestDate(InterestDate interestDate) {
-        this.interestDate = interestDate;
-        return this;
-    }
-
     public SampleClaimData withStatementOfTruth(StatementOfTruth statementOfTruth) {
         this.statementOfTruth = statementOfTruth;
         return this;
@@ -184,7 +179,6 @@ public class SampleClaimData {
             amount,
             feeAmount,
             interest,
-            interestDate,
             personalInjury,
             housingDisrepair,
             reason,
@@ -233,12 +227,14 @@ public class SampleClaimData {
 
     public static ClaimData noInterest() {
         return builder()
-            .withInterest(SampleInterest.noInterest())
-            .withInterestDate(SampleInterestDate.builder()
-                .withType(null)
-                .withDate(null)
-                .withReason(null)
-                .build())
+            .withInterest(
+                noInterestBuilder()
+                    .withInterestDate(SampleInterestDate.builder()
+                            .withType(null)
+                            .withDate(null)
+                            .withReason(null)
+                            .build())
+                    .build())
             .withAmount(SampleAmountBreakdown.validDefaults())
             .build();
     }

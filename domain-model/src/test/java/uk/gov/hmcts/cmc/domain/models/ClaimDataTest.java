@@ -17,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.DIFFERENT;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterest;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterestBuilder;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 
 public class ClaimDataTest {
 
@@ -41,8 +43,10 @@ public class ClaimDataTest {
     public void shouldBeInvalidWhenGivenStandardInterestWithInvalidDate() {
         //given
         ClaimData claimData = SampleClaimData.builder()
-            .withInterest(SampleInterest.standard())
-            .withInterestDate(invalidDate)
+            .withInterest(
+                standardInterestBuilder()
+                    .withInterestDate(invalidDate)
+                    .build())
             .build();
         //when
         Set<String> response = validate(claimData);
@@ -57,11 +61,12 @@ public class ClaimDataTest {
     public void shouldBeInvalidWhenGivenCustomInterestWithInvalidDate() {
         //given
         ClaimData claimData = SampleClaimData.builder()
-            .withInterest(SampleInterest.builder()
-                .withType(DIFFERENT)
-                .build())
-            .withInterestDate(invalidDate)
-            .build();
+            .withInterest(
+                SampleInterest.builder()
+                    .withType(DIFFERENT)
+                    .withInterestDate(invalidDate)
+                    .build())
+                .build();
         //when
         Set<String> response = validate(claimData);
         //then
@@ -73,9 +78,11 @@ public class ClaimDataTest {
     @Test
     public void shouldBeValidWhenGivenNoInterestWithInvalidInterestDate() {
         ClaimData claimData = SampleClaimData.builder()
-            .withInterest(noInterest())
-            .withInterestDate(invalidDate)
-            .build();
+            .withInterest(
+                noInterestBuilder()
+                    .withInterestDate(invalidDate)
+                    .build())
+                .build();
 
         Set<String> errors = validate(claimData);
 

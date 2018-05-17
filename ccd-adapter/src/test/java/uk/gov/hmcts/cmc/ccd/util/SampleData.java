@@ -172,7 +172,6 @@ public class SampleData {
                     .build())
             .payment(getCCDPayment())
             .interest(getCCDInterest())
-            .interestDate(getCCDInterestDate())
             .statementOfTruth(getCCDStatementOfTruth())
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
@@ -197,6 +196,7 @@ public class SampleData {
             .rate(BigDecimal.valueOf(2))
             .reason("reason")
             .type(CCDInterestType.DIFFERENT)
+            .interestDate(getCCDInterestDate())
             .build();
     }
 
