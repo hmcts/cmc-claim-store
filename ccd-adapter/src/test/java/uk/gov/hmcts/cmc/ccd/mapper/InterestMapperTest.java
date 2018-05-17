@@ -10,16 +10,19 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.BREAKDOWN;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.STANDARD;
 
@@ -83,6 +86,22 @@ public class InterestMapperTest {
     }
 
     @Test
+    public void shouldMapBreakdownInterestToCCD() {
+        //given
+        final Interest interest = SampleInterest.builder().withType(BREAKDOWN)
+            .withInterestBreakdown(SampleInterestBreakdown.builder().build())
+            .withSpecificDailyAmount(new BigDecimal(5))
+            .withInterestDate(SampleInterestDate.submissionToSettledOrJudgement())
+            .build();
+
+        //when
+        CCDInterest ccdInterest = interestMapper.to(interest);
+
+        //then
+        assertThat(interest).isEqualTo(ccdInterest);
+    }
+
+    @Test
     public void shouldMapStandardInterestFromCCD() {
         //given
         CCDInterest ccdInterest = CCDInterest.builder()
@@ -104,7 +123,7 @@ public class InterestMapperTest {
             .type(CCDInterestDateType.CUSTOM)
             .date(LocalDate.now())
             .reason("A reason")
-            .endDate(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
+            .endDateType(CCDInterestEndDateType.SETTLED_OR_JUDGMENT)
             .build();
 
         //given

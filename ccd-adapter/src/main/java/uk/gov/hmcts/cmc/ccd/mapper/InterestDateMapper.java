@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDate;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 @Component
@@ -18,6 +19,7 @@ public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate>
         return builder.type(CCDInterestDateType.valueOf(interestDate.getType().name()))
             .date(interestDate.getDate())
             .reason(interestDate.getReason())
+            .endDateType(CCDInterestEndDateType.valueOf(interestDate.getEndDateType().name()))
             .build();
     }
 
@@ -31,7 +33,7 @@ public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate>
             InterestDate.InterestDateType.valueOf(ccdInterestDate.getType().name()),
             ccdInterestDate.getDate(),
             ccdInterestDate.getReason(),
-            ccdInterestDate.getEndDate()
+            InterestDate.InterestEndDateType.valueOf(ccdInterestDate.getEndDateType().name())
         );
     }
 }
