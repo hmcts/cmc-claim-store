@@ -19,8 +19,10 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseCallback;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -187,28 +189,53 @@ public class ClaimService {
     }
 
     @SuppressWarnings("unchecked")
-    public AboutToSubmitCallbackResponse requestMoreTimeForResponseOnPaper(CaseCallback caseCallback) {
-        Claim claim = convertCallbackToClaim(caseCallback);
+    public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
+        CallbackRequest callbackRequest,
+        boolean validateOnly
+    ) {
+        Claim claim = convertCallbackToClaim(callbackRequest);
 
-        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
+        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
+        AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
+            .builder();
+
+        if (validateOnly || !validationResult.isEmpty()) {
+            return builder
+                .errors(validationResult)
+                .build();
+        }
+
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, claim.getDefendantEmail());
-        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, claim.getReferenceNumber());
-
-        Map<String, Object> data = new HashMap<>(((Map<String, Object>) caseCallback.getCaseDetails()
+        Map<String, Object> data = new HashMap<>(((Map<String, Object>) callbackRequest.getCaseDetails()
             .get("case_data"))
         );
         data.put("moreTimeRequested", CCDYesNoOption.YES);
         data.put("responseDeadline", newDeadline);
 
-        return AboutToSubmitCallbackResponse.builder()
+        return builder
             .data(data)
             .build();
     }
 
+    public SubmittedCallbackResponse requestMoreTimeOnPaperSubmitted(CallbackRequest callbackRequest) {
+        Claim claim = convertCallbackToClaim(callbackRequest);
+
+        eventProducer.createMoreTimeForResponseRequestedEvent(
+            claim,
+            claim.getResponseDeadline(),
+            claim.getDefendantEmail()
+        );
+        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, claim.getReferenceNumber());
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("Hey Charlie")
+            .confirmationBody("What's up *doc?*")
+            .build();
+    }
+
     @SuppressWarnings("unchecked")
-    private Claim convertCallbackToClaim(CaseCallback caseDetails) {
+    private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
         return ccdCaseDataToClaim.to(
             (long) caseDetails.getCaseDetails().get("id"),
             (Map<String, Object>) caseDetails.getCaseDetails().get("case_data")
