@@ -7,6 +7,7 @@ import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
