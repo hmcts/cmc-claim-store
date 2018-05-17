@@ -10,9 +10,10 @@ import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentDeclarationMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 @Component
 public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> {
@@ -89,7 +90,7 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
             Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeededOption().name()),
             partyMapper.from(response.getDefendant()),
             statementOfTruth,
-            FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
+            DefenceType.valueOf(response.getResponseType().name()),
             response.getDefence(),
             paymentDeclarationMapper.from(response.getPaymentDeclaration()),
             timelineMapper.from(response.getTimeline()),

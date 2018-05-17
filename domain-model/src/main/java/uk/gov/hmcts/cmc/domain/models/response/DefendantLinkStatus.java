@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;

@@ -1,17 +1,18 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static class FullDefence extends SampleResponse<FullDefence> {
-        private FullDefenceResponse.DefenceType defenceType = FullDefenceResponse.DefenceType.DISPUTE;
+        private DefenceType defenceType = DefenceType.DISPUTE;
         private String defence = "defence string";
         private PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder().build();
         private DefendantTimeline timeline = SampleDefendantTimeline.validDefaults();
@@ -21,7 +22,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return new FullDefence();
         }
 
-        public FullDefence withDefenceType(FullDefenceResponse.DefenceType defenceType) {
+        public FullDefence withDefenceType(DefenceType defenceType) {
             this.defenceType = defenceType;
             return this;
         }
