@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequeste
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 @Service
 public class DefendantResponseService {
