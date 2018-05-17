@@ -24,7 +24,7 @@ public class MoreTimeRequestRuleTest {
     private MoreTimeRequestRule moreTimeRequestRule = new MoreTimeRequestRule();
 
     @Test
-    public void noExceptionThrownWhenMoreTimeRequestedFirstTime() {
+    public void noExceptionThrownWhenMoreTimeRequestedFirstTimeAndDeadlineHasNotPassed() {
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().plusDays(2))
             .withMoreTimeRequested(false)
