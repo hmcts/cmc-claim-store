@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -28,7 +29,7 @@ public class MoreTimeRequestRuleTest {
             .withResponseDeadline(LocalDate.now().plusDays(2))
             .withMoreTimeRequested(false)
             .build();
-        moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
+        assertThatCode(() -> moreTimeRequestRule.assertMoreTimeCanBeRequested(claim)).doesNotThrowAnyException();
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
