@@ -23,7 +23,10 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -31,7 +34,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.*;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponseWithDefendant;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponseWithDefendantsResponse;
 
 @TestPropertySource(
     properties = {
@@ -40,13 +45,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.*;
     }
 )
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
+    private static final String CASE_REFERENCE = "000MC023";
     @MockBean
     protected SendLetterApi sendLetterApi;
-
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
-
-    private static final String CASE_REFERENCE = "000MC023";
 
     @Before
     public void setup() {
@@ -92,8 +95,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
-        String event = "claim-issued";
-        Claim claim = SampleClaim.builder()
+        final String event = "claim-issued";
+        final Claim claim = SampleClaim.builder()
             .withReferenceNumber(CASE_REFERENCE)
             .withDefendantId(null).build();
 
@@ -115,7 +118,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
-        String event = "more-time-requested";
+        final String event = "more-time-requested";
 
         commonGivenForSearchForCitizen(CASE_REFERENCE);
 
@@ -126,7 +129,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
-        String event = "more-time-requested";
+        final String event = "more-time-requested";
 
         commonGivenForSearchForCitizenAndDef(CASE_REFERENCE);
 
