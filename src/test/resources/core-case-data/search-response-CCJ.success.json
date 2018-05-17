@@ -1,0 +1,383 @@
+{
+  "id": 1516189555935242,
+  "jurisdiction": "CMC",
+  "state": "claimIssued",
+  "case_type_id": "MoneyClaimCase",
+  "created_date": "2018-01-17T11:45:55.944",
+  "last_modified": "2018-01-17T11:45:55.989",
+  "security_classification": "PUBLIC",
+  "case_data": {
+    "referenceNumber": "000MC023",
+    "submitterId": "20",
+    "submittedOn": "2018-01-17T11:45:46.872525",
+    "responseDeadline": "2018-01-17T11:45:55.944",
+    "claimData": {
+      "amount": {
+        "type": "BREAK_DOWN",
+        "amountBreakDown": {
+          "rows": [
+            {
+              "value": {
+                "amount": 40,
+                "reason": "reason"
+              }
+            }
+          ]
+        }
+      },
+      "reason": "reason",
+      "feeCode": "X0012",
+      "payment": {
+        "id": "123",
+        "amount": 4000,
+        "reference": "reference",
+        "dateCreated": "2010-10-12"
+      },
+      "interest": {
+        "rate": 8,
+        "type": "STANDARD",
+        "reason": "reason"
+      },
+      "claimants": [
+        {
+          "id": "6d763dee-c018-41d7-944f-c4b0ac175320",
+          "value": {
+            "type": "INDIVIDUAL",
+            "individual": {
+              "name": "John Rambo",
+              "address": {
+                "city": "Manchester",
+                "line1": "52",
+                "line2": "Down Street",
+                "postcode": "DF1 3LJ"
+              },
+              "dateOfBirth": "1968-01-02",
+              "phoneNumber": "07873727165",
+              "correspondenceAddress": {
+                "city": "Manchester",
+                "line1": "52",
+                "line2": "Down Street",
+                "postcode": "DF1 3LJ"
+              }
+            }
+          }
+        }
+      ],
+      "defendants": [
+        {
+          "id": "7ebb4899-6889-4d42-9706-7ba640d4e61e",
+          "value": {
+            "type": "INDIVIDUAL",
+            "individual": {
+              "name": "John Smith",
+              "email": "john.smith@server.net",
+              "address": {
+                "city": "Manchester",
+                "line1": "52",
+                "line2": "Down Street",
+                "postcode": "DF1 3LJ"
+              }
+            }
+          }
+        }
+      ],
+      "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
+      "interestDate": {
+        "date": "2015-02-02",
+        "type": "CUSTOM",
+        "reason": "I want to claim from this date because that's when that happened"
+      },
+      "feeAmountInPennies": 4000
+    },
+    "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
+    "id": 26,
+    "issuedOn": "2018-01-17",
+    "submitterEmail": "me@server.net",
+    "countyCourtJudgment": {
+      "paymentOption": "INSTALMENTS",
+      "paidAmount": 0,
+      "repaymentPlan": {
+        "instalmentAmount": 100,
+        "firstPaymentDate": "2100-10-10",
+        "paymentSchedule": "EACH_WEEK"
+      },
+      "statementOfTruth": {
+        "signerName": "Arnold Schwarzenegger",
+        "signerRole": "Director"
+      }
+    }
+  },
+  "data_classification": {
+    "referenceNumber": "PUBLIC",
+    "submitterId": "PUBLIC",
+    "submittedOn": "PUBLIC",
+    "claimData": {
+      "value": {
+        "amount": {
+          "value": {
+            "type": "PUBLIC",
+            "amountBreakDown": {
+              "value": {
+                "rows": {
+                  "value": [
+                    {
+                      "value": {
+                        "amount": "PUBLIC",
+                        "reason": "PUBLIC"
+                      }
+                    }
+                  ],
+                  "classification": "PUBLIC"
+                }
+              },
+              "classification": "PUBLIC"
+            }
+          },
+          "classification": "PUBLIC"
+        },
+        "reason": "PUBLIC",
+        "feeCode": "PUBLIC",
+        "payment": {
+          "value": {
+            "id": "PUBLIC",
+            "amount": "PUBLIC",
+            "reference": "PUBLIC",
+            "dateCreated": "PUBLIC",
+            "description": "PUBLIC",
+            "paymentState": {
+              "value": {
+                "status": "PUBLIC",
+                "finished": "PUBLIC"
+              },
+              "classification": "PUBLIC"
+            }
+          },
+          "classification": "PUBLIC"
+        },
+        "interest": {
+          "value": {
+            "rate": "PUBLIC",
+            "type": "PUBLIC",
+            "reason": "PUBLIC"
+          },
+          "classification": "PUBLIC"
+        },
+        "claimants": {
+          "value": [
+            {
+              "value": {
+                "type": "PUBLIC",
+                "individual": {
+                  "value": {
+                    "name": "PUBLIC",
+                    "address": {
+                      "value": {
+                        "city": "PUBLIC",
+                        "line1": "PUBLIC",
+                        "line2": "PUBLIC",
+                        "postcode": "PUBLIC"
+                      },
+                      "classification": "PUBLIC"
+                    },
+                    "dateOfBirth": "PUBLIC",
+                    "mobilePhone": "PUBLIC",
+                    "correspondenceAddress": {
+                      "value": {
+                        "city": "PUBLIC",
+                        "line1": "PUBLIC",
+                        "line2": "PUBLIC",
+                        "postcode": "PUBLIC"
+                      },
+                      "classification": "PUBLIC"
+                    }
+                  },
+                  "classification": "PUBLIC"
+                }
+              }
+            }
+          ],
+          "classification": "PUBLIC"
+        },
+        "defendants": {
+          "value": [
+            {
+              "value": {
+                "type": "PUBLIC",
+                "individual": {
+                  "value": {
+                    "name": "PUBLIC",
+                    "email": "PUBLIC",
+                    "address": {
+                      "value": {
+                        "city": "PUBLIC",
+                        "line1": "PUBLIC",
+                        "line2": "PUBLIC",
+                        "postcode": "PUBLIC"
+                      },
+                      "classification": "PUBLIC"
+                    }
+                  },
+                  "classification": "PUBLIC"
+                }
+              }
+            }
+          ],
+          "classification": "PUBLIC"
+        },
+        "externalId": "PUBLIC",
+        "interestDate": {
+          "value": {
+            "date": "PUBLIC",
+            "type": "PUBLIC",
+            "reason": "PUBLIC"
+          },
+          "classification": "PUBLIC"
+        },
+        "feeAmountInPennies": "PUBLIC"
+      },
+      "classification": "PUBLIC"
+    },
+    "externalId": "PUBLIC",
+    "id": "PUBLIC",
+    "issuedOn": "PUBLIC",
+    "submitterEmail": "PUBLIC"
+  },
+  "after_submit_callback_response": null,
+  "callback_response_status_code": null,
+  "callback_response_status": null,
+  "security_classifications": {
+    "referenceNumber": "PUBLIC",
+    "submitterId": "PUBLIC",
+    "submittedOn": "PUBLIC",
+    "claimData": {
+      "value": {
+        "amount": {
+          "value": {
+            "type": "PUBLIC",
+            "amountBreakDown": {
+              "value": {
+                "rows": {
+                  "value": [
+                    {
+                      "value": {
+                        "amount": "PUBLIC",
+                        "reason": "PUBLIC"
+                      }
+                    }
+                  ],
+                  "classification": "PUBLIC"
+                }
+              },
+              "classification": "PUBLIC"
+            }
+          },
+          "classification": "PUBLIC"
+        },
+        "reason": "PUBLIC",
+        "feeCode": "PUBLIC",
+        "payment": {
+          "value": {
+            "id": "PUBLIC",
+            "amount": "PUBLIC",
+            "reference": "PUBLIC",
+            "dateCreated": "PUBLIC",
+            "description": "PUBLIC",
+            "paymentState": {
+              "value": {
+                "status": "PUBLIC",
+                "finished": "PUBLIC"
+              },
+              "classification": "PUBLIC"
+            }
+          },
+          "classification": "PUBLIC"
+        },
+        "interest": {
+          "value": {
+            "rate": "PUBLIC",
+            "type": "PUBLIC",
+            "reason": "PUBLIC"
+          },
+          "classification": "PUBLIC"
+        },
+        "claimants": {
+          "value": [
+            {
+              "value": {
+                "type": "PUBLIC",
+                "individual": {
+                  "value": {
+                    "name": "PUBLIC",
+                    "address": {
+                      "value": {
+                        "city": "PUBLIC",
+                        "line1": "PUBLIC",
+                        "line2": "PUBLIC",
+                        "postcode": "PUBLIC"
+                      },
+                      "classification": "PUBLIC"
+                    },
+                    "dateOfBirth": "PUBLIC",
+                    "mobilePhone": "PUBLIC",
+                    "correspondenceAddress": {
+                      "value": {
+                        "city": "PUBLIC",
+                        "line1": "PUBLIC",
+                        "line2": "PUBLIC",
+                        "postcode": "PUBLIC"
+                      },
+                      "classification": "PUBLIC"
+                    }
+                  },
+                  "classification": "PUBLIC"
+                }
+              }
+            }
+          ],
+          "classification": "PUBLIC"
+        },
+        "defendants": {
+          "value": [
+            {
+              "value": {
+                "type": "PUBLIC",
+                "individual": {
+                  "value": {
+                    "name": "PUBLIC",
+                    "email": "PUBLIC",
+                    "address": {
+                      "value": {
+                        "city": "PUBLIC",
+                        "line1": "PUBLIC",
+                        "line2": "PUBLIC",
+                        "postcode": "PUBLIC"
+                      },
+                      "classification": "PUBLIC"
+                    }
+                  },
+                  "classification": "PUBLIC"
+                }
+              }
+            }
+          ],
+          "classification": "PUBLIC"
+        },
+        "externalId": "PUBLIC",
+        "interestDate": {
+          "value": {
+            "date": "PUBLIC",
+            "type": "PUBLIC",
+            "reason": "PUBLIC"
+          },
+          "classification": "PUBLIC"
+        },
+        "feeAmountInPennies": "PUBLIC"
+      },
+      "classification": "PUBLIC"
+    },
+    "externalId": "PUBLIC",
+    "id": "PUBLIC",
+    "issuedOn": "PUBLIC",
+    "submitterEmail": "PUBLIC"
+  }
+}

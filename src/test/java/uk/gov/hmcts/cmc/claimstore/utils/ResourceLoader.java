@@ -40,4 +40,14 @@ public class ResourceLoader {
         String response = new ResourceReader().read("/core-case-data/search-response.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
+
+    public static List<CaseDetails> successfulCoreCaseDataSearchResponseWithDefendant() {
+        String response = new ResourceReader().read("/core-case-data/search-response-with-def.success.json");
+        return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
+
+    public static List<CaseDetails> successfulCoreCaseDataSearchResponseWithDefendantsResponse() {
+        String response = new ResourceReader().read("/core-case-data/search-response-with-def-res.success.json");
+        return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
 }

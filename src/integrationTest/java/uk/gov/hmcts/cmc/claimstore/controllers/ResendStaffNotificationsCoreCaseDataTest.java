@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
-import javassist.tools.rmi.Sample;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -9,7 +8,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -17,22 +15,15 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
-import java.time.LocalDate;
-import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -40,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.*;
 
 @TestPropertySource(
     properties = {
@@ -54,6 +45,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
+
+    private static final String CASE_REFERENCE = "000MC023";
 
     @Before
     public void setup() {
@@ -71,6 +64,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
         String nonExistingClaimReference = "something";
         String event = "claim-issue";
+        commonGivenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(nonExistingClaimReference, event).andExpect(status().isNotFound());
     }
@@ -79,19 +73,19 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
         String nonExistingEvent = "some-event";
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        commonGivenForSearchForCitizen(CASE_REFERENCE);
 
-        makeRequest(claim.getReferenceNumber(), nonExistingEvent).andExpect(status().isNotFound());
+        makeRequest(CASE_REFERENCE, nonExistingEvent).andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
         String event = "claim-issued";
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, BEARER_TOKEN);
+        Claim claim = SampleClaim.builder().build();
+        commonGivenForSearchForCitizenAndDef(CASE_REFERENCE);
 
-        makeRequest(claim.getReferenceNumber(), event).andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -100,21 +94,13 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         String event = "claim-issued";
         Claim claim = SampleClaim.builder()
-            .withReferenceNumber("000MC023")
+            .withReferenceNumber(CASE_REFERENCE)
             .withDefendantId(null).build();
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.referenceNumber", claim.getReferenceNumber()))
-            )
-        ).willReturn(successfulCoreCaseDataSearchResponse());
+        commonGivenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());
@@ -131,9 +117,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
         String event = "more-time-requested";
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        commonGivenForSearchForCitizen(CASE_REFERENCE);
 
-        makeRequest(claim.getReferenceNumber(), event).andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
         verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
     }
@@ -142,22 +128,23 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
         String event = "more-time-requested";
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
+        commonGivenForSearchForCitizenAndDef(CASE_REFERENCE);
 
-        makeRequest(claim.getReferenceNumber(), event).andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, event).andExpect(status().isOk());
 
-        verify(notificationClient).sendEmail(eq("staff-more-time-requested-template"), eq("recipient@example.com"),
-            any(), eq("more-time-requested-notification-to-staff-" + claim.getReferenceNumber()));
+        verify(notificationClient).sendEmail(eq("staff-more-time-requested-template"),
+            eq("recipient@example.com"),
+            any(),
+            eq("more-time-requested-notification-to-staff-" + CASE_REFERENCE));
     }
 
     @Test
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
         String event = "response-submitted";
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
+        commonGivenForSearchForCitizen(CASE_REFERENCE);
 
-        makeRequest(claim.getReferenceNumber(), event).andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -166,31 +153,52 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
         String event = "response-submitted";
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        claimStore.saveResponse(
-            claim,
-            SampleResponse.FullDefence
-                .builder()
-                .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
-                .withMediation(null)
-                .build(),
-            DEFENDANT_ID,
-            "j.smith@example.com"
-        );
+        given(coreCaseDataApi.searchForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE))
+            )
+        ).willReturn(successfulCoreCaseDataSearchResponseWithDefendantsResponse());
 
-        makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, event).andExpect(status().isOk());
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo("recipient@example.com");
         assertThat(emailDataArgument.getValue().getSubject())
-            .isEqualTo("Civil Money Claim defence submitted: John Rambo v John Smith " + claim.getReferenceNumber());
+            .isEqualTo("Civil Money Claim defence submitted: John Rambo v John Smith " + CASE_REFERENCE);
         assertThat(emailDataArgument.getValue().getMessage()).contains(
-            "The defendant has submitted an already paid defence which is attached as a PDF",
+            "The defendant has submitted a full defence which is attached as a PDF",
             "Email: j.smith@example.com",
             "Mobile number: 07873727165"
         );
+    }
+
+    private void commonGivenForSearchForCitizen(String caseReference) {
+        given(coreCaseDataApi.searchForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(ImmutableMap.of("case.referenceNumber", caseReference))
+            )
+        ).willReturn(successfulCoreCaseDataSearchResponse());
+    }
+
+    private void commonGivenForSearchForCitizenAndDef(String caseReference) {
+        given(coreCaseDataApi.searchForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(ImmutableMap.of("case.referenceNumber", caseReference))
+            )
+        ).willReturn(successfulCoreCaseDataSearchResponseWithDefendant());
     }
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
