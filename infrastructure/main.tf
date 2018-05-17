@@ -127,6 +127,11 @@ module "claim-store-api" {
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.rpa_email.data["value"]}"
+
+    RPA_NOTIFICATIONS_DEFENCE_RESPONSE = "CMCdefence.Auto@justice.gov.uk"
+    RPA_NOTIFICATIONS_DEFAULT_JUDGEMENT = " CMCjudgment.Auto@justice.gov.uk"
+    RPA_NOTIFICATIONS_MORE_TIME = "CMC.Auto@justice.gov.uk"
+
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_EMAILTOSTAFF = "true"

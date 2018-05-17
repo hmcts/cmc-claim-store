@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -37,6 +38,7 @@ public class SealedClaimJsonMapper {
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
             .add("defendants", mapDefendants(claim.getClaimData().getDefendants()))
+            .add("defendantResponse", mapDefendantResponse(claim.getResponse().isPresent()))
             .build();
     }
 
@@ -80,5 +82,40 @@ public class SealedClaimJsonMapper {
             .add("postcode", address.getPostcode())
             .build();
     }
+
+    private JsonArray mapDefendantResponse(List<Claim> claims) {
+        return claims.stream()
+            .map(claim -> new NullAwareJsonObjectBuilder()
+                .add("defence", claim.getClaimData().getReason())
+                .add("evidence", claim.getClaimData().getEvidence().ifPresent())
+                .add("timeline", claim.getClaimData().getTimeline().isPresent())
+                .add("defendant", mapDefendants(claim.getClaimData().getDefendants()))
+                .add("dateOfBirth", mapDefendants(claim.getClaimData().getDefendant().getDateOfBirth()))
+                .add("defenceType", claim.getClaimData().getDefendant().getDefenceType)
+                .add("responseType", claim.getClaimData().getDefendant().getResponseType)
+                .add("freeMediation", mapFreeMediation(response.getFreeMediation().toString()))
+                .add("moreTimeNeeded", mapMoreTimeNeeded(response.getMoreTimeNeeded().toString()))
+                .build())
+            .collect(JsonCollectors.toJsonArray());
+    }
+
+    // get defendant gets called in mapDefendantResponse but also called in map
+
+    private JsonObject mapFreeMediation(Response response) {
+        return createObjectBuilder()
+            .add("submitterEmail", response.getFreeMediation().toString())
+            .build();
+    }
+
+    private JsonObject mapMoreTimeNeeded(Response response) {
+        return createObjectBuilder()
+            .add("moreTimeNeeded", response.getMoreTimeNeeded().toString())
+            .build();
+    }
+
+
+
+
+
 
 }
