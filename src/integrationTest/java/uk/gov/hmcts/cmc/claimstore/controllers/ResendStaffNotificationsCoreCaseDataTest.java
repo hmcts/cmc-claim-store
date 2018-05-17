@@ -65,8 +65,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
-        String nonExistingClaimReference = "something";
-        String event = "claim-issue";
+        final String nonExistingClaimReference = "something";
+        final String event = "claim-issue";
         commonGivenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(nonExistingClaimReference, event).andExpect(status().isNotFound());
@@ -74,7 +74,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
-        String nonExistingEvent = "some-event";
+        final String nonExistingEvent = "some-event";
 
         commonGivenForSearchForCitizen(CASE_REFERENCE);
 
@@ -83,9 +83,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
-        String event = "claim-issued";
+        final String event = "claim-issued";
 
-        Claim claim = SampleClaim.builder().build();
         commonGivenForSearchForCitizenAndDef(CASE_REFERENCE);
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
@@ -143,7 +142,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
-        String event = "response-submitted";
+        final String event = "response-submitted";
 
         commonGivenForSearchForCitizen(CASE_REFERENCE);
 
@@ -154,7 +153,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
-        String event = "response-submitted";
+        final String event = "response-submitted";
 
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
