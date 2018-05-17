@@ -20,6 +20,12 @@ public class DocumentNameUtils {
         return format("%s-json-claim", number);
     }
 
+    public static String buildJsonMoreTimeRequestedFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-more-time-requested", number);
+    }
+
     public static boolean isSealedClaim(String filename) {
         requireNonBlank(filename);
 

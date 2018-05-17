@@ -43,8 +43,12 @@ data "vault_generic_secret" "staff_email" {
   path = "secret/${var.vault_section}/cmc/claim-store/staff_email"
 }
 
-data "vault_generic_secret" "rpa_email" {
-  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email"
+data "vault_generic_secret" "rpa_email_sealed_claim" {
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email_sealed_claim"
+}
+
+data "vault_generic_secret" "rpa_email_more_time_requested" {
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email_more_time_requested"
 }
 
 data "vault_generic_secret" "anonymous_citizen_username" {
@@ -126,11 +130,11 @@ module "claim-store-api" {
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
-    RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.rpa_email.data["value"]}"
+    RPA_NOTIFICATIONS_RECIPIENT_SEALED_CLAIM = "${data.vault_generic_secret.rpa_email_sealed_claim.data["value"]}"
+    RPA_NOTIFICATIONS_RECIPIENT_MORE_TIME = "${data.vault_generic_secret.rpa_email_more_time_requested.data["value"]}"
 
     RPA_NOTIFICATIONS_DEFENCE_RESPONSE = "CMCdefence.Auto@justice.gov.uk"
     RPA_NOTIFICATIONS_DEFAULT_JUDGEMENT = " CMCjudgment.Auto@justice.gov.uk"
-    RPA_NOTIFICATIONS_MORE_TIME = "CMC.Auto@justice.gov.uk"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
