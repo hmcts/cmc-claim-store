@@ -72,7 +72,7 @@ public class SealedClaimJsonMapper {
     }
 
     private JsonObject mapAddress(Address address) {
-        return createObjectBuilder()
+        return new NullAwareJsonObjectBuilder()
             .add("line1", address.getLine1())
             .add("line2", address.getLine2())
             .add("line3", address.getLine3())
