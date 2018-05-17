@@ -73,7 +73,7 @@ public class CommonOperations {
     }
 
     public Response submitResponse(
-        uk.gov.hmcts.cmc.domain.models.Response response,
+        uk.gov.hmcts.cmc.domain.models.response.Response response,
         String claimExternalId,
         User defendant
     ) {

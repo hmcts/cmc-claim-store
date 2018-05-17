@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.DefendantLinkStatus;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
 import javax.validation.Valid;
