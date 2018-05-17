@@ -41,9 +41,8 @@
         "value": {
           "type": "INDIVIDUAL",
           "individual": {
-            "title": "Dr.",
             "name": "John Rambo",
-            "mobilePhone": "07873727165",
+            "phoneNumber": "07873727165",
             "address": {
               "line1": "52",
               "line2": "Down Street",
@@ -82,7 +81,6 @@
         "value": {
           "type": "INDIVIDUAL",
           "individual": {
-            "title": "Dr.",
             "name": "John Smith",
             "email": "j.smith@example.com",
             "address": {

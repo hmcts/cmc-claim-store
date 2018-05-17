@@ -77,7 +77,7 @@ public class CoreCaseDataService {
         String referenceNumber = referenceNumberService.getReferenceNumber(claimantRepresented);
         try {
             CCDCase ccdCase = caseMapper.to(claim);
-            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(claimantRepresented));
+            ccdCase.setReferenceNumber(referenceNumber);
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(claim.getSubmitterId())
                 .jurisdictionId(JURISDICTION_ID)
