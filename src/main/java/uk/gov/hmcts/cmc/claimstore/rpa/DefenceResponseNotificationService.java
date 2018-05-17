@@ -49,7 +49,7 @@ public class DefenceResponseNotificationService {
     private EmailData prepareEmailData(Claim claim) {
 
         return new EmailData(emailProperties.getRecipient(),
-            "J additional time " + claim.getReferenceNumber(),
+            "J defence response " + claim.getReferenceNumber(),
             "",
             Collections.singletonList(createDefenceResponseAttachment(claim))
         );
