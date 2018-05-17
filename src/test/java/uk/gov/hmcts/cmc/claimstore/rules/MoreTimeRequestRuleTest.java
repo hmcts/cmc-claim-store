@@ -60,4 +60,27 @@ public class MoreTimeRequestRuleTest {
         verify(moreTimeRequestRule).assertIsNotPastDeadline(any(LocalDateTime.class), eq(claim.getResponseDeadline()));
     }
 
+    @Test
+    public void assertIsNotPastDeadlineShouldNotThrowWhenTimeIsBefore4OnDeadlineDay() {
+        LocalDateTime now = LocalDate.now().atTime(15,59, 59, 999);
+        LocalDate responseDeadline = LocalDate.now();
+        assertThatCode(
+            () -> moreTimeRequestRule.assertIsNotPastDeadline(now, responseDeadline)
+        ).doesNotThrowAnyException();
+    }
+
+    @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
+    public void assertIsNotPastDeadlineShouldThrowWhenTimeIs4OnDeadlineDay() {
+        LocalDateTime now = LocalDate.now().atTime(16,0);
+        LocalDate responseDeadline = LocalDate.now();
+        moreTimeRequestRule.assertIsNotPastDeadline(now, responseDeadline);
+    }
+
+    @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
+    public void assertIsNotPastDeadlineShouldThrowWhenTimeIsPast4OnDeadlineDay() {
+        LocalDateTime now = LocalDate.now().atTime(16,1);
+        LocalDate responseDeadline = LocalDate.now();
+        moreTimeRequestRule.assertIsNotPastDeadline(now, responseDeadline);
+    }
+
 }
