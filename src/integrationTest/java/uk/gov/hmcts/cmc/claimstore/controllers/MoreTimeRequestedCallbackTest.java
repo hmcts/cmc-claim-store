@@ -1,0 +1,120 @@
+package uk.gov.hmcts.cmc.claimstore.controllers;
+
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=http://ccd-data-store-api"
+    }
+)
+public class MoreTimeRequestedCallbackTest extends MockSpringTest {
+
+    private static final String ABOUT_TO_START_CALLBACK = "about-to-start";
+
+    @Test
+    public void shouldReturnWithNoValidationErrorsOnAboutToStartIfAvailable() throws Exception {
+        MvcResult mvcResult = makeRequest(ABOUT_TO_START_CALLBACK, LocalDate.now().plusDays(3), false)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse response = deserializeObjectFrom(
+            mvcResult,
+            AboutToStartOrSubmitCallbackResponse.class
+        );
+
+        assertThat(response.getErrors()).isNull();
+    }
+
+    @Test
+    public void shouldReturnWithValidationErrorsOnAboutToStartIfAlreadyRequested() throws Exception {
+        MvcResult mvcResult = makeRequest(ABOUT_TO_START_CALLBACK, LocalDate.now().plusDays(3), true)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse response = deserializeObjectFrom(
+            mvcResult,
+            AboutToStartOrSubmitCallbackResponse.class
+        );
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    public void shouldReturnWithValidationErrorsOnAboutToStartIfPastResponseDeadline() throws Exception {
+        MvcResult mvcResult = makeRequest(ABOUT_TO_START_CALLBACK, LocalDate.now().minusDays(1), false)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse response = deserializeObjectFrom(
+            mvcResult,
+            AboutToStartOrSubmitCallbackResponse.class
+        );
+
+        assertThat(response.getErrors()).hasSize(1);
+    }
+
+    @Test
+    public void shouldModifyResponseDeadlineOnAboutToSubmit() throws Exception {
+        MvcResult mvcResult = makeRequest(ABOUT_TO_START_CALLBACK, LocalDate.now().plusDays(3), false)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse response = deserializeObjectFrom(
+            mvcResult,
+            AboutToStartOrSubmitCallbackResponse.class
+        );
+
+        assertThat(response.getErrors()).isNull();
+    }
+
+    @Test
+    public void shouldSendNotificationOnSubmitted() {
+
+    }
+
+    private ResultActions makeRequest(
+        String callbackType,
+        LocalDate responseDeadline,
+        boolean moreTimeRequestedAlready
+    ) throws Exception {
+        CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
+        caseDetailsTemp.getData().put("responseDeadline", responseDeadline);
+        caseDetailsTemp.getData().put("moreTimeRequested",
+            moreTimeRequestedAlready ? CCDYesNoOption.YES.name() : CCDYesNoOption.NO.name()
+        );
+
+        Map<String, Object> caseDetails = new HashMap<>();
+        caseDetails.put("id", caseDetailsTemp.getId());
+        caseDetails.put("case_data", caseDetailsTemp.getData());
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .eventId(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())
+            .caseDetails(caseDetails)
+            .build();
+
+        return webClient
+            .perform(post("/cases/callbacks/" + callbackType)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .content(jsonMapper.toJson(callbackRequest))
+            );
+    }
+}

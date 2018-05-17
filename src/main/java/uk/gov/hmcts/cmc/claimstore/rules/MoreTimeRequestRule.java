@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.rules;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -31,13 +30,11 @@ public class MoreTimeRequestRule {
 
         List<String> validationErrors = new ArrayList<>();
         if (claim.isMoreTimeRequested()) {
-            validationErrors.add("More time has already been requested");
+            validationErrors.add("The defendant already asked for more time and their request was processed");
         }
 
         if (LocalDate.now().isAfter(claim.getResponseDeadline())) {
-            validationErrors.add(
-                String.format("Response deadline %s has already passed", Formatting.formatDate(claim.getResponseDeadline()))
-            );
+            validationErrors.add("The defendant has missed the deadline for requesting more time");
         }
         return validationErrors;
     }

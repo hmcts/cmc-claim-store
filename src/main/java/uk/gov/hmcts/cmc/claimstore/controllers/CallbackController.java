@@ -33,7 +33,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/{callback-type}")
-    @ApiOperation("Request more time for response arrived on paper")
+    @ApiOperation("Handles all callbacks from CCD")
     public CallbackResponse callback(
         @PathVariable("callback-type") String callbackType,
         @NotNull @RequestBody CallbackRequest callback
