@@ -85,7 +85,9 @@ public class SealedClaimJsonMapper {
 
     private JsonArray mapDefendantResponse(List<Claim> claims) {
         return claims.stream()
-            .map(claim -> new NullAwareJsonObjectBuilder()
+            .map(claim -> {
+                Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+                new NullAwareJsonObjectBuilder()
                 .add("defence", claim.getClaimData().getReason())
                 .add("evidence", claim.getClaimData().getEvidence().ifPresent())
                 .add("timeline", claim.getClaimData().getTimeline().isPresent())
@@ -93,18 +95,14 @@ public class SealedClaimJsonMapper {
                 .add("dateOfBirth", mapDefendants(claim.getClaimData().getDefendant().getDateOfBirth()))
                 .add("defenceType", claim.getClaimData().getDefendant().getDefenceType)
                 .add("responseType", claim.getClaimData().getDefendant().getResponseType)
-                .add("freeMediation", mapFreeMediation(response.getFreeMediation().toString()))
-                .add("moreTimeNeeded", mapMoreTimeNeeded(response.getMoreTimeNeeded().toString()))
-                .build())
+                .add("freeMediation", response.getFreeMediation()
+                    .orElse(Response.FreeMediationOption.NO)
+                    .name()
+                    .toLowerCase())
+                .add("moreTimeNeeded", response.getMoreTimeNeeded())
+                .build()
+            })
             .collect(JsonCollectors.toJsonArray());
-    }
-
-    // get defendant gets called in mapDefendantResponse but also called in map
-
-    private JsonObject mapFreeMediation(Response response) {
-        return createObjectBuilder()
-            .add("submitterEmail", response.getFreeMediation().toString())
-            .build();
     }
 
     private JsonObject mapMoreTimeNeeded(Response response) {
