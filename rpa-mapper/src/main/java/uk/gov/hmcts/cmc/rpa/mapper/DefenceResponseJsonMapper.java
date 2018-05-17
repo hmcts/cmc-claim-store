@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSu
 @Component
 public class DefenceResponseJsonMapper {
 
-    public JsonObject mapDefenceResponse(Claim claim) {
+    public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
@@ -39,8 +39,6 @@ public class DefenceResponseJsonMapper {
             .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(),
                 Party.class,
                 party -> party.getMobilePhone().orElse(null)))
-
-
             .build();
     }
 
