@@ -23,7 +23,7 @@ public class MoreTimeRequestRule {
         assertIsNotPastDeadline(LocalDateTimeFactory.nowInLocalZone(), claim.getResponseDeadline());
     }
 
-    void assertIsNotPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
+    protected void assertIsNotPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
         LocalDateTime responseDeadlineTime = responseDeadline.atTime(16, 0);
         if (now.isEqual(responseDeadlineTime) || now.isAfter(responseDeadlineTime)) {
             throw new MoreTimeRequestedAfterDeadlineException("You must not request more time after deadline");
