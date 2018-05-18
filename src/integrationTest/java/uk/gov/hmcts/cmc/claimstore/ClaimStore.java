@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -31,6 +32,9 @@ public class ClaimStore {
     @Autowired
     private JsonMapper jsonMapper;
 
+    @Autowired
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
+
     public Claim getClaim(long claimId) {
         return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
     }
@@ -40,7 +44,8 @@ public class ClaimStore {
     }
 
     public Claim saveClaim(ClaimData claimData) {
-        return saveClaim(claimData, "1", LocalDate.now());
+        return saveClaim(claimData, "1", responseDeadlineCalculator
+            .calculateResponseDeadline(LocalDate.now()));
     }
 
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
