@@ -2,11 +2,9 @@ package uk.gov.hmcts.cmc.domain.amount;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 
 import java.math.BigDecimal;
@@ -16,10 +14,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown.*;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown.validDefaults;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.*;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.breakdownInterestBuilder;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 
 public class TotalAmountCalculatorTest {
 
