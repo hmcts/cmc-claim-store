@@ -10,8 +10,8 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefendantTimeline;
-import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;

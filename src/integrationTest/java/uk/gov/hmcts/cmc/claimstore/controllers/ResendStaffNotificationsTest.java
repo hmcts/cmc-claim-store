@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -164,7 +164,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
             claim,
             SampleResponse.FullDefence
                 .builder()
-                .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
+                .withDefenceType(DefenceType.ALREADY_PAID)
                 .withMediation(null)
                 .build(),
             DEFENDANT_ID,
