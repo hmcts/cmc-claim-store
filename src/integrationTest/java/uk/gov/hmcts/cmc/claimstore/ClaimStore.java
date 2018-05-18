@@ -51,8 +51,7 @@ public class ClaimStore {
     public Claim saveClaim(ClaimData claimData) {
         LocalDate issueDate = issueDateCalculator.calculateIssueDay(LocalDateTimeFactory.nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issueDate);
-        return saveClaim(claimData, "1", responseDeadlineCalculator
-            .calculateResponseDeadline(responseDeadline));
+        return saveClaim(claimData, "1", responseDeadline);
     }
 
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
