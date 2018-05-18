@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +37,9 @@ public class ClaimStore {
     @Autowired
     private ResponseDeadlineCalculator responseDeadlineCalculator;
 
+    @Autowired
+    private IssueDateCalculator issueDateCalculator;
+
     public Claim getClaim(long claimId) {
         return claimRepository.getById(claimId).orElseThrow(RuntimeException::new);
     }
@@ -44,8 +49,10 @@ public class ClaimStore {
     }
 
     public Claim saveClaim(ClaimData claimData) {
+        LocalDate issueDate = issueDateCalculator.calculateIssueDay(LocalDateTimeFactory.nowInLocalZone());
+        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issueDate);
         return saveClaim(claimData, "1", responseDeadlineCalculator
-            .calculateResponseDeadline(LocalDate.now()));
+            .calculateResponseDeadline(responseDeadline));
     }
 
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
