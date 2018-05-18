@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -8,18 +9,28 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.controllers.CallbackController.ABOUT_TO_START_CALLBACK;
+import static uk.gov.hmcts.cmc.claimstore.controllers.CallbackController.ABOUT_TO_SUBMIT_CALLBACK;
+import static uk.gov.hmcts.cmc.claimstore.controllers.CallbackController.SUBMITTED_CALLBACK;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
@@ -28,7 +39,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 )
 public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
-    private static final String ABOUT_TO_START_CALLBACK = "about-to-start";
+    @SpyBean
+    private MoreTimeRequestedNotificationService notificationService;
 
     @Test
     public void shouldReturnWithNoValidationErrorsOnAboutToStartIfAvailable() throws Exception {
@@ -74,7 +86,8 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
     @Test
     public void shouldModifyResponseDeadlineOnAboutToSubmit() throws Exception {
-        MvcResult mvcResult = makeRequest(ABOUT_TO_START_CALLBACK, LocalDate.now().plusDays(3), false)
+        LocalDate responseDeadline = LocalDate.now().plusDays(3);
+        MvcResult mvcResult = makeRequest(ABOUT_TO_SUBMIT_CALLBACK, responseDeadline, false)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -83,12 +96,39 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         );
 
-        assertThat(response.getErrors()).isNull();
+        assertThat(LocalDate.parse(response.getData().get("responseDeadline").toString()))
+            .isNotEqualTo(responseDeadline);
+
+        assertThat(CCDYesNoOption.valueOf(response.getData().get("moreTimeRequested").toString()))
+            .isEqualTo(CCDYesNoOption.YES);
     }
 
     @Test
-    public void shouldSendNotificationOnSubmitted() {
+    public void shouldSendNotificationOnSubmitted() throws Exception {
+        LocalDate responseDeadline = LocalDate.now().plusDays(3);
+        MvcResult mvcResult = makeRequest(SUBMITTED_CALLBACK, responseDeadline, false)
+            .andExpect(status().isOk())
+            .andReturn();
 
+        SubmittedCallbackResponse response = deserializeObjectFrom(
+            mvcResult,
+            SubmittedCallbackResponse.class
+        );
+
+        verify(notificationService, once()).sendMail(
+            eq(SampleClaim.SUBMITTER_EMAIL),
+            any(),
+            any(),
+            eq("more-time-requested-notification-to-claimant-004MC931")
+        );
+
+        assertThat(response.getConfirmationBody()).isNull();
+    }
+
+    @Test
+    public void shouldReturnErrorForUnknownCallback() throws Exception {
+        makeRequest("not-a-real-callback", null, false)
+            .andExpect(status().isBadRequest());
     }
 
     private ResultActions makeRequest(

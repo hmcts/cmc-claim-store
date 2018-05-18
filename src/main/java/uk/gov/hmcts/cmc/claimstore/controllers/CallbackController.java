@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -24,6 +25,10 @@ import javax.validation.constraints.NotNull;
     consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 public class CallbackController {
+
+    public static final String ABOUT_TO_START_CALLBACK = "about-to-start";
+    public static final String ABOUT_TO_SUBMIT_CALLBACK = "about-to-submit";
+    public static final String SUBMITTED_CALLBACK = "submitted";
 
     private final ClaimService claimService;
 
@@ -41,17 +46,17 @@ public class CallbackController {
 
         if (callback.getEventId().equals(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())) {
             switch (callbackType) {
-                case "about-to-start":
+                case ABOUT_TO_START_CALLBACK:
                     return claimService.requestMoreTimeOnPaper(callback, true);
-                case "about-to-submit":
+                case ABOUT_TO_SUBMIT_CALLBACK:
                     return claimService.requestMoreTimeOnPaper(callback, false);
-                case "submitted":
+                case SUBMITTED_CALLBACK:
                     return claimService.requestMoreTimeOnPaperSubmitted(callback);
                 default:
-                    throw new IllegalArgumentException("Unknown callback type: " + callbackType);
+                    throw new BadRequestException("Unknown callback type: " + callbackType);
             }
         } else {
-            throw new IllegalArgumentException("Unknown event: " + callback.getEventId());
+            throw new BadRequestException("Unknown event: " + callback.getEventId());
         }
     }
 }
