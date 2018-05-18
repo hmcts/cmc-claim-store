@@ -15,7 +15,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown.validDefaults;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.*;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.breakdownInterestBuilder;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInterest;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 
 public class TotalAmountCalculatorTest {
 
