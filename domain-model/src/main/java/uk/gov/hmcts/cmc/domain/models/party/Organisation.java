@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Organisation extends Party {
+public class Organisation extends Party implements HasContactPerson {
 
     private final String contactPerson;
     private final String companiesHouseNumber;
