@@ -17,7 +17,7 @@ import java.util.Collections;
 
 import static java.util.Objects.requireNonNull;
 
-@Service("rpa/claim-issued-notification-service")
+@Service("rpa/defendant-response-notification-service")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class DefenceResponseNotificationService {
 

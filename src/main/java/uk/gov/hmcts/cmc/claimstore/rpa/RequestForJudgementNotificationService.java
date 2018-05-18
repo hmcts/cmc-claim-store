@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
 
 import static java.util.Objects.requireNonNull;
 
-@Service("rpa/claim-issued-notification-service")
+@Service("rpa/request-judgement-notification-service")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class RequestForJudgementNotificationService {
 
