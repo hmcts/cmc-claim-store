@@ -115,7 +115,8 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+        verify(emailService, atLeast(2))
+            .sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
@@ -135,7 +136,8 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+        verify(emailService, atLeast(2))
+            .sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");

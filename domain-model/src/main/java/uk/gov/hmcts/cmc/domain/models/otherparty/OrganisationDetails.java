@@ -2,12 +2,13 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.Size;
 
-public class OrganisationDetails extends TheirDetails {
+public class OrganisationDetails extends TheirDetails implements HasContactPerson {
 
     @Size(max = 35, message = "may not be longer than {max} characters")
     private final String contactPerson;
