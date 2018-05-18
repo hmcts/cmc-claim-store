@@ -42,7 +42,7 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
     @Before
     public void setUp() {
-        claim = SampleClaim.builder().build();
+        claim = SampleClaim.getDefault();
 
         PDF sealedClaimDoc = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
         PDF defendantLetterDoc = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
