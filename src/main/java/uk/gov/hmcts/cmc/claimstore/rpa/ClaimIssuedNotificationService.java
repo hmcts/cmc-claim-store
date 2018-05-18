@@ -50,10 +50,8 @@ public class ClaimIssuedNotificationService {
     public void notifyRobotOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
-        if (!event.getClaim().getClaimData().isClaimantRepresented()) {
-            EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
-            emailService.sendEmail(emailProperties.getSender(), emailData);
-        }
+        EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
+        emailService.sendEmail(emailProperties.getSender(), emailData);
     }
 
     private EmailData prepareEmailData(Claim claim, List<PDF> documents) {

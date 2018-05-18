@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
+import java.time.LocalDate;
 import java.util.List;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -47,7 +48,7 @@ public class SealedClaimJsonMapper {
                 .add("address", mapAddress(claimant.getAddress()))
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getMobilePhone().orElse(null))
-                .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
+                .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> formatNullableDate(individual.getDateOfBirth())))
                 .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, SoleTrader::getBusinessName))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(claimant, Organisation.class, Organisation::getCompaniesHouseNumber))
@@ -78,6 +79,14 @@ public class SealedClaimJsonMapper {
             .add("city", address.getCity())
             .add("postcode", address.getPostcode())
             .build();
+    }
+
+    private String formatNullableDate(LocalDate date) {
+        if (date != null) {
+            return DateFormatter.format(date);
+        } else {
+            return null;
+        }
     }
 
 }
