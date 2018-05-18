@@ -18,13 +18,13 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 import java.time.LocalDate;
 import java.util.Map;
 
-import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
@@ -121,7 +121,7 @@ public class CoreCaseDataService {
 
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
-        ccdCase.setCountyCourtJudgmentRequestedAt(now());
+        ccdCase.setCountyCourtJudgmentRequestedAt(LocalDateTimeFactory.nowInLocalZone());
         return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 
@@ -135,7 +135,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
         ccdCase.setDefendantEmail(defendantEmail);
-        ccdCase.setRespondedAt(now());
+        ccdCase.setRespondedAt(LocalDateTimeFactory.nowInLocalZone());
         return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
 
@@ -162,7 +162,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             .settlement(settlementMapper.to(settlement))
-            .settlementReachedAt(now())
+            .settlementReachedAt(LocalDateTimeFactory.nowInLocalZone())
             .build();
 
         return this.update(authorisation, ccdCase, event);
