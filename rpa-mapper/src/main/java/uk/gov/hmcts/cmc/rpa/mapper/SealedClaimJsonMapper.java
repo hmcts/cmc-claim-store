@@ -19,7 +19,6 @@ import javax.json.JsonObject;
 import javax.json.stream.JsonCollectors;
 import java.util.List;
 
-import static javax.json.Json.createObjectBuilder;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
 
@@ -72,7 +71,7 @@ public class SealedClaimJsonMapper {
     }
 
     private JsonObject mapAddress(Address address) {
-        return createObjectBuilder()
+        return new NullAwareJsonObjectBuilder()
             .add("line1", address.getLine1())
             .add("line2", address.getLine2())
             .add("line3", address.getLine3())
