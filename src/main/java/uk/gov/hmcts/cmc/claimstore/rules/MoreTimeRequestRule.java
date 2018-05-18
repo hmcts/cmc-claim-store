@@ -4,10 +4,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
@@ -20,7 +22,11 @@ public class MoreTimeRequestRule {
             throw new MoreTimeAlreadyRequestedException("You have already requested more time");
         }
 
-        if (LocalDate.now().isAfter(claim.getResponseDeadline())) {
+        assertIsNotPastDeadline(LocalDateTimeFactory.nowInLocalZone(), claim.getResponseDeadline());
+    }
+
+    void assertIsNotPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
+        if (isPastDeadline(now, responseDeadline)) {
             throw new MoreTimeRequestedAfterDeadlineException("You must not request more time after deadline");
         }
     }
@@ -33,9 +39,14 @@ public class MoreTimeRequestRule {
             validationErrors.add("The defendant already asked for more time and their request was processed");
         }
 
-        if (LocalDate.now().isAfter(claim.getResponseDeadline())) {
+        if (isPastDeadline(LocalDateTimeFactory.nowInLocalZone(), claim.getResponseDeadline())) {
             validationErrors.add("The defendant has missed the deadline for requesting more time");
         }
         return validationErrors;
+    }
+
+    private boolean isPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
+        LocalDateTime responseDeadlineTime = responseDeadline.atTime(16, 0);
+        return now.isEqual(responseDeadlineTime) || now.isAfter(responseDeadlineTime);
     }
 }

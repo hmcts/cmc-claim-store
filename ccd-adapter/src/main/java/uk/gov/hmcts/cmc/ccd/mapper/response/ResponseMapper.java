@@ -10,9 +10,10 @@ import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentDeclarationMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 @Component
 public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> {
@@ -47,7 +48,7 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
             .ifPresent(freeMediation -> builder.freeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
         if (response.getMoreTimeNeeded() == null) {
-            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(Response.MoreTimeNeededOption.NO.name()));
+            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(YesNoOption.NO.name()));
         } else {
             builder.moreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
         }
@@ -72,10 +73,10 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
 
     @Override
     public FullDefenceResponse from(CCDResponse response) {
-        Response.FreeMediationOption freeMediation = null;
+        YesNoOption freeMediation = null;
 
         if (response.getFreeMediationOption() != null) {
-            freeMediation = Response.FreeMediationOption.valueOf(response.getFreeMediationOption().name());
+            freeMediation = YesNoOption.valueOf(response.getFreeMediationOption().name());
         }
 
         StatementOfTruth statementOfTruth = null;
@@ -86,10 +87,10 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
 
         return new FullDefenceResponse(
             freeMediation,
-            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeededOption().name()),
+            YesNoOption.valueOf(response.getMoreTimeNeededOption().name()),
             partyMapper.from(response.getDefendant()),
             statementOfTruth,
-            FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
+            DefenceType.valueOf(response.getResponseType().name()),
             response.getDefence(),
             paymentDeclarationMapper.from(response.getPaymentDeclaration()),
             timelineMapper.from(response.getTimeline()),
