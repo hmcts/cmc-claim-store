@@ -1,0 +1,51 @@
+{
+  "caseNumber": "000CM001",
+  "issueDate": "26-Apr-2018",
+  "courtFee": 40.00,
+  "amountWithInterest": 80.89,
+  "submitterEmail": "claimant@mail.com",
+  "claimants": [
+    {
+      "type": "Individual",
+      "name": "John Rambo",
+      "businessName": null,
+      "companiesHouseNumber": null,
+      "contactPerson": null,
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "phoneNumber": "07873727165",
+      "dateOfBirth": "02-Jan-1968",
+      "correspondenceAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      }
+    }
+  ],
+  "defendants": [
+    {
+      "type": "Individual",
+      "name": "John Smith",
+      "businessName": null,
+      "companiesHouseNumber": null,
+      "contactPerson": null,
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "emailAddress": "j.smith@example.com",
+      "correspondenceAddress": null
+    }
+  ],
+  "serviceDate": "01-May-2018"
+}
