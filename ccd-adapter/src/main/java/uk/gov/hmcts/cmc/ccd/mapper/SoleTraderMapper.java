@@ -22,7 +22,7 @@ public class SoleTraderMapper implements Mapper<CCDSoleTrader, SoleTrader> {
 
         CCDSoleTrader.CCDSoleTraderBuilder builder = CCDSoleTrader.builder();
         soleTrader.getTitle().ifPresent(builder::title);
-        soleTrader.getMobilePhone().ifPresent(builder::phoneNumber);
+        soleTrader.getPhoneNumber().ifPresent(builder::phoneNumber);
         soleTrader.getBusinessName().ifPresent(builder::businessName);
         soleTrader.getCorrespondenceAddress()
             .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));

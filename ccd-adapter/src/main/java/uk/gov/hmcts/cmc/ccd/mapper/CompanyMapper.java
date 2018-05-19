@@ -21,7 +21,7 @@ public class CompanyMapper implements Mapper<CCDCompany, Company> {
     public CCDCompany to(Company company) {
 
         CCDCompany.CCDCompanyBuilder builder = CCDCompany.builder();
-        company.getMobilePhone().ifPresent(builder::phoneNumber);
+        company.getPhoneNumber().ifPresent(builder::phoneNumber);
         company.getContactPerson().ifPresent(builder::contactPerson);
 
         company.getCorrespondenceAddress()

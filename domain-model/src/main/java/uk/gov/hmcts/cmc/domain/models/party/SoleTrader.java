@@ -20,12 +20,12 @@ public class SoleTrader extends Party implements TitledParty {
         String name,
         Address address,
         Address correspondenceAddress,
-        String mobilePhone,
+        String phoneNumber,
         Representative representative,
         String title,
         String businessName
     ) {
-        super(name, address, correspondenceAddress, mobilePhone, representative);
+        super(name, address, correspondenceAddress, phoneNumber, representative);
         this.title = title;
         this.businessName = businessName;
     }

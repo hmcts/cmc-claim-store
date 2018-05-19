@@ -43,7 +43,7 @@ public abstract class Party implements NamedParty {
     private final Address correspondenceAddress;
 
     @Size(max = 30, message = "may not be longer than {max} characters")
-    private final String mobilePhone;
+    private final String phoneNumber;
 
     @Valid
     private final Representative representative;
@@ -52,13 +52,13 @@ public abstract class Party implements NamedParty {
         String name,
         Address address,
         Address correspondenceAddress,
-        String mobilePhone,
+        String phoneNumber,
         Representative representative
     ) {
         this.name = name;
         this.address = address;
         this.correspondenceAddress = correspondenceAddress;
-        this.mobilePhone = mobilePhone;
+        this.phoneNumber = phoneNumber;
         this.representative = representative;
     }
 
@@ -75,8 +75,8 @@ public abstract class Party implements NamedParty {
         return Optional.ofNullable(correspondenceAddress);
     }
 
-    public Optional<String> getMobilePhone() {
-        return Optional.ofNullable(mobilePhone);
+    public Optional<String> getPhoneNumber() {
+        return Optional.ofNullable(phoneNumber);
     }
 
     public Optional<Representative> getRepresentative() {
@@ -98,13 +98,13 @@ public abstract class Party implements NamedParty {
         return Objects.equals(name, other.name)
             && Objects.equals(address, other.address)
             && Objects.equals(correspondenceAddress, other.correspondenceAddress)
-            && Objects.equals(mobilePhone, other.mobilePhone)
+            && Objects.equals(phoneNumber, other.phoneNumber)
             && Objects.equals(representative, other.representative);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, address, correspondenceAddress, mobilePhone, representative);
+        return Objects.hash(name, address, correspondenceAddress, phoneNumber, representative);
     }
 
     @Override

@@ -69,10 +69,10 @@ public class DefendantResponseStaffNotificationService {
         map.put("claim", claim);
         map.put("response", claim.getResponse().orElseThrow(IllegalStateException::new));
         map.put("defendantEmail", defendantEmail);
-        map.put("defendantMobilePhone", claim.getResponse()
+        map.put("defendantPhoneNumber", claim.getResponse()
             .orElseThrow(IllegalStateException::new)
             .getDefendant()
-            .getMobilePhone()
+            .getPhoneNumber()
             .orElse(null));
         return map;
     }
