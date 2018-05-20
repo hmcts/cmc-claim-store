@@ -32,7 +32,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
@@ -121,7 +121,7 @@ public class CoreCaseDataService {
 
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
-        ccdCase.setCountyCourtJudgmentRequestedAt(nowInLocalZone());
+        ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
         return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 
@@ -135,7 +135,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
         ccdCase.setDefendantEmail(defendantEmail);
-        ccdCase.setRespondedAt(nowInLocalZone());
+        ccdCase.setRespondedAt(nowInUTC());
         return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
 
@@ -162,7 +162,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             .settlement(settlementMapper.to(settlement))
-            .settlementReachedAt(nowInLocalZone())
+            .settlementReachedAt(nowInUTC())
             .build();
 
         return this.update(authorisation, ccdCase, event);
