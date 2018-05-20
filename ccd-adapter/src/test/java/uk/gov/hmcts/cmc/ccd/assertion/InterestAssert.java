@@ -32,6 +32,12 @@ public class InterestAssert extends AbstractAssert<InterestAssert, Interest> {
                 ccdInterest.getType().name(), actual.getType().name());
         }
 
+        if (!Objects.equals(actual.getSpecificDailyAmount().orElse(null), ccdInterest.getSpecificDailyAmount())) {
+            failWithMessage("Expected Interest.specificDailyAmount to be <%s> but was <%s>",
+                ccdInterest.getSpecificDailyAmount(), actual.getSpecificDailyAmount().orElse(null));
+        }
+
+        assertThat(actual.getInterestBreakdown()).isEqualTo(ccdInterest.getInterestBreakdown());
         assertThat(actual.getInterestDate()).isEqualTo(ccdInterest.getInterestDate());
 
         return this;
