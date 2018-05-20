@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CCDInterestType {
     STANDARD("standard"),
+    BREAKDOWN("breakdown"),
     DIFFERENT("different"),
     NO_INTEREST("no interest");
 
