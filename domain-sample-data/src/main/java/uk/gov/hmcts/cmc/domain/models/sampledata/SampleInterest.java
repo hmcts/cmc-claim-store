@@ -34,7 +34,7 @@ public class SampleInterest {
                 .withRate(new BigDecimal("8"))
                 .withReason(null)
                 .withInterestDate(SampleInterestDate.builder()
-                    .withDate(LocalDate.of(2015,02,02)).build())
+                    .withDate(LocalDate.of(2015, 02, 02)).build())
                 .build();
     }
 
