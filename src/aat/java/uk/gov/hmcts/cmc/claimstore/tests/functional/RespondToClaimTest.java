@@ -9,12 +9,12 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 public class RespondToClaimTest extends BaseTest {
 
@@ -63,8 +63,7 @@ public class RespondToClaimTest extends BaseTest {
 
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
-        assertThat(updatedCase.getRespondedAt()).isCloseTo(LocalDateTimeFactory.nowInLocalZone(),
-            within(2, ChronoUnit.MINUTES));
+        assertThat(updatedCase.getRespondedAt()).isCloseTo(nowInLocalZone(), within(2, ChronoUnit.MINUTES));
     }
 
     @Test

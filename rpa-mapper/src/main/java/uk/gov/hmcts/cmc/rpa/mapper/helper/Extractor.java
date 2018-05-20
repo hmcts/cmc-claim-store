@@ -9,6 +9,7 @@ public class Extractor {
         // NO-OP
     }
 
+    @SuppressWarnings("unchecked") // returns null if its not the right instance
     public static <G, S extends G> String extractFromSubclass(G instance, Class<S> subclass,
                                                               Function<S, String> mapper) {
         if (subclass.isInstance(instance)) {
@@ -18,6 +19,7 @@ public class Extractor {
         }
     }
 
+    @SuppressWarnings("unchecked") // returns null if its not the right instance
     public static <G, S extends G> String extractOptionalFromSubclass(G instance, Class<S> subclass,
                                                                       Function<S, Optional<String>> mapper) {
         return extractFromSubclass(instance, subclass, value -> mapper.apply((S) instance).orElse(null));

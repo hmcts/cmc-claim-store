@@ -54,7 +54,7 @@ public class UserService {
     }
 
     public User authenticateAnonymousCaseWorker() {
-        IdamCaseworker anonymousCaseworker = idamCaseworkerProperties.getAnonymousCaseworker();
+        IdamCaseworker anonymousCaseworker = idamCaseworkerProperties.getAnonymous();
         return authenticateUser(anonymousCaseworker.getUsername(), anonymousCaseworker.getPassword());
     }
 

@@ -8,27 +8,27 @@ import javax.validation.Valid;
 
 @Component
 @Validated
-@ConfigurationProperties(prefix = "idam")
+@ConfigurationProperties(prefix = "idam.caseworker")
 public class IdamCaseworkerProperties {
 
     @Valid
-    private IdamCaseworker anonymousCaseworker;
+    private IdamCaseworker anonymous;
     @Valid
-    private IdamCaseworker systemUpdateUser;
+    private IdamCaseworker system;
 
-    public IdamCaseworker getAnonymousCaseworker() {
-        return anonymousCaseworker;
+    public IdamCaseworker getAnonymous() {
+        return anonymous;
     }
 
-    public void setAnonymousCaseworker(IdamCaseworker anonymousCaseworker) {
-        this.anonymousCaseworker = anonymousCaseworker;
+    public void setAnonymous(IdamCaseworker anonymous) {
+        this.anonymous = anonymous;
     }
 
-    public IdamCaseworker getSystemUpdateUser() {
-        return systemUpdateUser;
+    public IdamCaseworker getSystem() {
+        return system;
     }
 
-    public void setSystemUpdateUser(IdamCaseworker systemUpdateUser) {
-        this.systemUpdateUser = systemUpdateUser;
+    public void setSystem(IdamCaseworker system) {
+        this.system = system;
     }
 }
