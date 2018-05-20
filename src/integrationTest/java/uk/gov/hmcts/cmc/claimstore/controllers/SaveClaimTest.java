@@ -29,6 +29,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
@@ -136,7 +137,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
-        verify(emailService, atLeast(2))
+        verify(emailService, once())
             .sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
