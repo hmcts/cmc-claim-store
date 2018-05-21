@@ -26,6 +26,8 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSu
 @SuppressWarnings({"LineLength"})
 public class SealedClaimJsonMapper {
 
+    AddressJsonMapper mapAddress = new AddressJsonMapper();
+
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
@@ -44,8 +46,8 @@ public class SealedClaimJsonMapper {
             .map(claimant -> new NullAwareJsonObjectBuilder()
                 .add("type", claimant.getClass().getSimpleName())
                 .add("name", claimant.getName())
-                .add("address", mapAddress(claimant.getAddress()))
-                .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
+                .add("address", mapAddress.mapAddress(claimant.getAddress()))
+                .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(mapAddress::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getMobilePhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
                 .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, SoleTrader::getBusinessName))
@@ -60,24 +62,14 @@ public class SealedClaimJsonMapper {
             .map(defendant -> new NullAwareJsonObjectBuilder()
                 .add("type", defendant.getClass().getSimpleName().replace("Details", ""))
                 .add("name", defendant.getName())
-                .add("address", mapAddress(defendant.getAddress()))
-                .add("correspondenceAddress", defendant.getServiceAddress().map(this::mapAddress).orElse(null))
+                .add("address", mapAddress.mapAddress(defendant.getAddress()))
+                .add("correspondenceAddress", defendant.getServiceAddress().map(mapAddress::mapAddress).orElse(null))
                 .add("emailAddress", defendant.getEmail().orElse(null))
                 .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, SoleTraderDetails::getBusinessName))
                 .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
                 .build())
             .collect(JsonCollectors.toJsonArray());
-    }
-
-    public JsonObject mapAddress(Address address) {
-        return new NullAwareJsonObjectBuilder()
-            .add("line1", address.getLine1())
-            .add("line2", address.getLine2())
-            .add("line3", address.getLine3())
-            .add("city", address.getCity())
-            .add("postcode", address.getPostcode())
-            .build();
     }
 
 }

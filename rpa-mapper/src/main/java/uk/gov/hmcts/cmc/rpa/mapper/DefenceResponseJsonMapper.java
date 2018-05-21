@@ -16,7 +16,7 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSu
 @Component
 public class DefenceResponseJsonMapper {
 
-    SealedClaimJsonMapper mapAddress = new SealedClaimJsonMapper();
+    AddressJsonMapper mapAddress = new AddressJsonMapper();
 
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
