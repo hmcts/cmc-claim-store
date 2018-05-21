@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -39,7 +39,7 @@ public class DefenceResponseNotificationService {
     }
 
     @EventListener
-    public void notifyRobotics(DocumentGeneratedEvent event) {
+    public void notifyRobotics(DefendantResponseEvent event) {
         requireNonNull(event);
 
         EmailData emailData = prepareEmailData(event.getClaim());
