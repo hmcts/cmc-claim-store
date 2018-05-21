@@ -28,7 +28,10 @@ public class DefenceResponseJsonMapper {
                             claim.getClaimData().getDefendant(),
                             HasContactPerson.class,
                             HasContactPerson::getContactPerson))
-            .add("defendantsAddress", mapAddress.mapAddress(claim.getClaimData().getDefendant().getAddress()))
+            .add("defendantsAddress", mapAddress.mapAddress(
+                        claim.getClaimData()
+                            .getDefendant()
+                            .getAddress()))
             .add("defendantsCorrespondenceAddress",
                         claim.getClaimData()
                             .getDefendant()
