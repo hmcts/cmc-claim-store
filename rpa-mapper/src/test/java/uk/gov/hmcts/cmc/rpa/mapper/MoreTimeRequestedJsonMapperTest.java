@@ -24,15 +24,15 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @SpringBootTest
 @ContextConfiguration(classes = ModuleConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class RequestForJudgementJsonMapperTest {
+public class MoreTimeRequestedJsonMapperTest {
 
     @Autowired
-    private RequestForJudgementJsonMapper mapper;
+    private MoreTimeRequestedJsonMapper mapper;
     private static String REFERENCE_NUMBER = "000MC001";
-    private static String INPUT ="/rpa_request_for_judgement.json";
+    private static String INPUT ="/rpa_more_time_requested.json";
 
     @Test
-    public void shouldMapIndividualForRequestForJudgement() throws JSONException {
+    public void shouldMapIndividualForMoreTimeRequested() throws JSONException {
 
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
@@ -51,7 +51,7 @@ public class RequestForJudgementJsonMapperTest {
     }
 
     @Test
-    public void shouldMapSoleTraderForRequestForJudgement() throws JSONException {
+    public void shouldMapSoleTraderForMoreTimeRequested() throws JSONException {
 
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
@@ -70,7 +70,7 @@ public class RequestForJudgementJsonMapperTest {
     }
 
     @Test
-    public void shouldMapOrganisationForRequestForJudgement() throws JSONException {
+    public void shouldMapOrganisationForMoreTimeRequested() throws JSONException {
 
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
@@ -89,7 +89,7 @@ public class RequestForJudgementJsonMapperTest {
     }
 
     @Test
-    public void shouldMapCompanyForRequestForJudgement() throws JSONException {
+    public void shouldMapCompanyForMoreTimeRequested() throws JSONException {
 
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
