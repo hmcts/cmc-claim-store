@@ -197,6 +197,7 @@ public class SampleData {
             .rate(BigDecimal.valueOf(2))
             .reason("reason")
             .type(CCDInterestType.DIFFERENT)
+            .interestDate(getCCDInterestDate())
             .build();
     }
 

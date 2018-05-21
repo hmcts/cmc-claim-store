@@ -136,6 +136,7 @@ public class JsonMapperTest {
                 SampleInterestDate.builder()
                     .withDate(LocalDate.of(2015, 2, 2))
                     .build())
+            .withInterest(null)
             .withAmount(
                 SampleAmountRange.builder()
                     .withHigherValue(BigDecimal.valueOf(123.56))
