@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -68,6 +69,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
         );
 
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().get(0)).isEqualTo(MoreTimeRequestRule.ALREADY_REQUESTED_MORE_TIME_ERROR);
     }
 
     @Test
@@ -82,6 +84,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
         );
 
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().get(0)).isEqualTo(MoreTimeRequestRule.PAST_DEADLINE_ERROR);
     }
 
     @Test

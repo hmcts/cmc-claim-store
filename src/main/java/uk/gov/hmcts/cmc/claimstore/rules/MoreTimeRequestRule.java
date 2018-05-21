@@ -15,6 +15,10 @@ import java.util.Objects;
 @Service
 public class MoreTimeRequestRule {
 
+    public static final String ALREADY_REQUESTED_MORE_TIME_ERROR =
+        "The defendant already asked for more time and their request was processed";
+    public static final String PAST_DEADLINE_ERROR = "The defendant has missed the deadline for requesting more time";
+
     public void assertMoreTimeCanBeRequested(Claim claim) {
         Objects.requireNonNull(claim, "claim object can not be null");
 
@@ -36,11 +40,11 @@ public class MoreTimeRequestRule {
 
         List<String> validationErrors = new ArrayList<>();
         if (claim.isMoreTimeRequested()) {
-            validationErrors.add("The defendant already asked for more time and their request was processed");
+            validationErrors.add(ALREADY_REQUESTED_MORE_TIME_ERROR);
         }
 
         if (isPastDeadline(LocalDateTimeFactory.nowInLocalZone(), claim.getResponseDeadline())) {
-            validationErrors.add("The defendant has missed the deadline for requesting more time");
+            validationErrors.add(PAST_DEADLINE_ERROR);
         }
         return validationErrors;
     }
