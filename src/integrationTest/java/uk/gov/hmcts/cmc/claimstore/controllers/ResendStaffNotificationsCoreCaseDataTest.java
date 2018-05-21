@@ -74,8 +74,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         final String nonExistingClaimReference = "something";
         final String event = "claim-issue";
         givenForSearchForCitizen(CASE_REFERENCE);
-
-        makeRequest(nonExistingClaimReference, event).andExpect(status().isNotFound());
+        ResultActions result = makeRequest(nonExistingClaimReference, event);
+        assertThat(result).isNotNull();
+        result.andExpect(status().isNotFound());
     }
 
     @Test
@@ -83,8 +84,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         final String nonExistingEvent = "some-event";
 
         givenForSearchForCitizen(CASE_REFERENCE);
-
-        makeRequest(CASE_REFERENCE, nonExistingEvent).andExpect(status().isNotFound());
+        ResultActions result = makeRequest(CASE_REFERENCE, nonExistingEvent);
+        assertThat(result).isNotNull();
+        result.andExpect(status().isNotFound());
     }
 
     @Test
