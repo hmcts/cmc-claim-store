@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -118,5 +119,11 @@ public class ClaimController {
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();
         return new DefendantLinkStatus(linked);
+    }
+
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/pre-payment")
+    @ApiOperation("Submit Pre Payment claim")
+    public CaseReference preSubmit(@PathVariable("externalId") String externalId) {
+        return new CaseReference(externalId);
     }
 }
