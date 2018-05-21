@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
@@ -23,12 +23,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_SUBMITTED;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
 public class ClaimService {
@@ -133,7 +133,7 @@ public class ClaimService {
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(now())
+            .createdAt(nowInUTC())
             .letterHolderId(letterHolderId.orElse(null))
             .build();
 
@@ -176,15 +176,8 @@ public class ClaimService {
         return claim;
     }
 
-    /**
-     * Temporarily left in until CCD is enabled everywhere.
-     */
-    public Claim linkDefendantToClaimV1(String externalId, String defendantId, String authorisation) {
-        return caseRepository.linkDefendantV1(externalId, defendantId, authorisation);
-    }
-
-    public void linkDefendantToClaimV2(String authorisation) {
-        caseRepository.linkDefendantV2(authorisation);
+    public void linkDefendantToClaim(String authorisation) {
+        caseRepository.linkDefendant(authorisation);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

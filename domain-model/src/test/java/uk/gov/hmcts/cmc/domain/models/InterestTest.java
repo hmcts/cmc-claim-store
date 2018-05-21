@@ -34,7 +34,7 @@ public class InterestTest {
     }
 
     @Test
-    public void shouldBeSuccessfulValidationForInterestDate1() {
+    public void shouldBeSuccessfulValidationForStandardInterestType() {
         //given
         Interest interest = SampleInterest.builder()
             .withType(Interest.InterestType.STANDARD)
@@ -62,7 +62,7 @@ public class InterestTest {
     }
 
     @Test
-    public void shouldBeInvalidForBreakdownInterestWithNullBreakdown() {
+    public void shouldBeInvalidForBreakdownInterestTypeWithNullBreakdown() {
         Interest interest = SampleInterest.breakdownInterestBuilder()
             .withInterestBreakdown(null)
             .build();
@@ -73,7 +73,7 @@ public class InterestTest {
     }
 
     @Test
-    public void shouldBeInvalidForBreakdownInterestWithInvalidBreakdown() {
+    public void shouldBeInvalidForBreakdownInterestTypeWithInvalidBreakdown() {
         Interest interest = SampleInterest.breakdownInterestBuilder()
             .withInterestBreakdown(
                 SampleInterestBreakdown.builder()

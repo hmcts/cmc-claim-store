@@ -8,11 +8,14 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
@@ -39,13 +42,21 @@ public class JsonMapperTest {
     private JsonMapper processor = JsonMapperFactory.create();
 
     @Test
-    public void shouldProcessClaimDataToJson() throws Exception {
+    public void shouldProcessClaimDataToJson() {
         //given
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withDate(LocalDate.of(2015, 2, 2))
+            .build();
+
         ClaimData input = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
-            .withInterestDate(SampleInterestDate.builder()
-                .withDate(LocalDate.of(2015, 2, 2))
+            .withInterest(SampleInterest.builder()
+                .withType(Interest.InterestType.STANDARD)
+                .withRate(new BigDecimal("8"))
+                .withReason(null)
+                .withInterestDate(interestDate)
                 .build())
+            .withInterestDate(interestDate)
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
             .withFeeAccountNumber(null)
@@ -70,7 +81,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessFromJson() throws Exception {
+    public void shouldProcessFromJson() {
         //given
         String input = new ResourceReader().read("/claim-application.json");
 
@@ -78,11 +89,19 @@ public class JsonMapperTest {
         ClaimData output = processor.fromJson(input, ClaimData.class);
 
         //then
+        InterestDate interestDate = SampleInterestDate.builder()
+            .withDate(LocalDate.of(2015, 2, 2))
+            .build();
+
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
-            .withInterestDate(SampleInterestDate.builder()
-                .withDate(LocalDate.of(2015, 2, 2))
+            .withInterest(SampleInterest.builder()
+                .withType(Interest.InterestType.STANDARD)
+                .withRate(new BigDecimal("8"))
+                .withReason(null)
+                .withInterestDate(interestDate)
                 .build())
+            .withInterestDate(interestDate)
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
             .withFeeAccountNumber(null)
@@ -103,7 +122,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessLegalClaimFromJson() throws Exception {
+    public void shouldProcessLegalClaimFromJson() {
         //given
         String input = new ResourceReader().read("/legal-claim-application.json");
 
@@ -117,6 +136,7 @@ public class JsonMapperTest {
                 SampleInterestDate.builder()
                     .withDate(LocalDate.of(2015, 2, 2))
                     .build())
+            .withInterest(null)
             .withAmount(
                 SampleAmountRange.builder()
                     .withHigherValue(BigDecimal.valueOf(123.56))
@@ -135,7 +155,7 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessDependantResponseFromJson() throws Exception {
+    public void shouldProcessDependantResponseFromJson() {
         //given
         String input = new ResourceReader().read("/defendant-response.json");
 

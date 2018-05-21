@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.DefendantLinkStatus;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -98,20 +98,10 @@ public class ClaimController {
         return claimService.saveClaim(submitterId, claimData, authorisation);
     }
 
-    @PutMapping("/{externalId:" + UUID_PATTERN + "}/defendant/{defendantId}")
-    @ApiOperation("Links defendant to existing claim")
-    public Claim linkDefendantToClaimV1(
-        @PathVariable("externalId") String externalId,
-        @PathVariable("defendantId") String defendantId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
-    ) {
-        return claimService.linkDefendantToClaimV1(externalId, defendantId, authorisation);
-    }
-
     @PutMapping("/defendant/link")
     @ApiOperation("Links defendant to all unlinked letter-holder cases")
-    public void linkDefendantToClaimV2(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        claimService.linkDefendantToClaimV2(authorisation);
+    public void linkDefendantToClaim(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        claimService.linkDefendantToClaim(authorisation);
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")

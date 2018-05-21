@@ -36,7 +36,13 @@
       "interest": {
         "rate": 8,
         "type": "STANDARD",
-        "reason": "reason"
+        "reason": "reason",
+        "interestDate": {
+          "date": "2015-02-02",
+          "type": "CUSTOM",
+          "reason": "I want to claim from this date because that's when that happened",
+          "endDateType": "SUBMISSION"
+        }
       },
       "claimants": [
         {
@@ -85,7 +91,8 @@
       "interestDate": {
         "date": "2015-02-02",
         "type": "CUSTOM",
-        "reason": "I want to claim from this date because that's when that happened"
+        "reason": "I want to claim from this date because that's when that happened",
+        "endDateType": "SUBMISSION"
       },
       "feeAmountInPennies": 4000
     },

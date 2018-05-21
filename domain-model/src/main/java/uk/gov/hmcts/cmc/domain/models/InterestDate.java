@@ -3,11 +3,14 @@ package uk.gov.hmcts.cmc.domain.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
+
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class InterestDate {
     public enum InterestDateType {
@@ -98,5 +101,10 @@ public class InterestDate {
     @Override
     public int hashCode() {
         return Objects.hash(type, date, reason);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 }

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public class ResourceLoader {
     private static final JsonMapper jsonMapper = JsonMapperFactory.create();
@@ -36,7 +37,15 @@ public class ResourceLoader {
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 
-    public static List<CaseDetails> successfulCoreCaseDataSearchResponse() {
+    public static CaseDetails caseWithReferenceNumber(String referenceNumber) {
+        CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
+
+        Map<String, Object> data = caseDetails.getData();
+        data.put("referenceNumber", referenceNumber);
+        return caseDetails;
+    }
+
+    public static List<CaseDetails> listOfCaseDetails() {
         String response = new ResourceReader().read("/core-case-data/search-response.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }

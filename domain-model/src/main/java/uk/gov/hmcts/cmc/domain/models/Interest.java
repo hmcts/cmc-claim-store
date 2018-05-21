@@ -35,18 +35,22 @@ public class Interest {
 
     private final BigDecimal specificDailyAmount;
 
+    private final InterestDate interestDate;
+
     public Interest(
         InterestType type,
         InterestBreakdown interestBreakdown,
         BigDecimal rate,
         String reason,
-        BigDecimal specificDailyAmount
+        BigDecimal specificDailyAmount,
+        InterestDate interestDate
     ) {
         this.type = type;
         this.interestBreakdown = interestBreakdown;
         this.rate = rate;
         this.reason = reason;
         this.specificDailyAmount = specificDailyAmount;
+        this.interestDate = interestDate;
     }
 
     public InterestType getType() {
@@ -69,25 +73,30 @@ public class Interest {
         return Optional.ofNullable(specificDailyAmount);
     }
 
+    public InterestDate getInterestDate() {
+        return interestDate;
+    }
+
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Interest interest = (Interest) other;
+        Interest interest = (Interest) o;
         return Objects.equals(type, interest.type)
-            && Objects.equals(interestBreakdown, interest.interestBreakdown)
-            && Objects.equals(rate, interest.rate)
-            && Objects.equals(reason, interest.reason)
-            && Objects.equals(specificDailyAmount, interest.specificDailyAmount);
+                && Objects.equals(interestBreakdown, interest.interestBreakdown)
+                && Objects.equals(rate, interest.rate)
+                && Objects.equals(reason, interest.reason)
+                && Objects.equals(specificDailyAmount, interest.specificDailyAmount)
+                && Objects.equals(interestDate, interest.interestDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, interestBreakdown, rate, reason, specificDailyAmount);
+        return Objects.hash(type, interestBreakdown, rate, reason, specificDailyAmount, interestDate);
     }
 
     @Override

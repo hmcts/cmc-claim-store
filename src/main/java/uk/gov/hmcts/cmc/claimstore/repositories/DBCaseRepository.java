@@ -1,19 +1,21 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service("caseRepository")
@@ -51,22 +53,25 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim linkDefendantV1(String externalId, String defendantId, String authorisation) {
-        String notFoundErrorMessage = "Claim not found by external id: " + externalId;
+    public void linkDefendant(String authorisation) {
+        User defendantUser = userService.getUser(authorisation);
+        String defendantId = defendantUser.getUserDetails().getId();
 
-        Claim claim = claimRepository.getClaimByExternalId(externalId)
-            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
-        claimRepository.linkDefendant(claim.getId(), defendantId);
-
-        claim = claimRepository.getClaimByExternalId(externalId)
-            .orElseThrow(() -> new NotFoundException(notFoundErrorMessage));
-        return claim;
-
+        defendantUser.getUserDetails().getRoles().stream()
+            .filter(this::isLetterHolderRole)
+            .map(this::extractLetterHolderId)
+            .forEach(letterHolderId -> claimRepository.linkDefendant(letterHolderId, defendantId));
     }
 
-    @Override
-    public void linkDefendantV2(String authorisation) {
-        throw new NotImplementedException("Will not be implemented for DB");
+    private String extractLetterHolderId(String role) {
+        return StringUtils.remove(role, "letter-");
+    }
+
+    private boolean isLetterHolderRole(String role) {
+        Objects.requireNonNull(role);
+        return role.startsWith("letter")
+            && !"letter-holder".equals(role)
+            && !role.endsWith("loa1");
     }
 
     @Override

@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -251,7 +251,7 @@ public class SettlementOfferTest extends BaseTest {
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         commonOperations.linkDefendant(
-            createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
+            defendant.getAuthorisation()
         );
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
@@ -265,11 +265,11 @@ public class SettlementOfferTest extends BaseTest {
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
 
         commonOperations.linkDefendant(
-            createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
+            defendant.getAuthorisation()
         );
 
         Response response = SampleResponse.FullDefence.builder()
-            .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
+            .withDefenceType(DefenceType.DISPUTE)
             .build();
 
         return commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
