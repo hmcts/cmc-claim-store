@@ -224,7 +224,7 @@ public class ClaimService {
         eventProducer.createMoreTimeForResponseRequestedEvent(
             claim,
             claim.getResponseDeadline(),
-            claim.getDefendantEmail()
+            claim.getClaimData().getDefendant().getEmail().orElse(null)
         );
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, claim.getReferenceNumber());
 
