@@ -45,9 +45,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
     }
 )
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
+
     private static final String CASE_REFERENCE = "000MC023";
+
     @MockBean
     protected SendLetterApi sendLetterApi;
+
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
@@ -67,7 +70,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
         final String nonExistingClaimReference = "something";
         final String event = "claim-issue";
-        commonGivenForSearchForCitizen(CASE_REFERENCE);
+        givenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(nonExistingClaimReference, event).andExpect(status().isNotFound());
     }
@@ -76,7 +79,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
         final String nonExistingEvent = "some-event";
 
-        commonGivenForSearchForCitizen(CASE_REFERENCE);
+        givenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(CASE_REFERENCE, nonExistingEvent).andExpect(status().isNotFound());
     }
@@ -85,7 +88,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
         final String event = "claim-issued";
 
-        commonGivenForSearchForCitizenAndDef(CASE_REFERENCE);
+        givenForSearchForCitizenAndDef(CASE_REFERENCE);
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
@@ -102,7 +105,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
-        commonGivenForSearchForCitizen(CASE_REFERENCE);
+        givenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());
@@ -119,7 +122,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
         final String event = "more-time-requested";
 
-        commonGivenForSearchForCitizen(CASE_REFERENCE);
+        givenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
@@ -130,7 +133,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
         final String event = "more-time-requested";
 
-        commonGivenForSearchForCitizenAndDef(CASE_REFERENCE);
+        givenForSearchForCitizenAndDef(CASE_REFERENCE);
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isOk());
 
@@ -144,7 +147,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
         final String event = "response-submitted";
 
-        commonGivenForSearchForCitizen(CASE_REFERENCE);
+        givenForSearchForCitizen(CASE_REFERENCE);
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
@@ -179,25 +182,25 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         );
     }
 
-    private void commonGivenForSearchForCitizen(String caseReference) {
+    private void givenForSearchForCitizen(String caseReference) {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", caseReference))
             )
         ).willReturn(successfulCoreCaseDataSearchResponse());
     }
 
-    private void commonGivenForSearchForCitizenAndDef(String caseReference) {
+    private void givenForSearchForCitizenAndDef(String caseReference) {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", caseReference))
             )
         ).willReturn(successfulCoreCaseDataSearchResponseWithDefendant());
