@@ -29,14 +29,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponseWithDefendant;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponseWithDefendantsResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefendant;
 
 @TestPropertySource(
     properties = {
@@ -54,8 +55,10 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
+    private static final String PAGE = "1";
+
     @Before
-    public void setup() {
+    public void setUp() {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
         UserDetails userDetails = SampleUserDetails.getDefault();
@@ -107,10 +110,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
         givenForSearchForCitizen(CASE_REFERENCE);
 
-        makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isOk());
+        makeRequest(claim.getReferenceNumber(), event).andExpect(status().isOk());
 
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+        verify(emailService, times(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
@@ -164,9 +166,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE))
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE))
             )
-        ).willReturn(successfulCoreCaseDataSearchResponseWithDefendantsResponse());
+        ).willReturn(listOfCaseDetailsWithDefResponse());
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isOk());
 
@@ -189,9 +191,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference))
+            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE))
             )
-        ).willReturn(successfulCoreCaseDataSearchResponse());
+        ).willReturn(listOfCaseDetails());
     }
 
     private void givenForSearchForCitizenAndDef(String caseReference) {
@@ -201,9 +203,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference))
+            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE))
             )
-        ).willReturn(successfulCoreCaseDataSearchResponseWithDefendant());
+        ).willReturn(listOfCaseDetailsWithDefendant());
     }
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {

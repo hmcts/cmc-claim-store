@@ -50,12 +50,12 @@ public class ResourceLoader {
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
 
-    public static List<CaseDetails> successfulCoreCaseDataSearchResponseWithDefendant() {
+    public static List<CaseDetails> listOfCaseDetailsWithDefendant() {
         String response = new ResourceReader().read("/core-case-data/search-response-with-def.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
 
-    public static List<CaseDetails> successfulCoreCaseDataSearchResponseWithDefendantsResponse() {
+    public static List<CaseDetails> listOfCaseDetailsWithDefResponse() {
         String response = new ResourceReader().read("/core-case-data/search-response-with-def-res.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
