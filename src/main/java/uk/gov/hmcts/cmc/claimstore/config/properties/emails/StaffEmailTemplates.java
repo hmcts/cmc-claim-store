@@ -1,14 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.config.properties.emails;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
+import static uk.gov.hmcts.cmc.claimstore.config.properties.emails.ResourceReader.readString;
 
 @Component
 public class StaffEmailTemplates {
+
     public String getClaimIssuedEmailBody() {
         return readString("/staff/templates/email/claimIssued/body.txt");
     }
@@ -47,20 +45,5 @@ public class StaffEmailTemplates {
 
     public String getBulkPrintEmailSubject() {
         return readString("/staff/templates/email/bulkPrintFailure/subject.txt");
-    }
-
-    private String readString(String resourcePath) {
-        return new String(
-            readBytes(resourcePath),
-            Charset.forName("UTF-8")
-        );
-    }
-
-    private byte[] readBytes(String resourcePath) {
-        try (InputStream inputStream = getClass().getResourceAsStream(resourcePath)) {
-            return IOUtils.toByteArray(inputStream);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
     }
 }
