@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
@@ -8,6 +9,7 @@ import java.util.Objects;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class CaseReference {
+    @JsonProperty("case_reference")
     private String caseReference;
 
     @JsonCreator
