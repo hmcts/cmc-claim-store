@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -42,7 +43,7 @@ public class JsonMapperTest {
     private JsonMapper processor = JsonMapperFactory.create();
 
     @Test
-    public void shouldProcessClaimDataToJson() {
+    public void shouldProcessClaimDataToJson() throws JSONException {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
             .withDate(LocalDate.of(2015, 2, 2))

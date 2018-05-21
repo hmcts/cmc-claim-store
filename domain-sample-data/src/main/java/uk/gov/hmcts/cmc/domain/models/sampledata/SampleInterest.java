@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class SampleInterest {
 
@@ -31,7 +32,9 @@ public class SampleInterest {
         return builder()
                 .withType(Interest.InterestType.STANDARD)
                 .withRate(new BigDecimal("8"))
-                .withReason(null);
+                .withReason(null)
+                .withInterestDate(SampleInterestDate.builder()
+                    .withDate(LocalDate.of(2015, 02, 02)).build());
     }
 
     public static SampleInterest noInterestBuilder() {
