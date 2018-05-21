@@ -30,7 +30,6 @@ public class CCDCaseDataToClaim {
     }
 
     private CCDCase convertToCCDCase(Map<String, Object> mapData) {
-        String json = jsonMapper.toJson(mapData);
-        return jsonMapper.fromJson(json, CCDCase.class);
+        return jsonMapper.fromMap(mapData, CCDCase.class);
     }
 }
