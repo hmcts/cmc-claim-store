@@ -119,4 +119,18 @@ public class ClaimController {
             .isPresent();
         return new DefendantLinkStatus(linked);
     }
+
+    // TODO: return CaseRefence object (create this class)
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}")
+    @ApiOperation("Submit pre payment case")
+    public Claim preSubmit(@PathVariable("externalId") String externalId,
+                                          @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        // if ccd disabled
+            // return externalId
+        // else
+            // call ccdService.save
+            // return ccd-id
+
+        return null;
+    }
 }

@@ -28,7 +28,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -75,14 +76,21 @@ public class CoreCaseDataService {
     public Claim save(String authorisation, Claim claim) {
         boolean claimantRepresented = claim.getClaimData().isClaimantRepresented();
         String referenceNumber = referenceNumberService.getReferenceNumber(claimantRepresented);
+
+        // new endpoint in claim api /claims/{external-id} return -> {case_reference: (external-id|ccd-case-reference)}
+
+        // if ccd is enabled:
+        // call ccd.save
+        // claimantRepresented = userService.getUserDetails(authorisation).isSolicitor()
+
         try {
             CCDCase ccdCase = caseMapper.to(claim);
             ccdCase.setReferenceNumber(referenceNumber);
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(claim.getSubmitterId())
+                .userId(claim.getSubmitterId()) // authorisation
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(SUBMIT_CLAIM.getValue())
+                .eventId(SUBMIT_PRE_PAYMENT.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -90,12 +98,12 @@ public class CoreCaseDataService {
                 .save(
                     authorisation,
                     eventRequestData,
-                    ccdCase,
-                    claimantRepresented,
-                    claim.getLetterHolderId()
+                    ccdCase, // map with external id
+                    claimantRepresented, // remove, this should be checked inside saveCoreCaseDataService
+                    claim.getLetterHolderId() // remove
                 );
 
-            return extractClaim(caseDetails);
+            return extractClaim(caseDetails); // return ccd-id
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(String
                 .format("Failed storing claim in CCD store for claim %s", referenceNumber), exception);
@@ -198,6 +206,16 @@ public class CoreCaseDataService {
                 .format("Failed updating claim in CCD store for claim %s on event %s", ccdCase.getReferenceNumber(),
                     caseEvent), exception);
         }
+    }
+
+    public Claim submitPostPayment(String authorisation, Claim claim) {
+        return extractClaim(
+            update(
+                authorisation,
+                caseMapper.to(claim),
+                SUBMIT_POST_PAYMENT
+            )
+        );
     }
 
     private Claim extractClaim(CaseDetails caseDetails) {
