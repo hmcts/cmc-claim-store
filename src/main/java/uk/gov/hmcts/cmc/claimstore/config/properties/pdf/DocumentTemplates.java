@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.config.properties.pdf;
 
 import org.springframework.stereotype.Component;
 
-import static uk.gov.hmcts.cmc.claimstore.config.properties.emails.ResourceReader.readBytes;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceReader.readBytes;
 
 @Component
 public class DocumentTemplates {

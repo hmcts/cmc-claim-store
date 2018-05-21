@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.rpa.email;
 
 import org.springframework.stereotype.Component;
 
-import static uk.gov.hmcts.cmc.claimstore.config.properties.emails.ResourceReader.readString;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceReader.readString;
 
 @Component("rpa/email-templates")
 public class EmailTemplates {

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.config.properties.emails;
+package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.apache.commons.io.IOUtils;
 
