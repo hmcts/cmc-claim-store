@@ -16,6 +16,8 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSu
 @Component
 public class DefenceResponseJsonMapper {
 
+    SealedClaimJsonMapper mapAddress = new SealedClaimJsonMapper();
+
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
@@ -46,6 +48,5 @@ public class DefenceResponseJsonMapper {
             .build();
     }
 
-    SealedClaimJsonMapper mapAddress = new SealedClaimJsonMapper();
 }
 
