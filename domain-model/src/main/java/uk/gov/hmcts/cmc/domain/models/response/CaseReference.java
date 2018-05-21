@@ -8,19 +8,19 @@ import java.util.Objects;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class CaseReference {
-    private String reference;
+    private String caseReference;
 
     @JsonCreator
     public CaseReference(String reference) {
-        this.reference = reference;
+        this.caseReference = reference;
     }
 
-    public String getReference() {
-        return reference;
+    public String getCaseReference() {
+        return caseReference;
     }
 
-    public void setReference(String reference) {
-        this.reference = reference;
+    public void setCaseReference(String caseReference) {
+        this.caseReference = caseReference;
     }
 
     @Override
@@ -35,12 +35,12 @@ public class CaseReference {
 
         CaseReference obj = (CaseReference) other;
 
-        return reference != null && reference.equals(obj.reference);
+        return caseReference != null && caseReference.equals(obj.caseReference);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(reference);
+        return Objects.hash(caseReference);
     }
 
     @Override

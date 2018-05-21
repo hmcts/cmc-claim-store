@@ -39,6 +39,7 @@ public class PrePaymentTest extends BaseIntegrationTest {
             .perform(
                 post("/claims/" + caseReference + "/pre-payment")
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
             );
     }
 }

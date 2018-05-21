@@ -123,7 +123,8 @@ public class ClaimController {
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/pre-payment")
     @ApiOperation("Submit Pre Payment claim")
-    public CaseReference preSubmit(@PathVariable("externalId") String externalId) {
+    public CaseReference preSubmit(@PathVariable("externalId") String externalId,
+                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return new CaseReference(externalId);
     }
 }
