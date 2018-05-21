@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.statementofmeans;
+package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 public enum PaymentFrequency {
     WEEK("Week"),

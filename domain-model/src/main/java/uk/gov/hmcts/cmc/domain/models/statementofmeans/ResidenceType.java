@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.statementofmeans;
+package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 public enum ResidenceType {
     OWN_HOME("Home you own yourself (or pay a mortgage on)"),

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.statementofmeans;
+package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 

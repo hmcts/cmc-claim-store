@@ -1,0 +1,78 @@
+package uk.gov.hmcts.cmc.domain.models.statementofmeans;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
+public class SelfEmployed {
+
+    private final String jobTitle;
+    private final BigDecimal annualTurnover;
+    private final boolean behindOnTaxPayments;
+    private final BigDecimal amountYouOwe;
+    private final String reason;
+
+    public SelfEmployed(
+        String jobTitle,
+        BigDecimal annualTurnover,
+        boolean behindOnTaxPayments,
+        BigDecimal amountYouOwe,
+        String reason
+    ) {
+        this.jobTitle = jobTitle;
+        this.annualTurnover = annualTurnover;
+        this.behindOnTaxPayments = behindOnTaxPayments;
+        this.amountYouOwe = amountYouOwe;
+        this.reason = reason;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public BigDecimal getAnnualTurnover() {
+        return annualTurnover;
+    }
+
+    public boolean isBehindOnTaxPayments() {
+        return behindOnTaxPayments;
+    }
+
+    public BigDecimal getAmountYouOwe() {
+        return amountYouOwe;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        SelfEmployed that = (SelfEmployed) other;
+        return behindOnTaxPayments == that.behindOnTaxPayments
+            && Objects.equals(jobTitle, that.jobTitle)
+            && Objects.equals(annualTurnover, that.annualTurnover)
+            && Objects.equals(amountYouOwe, that.amountYouOwe)
+            && Objects.equals(reason, that.reason);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(jobTitle, annualTurnover, behindOnTaxPayments, amountYouOwe, reason);
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+}
