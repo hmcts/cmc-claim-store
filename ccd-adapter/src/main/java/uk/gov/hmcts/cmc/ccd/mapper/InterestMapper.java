@@ -28,10 +28,13 @@ public class InterestMapper implements Mapper<CCDInterest, Interest> {
         }
 
         CCDInterest.CCDInterestBuilder builder = CCDInterest.builder();
+        interest.getSpecificDailyAmount().ifPresent(builder::specificDailyAmount);
+
         return builder
             .type(CCDInterestType.valueOf(interest.getType().name()))
             .rate(interest.getRate())
             .reason(interest.getReason())
+            .interestBreakdown(interestBreakdownMapper.to(interest.getInterestBreakdown()))
             .interestDate(interestDateMapper.to(interest.getInterestDate()))
             .build();
     }
