@@ -129,11 +129,6 @@ public class ClaimController {
     @ApiOperation("Submit Pre Payment claim")
     public CaseReference preSubmit(@PathVariable("externalId") String externalId,
                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-
-        if (ccdUrl == "false") {
-            return new CaseReference(externalId);
-        }
-
-        return claimService.
+        return claimService.savePrePayment(authorisation, externalId);
     }
 }

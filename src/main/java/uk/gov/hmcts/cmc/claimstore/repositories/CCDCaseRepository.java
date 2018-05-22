@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -96,6 +97,11 @@ public class CCDCaseRepository implements CaseRepository {
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
         coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation,
             CaseEvent.valueOf(userAction));
+    }
+
+    @Override
+    public CaseReference savePrePaymentClaim(String authorisation, String externalId) {
+        return coreCaseDataService.savePrePayment(authorisation, externalId);
     }
 
     @Override

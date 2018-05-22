@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
@@ -20,8 +21,15 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -42,8 +50,6 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CoreCaseDataService {
 
-    private final SaveCoreCaseDataService saveCoreCaseDataService;
-    private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
@@ -51,22 +57,24 @@ public class CoreCaseDataService {
     private final UserService userService;
     private final JsonMapper jsonMapper;
     private final ReferenceNumberService referenceNumberService;
+    private final CoreCaseDataApi coreCaseDataApi;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final CaseAccessApi caseAccessApi;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
     public CoreCaseDataService(
-        SaveCoreCaseDataService saveCoreCaseDataService,
-        UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
         UserService userService,
         JsonMapper jsonMapper,
-        ReferenceNumberService referenceNumberService
+        ReferenceNumberService referenceNumberService,
+        CoreCaseDataApi coreCaseDataApi,
+        AuthTokenGenerator authTokenGenerator,
+        CaseAccessApi caseAccessApi
     ) {
-        this.saveCoreCaseDataService = saveCoreCaseDataService;
-        this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
@@ -74,6 +82,9 @@ public class CoreCaseDataService {
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.referenceNumberService = referenceNumberService;
+        this.coreCaseDataApi = coreCaseDataApi;
+        this.authTokenGenerator = authTokenGenerator;
+        this.caseAccessApi = caseAccessApi;
     }
 
     public CaseReference savePrePayment(String authorisation, String externalId) {
@@ -90,14 +101,22 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            CaseDetails caseDetails = saveCoreCaseDataService.save(
-                authorisation,
-                eventRequestData,
-                data,
-                user.isSolicitor()
-            );
+            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData, user.isSolicitor());
 
-            return new CaseReference(caseDetails.getId().toString());
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(
+                    Event.builder()
+                        .id(startEventResponse.getEventId())
+                        .summary("CMC case submission event")
+                        .description("Submitting CMC pre-payment case")
+                        .build()
+                ).data(data)
+                .build();
+
+            return new CaseReference(
+                submitCreate(authorisation, eventRequestData, caseDataContent, user.isSolicitor()).getId().toString()
+            );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format("Failed storing claim in CCD store for claim %s", externalId), exception
@@ -105,15 +124,31 @@ public class CoreCaseDataService {
         }
     }
 
+    public Claim submitPostPayment(String authorisation, Claim claim) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+        boolean isRepresented = userDetails.isSolicitor();
+        CCDCase ccdCase = caseMapper.to(claim);
+        ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+
+        CaseDetails caseDetails = update(authorisation, ccdCase, SUBMIT_POST_PAYMENT);
+
+        if (isRepresented) {
+            grandAccessToCase(caseDetails, claim.getLetterHolderId());
+        }
+
+        return extractClaim(caseDetails);
+    }
+
     public CaseDetails requestMoreTimeForResponse(
         String authorisation,
         Claim claim,
         LocalDate newResponseDeadline
     ) {
-        CCDCase ccdCase = this.caseMapper.to(claim);
+        CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setResponseDeadline(newResponseDeadline);
         ccdCase.setMoreTimeRequested(YES);
-        return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED);
+
+        return update(authorisation, ccdCase, MORE_TIME_REQUESTED);
     }
 
     public CaseDetails saveCountyCourtJudgment(
@@ -121,11 +156,11 @@ public class CoreCaseDataService {
         Claim claim,
         CountyCourtJudgment countyCourtJudgment
     ) {
-
-        CCDCase ccdCase = this.caseMapper.to(claim);
+        CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
-        return this.update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+
+        return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
     }
 
     public CaseDetails saveDefendantResponse(
@@ -134,12 +169,12 @@ public class CoreCaseDataService {
         Response response,
         String authorisation
     ) {
-
-        CCDCase ccdCase = this.caseMapper.to(claim);
+        CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(nowInUTC());
-        return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+
+        return update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
 
     public CaseDetails saveSettlement(
@@ -153,7 +188,7 @@ public class CoreCaseDataService {
             .settlement(settlementMapper.to(settlement))
             .build();
 
-        return this.update(authorisation, ccdCase, event);
+        return update(authorisation, ccdCase, event);
     }
 
     public CaseDetails reachSettlementAgreement(
@@ -168,7 +203,7 @@ public class CoreCaseDataService {
             .settlementReachedAt(nowInUTC())
             .build();
 
-        return this.update(authorisation, ccdCase, event);
+        return update(authorisation, ccdCase, event);
     }
 
     public CaseDetails updateResponseDeadline(
@@ -180,12 +215,14 @@ public class CoreCaseDataService {
             .id(claim.getId())
             .responseDeadline(newResponseDeadline)
             .build();
-        return this.update(authorisation, ccdCase, TEST_SUPPORT_UPDATE);
+
+        return update(authorisation, ccdCase, TEST_SUPPORT_UPDATE);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
             String userId = userService.getUserDetails(authorisation).getId();
+            Long caseId = ccdCase.getId();
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(userId)
                 .jurisdictionId(JURISDICTION_ID)
@@ -194,7 +231,19 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            return updateCoreCaseDataService.update(authorisation, eventRequestData, ccdCase, ccdCase.getId());
+            StartEventResponse startEventResponse = startUpdate(authorisation, eventRequestData, caseId);
+
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary("CMC case update")
+                    .description("Submitting CMC case update")
+                    .build())
+                .data(ccdCase)
+                .build();
+
+            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -206,26 +255,107 @@ public class CoreCaseDataService {
         }
     }
 
-    public Claim submitPostPayment(String authorisation, Claim claim) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        boolean isRepresented = userDetails.isSolicitor();
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+    private StartEventResponse startUpdate(String authorisation, EventRequestData eventRequestData, Long caseId) {
+        return coreCaseDataApi.startEventForCitizen(
+            authorisation,
+            authTokenGenerator.generate(),
+            eventRequestData.getUserId(),
+            eventRequestData.getJurisdictionId(),
+            eventRequestData.getCaseTypeId(),
+            caseId.toString(),
+            eventRequestData.getEventId()
+        );
+    }
 
-        CaseDetails caseDetails = update(authorisation, ccdCase, SUBMIT_POST_PAYMENT);
+    private CaseDetails submitUpdate(
+        String authorisation,
+        EventRequestData eventRequestData,
+        CaseDataContent caseDataContent,
+        Long caseId
+    ) {
+        return coreCaseDataApi.submitEventForCitizen(
+            authorisation,
+            authTokenGenerator.generate(),
+            eventRequestData.getUserId(),
+            eventRequestData.getJurisdictionId(),
+            eventRequestData.getCaseTypeId(),
+            caseId.toString(),
+            eventRequestData.isIgnoreWarning(),
+            caseDataContent
+        );
+    }
 
-        if (isRepresented) {
-            saveCoreCaseDataService.grandAccessToCase(caseDetails, claim.getLetterHolderId());
+    private void grandAccessToCase(CaseDetails caseDetails, String letterHolderId) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        caseAccessApi.grantAccessToCase(
+            user.getAuthorisation(),
+            authTokenGenerator.generate(),
+            user.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            caseDetails.getId().toString(),
+            new UserId(letterHolderId)
+        );
+    }
+
+    private CaseDetails submitCreate(
+        String authorisation,
+        EventRequestData eventRequestData,
+        CaseDataContent caseDataContent,
+        boolean represented
+    ) {
+        if (represented) {
+            return coreCaseDataApi.submitForCaseworker(
+                authorisation,
+                this.authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                eventRequestData.isIgnoreWarning(),
+                caseDataContent
+            );
         }
 
-        return extractClaim(caseDetails);
+        return coreCaseDataApi.submitForCitizen(
+            authorisation,
+            this.authTokenGenerator.generate(),
+            eventRequestData.getUserId(),
+            eventRequestData.getJurisdictionId(),
+            eventRequestData.getCaseTypeId(),
+            eventRequestData.isIgnoreWarning(),
+            caseDataContent
+        );
+    }
+
+    private StartEventResponse startCreate(
+        String authorisation, EventRequestData eventRequestData, boolean isRepresented
+    ) {
+        if (isRepresented) {
+            return coreCaseDataApi.startForCaseworker(
+                authorisation,
+                authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                eventRequestData.getEventId()
+            );
+        }
+
+        return coreCaseDataApi.startForCitizen(
+            authorisation,
+            this.authTokenGenerator.generate(),
+            eventRequestData.getUserId(),
+            eventRequestData.getJurisdictionId(),
+            eventRequestData.getCaseTypeId(),
+            eventRequestData.getEventId()
+        );
     }
 
     private Claim extractClaim(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getData();
         caseData.put("id", caseDetails.getId());
         CCDCase ccdCase = jsonMapper.convertValue(caseData, CCDCase.class);
+
         return caseMapper.from(ccdCase);
     }
-
 }

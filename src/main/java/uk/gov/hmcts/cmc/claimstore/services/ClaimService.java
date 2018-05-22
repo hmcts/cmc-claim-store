@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -103,6 +104,10 @@ public class ClaimService {
 
     public List<Claim> getClaimByDefendantId(String id, String authorisation) {
         return caseRepository.getByDefendantId(id, authorisation);
+    }
+
+    public CaseReference savePrePayment(String authorisation, String externalId) {
+        return caseRepository.savePrePaymentClaim(authorisation, externalId);
     }
 
     @Transactional

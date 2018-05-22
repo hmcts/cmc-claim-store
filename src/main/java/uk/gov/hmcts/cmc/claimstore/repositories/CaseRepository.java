@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -14,9 +15,6 @@ public interface CaseRepository {
 
     Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
 
-    /**
-     * We need it only in ccd. For non-ccd it always returns `null`.
-     * */
     Long getOnHoldIdByExternalId(String externalId, String authorisation);
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
@@ -36,6 +34,8 @@ public interface CaseRepository {
     void updateSettlement(Claim claim, Settlement settlement, String authorisation, String userAction);
 
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
+
+    CaseReference savePrePaymentClaim(String authorisation, String externalId);
 
     Claim saveClaim(String authorisation, Claim claim);
 }

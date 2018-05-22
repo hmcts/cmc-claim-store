@@ -33,7 +33,6 @@ public class UpdateCoreCaseDataService {
         Object data,
         Long caseId
     ) {
-
         StartEventResponse startEventResponse = start(authorisation, eventRequestData, caseId);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -59,7 +58,7 @@ public class UpdateCoreCaseDataService {
             eventRequestData.getCaseTypeId(),
             caseId.toString(),
             eventRequestData.getEventId()
-            );
+        );
     }
 
     private CaseDetails submit(

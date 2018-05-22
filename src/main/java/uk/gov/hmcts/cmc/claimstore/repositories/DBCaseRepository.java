@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -47,11 +48,11 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
+    /**
+     * For non-CCD datastore it always null as there is no on hold state of claim then.
+     */
     @Override
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        /**
-         * For non-CCD datastore it always null as there is no on hold state of claim then.
-         * */
         return null;
     }
 
@@ -126,6 +127,14 @@ public class DBCaseRepository implements CaseRepository {
             jsonMapper.toJson(settlement),
             LocalDateTimeFactory.nowInUTC()
         );
+    }
+
+    /**
+     * For non-CCD datastore it always new CaseReference(externalId) as there is no pre payment step for non-ccd env.
+     */
+    @Override
+    public CaseReference savePrePaymentClaim(String authorisation, String externalId) {
+        return new CaseReference(externalId);
     }
 
     @Override
