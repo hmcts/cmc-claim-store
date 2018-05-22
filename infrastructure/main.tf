@@ -71,7 +71,7 @@ data "vault_generic_secret" "oauth_client_secret" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:hmcts/moj-module-webapp.git?ref=RPE-389/local-cache"
+  source = "git@github.com:hmcts/moj-module-webapp.git?ref=feature/force-capacity-to-1-for-preview"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
