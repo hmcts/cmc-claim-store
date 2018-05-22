@@ -172,7 +172,6 @@ public class SampleData {
                     .build())
             .payment(getCCDPayment())
             .interest(getCCDInterest())
-            .interestDate(getCCDInterestDate())
             .statementOfTruth(getCCDStatementOfTruth())
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
