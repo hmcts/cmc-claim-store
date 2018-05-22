@@ -30,11 +30,21 @@ public class DefendantJsonMapper {
                 .add("type", defendant.getClass().getSimpleName().replace("Details", ""))
                 .add("name", defendant.getName())
                 .add("address", mapAddress.mapAddress(defendant.getAddress()))
-                .add("correspondenceAddress", defendant.getServiceAddress().map(mapAddress::mapAddress).orElse(null))
+                .add("correspondenceAddress",
+                    defendant.getServiceAddress()
+                        .map(mapAddress::mapAddress)
+                        .orElse(null))
                 .add("emailAddress", defendant.getEmail().orElse(null))
-                .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, SoleTraderDetails::getBusinessName))
-                .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
-                .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
+                .add("businessName",
+                    extractOptionalFromSubclass(defendant, SoleTraderDetails.class,
+                        SoleTraderDetails::getBusinessName))
+                .add("contactPerson",
+                    extractOptionalFromSubclass(defendant, HasContactPerson.class,
+                        HasContactPerson::getContactPerson))
+                .add("companiesHouseNumber",
+                    extractOptionalFromSubclass(
+                        defendant, OrganisationDetails.class,
+                        OrganisationDetails::getCompaniesHouseNumber))
                 .build())
             .collect(JsonCollectors.toJsonArray());
     }
