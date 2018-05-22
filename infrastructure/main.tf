@@ -99,10 +99,10 @@ module "claim-store-api" {
     IDAM_S2S_AUTH_URL = "${local.s2sUrl}"
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
-    IDAM_ANONYMOUS_CASEWORKER_USERNAME = "${data.vault_generic_secret.anonymous_citizen_username.data["value"]}"
-    IDAM_ANONYMOUS_CASEWORKER_PASSWORD = "${data.vault_generic_secret.anonymous_citizen_password.data["value"]}"
-    IDAM_SYSTEM_UPDATE_USER_USERNAME = "${data.vault_generic_secret.system_update_username.data["value"]}"
-    IDAM_SYSTEM_UPDATE_USER_PASSWORD = "${data.vault_generic_secret.system_update_password.data["value"]}"
+    IDAM_CMC_ANONYMOUSCITIZEN_USER = "${data.vault_generic_secret.anonymous_citizen_username.data["value"]}"
+    IDAM_CMC_ANONYMOUSCITIZEN_PASSWORD = "${data.vault_generic_secret.anonymous_citizen_password.data["value"]}"
+    IDAM_CMC_SYSTEMUPDATE_USER = "${data.vault_generic_secret.system_update_username.data["value"]}"
+    IDAM_CMC_SYSTEMUPDATE_PASSWORD = "${data.vault_generic_secret.system_update_password.data["value"]}"
     OAUTH2_CLIENT_SECRET = "${data.vault_generic_secret.oauth_client_secret.data["value"]}"
 
     // notify
