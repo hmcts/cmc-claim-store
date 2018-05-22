@@ -29,7 +29,7 @@ public class RequestForJudgementJsonMapperTest {
     @Autowired
     private RequestForJudgementJsonMapper mapper;
     private static String REFERENCE_NUMBER = "000MC001";
-    private static String INPUT ="/rpa_request_for_judgement.json";
+    private static String INPUT = "/rpa_request_for_judgement.json";
 
     @Test
     public void shouldMapIndividualForRequestForJudgement() throws JSONException {
