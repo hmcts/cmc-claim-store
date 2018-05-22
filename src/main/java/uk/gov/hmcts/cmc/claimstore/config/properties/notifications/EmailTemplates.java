@@ -63,6 +63,9 @@ public class EmailTemplates {
     @NotEmpty
     private String offerCounterSignedEmailToOtherParty;
 
+    @NotEmpty
+    private String freeMediationAcceptedEmailToClaimant;
+
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -205,5 +208,13 @@ public class EmailTemplates {
 
     public void setOfferCounterSignedEmailToOtherParty(String offerCounterSignedEmailToOtherParty) {
         this.offerCounterSignedEmailToOtherParty = offerCounterSignedEmailToOtherParty;
+    }
+
+    public String getFreeMediationAcceptedEmailToClaimant() {
+        return freeMediationAcceptedEmailToClaimant;
+    }
+
+    public void setFreeMediationAcceptedEmailToClaimant(String freeMediationAcceptedEmailToClaimant) {
+        this.freeMediationAcceptedEmailToClaimant = freeMediationAcceptedEmailToClaimant;
     }
 }
