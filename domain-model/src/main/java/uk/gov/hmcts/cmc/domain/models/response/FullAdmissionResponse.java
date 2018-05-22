@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.FinancialDetails;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.FinancialDetails;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -27,9 +29,10 @@ public class FullAdmissionResponse extends Response {
     @DateNotInThePast
     private final LocalDate paymentDate;
 
+    @Valid
     private final RepaymentPlan repaymentPlan;
 
-    @NotNull
+    @Valid
     private final FinancialDetails financialDetails;
 
     public FullAdmissionResponse(
@@ -67,8 +70,8 @@ public class FullAdmissionResponse extends Response {
         return Optional.ofNullable(repaymentPlan);
     }
 
-    public FinancialDetails getFinancialDetails() {
-        return financialDetails;
+    public Optional<FinancialDetails> getFinancialDetails() {
+        return Optional.ofNullable(financialDetails);
     }
 
     @Override

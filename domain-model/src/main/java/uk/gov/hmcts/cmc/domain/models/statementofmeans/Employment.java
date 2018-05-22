@@ -11,35 +11,28 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class Employment {
 
-    private final YesNoOption isCurrentlyEmployed;
-    private final boolean isEmployed;
-    private final boolean isSelfEmployed;
+    private final YesNoOption isEmployed;
+    private final YesNoOption isSelfEmployed;
     private final List<Employer> employers;
     private final SelfEmployed selfEmployed;
 
     public Employment(
-        YesNoOption isCurrentlyEmployed,
-        boolean employed,
-        boolean isSelfEmployed,
+        YesNoOption employed,
+        YesNoOption isSelfEmployed,
         List<Employer> employers,
         SelfEmployed selfEmployed
     ) {
-        this.isCurrentlyEmployed = isCurrentlyEmployed;
         this.isEmployed = employed;
         this.isSelfEmployed = isSelfEmployed;
         this.employers = employers;
         this.selfEmployed = selfEmployed;
     }
 
-    public YesNoOption getIsCurrentlyEmployed() {
-        return isCurrentlyEmployed;
-    }
-
-    public boolean isEmployed() {
+    public YesNoOption isEmployed() {
         return isEmployed;
     }
 
-    public boolean isSelfEmployed() {
+    public YesNoOption isSelfEmployed() {
         return isSelfEmployed;
     }
 
@@ -62,7 +55,6 @@ public class Employment {
         Employment that = (Employment) other;
         return isEmployed == that.isEmployed
             && isSelfEmployed == that.isSelfEmployed
-            && isCurrentlyEmployed == that.isCurrentlyEmployed
             && Objects.equals(employers, that.employers)
             && Objects.equals(selfEmployed, that.selfEmployed);
     }
@@ -70,7 +62,7 @@ public class Employment {
     @Override
     public int hashCode() {
 
-        return Objects.hash(isCurrentlyEmployed, isEmployed, isSelfEmployed, employers, selfEmployed);
+        return Objects.hash(isEmployed, isSelfEmployed, employers, selfEmployed);
     }
 
     @Override

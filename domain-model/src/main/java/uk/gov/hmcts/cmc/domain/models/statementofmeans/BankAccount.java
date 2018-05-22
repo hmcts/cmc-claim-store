@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -27,15 +28,26 @@ public class BankAccount {
     }
 
     private final BankAccountType typeOfAccount;
-    private final boolean isJoint;
+    private final YesNoOption isJoint;
     private final BigDecimal balance;
 
-    public BankAccount(BankAccountType typeOfAccount, boolean isJoint, BigDecimal balance) {
+    public BankAccount(BankAccountType typeOfAccount, YesNoOption isJoint, BigDecimal balance) {
         this.typeOfAccount = typeOfAccount;
         this.isJoint = isJoint;
         this.balance = balance;
     }
 
+    public BankAccountType getTypeOfAccount() {
+        return typeOfAccount;
+    }
+
+    public YesNoOption getIsJoint() {
+        return isJoint;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
 
     @Override
     public boolean equals(Object other) {

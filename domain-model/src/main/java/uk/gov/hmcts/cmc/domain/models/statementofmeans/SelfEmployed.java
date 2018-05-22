@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -11,14 +12,14 @@ public class SelfEmployed {
 
     private final String jobTitle;
     private final BigDecimal annualTurnover;
-    private final boolean behindOnTaxPayments;
+    private final YesNoOption behindOnTaxPayments;
     private final BigDecimal amountYouOwe;
     private final String reason;
 
     public SelfEmployed(
         String jobTitle,
         BigDecimal annualTurnover,
-        boolean behindOnTaxPayments,
+        YesNoOption behindOnTaxPayments,
         BigDecimal amountYouOwe,
         String reason
     ) {
@@ -37,7 +38,7 @@ public class SelfEmployed {
         return annualTurnover;
     }
 
-    public boolean isBehindOnTaxPayments() {
+    public YesNoOption isBehindOnTaxPayments() {
         return behindOnTaxPayments;
     }
 
