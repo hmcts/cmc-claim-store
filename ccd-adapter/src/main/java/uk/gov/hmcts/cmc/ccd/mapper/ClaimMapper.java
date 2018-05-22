@@ -24,7 +24,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
     private final AmountMapper amountMapper;
     private final PaymentMapper paymentMapper;
     private final InterestMapper interestMapper;
-    private final InterestDateMapper interestDateMapper;
     private final TimelineMapper timelineMapper;
     private final EvidenceMapper evidenceMapper;
 
@@ -50,7 +49,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         this.amountMapper = amountMapper;
         this.paymentMapper = paymentMapper;
         this.interestMapper = interestMapper;
-        this.interestDateMapper = interestDateMapper;
         this.timelineMapper = timelineMapper;
         this.evidenceMapper = evidenceMapper;
     }
@@ -90,7 +88,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
         return builder
             .payment(paymentMapper.to(claimData.getPayment()))
             .interest(interestMapper.to(claimData.getInterest()))
-            .interestDate(interestDateMapper.to(claimData.getInterestDate()))
             .reason(claimData.getReason())
             .amount(amountMapper.to(claimData.getAmount()))
             .feeAmountInPennies(claimData.getFeeAmountInPennies())
@@ -126,7 +123,6 @@ public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
             amountMapper.from(ccdClaim.getAmount()),
             ccdClaim.getFeeAmountInPennies(),
             interestMapper.from(ccdClaim.getInterest()),
-            interestDateMapper.from(ccdClaim.getInterestDate()),
             personalInjuryMapper.from(ccdClaim.getPersonalInjury()),
             housingDisrepairMapper.from(ccdClaim.getHousingDisrepair()),
             ccdClaim.getReason(),
