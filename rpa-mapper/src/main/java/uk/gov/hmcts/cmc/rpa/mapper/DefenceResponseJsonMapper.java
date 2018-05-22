@@ -16,11 +16,9 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 public class DefenceResponseJsonMapper {
 
     @Autowired
-    private final AddressJsonMapper mapAddress;
     private final DefendantJsonMapper mapDefendant;
 
-    public DefenceResponseJsonMapper(AddressJsonMapper mapAddress, DefendantJsonMapper mapDefendant) {
-        this.mapAddress = mapAddress;
+    public DefenceResponseJsonMapper(DefendantJsonMapper mapDefendant) {
         this.mapDefendant = mapDefendant;
     }
 
