@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -47,12 +46,12 @@ public class ClaimService {
     @Autowired
     public ClaimService(
         ClaimRepository claimRepository,
+        CaseRepository caseRepository,
         UserService userService,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
-        EventProducer eventProducer,
-        CaseRepository caseRepository,
         MoreTimeRequestRule moreTimeRequestRule,
+        EventProducer eventProducer,
         AppInsights appInsights
     ) {
         this.claimRepository = claimRepository;

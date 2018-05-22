@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -105,7 +106,7 @@ public class CCDCaseApi {
         List<CaseDetails> result = search(user, ImmutableMap.of("case.externalId", externalId));
 
         if (result.size() != 1) {
-            throw new CoreCaseDataStoreException("Cases found by externalId " + externalId + " = " + result.size());
+            throw new ConflictException("There mus be exactly 1 case " + externalId + ". Found = " + result.size());
         }
 
         CaseDetails ccd = result.get(0);
