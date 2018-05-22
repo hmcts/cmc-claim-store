@@ -19,7 +19,6 @@ public class CCDClaim {
     private String externalId;
     private CCDAmount amount;
     private CCDInterest interest;
-    private CCDInterestDate interestDate;
     private CCDPayment payment;
     private String preferredCourt;
     private CCDPersonalInjury personalInjury;
