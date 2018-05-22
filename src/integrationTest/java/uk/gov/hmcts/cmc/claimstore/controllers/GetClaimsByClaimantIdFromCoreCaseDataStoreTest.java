@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,7 +70,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            any()
             )
         ).willReturn(listOfCaseDetails());
 
@@ -90,7 +89,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+                any()
             );
     }
 
@@ -139,7 +138,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1", "sortDirection", "desc"))
             )
         ).willReturn(numberOfClaimDetailsResults(11));
 
@@ -149,7 +148,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2", "sortDirection", "desc"))
             )
         ).willReturn(numberOfClaimDetailsResults(5));
 
@@ -186,7 +185,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1", "sortDirection", "desc"))
             )
         ).willReturn(numberOfClaimDetailsResults(11));
 
@@ -196,7 +195,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2", "sortDirection", "desc"))
             )
         ).willReturn(numberOfClaimDetailsResults(5));
 
@@ -227,39 +226,5 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
         return Stream.generate(ResourceLoader::successfulCoreCaseDataStoreSubmitResponse)
             .limit(number)
             .collect(Collectors.toList());
-    }
-
-    @Test
-    public void shouldSearchCCDEvenWhenNoClaimFoundInDB() throws Exception {
-        String nonExistingSubmitterId = "12";
-
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
-
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId))
-            )
-        ).willReturn(Collections.emptyList());
-
-        MvcResult result = makeRequest("/claims/claimant/" + nonExistingSubmitterId)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeListFrom(result))
-            .isEmpty();
-
-        verify(coreCaseDataApi)
-            .searchForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId, "page", "1"))
-            );
     }
 }
