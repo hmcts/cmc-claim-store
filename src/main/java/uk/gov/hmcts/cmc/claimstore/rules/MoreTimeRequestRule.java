@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
@@ -13,6 +14,13 @@ import java.util.Objects;
 @Service
 public class MoreTimeRequestRule {
 
+    private ClaimDeadlineService claimDeadlineService;
+
+    @Autowired
+    public MoreTimeRequestRule(ClaimDeadlineService claimDeadlineService) {
+        this.claimDeadlineService = claimDeadlineService;
+    }
+
     public void assertMoreTimeCanBeRequested(Claim claim) {
         Objects.requireNonNull(claim, "claim object can not be null");
 
@@ -24,8 +32,7 @@ public class MoreTimeRequestRule {
     }
 
     protected void assertIsNotPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
-        LocalDateTime responseDeadlineTime = responseDeadline.atTime(16, 0);
-        if (now.isEqual(responseDeadlineTime) || now.isAfter(responseDeadlineTime)) {
+        if (claimDeadlineService.isPastDeadline(now, responseDeadline)) {
             throw new MoreTimeRequestedAfterDeadlineException("You must not request more time after deadline");
         }
     }
