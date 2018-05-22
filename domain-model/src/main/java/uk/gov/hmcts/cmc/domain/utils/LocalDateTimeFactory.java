@@ -10,6 +10,10 @@ public class LocalDateTimeFactory {
 
     private LocalDateTimeFactory() {}
 
+    public static LocalDateTime fromNullableUTCtoLocalZone(LocalDateTime input) {
+        return input == null ? null : fromUTC(input);
+    }
+
     public static LocalDateTime fromUTC(LocalDateTime input) {
         return input.atZone(UTC_ZONE)
             .withZoneSameInstant(LOCAL_ZONE)

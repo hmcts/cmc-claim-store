@@ -13,7 +13,7 @@ public class SampleInterest {
     private BigDecimal rate = new BigDecimal(11);
     private String reason = "A reason";
     private BigDecimal specificDailyAmount = null;
-    private InterestDate interestDate = null;
+    private InterestDate interestDate = SampleInterestDate.validDefaults();
 
     public static SampleInterest builder() {
         return new SampleInterest();
@@ -27,25 +27,32 @@ public class SampleInterest {
                 .withReason(null);
     }
 
-    public static Interest standard() {
+    public static SampleInterest standardInterestBuilder() {
         return builder()
                 .withType(Interest.InterestType.STANDARD)
                 .withRate(new BigDecimal("8"))
-                .withReason(null)
-                .build();
+                .withReason(null);
+//                .withInterestDate(SampleInterestDate.builder()
+//                    .withDate(LocalDate.of(2015, 02, 02)).build());
     }
 
-    public static Interest noInterest() {
+    public static SampleInterest noInterestBuilder() {
         return builder()
                 .withType(Interest.InterestType.NO_INTEREST)
                 .withRate(null)
-                .withReason(null)
-                .build();
+                .withReason(null);
+    }
+
+    public static Interest standard() {
+        return standardInterestBuilder().build();
+    }
+
+    public static Interest noInterest() {
+        return noInterestBuilder().build();
     }
 
     public static Interest breakdownOnly() {
-        return breakdownInterestBuilder()
-                .build();
+        return breakdownInterestBuilder().build();
     }
 
     public SampleInterest withType(Interest.InterestType type) {
@@ -86,7 +93,6 @@ public class SampleInterest {
                 reason,
                 specificDailyAmount,
                 interestDate
-
         );
     }
 

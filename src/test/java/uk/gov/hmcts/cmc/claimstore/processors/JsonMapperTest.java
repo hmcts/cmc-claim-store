@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -10,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -42,7 +43,7 @@ public class JsonMapperTest {
     private JsonMapper processor = JsonMapperFactory.create();
 
     @Test
-    public void shouldProcessClaimDataToJson() {
+    public void shouldProcessClaimDataToJson() throws JSONException {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
             .withDate(LocalDate.of(2015, 2, 2))
@@ -51,12 +52,11 @@ public class JsonMapperTest {
         ClaimData input = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterest(SampleInterest.builder()
-                .withType(Interest.InterestType.STANDARD)
-                .withRate(new BigDecimal("8"))
-                .withReason(null)
-                .withInterestDate(interestDate)
-                .build())
-            .withInterestDate(interestDate)
+                    .withType(Interest.InterestType.STANDARD)
+                    .withRate(new BigDecimal("8"))
+                    .withReason(null)
+                    .withInterestDate(interestDate)
+                    .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
             .withFeeAccountNumber(null)
@@ -96,12 +96,11 @@ public class JsonMapperTest {
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterest(SampleInterest.builder()
-                .withType(Interest.InterestType.STANDARD)
-                .withRate(new BigDecimal("8"))
-                .withReason(null)
-                .withInterestDate(interestDate)
-                .build())
-            .withInterestDate(interestDate)
+                    .withType(Interest.InterestType.STANDARD)
+                    .withRate(new BigDecimal("8"))
+                    .withReason(null)
+                    .withInterestDate(interestDate)
+                    .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
             .withFeeAccountNumber(null)
@@ -130,12 +129,19 @@ public class JsonMapperTest {
         ClaimData output = processor.fromJson(input, ClaimData.class);
 
         //then
+        InterestDate interestDate = SampleInterestDate.builder()
+                .withDate(LocalDate.of(2015, 2, 2))
+                .build();
+
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
-            .withInterestDate(
-                SampleInterestDate.builder()
-                    .withDate(LocalDate.of(2015, 2, 2))
-                    .build())
+            .withInterest(
+                    SampleInterest.builder()
+                            .withType(Interest.InterestType.STANDARD)
+                            .withRate(new BigDecimal("8"))
+                            .withReason(null)
+                            .withInterestDate(interestDate)
+                            .build())
             .withAmount(
                 SampleAmountRange.builder()
                     .withHigherValue(BigDecimal.valueOf(123.56))
