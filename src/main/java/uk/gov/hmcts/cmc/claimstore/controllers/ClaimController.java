@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -34,10 +36,13 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 public class ClaimController {
 
     private final ClaimService claimService;
+    private final String ccdUrl;
 
     @Autowired
-    public ClaimController(ClaimService claimService) {
+    public ClaimController(ClaimService claimService,
+                           @Value("${core_case_data.api.url}") String ccdUrl) {
         this.claimService = claimService;
+        this.ccdUrl = ccdUrl;
     }
 
     @GetMapping("/claimant/{submitterId}")
@@ -120,17 +125,15 @@ public class ClaimController {
         return new DefendantLinkStatus(linked);
     }
 
-    // TODO: return CaseRefence object (create this class)
-    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}")
-    @ApiOperation("Submit pre payment case")
-    public Claim preSubmit(@PathVariable("externalId") String externalId,
-                                          @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        // if ccd disabled
-            // return externalId
-        // else
-            // call ccdService.save
-            // return ccd-id
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/pre-payment")
+    @ApiOperation("Submit Pre Payment claim")
+    public CaseReference preSubmit(@PathVariable("externalId") String externalId,
+                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
 
-        return null;
+        if (ccdUrl == "false") {
+            return new CaseReference(externalId);
+        }
+
+        return claimService.
     }
 }

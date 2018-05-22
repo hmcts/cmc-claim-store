@@ -44,36 +44,35 @@ public class SaveCoreCaseDataService {
         String authorisation,
         EventRequestData eventRequestData,
         Object data,
-        boolean represented,
-        String letterHolderId
+        boolean represented
     ) {
-
         StartEventResponse startEventResponse = start(authorisation, eventRequestData, represented);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
-            .event(Event.builder()
-                .id(startEventResponse.getEventId())
-                .summary("CMC case submission event")
-                .description("Submitting CMC case")
-                .build())
-            .data(data)
+            .event(
+                Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary("CMC case submission event")
+                    .description("Submitting CMC case")
+                    .build()
+            ).data(data)
             .build();
 
-        CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent, represented);
+        return submit(authorisation, eventRequestData, caseDataContent, represented);
+    }
 
-        if (!represented) {
-            User user = userService.authenticateAnonymousCaseWorker();
-            caseAccessApi.grantAccessToCase(user.getAuthorisation(),
-                authTokenGenerator.generate(),
-                user.getUserDetails().getId(),
-                JURISDICTION_ID,
-                CASE_TYPE_ID,
-                caseDetails.getId().toString(),
-                new UserId(letterHolderId)
-            );
-        }
-        return caseDetails;
+    public void grandAccessToCase(CaseDetails caseDetails, String letterHolderId) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        caseAccessApi.grantAccessToCase(
+            user.getAuthorisation(),
+            authTokenGenerator.generate(),
+            user.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            caseDetails.getId().toString(),
+            new UserId(letterHolderId)
+        );
     }
 
     private CaseDetails submit(

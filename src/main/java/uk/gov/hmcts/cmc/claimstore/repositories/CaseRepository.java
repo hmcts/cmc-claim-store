@@ -14,6 +14,11 @@ public interface CaseRepository {
 
     Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
 
+    /**
+     * We need it only in ccd. For non-ccd it always returns `null`.
+     * */
+    Long getOnHoldIdByExternalId(String externalId, String authorisation);
+
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
     void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);

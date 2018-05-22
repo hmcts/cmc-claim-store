@@ -47,6 +47,14 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
+    @Override
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+        /**
+         * For non-CCD datastore it always null as there is no on hold state of claim then.
+         * */
+        return null;
+    }
+
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
         return claimRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);

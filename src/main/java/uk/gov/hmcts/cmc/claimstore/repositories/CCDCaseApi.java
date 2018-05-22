@@ -100,6 +100,23 @@ public class CCDCaseApi {
         return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
     }
 
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+        User user = userService.getUser(authorisation);
+        List<CaseDetails> result = search(user, ImmutableMap.of("case.externalId", externalId));
+
+        if (result.size() != 1) {
+            throw new CoreCaseDataStoreException("Cases found by externalId " + externalId + " = " + result.size());
+        }
+
+        CaseDetails ccd = result.get(0);
+
+        if (ccd.getData() != null) {
+            throw new CoreCaseDataStoreException("Case " + externalId + " is not on hold");
+        }
+
+        return ccd.getId();
+    }
+
     /**
      * LLD https://tools.hmcts.net/confluence/display/ROC/Defendant+linking+with+CCD
      */

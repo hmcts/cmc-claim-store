@@ -109,9 +109,7 @@ public class ClaimService {
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
-            throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
-        });
+        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
 
         LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
@@ -126,7 +124,8 @@ public class ClaimService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String submitterEmail = userDetails.getEmail();
 
-        final Claim claim = Claim.builder()
+        Claim claim = Claim.builder()
+            .id(prePaymentClaimId)
             .claimData(claimData)
             .submitterId(submitterId)
             .issuedOn(issuedOn)
@@ -147,7 +146,8 @@ public class ClaimService {
         );
 
         Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
-        trackClaimIssued(retrievedClaim.getReferenceNumber(), claim.getClaimData().isClaimantRepresented());
+        trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
+
         return retrievedClaim;
     }
 

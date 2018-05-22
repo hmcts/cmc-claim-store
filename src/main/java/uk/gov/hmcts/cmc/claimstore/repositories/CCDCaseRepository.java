@@ -14,8 +14,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
-
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseRepository implements CaseRepository {
@@ -39,6 +37,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return ccdCaseApi.getByExternalId(externalId, authorisation);
+    }
+
+    @Override
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+        return ccdCaseApi.getOnHoldIdByExternalId(externalId, authorisation);
     }
 
     @Override
@@ -99,5 +102,4 @@ public class CCDCaseRepository implements CaseRepository {
     public Claim saveClaim(String authorisation, Claim claim) {
         return coreCaseDataService.submitPostPayment(authorisation, claim);
     }
-
 }
