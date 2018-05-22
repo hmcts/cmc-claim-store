@@ -10,7 +10,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
@@ -27,7 +26,10 @@ public class DefenceResponseJsonMapperTest {
 
     @Autowired
     private DefenceResponseJsonMapper mapper;
-    private static String INPUT = "/defence_response_rpa_case.json";
+    private static String INDIVIDUAL = "/DefenceResponse/defence_response_individual_rpa_case.json";
+    private static String SOLE_TRADER = "/DefenceResponse/defence_response_sole_trader_rpa_case.json";
+    private static String COMPANY = "/DefenceResponse/defence_response_company_rpa_case.json";
+    private static String ORGANISATION = "/DefenceResponse/defence_response_organisation_rpa_case.json";
 
     @Test
     public void shouldMapIndividualDefenceResponseToRPA() throws JSONException {
@@ -38,7 +40,52 @@ public class DefenceResponseJsonMapperTest {
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        String expected = new ResourceReader().read(INPUT).trim();
+        String expected = new ResourceReader().read(INDIVIDUAL).trim();
+
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapSoleTraderDefenceResponseToRPA() throws JSONException {
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withDefendant(SampleTheirDetails.builder().soleTraderDetails())
+                .build())
+            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .build();
+
+        String expected = new ResourceReader().read(SOLE_TRADER).trim();
+
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapCompanyDefenceResponseToRPA() throws JSONException {
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withDefendant(SampleTheirDetails.builder().companyDetails())
+                .build())
+            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .build();
+
+        String expected = new ResourceReader().read(COMPANY).trim();
+
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapOrganisationDefenceResponseToRPA() throws JSONException {
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withCompaniesHouseNumber("09047000")
+                    .organisationDetails())
+                .build())
+            .withIssuedOn(LocalDate.of(2018, 4, 26))
+
+            .build();
+
+        String expected = new ResourceReader().read(ORGANISATION).trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
