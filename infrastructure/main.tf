@@ -43,27 +43,27 @@ data "vault_generic_secret" "db_password" {
 }
 
 data "vault_generic_secret" "staff_email" {
-  path = "secret/${var.vault_section}/cmc/claim-store/staff_email"
+  path = "secret/${var.vault_section}/cmc/claim-store/staff-email"
 }
 
 data "vault_generic_secret" "rpa_email_sealed_claim" {
-  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email_sealed_claim"
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-sealed-claim"
 }
 
 data "vault_generic_secret" "rpa_email_more_time_requested" {
-  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email_more_time_requested"
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-more-time-requested"
 }
 
 data "vault_generic_secret" "rpa_email_defence_response" {
-  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email_defence_response"
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-defence-response"
 }
 
 data "vault_generic_secret" "rpa_email_additional_time" {
-  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email_additional_time"
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-additional-time"
 }
 
 data "vault_generic_secret" "rpa_email_default_judgment" {
-  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email_default_judgment"
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-default-judgment"
 }
 
 data "vault_generic_secret" "anonymous_citizen_username" {
