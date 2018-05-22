@@ -22,15 +22,15 @@ public class CountyCourtJudgmentRule {
                 + claim.getExternalId() + " was submitted");
         }
 
-        if (!canCountyCourtJudgmentBeRequestedYet(claim)) {
+        if (!canCountyCourtJudgmentBeRequestedYet(LocalDate.now(), claim)) {
             throw new ForbiddenActionException(
                 "County Court Judgment for claim " + claim.getExternalId() + " cannot be requested yet"
             );
         }
     }
 
-    private boolean canCountyCourtJudgmentBeRequestedYet(Claim claim) {
-        return LocalDate.now().isAfter(claim.getResponseDeadline());
+    protected boolean canCountyCourtJudgmentBeRequestedYet(LocalDate currentDate, Claim claim) {
+        return currentDate.isAfter(claim.getResponseDeadline());
     }
 
     private boolean isResponseAlreadySubmitted(Claim claim) {
