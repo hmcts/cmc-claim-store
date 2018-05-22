@@ -8,9 +8,9 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
+import java.util.List;
 import javax.json.JsonArray;
 import javax.json.stream.JsonCollectors;
-import java.util.List;
 
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
 
