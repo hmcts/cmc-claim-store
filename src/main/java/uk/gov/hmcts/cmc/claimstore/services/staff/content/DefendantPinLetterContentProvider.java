@@ -52,7 +52,9 @@ public class DefendantPinLetterContentProvider {
             InterestContent interestContent = interestContentProvider.createContent(
                 claim.getClaimData()
                     .getInterest(),
-                claim.getClaimData().getInterestDate(),
+                claim.getClaimData()
+                    .getInterest()
+                    .getInterestDate(),
                 ((AmountBreakDown)claim.getClaimData()
                     .getAmount())
                     .getTotalAmount(),

@@ -62,8 +62,6 @@ public class ClaimData {
     @Valid
     private final Interest interest;
 
-    private final InterestDate interestDate;
-
     @Valid
     private final PersonalInjury personalInjury;
 
@@ -102,7 +100,6 @@ public class ClaimData {
         Amount amount,
         BigInteger feeAmountInPennies,
         Interest interest,
-        InterestDate interestDate,
         PersonalInjury personalInjury,
         HousingDisrepair housingDisrepair,
         String reason,
@@ -121,7 +118,6 @@ public class ClaimData {
         this.amount = amount;
         this.feeAmountInPennies = feeAmountInPennies;
         this.interest = interest;
-        this.interestDate = interestDate;
         this.personalInjury = personalInjury;
         this.housingDisrepair = housingDisrepair;
         this.reason = reason;
@@ -148,16 +144,6 @@ public class ClaimData {
 
     public Interest getInterest() {
         return interest;
-    }
-
-    public InterestDate getInterestDate() {
-        if (interestDate != null) {
-            return interestDate;
-        } else if (interest != null) {
-            return interest.getInterestDate();
-        } else {
-            return null;
-        }
     }
 
     @JsonIgnore
@@ -256,7 +242,6 @@ public class ClaimData {
             && Objects.equals(amount, that.amount)
             && Objects.equals(feeAmountInPennies, that.feeAmountInPennies)
             && Objects.equals(interest, that.interest)
-            && Objects.equals(interestDate, that.interestDate)
             && Objects.equals(personalInjury, that.personalInjury)
             && Objects.equals(housingDisrepair, that.housingDisrepair)
             && Objects.equals(reason, that.reason)
@@ -279,7 +264,6 @@ public class ClaimData {
             amount,
             feeAmountInPennies,
             interest,
-            interestDate,
             personalInjury,
             housingDisrepair,
             reason,

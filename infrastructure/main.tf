@@ -18,6 +18,9 @@ locals {
   sendLetterUrl = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
+  ccdCnpUrl = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
+  ccdApiUrl = "${var.env == "demo" ? local.ccdCnpUrl : "false"}"
+
   previewVaultName = "${var.product}-claim-store"
   nonPreviewVaultName = "${var.product}-claim-store-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
@@ -110,7 +113,7 @@ module "claim-store-api" {
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
-    CORE_CASE_DATA_API_URL = "false"
+    CORE_CASE_DATA_API_URL = "${local.ccdApiUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
     // mail
