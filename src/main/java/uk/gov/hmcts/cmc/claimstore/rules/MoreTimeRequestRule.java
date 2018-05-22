@@ -18,6 +18,9 @@ public class MoreTimeRequestRule {
     public static final String ALREADY_REQUESTED_MORE_TIME_ERROR =
         "The defendant already asked for more time and their request was processed";
     public static final String PAST_DEADLINE_ERROR = "The defendant has missed the deadline for requesting more time";
+    public static final String ALREADY_RESPONDED_ERROR =
+        "You can’t process this paper request for more time because the defendant already responded to "
+            + "the claim digitally.";
 
     public void assertMoreTimeCanBeRequested(Claim claim) {
         Objects.requireNonNull(claim, "claim object can not be null");
@@ -46,6 +49,11 @@ public class MoreTimeRequestRule {
         if (isPastDeadline(LocalDateTimeFactory.nowInLocalZone(), claim.getResponseDeadline())) {
             validationErrors.add(PAST_DEADLINE_ERROR);
         }
+
+        if (claim.getRespondedAt() != null) {
+            validationErrors.add(ALREADY_RESPONDED_ERROR);
+        }
+
         return validationErrors;
     }
 

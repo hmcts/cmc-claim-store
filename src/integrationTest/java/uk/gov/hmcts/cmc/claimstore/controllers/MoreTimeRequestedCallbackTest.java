@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -70,6 +71,26 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().get(0)).isEqualTo(MoreTimeRequestRule.ALREADY_REQUESTED_MORE_TIME_ERROR);
+    }
+
+    @Test
+    public void shouldReturnWithValidationErrorsOnAboutToStartIfAlreadyResponded() throws Exception {
+        MvcResult mvcResult = makeRequest(
+            ABOUT_TO_START_CALLBACK,
+            LocalDate.now().plusDays(3),
+            false,
+            true
+        )
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse response = deserializeObjectFrom(
+            mvcResult,
+            AboutToStartOrSubmitCallbackResponse.class
+        );
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().get(0)).isEqualTo(MoreTimeRequestRule.ALREADY_RESPONDED_ERROR);
     }
 
     @Test
@@ -139,11 +160,24 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
         LocalDate responseDeadline,
         boolean moreTimeRequestedAlready
     ) throws Exception {
+        return makeRequest(callbackType, responseDeadline, moreTimeRequestedAlready, false);
+    }
+
+    private ResultActions makeRequest(
+        String callbackType,
+        LocalDate responseDeadline,
+        boolean moreTimeRequestedAlready,
+        boolean respondedAlready
+    ) throws Exception {
         CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
         caseDetailsTemp.getData().put("responseDeadline", responseDeadline);
         caseDetailsTemp.getData().put("moreTimeRequested",
             moreTimeRequestedAlready ? CCDYesNoOption.YES.name() : CCDYesNoOption.NO.name()
         );
+
+        if (respondedAlready) {
+            caseDetailsTemp.getData().put("respondedAt", LocalDateTimeFactory.nowInUTC());
+        }
 
         Map<String, Object> caseDetails = new HashMap<>();
         caseDetails.put("id", caseDetailsTemp.getId());
@@ -159,5 +193,6 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .content(jsonMapper.toJson(callbackRequest))
             );
+
     }
 }
