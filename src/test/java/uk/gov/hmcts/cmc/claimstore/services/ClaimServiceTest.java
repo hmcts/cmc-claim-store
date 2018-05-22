@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -166,15 +165,13 @@ public class ClaimServiceTest {
             anyString(), eq(AUTHORISATION));
     }
 
-    // this test cannot be done in claimService now as this logic is on different level
-    @Ignore
     @Test(expected = ConflictException.class)
     public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
-        ClaimData app = SampleClaimData.validDefaults();
-        String authorisationToken = "Open same!";
-        when(caseRepository.getClaimByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
+        ClaimData claimData = SampleClaimData.validDefaults();
+        when(caseRepository.getOnHoldIdByExternalId(eq(claimData.getExternalId().toString()), eq(AUTHORISATION)))
+            .thenThrow(new ConflictException("Duplicate"));
 
-        claimService.saveClaim(USER_ID, app, authorisationToken);
+        claimService.saveClaim(USER_ID, claimData, AUTHORISATION);
     }
 
     @Test

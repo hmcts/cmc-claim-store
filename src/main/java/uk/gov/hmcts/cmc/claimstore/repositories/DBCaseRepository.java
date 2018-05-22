@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -48,11 +49,13 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
-    /**
-     * For non-CCD datastore it always null as there is no on hold state of claim then.
-     */
     @Override
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+        getClaimByExternalId(externalId, authorisation)
+            .ifPresent(claim -> {
+                throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
+            });
+
         return null;
     }
 
