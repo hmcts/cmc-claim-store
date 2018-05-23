@@ -93,7 +93,15 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
         final String event = "claim-issued";
 
-        givenForSearchForCitizenAndDef(CASE_REFERENCE);
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetailsWithDefendant());
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
@@ -137,7 +145,15 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
         final String event = "more-time-requested";
 
-        givenForSearchForCitizenAndDef(CASE_REFERENCE);
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetailsWithDefendant());
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isOk());
 
@@ -196,18 +212,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
-    }
-
-    private void givenForSearchForCitizenAndDef(String caseReference) {
-        given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE, "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithDefendant());
     }
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
