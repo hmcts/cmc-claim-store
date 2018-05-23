@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
@@ -27,7 +26,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
@@ -110,7 +109,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = this.caseMapper.to(claim);
         ccdCase.setResponseDeadline(newResponseDeadline);
         ccdCase.setMoreTimeRequested(YES);
-        return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED);
+        return this.update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
     }
 
     public CaseDetails saveCountyCourtJudgment(
@@ -133,7 +132,7 @@ public class CoreCaseDataService {
     ) {
 
         CCDCase ccdCase = this.caseMapper.to(claim);
-        ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
+        ccdCase.setResponse(responseMapper.to(response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(nowInUTC());
         return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
