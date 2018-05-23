@@ -111,7 +111,7 @@ public class CCDCaseApi {
 
         CaseDetails ccd = result.get(0);
 
-        if (ccd.getData() != null) {
+        if (!ccd.getState().equals("onhold")) {
             throw new CoreCaseDataStoreException("Case " + externalId + " is not on hold");
         }
 
