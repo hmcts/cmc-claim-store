@@ -32,18 +32,20 @@ public class MoreTimeRequestedCitizenNotificationHandler {
     }
 
     @EventListener
-    void sendNotifications(MoreTimeRequestedEvent event) {
+    public void sendNotifications(MoreTimeRequestedEvent event) {
         sendNotificationToClaimant(event);
         sendNotificationToDefendant(event);
     }
 
     private void sendNotificationToDefendant(MoreTimeRequestedEvent event) {
-        notificationService.sendMail(
-            event.getDefendantEmail(),
-            notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
-            prepareNotificationParameters(event),
-            referenceForDefendant(event.getClaim().getReferenceNumber())
-        );
+        if (event.getDefendantEmail() != null) {
+            notificationService.sendMail(
+                event.getDefendantEmail(),
+                notificationsProperties.getTemplates().getEmail().getDefendantMoreTimeRequested(),
+                prepareNotificationParameters(event),
+                referenceForDefendant(event.getClaim().getReferenceNumber())
+            );
+        }
     }
 
     private void sendNotificationToClaimant(MoreTimeRequestedEvent event) {
