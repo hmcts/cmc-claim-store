@@ -180,10 +180,6 @@ public class ClaimService {
         caseRepository.linkDefendant(authorisation);
     }
 
-    public void linkLetterHolder(Long claimId, String userId) {
-        claimRepository.linkLetterHolder(claimId, userId);
-    }
-
     public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
         claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
     }

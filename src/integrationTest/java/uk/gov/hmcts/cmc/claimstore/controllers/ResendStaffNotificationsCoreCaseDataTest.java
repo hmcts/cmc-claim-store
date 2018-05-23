@@ -63,9 +63,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             .willReturn(new byte[]{1, 2, 3, 4});
         UserDetails userDetails = SampleUserDetails.getDefault();
         User user = new User(AUTHORISATION_TOKEN, userDetails);
-        given(userService.getUserDetails(anyString())).willReturn(userDetails);
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
         given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
-        given(userService.getUser(anyString())).willReturn(user);
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(user);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
@@ -108,7 +108,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             .withDefendantId(null).build();
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
-        given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
+        given(userService.generatePin(anyString(), eq(AUTHORISATION_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
         givenForSearchForCitizen(CASE_REFERENCE);
 
@@ -168,7 +168,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE))
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithDefResponse());
 
@@ -193,7 +193,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE))
+            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
     }
@@ -205,7 +205,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE))
+            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithDefendant());
     }
@@ -213,6 +213,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
             .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, "ABC123"));
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN));
     }
 }
