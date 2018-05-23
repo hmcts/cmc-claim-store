@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantResponseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -25,16 +25,16 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     private final ClaimMapper claimMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    private final DefendantResponseMapper defendantResponseMapper;
+    private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
 
     public CaseMapper(ClaimMapper claimMapper,
                       CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-                      DefendantResponseMapper defendantResponseMapper,
+                      ResponseMapper responseMapper,
                       SettlementMapper settlementMapper) {
         this.claimMapper = claimMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
-        this.defendantResponseMapper = defendantResponseMapper;
+        this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
     }
 
@@ -56,7 +56,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         }
 
         claim.getResponse()
-            .ifPresent(response -> builder.response(defendantResponseMapper.to(response)));
+            .ifPresent(response -> builder.response(responseMapper.to(response)));
 
         claim.getSettlement().ifPresent(settlement -> builder.settlement(settlementMapper.to(settlement)));
 
@@ -97,7 +97,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
         Response response = null;
         if (ccdCase.getResponse() != null) {
-            response = defendantResponseMapper.from(ccdCase.getResponse());
+            response = responseMapper.from(ccdCase.getResponse());
         }
 
         Settlement settlement = null;

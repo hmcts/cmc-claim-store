@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CCDDefendantResponse {
+public class CCDResponse {
 
     private CCDResponseType responseType;
     private CCDFullDefenceResponse fullDefenceResponse;

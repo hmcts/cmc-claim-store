@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefendantResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,7 +28,7 @@ public class CCDCase {
     private CCDCountyCourtJudgment countyCourtJudgment;
     private LocalDateTime countyCourtJudgmentRequestedAt;
     private String defendantEmail;
-    private CCDDefendantResponse response;
+    private CCDResponse response;
     private LocalDateTime respondedAt;
     private CCDSettlement settlement;
     private LocalDateTime settlementReachedAt;
