@@ -8,10 +8,19 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
 public class MoreTimeRequestRule {
+
+    public static final String ALREADY_REQUESTED_MORE_TIME_ERROR =
+        "The defendant already asked for more time and their request was processed";
+    public static final String PAST_DEADLINE_ERROR = "The defendant has missed the deadline for requesting more time";
+    public static final String ALREADY_RESPONDED_ERROR =
+        "You can’t process this paper request for more time because the defendant already responded to "
+            + "the claim digitally.";
 
     public void assertMoreTimeCanBeRequested(Claim claim) {
         Objects.requireNonNull(claim, "claim object can not be null");
@@ -23,11 +32,33 @@ public class MoreTimeRequestRule {
         assertIsNotPastDeadline(LocalDateTimeFactory.nowInLocalZone(), claim.getResponseDeadline());
     }
 
-    protected void assertIsNotPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
-        LocalDateTime responseDeadlineTime = responseDeadline.atTime(16, 0);
-        if (now.isEqual(responseDeadlineTime) || now.isAfter(responseDeadlineTime)) {
+    void assertIsNotPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
+        if (isPastDeadline(now, responseDeadline)) {
             throw new MoreTimeRequestedAfterDeadlineException("You must not request more time after deadline");
         }
     }
 
+    public List<String> validateMoreTimeCanBeRequested(Claim claim) {
+        Objects.requireNonNull(claim, "claim object can not be null");
+
+        List<String> validationErrors = new ArrayList<>();
+        if (claim.isMoreTimeRequested()) {
+            validationErrors.add(ALREADY_REQUESTED_MORE_TIME_ERROR);
+        }
+
+        if (isPastDeadline(LocalDateTimeFactory.nowInLocalZone(), claim.getResponseDeadline())) {
+            validationErrors.add(PAST_DEADLINE_ERROR);
+        }
+
+        if (claim.getRespondedAt() != null) {
+            validationErrors.add(ALREADY_RESPONDED_ERROR);
+        }
+
+        return validationErrors;
+    }
+
+    private boolean isPastDeadline(LocalDateTime now, LocalDate responseDeadline) {
+        LocalDateTime responseDeadlineTime = responseDeadline.atTime(16, 0);
+        return now.isEqual(responseDeadlineTime) || now.isAfter(responseDeadlineTime);
+    }
 }
