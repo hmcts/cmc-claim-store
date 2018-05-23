@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
@@ -42,7 +41,7 @@ public class CoreCaseDataService {
     private final UpdateCoreCaseDataService updateCoreCaseDataService;
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    private final ResponseMapper responseMapper;
+    private final DefendantResponseMapper defendantResponseMapper;
     private final SettlementMapper settlementMapper;
     private final UserService userService;
     private final JsonMapper jsonMapper;
@@ -55,7 +54,7 @@ public class CoreCaseDataService {
         UpdateCoreCaseDataService updateCoreCaseDataService,
         CaseMapper caseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        ResponseMapper responseMapper,
+        DefendantResponseMapper defendantResponseMapper,
         SettlementMapper settlementMapper,
         UserService userService,
         JsonMapper jsonMapper,
@@ -65,7 +64,7 @@ public class CoreCaseDataService {
         this.updateCoreCaseDataService = updateCoreCaseDataService;
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
-        this.responseMapper = responseMapper;
+        this.defendantResponseMapper = defendantResponseMapper;
         this.settlementMapper = settlementMapper;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
@@ -133,7 +132,7 @@ public class CoreCaseDataService {
     ) {
 
         CCDCase ccdCase = this.caseMapper.to(claim);
-        ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
+        ccdCase.setResponse(defendantResponseMapper.to(response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(nowInUTC());
         return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);

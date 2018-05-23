@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
 import uk.gov.hmcts.cmc.ccd.mapper.DefendantEvidenceMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 @Component
-public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> {
+public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse, FullDefenceResponse> {
 
     private final StatementOfTruthMapper statementOfTruthMapper;
     private final PartyMapper partyMapper;
@@ -25,7 +25,7 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
     private final DefendantEvidenceMapper evidenceMapper;
 
     @Autowired
-    public ResponseMapper(
+    public FullDefenceResponseMapper(
         StatementOfTruthMapper statementOfTruthMapper,
         PartyMapper partyMapper,
         PaymentDeclarationMapper paymentDeclarationMapper,
@@ -41,38 +41,38 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
     }
 
     @Override
-    public CCDResponse to(FullDefenceResponse response) {
-        CCDResponse.CCDResponseBuilder builder = CCDResponse.builder();
+    public CCDFullDefenceResponse to(FullDefenceResponse fullDefenceResponse) {
+        CCDFullDefenceResponse.CCDFullDefenceResponseBuilder builder = CCDFullDefenceResponse.builder();
 
-        response.getFreeMediation()
+        fullDefenceResponse.getFreeMediation()
             .ifPresent(freeMediation -> builder.freeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
-        if (response.getMoreTimeNeeded() == null) {
+        if (fullDefenceResponse.getMoreTimeNeeded() == null) {
             builder.moreTimeNeededOption(CCDYesNoOption.valueOf(YesNoOption.NO.name()));
         } else {
-            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(fullDefenceResponse.getMoreTimeNeeded().name()));
         }
 
-        builder.defendant(partyMapper.to(response.getDefendant()));
+        builder.defendant(partyMapper.to(fullDefenceResponse.getDefendant()));
 
-        response.getStatementOfTruth()
+        fullDefenceResponse.getStatementOfTruth()
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
 
-        builder.responseType(CCDDefenceType.valueOf(response.getDefenceType().name()));
-        response.getDefence().ifPresent(builder::defence);
+        builder.defenceType(CCDDefenceType.valueOf(fullDefenceResponse.getDefenceType().name()));
+        fullDefenceResponse.getDefence().ifPresent(builder::defence);
 
-        response.getPaymentDeclaration().ifPresent(paymentDeclaration ->
+        fullDefenceResponse.getPaymentDeclaration().ifPresent(paymentDeclaration ->
             builder.paymentDeclaration(paymentDeclarationMapper.to(paymentDeclaration)));
 
-        response.getTimeline().ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
+        fullDefenceResponse.getTimeline().ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
 
-        response.getEvidence().ifPresent(evidence -> builder.evidence(evidenceMapper.to(evidence)));
+        fullDefenceResponse.getEvidence().ifPresent(evidence -> builder.evidence(evidenceMapper.to(evidence)));
 
         return builder.build();
     }
 
     @Override
-    public FullDefenceResponse from(CCDResponse response) {
+    public FullDefenceResponse from(CCDFullDefenceResponse response) {
         YesNoOption freeMediation = null;
 
         if (response.getFreeMediationOption() != null) {
@@ -90,7 +90,7 @@ public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> 
             YesNoOption.valueOf(response.getMoreTimeNeededOption().name()),
             partyMapper.from(response.getDefendant()),
             statementOfTruth,
-            DefenceType.valueOf(response.getResponseType().name()),
+            DefenceType.valueOf(response.getDefenceType().name()),
             response.getDefence(),
             paymentDeclarationMapper.from(response.getPaymentDeclaration()),
             timelineMapper.from(response.getTimeline()),

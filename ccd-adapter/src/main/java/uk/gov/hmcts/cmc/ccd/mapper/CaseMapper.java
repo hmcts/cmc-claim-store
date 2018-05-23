@@ -4,11 +4,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -26,16 +25,16 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     private final ClaimMapper claimMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    private final ResponseMapper responseMapper;
+    private final DefendantResponseMapper defendantResponseMapper;
     private final SettlementMapper settlementMapper;
 
     public CaseMapper(ClaimMapper claimMapper,
                       CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-                      ResponseMapper responseMapper,
+                      DefendantResponseMapper defendantResponseMapper,
                       SettlementMapper settlementMapper) {
         this.claimMapper = claimMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
-        this.responseMapper = responseMapper;
+        this.defendantResponseMapper = defendantResponseMapper;
         this.settlementMapper = settlementMapper;
     }
 
@@ -56,7 +55,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.respondedAt(claim.getRespondedAt());
         }
 
-        claim.getResponse().ifPresent(response -> builder.response(responseMapper.to((FullDefenceResponse) response)));
+        claim.getResponse()
+            .ifPresent(response -> builder.response(defendantResponseMapper.to(response)));
 
         claim.getSettlement().ifPresent(settlement -> builder.settlement(settlementMapper.to(settlement)));
 
@@ -97,7 +97,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
         Response response = null;
         if (ccdCase.getResponse() != null) {
-            response = responseMapper.from(ccdCase.getResponse());
+            response = defendantResponseMapper.from(ccdCase.getResponse());
         }
 
         Settlement settlement = null;

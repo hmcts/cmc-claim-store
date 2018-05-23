@@ -9,8 +9,8 @@ import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDDefendantEvidence;
 
 @Value
 @Builder
-public class CCDResponse {
-    private CCDDefenceType responseType;
+public class CCDFullDefenceResponse {
+    private CCDDefenceType defenceType;
     private String defence;
     private CCDPaymentDeclaration paymentDeclaration;
     private CCDYesNoOption freeMediationOption;

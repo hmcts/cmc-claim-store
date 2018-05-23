@@ -159,8 +159,8 @@ public class Assertions {
         return new CountyCourtJudgmentAssert(countyCourtJudgment);
     }
 
-    public static ResponseAssert assertThat(FullDefenceResponse fullDefenceResponse) {
-        return new ResponseAssert(fullDefenceResponse);
+    public static FullDefenceResponseAssert assertThat(FullDefenceResponse fullDefenceResponse) {
+        return new FullDefenceResponseAssert(fullDefenceResponse);
     }
 
     public static SettlementAssert assertThat(Settlement settlement) {

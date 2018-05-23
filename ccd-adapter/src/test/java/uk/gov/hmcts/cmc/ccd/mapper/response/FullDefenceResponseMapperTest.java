@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -18,10 +18,10 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ResponseMapperTest {
+public class FullDefenceResponseMapperTest {
 
     @Autowired
-    private ResponseMapper responseMapper;
+    private FullDefenceResponseMapper fullDefenceResponseMapper;
 
     @Test
     public void shouldMapFullDefenceResponseToCCD() {
@@ -29,10 +29,10 @@ public class ResponseMapperTest {
         final FullDefenceResponse fullDefenceResponse = SampleResponse.validDefaults();
 
         //when
-        CCDResponse ccdResponse = responseMapper.to(fullDefenceResponse);
+        CCDFullDefenceResponse ccdFullDefenceResponse = fullDefenceResponseMapper.to(fullDefenceResponse);
 
         //then
-        assertThat(fullDefenceResponse).isEqualTo(ccdResponse);
+        assertThat(fullDefenceResponse).isEqualTo(ccdFullDefenceResponse);
     }
 
     @Test
@@ -45,9 +45,9 @@ public class ResponseMapperTest {
             .build();
 
         //when
-        CCDResponse ccdResponse = responseMapper.to(fullDefenceResponse);
+        CCDFullDefenceResponse ccdFullDefenceResponse = fullDefenceResponseMapper.to(fullDefenceResponse);
 
         //then
-        assertThat(fullDefenceResponse).isEqualTo(ccdResponse);
+        assertThat(fullDefenceResponse).isEqualTo(ccdFullDefenceResponse);
     }
 }
