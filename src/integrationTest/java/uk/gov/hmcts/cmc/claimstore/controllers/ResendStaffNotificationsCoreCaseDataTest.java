@@ -73,7 +73,15 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
         final String nonExistingClaimReference = "something";
         final String event = "claim-issue";
-        givenForSearchForCitizen(CASE_REFERENCE);
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetails());
         ResultActions result = makeRequest(nonExistingClaimReference, event);
         assertThat(result).isNotNull();
         result.andExpect(status().isNotFound());
@@ -83,7 +91,15 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
         final String nonExistingEvent = "some-event";
 
-        givenForSearchForCitizen(CASE_REFERENCE);
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetails());
         ResultActions result = makeRequest(CASE_REFERENCE, nonExistingEvent);
         assertThat(result).isNotNull();
         result.andExpect(status().isNotFound());
@@ -118,7 +134,15 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq(AUTHORISATION_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
-        givenForSearchForCitizen(CASE_REFERENCE);
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetails());
 
         makeRequest(claim.getReferenceNumber(), event).andExpect(status().isOk());
 
@@ -134,7 +158,15 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
         final String event = "more-time-requested";
 
-        givenForSearchForCitizen(CASE_REFERENCE);
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
@@ -167,7 +199,15 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
         final String event = "response-submitted";
 
-        givenForSearchForCitizen(CASE_REFERENCE);
+        given(coreCaseDataApi.searchForCitizen(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
 
@@ -200,18 +240,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             "Email: j.smith@example.com",
             "Mobile number: 07873727165"
         );
-    }
-
-    private void givenForSearchForCitizen(String caseReference) {
-        given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference, "page", PAGE, "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
     }
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
