@@ -66,11 +66,11 @@ data "vault_generic_secret" "rpa_email_default_judgment" {
   path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-default-judgment"
 }
 
-data "vault_generic_secret" "anonymous_citizen_username" {
+data "vault_generic_secret" "anonymous_caseworker_username" {
   path = "secret/${var.vault_section}/ccidam/idam-api/cmc/anonymouscitizen/user"
 }
 
-data "vault_generic_secret" "anonymous_citizen_password" {
+data "vault_generic_secret" "anonymous_caseworker_password" {
   path = "secret/${var.vault_section}/ccidam/idam-api/cmc/anonymouscitizen/password"
 }
 
@@ -115,10 +115,10 @@ module "claim-store-api" {
     IDAM_S2S_AUTH_URL = "${local.s2sUrl}"
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
-    IDAM_ANONYMOUS_CASEWORKER_USERNAME = "${data.vault_generic_secret.anonymous_citizen_username.data["value"]}"
-    IDAM_ANONYMOUS_CASEWORKER_PASSWORD = "${data.vault_generic_secret.anonymous_citizen_password.data["value"]}"
-    IDAM_SYSTEM_UPDATE_USER_USERNAME = "${data.vault_generic_secret.system_update_username.data["value"]}"
-    IDAM_SYSTEM_UPDATE_USER_PASSWORD = "${data.vault_generic_secret.system_update_password.data["value"]}"
+    IDAM_CASEWORKER_ANONYMOUS_USERNAME = "${data.vault_generic_secret.anonymous_caseworker_username.data["value"]}"
+    IDAM_CASEWORKER_ANONYMOUS_PASSWORD = "${data.vault_generic_secret.anonymous_caseworker_password.data["value"]}"
+    IDAM_CASEWORKER_SYSTEM_USERNAME = "${data.vault_generic_secret.system_update_username.data["value"]}"
+    IDAM_CASEWORKER_SYSTEM_PASSWORD = "${data.vault_generic_secret.system_update_password.data["value"]}"
     OAUTH2_CLIENT_SECRET = "${data.vault_generic_secret.oauth_client_secret.data["value"]}"
 
     // notify
@@ -155,6 +155,8 @@ module "claim-store-api" {
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_EMAILTOSTAFF = "true"
+
+    ROOT_APPENDER = "CMC"
   }
 }
 
