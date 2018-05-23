@@ -230,6 +230,7 @@ public class CCDCaseApi {
     ) {
         Map<String, String> searchCriteria = new HashMap<>(searchString);
         searchCriteria.put("page", page.toString());
+        searchCriteria.put("sortDirection", "desc");
 
         String serviceAuthToken = this.authTokenGenerator.generate();
 
