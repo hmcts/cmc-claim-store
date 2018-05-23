@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
@@ -133,7 +132,7 @@ public class CoreCaseDataService {
     ) {
 
         CCDCase ccdCase = this.caseMapper.to(claim);
-        ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
+        ccdCase.setResponse(responseMapper.to(response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(nowInUTC());
         return this.update(authorisation, ccdCase, DEFENCE_SUBMITTED);
