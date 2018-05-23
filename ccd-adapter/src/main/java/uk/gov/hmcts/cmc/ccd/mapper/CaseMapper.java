@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -56,7 +55,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.respondedAt(claim.getRespondedAt());
         }
 
-        claim.getResponse().ifPresent(response -> builder.response(responseMapper.to((FullDefenceResponse) response)));
+        claim.getResponse()
+            .ifPresent(response -> builder.response(responseMapper.to(response)));
 
         claim.getSettlement().ifPresent(settlement -> builder.settlement(settlementMapper.to(settlement)));
 
