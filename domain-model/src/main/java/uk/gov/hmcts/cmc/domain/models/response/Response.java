@@ -23,6 +23,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 })
 public abstract class Response {
 
+    private final ResponseType responseType;
+
     private final YesNoOption freeMediation;
 
     @JsonUnwrapped
@@ -36,15 +38,21 @@ public abstract class Response {
     private final StatementOfTruth statementOfTruth;
 
     public Response(
+        ResponseType responseType,
         YesNoOption freeMediation,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth
     ) {
+        this.responseType = responseType;
         this.freeMediation = freeMediation;
         this.moreTimeNeeded = moreTimeNeeded;
         this.defendant = defendant;
         this.statementOfTruth = statementOfTruth;
+    }
+
+    public ResponseType getResponseType() {
+        return responseType;
     }
 
     public Optional<YesNoOption> getFreeMediation() {
@@ -75,7 +83,8 @@ public abstract class Response {
         }
 
         Response that = (Response) other;
-        return Objects.equals(freeMediation, that.freeMediation)
+        return Objects.equals(responseType, that.responseType)
+            && Objects.equals(freeMediation, that.freeMediation)
             && Objects.equals(moreTimeNeeded, that.moreTimeNeeded)
             && Objects.equals(defendant, that.defendant)
             && Objects.equals(statementOfTruth, that.statementOfTruth);
@@ -83,7 +92,7 @@ public abstract class Response {
 
     @Override
     public int hashCode() {
-        return Objects.hash(freeMediation, moreTimeNeeded, defendant);
+        return Objects.hash(responseType, freeMediation, moreTimeNeeded, defendant);
     }
 
     @Override
