@@ -82,9 +82,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
-        ResultActions result = makeRequest(nonExistingClaimReference, event);
-        assertThat(result).isNotNull();
-        result.andExpect(status().isNotFound());
+        makeRequest(nonExistingClaimReference, event).andExpect(status().isNotFound());
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
@@ -100,9 +99,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
-        ResultActions result = makeRequest(CASE_REFERENCE, nonExistingEvent);
-        assertThat(result).isNotNull();
-        result.andExpect(status().isNotFound());
+        makeRequest(CASE_REFERENCE, nonExistingEvent).andExpect(status().isNotFound());
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
