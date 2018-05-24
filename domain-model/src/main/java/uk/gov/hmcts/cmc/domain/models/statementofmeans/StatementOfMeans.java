@@ -9,7 +9,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-public class FinancialDetails {
+public class StatementOfMeans {
     private final ResidenceType residenceType;
     private final Dependant dependant;
     private final Employment employment;
@@ -20,7 +20,7 @@ public class FinancialDetails {
     private final List<CourtOrder> courtOrders;
     private final String reason;
 
-    public FinancialDetails(
+    public StatementOfMeans(
         ResidenceType residenceType,
         Dependant dependant,
         Employment employment,
@@ -86,7 +86,7 @@ public class FinancialDetails {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        FinancialDetails that = (FinancialDetails) other;
+        StatementOfMeans that = (StatementOfMeans) other;
         return residenceType == that.residenceType
             && Objects.equals(dependant, that.dependant)
             && Objects.equals(employment, that.employment)

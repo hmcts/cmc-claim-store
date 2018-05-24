@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.FinancialDetails;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -15,6 +15,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class FullAdmissionResponse extends Response {
@@ -33,7 +34,7 @@ public class FullAdmissionResponse extends Response {
     private final RepaymentPlan repaymentPlan;
 
     @Valid
-    private final FinancialDetails financialDetails;
+    private final StatementOfMeans statementOfMeans;
 
     public FullAdmissionResponse(
         YesNoOption freeMediation,
@@ -44,14 +45,14 @@ public class FullAdmissionResponse extends Response {
         PaymentOption paymentOption,
         LocalDate paymentDate,
         RepaymentPlan repaymentPlan,
-        FinancialDetails financialDetails
+        StatementOfMeans statementOfMeans
     ) {
-        super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
+        super(FULL_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.defenceType = defenceType;
         this.paymentOption = paymentOption;
         this.paymentDate = paymentDate;
         this.repaymentPlan = repaymentPlan;
-        this.financialDetails = financialDetails;
+        this.statementOfMeans = statementOfMeans;
     }
 
     public DefenceType getDefenceType() {
@@ -70,8 +71,8 @@ public class FullAdmissionResponse extends Response {
         return Optional.ofNullable(repaymentPlan);
     }
 
-    public Optional<FinancialDetails> getFinancialDetails() {
-        return Optional.ofNullable(financialDetails);
+    public Optional<StatementOfMeans> getStatementOfMeans() {
+        return Optional.ofNullable(statementOfMeans);
     }
 
     @Override
@@ -90,13 +91,13 @@ public class FullAdmissionResponse extends Response {
             && paymentOption == that.paymentOption
             && Objects.equals(paymentDate, that.paymentDate)
             && Objects.equals(repaymentPlan, that.repaymentPlan)
-            && Objects.equals(financialDetails, that.financialDetails);
+            && Objects.equals(statementOfMeans, that.statementOfMeans);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), defenceType, paymentOption, paymentDate, repaymentPlan, financialDetails);
+        return Objects.hash(super.hashCode(), defenceType, paymentOption, paymentDate, repaymentPlan, statementOfMeans);
     }
 
     @Override

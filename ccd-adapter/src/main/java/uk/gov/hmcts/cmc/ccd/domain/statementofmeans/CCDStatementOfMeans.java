@@ -8,7 +8,7 @@ import java.util.List;
 
 @Value
 @Builder
-public class CCDFinancialDetails {
+public class CCDStatementOfMeans {
     private CCDResidenceType residenceType;
     private CCDDependant dependant;
     private CCDEmployment employment;
