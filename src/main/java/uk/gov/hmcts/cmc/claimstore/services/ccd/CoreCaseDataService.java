@@ -87,7 +87,7 @@ public class CoreCaseDataService {
         this.caseAccessApi = caseAccessApi;
     }
 
-    public CaseReference savePrePayment(String authorisation, String externalId) {
+    public CaseReference savePrePayment(String externalId, String authorisation) {
         UserDetails user = userService.getUserDetails(authorisation);
 
         try {
