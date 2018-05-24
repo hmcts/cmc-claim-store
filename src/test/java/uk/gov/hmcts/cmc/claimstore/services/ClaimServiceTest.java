@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -76,6 +77,8 @@ public class ClaimServiceTest {
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private CCDCaseDataToClaim ccdCaseDataToClaim;
 
     @Before
     public void setup() {
@@ -89,7 +92,8 @@ public class ClaimServiceTest {
             eventProducer,
             caseRepository,
             new MoreTimeRequestRule(),
-            appInsights
+            appInsights,
+            ccdCaseDataToClaim
         );
     }
 
