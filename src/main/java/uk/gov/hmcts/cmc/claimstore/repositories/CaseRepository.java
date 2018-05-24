@@ -34,6 +34,6 @@ public interface CaseRepository {
 
     Claim saveClaim(String authorisation, Claim claim);
 
-    Optional<Claim> getByClaimReferenceNumberAnonymous(String reference);
+    Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation);
 }
 

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -104,10 +103,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
-
+    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation) {
         return ccdCaseApi.getByReferenceNumber(reference, authorisation);
     }
 

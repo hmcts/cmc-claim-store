@@ -137,7 +137,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference) {
-        return claimRepository.getByClaimReferenceNumberAnonymous(reference);
+    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation) {
+        return claimRepository.getByClaimReferenceNumber(reference);
     }
 }

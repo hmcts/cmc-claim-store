@@ -198,7 +198,7 @@ sourceSets {
       srcDir('src/integrationTest/java')
     }
     resources {
-      srcDir('src/integrationTests/resources')
+      srcDir('src/integrationTest/resources')
     }
   }
 

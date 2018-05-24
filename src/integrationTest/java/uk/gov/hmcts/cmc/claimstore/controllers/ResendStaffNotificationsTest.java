@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -26,7 +25,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -43,20 +41,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class ResendStaffNotificationsTest extends BaseIntegrationTest {
-
     @MockBean
     protected SendLetterApi sendLetterApi;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
-
-    @Before
-    public void setup() {
-        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
-
-        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
-    }
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
