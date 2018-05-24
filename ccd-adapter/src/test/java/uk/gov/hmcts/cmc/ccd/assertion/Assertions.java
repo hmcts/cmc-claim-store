@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
+import uk.gov.hmcts.cmc.ccd.assertion.response.FullDefenceResponseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.ResponseAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
@@ -40,6 +42,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 public class Assertions {
 
@@ -159,8 +162,8 @@ public class Assertions {
         return new CountyCourtJudgmentAssert(countyCourtJudgment);
     }
 
-    public static ResponseAssert assertThat(FullDefenceResponse fullDefenceResponse) {
-        return new ResponseAssert(fullDefenceResponse);
+    public static FullDefenceResponseAssert assertThat(FullDefenceResponse fullDefenceResponse) {
+        return new FullDefenceResponseAssert(fullDefenceResponse);
     }
 
     public static SettlementAssert assertThat(Settlement settlement) {
@@ -205,5 +208,9 @@ public class Assertions {
 
     public static DefendantEvidenceAssert assertThat(DefendantEvidence evidence) {
         return new DefendantEvidenceAssert(evidence);
+    }
+
+    public static ResponseAssert assertThat(Response response) {
+        return new ResponseAssert(response);
     }
 }

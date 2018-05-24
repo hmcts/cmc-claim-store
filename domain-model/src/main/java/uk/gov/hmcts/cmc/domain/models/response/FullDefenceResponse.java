@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class FullDefenceResponse extends Response {
@@ -42,7 +43,7 @@ public class FullDefenceResponse extends Response {
         DefendantTimeline timeline,
         DefendantEvidence evidence
     ) {
-        super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
+        super(FULL_DEFENCE, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.defenceType = defenceType;
         this.defence = defence;
         this.paymentDeclaration = paymentDeclaration;
