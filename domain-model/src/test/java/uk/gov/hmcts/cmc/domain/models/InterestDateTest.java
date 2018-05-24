@@ -8,8 +8,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
+import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestDateType.CUSTOM;
+import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestDateType.SUBMISSION;
+import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT;
-import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SUBMISSION;
 
 public class InterestDateTest {
 
@@ -17,10 +19,10 @@ public class InterestDateTest {
     public void withCustomType_shouldBeSuccessfulValidationWhenDateInThePast() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withType(CUSTOM)
                 .withDate(LocalDate.of(2015, 2, 5))
                 .withReason("reason")
-                .withEndDateType(SUBMISSION)
+                .withEndDateType(InterestEndDateType.SUBMISSION)
                 .build();
         //when
         Set<String> errors = validate(interestDate);
@@ -33,10 +35,10 @@ public class InterestDateTest {
         //given
         LocalDate todayPlusOne = LocalDate.now().plusDays(1);
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withType(CUSTOM)
                 .withDate(todayPlusOne)
                 .withReason("reason")
-                .withEndDateType(SUBMISSION)
+                .withEndDateType(InterestEndDateType.SUBMISSION)
                 .build();
         //when
         Set<String> errors = validate(interestDate);
@@ -49,7 +51,7 @@ public class InterestDateTest {
     public void withCustomType_shouldBeInvalidWhenMandatoryFieldsMissing() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withType(CUSTOM)
                 .withDate(null)
                 .withReason(null)
                 .withEndDateType(null)
@@ -67,10 +69,10 @@ public class InterestDateTest {
     public void withSubmissionType_shouldBeSuccessfulValidation() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.SUBMISSION)
+                .withType(SUBMISSION)
                 .withDate(null)
                 .withReason(null)
-                .withEndDateType(SUBMISSION)
+                .withEndDateType(InterestEndDateType.SUBMISSION)
                 .build();
         //when
         Set<String> errors = validate(interestDate);
@@ -82,7 +84,7 @@ public class InterestDateTest {
     public void withSubmissionType_shouldBeInvalidWhenUnexpectedFieldsProvided() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.SUBMISSION)
+                .withType(SUBMISSION)
                 .withDate(LocalDate.of(2015, 2, 5))
                 .withReason("reason")
                 .withEndDateType(SETTLED_OR_JUDGMENT)
@@ -103,7 +105,7 @@ public class InterestDateTest {
                 .withType(null)
                 .withDate(null)
                 .withReason(null)
-                .withEndDateType(SUBMISSION)
+                .withEndDateType(InterestEndDateType.SUBMISSION)
                 .build();
         //when
         Set<String> errors = validate(interestDate);
@@ -133,7 +135,7 @@ public class InterestDateTest {
     public void withCustomType_shouldIsCustomReturnTrue() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withType(CUSTOM)
                 .withDate(LocalDate.of(2015, 2, 5))
                 .build();
 
@@ -145,7 +147,7 @@ public class InterestDateTest {
     public void withCustomType_shouldIsEndDateOnSubmissionReturnFalse() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withType(CUSTOM)
                 .withDate(LocalDate.of(2015, 2, 5))
                 .build();
 
@@ -157,7 +159,7 @@ public class InterestDateTest {
     public void withSubmissionType_shouldIsCustomReturnFalse() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.SUBMISSION)
+                .withType(SUBMISSION)
                 .build();
 
         //then
@@ -168,8 +170,8 @@ public class InterestDateTest {
     public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnTrueWhenEndDateTypeIsSettledOrJudgment() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.SUBMISSION)
-                .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
+                .withType(SUBMISSION)
+                .withEndDateType(SETTLED_OR_JUDGMENT)
                 .build();
 
         //then
@@ -181,8 +183,8 @@ public class InterestDateTest {
     public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnFalseWhenEndDateTypeIsSubmission() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.SUBMISSION)
-                .withEndDateType(SUBMISSION)
+                .withType(SUBMISSION)
+                .withEndDateType(InterestEndDateType.SUBMISSION)
                 .build();
 
         //then
@@ -194,7 +196,7 @@ public class InterestDateTest {
     public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnFalseWhenEndDateTypeIsSetNull() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-                .withType(InterestDate.InterestDateType.SUBMISSION)
+                .withType(SUBMISSION)
                 .withEndDateType(null)
                 .build();
 
