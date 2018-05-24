@@ -9,6 +9,7 @@ public enum AppInsightsEvent {
     SETTLEMENT_REACHED("Settlement reached"),
     CCJ_REQUESTED("CCJ requested"),
     RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
+    RESPONSE_MORE_TIME_REQUESTED_PAPER("Response - more time requested paper"),
     BULK_PRINT_FAILED("Bulk print failed");
 
     private String displayName;

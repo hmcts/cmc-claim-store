@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
+import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -45,6 +46,7 @@ public class CCDCaseApi {
     private final JsonMapper jsonMapper;
     private final CaseAccessApi caseAccessApi;
     private final CoreCaseDataService coreCaseDataService;
+    private final CCDCaseDataToClaim ccdCaseDataToClaim;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
@@ -58,7 +60,8 @@ public class CCDCaseApi {
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
         CaseAccessApi caseAccessApi,
-        CoreCaseDataService coreCaseDataService
+        CoreCaseDataService coreCaseDataService,
+        CCDCaseDataToClaim ccdCaseDataToClaim
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -67,6 +70,7 @@ public class CCDCaseApi {
         this.jsonMapper = jsonMapper;
         this.caseAccessApi = caseAccessApi;
         this.coreCaseDataService = coreCaseDataService;
+        this.ccdCaseDataToClaim = ccdCaseDataToClaim;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -218,18 +222,15 @@ public class CCDCaseApi {
     }
 
     private Claim readCase(User user, String caseId) {
-        return caseMapper.from(
-            convertToCCDCase(
-                coreCaseDataApi.readForCitizen(
-                    user.getAuthorisation(),
-                    authTokenGenerator.generate(),
-                    user.getUserDetails().getId(),
-                    JURISDICTION_ID,
-                    CASE_TYPE_ID,
-                    caseId
-                ).getData()
-            )
+        CaseDetails caseDetails = coreCaseDataApi.readForCitizen(
+            user.getAuthorisation(),
+            authTokenGenerator.generate(),
+            user.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            caseId
         );
+        return ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
     }
 
 
@@ -322,20 +323,7 @@ public class CCDCaseApi {
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result
             .stream()
-            .map(entry -> mapToClaim(entry.getId(), entry.getData()))
+            .map(entry -> ccdCaseDataToClaim.to(entry.getId(), entry.getData()))
             .collect(Collectors.toList());
-    }
-
-    private CCDCase convertToCCDCase(Map<String, Object> mapData) {
-        String json = jsonMapper.toJson(mapData);
-        return jsonMapper.fromJson(json, CCDCase.class);
-    }
-
-    private Claim mapToClaim(Long caseId, Map<String, Object> data) {
-        Map<String, Object> tempData = new HashMap<>(data);
-        tempData.put("id", caseId);
-
-        CCDCase ccdCase = convertToCCDCase(tempData);
-        return caseMapper.from(ccdCase);
     }
 }

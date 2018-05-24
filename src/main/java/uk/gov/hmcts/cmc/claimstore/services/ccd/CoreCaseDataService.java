@@ -38,9 +38,9 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -147,8 +147,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setResponseDeadline(newResponseDeadline);
         ccdCase.setMoreTimeRequested(YES);
-
-        return update(authorisation, ccdCase, MORE_TIME_REQUESTED);
+        return update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
     }
 
     public CaseDetails saveCountyCourtJudgment(
@@ -169,8 +168,9 @@ public class CoreCaseDataService {
         Response response,
         String authorisation
     ) {
+
         CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setResponse(responseMapper.to((FullDefenceResponse) response));
+        ccdCase.setResponse(responseMapper.to(response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(nowInUTC());
 
