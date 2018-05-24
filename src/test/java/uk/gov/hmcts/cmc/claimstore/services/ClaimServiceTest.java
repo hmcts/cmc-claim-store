@@ -157,6 +157,8 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(caseRepository.getOnHoldIdByExternalId(anyString(), eq(AUTHORISATION)))
+            .thenReturn(Optional.of(Long.valueOf(1)));
         when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
@@ -169,13 +171,9 @@ public class ClaimServiceTest {
             anyString(), eq(AUTHORISATION));
     }
 
-    @Test(expected = ConflictException.class)
-    public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
-        ClaimData claimData = SampleClaimData.validDefaults();
-        when(caseRepository.getOnHoldIdByExternalId(eq(claimData.getExternalId().toString()), eq(AUTHORISATION)))
-            .thenThrow(new ConflictException("Duplicate"));
-
-        claimService.saveClaim(USER_ID, claimData, AUTHORISATION);
+    @Test(expected = NotFoundException.class)
+    public void saveClaimShouldThrowNotFoundExceptionWhenOnHoldClaimDoesntExist() {
+        claimService.saveClaim(USER_ID, SampleClaimData.validDefaults(), AUTHORISATION);
     }
 
     @Test
