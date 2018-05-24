@@ -85,8 +85,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             )
         ).willReturn(listOfCaseDetails());
 
-        ResultActions result = makeRequest(nonExistingClaimReference, "claim-issue");
-        result.andExpect(status().isNotFound());
+        makeRequest(nonExistingClaimReference, "claim-issue").andExpect(status().isNotFound());
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
@@ -101,9 +101,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             )
         ).willReturn(listOfCaseDetails());
 
-        ResultActions result = makeRequest(CASE_REFERENCE, "non-existing-event");
-
-        result.andExpect(status().isNotFound());
+        makeRequest(CASE_REFERENCE, "non-existing-event").andExpect(status().isNotFound());
+        verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
