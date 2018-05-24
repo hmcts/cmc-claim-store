@@ -94,7 +94,7 @@
       "feeAmountInPennies": 4000
     },
     "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
-    "response":{
+    "response": {
       "responseType": "DISPUTE",
       "paymentDeclaration": {
         "paidDate": "2016-01-02",
@@ -119,9 +119,39 @@
         }
       }
     },
+    "settlement": {
+      "partyStatements": [
+        {
+          "id": "eda3bdb5-1a46-4803-9cdf-225c2974dac8",
+          "value": {
+            "type": "OFFER",
+            "offer": {
+              "content": "I will fix the leaking roof",
+              "completionDate": "2018-05-31"
+            },
+            "madeBy": "DEFENDANT"
+          }
+        },
+        {
+          "id": "9a660b7d-6f40-4fa3-a780-fff9dd9f37e9",
+          "value": {
+            "type": "ACCEPTATION",
+            "madeBy": "CLAIMANT"
+          }
+        },
+        {
+          "id": "30d58b83-1e97-4fad-a481-8f678dbfe346",
+          "value": {
+            "type": "COUNTERSIGNATURE",
+            "madeBy": "DEFENDANT"
+          }
+        }
+      ]
+    },
     "id": 26,
     "issuedOn": "2018-01-17",
     "respondedAt": "2018-01-17T11:45:55.944",
+    "settlementReachedAt": "2018-05-17T12:55:58.505",
     "submitterEmail": "me@server.net"
   },
   "data_classification": {

@@ -14,8 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -36,8 +34,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithCCJ;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefendant;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithOfferCounterSigned;
 
 @TestPropertySource(
     properties = {
@@ -71,123 +71,113 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
-        final String nonExistingClaimReference = "something";
-        final String event = "claim-issue";
+        String nonExistingClaimReference = "something";
+
         given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(ImmutableMap.of("case.referenceNumber", nonExistingClaimReference,
+                "page", PAGE,
+                "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
-        ResultActions result = makeRequest(nonExistingClaimReference, event);
-        assertThat(result).isNotNull();
+
+        ResultActions result = makeRequest(nonExistingClaimReference, "claim-issue");
         result.andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
-        final String nonExistingEvent = "some-event";
-
         given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
-        ResultActions result = makeRequest(CASE_REFERENCE, nonExistingEvent);
-        assertThat(result).isNotNull();
+
+        ResultActions result = makeRequest(CASE_REFERENCE, "non-existing-event");
+
         result.andExpect(status().isNotFound());
     }
 
     @Test
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
-        final String event = "claim-issued";
-
         given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithDefendant());
 
-        makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
-        final String event = "claim-issued";
-        final Claim claim = SampleClaim.builder()
-            .withReferenceNumber(CASE_REFERENCE)
-            .withDefendantId(null).build();
-
-        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
-        given(userService.generatePin(anyString(), eq(AUTHORISATION_TOKEN))).willReturn(pinResponse);
-        given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
         given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
+        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
+        given(userService.generatePin(anyString(), eq(AUTHORISATION_TOKEN))).willReturn(pinResponse);
+        given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
-        makeRequest(claim.getReferenceNumber(), event).andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
 
         verify(emailService, times(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailData.getSubject()).isEqualTo("Claim " + claim.getReferenceNumber() + " issued");
+        assertThat(emailData.getSubject()).isEqualTo("Claim " + CASE_REFERENCE + " issued");
         assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
     }
 
     @Test
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
-        final String event = "more-time-requested";
-
         given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
 
-        makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isConflict());
 
         verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
     }
 
     @Test
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
-        final String event = "more-time-requested";
-
         given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithDefendant());
 
-        makeRequest(CASE_REFERENCE, event).andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isOk());
 
         verify(notificationClient).sendEmail(eq("staff-more-time-requested-template"),
             eq("recipient@example.com"),
@@ -197,27 +187,23 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
-        final String event = "response-submitted";
-
         given(coreCaseDataApi.searchForCitizen(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
 
-        makeRequest(CASE_REFERENCE, event).andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
-        final String event = "response-submitted";
-
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -228,7 +214,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             )
         ).willReturn(listOfCaseDetailsWithDefResponse());
 
-        makeRequest(CASE_REFERENCE, event).andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isOk());
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
@@ -240,6 +226,40 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             "Email: j.smith@example.com",
             "Mobile number: 07873727165"
         );
+    }
+
+    @Test
+    public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
+        given(coreCaseDataApi.searchForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetailsWithCCJ());
+
+        makeRequest(CASE_REFERENCE, "ccj-request-submitted").andExpect(status().isOk());
+
+        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+    }
+
+    @Test
+    public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
+        given(coreCaseDataApi.searchForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
+            )
+        ).willReturn(listOfCaseDetailsWithOfferCounterSigned());
+
+        makeRequest(CASE_REFERENCE, "offer-accepted").andExpect(status().isOk());
+
+        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
     }
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
