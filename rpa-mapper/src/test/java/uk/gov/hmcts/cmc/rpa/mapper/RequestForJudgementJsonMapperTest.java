@@ -41,70 +41,10 @@ public class RequestForJudgementJsonMapperTest {
                 .build())
             .withReferenceNumber(REFERENCE_NUMBER)
             .withIssuedOn(LocalDate.of(2018, 4, 10))
-            .withResponseDeadline(LocalDate.of(2018, 5, 27))
-            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
         String expected = new ResourceReader().read(INPUT).trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
-
-    @Test
-    public void shouldMapSoleTraderForRequestForJudgement() throws JSONException {
-
-        Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder()
-                .withClaimant(SampleParty.builder().soleTrader())
-                .withDefendant(SampleTheirDetails.builder().individualDetails())
-                .build())
-            .withReferenceNumber(REFERENCE_NUMBER)
-            .withIssuedOn(LocalDate.of(2018, 4, 10))
-            .withResponseDeadline(LocalDate.of(2018, 5, 27))
-            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .build();
-
-        String expected = new ResourceReader().read(INPUT).trim();
-
-        assertEquals(expected, mapper.map(claim).toString(), STRICT);
-    }
-
-    @Test
-    public void shouldMapOrganisationForRequestForJudgement() throws JSONException {
-
-        Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder()
-                .withClaimant(SampleParty.builder().organisation())
-                .withDefendant(SampleTheirDetails.builder().individualDetails())
-                .build())
-            .withReferenceNumber(REFERENCE_NUMBER)
-            .withIssuedOn(LocalDate.of(2018, 4, 10))
-            .withResponseDeadline(LocalDate.of(2018, 5, 27))
-            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .build();
-
-        String expected = new ResourceReader().read(INPUT).trim();
-
-        assertEquals(expected, mapper.map(claim).toString(), STRICT);
-    }
-
-    @Test
-    public void shouldMapCompanyForRequestForJudgement() throws JSONException {
-
-        Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder()
-                .withClaimant(SampleParty.builder().company())
-                .withDefendant(SampleTheirDetails.builder().individualDetails())
-                .build())
-            .withReferenceNumber(REFERENCE_NUMBER)
-            .withIssuedOn(LocalDate.of(2018, 4, 10))
-            .withResponseDeadline(LocalDate.of(2018, 5, 27))
-            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .build();
-
-        String expected = new ResourceReader().read(INPUT).trim();
-
-        assertEquals(expected, mapper.map(claim).toString(), STRICT);
-    }
-
 }

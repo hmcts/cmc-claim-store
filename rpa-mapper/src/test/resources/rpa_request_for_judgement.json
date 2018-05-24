@@ -1,5 +1,12 @@
+
 {
-  "caseNumber": "000MC001",
-  "issueDate": "10-Apr-2018",
-  "responseDeadline": "27-May-2018"
+  "caseNumber": "000CM001",
+  "issueDate": "26-Apr-2018",
+  "courtFee": 40.00,
+  "responseDeadline": "",
+  "paymentOption": "" // IMMEDIATELY / FULL_BY_SPECIFIED_DATE / INSTALMENTS,
+  "repaymentDate": "" // date if paymentType == "FULL_BY_SPECIFIED_DATE", otherwise null
+  "repaymentPlan": "" // object if paymentType == "INSTALMENTS", otherwise null
+    "paymentSchedule": "", // EACH_WEEK / EVERY_TWO_WEEKS / EVERY_MONTH
+    "firstPaymentDate": ""
 }
