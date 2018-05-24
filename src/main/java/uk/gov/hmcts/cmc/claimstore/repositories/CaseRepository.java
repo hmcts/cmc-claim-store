@@ -35,7 +35,7 @@ public interface CaseRepository {
 
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
 
-    CaseReference savePrePaymentClaim(String authorisation, String externalId);
+    CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
     Claim saveClaim(String authorisation, Claim claim);
 }

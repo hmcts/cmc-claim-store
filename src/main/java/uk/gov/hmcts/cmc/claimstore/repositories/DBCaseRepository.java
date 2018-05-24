@@ -137,7 +137,7 @@ public class DBCaseRepository implements CaseRepository {
      * For non-CCD datastore it always new CaseReference(externalId) as there is no pre payment step for non-ccd env.
      */
     @Override
-    public CaseReference savePrePaymentClaim(String authorisation, String externalId) {
+    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
         return new CaseReference(externalId);
     }
 

@@ -119,9 +119,9 @@ public class ClaimService {
         return caseRepository.getByDefendantId(id, authorisation);
     }
 
-    public boolean isClaimOnHold(String authorisation, String externalId) {
+    public boolean isClaimOnHold(String externalId, String authorisation) {
         try {
-            if (caseRepository.getOnHoldIdByExternalId(authorisation, externalId).isPresent()) {
+            if (caseRepository.getOnHoldIdByExternalId(externalId, authorisation).isPresent()) {
                 return true;
             }
 
@@ -131,12 +131,14 @@ public class ClaimService {
         }
     }
 
-    public CaseReference savePrePayment(String authorisation, String externalId) {
-        caseRepository.getOnHoldIdByExternalId(externalId, authorisation).ifPresent(claim -> {
-            throw new ConflictException("Duplicate claim for external id " + externalId);
-        });
+    public CaseReference savePrePayment(String externalId, String authorisation) {
+        Optional<Long> claimOnHoldId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
 
-        return caseRepository.savePrePaymentClaim(authorisation, externalId);
+        if (claimOnHoldId.isPresent()) {
+            return new CaseReference(claimOnHoldId.get().toString());
+        }
+
+        return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
     @Transactional

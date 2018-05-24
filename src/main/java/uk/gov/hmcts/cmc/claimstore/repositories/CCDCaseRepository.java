@@ -100,7 +100,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public CaseReference savePrePaymentClaim(String authorisation, String externalId) {
+    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
         return coreCaseDataService.savePrePayment(authorisation, externalId);
     }
 

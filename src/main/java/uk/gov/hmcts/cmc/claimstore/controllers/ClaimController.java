@@ -126,14 +126,14 @@ public class ClaimController {
     @ApiOperation("Submit Pre Payment claim")
     public CaseReference preSubmit(@PathVariable("externalId") String externalId,
                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.savePrePayment(authorisation, externalId);
+        return claimService.savePrePayment(externalId, authorisation);
     }
 
     @GetMapping("/{externalId}/on-hold")
     @ApiOperation("Check whether an on hold claim exists")
     public ClaimState isDefendantLinked(@PathVariable("externalId") String externalId,
                                         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return new ClaimState(claimService.isClaimOnHold(authorisation, externalId));
+        return new ClaimState(claimService.isClaimOnHold(externalId, authorisation));
     }
 
 }
