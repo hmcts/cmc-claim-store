@@ -13,29 +13,23 @@ import javax.json.JsonObject;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 
 @Component
+@SuppressWarnings({"LineLength"})
 public class DefenceResponseJsonMapper {
 
     @Autowired
-    private final DefendantJsonMapper mapDefendant;
+    private final DefendantJsonMapper defendantMapper;
 
-    public DefenceResponseJsonMapper(DefendantJsonMapper mapDefendant) {
-        this.mapDefendant = mapDefendant;
+    public DefenceResponseJsonMapper(DefendantJsonMapper defendantMapper) {
+        this.defendantMapper = defendantMapper;
     }
 
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
-            .add("defendants", mapDefendant.mapDefendants(claim.getClaimData().getDefendants()))
-            .add("dateOfBirth",
-                        extractFromSubclass(claim.getClaimData().getDefendant(),
-                            Individual.class,
-                            individual -> DateFormatter.format(individual.getDateOfBirth())))
-            .add("phoneNumber",
-                        extractFromSubclass(
-                            claim.getClaimData().getDefendant(),
-                            Party.class,
-                            party -> party.getMobilePhone().orElse(null)))
+            .add("defendants", defendantMapper.mapDefendants(claim.getClaimData().getDefendants()))
+            .add("dateOfBirth", extractFromSubclass(claim.getClaimData().getDefendant(), Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
+            .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(), Party.class, party -> party.getMobilePhone().orElse(null)))
             .build();
     }
 
