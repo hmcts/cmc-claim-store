@@ -17,11 +17,11 @@ public class InterestDateTest {
     public void withCustomType_shouldBeSuccessfulValidationWhenDateInThePast() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.CUSTOM)
-            .withDate(LocalDate.of(2015, 2, 5))
-            .withReason("reason")
-            .withEndDateType(SUBMISSION)
-            .build();
+                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withDate(LocalDate.of(2015, 2, 5))
+                .withReason("reason")
+                .withEndDateType(SUBMISSION)
+                .build();
         //when
         Set<String> errors = validate(interestDate);
         //then
@@ -33,16 +33,16 @@ public class InterestDateTest {
         //given
         LocalDate todayPlusOne = LocalDate.now().plusDays(1);
         InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.CUSTOM)
-            .withDate(todayPlusOne)
-            .withReason("reason")
-            .withEndDateType(SUBMISSION)
-            .build();
+                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withDate(todayPlusOne)
+                .withReason("reason")
+                .withEndDateType(SUBMISSION)
+                .build();
         //when
         Set<String> errors = validate(interestDate);
         //then
         assertThat(errors)
-            .containsExactlyInAnyOrder("date : is in the future");
+                .containsExactlyInAnyOrder("date : is in the future");
     }
 
     @Test
@@ -93,8 +93,7 @@ public class InterestDateTest {
         assertThat(errors)
                 .containsExactlyInAnyOrder(
                         "date : may not be provided when type is 'submission'",
-                        "reason : may not be provided when type is 'submission'"
-                );
+                        "reason : may not be provided when type is 'submission'");
     }
 
     @Test
@@ -127,17 +126,16 @@ public class InterestDateTest {
         assertThat(errors)
                 .containsExactlyInAnyOrder(
                         "date : may not be provided when type is undefined",
-                        "reason : may not be provided when type is undefined"
-                );
+                        "reason : may not be provided when type is undefined");
     }
 
     @Test
     public void withCustomType_shouldIsCustomReturnTrue() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.CUSTOM)
-            .withDate(LocalDate.of(2015, 2, 5))
-            .build();
+                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withDate(LocalDate.of(2015, 2, 5))
+                .build();
 
         //then
         assertThat(interestDate.isCustom()).isEqualTo(true);
@@ -147,9 +145,9 @@ public class InterestDateTest {
     public void withCustomType_shouldIsEndDateOnSubmissionReturnFalse() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.CUSTOM)
-            .withDate(LocalDate.of(2015, 2, 5))
-            .build();
+                .withType(InterestDate.InterestDateType.CUSTOM)
+                .withDate(LocalDate.of(2015, 2, 5))
+                .build();
 
         //then
         assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);
@@ -167,12 +165,12 @@ public class InterestDateTest {
     }
 
     @Test
-    public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnTrueWhenInterestEndDateTypeIsSettledOrJudgment() {
+    public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnTrueWhenEndDateTypeIsSettledOrJudgment() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.SUBMISSION)
-            .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
-            .build();
+                .withType(InterestDate.InterestDateType.SUBMISSION)
+                .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
+                .build();
 
         //then
         assertThat(interestDate.isEndDateOnClaimComplete()).isEqualTo(true);
@@ -180,12 +178,12 @@ public class InterestDateTest {
     }
 
     @Test
-    public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnFalseWhenInterestEndDateTypeIsSubmission() {
+    public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnFalseWhenEndDateTypeIsSubmission() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.SUBMISSION)
-            .withEndDateType(SUBMISSION)
-            .build();
+                .withType(InterestDate.InterestDateType.SUBMISSION)
+                .withEndDateType(SUBMISSION)
+                .build();
 
         //then
         assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(true);
@@ -193,12 +191,12 @@ public class InterestDateTest {
     }
 
     @Test
-    public void  withSubmissionType_shouldIsEndDateOnClaimCompleteReturnFalseWhenInterestEndDateTypeIsSetNull() {
+    public void withSubmissionType_shouldIsEndDateOnClaimCompleteReturnFalseWhenEndDateTypeIsSetNull() {
         //given
         InterestDate interestDate = SampleInterestDate.builder()
-            .withType(InterestDate.InterestDateType.SUBMISSION)
-            .withEndDateType(null)
-            .build();
+                .withType(InterestDate.InterestDateType.SUBMISSION)
+                .withEndDateType(null)
+                .build();
 
         //then
         assertThat(interestDate.isEndDateOnSubmission()).isEqualTo(false);

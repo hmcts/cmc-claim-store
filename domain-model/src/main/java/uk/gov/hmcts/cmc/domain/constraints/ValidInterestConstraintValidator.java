@@ -4,9 +4,9 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
+import java.util.Set;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Set;
 
 import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
 
@@ -138,15 +138,23 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
             switch (interestDate.getEndDateType()) {
                 case SETTLED_OR_JUDGMENT:
                     if ((interest.getRate() == null) && !interest.getSpecificDailyAmount().isPresent()) {
-                        setValidationErrors(validatorContext, "rate", mayNotBeNullErrorForType("breakdown"));
-                        setValidationErrors(validatorContext, "specificDailyAmount", mayNotBeNullErrorForType("breakdown"));
+                        setValidationErrors(validatorContext,
+                                "rate",
+                                mayNotBeNullErrorForType("breakdown"));
+                        setValidationErrors(validatorContext,
+                                "specificDailyAmount",
+                                mayNotBeNullErrorForType("breakdown"));
                         valid = false;
                     }
                     break;
                 case SUBMISSION:
                     if ((interest.getRate() != null) || interest.getSpecificDailyAmount().isPresent()) {
-                        setValidationErrors(validatorContext, "rate", mayNotBeProvidedErrorForType("breakdown"));
-                        setValidationErrors(validatorContext, "specificDailyAmount", mayNotBeProvidedErrorForType("breakdown"));
+                        setValidationErrors(validatorContext,
+                                "rate",
+                                mayNotBeProvidedErrorForType("breakdown"));
+                        setValidationErrors(validatorContext,
+                                "specificDailyAmount",
+                                mayNotBeProvidedErrorForType("breakdown"));
                         valid = false;
                     }
                     break;

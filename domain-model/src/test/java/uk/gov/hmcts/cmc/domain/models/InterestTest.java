@@ -10,7 +10,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
-import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.*;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.BREAKDOWN;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.DIFFERENT;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
+import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.STANDARD;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestDateType.CUSTOM;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestDateType.SUBMISSION;
 
@@ -35,7 +38,7 @@ public class InterestTest {
     }
 
     @Test
-    public void withNoInterestType_shouldBeSuccessfulValidation() {
+    public void withNoInterestType_shouldBeSuccessful() {
         //given
         Interest interest = SampleInterest
                 .builder()
@@ -72,12 +75,11 @@ public class InterestTest {
                         "reason : may not be provided when interest type is 'no interest'",
                         "interestDate : may not be provided when interest type is 'no interest'",
                         "interestBreakdown : may not be provided when interest type is 'no interest'",
-                        "specificDailyAmount : may not be provided when interest type is 'no interest'"
-                );
+                        "specificDailyAmount : may not be provided when interest type is 'no interest'");
     }
 
     @Test
-    public void withStandardInterestType_shouldBeSuccessfulValidation() {
+    public void withStandardInterestType_shouldBeSuccessful() {
         //given
         Interest interest = SampleInterest
                 .builder()
@@ -112,8 +114,7 @@ public class InterestTest {
         assertThat(errors)
                 .containsExactlyInAnyOrder(
                         "rate : may not be null when interest type is 'standard'",
-                        "interestDate : may not be null when interest type is 'standard'"
-                );
+                        "interestDate : may not be null when interest type is 'standard'");
     }
 
     @Test
@@ -135,8 +136,7 @@ public class InterestTest {
                 .containsExactlyInAnyOrder(
                         "reason : may not be provided when interest type is 'standard'",
                         "interestBreakdown : may not be provided when interest type is 'standard'",
-                        "specificDailyAmount : may not be provided when interest type is 'standard'"
-                );
+                        "specificDailyAmount : may not be provided when interest type is 'standard'");
     }
 
     @Test
@@ -164,7 +164,7 @@ public class InterestTest {
     }
 
     @Test
-    public void withDifferentInterestType_shouldBeSuccessfulValidation() {
+    public void withDifferentInterestType_shouldBeSuccessful() {
         //given
         Interest interest = SampleInterest
                 .builder()
@@ -200,8 +200,7 @@ public class InterestTest {
                 .containsExactlyInAnyOrder(
                         "rate : may not be null when interest type is 'different'",
                         "reason : may not be null when interest type is 'different'",
-                        "interestDate : may not be null when interest type is 'different'"
-                );
+                        "interestDate : may not be null when interest type is 'different'");
     }
 
     @Test
@@ -222,8 +221,7 @@ public class InterestTest {
         assertThat(errors)
                 .containsExactlyInAnyOrder(
                         "interestBreakdown : may not be provided when interest type is 'different'",
-                        "specificDailyAmount : may not be provided when interest type is 'different'"
-                );
+                        "specificDailyAmount : may not be provided when interest type is 'different'");
     }
 
     @Test
@@ -251,7 +249,7 @@ public class InterestTest {
     }
 
     @Test
-    public void withBreakdownInterestTypeAndSettleOrJudgmentEndDateType_shouldBeSuccessfulValidationWhenRateProvided() {
+    public void withBreakdownInterestTypeAndSettleOrJudgmentEndDateType_shouldBeSuccessfulWhenRateProvided() {
         InterestDate interestDateOfTypeSettledOrJudgment = SampleInterestDate
                 .builder()
                 .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
@@ -272,7 +270,7 @@ public class InterestTest {
     }
 
     @Test
-    public void withBreakdownInterestTypeAndSettleOrJudgmentEndDateType_shouldBeSuccessfulValidationWhenSpecificDailyAmountProvided() {
+    public void withBreakdownInterestTypeAndSettleOrJudgmentEndDateType_shouldBeSuccessfulWhenSpecDailyAmntProvided() {
         InterestDate interestDateOfTypeSettledOrJudgment = SampleInterestDate
                 .builder()
                 .withEndDateType(InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT)
@@ -293,7 +291,7 @@ public class InterestTest {
     }
 
     @Test
-    public void withBreakdownInterestTypeAndSubmissionEndDateType_shouldBeSuccessfulValidation() {
+    public void withBreakdownInterestTypeAndSubmissionEndDateType_shouldBeSuccessful() {
         InterestDate interestDateOfTypeSubmission = SampleInterestDate
                 .builder()
                 .withEndDateType(InterestDate.InterestEndDateType.SUBMISSION)
@@ -334,8 +332,7 @@ public class InterestTest {
         assertThat(errors).containsExactlyInAnyOrder(
                 "interestBreakdown : may not be null when interest type is 'breakdown'",
                 "rate : may not be null when interest type is 'breakdown'",
-                "specificDailyAmount : may not be null when interest type is 'breakdown'"
-        );
+                "specificDailyAmount : may not be null when interest type is 'breakdown'");
     }
 
     @Test
@@ -401,8 +398,7 @@ public class InterestTest {
         assertThat(errors).containsExactlyInAnyOrder(
                 "reason : may not be provided when interest type is 'breakdown'",
                 "rate : may not be provided when interest type is 'breakdown'",
-                "specificDailyAmount : may not be provided when interest type is 'breakdown'"
-        );
+                "specificDailyAmount : may not be provided when interest type is 'breakdown'");
     }
 
     @Test
@@ -452,8 +448,7 @@ public class InterestTest {
         assertThat(errors)
                 .containsExactlyInAnyOrder(
                         "interestDate : reason : may not be provided when type is 'submission'",
-                        "interestDate : date : may not be provided when type is 'submission'"
-                );
+                        "interestDate : date : may not be provided when type is 'submission'");
     }
 
     @Test
