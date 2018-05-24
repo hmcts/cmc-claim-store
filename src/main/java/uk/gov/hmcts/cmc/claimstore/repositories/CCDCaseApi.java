@@ -34,6 +34,21 @@ import java.util.stream.Collectors;
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseApi {
 
+    public static enum CaseState {
+        ONHOLD("onhold"),
+        OPEN("open");
+
+        private final String state;
+
+        CaseState(String state) {
+            this.state = state;
+        }
+
+        public String getValue() {
+            return state;
+        }
+    }
+
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
@@ -67,14 +82,14 @@ public class CCDCaseApi {
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
-        return extractClaims(search(user, ImmutableMap.of("case.submitterId", submitterId)));
+        return extractClaims(searchOnlyOpenCases(user, ImmutableMap.of("case.submitterId", submitterId)));
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
         User user = userService.getUser(authorisation);
 
         List<Claim> claims = extractClaims(
-            search(user, ImmutableMap.of("case.referenceNumber", referenceNumber))
+            searchOnlyOpenCases(user, ImmutableMap.of("case.referenceNumber", referenceNumber))
         );
 
         if (claims.size() > 1) {
@@ -87,7 +102,7 @@ public class CCDCaseApi {
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        List<CaseDetails> result = search(user, ImmutableMap.of("case.externalId", externalId));
+        List<CaseDetails> result = searchOnlyOpenCases(user, ImmutableMap.of("case.externalId", externalId));
 
         if (result.size() == 1 && isCaseOnHold(result.get(0))) {
             throw new OnHoldClaimAccessAttemptException("Case is on hold " + externalId);
@@ -104,7 +119,7 @@ public class CCDCaseApi {
 
     public Optional<Long> getOnHoldIdByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
-        List<CaseDetails> result = search(user, ImmutableMap.of("case.externalId", externalId));
+        List<CaseDetails> result = searchAll(user, ImmutableMap.of("case.externalId", externalId));
 
         if (result.size() == 0) {
             return Optional.empty();
@@ -188,7 +203,7 @@ public class CCDCaseApi {
         User defendant = userService.getUser(authorisation);
 
         return extractClaims(
-            search(defendant, ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()))
+            searchOnlyOpenCases(defendant, ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()))
         );
     }
 
@@ -230,9 +245,15 @@ public class CCDCaseApi {
         return ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
     }
 
+    private List<CaseDetails> searchAll(User user, Map<String, String> searchString) {
+        return search(user, searchString, 1, new ArrayList<>(), null, null);
+    }
 
-    private List<CaseDetails> search(User user, Map<String, String> searchString) {
-        return search(user, searchString, 1, new ArrayList<>(), null);
+    private List<CaseDetails> searchOnlyOpenCases(User user, Map<String, String> searchString) {
+        Map<String, String> searchOnlyOpen = new HashMap<>(searchString);
+        searchOnlyOpen.put("state", "open");
+
+        return search(user, searchOnlyOpen, 1, new ArrayList<>(), null, CaseState.OPEN);
     }
 
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
@@ -241,11 +262,15 @@ public class CCDCaseApi {
         Map<String, String> searchString,
         Integer page,
         List<CaseDetails> results,
-        Integer numOfPages
+        Integer numOfPages,
+        CaseState state
     ) {
         Map<String, String> searchCriteria = new HashMap<>(searchString);
         searchCriteria.put("page", page.toString());
         searchCriteria.put("sortDirection", "desc");
+        if (state != null) {
+            searchCriteria.put("state", state.getValue());
+        }
 
         String serviceAuthToken = this.authTokenGenerator.generate();
 
@@ -258,7 +283,7 @@ public class CCDCaseApi {
 
             if (numOfPages > page && page < MAX_NUM_OF_PAGES_TO_CHECK) {
                 ++page;
-                return search(user, searchString, page, results, numOfPages);
+                return search(user, searchString, page, results, numOfPages, state);
             }
         }
 
@@ -325,6 +350,6 @@ public class CCDCaseApi {
     }
 
     private boolean isCaseOnHold(CaseDetails caseDetails) {
-        return caseDetails.getState().equals("onhold");
+        return caseDetails.getState().equals(CaseState.ONHOLD.getValue());
     }
 }
