@@ -119,18 +119,6 @@ public class ClaimService {
         return caseRepository.getByDefendantId(id, authorisation);
     }
 
-    public boolean isClaimOnHold(String externalId, String authorisation) {
-        try {
-            if (caseRepository.getOnHoldIdByExternalId(externalId, authorisation).isPresent()) {
-                return true;
-            }
-
-            throw new NotFoundException("Claim not found " + externalId);
-        } catch (OnHoldClaimAccessAttemptException e) {
-            return false;
-        }
-    }
-
     public CaseReference savePrePayment(String externalId, String authorisation) {
         Optional<Long> claimOnHoldId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
 

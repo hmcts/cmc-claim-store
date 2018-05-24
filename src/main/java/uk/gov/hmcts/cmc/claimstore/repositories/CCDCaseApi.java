@@ -86,9 +86,14 @@ public class CCDCaseApi {
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
-        List<Claim> claims = extractClaims(
-            search(user, ImmutableMap.of("case.externalId", externalId))
-        );
+
+        List<CaseDetails> result = search(user, ImmutableMap.of("case.externalId", externalId));
+
+        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
+            throw new OnHoldClaimAccessAttemptException("Case is on hold " + externalId);
+        }
+
+        List<Claim> claims = extractClaims(result);
 
         if (claims.size() > 1) {
             throw new CoreCaseDataStoreException("More than one claim found by externalId " + externalId);
@@ -107,7 +112,7 @@ public class CCDCaseApi {
 
         CaseDetails ccd = result.get(0);
 
-        if (!ccd.getState().equals("onhold")) {
+        if (!isCaseOnHold(ccd)) {
             throw new OnHoldClaimAccessAttemptException("Case " + externalId + " is not on hold");
         }
 
@@ -317,5 +322,9 @@ public class CCDCaseApi {
             .stream()
             .map(entry -> ccdCaseDataToClaim.to(entry.getId(), entry.getData()))
             .collect(Collectors.toList());
+    }
+
+    private boolean isCaseOnHold(CaseDetails caseDetails) {
+        return caseDetails.getState().equals("onhold");
     }
 }

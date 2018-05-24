@@ -128,12 +128,4 @@ public class ClaimController {
                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.savePrePayment(externalId, authorisation);
     }
-
-    @GetMapping("/{externalId}/on-hold")
-    @ApiOperation("Check whether an on hold claim exists")
-    public ClaimState isDefendantLinked(@PathVariable("externalId") String externalId,
-                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return new ClaimState(claimService.isClaimOnHold(externalId, authorisation));
-    }
-
 }

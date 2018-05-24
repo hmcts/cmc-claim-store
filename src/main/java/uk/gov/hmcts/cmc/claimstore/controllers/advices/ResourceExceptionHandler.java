@@ -96,7 +96,7 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(value = OnHoldClaimAccessAttemptException.class)
     public ResponseEntity<Object> onHoldClaim(Exception exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
