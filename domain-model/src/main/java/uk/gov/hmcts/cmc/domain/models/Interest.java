@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.constraints.ValidInterest;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -28,7 +27,6 @@ public class Interest {
     @NotNull
     private final InterestType type;
 
-    @Valid
     private final InterestBreakdown interestBreakdown;
 
     private final BigDecimal rate;
@@ -37,7 +35,6 @@ public class Interest {
 
     private final BigDecimal specificDailyAmount;
 
-    @Valid
     private final InterestDate interestDate;
 
     public Interest(
