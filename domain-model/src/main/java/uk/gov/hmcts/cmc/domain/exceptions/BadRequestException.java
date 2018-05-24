@@ -6,4 +6,8 @@ public class BadRequestException extends IllegalArgumentException {
         super(message, ex);
     }
 
+    public BadRequestException(String message) {
+        super(message);
+    }
+
 }

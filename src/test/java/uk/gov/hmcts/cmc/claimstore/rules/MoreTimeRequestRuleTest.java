@@ -78,5 +78,5 @@ public class MoreTimeRequestRuleTest {
         verify(claimDeadlineService).isPastDeadline(currentDateTime.capture(), eq(deadlineDay));
         assertThat(currentDateTime.getValue()).isCloseTo(nowInLocalZone(), within(10, ChronoUnit.SECONDS));
     }
-
+    
 }
