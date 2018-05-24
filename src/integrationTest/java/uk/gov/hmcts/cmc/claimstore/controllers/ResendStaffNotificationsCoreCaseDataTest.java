@@ -31,8 +31,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithCCJ;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefResponse;
@@ -74,11 +72,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         String nonExistingClaimReference = "something";
 
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", nonExistingClaimReference,
                 "page", PAGE,
                 "sortDirection", "desc"))
@@ -92,11 +90,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
@@ -108,11 +106,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithDefendant());
@@ -125,11 +123,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
@@ -150,11 +148,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
@@ -167,11 +165,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithDefendant());
@@ -187,11 +185,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetails());
@@ -204,11 +202,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithDefResponse());
@@ -230,11 +228,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithCCJ());
@@ -247,11 +245,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Test
     public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
         given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
             eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE, "page", PAGE, "sortDirection", "desc"))
             )
         ).willReturn(listOfCaseDetailsWithOfferCounterSigned());
