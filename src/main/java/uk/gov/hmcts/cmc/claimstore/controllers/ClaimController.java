@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.response.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -127,4 +128,12 @@ public class ClaimController {
                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.savePrePayment(authorisation, externalId);
     }
+
+    @GetMapping("/{externalId}/on-hold")
+    @ApiOperation("Check whether an on hold claim exists")
+    public ClaimState isDefendantLinked(@PathVariable("externalId") String externalId,
+                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return new ClaimState(claimService.isClaimOnHold(authorisation, externalId));
+    }
+
 }

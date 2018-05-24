@@ -8,12 +8,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
@@ -42,8 +40,6 @@ public class CCDCaseApi {
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
-    private final CaseMapper caseMapper;
-    private final JsonMapper jsonMapper;
     private final CaseAccessApi caseAccessApi;
     private final CoreCaseDataService coreCaseDataService;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
@@ -57,8 +53,6 @@ public class CCDCaseApi {
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         UserService userService,
-        CaseMapper caseMapper,
-        JsonMapper jsonMapper,
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CCDCaseDataToClaim ccdCaseDataToClaim
@@ -66,8 +60,6 @@ public class CCDCaseApi {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
-        this.caseMapper = caseMapper;
-        this.jsonMapper = jsonMapper;
         this.caseAccessApi = caseAccessApi;
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
@@ -105,21 +97,21 @@ public class CCDCaseApi {
         return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
     }
 
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+    public Optional<Long> getOnHoldIdByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         List<CaseDetails> result = search(user, ImmutableMap.of("case.externalId", externalId));
 
-        if (result.size() != 1) {
-            throw new ConflictException("There mus be exactly 1 case " + externalId + ". Found = " + result.size());
+        if (result.size() == 0) {
+            return Optional.empty();
         }
 
         CaseDetails ccd = result.get(0);
 
         if (!ccd.getState().equals("onhold")) {
-            throw new CoreCaseDataStoreException("Case " + externalId + " is not on hold");
+            throw new OnHoldClaimAccessAttemptException("Case " + externalId + " is not on hold");
         }
 
-        return ccd.getId();
+        return Optional.of(ccd.getId());
     }
 
     /**

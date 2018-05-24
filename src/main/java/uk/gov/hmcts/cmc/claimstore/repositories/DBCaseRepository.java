@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -50,13 +51,13 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+    public Optional<Long> getOnHoldIdByExternalId(String externalId, String authorisation) {
         getClaimByExternalId(externalId, authorisation)
             .ifPresent(claim -> {
                 throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
             });
 
-        return null;
+        return Optional.empty();
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {

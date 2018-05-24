@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -117,7 +119,23 @@ public class ClaimService {
         return caseRepository.getByDefendantId(id, authorisation);
     }
 
+    public boolean isClaimOnHold(String authorisation, String externalId) {
+        try {
+            if (caseRepository.getOnHoldIdByExternalId(authorisation, externalId).isPresent()) {
+                return true;
+            }
+
+            throw new NotFoundException("Claim not found " + externalId);
+        } catch (OnHoldClaimAccessAttemptException e) {
+            return false;
+        }
+    }
+
     public CaseReference savePrePayment(String authorisation, String externalId) {
+        caseRepository.getOnHoldIdByExternalId(externalId, authorisation).ifPresent(claim -> {
+            throw new ConflictException("Duplicate claim for external id " + externalId);
+        });
+
         return caseRepository.savePrePaymentClaim(authorisation, externalId);
     }
 
@@ -125,7 +143,8 @@ public class ClaimService {
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
+        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation)
+            .orElseThrow(() -> new NotFoundException("No on hold claim " + externalId));
 
         LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();

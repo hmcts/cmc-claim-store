@@ -41,7 +41,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+    public Optional<Long> getOnHoldIdByExternalId(String externalId, String authorisation) {
         return ccdCaseApi.getOnHoldIdByExternalId(externalId, authorisation);
     }
 
