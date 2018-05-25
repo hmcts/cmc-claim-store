@@ -17,14 +17,14 @@ public class RetrieveCaseTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToRetrieveCasesBySubmitterId() {
-        User citizen = bootstrap.getSmokeTestCitizen();
+        User citizen = bootstrap.getSmokeTestUser();
         testCasesRetrievalFor("/claims/claimant/" + citizen.getUserDetails().getId(),
             citizen.getAuthorisation());
     }
 
     @Test
     public void shouldBeAbleToRetrieveCasesByDefendantId() {
-        User citizen = bootstrap.getSmokeTestCitizen();
+        User citizen = bootstrap.getSmokeTestUser();
         testCasesRetrievalFor("/claims/defendant/" + citizen.getUserDetails().getId(),
             citizen.getAuthorisation());
     }

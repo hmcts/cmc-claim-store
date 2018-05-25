@@ -138,7 +138,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1", "sortDirection", "desc"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
             )
         ).willReturn(numberOfClaimDetailsResults(11));
 
@@ -148,7 +148,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2", "sortDirection", "desc"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
             )
         ).willReturn(numberOfClaimDetailsResults(5));
 
@@ -185,7 +185,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1", "sortDirection", "desc"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
             )
         ).willReturn(numberOfClaimDetailsResults(11));
 
@@ -195,7 +195,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2", "sortDirection", "desc"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
             )
         ).willReturn(numberOfClaimDetailsResults(5));
 
