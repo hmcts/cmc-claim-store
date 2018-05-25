@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -133,7 +132,7 @@ public class CoreCaseDataService {
         CaseDetails caseDetails = update(authorisation, ccdCase, SUBMIT_POST_PAYMENT);
 
         if (isRepresented) {
-            grandAccessToCase(caseDetails, claim.getLetterHolderId());
+            grantAccessToCase(caseDetails, claim.getLetterHolderId());
         }
 
         return extractClaim(caseDetails);
@@ -321,7 +320,7 @@ public class CoreCaseDataService {
         }
     }
 
-    private void grandAccessToCase(CaseDetails caseDetails, String letterHolderId) {
+    private void grantAccessToCase(CaseDetails caseDetails, String letterHolderId) {
         User user = userService.authenticateAnonymousCaseWorker();
         caseAccessApi.grantAccessToCase(
             user.getAuthorisation(),
