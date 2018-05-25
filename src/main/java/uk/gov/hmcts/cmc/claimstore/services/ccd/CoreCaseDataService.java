@@ -221,17 +221,22 @@ public class CoreCaseDataService {
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
         try {
-            String userId = userService.getUserDetails(authorisation).getId();
+            UserDetails userDetails = userService.getUserDetails(authorisation);
             Long caseId = ccdCase.getId();
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(userId)
+                .userId(userDetails.getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(caseEvent.getValue())
                 .ignoreWarning(true)
                 .build();
 
-            StartEventResponse startEventResponse = startUpdate(authorisation, eventRequestData, caseId);
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                userDetails.isSolicitor()
+            );
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
@@ -243,7 +248,7 @@ public class CoreCaseDataService {
                 .data(ccdCase)
                 .build();
 
-            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId);
+            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId, userDetails.isSolicitor());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -255,34 +260,65 @@ public class CoreCaseDataService {
         }
     }
 
-    private StartEventResponse startUpdate(String authorisation, EventRequestData eventRequestData, Long caseId) {
-        return coreCaseDataApi.startEventForCitizen(
-            authorisation,
-            authTokenGenerator.generate(),
-            eventRequestData.getUserId(),
-            eventRequestData.getJurisdictionId(),
-            eventRequestData.getCaseTypeId(),
-            caseId.toString(),
-            eventRequestData.getEventId()
-        );
+    private StartEventResponse startUpdate(
+        String authorisation,
+        EventRequestData eventRequestData,
+        Long caseId,
+        boolean isRepresented
+    ) {
+        if (isRepresented) {
+            return coreCaseDataApi.startEventForCaseWorker(
+                authorisation,
+                authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                caseId.toString(),
+                eventRequestData.getEventId()
+            );
+        } else {
+            return coreCaseDataApi.startEventForCitizen(
+                authorisation,
+                authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                caseId.toString(),
+                eventRequestData.getEventId()
+            );
+        }
     }
 
     private CaseDetails submitUpdate(
         String authorisation,
         EventRequestData eventRequestData,
         CaseDataContent caseDataContent,
-        Long caseId
+        Long caseId,
+        boolean isRepresented
     ) {
-        return coreCaseDataApi.submitEventForCitizen(
-            authorisation,
-            authTokenGenerator.generate(),
-            eventRequestData.getUserId(),
-            eventRequestData.getJurisdictionId(),
-            eventRequestData.getCaseTypeId(),
-            caseId.toString(),
-            eventRequestData.isIgnoreWarning(),
-            caseDataContent
-        );
+        if (isRepresented) {
+            return coreCaseDataApi.submitEventForCaseWorker(
+                authorisation,
+                authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                caseId.toString(),
+                eventRequestData.isIgnoreWarning(),
+                caseDataContent
+            );
+        } else {
+            return coreCaseDataApi.submitEventForCitizen(
+                authorisation,
+                authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                caseId.toString(),
+                eventRequestData.isIgnoreWarning(),
+                caseDataContent
+            );
+        }
     }
 
     private void grandAccessToCase(CaseDetails caseDetails, String letterHolderId) {
