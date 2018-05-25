@@ -21,9 +21,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class FullAdmissionResponse extends Response {
 
     @NotNull
-    private final DefenceType defenceType;
-
-    @NotNull
     private final PaymentOption paymentOption;
 
     @JsonUnwrapped
@@ -41,22 +38,16 @@ public class FullAdmissionResponse extends Response {
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
-        DefenceType defenceType,
         PaymentOption paymentOption,
         LocalDate paymentDate,
         RepaymentPlan repaymentPlan,
         StatementOfMeans statementOfMeans
     ) {
         super(FULL_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
-        this.defenceType = defenceType;
         this.paymentOption = paymentOption;
         this.paymentDate = paymentDate;
         this.repaymentPlan = repaymentPlan;
         this.statementOfMeans = statementOfMeans;
-    }
-
-    public DefenceType getDefenceType() {
-        return defenceType;
     }
 
     public PaymentOption getPaymentOption() {
@@ -87,8 +78,7 @@ public class FullAdmissionResponse extends Response {
             return false;
         }
         FullAdmissionResponse that = (FullAdmissionResponse) other;
-        return defenceType == that.defenceType
-            && paymentOption == that.paymentOption
+        return paymentOption == that.paymentOption
             && Objects.equals(paymentDate, that.paymentDate)
             && Objects.equals(repaymentPlan, that.repaymentPlan)
             && Objects.equals(statementOfMeans, that.statementOfMeans);
@@ -97,7 +87,7 @@ public class FullAdmissionResponse extends Response {
     @Override
     public int hashCode() {
 
-        return Objects.hash(super.hashCode(), defenceType, paymentOption, paymentDate, repaymentPlan, statementOfMeans);
+        return Objects.hash(super.hashCode(), paymentOption, paymentDate, repaymentPlan, statementOfMeans);
     }
 
     @Override

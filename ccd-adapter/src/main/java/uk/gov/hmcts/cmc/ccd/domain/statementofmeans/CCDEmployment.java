@@ -2,17 +2,16 @@ package uk.gov.hmcts.cmc.ccd.domain.statementofmeans;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployed;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.util.List;
 
 @Value
 @Builder
 public class CCDEmployment {
-    private YesNoOption isEmployed;
-    private YesNoOption isSelfEmployed;
-    private List<Employer> employers;
-    private SelfEmployed selfEmployed;
+    private CCDYesNoOption isEmployed;
+    private CCDYesNoOption isSelfEmployed;
+    private List<CCDCollectionElement<CCDEmployer>> employers;
+    private CCDSelfEmployed selfEmployed;
 }
