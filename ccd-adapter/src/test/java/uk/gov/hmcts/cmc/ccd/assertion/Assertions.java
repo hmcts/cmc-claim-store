@@ -1,7 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
+import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantEvidenceAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantTimelineAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.FullDefenceResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.ResponseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.BankAccountAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.ChildrenAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
@@ -43,6 +47,8 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Children;
 
 public class Assertions {
 
@@ -212,5 +218,13 @@ public class Assertions {
 
     public static ResponseAssert assertThat(Response response) {
         return new ResponseAssert(response);
+    }
+
+    public static BankAccountAssert assertThat(BankAccount bankAccount) {
+        return new BankAccountAssert(bankAccount);
+    }
+
+    public static ChildrenAssert assertThat(Children children) {
+        return new ChildrenAssert(children);
     }
 }

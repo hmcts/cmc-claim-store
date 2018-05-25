@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
+import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
@@ -7,6 +8,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 public class Children {
 
     private final Integer under11;
