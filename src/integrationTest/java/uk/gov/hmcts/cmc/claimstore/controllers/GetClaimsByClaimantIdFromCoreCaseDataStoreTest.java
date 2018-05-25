@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -138,7 +140,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1", "sortDirection", "desc"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1", "sortDirection", "desc","state", CCDCaseApi.CaseState.OPEN.getValue()))
             )
         ).willReturn(numberOfClaimDetailsResults(11));
 
@@ -148,7 +150,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2", "sortDirection", "desc"))
+            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2", "sortDirection", "desc", "state", CCDCaseApi.CaseState.OPEN.getValue()))
             )
         ).willReturn(numberOfClaimDetailsResults(5));
 
@@ -220,7 +222,6 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
         assertThat(deserializeListFrom(result))
             .hasSize(16);
     }
-
 
     private List<CaseDetails> numberOfClaimDetailsResults(final int number) {
         return Stream.generate(ResourceLoader::successfulCoreCaseDataStoreSubmitResponse)

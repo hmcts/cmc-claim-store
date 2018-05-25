@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -41,7 +42,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Long> getOnHoldIdByExternalId(String externalId, String authorisation) {
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
         return ccdCaseApi.getOnHoldIdByExternalId(externalId, authorisation);
     }
 
@@ -101,7 +102,11 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        return coreCaseDataService.savePrePayment(externalId, authorisation);
+        try {
+            return new CaseReference(getOnHoldIdByExternalId(externalId, authorisation).toString());
+        } catch (NotFoundException e) {
+            return coreCaseDataService.savePrePayment(externalId, authorisation);
+        }
     }
 
     @Override

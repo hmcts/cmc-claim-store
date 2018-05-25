@@ -51,13 +51,13 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Long> getOnHoldIdByExternalId(String externalId, String authorisation) {
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
         getClaimByExternalId(externalId, authorisation)
             .ifPresent(claim -> {
                 throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
             });
 
-        return Optional.empty();
+        return null;
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {

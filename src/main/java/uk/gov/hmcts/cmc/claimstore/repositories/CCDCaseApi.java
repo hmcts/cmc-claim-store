@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -117,21 +118,21 @@ public class CCDCaseApi {
         return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
     }
 
-    public Optional<Long> getOnHoldIdByExternalId(String externalId, String authorisation) {
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         List<CaseDetails> result = searchAll(user, ImmutableMap.of("case.externalId", externalId));
 
         if (result.size() == 0) {
-            return Optional.empty();
+            throw new NotFoundException("Case " + externalId + " not found.");
         }
 
         CaseDetails ccd = result.get(0);
 
         if (!isCaseOnHold(ccd)) {
-            throw new OnHoldClaimAccessAttemptException("Case " + externalId + " is not on hold");
+            throw new OnHoldClaimAccessAttemptException("Case " + externalId + " is not on hold.");
         }
 
-        return Optional.of(ccd.getId());
+        return ccd.getId();
     }
 
     /**
@@ -250,10 +251,7 @@ public class CCDCaseApi {
     }
 
     private List<CaseDetails> searchOnlyOpenCases(User user, Map<String, String> searchString) {
-        Map<String, String> searchOnlyOpen = new HashMap<>(searchString);
-        searchOnlyOpen.put("state", "open");
-
-        return search(user, searchOnlyOpen, 1, new ArrayList<>(), null, CaseState.OPEN);
+        return search(user, searchString, 1, new ArrayList<>(), null, CaseState.OPEN);
     }
 
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only

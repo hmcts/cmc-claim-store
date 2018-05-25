@@ -120,12 +120,6 @@ public class ClaimService {
     }
 
     public CaseReference savePrePayment(String externalId, String authorisation) {
-        Optional<Long> claimOnHoldId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
-
-        if (claimOnHoldId.isPresent()) {
-            return new CaseReference(claimOnHoldId.get().toString());
-        }
-
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
@@ -133,8 +127,7 @@ public class ClaimService {
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation)
-            .orElseThrow(() -> new NotFoundException("No on hold claim " + externalId));
+        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
 
         LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();

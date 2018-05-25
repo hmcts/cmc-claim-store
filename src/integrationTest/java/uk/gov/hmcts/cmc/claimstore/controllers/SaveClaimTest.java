@@ -51,6 +51,8 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldReturnNewlyCreatedClaim() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
+        makeRequestPrePayment(claimData.getExternalId().toString()).andExpect(status().isOk());
+
         MvcResult result = makeRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
