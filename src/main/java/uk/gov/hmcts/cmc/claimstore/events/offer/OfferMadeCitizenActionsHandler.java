@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +17,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
 public class OfferMadeCitizenActionsHandler {
@@ -70,7 +70,7 @@ public class OfferMadeCitizenActionsHandler {
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put("responseForOfferDeadline",
             Formatting.formatDate(
-                offerResponseDeadlineCalculator.calculateOfferResponseDeadline(LocalDateTime.now())
+                offerResponseDeadlineCalculator.calculateOfferResponseDeadline(nowInLocalZone())
             )
         );
 
