@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
+import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -7,8 +8,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 public class Employment {
 
     private final YesNoOption isEmployed;
@@ -37,7 +40,7 @@ public class Employment {
     }
 
     public List<Employer> getEmployers() {
-        return employers;
+        return employers == null ? emptyList() : employers;
     }
 
     public Optional<SelfEmployed> getSelfEmployed() {

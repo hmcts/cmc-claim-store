@@ -10,6 +10,9 @@ public class ChildrenMapper implements Mapper<CCDChildren, Children> {
 
     @Override
     public CCDChildren to(Children children) {
+        if (children == null) {
+            return null;
+        }
         return CCDChildren.builder()
             .under11(children.getUnder11().orElse(0))
             .between11and15(children.getBetween11and15().orElse(0))
@@ -19,6 +22,9 @@ public class ChildrenMapper implements Mapper<CCDChildren, Children> {
 
     @Override
     public Children from(CCDChildren ccdChildren) {
+        if (ccdChildren == null) {
+            return null;
+        }
         return new Children(
             ccdChildren.getUnder11(),
             ccdChildren.getBetween11and15(),

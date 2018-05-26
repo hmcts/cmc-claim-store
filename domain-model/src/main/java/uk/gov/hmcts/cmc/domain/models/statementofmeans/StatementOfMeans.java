@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
+import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 public class StatementOfMeans {
     private final ResidenceType residenceType;
     private final Dependant dependant;

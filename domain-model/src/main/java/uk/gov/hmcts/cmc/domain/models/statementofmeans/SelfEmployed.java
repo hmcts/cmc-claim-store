@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
+import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -8,6 +9,7 @@ import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 public class SelfEmployed {
 
     private final String jobTitle;
