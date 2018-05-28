@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
@@ -11,17 +14,30 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MoreTimeRequestRuleTest {
 
+    @Captor
+    private ArgumentCaptor<LocalDateTime> currentDateTime;
+
     @Spy
-    private MoreTimeRequestRule moreTimeRequestRule = new MoreTimeRequestRule();
+    private ClaimDeadlineService claimDeadlineService = new ClaimDeadlineService();
+
+    private MoreTimeRequestRule moreTimeRequestRule;
+
+    @Before
+    public void beforeEachTest() {
+        moreTimeRequestRule = new MoreTimeRequestRule(claimDeadlineService);
+    }
 
     @Test
     public void noExceptionThrownWhenMoreTimeRequestedFirstTimeAndDeadlineHasNotPassed() {
@@ -51,36 +67,16 @@ public class MoreTimeRequestRuleTest {
     }
 
     @Test
-    public void shouldCallAssertIsNotPastDeadline() {
+    public void shouldCallClaimDeadlineServicePassingCurrentUKTimeToCheckIfDeadlineHasPassed() {
+        LocalDate deadlineDay = LocalDate.now().plusDays(2);
         Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().plusDays(2))
+            .withResponseDeadline(deadlineDay)
             .withMoreTimeRequested(false)
             .build();
         moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
-        verify(moreTimeRequestRule).assertIsNotPastDeadline(any(LocalDateTime.class), eq(claim.getResponseDeadline()));
-    }
 
-    @Test
-    public void assertIsNotPastDeadlineShouldNotThrowWhenTimeIsBefore4PMOnDeadlineDay() {
-        LocalDateTime now = LocalDate.now().atTime(15, 59, 59, 999);
-        LocalDate responseDeadline = LocalDate.now();
-        assertThatCode(
-            () -> moreTimeRequestRule.assertIsNotPastDeadline(now, responseDeadline)
-        ).doesNotThrowAnyException();
-    }
-
-    @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
-    public void assertIsNotPastDeadlineShouldThrowWhenTimeIs4PMOnDeadlineDay() {
-        LocalDateTime now = LocalDate.now().atTime(16, 0);
-        LocalDate responseDeadline = LocalDate.now();
-        moreTimeRequestRule.assertIsNotPastDeadline(now, responseDeadline);
-    }
-
-    @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
-    public void assertIsNotPastDeadlineShouldThrowWhenTimeIsPast4PMOnDeadlineDay() {
-        LocalDateTime now = LocalDate.now().atTime(16, 1);
-        LocalDate responseDeadline = LocalDate.now();
-        moreTimeRequestRule.assertIsNotPastDeadline(now, responseDeadline);
+        verify(claimDeadlineService).isPastDeadline(currentDateTime.capture(), eq(deadlineDay));
+        assertThat(currentDateTime.getValue()).isCloseTo(nowInLocalZone(), within(10, ChronoUnit.SECONDS));
     }
     
 }
