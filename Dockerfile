@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-COPY build/libs/claim-store.jar /opt/app/
+COPY claim-store.jar /opt/app/
 
 WORKDIR /opt/app
 
