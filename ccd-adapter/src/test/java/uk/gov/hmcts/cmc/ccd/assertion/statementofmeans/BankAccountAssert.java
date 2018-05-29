@@ -26,7 +26,7 @@ public class BankAccountAssert extends AbstractAssert<BankAccountAssert, BankAcc
         }
 
         if (!Objects.equals(actual.getTypeOfAccount().name(), ccdBankAccount.getTypeOfAccount().name())) {
-            failWithMessage("Expected Address.line3 to be <%s> but was <%s>",
+            failWithMessage("Expected BankAccount.typeOfAccount to be <%s> but was <%s>",
                 ccdBankAccount.getTypeOfAccount().name(), actual.getTypeOfAccount().name());
         }
 

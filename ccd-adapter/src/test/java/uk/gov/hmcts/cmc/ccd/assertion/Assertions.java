@@ -11,7 +11,10 @@ import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.DebtAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.DependantAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.EmployerAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.EmploymentAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.ExpenseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.SelfEmployedAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
@@ -60,7 +63,10 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployed;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 public class Assertions {
 
@@ -264,4 +270,15 @@ public class Assertions {
         return new EmploymentAssert(employment);
     }
 
+    public static IncomeAssert assertThat(Income income) {
+        return new IncomeAssert(income);
+    }
+
+    public static ExpenseAssert assertThat(Expense expense) {
+        return new ExpenseAssert(expense);
+    }
+
+    public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
+        return new StatementOfMeansAssert(statementOfMeans);
+    }
 }
