@@ -2,7 +2,7 @@
   "caseNumber": "000CM001",
   "issueDate": "26-Apr-2018",
   "courtFee": 40.00,
-  "alreadyPaid": 100.00,
+  "alreadyPaid": 10.00,
   "amountWithInterest": 80.89,
-  "paymentDeadline": "Fortnightly + 12/MAR/2020"
+  "paymentDeadline": "Monthly + 12-Mar-2200"
 }
