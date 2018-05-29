@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -45,12 +48,16 @@ public class DefendantResponseServiceTest {
     @Mock
     private ClaimService claimService;
 
+    @Mock
+    private AppInsights appInsights;
+
     @Before
     public void setup() {
         responseService = new DefendantResponseService(
             eventProducer,
             claimService,
-            userService
+            userService,
+            appInsights
         );
     }
 
@@ -71,6 +78,9 @@ public class DefendantResponseServiceTest {
         //then
         verify(eventProducer, once())
             .createDefendantResponseEvent(eq(claim));
+
+        verify(appInsights, once())
+            .trackEvent(any(AppInsightsEvent.class), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = DefendantLinkingException.class)

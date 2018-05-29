@@ -2,12 +2,19 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
 
 @Service
 public class DefendantResponseService {
@@ -15,15 +22,18 @@ public class DefendantResponseService {
     private final EventProducer eventProducer;
     private final ClaimService claimService;
     private final UserService userService;
+    private final AppInsights appInsights;
 
     public DefendantResponseService(
         EventProducer eventProducer,
         ClaimService claimService,
-        UserService userService
+        UserService userService,
+        AppInsights appInsights
     ) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
+        this.appInsights = appInsights;
     }
 
     @Transactional
@@ -56,6 +66,9 @@ public class DefendantResponseService {
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 
+        appInsights.trackEvent(prepareAppInsightsEventName(response.getResponseType()), claim.getReferenceNumber());
+
+
         return claimAfterSavingResponse;
     }
 
@@ -69,5 +82,18 @@ public class DefendantResponseService {
 
     private boolean isCCJAlreadyRequested(Claim claim) {
         return claim.getCountyCourtJudgmentRequestedAt() != null;
+    }
+
+    private AppInsightsEvent prepareAppInsightsEventName(ResponseType responseType) {
+        switch (responseType) {
+            case FULL_ADMISSION:
+                return RESPONSE_FULL_ADMISSION_SUBMITTED;
+            case PART_ADMISSION:
+                return RESPONSE_PART_ADMISSION_SUBMITTED;
+            case FULL_DEFENCE:
+                return RESPONSE_FULL_DEFENCE_SUBMITTED;
+            default:
+                throw new IllegalArgumentException("Invalid response type " + responseType);
+        }
     }
 }
