@@ -131,7 +131,7 @@ public class CoreCaseDataService {
 
         CaseDetails caseDetails = update(authorisation, ccdCase, SUBMIT_POST_PAYMENT);
 
-        if (isRepresented) {
+        if (!isRepresented) {
             grantAccessToCase(caseDetails, claim.getLetterHolderId());
         }
 
