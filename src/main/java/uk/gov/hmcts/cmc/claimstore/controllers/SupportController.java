@@ -109,9 +109,7 @@ public class SupportController {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
-            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
-
-            String fullName = userService.getUserDetails(authorisation).getFullName();
+            String fullName = claim.getClaimData().getClaimant().getName();
 
             documentGenerator.generateForNonRepresentedClaim(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)

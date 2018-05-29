@@ -135,4 +135,9 @@ public class DBCaseRepository implements CaseRepository {
             .getClaimByExternalId(claim.getExternalId())
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
     }
+
+    @Override
+    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation) {
+        return claimRepository.getByClaimReferenceNumber(reference);
+    }
 }

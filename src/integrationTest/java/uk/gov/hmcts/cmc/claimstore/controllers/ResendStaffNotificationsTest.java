@@ -43,7 +43,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class ResendStaffNotificationsTest extends BaseIntegrationTest {
-
     @MockBean
     protected SendLetterApi sendLetterApi;
 
@@ -55,7 +54,10 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
 
-        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
+        UserDetails userDetails = SampleUserDetails.getDefault();
+        User user = new User(BEARER_TOKEN, userDetails);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
+        given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
     }
 
     @Test

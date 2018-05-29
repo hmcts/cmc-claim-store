@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -104,8 +105,11 @@ public class ClaimService {
     }
 
     public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
-        return claimRepository
-            .getByClaimReferenceNumberAnonymous(reference);
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+
+        return caseRepository
+            .getByClaimReferenceNumberAnonymous(reference, authorisation);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
@@ -242,10 +246,6 @@ public class ClaimService {
 
     public void linkDefendantToClaim(String authorisation) {
         caseRepository.linkDefendant(authorisation);
-    }
-
-    public void linkLetterHolder(Long claimId, String userId) {
-        claimRepository.linkLetterHolder(claimId, userId);
     }
 
     public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {

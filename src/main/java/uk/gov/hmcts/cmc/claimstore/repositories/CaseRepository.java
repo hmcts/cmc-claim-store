@@ -33,5 +33,8 @@ public interface CaseRepository {
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
 
     Claim saveClaim(String authorisation, Claim claim);
+
+    // Remove this method once DB implementation is gone, CCD implementation can use #getByClaimReferenceNumber
+    Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation);
 }
 
