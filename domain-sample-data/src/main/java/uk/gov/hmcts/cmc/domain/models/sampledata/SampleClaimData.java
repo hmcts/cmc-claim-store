@@ -200,6 +200,7 @@ public class SampleClaimData {
 
     public static SampleClaimData submittedByClaimantBuilder() {
         return builder()
+            .withExternalId(UUID.randomUUID())
             .withFeeAccountNumber(null)
             .withStatementOfTruth(null)
             .withPersonalInjury(null)
