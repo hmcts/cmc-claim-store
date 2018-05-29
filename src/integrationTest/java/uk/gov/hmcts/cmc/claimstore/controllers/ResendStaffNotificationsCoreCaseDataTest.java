@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,9 +83,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
                 "state", "open",
                 "sortDirection", "desc"))
             )
-        ).willReturn(listOfCaseDetails());
+        ).willReturn(Collections.emptyList());
 
-        makeRequest(nonExistingClaimReference, "claim-issue").andExpect(status().isNotFound());
+        makeRequest(nonExistingClaimReference, "claim-submitted-post-payment").andExpect(status().isNotFound());
         verify(emailService, never()).sendEmail(any(), any());
     }
 
@@ -122,7 +123,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             )
         ).willReturn(listOfCaseDetailsWithDefendant());
 
-        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "claim-submitted-post-payment").andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -145,7 +146,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         given(userService.generatePin(anyString(), eq(AUTHORISATION_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
-        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "claim-submitted-post-payment").andExpect(status().isOk());
 
         verify(emailService, times(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
