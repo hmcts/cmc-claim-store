@@ -17,7 +17,7 @@ variable "idam_api_url" {
 }
 
 variable "frontend_url" {
-  default = "https://moneyclaim.nonprod.platform.hmcts.net"
+  default = "https://cmc-citizen-frontend-saat-staging.service.core-compute-saat.internal"
 }
 
 variable "respond_to_claim_url" {
