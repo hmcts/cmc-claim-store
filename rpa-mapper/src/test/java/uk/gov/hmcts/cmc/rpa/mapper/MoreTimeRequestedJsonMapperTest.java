@@ -42,7 +42,6 @@ public class MoreTimeRequestedJsonMapperTest {
             .withReferenceNumber(REFERENCE_NUMBER)
             .withIssuedOn(LocalDate.of(2018, 4, 10))
             .withResponseDeadline(LocalDate.of(2018, 5, 27))
-            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
         String expected = new ResourceReader().read(INPUT).trim();

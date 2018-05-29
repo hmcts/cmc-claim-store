@@ -23,13 +23,13 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSu
 @SuppressWarnings({"LineLength"})
 public class SealedClaimJsonMapper {
 
-    private final AddressJsonMapper mapAddress;
-    private final DefendantJsonMapper mapDefendant;
+    private final AddressJsonMapper addressMapper;
+    private final DefendantJsonMapper defenceMapper;
 
     @Autowired
-    public SealedClaimJsonMapper(AddressJsonMapper mapAddress, DefendantJsonMapper mapDefendant) {
-        this.mapAddress = mapAddress;
-        this.mapDefendant = mapDefendant;
+    public SealedClaimJsonMapper(AddressJsonMapper addressMapper, DefendantJsonMapper defenceMapper) {
+        this.addressMapper = addressMapper;
+        this.defenceMapper = defenceMapper;
     }
 
     public JsonObject map(Claim claim) {
@@ -41,7 +41,7 @@ public class SealedClaimJsonMapper {
             .add("amountWithInterest", claim.getTotalAmountTillToday().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
-            .add("defendants", mapDefendant.mapDefendants(claim.getClaimData().getDefendants()))
+            .add("defendants", defenceMapper.mapDefendants(claim.getClaimData().getDefendants()))
             .build();
     }
 
@@ -50,8 +50,8 @@ public class SealedClaimJsonMapper {
             .map(claimant -> new NullAwareJsonObjectBuilder()
                 .add("type", claimant.getClass().getSimpleName())
                 .add("name", claimant.getName())
-                .add("address", mapAddress.mapAddress(claimant.getAddress()))
-                .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(mapAddress::mapAddress).orElse(null))
+                .add("address", addressMapper.mapAddress(claimant.getAddress()))
+                .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(addressMapper::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getMobilePhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
                 .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, SoleTrader::getBusinessName))
