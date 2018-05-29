@@ -2,9 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain.response;
 
 public enum CCDDefenceType {
     DISPUTE("dispute"),
-    ALREADY_PAID("already paid"),
-    PART_ADMISSION("reject part of the claim"),
-    FULL_ADMISSION("admit all of the claim");
+    ALREADY_PAID("already paid");
 
     private String value;
 
