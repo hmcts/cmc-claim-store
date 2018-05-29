@@ -29,7 +29,7 @@ public class MoreTimeRequestedJsonMapperTest {
     @Autowired
     private MoreTimeRequestedJsonMapper mapper;
     private static String REFERENCE_NUMBER = "000MC001";
-    private static String INPUT = "/rpa_more_time_requested.json";
+    private static String INPUT = "/rpa_more_time_requested_forthwith.json";
 
     @Test
     public void shouldMapIndividualForMoreTimeRequested() throws JSONException {

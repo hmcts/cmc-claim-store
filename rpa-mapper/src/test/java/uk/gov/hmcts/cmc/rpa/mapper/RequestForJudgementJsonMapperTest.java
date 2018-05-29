@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -29,7 +28,7 @@ public class RequestForJudgementJsonMapperTest {
     @Autowired
     private RequestForJudgementJsonMapper mapper;
     private static String REFERENCE_NUMBER = "000MC001";
-    private static String INPUT = "/rpa_request_for_judgement.json";
+    private static String INPUT = "/defaultJudgement/rpa_request_for_judgement_forthwith.json";
 
     @Test
     public void shouldMapIndividualForRequestForJudgement() throws JSONException {

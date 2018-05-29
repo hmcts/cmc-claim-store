@@ -15,14 +15,6 @@ import java.util.Locale;
 
 import static java.util.Objects.requireNonNull;
 
-/*
-*           case number
-*           date of issue
-amount claimed including interest
-*           court fee
-amount already paid
-payment deadline
- */
 @Component
 public class RequestForJudgementJsonMapper {
 
@@ -37,21 +29,20 @@ public class RequestForJudgementJsonMapper {
     }
 
     private String getPaymentDeadline(CountyCourtJudgment countyCourtJudgment) {
-        String value;
         switch (countyCourtJudgment.getPaymentOption()) {
             case IMMEDIATELY:
                 return "Forthwith";
             case FULL_BY_SPECIFIED_DATE:
                 return "In Full by (" + DateFormatter.format(countyCourtJudgment.getPayBySetDate().get()) + ")";
             case INSTALMENTS:
-                return getInstallmentValues(countyCourtJudgment.getRepaymentPlan().get());
+                return getRepaymentSchedule(countyCourtJudgment.getRepaymentPlan().get());
             default:
                 throw new IllegalArgumentException("No payment option selected");
 
         }
     }
 
-    private String getInstallmentValues(RepaymentPlan repaymentPlan) {
+    private String getRepaymentSchedule(RepaymentPlan repaymentPlan) {
         PaymentSchedule paymentSchedule = repaymentPlan.getPaymentSchedule();
         String firstPaymentDate = DateFormatter.format(repaymentPlan.getFirstPaymentDate());
         switch (paymentSchedule) {
