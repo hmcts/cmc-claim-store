@@ -71,6 +71,6 @@ public class UserDetails {
 
     @JsonIgnore
     public boolean isCaseworker() {
-        return false;
+        return roles.stream().anyMatch("caseworker-cmc"::equals);
     }
 }

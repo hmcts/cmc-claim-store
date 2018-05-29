@@ -315,7 +315,7 @@ public class CCDCaseApi {
 
     private int getTotalPagesCount(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
         int result;
-        if (user.getUserDetails().isSolicitor()) {
+        if (user.getUserDetails().isSolicitor() || user.getUserDetails().isCaseworker()) {
             result = coreCaseDataApi
                 .getPaginationInfoForSearchForCaseworkers(
                     user.getAuthorisation(),
