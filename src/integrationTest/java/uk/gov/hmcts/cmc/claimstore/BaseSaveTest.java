@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore;
 
 import org.junit.Before;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -43,9 +44,17 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
     protected ResultActions makeRequest(ClaimData claimData) throws Exception {
         return webClient
             .perform(post("/claims/" + USER_ID)
-                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(claimData))
+            );
+    }
+
+    protected ResultActions makeRequestPrePayment(String externalId) throws Exception {
+        return webClient
+            .perform(post("/claims/" + externalId + "/pre-payment")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }
 }

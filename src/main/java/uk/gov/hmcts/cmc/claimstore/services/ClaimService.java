@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -18,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -57,12 +57,12 @@ public class ClaimService {
     @Autowired
     public ClaimService(
         ClaimRepository claimRepository,
+        CaseRepository caseRepository,
         UserService userService,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
-        EventProducer eventProducer,
-        CaseRepository caseRepository,
         MoreTimeRequestRule moreTimeRequestRule,
+        EventProducer eventProducer,
         AppInsights appInsights,
         CCDCaseDataToClaim ccdCaseDataToClaim
     ) {
@@ -121,13 +121,15 @@ public class ClaimService {
         return caseRepository.getByDefendantId(id, authorisation);
     }
 
+    public CaseReference savePrePayment(String externalId, String authorisation) {
+        return caseRepository.savePrePaymentClaim(externalId, authorisation);
+    }
+
     @Transactional
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
-            throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
-        });
+        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
 
         LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
@@ -142,7 +144,8 @@ public class ClaimService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String submitterEmail = userDetails.getEmail();
 
-        final Claim claim = Claim.builder()
+        Claim claim = Claim.builder()
+            .id(prePaymentClaimId)
             .claimData(claimData)
             .submitterId(submitterId)
             .issuedOn(issuedOn)
@@ -163,7 +166,8 @@ public class ClaimService {
         );
 
         Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
-        trackClaimIssued(retrievedClaim.getReferenceNumber(), claim.getClaimData().isClaimantRepresented());
+        trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
+
         return retrievedClaim;
     }
 

@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -37,6 +39,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return ccdCaseApi.getByExternalId(externalId, authorisation);
+    }
+
+    @Override
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+        return ccdCaseApi.getOnHoldIdByExternalId(externalId, authorisation);
     }
 
     @Override
@@ -94,8 +101,17 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
+        try {
+            return new CaseReference(getOnHoldIdByExternalId(externalId, authorisation).toString());
+        } catch (NotFoundException e) {
+            return coreCaseDataService.savePrePayment(externalId, authorisation);
+        }
+    }
+
+    @Override
     public Claim saveClaim(String authorisation, Claim claim) {
-        return coreCaseDataService.save(authorisation, claim);
+        return coreCaseDataService.submitPostPayment(authorisation, claim);
     }
 
     @Override
