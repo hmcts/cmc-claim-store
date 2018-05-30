@@ -70,13 +70,13 @@ data "vault_generic_secret" "oauth_client_secret" {
   path = "secret/${var.vault_section}/ccidam/idam-api/oauth2/client-secrets/cmc-citizen"
 }
 
-module "quartz-store-db" {
+module "scheduler" {
   source = "git@github.com:hmcts/moj-module-postgres?ref=cnp-449-tactical"
-  product = "quartz-postgres-db"
+  product = "${var.product}-scheduler"
   location = "${var.location}"
   env = "${var.env}"
-  postgresql_user = "quartzStore"
-  database_name = "quartzStore"
+  postgresql_user = "scheduler"
+  database_name = "scheduler"
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
   storage_mb = "51200"
