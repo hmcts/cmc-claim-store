@@ -40,7 +40,7 @@ public class ResponseMapper implements Mapper<CCDResponse, Response> {
             case FULL_ADMISSION:
                 FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
                 builder.responseType(FULL_ADMISSION)
-                    .ccdFullAdmissionResponse(fullAdmissionResponseMapper.to(fullAdmissionResponse));
+                    .fullAdmissionResponse(fullAdmissionResponseMapper.to(fullAdmissionResponse));
                 break;
             default:
                 throw new MappingException("Invalid responseType " + response.getResponseType());
@@ -55,7 +55,7 @@ public class ResponseMapper implements Mapper<CCDResponse, Response> {
             case FULL_DEFENCE:
                 return fullDefenceResponseMapper.from(ccdResponse.getFullDefenceResponse());
             case FULL_ADMISSION:
-                return fullAdmissionResponseMapper.from(ccdResponse.getCcdFullAdmissionResponse());
+                return fullAdmissionResponseMapper.from(ccdResponse.getFullAdmissionResponse());
             default:
                 throw new MappingException("Invalid responseType " + ccdResponse.getResponseType());
         }
