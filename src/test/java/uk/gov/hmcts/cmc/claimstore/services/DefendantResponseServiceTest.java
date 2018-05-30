@@ -19,12 +19,19 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -126,5 +133,23 @@ public class DefendantResponseServiceTest {
             .thenReturn(SampleClaim.builder().withCountyCourtJudgmentRequestedAt(LocalDateTime.now()).build());
 
         responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
+    }
+
+    @Test
+    public void getAppInsightsEventNameShouldReturnFullDefence() {
+        assertThat(responseService.getAppInsightsEventName(FULL_DEFENCE))
+            .isEqualTo(RESPONSE_FULL_DEFENCE_SUBMITTED);
+    }
+
+    @Test
+    public void getAppInsightsEventNameShouldReturnFullAdmission() {
+        assertThat(responseService.getAppInsightsEventName(FULL_ADMISSION))
+            .isEqualTo(RESPONSE_FULL_ADMISSION_SUBMITTED);
+    }
+
+    @Test
+    public void getAppInsightsEventNameShouldReturnPartAdmission() {
+        assertThat(responseService.getAppInsightsEventName(PART_ADMISSION))
+            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED);
     }
 }

@@ -66,10 +66,23 @@ public class DefendantResponseService {
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 
-        appInsights.trackEvent(prepareAppInsightsEventName(response.getResponseType()), claim.getReferenceNumber());
+        appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()), claim.getReferenceNumber());
 
 
         return claimAfterSavingResponse;
+    }
+
+    public AppInsightsEvent getAppInsightsEventName(ResponseType responseType) {
+        switch (responseType) {
+            case FULL_ADMISSION:
+                return RESPONSE_FULL_ADMISSION_SUBMITTED;
+            case PART_ADMISSION:
+                return RESPONSE_PART_ADMISSION_SUBMITTED;
+            case FULL_DEFENCE:
+                return RESPONSE_FULL_DEFENCE_SUBMITTED;
+            default:
+                throw new IllegalArgumentException("Invalid response type " + responseType);
+        }
     }
 
     private boolean isClaimLinkedWithDefendant(Claim claim, String defendantId) {
@@ -84,16 +97,4 @@ public class DefendantResponseService {
         return claim.getCountyCourtJudgmentRequestedAt() != null;
     }
 
-    private AppInsightsEvent prepareAppInsightsEventName(ResponseType responseType) {
-        switch (responseType) {
-            case FULL_ADMISSION:
-                return RESPONSE_FULL_ADMISSION_SUBMITTED;
-            case PART_ADMISSION:
-                return RESPONSE_PART_ADMISSION_SUBMITTED;
-            case FULL_DEFENCE:
-                return RESPONSE_FULL_DEFENCE_SUBMITTED;
-            default:
-                throw new IllegalArgumentException("Invalid response type " + responseType);
-        }
-    }
 }
