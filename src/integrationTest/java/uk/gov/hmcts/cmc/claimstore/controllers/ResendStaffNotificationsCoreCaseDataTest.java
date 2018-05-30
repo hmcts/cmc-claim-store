@@ -52,7 +52,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
     private static final String PAGE = "1";
 
     @MockBean
-    protected SendLetterApi sendLetterApi;
+    private SendLetterApi sendLetterApi;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
