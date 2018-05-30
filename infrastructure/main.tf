@@ -70,6 +70,18 @@ data "vault_generic_secret" "oauth_client_secret" {
   path = "secret/${var.vault_section}/ccidam/idam-api/oauth2/client-secrets/cmc-citizen"
 }
 
+module "quartz-store-db" {
+  source = "git@github.com:hmcts/moj-module-postgres?ref=cnp-449-tactical"
+  product = "quartz-postgres-db"
+  location = "${var.location}"
+  env = "${var.env}"
+  postgresql_user = "quartzStore"
+  database_name = "quartzStore"
+  sku_name = "GP_Gen5_2"
+  sku_tier = "GeneralPurpose"
+  storage_mb = "51200"
+}
+
 module "claim-store-api" {
   source = "git@github.com:hmcts/moj-module-webapp.git?ref=RPE-389/local-cache"
   product = "${var.product}-${var.microservice}"
