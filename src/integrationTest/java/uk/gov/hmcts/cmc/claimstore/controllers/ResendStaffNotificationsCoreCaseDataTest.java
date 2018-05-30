@@ -72,20 +72,21 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
-        String nonExistingClaimReference = "nonExistingCaseReference";
+        String nonExistingCaseReference = "something";
 
-        givenSearchByReferenceNumberReturns(nonExistingClaimReference, Collections.emptyList());
+        givenSearchByReferenceNumberReturns(nonExistingCaseReference, Collections.emptyList());
 
-        makeRequest(nonExistingClaimReference, "claim-issued").andExpect(status().isNotFound());
+        makeRequest(nonExistingCaseReference, "claim-issued").andExpect(status().isNotFound());
+
         verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
-
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, "non-existing-event").andExpect(status().isNotFound());
+
         verify(emailService, never()).sendEmail(any(), any());
     }
 
@@ -101,8 +102,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
     @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
-        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
-        given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
+        given(userService.generatePin(anyString(), eq(BEARER_TOKEN)))
+            .willReturn(new GeneratePinResponse("pin-123", "333"));
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
@@ -181,28 +182,24 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
     }
 
-    private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
-        return webClient
-            .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
-    }
-
-    private void givenSearchByReferenceNumberReturns(
-        String nonExistingClaimReference,
-        List<CaseDetails> caseDetails
-    ) {
+    private void givenSearchByReferenceNumberReturns(String caseReference, List<CaseDetails> cases) {
         given(coreCaseDataApi.searchForCaseworker(
             any(),
             any(),
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.referenceNumber", nonExistingClaimReference,
+            eq(ImmutableMap.of("case.referenceNumber", caseReference,
                 "page", PAGE,
                 "state", "open",
                 "sortDirection", "desc"))
             )
-        ).willReturn(caseDetails);
+        ).willReturn(cases);
     }
 
+    private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
+        return webClient
+            .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+    }
 }
