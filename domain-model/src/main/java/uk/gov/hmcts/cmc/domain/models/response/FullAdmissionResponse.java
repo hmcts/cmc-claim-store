@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
@@ -33,6 +34,7 @@ public class FullAdmissionResponse extends Response {
     @Valid
     private final StatementOfMeans statementOfMeans;
 
+    @Builder
     public FullAdmissionResponse(
         YesNoOption freeMediation,
         YesNoOption moreTimeNeeded,

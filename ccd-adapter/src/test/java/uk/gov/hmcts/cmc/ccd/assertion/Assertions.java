@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantEvidenceAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantTimelineAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.FullAdmissionResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.FullDefenceResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.ResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.BankAccountAssert;
@@ -54,6 +55,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
@@ -281,4 +283,9 @@ public class Assertions {
     public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
         return new StatementOfMeansAssert(statementOfMeans);
     }
+
+    public static FullAdmissionResponseAssert assertThat(FullAdmissionResponse fullAdmissionResponse) {
+        return new FullAdmissionResponseAssert(fullAdmissionResponse);
+    }
+
 }

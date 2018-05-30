@@ -57,8 +57,9 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
 
     @Override
     public FullAdmissionResponse from(CCDFullAdmissionResponse ccdFullAdmissionResponse) {
+        CCDYesNoOption ccdFreeMediation = ccdFullAdmissionResponse.getFreeMediationOption();
         return new FullAdmissionResponse(
-            YesNoOption.valueOf(ccdFullAdmissionResponse.getFreeMediationOption().name()),
+            ccdFreeMediation != null ? YesNoOption.valueOf(ccdFreeMediation.name()) : null,
             YesNoOption.valueOf(ccdFullAdmissionResponse.getMoreTimeNeededOption().name()),
             partyMapper.from(ccdFullAdmissionResponse.getDefendant()),
             statementOfTruthMapper.from(ccdFullAdmissionResponse.getStatementOfTruth()),
