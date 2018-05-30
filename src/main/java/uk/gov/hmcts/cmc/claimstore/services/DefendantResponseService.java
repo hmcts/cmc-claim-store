@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
@@ -67,11 +68,12 @@ public class DefendantResponseService {
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 
         appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()), claim.getReferenceNumber());
-        
+
         return claimAfterSavingResponse;
     }
 
     public AppInsightsEvent getAppInsightsEventName(ResponseType responseType) {
+        requireNonNull(responseType, "responseType must not be null");
         switch (responseType) {
             case FULL_ADMISSION:
                 return RESPONSE_FULL_ADMISSION_SUBMITTED;

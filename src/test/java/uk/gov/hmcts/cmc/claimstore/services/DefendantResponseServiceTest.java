@@ -152,4 +152,9 @@ public class DefendantResponseServiceTest {
         assertThat(responseService.getAppInsightsEventName(PART_ADMISSION))
             .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED);
     }
+
+    @Test(expected = NullPointerException.class)
+    public void getAppInsightsEventNameShouldThrowNullPointerExceptionForNullInput() {
+        responseService.getAppInsightsEventName(null);
+    }
 }
