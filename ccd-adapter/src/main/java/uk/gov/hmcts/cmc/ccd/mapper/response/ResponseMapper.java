@@ -2,98 +2,50 @@ package uk.gov.hmcts.cmc.ccd.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
-import uk.gov.hmcts.cmc.ccd.mapper.DefendantEvidenceMapper;
+import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.PaymentDeclarationMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
-import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+
+import static uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType.FULL_DEFENCE;
 
 @Component
-public class ResponseMapper implements Mapper<CCDResponse, FullDefenceResponse> {
+public class ResponseMapper implements Mapper<CCDResponse, Response> {
 
-    private final StatementOfTruthMapper statementOfTruthMapper;
-    private final PartyMapper partyMapper;
-    private final PaymentDeclarationMapper paymentDeclarationMapper;
-    private final DefendantTimelineMapper timelineMapper;
-    private final DefendantEvidenceMapper evidenceMapper;
+    private final FullDefenceResponseMapper fullDefenceResponseMapper;
 
     @Autowired
-    public ResponseMapper(
-        StatementOfTruthMapper statementOfTruthMapper,
-        PartyMapper partyMapper,
-        PaymentDeclarationMapper paymentDeclarationMapper,
-        DefendantTimelineMapper timelineMapper,
-        DefendantEvidenceMapper evidenceMapper
-    ) {
-
-        this.statementOfTruthMapper = statementOfTruthMapper;
-        this.partyMapper = partyMapper;
-        this.paymentDeclarationMapper = paymentDeclarationMapper;
-        this.timelineMapper = timelineMapper;
-        this.evidenceMapper = evidenceMapper;
+    public ResponseMapper(FullDefenceResponseMapper fullDefenceResponseMapper) {
+        this.fullDefenceResponseMapper = fullDefenceResponseMapper;
     }
 
     @Override
-    public CCDResponse to(FullDefenceResponse response) {
+    public CCDResponse to(Response response) {
+
         CCDResponse.CCDResponseBuilder builder = CCDResponse.builder();
-
-        response.getFreeMediation()
-            .ifPresent(freeMediation -> builder.freeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
-
-        if (response.getMoreTimeNeeded() == null) {
-            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(Response.MoreTimeNeededOption.NO.name()));
-        } else {
-            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
+                builder.responseType(FULL_DEFENCE)
+                    .fullDefenceResponse(fullDefenceResponseMapper.to(fullDefenceResponse));
+                break;
+            default:
+                throw new MappingException("Invalid responseType " + response.getResponseType());
         }
-
-        builder.defendant(partyMapper.to(response.getDefendant()));
-
-        response.getStatementOfTruth()
-            .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
-
-        builder.responseType(CCDDefenceType.valueOf(response.getDefenceType().name()));
-        response.getDefence().ifPresent(builder::defence);
-
-        response.getPaymentDeclaration().ifPresent(paymentDeclaration ->
-            builder.paymentDeclaration(paymentDeclarationMapper.to(paymentDeclaration)));
-
-        response.getTimeline().ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
-
-        response.getEvidence().ifPresent(evidence -> builder.evidence(evidenceMapper.to(evidence)));
 
         return builder.build();
     }
 
     @Override
-    public FullDefenceResponse from(CCDResponse response) {
-        Response.FreeMediationOption freeMediation = null;
-
-        if (response.getFreeMediationOption() != null) {
-            freeMediation = Response.FreeMediationOption.valueOf(response.getFreeMediationOption().name());
+    public Response from(CCDResponse ccdResponse) {
+        switch (ccdResponse.getResponseType()) {
+            case FULL_DEFENCE:
+                CCDFullDefenceResponse fullDefenceResponse = ccdResponse.getFullDefenceResponse();
+                return fullDefenceResponseMapper.from(fullDefenceResponse);
+            default:
+                throw new MappingException("Invalid responseType " + ccdResponse.getResponseType());
         }
-
-        StatementOfTruth statementOfTruth = null;
-
-        if (response.getStatementOfTruth() != null) {
-            statementOfTruth = statementOfTruthMapper.from(response.getStatementOfTruth());
-        }
-
-        return new FullDefenceResponse(
-            freeMediation,
-            Response.MoreTimeNeededOption.valueOf(response.getMoreTimeNeededOption().name()),
-            partyMapper.from(response.getDefendant()),
-            statementOfTruth,
-            FullDefenceResponse.DefenceType.valueOf(response.getResponseType().name()),
-            response.getDefence(),
-            paymentDeclarationMapper.from(response.getPaymentDeclaration()),
-            timelineMapper.from(response.getTimeline()),
-            evidenceMapper.from(response.getEvidence())
-        );
     }
 }

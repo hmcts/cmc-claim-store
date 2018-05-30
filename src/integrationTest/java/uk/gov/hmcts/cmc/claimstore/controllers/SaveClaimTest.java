@@ -29,6 +29,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
@@ -47,7 +48,22 @@ public class SaveClaimTest extends BaseSaveTest {
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     @Test
-    public void shouldReturnNewlyCreatedClaim() throws Exception {
+    public void shouldReturnNewlyCreatedClaimWhenPrePaymentCalledDbEnv() throws Exception {
+        ClaimData claimData = SampleClaimData.submittedByClaimant();
+
+        makeRequestPrePayment(claimData.getExternalId().toString()).andExpect(status().isOk());
+
+        MvcResult result = makeRequest(claimData)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getClaimData)
+            .contains(claimData);
+    }
+
+    @Test
+    public void shouldReturnNewlyCreatedClaimWhenPrePaymentNotCalledDbEnv() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
         MvcResult result = makeRequest(claimData)
@@ -115,7 +131,8 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+        verify(emailService, atLeast(2))
+            .sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
@@ -135,7 +152,8 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
-        verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+        verify(emailService, once())
+            .sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");

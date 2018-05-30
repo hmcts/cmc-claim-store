@@ -6,15 +6,15 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 public class RespondToClaimTest extends BaseTest {
 
@@ -29,7 +29,7 @@ public class RespondToClaimTest extends BaseTest {
     public void shouldBeAbleToSuccessfullySubmitDisputeDefence() {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
-            .withDefenceType(FullDefenceResponse.DefenceType.DISPUTE)
+            .withDefenceType(DefenceType.DISPUTE)
             .build();
         shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
     }
@@ -37,7 +37,7 @@ public class RespondToClaimTest extends BaseTest {
     @Test
     public void shouldBeAbleToSuccessfullySubmitAlreadyPaidDefence() {
         Response fullDefenceAlreadyPaidResponse = SampleResponse.FullDefence.builder()
-            .withDefenceType(FullDefenceResponse.DefenceType.ALREADY_PAID)
+            .withDefenceType(DefenceType.ALREADY_PAID)
             .withMediation(null)
             .build();
         shouldBeAbleToSuccessfullySubmit(fullDefenceAlreadyPaidResponse);
@@ -52,7 +52,7 @@ public class RespondToClaimTest extends BaseTest {
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         commonOperations.linkDefendant(
-            createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
+            defendant.getAuthorisation()
         );
 
         Claim updatedCase = commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
@@ -63,8 +63,7 @@ public class RespondToClaimTest extends BaseTest {
 
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
-        assertThat(updatedCase.getRespondedAt()).isCloseTo(LocalDateTimeFactory.nowInLocalZone(),
-            within(2, ChronoUnit.MINUTES));
+        assertThat(updatedCase.getRespondedAt()).isCloseTo(nowInLocalZone(), within(2, ChronoUnit.MINUTES));
     }
 
     @Test
@@ -77,7 +76,7 @@ public class RespondToClaimTest extends BaseTest {
 
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         commonOperations.linkDefendant(
-            createdCase.getExternalId(), defendant.getUserDetails().getId(), defendant.getAuthorisation()
+            defendant.getAuthorisation()
         );
 
         Response invalidResponse = SampleResponse.FullDefence.builder()

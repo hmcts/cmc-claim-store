@@ -1,7 +1,6 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -23,24 +22,12 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 })
 public abstract class Response {
 
-    public enum FreeMediationOption {
-        @JsonProperty("yes")
-        YES,
-        @JsonProperty("no")
-        NO
-    }
+    private final ResponseType responseType;
 
-    public enum MoreTimeNeededOption {
-        @JsonProperty("yes")
-        YES,
-        @JsonProperty("no")
-        NO
-    }
-
-    private final FreeMediationOption freeMediation;
+    private final YesNoOption freeMediation;
 
     @JsonUnwrapped
-    private final MoreTimeNeededOption moreTimeNeeded;
+    private final YesNoOption moreTimeNeeded;
 
     @Valid
     @NotNull
@@ -50,22 +37,28 @@ public abstract class Response {
     private final StatementOfTruth statementOfTruth;
 
     public Response(
-            FreeMediationOption freeMediation,
-            MoreTimeNeededOption moreTimeNeeded,
-            Party defendant,
-            StatementOfTruth statementOfTruth
+        ResponseType responseType,
+        YesNoOption freeMediation,
+        YesNoOption moreTimeNeeded,
+        Party defendant,
+        StatementOfTruth statementOfTruth
     ) {
+        this.responseType = responseType;
         this.freeMediation = freeMediation;
         this.moreTimeNeeded = moreTimeNeeded;
         this.defendant = defendant;
         this.statementOfTruth = statementOfTruth;
     }
 
-    public Optional<FreeMediationOption> getFreeMediation() {
+    public ResponseType getResponseType() {
+        return responseType;
+    }
+
+    public Optional<YesNoOption> getFreeMediation() {
         return Optional.ofNullable(freeMediation);
     }
 
-    public MoreTimeNeededOption getMoreTimeNeeded() {
+    public YesNoOption getMoreTimeNeeded() {
         return moreTimeNeeded;
     }
 
@@ -89,7 +82,8 @@ public abstract class Response {
         }
 
         Response that = (Response) other;
-        return Objects.equals(freeMediation, that.freeMediation)
+        return Objects.equals(responseType, that.responseType)
+            && Objects.equals(freeMediation, that.freeMediation)
             && Objects.equals(moreTimeNeeded, that.moreTimeNeeded)
             && Objects.equals(defendant, that.defendant)
             && Objects.equals(statementOfTruth, that.statementOfTruth);
@@ -97,7 +91,7 @@ public abstract class Response {
 
     @Override
     public int hashCode() {
-        return Objects.hash(freeMediation, moreTimeNeeded, defendant);
+        return Objects.hash(responseType, freeMediation, moreTimeNeeded, defendant);
     }
 
     @Override

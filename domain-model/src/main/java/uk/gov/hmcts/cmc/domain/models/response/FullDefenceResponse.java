@@ -1,6 +1,7 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -11,24 +12,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class FullDefenceResponse extends Response {
-
-    public enum DefenceType {
-        DISPUTE("I dispute all the claim"),
-        ALREADY_PAID("I have paid what I believe I owe");
-
-        String description;
-
-        DefenceType(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return this.description;
-        }
-    }
 
     @NotNull
     private final DefenceType defenceType;
@@ -46,8 +33,8 @@ public class FullDefenceResponse extends Response {
     private final DefendantEvidence evidence;
 
     public FullDefenceResponse(
-        FreeMediationOption freeMediation,
-        MoreTimeNeededOption moreTimeNeeded,
+        YesNoOption freeMediation,
+        YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
         DefenceType defenceType,
@@ -56,7 +43,7 @@ public class FullDefenceResponse extends Response {
         DefendantTimeline timeline,
         DefendantEvidence evidence
     ) {
-        super(freeMediation, moreTimeNeeded, defendant, statementOfTruth);
+        super(FULL_DEFENCE, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.defenceType = defenceType;
         this.defence = defence;
         this.paymentDeclaration = paymentDeclaration;

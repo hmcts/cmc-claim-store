@@ -6,6 +6,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -36,19 +38,22 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_AUTH_TOKEN = "authDataString";
 
+
     private Claim claim;
 
     @Before
     public void beforeEachTest() {
-        when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(
-            SampleUserDetails.builder()
-                .withUserId(DEFENDANT_ID)
-                .build()
-        );
-
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
-        caseRepository.linkDefendantV1(claim.getExternalId(), DEFENDANT_ID, DEFENDANT_AUTH_TOKEN);
 
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withMail(DEFENDANT_EMAIL)
+            .withRoles("letter-" + claim.getLetterHolderId())
+            .build();
+
+        when(userService.getUserDetails(DEFENDANT_AUTH_TOKEN)).thenReturn(userDetails);
+        given(userService.getUser(DEFENDANT_AUTH_TOKEN)).willReturn(new User(DEFENDANT_AUTH_TOKEN, userDetails));
+        caseRepository.linkDefendant(DEFENDANT_AUTH_TOKEN);
     }
 
     @Test

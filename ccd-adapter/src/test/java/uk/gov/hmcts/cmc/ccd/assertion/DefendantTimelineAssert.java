@@ -4,8 +4,8 @@ import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefendantTimeline;
-import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 
 import java.util.List;
 import java.util.Objects;

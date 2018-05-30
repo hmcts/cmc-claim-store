@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefendantTimeline;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
-import uk.gov.hmcts.cmc.domain.models.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 
 import java.util.Objects;
 import java.util.stream.Collectors;

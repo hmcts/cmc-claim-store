@@ -33,7 +33,7 @@ public class InterestContentProviderTest {
     @Before
     public void beforeEachTest() {
         interest = claim.getClaimData().getInterest();
-        interestDate = claim.getClaimData().getInterestDate();
+        interestDate = claim.getClaimData().getInterest().getInterestDate();
         claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
         issuedOn = claim.getIssuedOn();
     }

@@ -3,32 +3,41 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
+import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Response;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_SUBMITTED;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
 public class ClaimService {
@@ -41,18 +50,20 @@ public class ClaimService {
     private final CaseRepository caseRepository;
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final AppInsights appInsights;
+    private final CCDCaseDataToClaim ccdCaseDataToClaim;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
     public ClaimService(
         ClaimRepository claimRepository,
+        CaseRepository caseRepository,
         UserService userService,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
-        EventProducer eventProducer,
-        CaseRepository caseRepository,
         MoreTimeRequestRule moreTimeRequestRule,
-        AppInsights appInsights
+        EventProducer eventProducer,
+        AppInsights appInsights,
+        CCDCaseDataToClaim ccdCaseDataToClaim
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -62,6 +73,7 @@ public class ClaimService {
         this.caseRepository = caseRepository;
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.appInsights = appInsights;
+        this.ccdCaseDataToClaim = ccdCaseDataToClaim;
     }
 
     public Claim getClaimById(long claimId) {
@@ -105,13 +117,15 @@ public class ClaimService {
         return caseRepository.getByDefendantId(id, authorisation);
     }
 
+    public CaseReference savePrePayment(String externalId, String authorisation) {
+        return caseRepository.savePrePaymentClaim(externalId, authorisation);
+    }
+
     @Transactional
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
-        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
-            throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
-        });
+        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
 
         LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
@@ -126,14 +140,15 @@ public class ClaimService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         String submitterEmail = userDetails.getEmail();
 
-        final Claim claim = Claim.builder()
+        Claim claim = Claim.builder()
+            .id(prePaymentClaimId)
             .claimData(claimData)
             .submitterId(submitterId)
             .issuedOn(issuedOn)
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(now())
+            .createdAt(nowInUTC())
             .letterHolderId(letterHolderId.orElse(null))
             .build();
 
@@ -147,7 +162,8 @@ public class ClaimService {
         );
 
         Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
-        trackClaimIssued(retrievedClaim.getReferenceNumber(), claim.getClaimData().isClaimantRepresented());
+        trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
+
         return retrievedClaim;
     }
 
@@ -176,15 +192,60 @@ public class ClaimService {
         return claim;
     }
 
-    /**
-     * Temporarily left in until CCD is enabled everywhere.
-     */
-    public Claim linkDefendantToClaimV1(String externalId, String defendantId, String authorisation) {
-        return caseRepository.linkDefendantV1(externalId, defendantId, authorisation);
+    @SuppressWarnings("unchecked")
+    public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
+        CallbackRequest callbackRequest,
+        boolean validateOnly
+    ) {
+        Claim claim = convertCallbackToClaim(callbackRequest);
+
+        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
+        AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
+            .builder();
+
+        if (validateOnly || !validationResult.isEmpty()) {
+            return builder
+                .errors(validationResult)
+                .build();
+        }
+
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+
+        Map<String, Object> data = new HashMap<>(((Map<String, Object>) callbackRequest.getCaseDetails()
+            .get("case_data"))
+        );
+        data.put("moreTimeRequested", CCDYesNoOption.YES);
+        data.put("responseDeadline", newDeadline);
+
+        return builder
+            .data(data)
+            .build();
     }
 
-    public void linkDefendantToClaimV2(String authorisation) {
-        caseRepository.linkDefendantV2(authorisation);
+    public SubmittedCallbackResponse requestMoreTimeOnPaperSubmitted(CallbackRequest callbackRequest) {
+        Claim claim = convertCallbackToClaim(callbackRequest);
+
+        eventProducer.createMoreTimeForResponseRequestedEvent(
+            claim,
+            claim.getResponseDeadline(),
+            claim.getClaimData().getDefendant().getEmail().orElse(null)
+        );
+        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, claim.getReferenceNumber());
+
+        return SubmittedCallbackResponse.builder()
+            .build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
+        return ccdCaseDataToClaim.to(
+            (long) caseDetails.getCaseDetails().get("id"),
+            (Map<String, Object>) caseDetails.getCaseDetails().get("case_data")
+        );
+    }
+
+    public void linkDefendantToClaim(String authorisation) {
+        caseRepository.linkDefendant(authorisation);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

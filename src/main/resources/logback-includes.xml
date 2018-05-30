@@ -1,3 +1,5 @@
-<appender name="aiAppender"
-          class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+<appender name="CMC" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+        <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{10}:%line: %msg%n</pattern>
+    </encoder>
 </appender>

@@ -2,8 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,15 +15,15 @@ public interface CaseRepository {
 
     Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
 
+    Long getOnHoldIdByExternalId(String externalId, String authorisation);
+
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
     void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
-    Claim linkDefendantV1(String externalId, String defendantId, String authorisation);
-
-    void linkDefendantV2(String authorisation);
+    void linkDefendant(String authorisation);
 
     List<Claim> getByDefendantId(String id, String authorisation);
 
@@ -33,6 +34,8 @@ public interface CaseRepository {
     void updateSettlement(Claim claim, Settlement settlement, String authorisation, String userAction);
 
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
+
+    CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
     Claim saveClaim(String authorisation, Claim claim);
 }

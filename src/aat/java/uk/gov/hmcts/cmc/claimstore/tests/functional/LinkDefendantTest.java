@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,66 +21,26 @@ public class LinkDefendantTest extends BaseTest {
     }
 
     @Test
-    public void shouldBeAbleToSuccessfullyLinkDefendantV1() {
+    public void shouldBeAbleToSuccessfullyLinkDefendant() {
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimant.getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createCitizen();
+        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
 
-        Claim claim = linkDefendantV1(defendant, createdCase.getExternalId())
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-
-        assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
-    }
-
-    @Test
-    @Ignore("Disabled due to not using CCD integration currently")
-    public void shouldBeAbleToSuccessfullyLinkDefendantOnCCD() {
-        Claim claim = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimant.getUserDetails().getId()
-        );
-
-        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
-
-        linkDefendantV2(defendant)
+        RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
+            .when()
+            .put("/claims/defendant/link")
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value());
 
-        Claim response = RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
-            .when()
-            .get("/claims/" + claim.getExternalId())
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
+        Claim claim = commonOperations.retrieveClaim(createdCase.getExternalId(), claimant.getAuthorisation());
 
-        assertThat(response.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
-    }
-
-    private Response linkDefendantV1(User defendant, String externalId) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
-            .when()
-            .put("/claims/" + externalId + "/defendant/" + defendant.getUserDetails().getId());
-    }
-
-    private Response linkDefendantV2(User defendant) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
-            .when()
-            .put("/claims/defendant/link");
+        assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
     }
 
 }

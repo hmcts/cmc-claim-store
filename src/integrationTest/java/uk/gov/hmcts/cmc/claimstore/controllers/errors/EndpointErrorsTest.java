@@ -85,12 +85,12 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void linkDefendantToClaimShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        String externalId = "2ab19d16-fddf-4494-a01a-f64f93d04782";
+        String defendantId = "2";
 
-        given(claimRepository.getClaimByExternalId(externalId)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getByDefendantId(defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(put("/claims/" + externalId + "/defendant/2")
+            .perform(get("/claims/defendant/" + defendantId)
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isInternalServerError());
     }
@@ -105,10 +105,10 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withDefendantId(null)
             .build();
         given(claimRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
-        given(claimRepository.linkDefendant(claim.getId(), defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.linkDefendant(claim.getLetterHolderId(), defendantId)).willThrow(UNEXPECTED_ERROR);
 
         webClient
-            .perform(put("/claims/" + externalId + "/defendant/" + defendantId)
+            .perform(put("/claims/defendant/link")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isInternalServerError());
     }

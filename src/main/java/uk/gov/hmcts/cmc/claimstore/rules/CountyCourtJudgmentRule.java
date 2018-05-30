@@ -1,15 +1,24 @@
 package uk.gov.hmcts.cmc.claimstore.rules;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.time.LocalDate;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
+
 @Service
 public class CountyCourtJudgmentRule {
+
+    private ClaimDeadlineService claimDeadlineService;
+
+    @Autowired
+    public CountyCourtJudgmentRule(ClaimDeadlineService claimDeadlineService) {
+        this.claimDeadlineService = claimDeadlineService;
+    }
 
     public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim) {
         Objects.requireNonNull(claim, "claim object can not be null");
@@ -22,15 +31,11 @@ public class CountyCourtJudgmentRule {
                 + claim.getExternalId() + " was submitted");
         }
 
-        if (!canCountyCourtJudgmentBeRequestedYet(claim)) {
+        if (!claimDeadlineService.isPastDeadline(nowInLocalZone(), claim.getResponseDeadline())) {
             throw new ForbiddenActionException(
                 "County Court Judgment for claim " + claim.getExternalId() + " cannot be requested yet"
             );
         }
-    }
-
-    private boolean canCountyCourtJudgmentBeRequestedYet(Claim claim) {
-        return LocalDate.now().isAfter(claim.getResponseDeadline());
     }
 
     private boolean isResponseAlreadySubmitted(Claim claim) {

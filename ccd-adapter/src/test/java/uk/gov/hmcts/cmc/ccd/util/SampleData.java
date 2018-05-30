@@ -22,6 +22,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.math.BigDecimal;
@@ -172,7 +177,6 @@ public class SampleData {
                     .build())
             .payment(getCCDPayment())
             .interest(getCCDInterest())
-            .interestDate(getCCDInterestDate())
             .statementOfTruth(getCCDStatementOfTruth())
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
@@ -197,6 +201,7 @@ public class SampleData {
             .rate(BigDecimal.valueOf(2))
             .reason("reason")
             .type(CCDInterestType.DIFFERENT)
+            .interestDate(getCCDInterestDate())
             .build();
     }
 
@@ -261,4 +266,20 @@ public class SampleData {
             .build();
     }
 
+    public static CCDFullDefenceResponse getFullDefenceResponse() {
+        return CCDFullDefenceResponse.builder()
+            .moreTimeNeededOption(CCDYesNoOption.YES)
+            .defence("My defence")
+            .defenceType(CCDDefenceType.DISPUTE)
+            .defendant(getCCDPartyIndividual())
+            .build();
+
+    }
+
+    public static CCDResponse getCCDResponse() {
+        return CCDResponse.builder()
+            .responseType(CCDResponseType.FULL_DEFENCE)
+            .fullDefenceResponse(getFullDefenceResponse())
+            .build();
+    }
 }

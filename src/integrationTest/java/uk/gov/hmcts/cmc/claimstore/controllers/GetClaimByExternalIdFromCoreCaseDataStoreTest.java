@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataSearchResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 
 @TestPropertySource(
     properties = {
@@ -44,7 +44,7 @@ public class GetClaimByExternalIdFromCoreCaseDataStoreTest extends BaseGetTest {
             eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.externalId", externalId))
             )
-        ).willReturn(successfulCoreCaseDataSearchResponse());
+        ).willReturn(listOfCaseDetails());
 
         makeRequest("/claims/" + externalId)
             .andExpect(status().isOk())

@@ -3,14 +3,15 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Response;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
@@ -107,8 +108,13 @@ public final class SampleClaim {
     public static Claim getWithSubmissionInterestDate() {
         return builder()
             .withClaimData(
-                SampleClaimData.builder().withInterestDate(SampleInterestDate.submission()).build()
-            )
+                SampleClaimData
+                    .builder()
+                    .withInterest(
+                        standardInterestBuilder()
+                            .withInterestDate(SampleInterestDate.submission())
+                            .build())
+                    .build())
             .build();
     }
 

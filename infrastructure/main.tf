@@ -18,6 +18,9 @@ locals {
   sendLetterUrl = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
+  ccdCnpUrl = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
+  ccdApiUrl = "${var.env == "demo" ? local.ccdCnpUrl : "false"}"
+
   previewVaultName = "${var.product}-claim-store"
   nonPreviewVaultName = "${var.product}-claim-store-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
@@ -43,11 +46,15 @@ data "vault_generic_secret" "staff_email" {
   path = "secret/${var.vault_section}/cmc/claim-store/staff_email"
 }
 
-data "vault_generic_secret" "anonymous_citizen_username" {
+data "vault_generic_secret" "rpa_email" {
+  path = "secret/${var.vault_section}/cmc/claim-store/rpa_email"
+}
+
+data "vault_generic_secret" "anonymous_caseworker_username" {
   path = "secret/${var.vault_section}/ccidam/idam-api/cmc/anonymouscitizen/user"
 }
 
-data "vault_generic_secret" "anonymous_citizen_password" {
+data "vault_generic_secret" "anonymous_caseworker_password" {
   path = "secret/${var.vault_section}/ccidam/idam-api/cmc/anonymouscitizen/password"
 }
 
@@ -92,10 +99,10 @@ module "claim-store-api" {
     IDAM_S2S_AUTH_URL = "${local.s2sUrl}"
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.vault_generic_secret.s2s_secret.data["value"]}"
 
-    IDAM_ANONYMOUS_CASEWORKER_USERNAME = "${data.vault_generic_secret.anonymous_citizen_username.data["value"]}"
-    IDAM_ANONYMOUS_CASEWORKER_PASSWORD = "${data.vault_generic_secret.anonymous_citizen_password.data["value"]}"
-    IDAM_SYSTEM_UPDATE_USER_USERNAME = "${data.vault_generic_secret.system_update_username.data["value"]}"
-    IDAM_SYSTEM_UPDATE_USER_PASSWORD = "${data.vault_generic_secret.system_update_password.data["value"]}"
+    IDAM_CASEWORKER_ANONYMOUS_USERNAME = "${data.vault_generic_secret.anonymous_caseworker_username.data["value"]}"
+    IDAM_CASEWORKER_ANONYMOUS_PASSWORD = "${data.vault_generic_secret.anonymous_caseworker_password.data["value"]}"
+    IDAM_CASEWORKER_SYSTEM_USERNAME = "${data.vault_generic_secret.system_update_username.data["value"]}"
+    IDAM_CASEWORKER_SYSTEM_PASSWORD = "${data.vault_generic_secret.system_update_password.data["value"]}"
     OAUTH2_CLIENT_SECRET = "${data.vault_generic_secret.oauth_client_secret.data["value"]}"
 
     // notify
@@ -106,7 +113,7 @@ module "claim-store-api" {
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
-    CORE_CASE_DATA_API_URL = "false"
+    CORE_CASE_DATA_API_URL = "${local.ccdApiUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
     // mail
@@ -120,8 +127,14 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.staff_email.data["value"]}"
 
+    // robot notifications
+    RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
+    RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.rpa_email.data["value"]}"
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
+    FEATURE_TOGGLES_EMAILTOSTAFF = "true"
+
+    ROOT_APPENDER = "CMC"
   }
 }
 
