@@ -18,10 +18,10 @@ import java.util.Optional;
 public interface ClaimRepository {
 
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
-    String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
+        String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 
     @SuppressWarnings("squid:S1214") // Pointless to create class for this
-    String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
+        String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
     List<Claim> findAll();
@@ -170,10 +170,14 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET defendant_id = :defendantId WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
+        "UPDATE claim SET "
+            + "defendant_id = :defendantId,"
+            + "defendant_email = :defendantEmail "
+            + "WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
     )
     Integer linkDefendant(
         @Bind("letterHolderId") String letterHolderId,
-        @Bind("defendantId") String defendantId
-    );
+        @Bind("defendantId") String defendantId,
+        @Bind("defendantEmail") String defendantEmail
+        );
 }

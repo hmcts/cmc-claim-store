@@ -188,7 +188,11 @@ public class CCDCaseApi {
 
         coreCaseDataService.update(
             defendantUser.getAuthorisation(),
-            CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
+            CCDCase.builder()
+                .id(Long.valueOf(caseId))
+                .defendantId(defendantId)
+                .defendantEmail(defendantUser.getUserDetails().getEmail())
+                .build(),
             CaseEvent.LINK_DEFENDANT
         );
     }

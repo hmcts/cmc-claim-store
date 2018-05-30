@@ -68,11 +68,12 @@ public class DBCaseRepository implements CaseRepository {
     public void linkDefendant(String authorisation) {
         User defendantUser = userService.getUser(authorisation);
         String defendantId = defendantUser.getUserDetails().getId();
+        String defendantEmail = defendantUser.getUserDetails().getEmail();
 
         defendantUser.getUserDetails().getRoles().stream()
             .filter(this::isLetterHolderRole)
             .map(this::extractLetterHolderId)
-            .forEach(letterHolderId -> claimRepository.linkDefendant(letterHolderId, defendantId));
+            .forEach(letterHolderId -> claimRepository.linkDefendant(letterHolderId, defendantId, defendantEmail));
     }
 
     private String extractLetterHolderId(String role) {
