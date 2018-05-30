@@ -15,10 +15,12 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +49,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";
+    private static final String PAGE = "1";
 
     @MockBean
     protected SendLetterApi sendLetterApi;
@@ -54,7 +57,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    private static final String PAGE = "1";
 
     @Before
     public void setUp() {
@@ -70,20 +72,9 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
-        String nonExistingClaimReference = "something";
+        String nonExistingClaimReference = "nonExistingCaseReference";
 
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", nonExistingClaimReference,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(Collections.emptyList());
+        givenSearchByReferenceNumberReturns(nonExistingClaimReference, Collections.emptyList());
 
         makeRequest(nonExistingClaimReference, "claim-issued").andExpect(status().isNotFound());
         verify(emailService, never()).sendEmail(any(), any());
@@ -91,18 +82,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, "non-existing-event").andExpect(status().isNotFound());
         verify(emailService, never()).sendEmail(any(), any());
@@ -110,18 +91,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithDefendant());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefendant());
 
         makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isConflict());
 
@@ -130,18 +100,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
@@ -158,18 +117,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isConflict());
 
@@ -178,18 +126,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithDefendant());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefendant());
 
         makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isOk());
 
@@ -201,18 +138,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isConflict());
 
@@ -221,18 +147,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithDefResponse());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefResponse());
 
         makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isOk());
 
@@ -250,18 +165,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithCCJ());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithCCJ());
 
         makeRequest(CASE_REFERENCE, "ccj-request-submitted").andExpect(status().isOk());
 
@@ -270,18 +174,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Test
     public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithOfferCounterSigned());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithOfferCounterSigned());
 
         makeRequest(CASE_REFERENCE, "offer-accepted").andExpect(status().isOk());
 
@@ -293,4 +186,23 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
             .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
+
+    private void givenSearchByReferenceNumberReturns(
+        String nonExistingClaimReference,
+        List<CaseDetails> caseDetails
+    ) {
+        given(coreCaseDataApi.searchForCaseworker(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", nonExistingClaimReference,
+                "page", PAGE,
+                "state", "open",
+                "sortDirection", "desc"))
+            )
+        ).willReturn(caseDetails);
+    }
+
 }

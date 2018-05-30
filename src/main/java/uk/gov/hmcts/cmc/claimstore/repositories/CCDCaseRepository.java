@@ -114,9 +114,4 @@ public class CCDCaseRepository implements CaseRepository {
         return coreCaseDataService.submitPostPayment(authorisation, claim);
     }
 
-    @Override
-    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation) {
-        return ccdCaseApi.getByReferenceNumber(reference, authorisation);
-    }
-
 }

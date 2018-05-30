@@ -109,7 +109,7 @@ public class ClaimService {
         String authorisation = user.getAuthorisation();
 
         return caseRepository
-            .getByClaimReferenceNumberAnonymous(reference, authorisation);
+            .getByClaimReferenceNumber(reference, authorisation);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {

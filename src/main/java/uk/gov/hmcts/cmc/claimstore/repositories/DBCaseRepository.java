@@ -61,7 +61,9 @@ public class DBCaseRepository implements CaseRepository {
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return claimRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
+        return submitterId != null
+            ? claimRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId)
+            : claimRepository.getByClaimReferenceNumber(claimReferenceNumber);
     }
 
     @Override
@@ -154,10 +156,5 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository
             .getClaimByExternalId(claim.getExternalId())
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
-    }
-
-    @Override
-    public Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation) {
-        return claimRepository.getByClaimReferenceNumber(reference);
     }
 }
