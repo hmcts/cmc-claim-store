@@ -19,8 +19,6 @@ public abstract class BaseGetTest extends BaseIntegrationTest {
         .build();
 
     protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
-    protected static final String SERVICE_TOKEN = "S2S token";
-
 
     @Before
     public void setup() {
