@@ -9,7 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -44,7 +44,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
-public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
+public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";
 
@@ -61,10 +61,10 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
         UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc").build();
-        User user = new User(AUTHORISATION_TOKEN, userDetails);
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+        User user = new User(BEARER_TOKEN, userDetails);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
         given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(user);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(user);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
@@ -85,7 +85,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             )
         ).willReturn(Collections.emptyList());
 
-        makeRequest(nonExistingClaimReference, "claim-submitted-post-payment").andExpect(status().isNotFound());
+        makeRequest(nonExistingClaimReference, "claim-issued").andExpect(status().isNotFound());
         verify(emailService, never()).sendEmail(any(), any());
     }
 
@@ -123,7 +123,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             )
         ).willReturn(listOfCaseDetailsWithDefendant());
 
-        makeRequest(CASE_REFERENCE, "claim-submitted-post-payment").andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -143,10 +143,10 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
             )
         ).willReturn(listOfCaseDetails());
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
-        given(userService.generatePin(anyString(), eq(AUTHORISATION_TOKEN))).willReturn(pinResponse);
+        given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
-        makeRequest(CASE_REFERENCE, "claim-submitted-post-payment").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
 
         verify(emailService, times(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
@@ -291,6 +291,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
             .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
 }

@@ -63,7 +63,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
         String nonExistingClaimReference = "something";
-        String event = "claim-submitted-post-paymen";
+        String event = "claim-issued";
 
         makeRequest(nonExistingClaimReference, event)
             .andExpect(status().isNotFound());
@@ -81,7 +81,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
-        String event = "claim-submitted-post-payment";
+        String event = "claim-issued";
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
         UserDetails userDetails = SampleUserDetails.builder()
@@ -101,7 +101,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
-        String event = "claim-submitted-post-payment";
+        String event = "claim-issued";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
 

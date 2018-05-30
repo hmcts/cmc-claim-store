@@ -74,7 +74,7 @@ public class SupportController {
             .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 
         switch (event) {
-            case "claim-submitted-post-payment":
+            case "claim-issued":
                 resendStaffNotificationsOnClaimIssued(claim, authorisation);
                 break;
             case "more-time-requested":
