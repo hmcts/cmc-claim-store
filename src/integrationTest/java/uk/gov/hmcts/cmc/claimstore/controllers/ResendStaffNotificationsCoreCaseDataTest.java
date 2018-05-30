@@ -9,16 +9,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
+import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,9 +46,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
-public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
+public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";
+    private static final String PAGE = "1";
 
     @MockBean
     protected SendLetterApi sendLetterApi;
@@ -54,55 +57,33 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    private static final String PAGE = "1";
 
     @Before
     public void setUp() {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
         UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc").build();
-        User user = new User(AUTHORISATION_TOKEN, userDetails);
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+        User user = new User(BEARER_TOKEN, userDetails);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
         given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(user);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(user);
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
     }
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
-        String nonExistingClaimReference = "something";
+        String nonExistingClaimReference = "nonExistingCaseReference";
 
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", nonExistingClaimReference,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(Collections.emptyList());
+        givenSearchByReferenceNumberReturns(nonExistingClaimReference, Collections.emptyList());
 
-        makeRequest(nonExistingClaimReference, "claim-submitted-post-payment").andExpect(status().isNotFound());
+        makeRequest(nonExistingClaimReference, "claim-issued").andExpect(status().isNotFound());
         verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
     public void shouldRespond404WhenEventIsNotSupported() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, "non-existing-event").andExpect(status().isNotFound());
         verify(emailService, never()).sendEmail(any(), any());
@@ -110,43 +91,21 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithDefendant());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefendant());
 
-        makeRequest(CASE_REFERENCE, "claim-submitted-post-payment").andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
 
     @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
-        given(userService.generatePin(anyString(), eq(AUTHORISATION_TOKEN))).willReturn(pinResponse);
+        given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
-        makeRequest(CASE_REFERENCE, "claim-submitted-post-payment").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
 
         verify(emailService, times(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
@@ -158,18 +117,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isConflict());
 
@@ -178,18 +126,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithDefendant());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefendant());
 
         makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isOk());
 
@@ -201,18 +138,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetails());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
         makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isConflict());
 
@@ -221,18 +147,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithDefResponse());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefResponse());
 
         makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isOk());
 
@@ -250,18 +165,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithCCJ());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithCCJ());
 
         makeRequest(CASE_REFERENCE, "ccj-request-submitted").andExpect(status().isOk());
 
@@ -270,18 +174,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
 
     @Test
     public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
-        given(coreCaseDataApi.searchForCaseworker(
-            any(),
-            any(),
-            any(),
-            any(),
-            any(),
-            eq(ImmutableMap.of("case.referenceNumber", CASE_REFERENCE,
-                "page", PAGE,
-                "state", "open",
-                "sortDirection", "desc"))
-            )
-        ).willReturn(listOfCaseDetailsWithOfferCounterSigned());
+        givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithOfferCounterSigned());
 
         makeRequest(CASE_REFERENCE, "offer-accepted").andExpect(status().isOk());
 
@@ -291,6 +184,25 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseGetTest {
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
             .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
+
+    private void givenSearchByReferenceNumberReturns(
+        String nonExistingClaimReference,
+        List<CaseDetails> caseDetails
+    ) {
+        given(coreCaseDataApi.searchForCaseworker(
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            eq(ImmutableMap.of("case.referenceNumber", nonExistingClaimReference,
+                "page", PAGE,
+                "state", "open",
+                "sortDirection", "desc"))
+            )
+        ).willReturn(caseDetails);
+    }
+
 }

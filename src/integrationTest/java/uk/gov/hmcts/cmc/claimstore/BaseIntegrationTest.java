@@ -20,6 +20,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
     protected static final String DEFENDANT_ID = "555";
     protected static final String DEFENDANT_EMAIL = "j.smith@example.com";
     protected static final String BEARER_TOKEN = "Bearer let me in";
+    protected static final String SERVICE_TOKEN = "S2S token";
 
     @Autowired
     protected ClaimStore claimStore;

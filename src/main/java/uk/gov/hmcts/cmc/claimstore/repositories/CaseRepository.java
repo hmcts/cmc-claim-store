@@ -38,6 +38,5 @@ public interface CaseRepository {
     CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
     Claim saveClaim(String authorisation, Claim claim);
-
 }
 
