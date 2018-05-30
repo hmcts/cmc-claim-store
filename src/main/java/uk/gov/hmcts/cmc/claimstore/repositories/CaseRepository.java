@@ -39,7 +39,5 @@ public interface CaseRepository {
 
     Claim saveClaim(String authorisation, Claim claim);
 
-    // Remove this method once DB implementation is gone, CCD implementation can use #getByClaimReferenceNumber
-    Optional<Claim> getByClaimReferenceNumberAnonymous(String reference, String authorisation);
 }
 

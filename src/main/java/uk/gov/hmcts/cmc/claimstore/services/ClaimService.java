@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
@@ -105,11 +106,14 @@ public class ClaimService {
     }
 
     public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        String authorisation = user.getAuthorisation();
+        String authorisation = null;
 
-        return caseRepository
-            .getByClaimReferenceNumberAnonymous(reference, authorisation);
+        if (caseRepository instanceof CCDCaseRepository) {
+            User user = userService.authenticateAnonymousCaseWorker();
+            authorisation = user.getAuthorisation();
+        }
+
+        return caseRepository.getByClaimReferenceNumber(reference, authorisation);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
