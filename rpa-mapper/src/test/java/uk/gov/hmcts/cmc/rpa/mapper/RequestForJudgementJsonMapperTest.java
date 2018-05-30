@@ -29,11 +29,13 @@ public class RequestForJudgementJsonMapperTest {
     @Autowired
     private RequestForJudgementJsonMapper mapper;
     private static final LocalDate ISSUED_DATE = LocalDate.of(2018, 4, 26);
+    private static final LocalDate PAY_BY_SET_DATE = LocalDate.of(2200, 3, 12);
+    private static final BigDecimal PAID_ALREADY = new BigDecimal(10.00);
 
     @Test
     public void shouldMapRequestForJudgementForthWith() throws JSONException {
         SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(new BigDecimal(10.00));
+        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
         Claim claim = SampleClaim.builder()
             .withIssuedOn(ISSUED_DATE)
             .withCountyCourtJudgment(countyCourtJudgment.build()).build();
@@ -57,8 +59,8 @@ public class RequestForJudgementJsonMapperTest {
     @Test
     public void shouldMapRequestForJudgementPaidInFull() throws JSONException {
         SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(new BigDecimal(10.00));
-        countyCourtJudgment.withPayBySetDate(LocalDate.of(2200, 3, 12));
+        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
+        countyCourtJudgment.withPayBySetDate(PAY_BY_SET_DATE);
         Claim claim = SampleClaim.builder()
             .withIssuedOn(ISSUED_DATE)
             .withCountyCourtJudgment(countyCourtJudgment.build()).build();
@@ -70,11 +72,11 @@ public class RequestForJudgementJsonMapperTest {
     @Test
     public void shouldMapRequestForJudgementPayingFortnightly() throws JSONException {
         SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(new BigDecimal(10.00));
+        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
         SampleRepaymentPlan sampleRepaymentPlan = SampleRepaymentPlan
             .builder()
             .withPaymentSchedule(PaymentSchedule.EVERY_TWO_WEEKS)
-            .withFirstPaymentDate(LocalDate.of(2200, 3, 12));
+            .withFirstPaymentDate(PAY_BY_SET_DATE);
         countyCourtJudgment.withRepaymentPlan(sampleRepaymentPlan.build());
 
         Claim claim = SampleClaim.builder()
@@ -89,11 +91,11 @@ public class RequestForJudgementJsonMapperTest {
     @Test
     public void shouldMapRequestForJudgementPayingWeekly() throws JSONException {
         SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(new BigDecimal(10.00));
+        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
         SampleRepaymentPlan sampleRepaymentPlan = SampleRepaymentPlan
             .builder()
             .withPaymentSchedule(PaymentSchedule.EACH_WEEK)
-            .withFirstPaymentDate(LocalDate.of(2200, 3, 12));
+            .withFirstPaymentDate(PAY_BY_SET_DATE);
         countyCourtJudgment.withRepaymentPlan(sampleRepaymentPlan.build());
 
         Claim claim = SampleClaim.builder()
@@ -108,11 +110,11 @@ public class RequestForJudgementJsonMapperTest {
     @Test
     public void shouldMapRequestForJudgementPayingMonthly() throws JSONException {
         SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(new BigDecimal(10.00));
+        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
         SampleRepaymentPlan sampleRepaymentPlan = SampleRepaymentPlan
             .builder()
             .withPaymentSchedule(PaymentSchedule.EVERY_MONTH)
-            .withFirstPaymentDate(LocalDate.of(2200, 3, 12));
+            .withFirstPaymentDate(PAY_BY_SET_DATE);
         countyCourtJudgment.withRepaymentPlan(sampleRepaymentPlan.build());
 
         Claim claim = SampleClaim.builder()
