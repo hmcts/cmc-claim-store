@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -54,11 +56,17 @@ public class SealedClaimJsonMapper {
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(addressMapper::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getMobilePhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, SoleTrader::getBusinessName))
+                .add("businessName", getBusinessName(claimant))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(claimant, Organisation.class, Organisation::getCompaniesHouseNumber))
                 .build())
             .collect(JsonCollectors.toJsonArray());
+    }
+
+    private String getBusinessName(Party claimant) {
+        String businessName = extractOptionalFromSubclass(claimant, SoleTraderDetails.class, SoleTraderDetails::getBusinessName);
+        businessName = businessName != null ? "Trading as " + businessName : null;
+        return businessName;
     }
 
 }

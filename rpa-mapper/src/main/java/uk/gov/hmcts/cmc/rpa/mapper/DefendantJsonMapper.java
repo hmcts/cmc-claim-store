@@ -35,19 +35,19 @@ public class DefendantJsonMapper {
                 .add("address", addressMapper.mapAddress(defendant.getAddress()))
                 .add("correspondenceAddress", defendant.getServiceAddress().map(addressMapper::mapAddress).orElse(null))
                 .add("emailAddress", defendant.getEmail().orElse(null))
-                .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, SoleTraderDetails::getBusinessName))
+                .add("businessName", getBusinessName(defendant))
                 .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
                 .build())
             .collect(JsonCollectors.toJsonArray());
     }
 
-    public JsonArray mapDefendantsForDefenceResponse(List<TheirDetails> defendants, Party respondantOwnParty) {
+    public JsonArray mapDefendantsForDefenceResponse(List<TheirDetails> defendants, Party respondentOwnParty) {
         return defendants.stream()
             .map(defendant -> new NullAwareJsonObjectBuilder()
                 .add("type", defendant.getClass().getSimpleName().replace("Details", ""))
                 .add("name", defendant.getName())
-                .add("isAddressAmended", isAddressAmended(defendant, respondantOwnParty))
+                .add("isAddressAmended", isAddressAmended(defendant, respondentOwnParty))
                 .add("address", addressMapper.mapAddress(defendant.getAddress()))
                 .add("correspondenceAddress", defendant.getServiceAddress().map(addressMapper::mapAddress).orElse(null))
                 .add("emailAddress", defendant.getEmail().orElse(null))
@@ -64,8 +64,8 @@ public class DefendantJsonMapper {
         return businessName;
     }
 
-    private String isAddressAmended(TheirDetails defendant, Party respondantParty) {
-        if (!defendant.getAddress().equals(respondantParty.getAddress())) {
+    private String isAddressAmended(TheirDetails defendant, Party respondentParty) {
+        if (!defendant.getAddress().equals(respondentParty.getAddress())) {
             return "yes";
         }
         return "no";
