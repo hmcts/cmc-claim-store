@@ -2,9 +2,6 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
-import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
@@ -13,44 +10,22 @@ import javax.json.JsonObject;
 @Component
 public class RequestForJudgementJsonMapper {
 
+    private final CountyCourtJudgementMapper countyCourtJudgementMapper;
+
+    public RequestForJudgementJsonMapper(CountyCourtJudgementMapper countyCourtJudgementMapper) {
+        this.countyCourtJudgementMapper = countyCourtJudgementMapper;
+    }
+
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
             .add("courtFee", claim.getClaimData().getFeesPaidInPound())
-            .add("alreadyPaid", claim.getCountyCourtJudgment().getPaidAmount().orElse(null))
-            .add("paymentDeadline", getPaymentDeadline(claim.getCountyCourtJudgment()))
             .add("amountWithInterest", claim.getTotalAmountTillToday().orElse(null))
+            .add("countyCourtJudgement", countyCourtJudgementMapper.mapCCJ(claim.getCountyCourtJudgment()))
+            .add("claimantEmail", claim.getSubmitterEmail())
+            .add("defendantEmail", claim.getDefendantEmail())
             .build();
-    }
-
-    private String getPaymentDeadline(CountyCourtJudgment countyCourtJudgment) {
-        switch (countyCourtJudgment.getPaymentOption()) {
-            case IMMEDIATELY:
-                return "Forthwith";
-            case FULL_BY_SPECIFIED_DATE:
-                return "In Full by " + DateFormatter.format(countyCourtJudgment.getPayBySetDate().get());
-            case INSTALMENTS:
-                return getRepaymentSchedule(countyCourtJudgment.getRepaymentPlan().get());
-            default:
-                throw new IllegalArgumentException("No payment option selected");
-
-        }
-    }
-
-    private String getRepaymentSchedule(RepaymentPlan repaymentPlan) {
-        PaymentSchedule paymentSchedule = repaymentPlan.getPaymentSchedule();
-        String firstPaymentDate = DateFormatter.format(repaymentPlan.getFirstPaymentDate());
-        switch (paymentSchedule) {
-            case EACH_WEEK:
-                return "Weekly + " + firstPaymentDate;
-            case EVERY_TWO_WEEKS:
-                return "Fortnightly + " + firstPaymentDate;
-            case EVERY_MONTH:
-                return "Monthly + " + firstPaymentDate;
-            default:
-                throw new IllegalArgumentException("No Payment Schedule selected");
-        }
     }
 }
 
