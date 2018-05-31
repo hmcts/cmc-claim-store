@@ -5,8 +5,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
@@ -29,18 +31,25 @@ public class DefenceResponseJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
-            .add("defenceResponse", getDefenceResponse(claim.getResponse().get()))
+            .add("defenceResponse", extractFromSubclass(claim.getResponse(),
+                FullDefenceResponse.class,fullDefenceResponse -> fullDefenceResponse.getDefenceType().getDescription()))
             .add("defendants", defendantMapper.mapDefendants(claim.getClaimData().getDefendants()))
-            .add("dateOfBirth", extractFromSubclass(claim.getClaimData().getDefendant(), Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-            .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(), Party.class, party -> party.getMobilePhone().orElse(null)))
+            .add("dateOfBirth", extractFromSubclass(claim.getClaimData().getDefendant(),
+                Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
+            .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(),
+                Party.class, party -> party.getMobilePhone().orElse(null)))
+            .add("mediation", isMediationShown(claim.getResponse().get()))
             .build();
     }
 
-    private String getDefenceResponse(Response response){
-        if( response instanceof FullDefenceResponse){
-            return ((FullDefenceResponse)response).getDefenceType().getDescription();
+    private String isMediationShown(Response response){
+        if(response instanceof FullDefenceResponse){
+            FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
+            if(fullDefenceResponse.getDefenceType().equals(DefenceType.DISPUTE)){
+                return "yes";
+            }
         }
-        return null;
+        return "no";
     }
 
 }
