@@ -30,7 +30,7 @@ public class RequestForJudgementJsonMapperTest {
     private RequestForJudgementJsonMapper mapper;
     private static final LocalDate ISSUED_DATE = LocalDate.of(2018, 4, 26);
     private static final LocalDate PAY_BY_SET_DATE = LocalDate.of(2200, 3, 12);
-    private static final BigDecimal PAID_ALREADY = new BigDecimal(10.00);
+    private static final BigDecimal PAID_ALREADY = new BigDecimal(10);
 
     @Test
     public void shouldMapRequestForJudgementForthWith() throws JSONException {
