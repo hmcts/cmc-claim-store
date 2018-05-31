@@ -252,7 +252,7 @@ public class ClaimService {
     }
 
     public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
-        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+        caseRepository.linkSealedClaimDocument(claimId, documentSelfPath);
     }
 
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {

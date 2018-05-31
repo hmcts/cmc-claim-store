@@ -42,14 +42,14 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     }
 
     private void assertSealedClaimIsUploadedIntoDocumentManagementStore(ClaimData claimData) throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         MvcResult result = makeRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
 
-        verify(documentUploadClient).upload(AUTHORISATION_TOKEN, newArrayList(new InMemoryMultipartFile("files",
+        verify(documentUploadClient).upload(AUTHORISATION_TOKEN, any(), newArrayList(new InMemoryMultipartFile("files",
             deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdf",
             "application/pdf", PDF_BYTES)
         ));
@@ -66,7 +66,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     }
 
     private void assertSealedClaimIsLinked(ClaimData claimData) throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         MvcResult result = makeRequest(claimData)
@@ -79,7 +79,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldReturn500HttpStatusAndNotSendStaffEmailWhenDocumentUploadFailed() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         makeRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build())

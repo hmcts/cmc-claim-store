@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false",
+        "document_management.url=false",
         "core_case_data.api.url=false",
         "send-letter.url=http://localhost:${wiremock.server.port}"
     }

@@ -33,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false",
+        "document_management.url=false",
         "core_case_data.api.url=false"
     }
 )
@@ -187,6 +187,6 @@ public class SaveClaimTest extends BaseSaveTest {
         makeRequest(claimData)
             .andExpect(status().isOk());
 
-        verify(documentUploadClient, never()).upload(anyString(), anyList());
+        verify(documentUploadClient, never()).upload(any(), any(),anyList());
     }
 }

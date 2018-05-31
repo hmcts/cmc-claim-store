@@ -113,4 +113,9 @@ public class CCDCaseRepository implements CaseRepository {
     public Claim saveClaim(String authorisation, Claim claim) {
         return coreCaseDataService.submitPostPayment(authorisation, claim);
     }
+
+    @Override
+    public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
+
+    }
 }

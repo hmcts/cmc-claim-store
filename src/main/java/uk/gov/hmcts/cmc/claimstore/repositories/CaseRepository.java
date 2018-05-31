@@ -38,5 +38,7 @@ public interface CaseRepository {
     CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
     Claim saveClaim(String authorisation, Claim claim);
+
+    void linkSealedClaimDocument(Long claimId, String documentSelfPath);
 }
 

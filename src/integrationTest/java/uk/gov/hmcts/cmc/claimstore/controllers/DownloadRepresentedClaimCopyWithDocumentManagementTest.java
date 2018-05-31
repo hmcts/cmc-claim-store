@@ -13,7 +13,6 @@ import java.util.Optional;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -41,7 +40,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
 
     @Test
     public void shouldUploadSealedClaimWhenDocumentHasNotBeenUploadedYet() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
@@ -50,13 +49,13 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        verify(documentUploadClient).upload(AUTHORISATION_TOKEN, newArrayList(new InMemoryMultipartFile("files",
+        verify(documentUploadClient).upload(AUTHORISATION_TOKEN, any(), newArrayList(new InMemoryMultipartFile("files",
             claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)));
     }
 
     @Test
     public void shouldLinkSealedClaimWhenDocumentHasNotBeenUploadedYet() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
@@ -71,7 +70,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
 
     @Test
     public void shouldReturnServerErrorWhenUploadToDocumentManagementStoreFailed() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
