@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -51,6 +50,12 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
     @Before
     public void setup() {
+        UserDetails userDetails = SampleUserDetails.getDefault();
+        User user = new User(BEARER_TOKEN, userDetails);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
+        given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(user);
+
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
     }
@@ -101,7 +106,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
-        given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
+        given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(claim.getReferenceNumber(), event)
@@ -186,7 +191,6 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
-            .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, "ABC123"));
+            .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications"));
     }
 }

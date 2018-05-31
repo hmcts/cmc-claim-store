@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -199,7 +198,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
-            .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
+            .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications"));
     }
 }

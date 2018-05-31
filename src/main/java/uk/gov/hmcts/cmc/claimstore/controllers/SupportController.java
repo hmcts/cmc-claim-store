@@ -3,11 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
@@ -66,12 +64,13 @@ public class SupportController {
     @ApiOperation("Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
-        @PathVariable("event") String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
+        @PathVariable("event") String event
     ) throws ServletRequestBindingException {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
+
+        String authorisation = userService.authenticateAnonymousCaseWorker().getAuthorisation();
 
         switch (event) {
             case "claim-issued":
