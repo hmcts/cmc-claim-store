@@ -1,6 +1,7 @@
 {
   "caseNumber": "000CM001",
   "issueDate": "26-Apr-2018",
+  "defenceResponse": "I have paid what I believe I owe",
   "defendants": [
     {
       "type": "Individual",
@@ -8,6 +9,7 @@
       "businessName": null,
       "companiesHouseNumber": null,
       "contactPerson": null,
+      "isAddressAmended": "no",
       "address": {
         "line1": "52",
         "line2": "Down Street",
@@ -20,5 +22,6 @@
     }
   ],
   "dateOfBirth": null,
-  "phoneNumber": null
+  "phoneNumber": null,
+  "mediation": "no"
 }

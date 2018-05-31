@@ -38,7 +38,8 @@ public class RequestForJudgementJsonMapperTest {
         countyCourtJudgment.withPaidAmount(PAID_ALREADY);
         Claim claim = SampleClaim.builder()
             .withIssuedOn(ISSUED_DATE)
-            .withCountyCourtJudgment(countyCourtJudgment.build()).build();
+            .withCountyCourtJudgment(countyCourtJudgment.build())
+            .build();
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_forthwith.json")
             .trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);

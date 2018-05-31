@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
@@ -27,10 +29,18 @@ public class DefenceResponseJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
+            .add("defenceResponse", getDefenceResponse(claim.getResponse().get()))
             .add("defendants", defendantMapper.mapDefendants(claim.getClaimData().getDefendants()))
             .add("dateOfBirth", extractFromSubclass(claim.getClaimData().getDefendant(), Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
             .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(), Party.class, party -> party.getMobilePhone().orElse(null)))
             .build();
+    }
+
+    private String getDefenceResponse(Response response){
+        if( response instanceof FullDefenceResponse){
+            return ((FullDefenceResponse)response).getDefenceType().getDescription();
+        }
+        return null;
     }
 
 }
