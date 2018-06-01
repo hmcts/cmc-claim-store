@@ -47,8 +47,8 @@ public class SealedClaimJsonMapperTest {
     public void shouldMapSoleTraderCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
-                .withClaimant(SampleParty.builder().soleTrader())
-                .withDefendant(SampleTheirDetails.builder().soleTraderDetails())
+                .withClaimant(SampleParty.builder().withBusinessName("Business123").soleTrader())
+                .withDefendant(SampleTheirDetails.builder().withBusinessName("Business321").soleTraderDetails())
                 .build())
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
