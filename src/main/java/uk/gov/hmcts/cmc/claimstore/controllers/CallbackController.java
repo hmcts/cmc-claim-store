@@ -14,8 +14,13 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDocument;
 
+import java.util.List;
 import javax.validation.constraints.NotNull;
+
+import static java.util.Arrays.asList;
 
 @Api
 @RestController
@@ -58,5 +63,25 @@ public class CallbackController {
         } else {
             throw new BadRequestException("Unknown event: " + callback.getEventId());
         }
+    }
+
+    @PostMapping(path = "/print")
+    @ApiOperation("Handles print callback from CCD")
+    public List<CaseDocument> printCallback(@NotNull @RequestBody CaseDetails caseDetails) {
+        return asList(
+            CaseDocument.builder()
+                .name("Awesome doco")
+                .description("Saving the world")
+                .type("netflix")
+                .url("http://wow")
+                .build()
+            ,
+            CaseDocument.builder()
+                .name("Whale")
+                .description("Blue whales")
+                .type("netflix")
+                .url("http://wow")
+                .build()
+        );
     }
 }
