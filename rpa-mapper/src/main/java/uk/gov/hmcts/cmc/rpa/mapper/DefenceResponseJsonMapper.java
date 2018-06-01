@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import javax.json.JsonObject;
 
+import java.util.Optional;
+
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 
 @Component
@@ -38,15 +40,17 @@ public class DefenceResponseJsonMapper {
                 Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
             .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(),
                 Party.class, party -> party.getMobilePhone().orElse(null)))
-            .add("mediation", isMediationShown(claim.getResponse().get()))
+            .add("mediation", isMediationShown(claim.getResponse()))
             .build();
     }
 
-    private String isMediationShown(Response response){
-        if(response instanceof FullDefenceResponse){
-            FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
-            if(fullDefenceResponse.getDefenceType().equals(DefenceType.DISPUTE)){
-                return "yes";
+    private String isMediationShown(Optional<Response> response){
+        if(response.isPresent()){
+            if(response.get() instanceof FullDefenceResponse){
+                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response.get();
+                if(fullDefenceResponse.getDefenceType().equals(DefenceType.DISPUTE)){
+                    return "yes";
+                }
             }
         }
         return "no";
