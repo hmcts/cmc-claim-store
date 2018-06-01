@@ -73,7 +73,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class).getSealedClaimDocumentSelfPath())
+        assertThat(deserializeObjectFrom(result, Claim.class).getSealedClaimDocument())
             .isEqualTo(Optional.of("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"));
     }
 

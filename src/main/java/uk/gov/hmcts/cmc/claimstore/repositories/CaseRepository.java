@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,6 @@ public interface CaseRepository {
 
     Claim saveClaim(String authorisation, Claim claim);
 
-    void linkSealedClaimDocument(Long claimId, String documentSelfPath);
+    void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI);
 }
 

@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.net.URI;
 import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
@@ -80,14 +81,14 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @SuppressWarnings("squid:S3655")
     private byte[] downloadOrGenerateAndUpload(Claim claim, Supplier<byte[]> documentSupplier, String authorisation) {
-        if (claim.getSealedClaimDocumentSelfPath().isPresent()) {
-            String documentSelfPath = claim.getSealedClaimDocumentSelfPath().get();
-            return documentManagementService.downloadDocument(authorisation, documentSelfPath);
+        if (claim.getSealedClaimDocument().isPresent()) {
+            URI documentSelf = claim.getSealedClaimDocument().get();
+            return documentManagementService.downloadDocument(authorisation, documentSelf);
         } else {
             PDF document = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), documentSupplier.get());
 
-            String documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-            claimService.linkSealedClaimDocument(claim.getId(), documentSelfPath);
+            URI documentUri = documentManagementService.uploadDocument(authorisation, document);
+            claimService.linkSealedClaimDocument(authorisation, claim, documentUri);
 
             return document.getBytes();
         }

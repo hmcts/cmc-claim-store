@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
@@ -159,6 +161,18 @@ public class CoreCaseDataService {
         ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
 
         return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+    }
+
+    public CaseDetails linkSealedClaimDocument(
+        String authorisation,
+        Long caseId,
+        URI sealedClaimDocument
+    ) {
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .sealedClaimDocument(sealedClaimDocument.toString())
+            .build();
+        return update(authorisation, ccdCase, LINK_SEALED_CLAIM);
     }
 
     public CaseDetails saveDefendantResponse(

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -72,6 +73,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.defendantId(claim.getDefendantId());
         }
 
+        claim.getSealedClaimDocument().ifPresent(document -> builder.sealedClaimDocument(document.toString()));
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -125,7 +128,11 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()),
             settlement,
             fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()),
-            null
+            mapSealedClaimDocument(ccdCase.getSealedClaimDocument())
         );
+    }
+
+    private URI mapSealedClaimDocument(String sealedClaimDocumentUri) {
+        return sealedClaimDocumentUri != null ? URI.create(sealedClaimDocumentUri) : null;
     }
 }

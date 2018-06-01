@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -157,7 +158,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
-        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentUri) {
+        claimRepository.linkSealedClaimDocument(claim.getId(), documentUri.toString());
     }
 }

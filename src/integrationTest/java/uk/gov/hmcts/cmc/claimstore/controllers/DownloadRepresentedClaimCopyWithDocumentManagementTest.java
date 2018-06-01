@@ -64,7 +64,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocumentSelfPath())
+        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
             .isEqualTo(Optional.of("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"));
     }
 
@@ -78,7 +78,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
         makeRequest(claim.getExternalId())
             .andExpect(status().isInternalServerError());
 
-        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocumentSelfPath())
+        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
             .isEqualTo(Optional.empty());
 
     }

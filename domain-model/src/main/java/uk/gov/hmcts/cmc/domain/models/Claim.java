@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -45,7 +46,7 @@ public class Claim {
     private final LocalDateTime countyCourtJudgmentRequestedAt;
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
-    private final String sealedClaimDocumentSelfPath;
+    private final URI sealedClaimDocument;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -69,7 +70,7 @@ public class Claim {
         LocalDateTime countyCourtJudgmentRequestedAt,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
-        String sealedClaimDocumentSelfPath
+        URI sealedClaimDocument
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -90,7 +91,7 @@ public class Claim {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
-        this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
+        this.sealedClaimDocument = sealedClaimDocument;
     }
 
     public Long getId() {
@@ -169,8 +170,8 @@ public class Claim {
         return settlementReachedAt;
     }
 
-    public Optional<String> getSealedClaimDocumentSelfPath() {
-        return Optional.ofNullable(sealedClaimDocumentSelfPath);
+    public Optional<URI> getSealedClaimDocument() {
+        return Optional.ofNullable(sealedClaimDocument);
     }
 
     public LocalDate getServiceDate() {
@@ -218,7 +219,7 @@ public class Claim {
             && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
             && Objects.equals(settlement, claim.settlement)
             && Objects.equals(settlementReachedAt, claim.settlementReachedAt)
-            && Objects.equals(sealedClaimDocumentSelfPath, claim.sealedClaimDocumentSelfPath);
+            && Objects.equals(sealedClaimDocument, claim.sealedClaimDocument);
     }
 
     @Override
@@ -226,7 +227,7 @@ public class Claim {
         return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
             claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
             respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
-            settlement, settlementReachedAt, sealedClaimDocumentSelfPath
+            settlement, settlementReachedAt, sealedClaimDocument
         );
     }
 

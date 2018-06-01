@@ -45,11 +45,11 @@ public class DocumentManagementService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public String uploadDocument(String authorisation, PDF document) {
+    public URI uploadDocument(String authorisation, PDF document) {
         return uploadDocument(authorisation, document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
     }
 
-    public String uploadDocument(
+    public URI uploadDocument(
         String authorisation,
         String originalFileName,
         byte[] documentBytes,
@@ -67,14 +67,14 @@ public class DocumentManagementService {
             .orElseThrow(() ->
                 new DocumentManagementException("Document management failed uploading file" + originalFileName));
 
-        return URI.create(document.links.self.href).getPath();
+        return URI.create(document.links.self.href);
     }
 
-    public byte[] downloadDocument(String authorisation, String documentSelfPath) {
+    public byte[] downloadDocument(String authorisation, URI documentSelf) {
         Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
             authorisation,
             authTokenGenerator.generate(),
-            documentSelfPath
+            documentSelf.getPath()
         );
 
         ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
