@@ -17,12 +17,16 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.scheduler.model.JobData;
+import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +63,7 @@ public class CCDCaseApi {
     private final CaseAccessApi caseAccessApi;
     private final CoreCaseDataService coreCaseDataService;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final JobService jobService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
@@ -71,7 +76,8 @@ public class CCDCaseApi {
         UserService userService,
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
-        CCDCaseDataToClaim ccdCaseDataToClaim
+        CCDCaseDataToClaim ccdCaseDataToClaim,
+        JobService jobService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -79,6 +85,7 @@ public class CCDCaseApi {
         this.caseAccessApi = caseAccessApi;
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.jobService = jobService;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -186,15 +193,37 @@ public class CCDCaseApi {
             letterHolderId
         );
 
-        coreCaseDataService.update(
+        String defendantEmail = defendantUser.getUserDetails().getEmail();
+        CaseDetails caseDetails = coreCaseDataService.update(
             defendantUser.getAuthorisation(),
             CCDCase.builder()
                 .id(Long.valueOf(caseId))
                 .defendantId(defendantId)
-                .defendantEmail(defendantUser.getUserDetails().getEmail())
+                .defendantEmail(defendantEmail)
                 .build(),
             CaseEvent.LINK_DEFENDANT
         );
+
+        Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
+        jobService.scheduleJob(
+            JobData.builder()
+                .data(ImmutableMap.of(
+                    "caseId", caseId,
+                    "defendant-email", defendantEmail,
+                    "defendantId", defendantId)
+                )
+                .build(),
+            claim.getResponseDeadline().minusDays(5).atStartOfDay(ZoneOffset.UTC));
+
+        jobService.scheduleJob(
+            JobData.builder()
+                .data(ImmutableMap.of(
+                    "caseId", caseId,
+                    "defendant-email", defendantEmail,
+                    "defendantId", defendantId)
+                )
+                .build(),
+            claim.getResponseDeadline().minusDays(1).atStartOfDay(ZoneOffset.UTC));
     }
 
     private boolean isLetterHolderRole(String role) {
