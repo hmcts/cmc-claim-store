@@ -8,7 +8,7 @@
     {
       "type": "SoleTrader",
       "name": "John Rambo",
-      "businessName": "Trading as name",
+      "businessName": "Trading as AutoTraders",
       "companiesHouseNumber": null,
       "contactPerson": null,
       "address": {
@@ -33,7 +33,7 @@
     {
       "type": "SoleTrader",
       "name": "John Smith",
-      "businessName": "Sole Trading & Sons",
+      "businessName": "Trading as RoboticsTraders",
       "companiesHouseNumber": null,
       "contactPerson": null,
       "address": {
