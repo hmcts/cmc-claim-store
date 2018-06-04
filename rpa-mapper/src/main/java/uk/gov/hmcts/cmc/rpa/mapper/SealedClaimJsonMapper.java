@@ -48,7 +48,7 @@ public class SealedClaimJsonMapper {
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getMobilePhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-                .add("businessName", addTradingAsPrefix(extractOptionalFromSubclass(claimant, SoleTrader.class, SoleTrader::getBusinessName)))
+                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(this::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(claimant, Organisation.class, Organisation::getCompaniesHouseNumber))
                 .build())
@@ -63,7 +63,7 @@ public class SealedClaimJsonMapper {
                 .add("address", mapAddress(defendant.getAddress()))
                 .add("correspondenceAddress", defendant.getServiceAddress().map(this::mapAddress).orElse(null))
                 .add("emailAddress", defendant.getEmail().orElse(null))
-                .add("businessName", addTradingAsPrefix(extractOptionalFromSubclass(defendant, SoleTraderDetails.class, SoleTraderDetails::getBusinessName)))
+                .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, value -> value.getBusinessName().map(this::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
                 .build())
@@ -80,9 +80,8 @@ public class SealedClaimJsonMapper {
             .build();
     }
 
-    private String addTradingAsPrefix(String businessName) {
-        return businessName != null ? "Trading as " + businessName : null;
+    private String prependWithTradingAs(String value) {
+        return "Trading as " + value;
     }
-
 
 }
