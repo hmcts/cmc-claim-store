@@ -68,40 +68,35 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .ifPresent(employment -> builder.employment(employmentMapper.to(employment)));
 
         builder.bankAccounts(
-            statementOfMeans.getBankAccounts()
-                .stream()
+            asStream(statementOfMeans.getBankAccounts())
                 .map(bankAccountMapper::to)
                 .filter(Objects::nonNull)
                 .map(bankAccount -> CCDCollectionElement.<CCDBankAccount>builder().value(bankAccount).build())
                 .collect(Collectors.toList()));
 
         builder.debts(
-            statementOfMeans.getDebts()
-                .stream()
+            asStream(statementOfMeans.getDebts())
                 .map(debtMapper::to)
                 .filter(Objects::nonNull)
                 .map(debt -> CCDCollectionElement.<CCDDebt>builder().value(debt).build())
                 .collect(Collectors.toList()));
 
         builder.incomes(
-            statementOfMeans.getIncomes()
-                .stream()
+            asStream(statementOfMeans.getIncomes())
                 .map(incomeMapper::to)
                 .filter(Objects::nonNull)
-                .map(incom -> CCDCollectionElement.<CCDIncome>builder().value(incom).build())
+                .map(income -> CCDCollectionElement.<CCDIncome>builder().value(income).build())
                 .collect(Collectors.toList()));
 
         builder.expenses(
-            statementOfMeans.getExpenses()
-                .stream()
+            asStream(statementOfMeans.getExpenses())
                 .map(expenseMapper::to)
                 .filter(Objects::nonNull)
                 .map(expense -> CCDCollectionElement.<CCDExpense>builder().value(expense).build())
                 .collect(Collectors.toList()));
 
         builder.courtOrders(
-            statementOfMeans.getCourtOrders()
-                .stream()
+            asStream(statementOfMeans.getCourtOrders())
                 .map(courtOrderMapper::to)
                 .filter(Objects::nonNull)
                 .map(courtOrder -> CCDCollectionElement.<CCDCourtOrder>builder().value(courtOrder).build())
@@ -128,8 +123,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .map(debtMapper::from)
             .collect(Collectors.toList());
 
-        List<Income> incomes = ccdStatementOfMeans.getIncomes()
-            .stream()
+        List<Income> incomes = asStream(ccdStatementOfMeans.getIncomes())
             .map(CCDCollectionElement::getValue)
             .filter(Objects::nonNull)
             .map(incomeMapper::from)

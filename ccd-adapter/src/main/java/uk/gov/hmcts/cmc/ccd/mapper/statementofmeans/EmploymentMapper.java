@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+
 @Component
 public class EmploymentMapper implements Mapper<CCDEmployment, Employment> {
 
@@ -38,8 +40,7 @@ public class EmploymentMapper implements Mapper<CCDEmployment, Employment> {
             .isSelfEmployed(CCDYesNoOption.valueOf(employment.getIsSelfEmployed().name()));
 
         builder.employers(
-            employment.getEmployers()
-                .stream()
+            asStream(employment.getEmployers())
                 .map(employerMapper::to)
                 .filter(Objects::nonNull)
                 .map(employer -> CCDCollectionElement.<CCDEmployer>builder().value(employer).build())
@@ -57,8 +58,7 @@ public class EmploymentMapper implements Mapper<CCDEmployment, Employment> {
             return null;
         }
 
-        List<Employer> employers = ccdEmployment.getEmployers()
-            .stream()
+        List<Employer> employers = asStream(ccdEmployment.getEmployers())
             .map(CCDCollectionElement::getValue)
             .filter(Objects::nonNull)
             .map(employerMapper::from)
