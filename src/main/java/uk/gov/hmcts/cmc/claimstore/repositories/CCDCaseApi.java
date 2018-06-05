@@ -25,8 +25,8 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
+import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -204,26 +204,35 @@ public class CCDCaseApi {
             CaseEvent.LINK_DEFENDANT
         );
 
+        scheduleEmailNotificationsForResponse(caseId, defendantId, defendantEmail, caseDetails);
+    }
+
+    private void scheduleEmailNotificationsForResponse(
+        String caseId,
+        String defendantId,
+        String defendantEmail,
+        CaseDetails caseDetails
+    ) {
         Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        jobService.scheduleJob(
-            JobData.builder()
-                .data(ImmutableMap.of(
-                    "caseId", caseId,
-                    "defendant-email", defendantEmail,
-                    "defendantId", defendantId)
-                )
-                .build(),
-            claim.getResponseDeadline().minusDays(5).atStartOfDay(ZoneOffset.UTC));
+        LocalDate responseDeadline = claim.getResponseDeadline();
+        String defendantName = claim.getClaimData().getDefendant().getName();
+        String claimantName = claim.getClaimData().getClaimant().getName();
+        ImmutableMap.Builder<String, Object> emailData = ImmutableMap.builder();
+        emailData.put("caseId", caseId);
+        emailData.put("defendantEmail", defendantEmail);
+        emailData.put("defendantId", defendantId);
+        emailData.put("defendantName", defendantName);
+        emailData.put("claimantName", claimantName);
+        emailData.put("responseDeadline", responseDeadline);
 
         jobService.scheduleJob(
-            JobData.builder()
-                .data(ImmutableMap.of(
-                    "caseId", caseId,
-                    "defendant-email", defendantEmail,
-                    "defendantId", defendantId)
-                )
-                .build(),
-            claim.getResponseDeadline().minusDays(1).atStartOfDay(ZoneOffset.UTC));
+            JobData.builder().data(emailData.build()).build(),
+            responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC)
+        );
+
+        jobService.scheduleJob(
+            JobData.builder().data(emailData.build()).build(),
+            responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
     }
 
     private boolean isLetterHolderRole(String role) {

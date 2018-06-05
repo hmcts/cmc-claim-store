@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.scheduler.services;
 
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -9,19 +10,36 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Service
 public class NotificationEmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationEmailService.class);
+    private final ResponseNeededNotification defendantResponseNeededNotificationService;
+
+    public NotificationEmailService(ResponseNeededNotification defendantResponseNeededNotificationService) {
+
+        this.defendantResponseNeededNotificationService = defendantResponseNeededNotificationService;
+    }
 
     @Retryable(
         value = {JobExecutionException.class},
         backoff = @Backoff(delay = 10000))
     public void process(JobExecutionContext context) throws JobExecutionException {
         logger.info("Now: " + ZonedDateTime.now());
-        logger.info("Data: " + context.getJobDetail().getJobDataMap());
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        logger.info("Data: " + jobDataMap);
+        defendantResponseNeededNotificationService.sendMail(
+            (String) jobDataMap.get("defendantEmail"),
+            (String) jobDataMap.get("defendantEmail"),
+            (String) jobDataMap.get("defendantEmail"),
+            (String) jobDataMap.get("claimantName"),
+            (String) jobDataMap.get("defendantName"),
+            (LocalDate) jobDataMap.get("responseDeadline"),
+            (String) jobDataMap.get("defendantEmail")
+        );
         logger.info("Completed job work...");
     }
 
