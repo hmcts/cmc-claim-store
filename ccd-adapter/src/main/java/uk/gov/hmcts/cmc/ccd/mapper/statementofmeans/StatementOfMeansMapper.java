@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+
 @Component
 public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, StatementOfMeans> {
 
@@ -114,15 +116,13 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             return null;
         }
 
-        List<BankAccount> bankAccounts = ccdStatementOfMeans.getBankAccounts()
-            .stream()
+        List<BankAccount> bankAccounts = asStream(ccdStatementOfMeans.getBankAccounts())
             .map(CCDCollectionElement::getValue)
             .filter(Objects::nonNull)
             .map(bankAccountMapper::from)
             .collect(Collectors.toList());
 
-        List<Debt> debts = ccdStatementOfMeans.getDebts()
-            .stream()
+        List<Debt> debts = asStream(ccdStatementOfMeans.getDebts())
             .map(CCDCollectionElement::getValue)
             .filter(Objects::nonNull)
             .map(debtMapper::from)
@@ -135,15 +135,13 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .map(incomeMapper::from)
             .collect(Collectors.toList());
 
-        List<Expense> expenses = ccdStatementOfMeans.getExpenses()
-            .stream()
+        List<Expense> expenses = asStream(ccdStatementOfMeans.getExpenses())
             .map(CCDCollectionElement::getValue)
             .filter(Objects::nonNull)
             .map(expenseMapper::from)
             .collect(Collectors.toList());
 
-        List<CourtOrder> courtOrders = ccdStatementOfMeans.getCourtOrders()
-            .stream()
+        List<CourtOrder> courtOrders = asStream(ccdStatementOfMeans.getCourtOrders())
             .map(CCDCollectionElement::getValue)
             .filter(Objects::nonNull)
             .map(courtOrderMapper::from)

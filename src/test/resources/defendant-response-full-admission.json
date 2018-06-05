@@ -1,0 +1,89 @@
+{
+  "responseType": "FULL_ADMISSION",
+  "moreTimeNeeded": "no",
+  "defendant": {
+    "type": "individual",
+    "name": "John Rambo",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "correspondenceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "mobilePhone": "07873727165",
+    "representative": {
+      "organisationName": "Trading ltd",
+      "organisationAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "organisationContactDetails": {
+        "phone": "7873738547",
+        "email": "representative@example.org",
+        "dxAddress": "DX123456"
+      }
+    },
+    "dateOfBirth": "1968-01-02"
+  },
+  "paymentOption": "INSTALMENTS",
+  "repaymentPlan": {
+    "instalmentAmount": 100,
+    "firstPaymentDate": "2100-10-10",
+    "paymentSchedule": "EACH_WEEK"
+  },
+  "statementOfMeans": {
+    "residenceType": "OWN_HOME",
+    "dependant": {
+      "children": {
+        "between11and15": 0,
+        "between16and19": 2
+      },
+      "maintainedChildren": 1
+    },
+    "employment": {
+      "isEmployed": "yes",
+      "isSelfEmployed": "no",
+      "employers": [{
+        "jobTitle": "My sweet job",
+        "employerName": "CMC"
+      }]
+    },
+    "bankAccounts": [{
+      "typeOfAccount": "SAVING_ACCOUNT",
+      "isJoint": "yes",
+      "balance": 10
+    }],
+    "debts": [{
+      "description": "Reference",
+      "totalOwed": 10,
+      "monthlyPayments": 1
+    }],
+    "incomes": [{
+      "type": "Salary",
+      "frequency": "MONTH",
+      "amountReceived": 10
+    }],
+    "expenses": [{
+      "type": "Salary",
+      "frequency": "MONTH",
+      "amountPaid": 10
+    }],
+    "courtOrders": [{
+      "details": "Reference",
+      "amountOwed": 10,
+      "monthlyInstalmentAmount": 1
+    }],
+    "reason": "My reason"
+  }
+}

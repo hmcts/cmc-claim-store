@@ -21,14 +21,14 @@ public class EmploymentAssert extends AbstractAssert<EmploymentAssert, Employmen
     public EmploymentAssert isEqualTo(CCDEmployment ccdEmployment) {
         isNotNull();
 
-        if (!Objects.equals(actual.isEmployed().name(), ccdEmployment.getIsEmployed().name())) {
-            failWithMessage("Expected Employment.isEmployed to be <%s> but was <%s>",
-                ccdEmployment.getIsEmployed(), actual.isEmployed());
+        if (!Objects.equals(actual.getIsEmployed().name(), ccdEmployment.getIsEmployed().name())) {
+            failWithMessage("Expected Employment.getIsEmployed to be <%s> but was <%s>",
+                ccdEmployment.getIsEmployed(), actual.getIsEmployed());
         }
 
-        if (!Objects.equals(actual.isSelfEmployed().name(), ccdEmployment.getIsSelfEmployed().name())) {
-            failWithMessage("Expected Employment.isSelfEmployed to be <%s> but was <%s>",
-                ccdEmployment.getIsSelfEmployed().name(), actual.isSelfEmployed().name());
+        if (!Objects.equals(actual.getIsSelfEmployed().name(), ccdEmployment.getIsSelfEmployed().name())) {
+            failWithMessage("Expected Employment.getIsSelfEmployed to be <%s> but was <%s>",
+                ccdEmployment.getIsSelfEmployed().name(), actual.getIsSelfEmployed().name());
         }
 
         actual.getSelfEmployed()

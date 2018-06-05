@@ -31,11 +31,11 @@ public class Employment {
         this.selfEmployed = selfEmployed;
     }
 
-    public YesNoOption isEmployed() {
+    public YesNoOption getIsEmployed() {
         return isEmployed;
     }
 
-    public YesNoOption isSelfEmployed() {
+    public YesNoOption getIsSelfEmployed() {
         return isSelfEmployed;
     }
 

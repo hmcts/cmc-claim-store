@@ -15,7 +15,10 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(
+    value = {"responseType"},
+    ignoreUnknown = true
+)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "responseType")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = FullDefenceResponse.class, name = "FULL_DEFENCE"),

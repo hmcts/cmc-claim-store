@@ -34,8 +34,8 @@ public class EmploymentMapper implements Mapper<CCDEmployment, Employment> {
     public CCDEmployment to(Employment employment) {
 
         CCDEmployment.CCDEmploymentBuilder builder = CCDEmployment.builder()
-            .isEmployed(CCDYesNoOption.valueOf(employment.isEmployed().name()))
-            .isSelfEmployed(CCDYesNoOption.valueOf(employment.isSelfEmployed().name()));
+            .isEmployed(CCDYesNoOption.valueOf(employment.getIsEmployed().name()))
+            .isSelfEmployed(CCDYesNoOption.valueOf(employment.getIsSelfEmployed().name()));
 
         builder.employers(
             employment.getEmployers()
