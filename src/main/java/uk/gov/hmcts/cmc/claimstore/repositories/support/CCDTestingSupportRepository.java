@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories.support;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -31,5 +32,10 @@ public class CCDTestingSupportRepository implements SupportRepository {
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         return this.ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
+    }
+
+    @Override
+    public void linkDefendantToClaim(Claim claim, User defendant) {
+        this.ccdCaseApi.linkDefendantToCaseByCaseId(claim.getId().toString(), defendant);
     }
 }

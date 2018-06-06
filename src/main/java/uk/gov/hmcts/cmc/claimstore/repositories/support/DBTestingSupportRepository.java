@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories.support;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -28,5 +29,10 @@ public class DBTestingSupportRepository implements SupportRepository {
     @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         return this.testingSupportRepository.getByClaimReferenceNumber(claimReferenceNumber);
+    }
+
+    @Override
+    public void linkDefendantToClaim(Claim claim, User defendant) {
+        this.testingSupportRepository.updateDefendantId(claim.getExternalId(), defendant.getUserDetails().getId());
     }
 }

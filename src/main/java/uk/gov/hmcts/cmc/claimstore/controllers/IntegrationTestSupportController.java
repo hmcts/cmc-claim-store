@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.SupportRepository;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -23,10 +25,15 @@ import java.time.LocalDate;
 public class IntegrationTestSupportController {
 
     private final SupportRepository supportRepository;
+    private final UserService userService;
 
     @Autowired
-    public IntegrationTestSupportController(SupportRepository supportRepository) {
+    public IntegrationTestSupportController(
+        SupportRepository supportRepository,
+        UserService userService
+    ) {
         this.supportRepository = supportRepository;
+        this.userService = userService;
     }
 
     @GetMapping("/trigger-server-error")
@@ -57,9 +64,24 @@ public class IntegrationTestSupportController {
         return getClaim(claimReferenceNumber, authorisation);
     }
 
+    @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantUsername}")
+    public Claim linkDefendantToClaim(
+        @PathVariable("claimReferenceNumber") String claimReferenceNumber,
+        @PathVariable("defendantUsername") String defendantUsername,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
+    ) {
+        Claim claim = getClaim(claimReferenceNumber, authorisation);
+
+        //todo how we should store default password? const? properties?
+        User defendant = this.userService.authenticateUser(defendantUsername, "Password12");
+
+        supportRepository.linkDefendantToClaim(claim, defendant);
+
+        return getClaim(claimReferenceNumber, authorisation);
+    }
+
     private Claim getClaim(String claimReferenceNumber, String authorisation) {
         return supportRepository.getByClaimReferenceNumber(claimReferenceNumber, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by ref no: " + claimReferenceNumber));
     }
-
 }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.support;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -13,4 +14,5 @@ public interface SupportRepository {
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
+    void linkDefendantToClaim(Claim claim, User defendant);
 }
