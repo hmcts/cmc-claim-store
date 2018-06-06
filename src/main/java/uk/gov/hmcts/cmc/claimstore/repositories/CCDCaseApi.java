@@ -165,7 +165,7 @@ public class CCDCaseApi {
 
     public void linkDefendantToCaseByCaseId(String caseId, User defendantUser) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        this.linkToCase(defendantUser, anonymousCaseWorker, "", caseId);
+        this.linkToCaseWithoutRevoking(defendantUser, anonymousCaseWorker, caseId);
     }
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
@@ -189,6 +189,30 @@ public class CCDCaseApi {
             CASE_TYPE_ID,
             caseId,
             letterHolderId
+        );
+
+        coreCaseDataService.update(
+            defendantUser.getAuthorisation(),
+            CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
+            CaseEvent.LINK_DEFENDANT
+        );
+    }
+
+    private void linkToCaseWithoutRevoking(
+        User defendantUser,
+        User anonymousCaseWorker,
+        String caseId
+    ) {
+        String defendantId = defendantUser.getUserDetails().getId();
+        LOGGER.info("Granting access to case: {} for user: {}", caseId, defendantId);
+
+        caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
+            authTokenGenerator.generate(),
+            anonymousCaseWorker.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            caseId,
+            new UserId(defendantId)
         );
 
         coreCaseDataService.update(
