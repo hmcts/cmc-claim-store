@@ -69,3 +69,7 @@ variable "db_host" {
 variable "capacity" {
   default = "1"
 }
+
+variable "enable_staff_email" {
+  default = "true"
+}
