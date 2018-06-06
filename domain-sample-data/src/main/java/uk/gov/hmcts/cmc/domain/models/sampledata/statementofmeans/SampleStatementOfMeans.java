@@ -64,9 +64,9 @@ public class SampleStatementOfMeans {
                 .build()
             )
             .employment(Employment.builder()
-                .isEmployed(YesNoOption.YES)
+                .employmentOption(YesNoOption.YES)
                 .employers(asList(Employer.builder().employerName("CMC").jobTitle("My sweet job").build()))
-                .isSelfEmployed(YesNoOption.NO)
+                .selfEmployedOption(YesNoOption.NO)
                 .build()
             )
             .build();

@@ -41,7 +41,6 @@ public class Employer {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(jobTitle, employerName);
     }
 

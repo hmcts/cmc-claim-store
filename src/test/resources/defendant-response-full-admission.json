@@ -52,8 +52,8 @@
       "maintainedChildren": 1
     },
     "employment": {
-      "isEmployed": "yes",
-      "isSelfEmployed": "no",
+      "employmentOption": "yes",
+      "selfEmployedOption": "no",
       "employers": [{
         "jobTitle": "My sweet job",
         "employerName": "CMC"

@@ -49,7 +49,6 @@ public class Children {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(under11, between11and15, between16and19);
     }
 

@@ -88,7 +88,6 @@ public class FullAdmissionResponse extends Response {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), paymentOption, paymentDate, repaymentPlan, statementOfMeans);
     }
 

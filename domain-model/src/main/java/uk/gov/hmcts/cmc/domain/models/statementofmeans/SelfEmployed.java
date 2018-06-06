@@ -70,7 +70,6 @@ public class SelfEmployed {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(jobTitle, annualTurnover, behindOnTaxPayments, amountYouOwe, reason);
     }
 

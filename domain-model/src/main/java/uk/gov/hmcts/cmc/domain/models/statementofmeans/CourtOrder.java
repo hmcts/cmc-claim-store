@@ -49,7 +49,6 @@ public class CourtOrder {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(details, amountOwed, monthlyInstalmentAmount);
     }
 
