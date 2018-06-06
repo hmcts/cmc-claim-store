@@ -8,13 +8,10 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
-
-import javax.json.JsonObject;
-
 import java.util.Optional;
+import javax.json.JsonObject;
 
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 
@@ -34,9 +31,9 @@ public class DefenceResponseJsonMapper {
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
             .add("defenceResponse", extractFromSubclass(claim.getResponse().orElseThrow(IllegalStateException::new),
-                FullDefenceResponse.class,fullDefenceResponse -> fullDefenceResponse.getDefenceType().getDescription()))
+                FullDefenceResponse.class, fullDefenceResponse -> fullDefenceResponse.getDefenceType().getDescription()))
             .add("defendants", defendantMapper.mapDefendantsForDefenceResponse(claim.getClaimData().getDefendants(),
-                                    claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()))
+                claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()))
             .add("dateOfBirth", extractFromSubclass(claim.getClaimData().getDefendant(),
                 Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
             .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(),
@@ -45,11 +42,11 @@ public class DefenceResponseJsonMapper {
             .build();
     }
 
-    private String isMediationShown(Optional<Response> response){
-        if(response.isPresent()){
-            if(response.get() instanceof FullDefenceResponse){
+    private String isMediationShown(Optional<Response> response) {
+        if (response.isPresent()) {
+            if (response.get() instanceof FullDefenceResponse) {
                 FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response.get();
-                if(fullDefenceResponse.getDefenceType().equals(DefenceType.DISPUTE)){
+                if (fullDefenceResponse.getDefenceType().equals(DefenceType.DISPUTE)) {
                     return "yes";
                 }
             }

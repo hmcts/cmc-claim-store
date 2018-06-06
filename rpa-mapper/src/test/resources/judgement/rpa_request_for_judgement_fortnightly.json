@@ -5,10 +5,10 @@
   "courtFee": 40.00,
   "alreadyPaid": 10.00,
   "payment": "Every two weeks",
-  "instalmentAmount": "10.00",
-  "firstPayment": "01-May-2018",
+  "instalmentAmount": 100.00,
+  "firstPayment": "02-Mar-2200",
   "fullPaymentDeadline": null,
-  "claimantEmailAddress": "email@email.com",
+  "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null
 }
 

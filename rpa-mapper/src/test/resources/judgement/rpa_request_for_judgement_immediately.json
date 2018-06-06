@@ -8,7 +8,7 @@
   "instalmentAmount": null,
   "firstPayment": null,
   "fullPaymentDeadline": null,
-  "claimantEmailAddress": "email@email.com",
+  "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null
 }
 

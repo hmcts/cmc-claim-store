@@ -7,8 +7,8 @@
   "payment": "By a set date",
   "instalmentAmount": null,
   "firstPayment": null,
-  "fullPaymentDeadline": "26-Jul-2018",
-  "claimantEmailAddress": "email@email.com",
+  "fullPaymentDeadline": "12-Mar-2200",
+  "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null
 }
 
