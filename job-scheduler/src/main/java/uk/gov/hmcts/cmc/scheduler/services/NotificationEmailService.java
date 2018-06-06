@@ -31,15 +31,9 @@ public class NotificationEmailService {
         logger.info("Now: " + ZonedDateTime.now());
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
         logger.info("Data: " + jobDataMap);
-        defendantResponseNeededNotificationService.sendMail(
-            (String) jobDataMap.get("defendantEmail"),
-            (String) jobDataMap.get("defendantEmail"),
-            (String) jobDataMap.get("defendantEmail"),
-            (String) jobDataMap.get("claimantName"),
-            (String) jobDataMap.get("defendantName"),
-            (LocalDate) jobDataMap.get("responseDeadline"),
-            (String) jobDataMap.get("defendantEmail")
-        );
+
+        defendantResponseNeededNotificationService.sendMail(jobDataMap);
+
         logger.info("Completed job work...");
     }
 

@@ -19,6 +19,9 @@ public class EmailTemplates {
     private String defendantResponseIssuedToIndividual;
 
     @NotEmpty
+    private String defendantResponseNeeded;
+
+    @NotEmpty
     private String defendantResponseIssuedToCompany;
 
     @NotEmpty
@@ -205,5 +208,13 @@ public class EmailTemplates {
 
     public void setOfferCounterSignedEmailToOtherParty(String offerCounterSignedEmailToOtherParty) {
         this.offerCounterSignedEmailToOtherParty = offerCounterSignedEmailToOtherParty;
+    }
+
+    public String getDefendantResponseNeeded() {
+        return defendantResponseNeeded;
+    }
+
+    public void setDefendantResponseNeeded(String defendantResponseNeeded) {
+        this.defendantResponseNeeded = defendantResponseNeeded;
     }
 }

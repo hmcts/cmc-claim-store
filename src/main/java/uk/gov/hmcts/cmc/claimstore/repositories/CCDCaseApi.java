@@ -219,6 +219,7 @@ public class CCDCaseApi {
         String claimantName = claim.getClaimData().getClaimant().getName();
         ImmutableMap.Builder<String, Object> emailData = ImmutableMap.builder();
         emailData.put("caseId", caseId);
+        emailData.put("caseReference", claim.getReferenceNumber());
         emailData.put("defendantEmail", defendantEmail);
         emailData.put("defendantId", defendantId);
         emailData.put("defendantName", defendantName);

@@ -61,9 +61,9 @@ public class QuartzConfiguration {
     }
 
     @Bean
-    public Scheduler scheduler(SchedulerFactoryBean factory) throws SchedulerException {
+    public Scheduler scheduler(SchedulerFactoryBean schedulerFactoryBean) throws SchedulerException {
 
-        Scheduler scheduler = factory.getScheduler();
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
 
         scheduler.start();
 
