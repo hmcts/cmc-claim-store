@@ -48,7 +48,22 @@ public class SaveClaimTest extends BaseSaveTest {
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     @Test
-    public void shouldReturnNewlyCreatedClaim() throws Exception {
+    public void shouldReturnNewlyCreatedClaimWhenPrePaymentCalledDbEnv() throws Exception {
+        ClaimData claimData = SampleClaimData.submittedByClaimant();
+
+        makeRequestPrePayment(claimData.getExternalId().toString()).andExpect(status().isOk());
+
+        MvcResult result = makeRequest(claimData)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getClaimData)
+            .contains(claimData);
+    }
+
+    @Test
+    public void shouldReturnNewlyCreatedClaimWhenPrePaymentNotCalledDbEnv() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
         MvcResult result = makeRequest(claimData)
