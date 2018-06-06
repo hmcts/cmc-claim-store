@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 import javax.json.JsonObject;
@@ -44,7 +45,7 @@ public class DefenceResponseJsonMapper {
     private String isMediationShown(Response response) {
         if (FullDefenceResponse.class.isInstance(response)
             && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE)) {
-            return "yes";
+            return response.getFreeMediation().orElse(YesNoOption.NO).name().toLowerCase();
         }
         return "no";
     }
