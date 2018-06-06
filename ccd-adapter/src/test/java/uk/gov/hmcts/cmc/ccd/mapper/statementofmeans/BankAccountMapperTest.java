@@ -29,7 +29,7 @@ public class BankAccountMapperTest {
         //given
         BankAccount bankAccount = BankAccount.builder()
             .balance(BigDecimal.valueOf(100))
-            .isJoint(YesNoOption.NO)
+            .jointOption(YesNoOption.NO)
             .typeOfAccount(BankAccount.BankAccountType.CURRENT_ACCOUNT)
             .build();
 

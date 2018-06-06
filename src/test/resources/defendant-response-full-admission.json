@@ -61,7 +61,7 @@
     },
     "bankAccounts": [{
       "typeOfAccount": "SAVING_ACCOUNT",
-      "isJoint": "yes",
+      "jointOption": "yes",
       "balance": 10
     }],
     "debts": [{

@@ -15,7 +15,7 @@ public class BankAccountMapper implements Mapper<CCDBankAccount, BankAccount> {
     public CCDBankAccount to(BankAccount bankAccount) {
         return CCDBankAccount.builder()
             .typeOfAccount(BankAccountType.valueOf(bankAccount.getTypeOfAccount().name()))
-            .isJoint(CCDYesNoOption.valueOf(bankAccount.getIsJoint().name()))
+            .isJoint(CCDYesNoOption.valueOf(bankAccount.getJointOption().name()))
             .balance(bankAccount.getBalance())
             .build();
     }

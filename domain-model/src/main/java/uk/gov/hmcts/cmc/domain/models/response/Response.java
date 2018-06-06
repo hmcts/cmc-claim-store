@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonIgnoreProperties(
-    value = {"responseType"},
+    value = "responseType",
     ignoreUnknown = true
 )
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "responseType")

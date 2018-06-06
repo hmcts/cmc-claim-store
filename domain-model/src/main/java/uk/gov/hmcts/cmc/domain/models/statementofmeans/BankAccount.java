@@ -30,12 +30,12 @@ public class BankAccount {
     }
 
     private final BankAccountType typeOfAccount;
-    private final YesNoOption isJoint;
+    private final YesNoOption jointOption;
     private final BigDecimal balance;
 
-    public BankAccount(BankAccountType typeOfAccount, YesNoOption isJoint, BigDecimal balance) {
+    public BankAccount(BankAccountType typeOfAccount, YesNoOption jointOption, BigDecimal balance) {
         this.typeOfAccount = typeOfAccount;
-        this.isJoint = isJoint;
+        this.jointOption = jointOption;
         this.balance = balance;
     }
 
@@ -43,8 +43,8 @@ public class BankAccount {
         return typeOfAccount;
     }
 
-    public YesNoOption getIsJoint() {
-        return isJoint;
+    public YesNoOption getJointOption() {
+        return jointOption;
     }
 
     public BigDecimal getBalance() {
@@ -61,13 +61,13 @@ public class BankAccount {
         }
         BankAccount bankAccount = (BankAccount) other;
         return Objects.equals(typeOfAccount, bankAccount.typeOfAccount)
-            && Objects.equals(isJoint, bankAccount.isJoint)
+            && Objects.equals(jointOption, bankAccount.jointOption)
             && Objects.equals(balance, bankAccount.balance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeOfAccount, isJoint, balance);
+        return Objects.hash(typeOfAccount, jointOption, balance);
     }
 
     @Override

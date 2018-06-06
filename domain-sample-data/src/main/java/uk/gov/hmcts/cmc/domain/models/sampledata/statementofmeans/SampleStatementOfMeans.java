@@ -30,7 +30,7 @@ public class SampleStatementOfMeans {
             .reason("My reason")
             .bankAccounts(asList(BankAccount.builder()
                 .typeOfAccount(BankAccount.BankAccountType.SAVING_ACCOUNT)
-                .isJoint(YesNoOption.YES)
+                .jointOption(YesNoOption.YES)
                 .balance(BigDecimal.TEN)
                 .build()
             ))
