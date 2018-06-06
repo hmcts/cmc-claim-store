@@ -1,7 +1,7 @@
 {
   "caseNumber": "000CM001",
   "issueDate": "26-Apr-2018",
-  "defenceResponse": "I have paid what I believe I owe",
+  "defenceResponse": "I dispute all the claim",
   "defendants": [
     {
       "type": "Individual",
@@ -23,5 +23,5 @@
   ],
   "dateOfBirth": null,
   "phoneNumber": null,
-  "mediation": "no"
+  "mediation": "yes"
 }

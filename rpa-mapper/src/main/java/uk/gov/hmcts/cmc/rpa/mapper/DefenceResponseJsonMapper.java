@@ -33,9 +33,10 @@ public class DefenceResponseJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
-            .add("defenceResponse", extractFromSubclass(claim.getResponse(),
+            .add("defenceResponse", extractFromSubclass(claim.getResponse().orElseThrow(IllegalStateException::new),
                 FullDefenceResponse.class,fullDefenceResponse -> fullDefenceResponse.getDefenceType().getDescription()))
-            .add("defendants", defendantMapper.mapDefendants(claim.getClaimData().getDefendants()))
+            .add("defendants", defendantMapper.mapDefendantsForDefenceResponse(claim.getClaimData().getDefendants(),
+                                    claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()))
             .add("dateOfBirth", extractFromSubclass(claim.getClaimData().getDefendant(),
                 Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
             .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(),

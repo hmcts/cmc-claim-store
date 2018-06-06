@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -28,7 +29,7 @@ public class RequestForJudgementJsonMapperTest {
 
     @Autowired
     private RequestForJudgementJsonMapper mapper;
-    private static final LocalDate ISSUED_DATE = LocalDate.of(2018, 4, 26);
+    private static final LocalDateTime CCJ_REQUESTED_AT = LocalDate.of(2018, 4, 26).atStartOfDay();
     private static final LocalDate PAY_BY_SET_DATE = LocalDate.of(2200, 3, 12);
     private static final BigDecimal PAID_ALREADY = new BigDecimal(10);
 
@@ -37,7 +38,7 @@ public class RequestForJudgementJsonMapperTest {
         SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
         countyCourtJudgment.withPaidAmount(PAID_ALREADY);
         Claim claim = SampleClaim.builder()
-            .withIssuedOn(ISSUED_DATE)
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
             .withCountyCourtJudgment(countyCourtJudgment.build())
             .build();
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_forthwith.json")
@@ -50,11 +51,11 @@ public class RequestForJudgementJsonMapperTest {
         SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
         countyCourtJudgment.withPaidAmount(null);
         Claim claim = SampleClaim.builder()
-            .withIssuedOn(ISSUED_DATE)
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
             .withCountyCourtJudgment(countyCourtJudgment.build()).build();
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_nothing_paid.json")
             .trim();
-        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
     @Test
@@ -63,7 +64,7 @@ public class RequestForJudgementJsonMapperTest {
         countyCourtJudgment.withPaidAmount(PAID_ALREADY);
         countyCourtJudgment.withPayBySetDate(PAY_BY_SET_DATE);
         Claim claim = SampleClaim.builder()
-            .withIssuedOn(ISSUED_DATE)
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
             .withCountyCourtJudgment(countyCourtJudgment.build()).build();
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_full.json")
             .trim();
@@ -81,7 +82,7 @@ public class RequestForJudgementJsonMapperTest {
         countyCourtJudgment.withRepaymentPlan(sampleRepaymentPlan.build());
 
         Claim claim = SampleClaim.builder()
-            .withIssuedOn(ISSUED_DATE)
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
             .withCountyCourtJudgment(countyCourtJudgment.build()).build();
 
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_fortnightly.json")
@@ -100,7 +101,7 @@ public class RequestForJudgementJsonMapperTest {
         countyCourtJudgment.withRepaymentPlan(sampleRepaymentPlan.build());
 
         Claim claim = SampleClaim.builder()
-            .withIssuedOn(ISSUED_DATE)
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
             .withCountyCourtJudgment(countyCourtJudgment.build()).build();
 
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_weekly.json")
@@ -119,7 +120,7 @@ public class RequestForJudgementJsonMapperTest {
         countyCourtJudgment.withRepaymentPlan(sampleRepaymentPlan.build());
 
         Claim claim = SampleClaim.builder()
-            .withIssuedOn(ISSUED_DATE)
+            .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
             .withCountyCourtJudgment(countyCourtJudgment.build()).build();
 
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_monthly.json")
