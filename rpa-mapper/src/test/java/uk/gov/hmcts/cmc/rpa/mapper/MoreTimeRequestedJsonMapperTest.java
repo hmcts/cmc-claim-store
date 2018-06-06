@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -23,73 +24,86 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @SpringBootTest
 @ContextConfiguration(classes = ModuleConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class SealedClaimJsonMapperTest {
+public class MoreTimeRequestedJsonMapperTest {
 
     @Autowired
-    private SealedClaimJsonMapper mapper;
+    private MoreTimeRequestedJsonMapper mapper;
+    private static String REFERENCE_NUMBER = "000MC001";
+    private static String INPUT = "/rpa_more_time_requested.json";
 
     @Test
-    public void shouldMapIndividualCitizenClaimToRPA() throws JSONException {
+    public void shouldMapIndividualForMoreTimeRequested() throws JSONException {
+
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().individual())
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withIssuedOn(LocalDate.of(2018, 4, 10))
+            .withResponseDeadline(LocalDate.of(2018, 5, 27))
             .build();
 
-        String expected = new ResourceReader().read("/SealedClaim/individual_rpa_case.json").trim();
+        String expected = new ResourceReader().read(INPUT).trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
     @Test
-    public void shouldMapSoleTraderCitizenClaimToRPA() throws JSONException {
+    public void shouldMapSoleTraderForMoreTimeRequested() throws JSONException {
+
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
-                .withClaimant(SampleParty.builder().withBusinessName("AutoTraders").soleTrader())
-                .withDefendant(SampleTheirDetails.builder().withBusinessName("RoboticsTraders").soleTraderDetails())
+                .withClaimant(SampleParty.builder().soleTrader())
+                .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withIssuedOn(LocalDate.of(2018, 4, 10))
+            .withResponseDeadline(LocalDate.of(2018, 5, 27))
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        String expected = new ResourceReader().read("/SealedClaim/sole_trader_rpa_case.json").trim();
+        String expected = new ResourceReader().read(INPUT).trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
     @Test
-    public void shouldMapCompanyCitizenClaimToRPA() throws JSONException {
+    public void shouldMapOrganisationForMoreTimeRequested() throws JSONException {
+
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withClaimant(SampleParty.builder().organisation())
+                .withDefendant(SampleTheirDetails.builder().individualDetails())
+                .build())
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withIssuedOn(LocalDate.of(2018, 4, 10))
+            .withResponseDeadline(LocalDate.of(2018, 5, 27))
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+
+        String expected = new ResourceReader().read(INPUT).trim();
+
+        assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapCompanyForMoreTimeRequested() throws JSONException {
+
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().company())
-                .withDefendant(SampleTheirDetails.builder().companyDetails())
+                .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withIssuedOn(LocalDate.of(2018, 4, 10))
+            .withResponseDeadline(LocalDate.of(2018, 5, 27))
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        String expected = new ResourceReader().read("/SealedClaim/company_rpa_case.json").trim();
+        String expected = new ResourceReader().read(INPUT).trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
-    @Test
-    public void shouldMapOrganisationCitizenClaimToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder()
-                .withClaimant(SampleParty.builder()
-                    .withCompaniesHouseNumber("09047000")
-                    .organisation())
-                .withDefendant(SampleTheirDetails.builder()
-                    .withCompaniesHouseNumber("09047000")
-                    .organisationDetails())
-                .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
-            .build();
-
-        String expected = new ResourceReader().read("/SealedClaim/organisation_rpa_case.json").trim();
-
-        //then
-        assertEquals(expected, mapper.map(claim).toString(), STRICT);
-    }
 }

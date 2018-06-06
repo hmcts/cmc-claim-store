@@ -1,17 +1,16 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
-import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
+import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import java.util.List;
@@ -26,6 +25,13 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSu
 @SuppressWarnings({"LineLength"})
 public class SealedClaimJsonMapper {
 
+    @Autowired
+    private final DefendantJsonMapper defendantMapper;
+
+    public SealedClaimJsonMapper(DefendantJsonMapper defendantJsonMapper) {
+        this.defendantMapper = defendantJsonMapper;
+    }
+
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
@@ -35,7 +41,7 @@ public class SealedClaimJsonMapper {
             .add("amountWithInterest", claim.getTotalAmountTillToday().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
-            .add("defendants", mapDefendants(claim.getClaimData().getDefendants()))
+            .add("defendants", defendantMapper.mapDefendants(claim.getClaimData().getDefendants()))
             .build();
     }
 
@@ -48,24 +54,9 @@ public class SealedClaimJsonMapper {
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getMobilePhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(this::prependWithTradingAs)))
+                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(claimant, Organisation.class, Organisation::getCompaniesHouseNumber))
-                .build())
-            .collect(JsonCollectors.toJsonArray());
-    }
-
-    private JsonArray mapDefendants(List<TheirDetails> defendants) {
-        return defendants.stream()
-            .map(defendant -> new NullAwareJsonObjectBuilder()
-                .add("type", defendant.getClass().getSimpleName().replace("Details", ""))
-                .add("name", defendant.getName())
-                .add("address", mapAddress(defendant.getAddress()))
-                .add("correspondenceAddress", defendant.getServiceAddress().map(this::mapAddress).orElse(null))
-                .add("emailAddress", defendant.getEmail().orElse(null))
-                .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, value -> value.getBusinessName().map(this::prependWithTradingAs)))
-                .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
-                .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
                 .build())
             .collect(JsonCollectors.toJsonArray());
     }
@@ -78,10 +69,6 @@ public class SealedClaimJsonMapper {
             .add("city", address.getCity())
             .add("postcode", address.getPostcode())
             .build();
-    }
-
-    private String prependWithTradingAs(String value) {
-        return "Trading as " + value;
     }
 
 }

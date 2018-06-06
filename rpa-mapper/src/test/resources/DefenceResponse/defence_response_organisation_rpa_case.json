@@ -1,0 +1,27 @@
+{
+  "caseNumber": "000CM001",
+  "issueDate": "26-Apr-2018",
+  "defenceResponse": "I dispute all the claim",
+  "defendants": [
+    {
+      "type": "Organisation",
+      "name": "John Smith",
+      "businessName": null,
+      "companiesHouseNumber": "09047000",
+      "contactPerson": "Arnold Schwarzenegger",
+      "isAddressAmended": "no",
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "emailAddress": "j.smith@example.com",
+      "correspondenceAddress": null
+    }
+  ],
+  "dateOfBirth": null,
+  "phoneNumber": null,
+  "mediation": "yes"
+}

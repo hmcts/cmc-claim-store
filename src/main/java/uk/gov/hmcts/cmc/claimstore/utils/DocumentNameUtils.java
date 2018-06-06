@@ -20,6 +20,24 @@ public class DocumentNameUtils {
         return format("%s-json-claim", number);
     }
 
+    public static String buildJsonRequestForJudgementFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-request-for-judgement", number);
+    }
+
+    public static String buildJsonMoreTimeRequestedFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-more-time-requested", number);
+    }
+
+    public static String buildJsonDefenceResponseFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-defence-response", number);
+    }
+
     public static boolean isSealedClaim(String filename) {
         requireNonBlank(filename);
 
