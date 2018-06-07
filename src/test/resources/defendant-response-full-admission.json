@@ -60,7 +60,7 @@
       }]
     },
     "bankAccounts": [{
-      "typeOfAccount": "SAVING_ACCOUNT",
+      "typeOfAccount": "SAVINGS_ACCOUNT",
       "jointOption": "yes",
       "balance": 10
     }],
@@ -80,7 +80,7 @@
       "amountPaid": 10
     }],
     "courtOrders": [{
-      "details": "Reference",
+      "claimNumber": "Reference",
       "amountOwed": 10,
       "monthlyInstalmentAmount": 1
     }],

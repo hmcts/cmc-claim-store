@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Builder
 public class CCDCourtOrder {
 
-    private String details;
+    private String claimNumber;
     private BigDecimal amountOwed;
     private BigDecimal monthlyInstalmentAmount;
 }

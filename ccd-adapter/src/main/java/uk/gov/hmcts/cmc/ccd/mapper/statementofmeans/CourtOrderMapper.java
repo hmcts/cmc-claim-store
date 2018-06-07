@@ -11,7 +11,7 @@ public class CourtOrderMapper implements Mapper<CCDCourtOrder, CourtOrder> {
     @Override
     public CCDCourtOrder to(CourtOrder courtOrder) {
         return CCDCourtOrder.builder()
-            .details(courtOrder.getDetails())
+            .claimNumber(courtOrder.getClaimNumber())
             .amountOwed(courtOrder.getAmountOwed())
             .monthlyInstalmentAmount(courtOrder.getMonthlyInstalmentAmount())
             .build();
@@ -20,7 +20,7 @@ public class CourtOrderMapper implements Mapper<CCDCourtOrder, CourtOrder> {
     @Override
     public CourtOrder from(CCDCourtOrder ccdCourtOrder) {
         return new CourtOrder(
-            ccdCourtOrder.getDetails(),
+            ccdCourtOrder.getClaimNumber(),
             ccdCourtOrder.getAmountOwed(),
             ccdCourtOrder.getMonthlyInstalmentAmount()
         );

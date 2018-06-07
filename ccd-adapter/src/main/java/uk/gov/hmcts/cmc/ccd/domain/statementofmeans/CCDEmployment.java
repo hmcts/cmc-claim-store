@@ -14,4 +14,5 @@ public class CCDEmployment {
     private CCDYesNoOption isSelfEmployed;
     private List<CCDCollectionElement<CCDEmployer>> employers;
     private CCDSelfEmployed selfEmployed;
+    private CCDUnEmployed unEmployed;
 }

@@ -105,7 +105,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
     ) {
         ccdCourtOrders.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(ccdCourtOrder -> courtOrder.getDetails().equals(ccdCourtOrder.getDetails()))
+            .filter(ccdCourtOrder -> courtOrder.getClaimNumber().equals(ccdCourtOrder.getClaimNumber()))
             .findFirst()
             .ifPresent(ccdCourtOrder -> assertThat(courtOrder).isEqualTo(ccdCourtOrder));
     }

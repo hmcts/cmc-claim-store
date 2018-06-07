@@ -27,7 +27,7 @@ public class CourtOrderMapperTest {
         //given
         CourtOrder courtOrder = CourtOrder.builder()
             .amountOwed(BigDecimal.TEN)
-            .details("Reference")
+            .claimNumber("Reference")
             .monthlyInstalmentAmount(BigDecimal.ONE)
             .build();
 
@@ -44,7 +44,7 @@ public class CourtOrderMapperTest {
         //given
         CCDCourtOrder ccdCourtOrder = CCDCourtOrder.builder()
             .amountOwed(BigDecimal.TEN)
-            .details("Reference")
+            .claimNumber("Reference")
             .monthlyInstalmentAmount(BigDecimal.ONE)
             .build();
 

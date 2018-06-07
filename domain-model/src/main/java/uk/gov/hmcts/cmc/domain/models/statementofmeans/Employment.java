@@ -18,17 +18,20 @@ public class Employment {
     private final YesNoOption selfEmployedOption;
     private final List<Employer> employers;
     private final SelfEmployed selfEmployed;
+    private final UnEmployed unEmployed;
 
     public Employment(
         YesNoOption employed,
         YesNoOption selfEmployedOption,
         List<Employer> employers,
-        SelfEmployed selfEmployed
+        SelfEmployed selfEmployed,
+        UnEmployed unEmployed
     ) {
         this.employmentOption = employed;
         this.selfEmployedOption = selfEmployedOption;
         this.employers = employers;
         this.selfEmployed = selfEmployed;
+        this.unEmployed = unEmployed;
     }
 
     public YesNoOption getEmploymentOption() {
@@ -47,6 +50,10 @@ public class Employment {
         return Optional.ofNullable(selfEmployed);
     }
 
+    public Optional<UnEmployed> getUnEmployed() {
+        return Optional.ofNullable(unEmployed);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -59,13 +66,14 @@ public class Employment {
         return employmentOption == that.employmentOption
             && selfEmployedOption == that.selfEmployedOption
             && Objects.equals(employers, that.employers)
-            && Objects.equals(selfEmployed, that.selfEmployed);
+            && Objects.equals(selfEmployed, that.selfEmployed)
+            && Objects.equals(unEmployed, that.unEmployed);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(employmentOption, selfEmployedOption, employers, selfEmployed);
+        return Objects.hash(employmentOption, selfEmployedOption, employers, selfEmployed, unEmployed);
     }
 
     @Override

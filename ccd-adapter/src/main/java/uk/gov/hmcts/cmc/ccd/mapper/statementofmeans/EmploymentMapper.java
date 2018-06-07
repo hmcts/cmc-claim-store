@@ -22,14 +22,17 @@ public class EmploymentMapper implements Mapper<CCDEmployment, Employment> {
 
     private final EmployerMapper employerMapper;
     private final SelfEmployedMapper selfEmployedMapper;
+    private final UnEmployedMapper unEmployedMapper;
 
     @Autowired
     public EmploymentMapper(
         EmployerMapper employerMapper,
-        SelfEmployedMapper selfEmployedMapper
+        SelfEmployedMapper selfEmployedMapper,
+        UnEmployedMapper unEmployedMapper
     ) {
         this.employerMapper = employerMapper;
         this.selfEmployedMapper = selfEmployedMapper;
+        this.unEmployedMapper = unEmployedMapper;
     }
 
     @Override
@@ -48,6 +51,8 @@ public class EmploymentMapper implements Mapper<CCDEmployment, Employment> {
 
         employment.getSelfEmployed()
             .ifPresent(selfEmployed -> builder.selfEmployed(selfEmployedMapper.to(selfEmployed)));
+
+        employment.getUnEmployed().ifPresent(unEmployed -> unEmployedMapper.to(unEmployed));
 
         return builder.build();
     }
@@ -68,7 +73,8 @@ public class EmploymentMapper implements Mapper<CCDEmployment, Employment> {
             YesNoOption.valueOf(ccdEmployment.getIsEmployed().name()),
             YesNoOption.valueOf(ccdEmployment.getIsSelfEmployed().name()),
             employers,
-            selfEmployedMapper.from(ccdEmployment.getSelfEmployed())
+            selfEmployedMapper.from(ccdEmployment.getSelfEmployed()),
+            unEmployedMapper.from(ccdEmployment.getUnEmployed())
         );
     }
 }

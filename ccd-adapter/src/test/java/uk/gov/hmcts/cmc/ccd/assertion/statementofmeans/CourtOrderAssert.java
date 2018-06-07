@@ -15,9 +15,9 @@ public class CourtOrderAssert extends AbstractAssert<CourtOrderAssert, CourtOrde
     public CourtOrderAssert isEqualTo(CCDCourtOrder ccdCourtOrder) {
         isNotNull();
 
-        if (!Objects.equals(actual.getDetails(), ccdCourtOrder.getDetails())) {
-            failWithMessage("Expected CourtOrder.details to be <%s> but was <%s>",
-                ccdCourtOrder.getDetails(), actual.getDetails());
+        if (!Objects.equals(actual.getClaimNumber(), ccdCourtOrder.getClaimNumber())) {
+            failWithMessage("Expected CourtOrder.claimNumber to be <%s> but was <%s>",
+                ccdCourtOrder.getClaimNumber(), actual.getClaimNumber());
         }
 
         if (!Objects.equals(actual.getAmountOwed(), ccdCourtOrder.getAmountOwed())) {

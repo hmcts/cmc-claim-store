@@ -14,7 +14,7 @@ public class BankAccount {
 
     public enum BankAccountType {
         CURRENT_ACCOUNT("Current account"),
-        SAVING_ACCOUNT("Saving account"),
+        SAVINGS_ACCOUNT("Savings account"),
         ISA("ISA"),
         OTHER("Other");
 

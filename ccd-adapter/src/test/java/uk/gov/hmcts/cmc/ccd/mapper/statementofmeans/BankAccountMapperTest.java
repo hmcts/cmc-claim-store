@@ -46,7 +46,7 @@ public class BankAccountMapperTest {
         CCDBankAccount ccdBankAccount = CCDBankAccount.builder()
             .balance(BigDecimal.valueOf(100))
             .isJoint(CCDYesNoOption.NO)
-            .typeOfAccount(CCDBankAccount.BankAccountType.SAVING_ACCOUNT)
+            .typeOfAccount(CCDBankAccount.BankAccountType.SAVINGS_ACCOUNT)
             .build();
 
         //when
