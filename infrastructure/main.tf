@@ -107,6 +107,13 @@ module "claim-store-api" {
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
+    //schedular db
+    SCHEDULER_DB_HOST = "${module.scheduler.host_name}"
+    SCHEDULER_DB_PORT = "${module.scheduler.postgresql_listen_port}"
+    SCHEDULER_DB_NAME = "${module.scheduler.postgresql_database}"
+    SCHEDULER_DB_USERNAME = "${module.scheduler.user_name}"
+    SCHEDULER_DB_PASSWORD = "${module.scheduler.postgresql_password}"
+
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
     IDAM_S2S_AUTH_URL = "${local.s2sUrl}"

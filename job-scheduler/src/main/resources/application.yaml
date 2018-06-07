@@ -6,7 +6,15 @@ quartzProperties:
       isClustered: false
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-      dataSource: jobscheduler
+      dataSource: scheduler
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
       threadCount: 8
+
+spring:
+  datasource:
+    scheduler:
+      driverClassName: org.postgresql.Driver
+      username: ${SCHEDULER_DB_USERNAME:-}
+      password: ${SCHEDULER_DB_PASSWORD:-}
+      jdbc-url: jdbc:postgresql://${SCHEDULER_DB_HOST:}:${SCHEDULER_DB_PORT:}/${SCHEDULER_DB_NAME:scheduler}

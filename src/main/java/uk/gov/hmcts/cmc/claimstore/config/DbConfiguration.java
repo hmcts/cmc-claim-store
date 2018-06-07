@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -19,26 +20,29 @@ import javax.sql.DataSource;
 @Configuration
 public class DbConfiguration {
 
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource")
+    @Bean("claimStore")
+    @Primary
+    @ConfigurationProperties(prefix = "spring.datasource.claimstore")
     public DataSource dataSource() {
         return DataSourceBuilder.create()
             .build();
     }
 
     @Bean
-    public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(DataSource dataSource) {
-        return new TransactionAwareDataSourceProxy(dataSource);
+    public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(DataSource claimStore) {
+        return new TransactionAwareDataSourceProxy(claimStore);
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(TransactionAwareDataSourceProxy dataSource) {
-        return new DataSourceTransactionManager(dataSource);
+    public PlatformTransactionManager transactionManager(
+        TransactionAwareDataSourceProxy transactionAwareDataSourceProxy
+    ) {
+        return new DataSourceTransactionManager(transactionAwareDataSourceProxy);
     }
 
     @Bean
-    public DBI dbi(TransactionAwareDataSourceProxy dataSource) {
-        DBI dbi = new DBI(dataSource);
+    public DBI dbi(TransactionAwareDataSourceProxy transactionAwareDataSourceProxy) {
+        DBI dbi = new DBI(transactionAwareDataSourceProxy);
         dbi.registerContainerFactory(new OptionalContainerFactory());
 
         return dbi;
