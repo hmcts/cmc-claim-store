@@ -168,10 +168,29 @@ public class CCDCaseApi {
         this.linkToCaseWithoutRevoking(defendantUser, anonymousCaseWorker, caseId);
     }
 
+    private void linkToCaseWithoutRevoking(User defendantUser, User anonymousCaseWorker, String caseId) {
+        String defendantId = defendantUser.getUserDetails().getId();
+        
+        LOGGER.info("Granting access to case: {} for user: {}", caseId, defendantId);
+        this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
+
+        this.updateCase(defendantUser, caseId, defendantId);
+    }
+
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
+
         LOGGER.info("Granting access to case: {} for user: {} with letter-holder id: {}",
             caseId, defendantId, letterHolderId);
+        this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
+
+        LOGGER.info("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+        this.revokeAccessToCase(anonymousCaseWorker, letterHolderId, caseId);
+
+        this.updateCase(defendantUser, caseId, defendantId);
+    }
+
+    private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
         caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
@@ -180,8 +199,9 @@ public class CCDCaseApi {
             caseId,
             new UserId(defendantId)
         );
+    }
 
-        LOGGER.info("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+    private void revokeAccessToCase(User anonymousCaseWorker, String letterHolderId, String caseId) {
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
@@ -190,31 +210,9 @@ public class CCDCaseApi {
             caseId,
             letterHolderId
         );
-
-        coreCaseDataService.update(
-            defendantUser.getAuthorisation(),
-            CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
-            CaseEvent.LINK_DEFENDANT
-        );
     }
 
-    private void linkToCaseWithoutRevoking(
-        User defendantUser,
-        User anonymousCaseWorker,
-        String caseId
-    ) {
-        String defendantId = defendantUser.getUserDetails().getId();
-        LOGGER.info("Granting access to case: {} for user: {}", caseId, defendantId);
-
-        caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
-            authTokenGenerator.generate(),
-            anonymousCaseWorker.getUserDetails().getId(),
-            JURISDICTION_ID,
-            CASE_TYPE_ID,
-            caseId,
-            new UserId(defendantId)
-        );
-
+    private void updateCase(User defendantUser, String caseId, String defendantId) {
         coreCaseDataService.update(
             defendantUser.getAuthorisation(),
             CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
