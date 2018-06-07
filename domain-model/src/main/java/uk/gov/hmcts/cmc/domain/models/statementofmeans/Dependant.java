@@ -5,26 +5,30 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 public class Dependant {
 
+    @Valid
     private final Children children;
-    private final Integer maintainedChildren;
 
-    public Dependant(Children children, Integer maintainedChildren) {
+    @Valid
+    private final OtherDependant otherDependant;
+
+    public Dependant(Children children, OtherDependant otherDependant) {
         this.children = children;
-        this.maintainedChildren = maintainedChildren;
+        this.otherDependant = otherDependant;
     }
 
     public Optional<Children> getChildren() {
         return Optional.ofNullable(children);
     }
 
-    public Optional<Integer> getMaintainedChildren() {
-        return Optional.ofNullable(maintainedChildren);
+    public Optional<OtherDependant> getOtherDependant() {
+        return Optional.ofNullable(otherDependant);
     }
 
     @Override
@@ -37,13 +41,12 @@ public class Dependant {
         }
         Dependant dependant = (Dependant) other;
         return Objects.equals(children, dependant.children)
-            && Objects.equals(maintainedChildren, dependant.maintainedChildren);
+            && Objects.equals(otherDependant, dependant.otherDependant);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(children, maintainedChildren);
+        return Objects.hash(children, otherDependant);
     }
 
     @Override

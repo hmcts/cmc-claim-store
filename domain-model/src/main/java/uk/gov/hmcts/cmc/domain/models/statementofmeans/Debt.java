@@ -2,17 +2,30 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 public class Debt {
 
+    @NotEmpty
     private final String description;
+
+    @NotNull
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal totalOwed;
+
+    @NotNull
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal monthlyPayments;
 
     public Debt(String description, BigDecimal totalOwed, BigDecimal monthlyPayments) {

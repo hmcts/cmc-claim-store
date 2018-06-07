@@ -2,28 +2,57 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.hibernate.validator.constraints.NotEmpty;
+import uk.gov.hmcts.cmc.domain.constraints.EachNotNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 public class StatementOfMeans {
-    private final ResidenceType residenceType;
+
+    @Valid
+    @NotNull
+    private final Residence residence;
+
+    @Valid
     private final Dependant dependant;
+
+    @Valid
     private final Employment employment;
+
+    @Valid
+    @NotEmpty
+    @EachNotNull
     private final List<BankAccount> bankAccounts;
+
+    @Valid
+    @EachNotNull
     private final List<Debt> debts;
+
+    @Valid
+    @EachNotNull
     private final List<Income> incomes;
+
+    @Valid
+    @EachNotNull
     private final List<Expense> expenses;
+
+    @Valid
+    @EachNotNull
     private final List<CourtOrder> courtOrders;
+
+    @NotEmpty
     private final String reason;
 
     public StatementOfMeans(
-        ResidenceType residenceType,
+        Residence residence,
         Dependant dependant,
         Employment employment,
         List<BankAccount> bankAccounts,
@@ -33,7 +62,7 @@ public class StatementOfMeans {
         List<CourtOrder> courtOrders,
         String reason
     ) {
-        this.residenceType = residenceType;
+        this.residence = residence;
         this.dependant = dependant;
         this.employment = employment;
         this.bankAccounts = bankAccounts;
@@ -44,8 +73,8 @@ public class StatementOfMeans {
         this.reason = reason;
     }
 
-    public ResidenceType getResidenceType() {
-        return residenceType;
+    public Residence getResidence() {
+        return residence;
     }
 
     public Optional<Dependant> getDependant() {
@@ -89,7 +118,7 @@ public class StatementOfMeans {
             return false;
         }
         StatementOfMeans that = (StatementOfMeans) other;
-        return residenceType == that.residenceType
+        return Objects.equals(residence, that.residence)
             && Objects.equals(dependant, that.dependant)
             && Objects.equals(employment, that.employment)
             && Objects.equals(bankAccounts, that.bankAccounts)
@@ -102,7 +131,7 @@ public class StatementOfMeans {
 
     @Override
     public int hashCode() {
-        return Objects.hash(residenceType, dependant, employment, bankAccounts, debts, incomes, expenses,
+        return Objects.hash(residence, dependant, employment, bankAccounts, debts, incomes, expenses,
             courtOrders, reason);
     }
 

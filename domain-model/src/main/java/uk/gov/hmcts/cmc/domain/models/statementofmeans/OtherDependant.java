@@ -4,31 +4,33 @@ import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
-
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
-public class Employer {
+public class OtherDependant {
+
+    @NotNull
+    @Min(1)
+    private final Integer noOfPeople;
 
     @NotEmpty
-    private final String jobTitle;
+    private final String details;
 
-    @NotEmpty
-    private final String employerName;
-
-    public Employer(String jobTitle, String employerName) {
-        this.jobTitle = jobTitle;
-        this.employerName = employerName;
+    public OtherDependant(Integer noOfPeople, String details) {
+        this.noOfPeople = noOfPeople;
+        this.details = details;
     }
 
-    public String getJobTitle() {
-        return jobTitle;
+    public Integer getNoOfPeople() {
+        return noOfPeople;
     }
 
-    public String getEmployerName() {
-        return employerName;
+    public String getDetails() {
+        return details;
     }
 
     @Override
@@ -39,14 +41,14 @@ public class Employer {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        Employer employer = (Employer) other;
-        return Objects.equals(jobTitle, employer.jobTitle)
-            && Objects.equals(employerName, employer.employerName);
+        OtherDependant that = (OtherDependant) other;
+        return Objects.equals(noOfPeople, that.noOfPeople)
+            && Objects.equals(details, that.details);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(jobTitle, employerName);
+        return Objects.hash(noOfPeople, details);
     }
 
     @Override

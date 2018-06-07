@@ -2,20 +2,36 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 public class SelfEmployed {
 
+    @NotEmpty
     private final String jobTitle;
+
+    @NotNull
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal annualTurnover;
+
+    @NotNull
     private final YesNoOption behindOnTaxPayments;
+
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal amountYouOwe;
+
     private final String reason;
 
     public SelfEmployed(
@@ -44,8 +60,8 @@ public class SelfEmployed {
         return behindOnTaxPayments;
     }
 
-    public BigDecimal getAmountYouOwe() {
-        return amountYouOwe;
+    public Optional<BigDecimal> getAmountYouOwe() {
+        return Optional.ofNullable(amountYouOwe);
     }
 
     public String getReason() {

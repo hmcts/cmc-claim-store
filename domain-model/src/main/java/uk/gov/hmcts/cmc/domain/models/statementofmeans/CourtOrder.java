@@ -2,17 +2,30 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 public class CourtOrder {
 
+    @NotEmpty
     private final String claimNumber;
+
+    @NotNull
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal amountOwed;
+
+    @NotNull
+    @Money
+    @DecimalMin(value = "0.01")
     private final BigDecimal monthlyInstalmentAmount;
 
     public CourtOrder(String claimNumber, BigDecimal amountOwed, BigDecimal monthlyInstalmentAmount) {

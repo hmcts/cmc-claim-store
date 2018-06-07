@@ -43,13 +43,15 @@
     "paymentSchedule": "EACH_WEEK"
   },
   "statementOfMeans": {
-    "residenceType": "OWN_HOME",
+    "residence": {
+      "type": "JOINT_OWN_HOME"
+    },
     "dependant": {
       "children": {
         "between11and15": 0,
-        "between16and19": 2
-      },
-      "maintainedChildren": 1
+        "between16and19": 2,
+        "maintainedChildren": 1
+      }
     },
     "employment": {
       "employmentOption": "yes",
@@ -57,7 +59,10 @@
       "employers": [{
         "jobTitle": "My sweet job",
         "employerName": "CMC"
-      }]
+      }],
+      "unEmployed": {
+        "type": "Retired"
+      }
     },
     "bankAccounts": [{
       "typeOfAccount": "SAVINGS_ACCOUNT",
@@ -70,12 +75,12 @@
       "monthlyPayments": 1
     }],
     "incomes": [{
-      "type": "Salary",
+      "type": "JOB",
       "frequency": "MONTH",
       "amountReceived": 10
     }],
     "expenses": [{
-      "type": "Salary",
+      "type": "COUNCIL_TAX",
       "frequency": "MONTH",
       "amountPaid": 10
     }],
@@ -87,3 +92,4 @@
     "reason": "My reason"
   }
 }
+

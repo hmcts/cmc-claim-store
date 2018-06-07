@@ -5,13 +5,16 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.constraints.NotEmpty;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 public class UnEmployed {
 
+    @NotEmpty
     private final String type;
+
     private final Integer noOfYears;
     private final Integer noOfMonths;
 

@@ -11,8 +11,9 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.ResidenceType;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.UnEmployed;
 
 import java.math.BigDecimal;
 
@@ -26,7 +27,7 @@ public class SampleStatementOfMeans {
 
     public StatementOfMeans build() {
         return StatementOfMeans.builder()
-            .residenceType(ResidenceType.OWN_HOME)
+            .residence(Residence.builder().type(Residence.ResidenceType.JOINT_OWN_HOME).build())
             .reason("My reason")
             .bankAccounts(asList(BankAccount.builder()
                 .typeOfAccount(BankAccount.BankAccountType.SAVINGS_ACCOUNT)
@@ -47,26 +48,27 @@ public class SampleStatementOfMeans {
                 .build()
             ))
             .expenses(asList(Expense.builder()
-                .type("Salary")
+                .type(Expense.ExpenseType.COUNCIL_TAX)
                 .frequency(PaymentFrequency.MONTH)
                 .amountPaid(BigDecimal.TEN)
                 .build()
             ))
             .incomes(asList(Income.builder()
-                .type("Salary")
+                .type(Income.IncomeType.JOB)
                 .frequency(PaymentFrequency.MONTH)
                 .amountReceived(BigDecimal.TEN)
                 .build()
             ))
             .dependant(Dependant.builder()
-                .children(Children.builder().between11and15(0).between16and19(1).between16and19(2).build())
-                .maintainedChildren(1)
+                .children(Children.builder()
+                    .between11and15(0).between16and19(1).between16and19(2).maintainedChildren(1).build())
                 .build()
             )
             .employment(Employment.builder()
                 .employmentOption(YesNoOption.YES)
                 .employers(asList(Employer.builder().employerName("CMC").jobTitle("My sweet job").build()))
                 .selfEmployedOption(YesNoOption.NO)
+                .unEmployed(UnEmployed.builder().type("Retired").build())
                 .build()
             )
             .build();

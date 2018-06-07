@@ -2,10 +2,12 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -29,8 +31,14 @@ public class BankAccount {
         }
     }
 
+    @NotNull
     private final BankAccountType typeOfAccount;
+
+    @NotNull
     private final YesNoOption jointOption;
+
+    @Money
+    @NotNull
     private final BigDecimal balance;
 
     public BankAccount(BankAccountType typeOfAccount, YesNoOption jointOption, BigDecimal balance) {

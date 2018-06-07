@@ -2,11 +2,15 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.EachNotNull;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -14,10 +18,20 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 public class Employment {
 
+    @NotNull
     private final YesNoOption employmentOption;
+
+    @NotNull
     private final YesNoOption selfEmployedOption;
+
+    @Valid
+    @EachNotNull
     private final List<Employer> employers;
+
+    @Valid
     private final SelfEmployed selfEmployed;
+
+    @Valid
     private final UnEmployed unEmployed;
 
     public Employment(
@@ -72,7 +86,6 @@ public class Employment {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(employmentOption, selfEmployedOption, employers, selfEmployed, unEmployed);
     }
 
