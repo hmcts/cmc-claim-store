@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.errors;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.StatementContext;

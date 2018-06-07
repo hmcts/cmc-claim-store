@@ -2,10 +2,12 @@ package uk.gov.hmcts.cmc.claimstore;
 
 import org.flywaydb.core.Flyway;
 import org.mockito.Answers;
+import org.quartz.Scheduler;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -31,6 +33,19 @@ class MockedDatabaseConfiguration {
 
     @MockBean
     private TestingSupportRepository testingSupportRepository;
+
+    @MockBean
+    private Scheduler testingScheduler;
+
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean() {
+        return new SchedulerFactoryBean() {
+            @Override
+            public Scheduler getScheduler() {
+                return null;
+            }
+        };
+    }
 
     @Bean
     protected PlatformTransactionManager transactionManager() {

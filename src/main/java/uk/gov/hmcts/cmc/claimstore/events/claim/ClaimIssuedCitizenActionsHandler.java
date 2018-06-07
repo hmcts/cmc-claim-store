@@ -8,16 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.scheduler.jobs.NotificationEmailJob;
-import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
-
-import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.time.ZoneOffset.UTC;
 
 @Component
 public class ClaimIssuedCitizenActionsHandler {
@@ -67,37 +58,6 @@ public class ClaimIssuedCitizenActionsHandler {
                         event.getSubmitterName()
                     ));
         }
-    }
-
-    // This is added for spike, the actual implementation may vary based on the requirements in story
-    @EventListener
-    public void scheduleReminderEmails(CitizenClaimIssuedEvent event) {
-        Claim claim = event.getClaim();
-        Map<String, Object> data = new HashMap<>();
-        data.put("Email", claim.getDefendantEmail()); // we can add whatever data we want to pass to job.
-
-        ZonedDateTime fiveDaysBefore = claim.getResponseDeadline().minusDays(5).atStartOfDay(UTC);
-        JobData fiveDaysReminder = JobData.builder()
-            .id(UUID.randomUUID().toString())
-            .group("Reminders")
-            .description("Defendant reminder email 5 days before response deadline")
-            .jobClass(NotificationEmailJob.class)
-            .data(data)
-            .build();
-
-        this.jobService.scheduleJob(fiveDaysReminder, fiveDaysBefore);
-
-        ZonedDateTime oneDayBefore = claim.getResponseDeadline().minusDays(1).atStartOfDay(UTC);
-        JobData oneDayReminder = JobData.builder()
-            .id(UUID.randomUUID().toString())
-            .group("Reminders")
-            .description("Defendant reminder email 1 days before response deadline")
-            .jobClass(NotificationEmailJob.class)
-            .data(data)
-            .build();
-
-        this.jobService.scheduleJob(oneDayReminder, oneDayBefore);
-
     }
 
     private EmailTemplates getEmailTemplates() {

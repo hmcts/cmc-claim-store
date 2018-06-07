@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.scheduler.jobs.NotificationEmailJob;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -227,12 +229,22 @@ public class CCDCaseApi {
         emailData.put("responseDeadline", responseDeadline);
 
         jobService.scheduleJob(
-            JobData.builder().data(emailData.build()).build(),
+            JobData.builder()
+                .id(UUID.randomUUID().toString())
+                .group("Reminders")
+                .description("Defendant reminder email 5 days before response deadline")
+                .jobClass(NotificationEmailJob.class)
+                .data(emailData.build()).build(),
             responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC)
         );
 
         jobService.scheduleJob(
-            JobData.builder().data(emailData.build()).build(),
+            JobData.builder()
+                .id(UUID.randomUUID().toString())
+                .group("Reminders")
+                .description("Defendant reminder email 1 days before response deadline")
+                .jobClass(NotificationEmailJob.class)
+                .data(emailData.build()).build(),
             responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
     }
 
