@@ -149,9 +149,9 @@ module "claim-store-api" {
     RPA_NOTIFICATIONS_RECIPIENT_SEALED_CLAIM = "${data.vault_generic_secret.rpa_email_sealed_claim.data["value"]}"
     RPA_NOTIFICATIONS_RECIPIENT_MORE_TIME = "${data.vault_generic_secret.rpa_email_more_time_requested.data["value"]}"
 
-    RPA_NOTIFICATIONS_DEFENCE_RESPONSE = "${data.vault_generic_secret.rpa_email_defence_response["value"]}"
-    RPA_NOTIFICATIONS_DEFAULT_JUDGEMENT = "${data.vault_generic_secret.rpa_email_default_judgment["value"]}"
-    RPA_NOTIFICATIONS_ADDITIONAL_TIME = "${data.vault_generic_secret.rpa_email_additional_time["value"]}"
+    RPA_NOTIFICATIONS_DEFENCE_RESPONSE = "${data.vault_generic_secret.rpa_email_defence_response.data["value"]}"
+    RPA_NOTIFICATIONS_DEFAULT_JUDGEMENT = "${data.vault_generic_secret.rpa_email_default_judgment.data["value"]}"
+    RPA_NOTIFICATIONS_ADDITIONAL_TIME = "${data.vault_generic_secret.rpa_email_additional_time.data["value"]}"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
