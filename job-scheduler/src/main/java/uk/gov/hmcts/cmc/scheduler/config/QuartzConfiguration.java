@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.scheduler.config;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
@@ -34,11 +35,16 @@ public class QuartzConfiguration {
         return quartzProperties;
     }
 
-    @Bean("schedulerDataBase")
-    @ConfigurationProperties(prefix = "spring.datasource.scheduler")
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-            .build();
+    @Bean
+    @ConfigurationProperties("spring.datasource.scheduler")
+    public DataSourceProperties schedulerDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean
+    @ConfigurationProperties("spring.datasource.scheduler")
+    public DataSource schedulerDataSource() {
+        return schedulerDataSourceProperties().initializeDataSourceBuilder().build();
     }
 
     @Bean

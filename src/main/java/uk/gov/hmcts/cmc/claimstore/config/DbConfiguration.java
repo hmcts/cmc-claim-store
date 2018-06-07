@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.config;
 
 import org.skife.jdbi.v2.DBI;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -19,18 +19,23 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DbConfiguration {
-
-    @Bean("claimStore")
+    @Bean
     @Primary
-    @ConfigurationProperties(prefix = "spring.datasource.claimstore")
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-            .build();
+    @ConfigurationProperties("spring.datasource.claimstore")
+    public DataSourceProperties claimStoreDataSourceProperties() {
+        return new DataSourceProperties();
     }
 
     @Bean
-    public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(DataSource claimStore) {
-        return new TransactionAwareDataSourceProxy(claimStore);
+    @Primary
+    @ConfigurationProperties("spring.datasource.claimstore")
+    public DataSource claimStoreDataSource() {
+        return claimStoreDataSourceProperties().initializeDataSourceBuilder().build();
+    }
+
+    @Bean
+    public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(DataSource claimStoreDataSource) {
+        return new TransactionAwareDataSourceProxy(claimStoreDataSource);
     }
 
     @Bean
