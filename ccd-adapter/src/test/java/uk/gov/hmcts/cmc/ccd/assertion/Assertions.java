@@ -1,7 +1,21 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
+import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantEvidenceAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantTimelineAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.FullAdmissionResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.FullDefenceResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.ResponseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.BankAccountAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.ChildrenAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.CourtOrderAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.DebtAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.DependantAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.EmployerAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.EmploymentAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.ExpenseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.IncomeAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.SelfEmployedAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterest;
@@ -41,8 +55,20 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Children;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployed;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 public class Assertions {
 
@@ -213,4 +239,53 @@ public class Assertions {
     public static ResponseAssert assertThat(Response response) {
         return new ResponseAssert(response);
     }
+
+    public static BankAccountAssert assertThat(BankAccount bankAccount) {
+        return new BankAccountAssert(bankAccount);
+    }
+
+    public static ChildrenAssert assertThat(Children children) {
+        return new ChildrenAssert(children);
+    }
+
+    public static CourtOrderAssert assertThat(CourtOrder courtOrder) {
+        return new CourtOrderAssert(courtOrder);
+    }
+
+    public static DebtAssert assertThat(Debt debt) {
+        return new DebtAssert(debt);
+    }
+
+    public static DependantAssert assertThat(Dependant dependant) {
+        return new DependantAssert(dependant);
+    }
+
+    public static EmployerAssert assertThat(Employer employer) {
+        return new EmployerAssert(employer);
+    }
+
+    public static SelfEmployedAssert assertThat(SelfEmployed selfEmployed) {
+        return new SelfEmployedAssert(selfEmployed);
+    }
+
+    public static EmploymentAssert assertThat(Employment employment) {
+        return new EmploymentAssert(employment);
+    }
+
+    public static IncomeAssert assertThat(Income income) {
+        return new IncomeAssert(income);
+    }
+
+    public static ExpenseAssert assertThat(Expense expense) {
+        return new ExpenseAssert(expense);
+    }
+
+    public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
+        return new StatementOfMeansAssert(statementOfMeans);
+    }
+
+    public static FullAdmissionResponseAssert assertThat(FullAdmissionResponse fullAdmissionResponse) {
+        return new FullAdmissionResponseAssert(fullAdmissionResponse);
+    }
+
 }

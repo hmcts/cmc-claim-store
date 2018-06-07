@@ -27,6 +27,18 @@ import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDChildren;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDDependant;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployer;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployment;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDPaymentFrequency;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidenceType;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.math.BigDecimal;
@@ -34,6 +46,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -280,6 +293,70 @@ public class SampleData {
         return CCDResponse.builder()
             .responseType(CCDResponseType.FULL_DEFENCE)
             .fullDefenceResponse(getFullDefenceResponse())
+            .build();
+    }
+
+    public static CCDStatementOfMeans getCCDStatementOfMeans() {
+        return CCDStatementOfMeans.builder()
+            .residenceType(CCDResidenceType.OWN_HOME)
+            .reason("My reason")
+            .dependant(CCDDependant.builder()
+                .maintainedChildren(1)
+                .children(CCDChildren.builder().between16and19(2).between11and15(1).under11(0).build())
+                .build()
+            )
+            .employment(CCDEmployment.builder()
+                .employers(asList(
+                    CCDCollectionElement.<CCDEmployer>builder().value(CCDEmployer.builder()
+                        .jobTitle("A job")
+                        .employerName("A Company")
+                        .build()
+                    ).build()
+                ))
+                .isEmployed(CCDYesNoOption.YES)
+                .isSelfEmployed(CCDYesNoOption.NO)
+                .build()
+            )
+            .incomes(asList(
+                CCDCollectionElement.<CCDIncome>builder().value(CCDIncome.builder()
+                    .type("Salary")
+                    .frequency(CCDPaymentFrequency.MONTH)
+                    .amountReceived(BigDecimal.TEN)
+                    .build()
+                ).build()
+            ))
+            .expenses(asList(
+                CCDCollectionElement.<CCDExpense>builder().value(CCDExpense.builder()
+                    .type("Salary")
+                    .frequency(CCDPaymentFrequency.MONTH)
+                    .amountPaid(BigDecimal.TEN)
+                    .build()
+                ).build()
+            ))
+            .debts(asList(
+                CCDCollectionElement.<CCDDebt>builder().value(CCDDebt.builder()
+                    .totalOwed(BigDecimal.TEN)
+                    .description("Reference")
+                    .monthlyPayments(BigDecimal.ONE)
+                    .build()
+                ).build()
+            ))
+            .bankAccounts(asList(
+                CCDCollectionElement.<CCDBankAccount>builder().value(CCDBankAccount.builder()
+                    .balance(BigDecimal.valueOf(100))
+                    .isJoint(CCDYesNoOption.NO)
+                    .typeOfAccount(CCDBankAccount.BankAccountType.SAVINGS_ACCOUNT)
+                    .build()
+                ).build()
+            ))
+            .courtOrders(asList(
+                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder().build().builder()
+                    .amountOwed(BigDecimal.TEN)
+                    .claimNumber("Reference")
+                    .monthlyInstalmentAmount(BigDecimal.ONE)
+                    .build()
+                ).build()
+            ))
             .build();
     }
 }
