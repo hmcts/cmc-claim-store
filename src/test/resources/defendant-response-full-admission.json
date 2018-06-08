@@ -47,26 +47,36 @@
       "type": "JOINT_OWN_HOME"
     },
     "dependant": {
-      "children": {
-        "between11and15": 0,
-        "between16and19": 2,
-        "maintainedChildren": 1
+      "children": [{
+        "ageGroupType": "BETWEEN_11_AND_15",
+        "numberOfChildren": 2
+      }],
+      "numberOfMaintainedChildren": 2,
+      "otherDependants": {
+        "numberOfPeople": 3,
+        "details": "Three other dependants"
       }
     },
     "employment": {
-      "employmentOption": "yes",
-      "selfEmployedOption": "no",
       "employers": [{
         "jobTitle": "My sweet job",
         "employerName": "CMC"
       }],
-      "unEmployed": {
-        "type": "Retired"
+      "selfEmployment": {
+        "jobTitle": "Director",
+        "annualTurnover": 10,
+        "onTaxPayments": {
+          "amountYouOwe": 10,
+          "reason": "Genuine reason"
+        }
+      },
+      "unemployment": {
+        "retired": true
       }
     },
     "bankAccounts": [{
-      "typeOfAccount": "SAVINGS_ACCOUNT",
-      "jointOption": "yes",
+      "type": "SAVINGS_ACCOUNT",
+      "joint": true,
       "balance": 10
     }],
     "debts": [{
@@ -92,4 +102,3 @@
     "reason": "My reason"
   }
 }
-
