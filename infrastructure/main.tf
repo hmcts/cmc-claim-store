@@ -133,7 +133,7 @@ module "claim-store-api" {
     RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.rpa_email.data["value"]}"
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
-    FEATURE_TOGGLES_EMAILTOSTAFF = "true"
+    FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
 
     ROOT_APPENDER = "CMC"
   }
