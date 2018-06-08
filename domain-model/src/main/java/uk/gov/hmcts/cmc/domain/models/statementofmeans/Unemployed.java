@@ -12,21 +12,21 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class Unemployed {
     
     @NotNull
-    private final Integer noOfYears;
+    private final Integer numberOfYears;
     @NotNull
-    private final Integer noOfMonths;
+    private final Integer numberOfMonths;
 
-    public Unemployed(Integer noOfYears, Integer noOfMonths) {
-        this.noOfYears = noOfYears;
-        this.noOfMonths = noOfMonths;
+    public Unemployed(Integer numberOfYears, Integer numberOfMonths) {
+        this.numberOfYears = numberOfYears;
+        this.numberOfMonths = numberOfMonths;
     }
 
-    public Integer getNoOfYears() {
-        return noOfYears;
+    public Integer getNumberOfYears() {
+        return numberOfYears;
     }
 
-    public Integer getNoOfMonths() {
-        return noOfMonths;
+    public Integer getNumberOfMonths() {
+        return numberOfMonths;
     }
 
     @Override
@@ -38,12 +38,12 @@ public class Unemployed {
             return false;
         }
         Unemployed that = (Unemployed) other;
-        return Objects.equals(noOfYears, that.noOfYears) && Objects.equals(noOfMonths, that.noOfMonths);
+        return Objects.equals(numberOfYears, that.numberOfYears) && Objects.equals(numberOfMonths, that.numberOfMonths);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(noOfYears, noOfMonths);
+        return Objects.hash(numberOfYears, numberOfMonths);
     }
 
     @Override

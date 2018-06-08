@@ -15,18 +15,18 @@ public class OtherDependants {
 
     @NotNull
     @Min(1)
-    private final Integer noOfPeople;
+    private final Integer numberOfPeople;
 
     @NotBlank
     private final String details;
 
-    public OtherDependants(Integer noOfPeople, String details) {
-        this.noOfPeople = noOfPeople;
+    public OtherDependants(Integer numberOfPeople, String details) {
+        this.numberOfPeople = numberOfPeople;
         this.details = details;
     }
 
-    public Integer getNoOfPeople() {
-        return noOfPeople;
+    public Integer getNumberOfPeople() {
+        return numberOfPeople;
     }
 
     public String getDetails() {
@@ -42,13 +42,13 @@ public class OtherDependants {
             return false;
         }
         OtherDependants that = (OtherDependants) other;
-        return Objects.equals(noOfPeople, that.noOfPeople)
+        return Objects.equals(numberOfPeople, that.numberOfPeople)
             && Objects.equals(details, that.details);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(noOfPeople, details);
+        return Objects.hash(numberOfPeople, details);
     }
 
     @Override
