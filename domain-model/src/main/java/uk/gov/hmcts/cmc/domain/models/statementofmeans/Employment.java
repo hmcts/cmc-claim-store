@@ -3,14 +3,11 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.EachNotNull;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -18,54 +15,36 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 public class Employment {
 
-    @NotNull
-    private final YesNoOption employmentOption;
-
-    @NotNull
-    private final YesNoOption selfEmployedOption;
-
     @Valid
     @EachNotNull
     private final List<Employer> employers;
 
     @Valid
-    private final SelfEmployed selfEmployed;
+    private final SelfEmployment selfEmployment;
 
     @Valid
-    private final UnEmployed unEmployed;
+    private final UnEmployment unEmployment;
 
     public Employment(
-        YesNoOption employed,
-        YesNoOption selfEmployedOption,
         List<Employer> employers,
-        SelfEmployed selfEmployed,
-        UnEmployed unEmployed
+        SelfEmployment selfEmployment,
+        UnEmployment unEmployment
     ) {
-        this.employmentOption = employed;
-        this.selfEmployedOption = selfEmployedOption;
         this.employers = employers;
-        this.selfEmployed = selfEmployed;
-        this.unEmployed = unEmployed;
-    }
-
-    public YesNoOption getEmploymentOption() {
-        return employmentOption;
-    }
-
-    public YesNoOption getSelfEmployedOption() {
-        return selfEmployedOption;
+        this.selfEmployment = selfEmployment;
+        this.unEmployment = unEmployment;
     }
 
     public List<Employer> getEmployers() {
         return employers == null ? emptyList() : employers;
     }
 
-    public Optional<SelfEmployed> getSelfEmployed() {
-        return Optional.ofNullable(selfEmployed);
+    public Optional<SelfEmployment> getSelfEmployment() {
+        return Optional.ofNullable(selfEmployment);
     }
 
-    public Optional<UnEmployed> getUnEmployed() {
-        return Optional.ofNullable(unEmployed);
+    public Optional<UnEmployment> getUnEmployment() {
+        return Optional.ofNullable(unEmployment);
     }
 
     @Override
@@ -77,16 +56,14 @@ public class Employment {
             return false;
         }
         Employment that = (Employment) other;
-        return employmentOption == that.employmentOption
-            && selfEmployedOption == that.selfEmployedOption
-            && Objects.equals(employers, that.employers)
-            && Objects.equals(selfEmployed, that.selfEmployed)
-            && Objects.equals(unEmployed, that.unEmployed);
+        return Objects.equals(employers, that.employers)
+            && Objects.equals(selfEmployment, that.selfEmployment)
+            && Objects.equals(unEmployment, that.unEmployment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(employmentOption, selfEmployedOption, employers, selfEmployed, unEmployed);
+        return Objects.hash(employers, selfEmployment, unEmployment);
     }
 
     @Override

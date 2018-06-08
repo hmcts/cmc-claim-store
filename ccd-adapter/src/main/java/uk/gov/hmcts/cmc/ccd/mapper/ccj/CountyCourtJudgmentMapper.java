@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 
 import static uk.gov.hmcts.cmc.ccd.domain.ccj.CCDPaymentOption.valueOf;
 

@@ -2,22 +2,21 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
-public class SelfEmployed {
+public class SelfEmployment {
 
-    @NotEmpty
+    @NotBlank
     private final String jobTitle;
 
     @NotNull
@@ -25,8 +24,7 @@ public class SelfEmployed {
     @DecimalMin(value = "0.01")
     private final BigDecimal annualTurnover;
 
-    @NotNull
-    private final YesNoOption behindOnTaxPayments;
+    private final boolean behindOnTaxPayments;
 
     @Money
     @DecimalMin(value = "0.01")
@@ -34,10 +32,10 @@ public class SelfEmployed {
 
     private final String reason;
 
-    public SelfEmployed(
+    public SelfEmployment(
         String jobTitle,
         BigDecimal annualTurnover,
-        YesNoOption behindOnTaxPayments,
+        boolean behindOnTaxPayments,
         BigDecimal amountYouOwe,
         String reason
     ) {
@@ -56,7 +54,7 @@ public class SelfEmployed {
         return annualTurnover;
     }
 
-    public YesNoOption isBehindOnTaxPayments() {
+    public boolean isBehindOnTaxPayments() {
         return behindOnTaxPayments;
     }
 
@@ -64,8 +62,8 @@ public class SelfEmployed {
         return Optional.ofNullable(amountYouOwe);
     }
 
-    public String getReason() {
-        return reason;
+    public Optional<String> getReason() {
+        return Optional.ofNullable(reason);
     }
 
     @Override
@@ -76,7 +74,7 @@ public class SelfEmployed {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        SelfEmployed that = (SelfEmployed) other;
+        SelfEmployment that = (SelfEmployment) other;
         return behindOnTaxPayments == that.behindOnTaxPayments
             && Objects.equals(jobTitle, that.jobTitle)
             && Objects.equals(annualTurnover, that.annualTurnover)

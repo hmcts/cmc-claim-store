@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans;
 
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Children;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -13,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.UnEmployed;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.UnEmployment;
 
 import java.math.BigDecimal;
 
@@ -30,8 +29,8 @@ public class SampleStatementOfMeans {
             .residence(Residence.builder().type(Residence.ResidenceType.JOINT_OWN_HOME).build())
             .reason("My reason")
             .bankAccounts(asList(BankAccount.builder()
-                .typeOfAccount(BankAccount.BankAccountType.SAVINGS_ACCOUNT)
-                .jointOption(YesNoOption.YES)
+                .type(BankAccount.BankAccountType.SAVINGS_ACCOUNT)
+                .joint(true)
                 .balance(BigDecimal.TEN)
                 .build()
             ))
@@ -65,10 +64,8 @@ public class SampleStatementOfMeans {
                 .build()
             )
             .employment(Employment.builder()
-                .employmentOption(YesNoOption.YES)
                 .employers(asList(Employer.builder().employerName("CMC").jobTitle("My sweet job").build()))
-                .selfEmployedOption(YesNoOption.NO)
-                .unEmployed(UnEmployed.builder().type("Retired").build())
+                .unEmployment(UnEmployment.builder().type("Retired").build())
                 .build()
             )
             .build();

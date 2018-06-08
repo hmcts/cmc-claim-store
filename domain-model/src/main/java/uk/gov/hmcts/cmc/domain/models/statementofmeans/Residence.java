@@ -60,7 +60,6 @@ public class Residence {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(type, otherDetail);
     }
 }

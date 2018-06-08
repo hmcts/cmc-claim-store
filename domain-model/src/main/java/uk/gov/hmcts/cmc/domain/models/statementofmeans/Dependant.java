@@ -16,19 +16,19 @@ public class Dependant {
     private final Children children;
 
     @Valid
-    private final OtherDependant otherDependant;
+    private final OtherDependants otherDependants;
 
-    public Dependant(Children children, OtherDependant otherDependant) {
+    public Dependant(Children children, OtherDependants otherDependants) {
         this.children = children;
-        this.otherDependant = otherDependant;
+        this.otherDependants = otherDependants;
     }
 
     public Optional<Children> getChildren() {
         return Optional.ofNullable(children);
     }
 
-    public Optional<OtherDependant> getOtherDependant() {
-        return Optional.ofNullable(otherDependant);
+    public Optional<OtherDependants> getOtherDependants() {
+        return Optional.ofNullable(otherDependants);
     }
 
     @Override
@@ -41,12 +41,12 @@ public class Dependant {
         }
         Dependant dependant = (Dependant) other;
         return Objects.equals(children, dependant.children)
-            && Objects.equals(otherDependant, dependant.otherDependant);
+            && Objects.equals(otherDependants, dependant.otherDependants);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(children, otherDependant);
+        return Objects.hash(children, otherDependants);
     }
 
     @Override

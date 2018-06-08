@@ -2,23 +2,23 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.constraints.NotEmpty;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
-public class UnEmployed {
+public class UnEmployment {
 
-    @NotEmpty
+    @NotBlank
     private final String type;
 
     private final Integer noOfYears;
     private final Integer noOfMonths;
 
-    public UnEmployed(String type, Integer noOfYears, Integer noOfMonths) {
+    public UnEmployment(String type, Integer noOfYears, Integer noOfMonths) {
         this.type = type;
         this.noOfYears = noOfYears;
         this.noOfMonths = noOfMonths;
@@ -44,7 +44,7 @@ public class UnEmployed {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        UnEmployed that = (UnEmployed) other;
+        UnEmployment that = (UnEmployment) other;
         return Objects.equals(type, that.type)
             && Objects.equals(noOfYears, that.noOfYears)
             && Objects.equals(noOfMonths, that.noOfMonths);

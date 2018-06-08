@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -32,27 +31,26 @@ public class BankAccount {
     }
 
     @NotNull
-    private final BankAccountType typeOfAccount;
+    private final BankAccountType type;
 
-    @NotNull
-    private final YesNoOption jointOption;
+    private final boolean joint;
 
     @Money
     @NotNull
     private final BigDecimal balance;
 
-    public BankAccount(BankAccountType typeOfAccount, YesNoOption jointOption, BigDecimal balance) {
-        this.typeOfAccount = typeOfAccount;
-        this.jointOption = jointOption;
+    public BankAccount(BankAccountType type, boolean joint, BigDecimal balance) {
+        this.type = type;
+        this.joint = joint;
         this.balance = balance;
     }
 
-    public BankAccountType getTypeOfAccount() {
-        return typeOfAccount;
+    public BankAccountType getType() {
+        return type;
     }
 
-    public YesNoOption getJointOption() {
-        return jointOption;
+    public boolean isJoint() {
+        return joint;
     }
 
     public BigDecimal getBalance() {
@@ -67,15 +65,15 @@ public class BankAccount {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        BankAccount bankAccount = (BankAccount) other;
-        return Objects.equals(typeOfAccount, bankAccount.typeOfAccount)
-            && Objects.equals(jointOption, bankAccount.jointOption)
-            && Objects.equals(balance, bankAccount.balance);
+        BankAccount that = (BankAccount) other;
+        return joint == that.joint
+            && type == that.type
+            && Objects.equals(balance, that.balance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeOfAccount, jointOption, balance);
+        return Objects.hash(type, joint, balance);
     }
 
     @Override
