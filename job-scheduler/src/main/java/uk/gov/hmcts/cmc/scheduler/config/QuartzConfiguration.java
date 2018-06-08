@@ -58,15 +58,15 @@ public class QuartzConfiguration {
         flyway.migrate();
     }
 
-    @Bean
-    public TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy(
+    @Bean("schedulerTransactionAwareDataSourceProxy")
+    public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(
         @Qualifier("schedulerDataSource") DataSource dataSource
     ) {
         return new TransactionAwareDataSourceProxy(dataSource);
     }
 
-    @Bean
-    public PlatformTransactionManager schedulerTransactionManager(
+    @Bean("schedulerTransactionManager")
+    public PlatformTransactionManager transactionManager(
         TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy
     ) {
         return new DataSourceTransactionManager(schedulerTransactionAwareDataSourceProxy);
@@ -81,15 +81,16 @@ public class QuartzConfiguration {
 
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(
-        TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy,
-        PlatformTransactionManager schedulerTransactionManager
+        @Qualifier("schedulerTransactionAwareDataSourceProxy")
+            TransactionAwareDataSourceProxy transactionAwareDataSourceProxy,
+        @Qualifier("schedulerTransactionManager") PlatformTransactionManager transactionManager
     ) {
         Properties properties = new Properties();
         properties.putAll(quartzProperties);
 
         SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
-        schedulerFactory.setDataSource(schedulerTransactionAwareDataSourceProxy);
-        schedulerFactory.setTransactionManager(schedulerTransactionManager);
+        schedulerFactory.setDataSource(transactionAwareDataSourceProxy);
+        schedulerFactory.setTransactionManager(transactionManager);
         schedulerFactory.setQuartzProperties(properties);
         schedulerFactory.setJobFactory(springBeanJobFactory());
         schedulerFactory.setSchedulerName("CMC Job Scheduler");
