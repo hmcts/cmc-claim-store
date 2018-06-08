@@ -65,3 +65,11 @@ variable "appinsights_instrumentation_key" {
 variable "db_host" {
   default = "test-data-lb.moneyclaim.reform.hmcts.net"
 }
+
+variable "capacity" {
+  default = "1"
+}
+
+variable "enable_staff_email" {
+  default = "true"
+}

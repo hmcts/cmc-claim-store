@@ -79,6 +79,7 @@ module "claim-store-api" {
   is_frontend = false
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   subscription = "${var.subscription}"
+  capacity = "${var.capacity}"
 
   app_settings = {
     //    logging vars
@@ -132,7 +133,7 @@ module "claim-store-api" {
     RPA_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.rpa_email.data["value"]}"
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
-    FEATURE_TOGGLES_EMAILTOSTAFF = "true"
+    FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
 
     ROOT_APPENDER = "CMC"
   }
