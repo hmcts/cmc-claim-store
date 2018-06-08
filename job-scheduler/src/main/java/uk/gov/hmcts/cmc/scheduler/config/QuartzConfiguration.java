@@ -4,13 +4,12 @@ import org.flywaydb.core.Flyway;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -42,26 +41,28 @@ public class QuartzConfiguration {
         return new DataSourceProperties();
     }
 
-    @Bean
+    @Bean("schedulerDataSource")
     @ConfigurationProperties("spring.datasource.scheduler")
     public DataSource schedulerDataSource() {
         migrateFlyway(schedulerDataSourceProperties());
         return schedulerDataSourceProperties().initializeDataSourceBuilder().build();
     }
 
-    public void migrateFlyway(DataSourceProperties flywayProperties) {
+    private void migrateFlyway(DataSourceProperties flywayProperties) {
         final Flyway flyway = new Flyway();
         flyway.setDataSource(
             flywayProperties.getUrl(),
             flywayProperties.getUsername(),
             flywayProperties.getPassword());
-        flyway.setLocations("db/migration/scheduler");
+        flyway.setLocations("scheduler/db/migration");
         flyway.migrate();
     }
 
     @Bean
-    public TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy(DataSource schedulerDataBase) {
-        return new TransactionAwareDataSourceProxy(schedulerDataBase);
+    public TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy(
+        @Qualifier("schedulerDataSource") DataSource dataSource
+    ) {
+        return new TransactionAwareDataSourceProxy(dataSource);
     }
 
     @Bean
