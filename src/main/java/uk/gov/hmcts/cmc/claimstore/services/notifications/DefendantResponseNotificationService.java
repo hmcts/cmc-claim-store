@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
@@ -46,7 +45,6 @@ public class DefendantResponseNotificationService {
     private static final String CLAIMANT_TYPE = "claimantType";
     private static final String ISSUED_ON = "issuedOn";
     private static final String RESPONSE_DEADLINE = "responseDeadline";
-    private static final String MEDIATION_RESPONSE_DEADLINE = "mediationResponseDeadline";
     private final NotificationClient notificationClient;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
@@ -93,10 +91,12 @@ public class DefendantResponseNotificationService {
 
     private String getClaimantEmailTemplate(Claim claim) {
         if (claim.getResponse().isPresent()) {
-            Response response = claim.getResponse().get();
+            Response response = claim.getResponse()
+                .orElseThrow(() -> new IllegalArgumentException("No response found"));
 
-            if (response.getFreeMediation().isPresent() && response.getFreeMediation().get().equals(YesNoOption.YES)) {
-                return getEmailTemplates().getFreeMediationAcceptedEmailToClaimant();
+            YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.NO);
+            if (mediation.equals(YesNoOption.YES)) {
+                return getEmailTemplates().getClaimantResponseWithMediationIssued();
             }
         }
 
@@ -161,14 +161,13 @@ public class DefendantResponseNotificationService {
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
 
         parameters.put(MEDIATION_DECISION_DEADLINE, formatDate(decisionDeadline));
-        parameters.put(MEDIATION_RESPONSE_DEADLINE, Formatting.formatDate(decisionDeadline));
         parameters.put(FREE_MEDIATION_REQUESTED, isFreeMediationApplicable && isFreeMediationRequested ? "yes" : "");
         parameters.put(
             FREE_MEDIATION_NOT_REQUESTED, isFreeMediationApplicable && !isFreeMediationRequested ? "yes" : ""
         );
 
-        parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
-        parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
+        parameters.put(ISSUED_ON, formatDate(claim.getIssuedOn()));
+        parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
 
         return parameters.build();
     }
