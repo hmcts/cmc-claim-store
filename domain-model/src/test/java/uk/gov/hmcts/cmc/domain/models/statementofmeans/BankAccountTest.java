@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static java.math.BigDecimal.TEN;
@@ -65,5 +66,21 @@ public class BankAccountTest {
         assertThat(errors)
             .hasSize(1)
             .contains("balance : may not be null");
+    }
+
+    @Test
+    public void shouldBeInvalidForBalanceWithMoreThanTwoFractions() {
+        //given
+        BankAccount bankAccount = BankAccount.builder()
+                .joint(true)
+                .type(OTHER)
+                .balance(BigDecimal.valueOf(0.123f))
+                .build();
+        //when
+        Set<String> errors = validate(bankAccount);
+        //then
+        assertThat(errors)
+                .hasSize(1)
+                .contains("balance : can not be more than 2 fractions");
     }
 }

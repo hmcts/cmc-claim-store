@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static java.math.BigDecimal.ONE;
@@ -52,6 +53,22 @@ public class CourtOrderTest {
     }
 
     @Test
+    public void shouldBeInvalidForAmountOwedWithMoreThanTwoFractions() {
+        //given
+        CourtOrder courtOrder = CourtOrder.builder()
+                .monthlyInstalmentAmount(ONE)
+                .amountOwed(BigDecimal.valueOf(0.123f))
+                .claimNumber("My claim no")
+                .build();
+        //when
+        Set<String> errors = validate(courtOrder);
+        //then
+        assertThat(errors)
+                .hasSize(1)
+                .contains("amountOwed : can not be more than 2 fractions");
+    }
+
+    @Test
     public void shouldBeInvalidForNullMonthlyInstalmentAmount() {
         //given
         CourtOrder courtOrder = CourtOrder.builder()
@@ -67,6 +84,22 @@ public class CourtOrderTest {
     }
 
     @Test
+    public void shouldBeInvalidForMontlyInstalmentAmountWithMoreThanTwoFractions() {
+        //given
+        CourtOrder courtOrder = CourtOrder.builder()
+                .monthlyInstalmentAmount(BigDecimal.valueOf(0.123f))
+                .amountOwed(TEN)
+                .claimNumber("My claim no")
+                .build();
+        //when
+        Set<String> errors = validate(courtOrder);
+        //then
+        assertThat(errors)
+                .hasSize(1)
+                .contains("monthlyInstalmentAmount : can not be more than 2 fractions");
+    }
+
+    @Test
     public void shouldBeInvalidForNullClaimNumber() {
         //given
         CourtOrder courtOrder = CourtOrder.builder()
@@ -79,5 +112,21 @@ public class CourtOrderTest {
         assertThat(errors)
             .hasSize(1)
             .contains("claimNumber : may not be empty");
+    }
+
+    @Test
+    public void shouldBeInvalidForBlankClaimNumber() {
+        //given
+        CourtOrder courtOrder = CourtOrder.builder()
+                .monthlyInstalmentAmount(ONE)
+                .amountOwed(TEN)
+                .claimNumber("")
+                .build();
+        //when
+        Set<String> errors = validate(courtOrder);
+        //then
+        assertThat(errors)
+                .hasSize(1)
+                .contains("claimNumber : may not be empty");
     }
 }
