@@ -81,26 +81,21 @@ public class DefendantResponseNotificationService {
         Claim claim,
         String reference
     ) {
-        Map<String, String> parameters = aggregateParams(claim, claim.getResponse()
-            .orElseThrow(IllegalStateException::new));
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Map<String, String> parameters = aggregateParams(claim, response);
 
-        String emailTemplate = getClaimantEmailTemplate(claim);
+        String emailTemplate = getClaimantEmailTemplate(response);
 
         notify(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
     }
 
-    private String getClaimantEmailTemplate(Claim claim) {
-        if (claim.getResponse().isPresent()) {
-            Response response = claim.getResponse()
-                .orElseThrow(() -> new IllegalArgumentException("No response found"));
-
-            YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.NO);
-            if (mediation.equals(YesNoOption.YES)) {
-                return getEmailTemplates().getClaimantResponseWithMediationIssued();
-            }
+    private String getClaimantEmailTemplate(Response response) {
+        YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.NO);
+        if (mediation.equals(YesNoOption.YES)) {
+            return getEmailTemplates().getClaimantResponseWithMediationIssued();
+        } else {
+            return getEmailTemplates().getClaimantResponseIssued();
         }
-
-        return getEmailTemplates().getClaimantResponseIssued();
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
