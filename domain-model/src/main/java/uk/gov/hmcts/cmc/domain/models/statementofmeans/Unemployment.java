@@ -3,9 +3,9 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import javax.validation.Valid;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.Valid;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -14,6 +14,7 @@ public class Unemployment {
 
     @Valid
     private final Unemployed unemployed;
+
     private final boolean retired;
     private final String other;
 

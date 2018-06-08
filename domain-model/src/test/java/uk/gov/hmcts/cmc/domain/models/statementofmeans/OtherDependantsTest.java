@@ -10,7 +10,7 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 public class OtherDependantsTest {
 
     @Test
-    public void shouldBeSuccesfulValidationForOtherDependants() {
+    public void shouldBeSuccessfulValidationForOtherDependants() {
         //given
         OtherDependants otherDependants = OtherDependants.builder()
             .details("details")
@@ -44,7 +44,8 @@ public class OtherDependantsTest {
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(2);
+            .hasSize(2)
+            .contains("numberOfPeople : must be greater than or equal to 1");
     }
 
     @Test
@@ -57,7 +58,8 @@ public class OtherDependantsTest {
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(1);
+            .hasSize(1)
+            .contains("numberOfPeople : may not be null");
     }
 
     @Test
@@ -85,6 +87,7 @@ public class OtherDependantsTest {
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(1);
+            .hasSize(1)
+            .contains("details : may not be empty");
     }
 }
