@@ -15,17 +15,17 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class Dependant {
 
     @Valid
-    private final List<Children> children;
+    private final List<Child> children;
 
     @Valid
     private final OtherDependants otherDependants;
 
-    public Dependant(List<Children> children, OtherDependants otherDependants) {
+    public Dependant(List<Child> children, OtherDependants otherDependants) {
         this.children = children;
         this.otherDependants = otherDependants;
     }
 
-    public List<Children> getChildren() {
+    public List<Child> getChildren() {
         return children != null ? children : emptyList();
     }
 

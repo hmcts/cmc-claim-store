@@ -10,14 +10,14 @@ import javax.validation.Valid;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
-public class UnEmployment {
+public class Unemployment {
 
     @Valid
     private final Unemployed unemployed;
     private final boolean retired;
     private final String other;
 
-    public UnEmployment(Unemployed unemployed, boolean retired, String other) {
+    public Unemployment(Unemployed unemployed, boolean retired, String other) {
         this.unemployed = unemployed;
         this.retired = retired;
         this.other = other;
@@ -43,7 +43,7 @@ public class UnEmployment {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        UnEmployment that = (UnEmployment) other;
+        Unemployment that = (Unemployment) other;
         return retired == that.retired
             && Objects.equals(unemployed, that.unemployed)
             && Objects.equals(this.other, that.other);

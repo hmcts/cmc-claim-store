@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.UnEmployment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
 import java.math.BigDecimal;
 
@@ -61,7 +61,7 @@ public class SampleStatementOfMeans {
             )
             .employment(Employment.builder()
                 .employers(asList(Employer.builder().employerName("CMC").jobTitle("My sweet job").build()))
-                .unEmployment(UnEmployment.builder().retired(true).build())
+                .unemployment(Unemployment.builder().retired(true).build())
                 .build()
             )
             .build();

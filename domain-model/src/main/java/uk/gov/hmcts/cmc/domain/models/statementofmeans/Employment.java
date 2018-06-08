@@ -23,16 +23,16 @@ public class Employment {
     private final SelfEmployment selfEmployment;
 
     @Valid
-    private final UnEmployment unEmployment;
+    private final Unemployment unemployment;
 
     public Employment(
         List<Employer> employers,
         SelfEmployment selfEmployment,
-        UnEmployment unEmployment
+        Unemployment unemployment
     ) {
         this.employers = employers;
         this.selfEmployment = selfEmployment;
-        this.unEmployment = unEmployment;
+        this.unemployment = unemployment;
     }
 
     public List<Employer> getEmployers() {
@@ -43,8 +43,8 @@ public class Employment {
         return Optional.ofNullable(selfEmployment);
     }
 
-    public Optional<UnEmployment> getUnEmployment() {
-        return Optional.ofNullable(unEmployment);
+    public Optional<Unemployment> getUnemployment() {
+        return Optional.ofNullable(unemployment);
     }
 
     @Override
@@ -58,12 +58,12 @@ public class Employment {
         Employment that = (Employment) other;
         return Objects.equals(employers, that.employers)
             && Objects.equals(selfEmployment, that.selfEmployment)
-            && Objects.equals(unEmployment, that.unEmployment);
+            && Objects.equals(unemployment, that.unemployment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(employers, selfEmployment, unEmployment);
+        return Objects.hash(employers, selfEmployment, unemployment);
     }
 
     @Override
