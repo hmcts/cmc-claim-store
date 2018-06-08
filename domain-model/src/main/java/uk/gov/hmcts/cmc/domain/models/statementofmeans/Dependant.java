@@ -3,28 +3,30 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 
+import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 public class Dependant {
 
     @Valid
-    private final Children children;
+    private final List<Children> children;
 
     @Valid
     private final OtherDependants otherDependants;
 
-    public Dependant(Children children, OtherDependants otherDependants) {
+    public Dependant(List<Children> children, OtherDependants otherDependants) {
         this.children = children;
         this.otherDependants = otherDependants;
     }
 
-    public Optional<Children> getChildren() {
-        return Optional.ofNullable(children);
+    public List<Children> getChildren() {
+        return children != null ? children : emptyList();
     }
 
     public Optional<OtherDependants> getOtherDependants() {

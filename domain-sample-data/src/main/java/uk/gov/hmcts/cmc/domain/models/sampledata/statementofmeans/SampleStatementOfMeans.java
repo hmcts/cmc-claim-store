@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans;
 
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Children;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
@@ -58,14 +57,11 @@ public class SampleStatementOfMeans {
                 .amountReceived(BigDecimal.TEN)
                 .build()
             ))
-            .dependant(Dependant.builder()
-                .children(Children.builder()
-                    .between11and15(0).between16and19(1).between16and19(2).maintainedChildren(1).build())
-                .build()
+            .dependant(Dependant.builder().build()
             )
             .employment(Employment.builder()
                 .employers(asList(Employer.builder().employerName("CMC").jobTitle("My sweet job").build()))
-                .unEmployment(UnEmployment.builder().type("Retired").build())
+                .unEmployment(UnEmployment.builder().retired(true).build())
                 .build()
             )
             .build();

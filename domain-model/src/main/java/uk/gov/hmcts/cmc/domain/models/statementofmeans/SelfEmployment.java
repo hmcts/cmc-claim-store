@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.constraints.Money;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
@@ -24,26 +25,17 @@ public class SelfEmployment {
     @DecimalMin(value = "0.01")
     private final BigDecimal annualTurnover;
 
-    private final boolean behindOnTaxPayments;
-
-    @Money
-    @DecimalMin(value = "0.01")
-    private final BigDecimal amountYouOwe;
-
-    private final String reason;
+    @Valid
+    private final OnTaxPayments onTaxPayments;
 
     public SelfEmployment(
         String jobTitle,
         BigDecimal annualTurnover,
-        boolean behindOnTaxPayments,
-        BigDecimal amountYouOwe,
-        String reason
+        OnTaxPayments onTaxPayments
     ) {
         this.jobTitle = jobTitle;
         this.annualTurnover = annualTurnover;
-        this.behindOnTaxPayments = behindOnTaxPayments;
-        this.amountYouOwe = amountYouOwe;
-        this.reason = reason;
+        this.onTaxPayments = onTaxPayments;
     }
 
     public String getJobTitle() {
@@ -54,16 +46,8 @@ public class SelfEmployment {
         return annualTurnover;
     }
 
-    public boolean isBehindOnTaxPayments() {
-        return behindOnTaxPayments;
-    }
-
-    public Optional<BigDecimal> getAmountYouOwe() {
-        return Optional.ofNullable(amountYouOwe);
-    }
-
-    public Optional<String> getReason() {
-        return Optional.ofNullable(reason);
+    public Optional<OnTaxPayments> getOnTaxPayments() {
+        return Optional.ofNullable(onTaxPayments);
     }
 
     @Override
@@ -75,16 +59,14 @@ public class SelfEmployment {
             return false;
         }
         SelfEmployment that = (SelfEmployment) other;
-        return behindOnTaxPayments == that.behindOnTaxPayments
-            && Objects.equals(jobTitle, that.jobTitle)
+        return Objects.equals(jobTitle, that.jobTitle)
             && Objects.equals(annualTurnover, that.annualTurnover)
-            && Objects.equals(amountYouOwe, that.amountYouOwe)
-            && Objects.equals(reason, that.reason);
+            && Objects.equals(onTaxPayments, that.onTaxPayments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(jobTitle, annualTurnover, behindOnTaxPayments, amountYouOwe, reason);
+        return Objects.hash(jobTitle, annualTurnover, onTaxPayments);
     }
 
     @Override
