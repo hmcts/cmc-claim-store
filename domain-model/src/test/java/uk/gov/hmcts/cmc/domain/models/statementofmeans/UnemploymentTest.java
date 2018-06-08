@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-
 import org.junit.Test;
 
 import java.util.Set;
