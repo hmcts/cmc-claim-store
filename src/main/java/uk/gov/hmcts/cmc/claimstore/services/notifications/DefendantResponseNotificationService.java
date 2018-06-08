@@ -91,7 +91,7 @@ public class DefendantResponseNotificationService {
 
     private String getClaimantEmailTemplate(Response response) {
         YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.NO);
-        if (mediation.equals(YesNoOption.YES)) {
+        if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
         } else {
             return getEmailTemplates().getClaimantResponseIssued();

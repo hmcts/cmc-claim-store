@@ -25,6 +25,9 @@ public class EmailTemplates {
     private String claimantResponseIssued;
 
     @NotEmpty
+    private String claimantResponseWithMediationIssued;
+
+    @NotEmpty
     private String staffMoreTimeRequested;
 
     @NotEmpty
@@ -62,9 +65,6 @@ public class EmailTemplates {
 
     @NotEmpty
     private String offerCounterSignedEmailToOtherParty;
-
-    @NotEmpty
-    private String claimantResponseWithMediationIssued;
 
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
