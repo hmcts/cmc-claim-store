@@ -2,10 +2,12 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CaseEvent {
 
-    SUBMIT_CLAIM("submitClaimEvent"),
+    SUBMIT_PRE_PAYMENT("SubmitPrePayment"),
+    SUBMIT_POST_PAYMENT("SubmitPostPayment"),
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
     DEFENCE_SUBMITTED("DefenceSubmitted"),
-    MORE_TIME_REQUESTED("MoreTimeRequested"),
+    MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
+    MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
     OFFER_REJECTED_BY_CLAIMANT("OfferRejectedByClaimant"),
     OFFER_REJECTED_BY_DEFENDANT("OfferRejectedByDefendant"),

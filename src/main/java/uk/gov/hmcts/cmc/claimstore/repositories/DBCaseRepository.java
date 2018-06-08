@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -45,6 +47,16 @@ public class DBCaseRepository implements CaseRepository {
 
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return claimRepository.getClaimByExternalId(externalId);
+    }
+
+    @Override
+    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
+        getClaimByExternalId(externalId, authorisation)
+            .ifPresent(claim -> {
+                throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
+            });
+
+        return null;
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
@@ -118,6 +130,14 @@ public class DBCaseRepository implements CaseRepository {
             jsonMapper.toJson(settlement),
             LocalDateTimeFactory.nowInUTC()
         );
+    }
+
+    /**
+     * For non-CCD datastore it always new CaseReference(externalId) as there is no pre payment step for non-ccd env.
+     */
+    @Override
+    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
+        return new CaseReference(externalId);
     }
 
     @Override

@@ -8,13 +8,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.PaginatedSearchMetadata;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,7 +71,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            any()
             )
         ).willReturn(listOfCaseDetails());
 
@@ -90,14 +90,12 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+                any()
             );
     }
 
     @Test
     public void shouldPreserveOrderReturnedFromCCD() throws Exception {
-        String submitterId = "1";
-
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
 
         CaseDetails caseDetails = caseWithReferenceNumber("000MC001");
@@ -119,7 +117,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             )
         );
 
-        MvcResult result = makeRequest("/claims/claimant/" + submitterId)
+        MvcResult result = makeRequest("/claims/claimant/" + USER_ID)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -128,9 +126,17 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             .isEqualTo(asList("000MC001", "000MC002", "000MC003"));
     }
 
+    private ImmutableMap<String, String> searchCriteria(int page) {
+        return ImmutableMap.of(
+            "case.submitterId", USER_ID,
+            "page", String.valueOf(page),
+            "sortDirection", "desc",
+            "state", CCDCaseApi.CaseState.OPEN.getValue()
+        );
+    }
+
     @Test
     public void shouldUseCCDPaginationApiSolicitor() throws Exception {
-        String submitterId = "1";
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(SOLICITOR_USER);
 
         given(coreCaseDataApi.searchForCaseworker(
@@ -139,7 +145,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            eq(searchCriteria(1))
             )
         ).willReturn(numberOfClaimDetailsResults(11));
 
@@ -149,7 +155,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
+            eq(searchCriteria(2))
             )
         ).willReturn(numberOfClaimDetailsResults(5));
 
@@ -167,7 +173,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             )
         ).willReturn(searchMetadata);
 
-        MvcResult result = makeRequest("/claims/claimant/" + submitterId)
+        MvcResult result = makeRequest("/claims/claimant/" + USER_ID)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -177,7 +183,6 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
 
     @Test
     public void shouldUseCCDPaginationApiCitizen() throws Exception {
-        String submitterId = "1";
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
 
         given(coreCaseDataApi.searchForCitizen(
@@ -186,7 +191,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "1"))
+            eq(searchCriteria(1))
             )
         ).willReturn(numberOfClaimDetailsResults(11));
 
@@ -196,7 +201,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.submitterId", submitterId, "page", "2"))
+            eq(searchCriteria(2))
             )
         ).willReturn(numberOfClaimDetailsResults(5));
 
@@ -214,7 +219,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             )
         ).willReturn(searchMetadata);
 
-        MvcResult result = makeRequest("/claims/claimant/" + submitterId)
+        MvcResult result = makeRequest("/claims/claimant/" + USER_ID)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -222,44 +227,9 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
             .hasSize(16);
     }
 
-
     private List<CaseDetails> numberOfClaimDetailsResults(final int number) {
         return Stream.generate(ResourceLoader::successfulCoreCaseDataStoreSubmitResponse)
             .limit(number)
             .collect(Collectors.toList());
-    }
-
-    @Test
-    public void shouldSearchCCDEvenWhenNoClaimFoundInDB() throws Exception {
-        String nonExistingSubmitterId = "12";
-
-        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(CITIZEN_USER);
-
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId))
-            )
-        ).willReturn(Collections.emptyList());
-
-        MvcResult result = makeRequest("/claims/claimant/" + nonExistingSubmitterId)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(deserializeListFrom(result))
-            .isEmpty();
-
-        verify(coreCaseDataApi)
-            .searchForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.submitterId", nonExistingSubmitterId, "page", "1"))
-            );
     }
 }

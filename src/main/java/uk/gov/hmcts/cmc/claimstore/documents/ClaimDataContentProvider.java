@@ -52,7 +52,7 @@ public class ClaimDataContentProvider {
         if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
-                claim.getClaimData().getInterestDate(),
+                claim.getClaimData().getInterest().getInterestDate(),
                 amountBreakDown.getTotalAmount(),
                 claim.getIssuedOn(),
                 claim.getIssuedOn()

@@ -7,15 +7,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -29,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -76,6 +76,8 @@ public class ClaimServiceTest {
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private CCDCaseDataToClaim ccdCaseDataToClaim;
 
     @Before
     public void setup() {
@@ -83,13 +85,14 @@ public class ClaimServiceTest {
 
         claimService = new ClaimService(
             claimRepository,
+            caseRepository,
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
-            caseRepository,
-            new MoreTimeRequestRule(),
-            appInsights
+            appInsights,
+            ccdCaseDataToClaim
         );
     }
 
@@ -154,9 +157,10 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        doReturn(Optional.empty())
-            .doReturn(Optional.of(claim))
-            .when(caseRepository).getClaimByExternalId(anyString(), anyString());
+        when(caseRepository.getOnHoldIdByExternalId(anyString(), eq(AUTHORISATION)))
+            .thenReturn(Long.valueOf(1));
+        when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
+            .thenReturn(Optional.of(claim));
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
         Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION);
@@ -167,13 +171,9 @@ public class ClaimServiceTest {
             anyString(), eq(AUTHORISATION));
     }
 
-    @Test(expected = ConflictException.class)
-    public void saveClaimShouldThrowConflictExceptionForDuplicateClaim() {
-        ClaimData app = SampleClaimData.validDefaults();
-        String authorisationToken = "Open same!";
-        when(caseRepository.getClaimByExternalId(any(), anyString())).thenReturn(Optional.of(claim));
-
-        claimService.saveClaim(USER_ID, app, authorisationToken);
+    @Test(expected = NotFoundException.class)
+    public void saveClaimShouldThrowNotFoundExceptionWhenOnHoldClaimDoesntExist() {
+        claimService.saveClaim(USER_ID, SampleClaimData.validDefaults(), AUTHORISATION);
     }
 
     @Test
