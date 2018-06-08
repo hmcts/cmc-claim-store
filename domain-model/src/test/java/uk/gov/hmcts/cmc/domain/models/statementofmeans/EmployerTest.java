@@ -14,7 +14,7 @@ public class EmployerTest {
         //given
         Employer employer = Employer.builder()
             .jobTitle("My job")
-            .employerName("My Company")
+            .name("My Company")
             .build();
         //when
         Set<String> response = validate(employer);
@@ -37,7 +37,7 @@ public class EmployerTest {
     public void shouldBeInvalidForNullJobTitle() {
         //given
         Employer employer = Employer.builder()
-            .employerName("My Company")
+            .name("My Company")
             .build();
         //when
         Set<String> errors = validate(employer);
@@ -51,7 +51,7 @@ public class EmployerTest {
     public void shouldBeInvalidForBlankJobTitle() {
         //given
         Employer employer = Employer.builder()
-                .employerName("My Company")
+            .name("My Company")
                 .jobTitle("")
                 .build();
         //when
@@ -73,21 +73,21 @@ public class EmployerTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("employerName : may not be empty");
+            .contains("name : may not be empty");
     }
 
     @Test
     public void shouldBeInvalidForBlankEmployerName() {
         //given
         Employer employer = Employer.builder()
-                .jobTitle("My job")
-                .employerName("")
-                .build();
+            .jobTitle("My job")
+            .name("")
+            .build();
         //when
         Set<String> errors = validate(employer);
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("employerName : may not be empty");
+            .contains("name : may not be empty");
     }
 }

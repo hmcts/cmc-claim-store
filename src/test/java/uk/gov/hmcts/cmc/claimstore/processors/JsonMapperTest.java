@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.json.JSONException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -174,7 +173,6 @@ public class JsonMapperTest {
     }
 
     @Test
-    @Ignore
     public void shouldProcessDependantResponseFullAdmissionFromJson() {
         //given
         String input = new ResourceReader().read("/defendant-response-full-admission.json");
