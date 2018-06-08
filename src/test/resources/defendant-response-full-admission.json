@@ -60,7 +60,7 @@
     "employment": {
       "employers": [{
         "jobTitle": "My sweet job",
-        "employerName": "CMC"
+        "name": "CMC"
       }],
       "selfEmployment": {
         "jobTitle": "Director",

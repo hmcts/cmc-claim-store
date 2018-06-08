@@ -43,7 +43,7 @@ public class SampleStatementOfMeans {
                     .build())
                 .build())
             .employment(Employment.builder()
-                .employers(asList(Employer.builder().employerName("CMC").jobTitle("My sweet job").build()))
+                .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
                 .unemployment(Unemployment.builder().retired(true).build())
                 .selfEmployment(SelfEmployment.builder()
                     .jobTitle("Director")

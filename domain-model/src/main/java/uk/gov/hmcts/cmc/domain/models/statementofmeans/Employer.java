@@ -15,19 +15,19 @@ public class Employer {
     private final String jobTitle;
 
     @NotBlank
-    private final String employerName;
+    private final String name;
 
-    public Employer(String jobTitle, String employerName) {
+    public Employer(String jobTitle, String name) {
         this.jobTitle = jobTitle;
-        this.employerName = employerName;
+        this.name = name;
     }
 
     public String getJobTitle() {
         return jobTitle;
     }
 
-    public String getEmployerName() {
-        return employerName;
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -40,12 +40,12 @@ public class Employer {
         }
         Employer employer = (Employer) other;
         return Objects.equals(jobTitle, employer.jobTitle)
-            && Objects.equals(employerName, employer.employerName);
+            && Objects.equals(name, employer.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(jobTitle, employerName);
+        return Objects.hash(jobTitle, name);
     }
 
     @Override
