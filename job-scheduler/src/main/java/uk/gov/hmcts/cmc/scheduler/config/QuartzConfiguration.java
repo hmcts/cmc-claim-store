@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.scheduler.config;
 
+import org.flywaydb.core.Flyway;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,18 @@ public class QuartzConfiguration {
     @Bean
     @ConfigurationProperties("spring.datasource.scheduler")
     public DataSource schedulerDataSource() {
+        migrateFlyway(schedulerDataSourceProperties());
         return schedulerDataSourceProperties().initializeDataSourceBuilder().build();
+    }
+
+    public void migrateFlyway(DataSourceProperties flywayProperties) {
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(
+            flywayProperties.getUrl(),
+            flywayProperties.getUsername(),
+            flywayProperties.getPassword());
+        flyway.setLocations("db/migration/scheduler");
+        flyway.migrate();
     }
 
     @Bean
@@ -67,7 +79,6 @@ public class QuartzConfiguration {
     }
 
     @Bean
-    @DependsOn("flywayInitializer")
     public SchedulerFactoryBean schedulerFactoryBean(
         TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy,
         PlatformTransactionManager schedulerTransactionManager

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.config;
 
+import org.flywaydb.core.Flyway;
 import org.skife.jdbi.v2.DBI;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -30,12 +31,23 @@ public class DbConfiguration {
     @Primary
     @ConfigurationProperties("spring.datasource.claimstore")
     public DataSource claimStoreDataSource() {
+        migrateFlyway(claimStoreDataSourceProperties());
         return claimStoreDataSourceProperties().initializeDataSourceBuilder().build();
     }
 
     @Bean
     public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(DataSource claimStoreDataSource) {
         return new TransactionAwareDataSourceProxy(claimStoreDataSource);
+    }
+
+    public void migrateFlyway(DataSourceProperties flywayProperties) {
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(
+            flywayProperties.getUrl(),
+            flywayProperties.getUsername(),
+            flywayProperties.getPassword());
+        flyway.setLocations("db/migration/claimstore");
+        flyway.migrate();
     }
 
     @Bean
