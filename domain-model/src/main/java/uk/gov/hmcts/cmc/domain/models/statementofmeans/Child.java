@@ -21,19 +21,19 @@ public class Child {
     private final AgeGroupType ageGroupType;
 
     @NotNull
-    private final Integer numberOfChildreen;
+    private final Integer numberOfChildren;
 
-    public Child(AgeGroupType ageGroupType, Integer numberOfChildreen) {
+    public Child(AgeGroupType ageGroupType, Integer numberOfChildren) {
         this.ageGroupType = ageGroupType;
-        this.numberOfChildreen = numberOfChildreen;
+        this.numberOfChildren = numberOfChildren;
     }
 
     public AgeGroupType getAgeGroupType() {
         return ageGroupType;
     }
 
-    public Integer getNumberOfChildreen() {
-        return numberOfChildreen;
+    public Integer getNumberOfChildren() {
+        return numberOfChildren;
     }
 
     @Override
@@ -45,12 +45,12 @@ public class Child {
             return false;
         }
         Child child = (Child) other;
-        return ageGroupType == child.ageGroupType && Objects.equals(numberOfChildreen, child.numberOfChildreen);
+        return ageGroupType == child.ageGroupType && Objects.equals(numberOfChildren, child.numberOfChildren);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ageGroupType, numberOfChildreen);
+        return Objects.hash(ageGroupType, numberOfChildren);
     }
 
     @Override

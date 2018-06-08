@@ -17,16 +17,26 @@ public class Dependant {
     @Valid
     private final List<Child> children;
 
+    private final Integer noOfMaintainedChildren;
+
     @Valid
     private final OtherDependants otherDependants;
 
-    public Dependant(List<Child> children, OtherDependants otherDependants) {
+    public Dependant(
+        List<Child> children,
+        Integer noOfMaintainedChildren,
+        OtherDependants otherDependants) {
         this.children = children;
+        this.noOfMaintainedChildren = noOfMaintainedChildren;
         this.otherDependants = otherDependants;
     }
 
     public List<Child> getChildren() {
         return children != null ? children : emptyList();
+    }
+
+    public Optional<Integer> getNoOfMaintainedChildren() {
+        return Optional.ofNullable(noOfMaintainedChildren);
     }
 
     public Optional<OtherDependants> getOtherDependants() {
@@ -43,12 +53,13 @@ public class Dependant {
         }
         Dependant dependant = (Dependant) other;
         return Objects.equals(children, dependant.children)
+            && Objects.equals(noOfMaintainedChildren, dependant.noOfMaintainedChildren)
             && Objects.equals(otherDependants, dependant.otherDependants);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(children, otherDependants);
+        return Objects.hash(children, noOfMaintainedChildren, otherDependants);
     }
 
     @Override
