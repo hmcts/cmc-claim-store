@@ -9,7 +9,7 @@ import javax.json.JsonObject;
 @Component
 public class AddressJsonMapper {
 
-    public JsonObject mapAddress(Address address) {
+    public JsonObject map(Address address) {
         return new NullAwareJsonObjectBuilder()
             .add("line1", address.getLine1())
             .add("line2", address.getLine2())

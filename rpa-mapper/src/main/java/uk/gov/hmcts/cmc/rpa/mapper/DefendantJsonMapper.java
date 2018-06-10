@@ -7,12 +7,12 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import java.util.List;
-import javax.json.JsonArray;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import javax.json.stream.JsonCollectors;
 
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
@@ -28,32 +28,43 @@ public class DefendantJsonMapper {
         this.addressMapper = addressMapper;
     }
 
-    public JsonArray mapDefendants(List<TheirDetails> defendants) {
-        return defendants.stream().map(defendant -> addValues(defendant).build()).collect(JsonCollectors.toJsonArray());
+    public JsonArray map(TheirDetails defendants){
+        return Json.createArrayBuilder().add(addValues(defendants)).build();
     }
 
-    public JsonArray mapDefendantsForDefenceResponse(List<TheirDetails> defendants, Party ownParty) {
-        return defendants.stream()
-            .map(defendant -> addValues(defendant).add("isAddressAmended", isAddressAmended(defendant, ownParty)).build())
-            .collect(JsonCollectors.toJsonArray());
-    }
+    public JsonArray map(Party ownParty, TheirDetails oppositeParty, String defendantsEmail) {
 
-    private String isAddressAmended(TheirDetails defendant, Party respondentParty) {
-        if (!defendant.getAddress().equals(respondentParty.getAddress())) {
-            return "yes";
-        }
-        return "no";
+        JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder()
+            .add("type", ownParty.getClass().getSimpleName().replace("Details", ""))
+            .add("name", ownParty.getName())
+            .add("address", addressMapper.map(ownParty.getAddress()))
+            .add("correspondenceAddress", ownParty.getCorrespondenceAddress().map(addressMapper::map).orElse(null))
+            .add("emailAddress", defendantsEmail)
+            .add("addressAmended", isAddressAmended(ownParty, oppositeParty).name().toLowerCase())
+            .add("businessName", extractOptionalFromSubclass(ownParty, SoleTraderDetails.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
+            .add("contactPerson", extractOptionalFromSubclass(ownParty, HasContactPerson.class, HasContactPerson::getContactPerson))
+            .add("companiesHouseNumber", extractOptionalFromSubclass(ownParty, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber));
+
+        return Json.createArrayBuilder().add(jsonObjectBuilder).build();
     }
+//        return Json.createArrayBuilder().add(addValues(defendant).add("addressAmended", isAddressAmended(defendant, ownParty).name().toLowerCase())).build();
 
     private JsonObjectBuilder addValues(TheirDetails defendant) {
         return new NullAwareJsonObjectBuilder()
             .add("type", defendant.getClass().getSimpleName().replace("Details", ""))
             .add("name", defendant.getName())
-            .add("address", addressMapper.mapAddress(defendant.getAddress()))
-            .add("correspondenceAddress", defendant.getServiceAddress().map(addressMapper::mapAddress).orElse(null))
+            .add("address", addressMapper.map(defendant.getAddress()))
+            .add("correspondenceAddress", defendant.getServiceAddress().map(addressMapper::map).orElse(null))
             .add("emailAddress", defendant.getEmail().orElse(null))
             .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
             .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
             .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber));
+    }
+
+    private YesNoOption isAddressAmended(Party ownParty, TheirDetails oppositeParty) {
+        if (!ownParty.getAddress().equals(oppositeParty.getAddress())) {
+            return YesNoOption.YES;
+        }
+        return YesNoOption.NO;
     }
 }

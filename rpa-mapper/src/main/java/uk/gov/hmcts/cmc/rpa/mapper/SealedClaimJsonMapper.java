@@ -33,6 +33,7 @@ public class SealedClaimJsonMapper {
     }
 
     public JsonObject map(Claim claim) {
+
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
@@ -41,7 +42,7 @@ public class SealedClaimJsonMapper {
             .add("amountWithInterest", claim.getTotalAmountTillToday().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
-            .add("defendants", defendantMapper.mapDefendants(claim.getClaimData().getDefendants()))
+            .add("defendants", defendantMapper.map(claim.getClaimData().getDefendants().stream().findFirst().orElseThrow(IllegalStateException::new)))
             .build();
     }
 

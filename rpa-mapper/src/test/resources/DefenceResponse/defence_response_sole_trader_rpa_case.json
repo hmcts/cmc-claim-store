@@ -9,7 +9,7 @@
       "businessName": "Trading as Sole Trading & Sons",
       "companiesHouseNumber": null,
       "contactPerson": null,
-      "isAddressAmended": "no",
+      "addressAmended": "no",
       "address": {
         "line1": "52",
         "line2": "Down Street",

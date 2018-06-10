@@ -13,6 +13,7 @@ public class EmailProperties {
 
     @NotBlank
     private String sender;
+
     @NotBlank
     private String recipient;
 

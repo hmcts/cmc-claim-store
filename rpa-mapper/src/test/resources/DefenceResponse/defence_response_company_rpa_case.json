@@ -9,7 +9,7 @@
       "businessName": null,
       "companiesHouseNumber": null,
       "contactPerson": "Arnold Schwarzenegger",
-      "isAddressAmended": "no",
+      "addressAmended": "no",
       "address": {
         "line1": "52",
         "line2": "Down Street",

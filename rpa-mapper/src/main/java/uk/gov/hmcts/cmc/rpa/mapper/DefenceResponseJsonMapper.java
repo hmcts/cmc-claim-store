@@ -28,25 +28,25 @@ public class DefenceResponseJsonMapper {
 
     public JsonObject map(Claim claim) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        String defendantsEmail = claim.getDefendantEmail();
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
             .add("defenceResponse", extractFromSubclass(response, FullDefenceResponse.class, fullDefenceResponse -> fullDefenceResponse.getDefenceType().getDescription()))
-            .add("defendants", defendantMapper.mapDefendantsForDefenceResponse(claim.getClaimData().getDefendants(),
-                response.getDefendant()))
-            .add("dateOfBirth", extractFromSubclass(claim.getClaimData().getDefendant(),
+            .add("defendants", defendantMapper.map(response.getDefendant(), claim.getClaimData().getDefendant(), defendantsEmail))
+            .add("dateOfBirth", extractFromSubclass(response.getDefendant(),
                 Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-            .add("phoneNumber", extractFromSubclass(claim.getClaimData().getDefendant(),
+            .add("phoneNumber", extractFromSubclass(response.getDefendant(),
                 Party.class, party -> party.getMobilePhone().orElse(null)))
-            .add("mediation", isMediationShown(response))
+            .add("mediation", isMediationShown(response).name().toLowerCase())
             .build();
     }
 
-    private String isMediationShown(Response response) {
+    private YesNoOption isMediationShown(Response response) {
         if (FullDefenceResponse.class.isInstance(response)
             && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE)) {
-            return response.getFreeMediation().orElse(YesNoOption.NO).name().toLowerCase();
+            return response.getFreeMediation().orElse(YesNoOption.NO);
         }
-        return "no";
+        return YesNoOption.NO;
     }
 }
