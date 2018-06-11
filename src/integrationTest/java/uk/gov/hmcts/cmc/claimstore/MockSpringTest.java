@@ -1,15 +1,22 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.PostgreSQLContainer;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -32,12 +39,15 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.service.notify.NotificationClient;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
+@DirtiesContext
+@ContextConfiguration(initializers = {MockSpringTest.Initializer.class})
 public abstract class MockSpringTest {
 
     @Autowired
@@ -107,5 +117,35 @@ public abstract class MockSpringTest {
     protected List<Claim> deserializeListFrom(MvcResult result) throws UnsupportedEncodingException {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), new TypeReference<List<Claim>>() {
         });
+    }
+
+    @ClassRule
+    public static PostgreSQLContainer claimStorePostgreSQLContainer =
+        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
+            .withDatabaseName("claimstore")
+            .withUsername("claimstore")
+            .withPassword("claimstore")
+            .withStartupTimeout(Duration.ofSeconds(600));
+
+    @ClassRule
+    public static PostgreSQLContainer schedulerPostgreSQLContainer =
+        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
+            .withDatabaseName("scheduler")
+            .withUsername("scheduler")
+            .withPassword("scheduler")
+            .withStartupTimeout(Duration.ofSeconds(600));
+
+    static class Initializer
+        implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                "spring.datasource.claimstore.url=" + claimStorePostgreSQLContainer.getJdbcUrl(),
+                "spring.datasource.claimstore.username=" + claimStorePostgreSQLContainer.getUsername(),
+                "spring.datasource.claimstore.password=" + claimStorePostgreSQLContainer.getPassword(),
+                "spring.datasource.scheduler.url=" + schedulerPostgreSQLContainer.getJdbcUrl(),
+                "spring.datasource.scheduler.username=" + schedulerPostgreSQLContainer.getUsername(),
+                "spring.datasource.scheduler.password=" + schedulerPostgreSQLContainer.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
     }
 }

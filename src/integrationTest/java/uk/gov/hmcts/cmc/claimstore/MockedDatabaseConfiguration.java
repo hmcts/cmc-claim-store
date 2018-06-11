@@ -23,11 +23,11 @@ class MockedDatabaseConfiguration {
     @MockBean
     private Flyway flyway;
 
-    @MockBean(name = "dataSource", answer = Answers.RETURNS_MOCKS)
+    @MockBean(name = "claimStoreDataSource", value = DataSource.class, answer = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
 
-    @MockBean(name = "sharedDataSource", answer = Answers.RETURNS_MOCKS)
-    private DataSource sharedDataSource;
+    @MockBean(name = "schedulerDataSource", value = DataSource.class, answer = Answers.RETURNS_MOCKS)
+    private DataSource schedulerDataSource;
 
     @MockBean
     private ClaimRepository claimRepository;
