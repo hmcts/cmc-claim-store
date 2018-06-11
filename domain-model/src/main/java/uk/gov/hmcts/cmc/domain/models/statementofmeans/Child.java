@@ -4,6 +4,7 @@ import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -23,9 +24,16 @@ public class Child {
     @NotNull
     private final Integer numberOfChildren;
 
-    public Child(AgeGroupType ageGroupType, Integer numberOfChildren) {
+    private final Integer numberOfChildrenLivingWithYou;
+
+    public Child(
+        AgeGroupType ageGroupType,
+        Integer numberOfChildren,
+        Integer numberOfChildrenLivingWithYou
+    ) {
         this.ageGroupType = ageGroupType;
         this.numberOfChildren = numberOfChildren;
+        this.numberOfChildrenLivingWithYou = numberOfChildrenLivingWithYou;
     }
 
     public AgeGroupType getAgeGroupType() {
@@ -34,6 +42,10 @@ public class Child {
 
     public Integer getNumberOfChildren() {
         return numberOfChildren;
+    }
+
+    public Optional<Integer> getNumberOfChildrenLivingWithYou() {
+        return Optional.ofNullable(numberOfChildrenLivingWithYou);
     }
 
     @Override
@@ -45,12 +57,14 @@ public class Child {
             return false;
         }
         Child child = (Child) other;
-        return ageGroupType == child.ageGroupType && Objects.equals(numberOfChildren, child.numberOfChildren);
+        return ageGroupType == child.ageGroupType
+            && Objects.equals(numberOfChildren, child.numberOfChildren)
+            && Objects.equals(numberOfChildrenLivingWithYou, child.numberOfChildrenLivingWithYou);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ageGroupType, numberOfChildren);
+        return Objects.hash(ageGroupType, numberOfChildren, numberOfChildrenLivingWithYou);
     }
 
     @Override

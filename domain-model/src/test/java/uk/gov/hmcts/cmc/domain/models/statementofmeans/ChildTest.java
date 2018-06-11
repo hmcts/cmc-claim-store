@@ -6,6 +6,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_16_AND_19;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.UNDER_11;
 
 public class ChildTest {
@@ -14,8 +15,9 @@ public class ChildTest {
     public void shouldBeSuccessfulValidationForChild() {
         //given
         Child child = Child.builder()
-                .ageGroupType(UNDER_11)
-                .numberOfChildren(2)
+            .ageGroupType(BETWEEN_16_AND_19)
+            .numberOfChildren(2)
+            .numberOfChildrenLivingWithYou(1)
                 .build();
         //when
         Set<String> response = validate(child);
