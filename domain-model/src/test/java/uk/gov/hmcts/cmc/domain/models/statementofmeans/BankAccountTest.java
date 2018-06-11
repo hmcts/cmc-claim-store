@@ -12,15 +12,17 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAc
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.OTHER;
 
 public class BankAccountTest {
+    public static BankAccount.BankAccountBuilder newSampleOfBankAccountBuilder() {
+        return BankAccount.builder()
+                .balance(TEN)
+                .type(CURRENT_ACCOUNT)
+                .joint(false);
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectBankAccount() {
         //given
-        BankAccount bankAccount = BankAccount.builder()
-            .balance(TEN)
-            .type(CURRENT_ACCOUNT)
-            .joint(false)
-            .build();
+        BankAccount bankAccount = newSampleOfBankAccountBuilder().build();
         //when
         Set<String> response = validate(bankAccount);
         //then

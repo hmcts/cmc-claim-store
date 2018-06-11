@@ -9,13 +9,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class OnTaxPaymentsTest {
+    public static OnTaxPayments.OnTaxPaymentsBuilder newSampleOfOnTaxPaymentsBuilder() {
+        return OnTaxPayments.builder()
+                .amountYouOwe(BigDecimal.ONE)
+                .reason("Whatever");
+    }
+        
     @Test
     public void shouldBeSuccessfulValidationForOnTaxPayments() {
         //given
-        OnTaxPayments onTaxPayments = OnTaxPayments.builder()
-            .amountYouOwe(BigDecimal.ONE)
-            .reason("Whatever")
-            .build();
+        OnTaxPayments onTaxPayments = newSampleOfOnTaxPaymentsBuilder().build();
         //when
         Set<String> response = validate(onTaxPayments);
         //then

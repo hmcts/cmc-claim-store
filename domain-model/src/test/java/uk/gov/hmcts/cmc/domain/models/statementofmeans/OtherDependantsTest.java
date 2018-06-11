@@ -8,14 +8,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class OtherDependantsTest {
+    public static OtherDependants.OtherDependantsBuilder newSampleOfOtherDependantsBuilder() {
+        return OtherDependants.builder()
+                .details("details")
+                .numberOfPeople(3);
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForOtherDependants() {
         //given
-        OtherDependants otherDependants = OtherDependants.builder()
-            .details("details")
-            .numberOfPeople(3)
-            .build();
+        OtherDependants otherDependants = newSampleOfOtherDependantsBuilder()
+                .build();
         //when
         Set<String> response = validate(otherDependants);
         //then
@@ -30,64 +33,64 @@ public class OtherDependantsTest {
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(2);
+                .hasSize(2);
     }
 
     @Test
     public void shouldBeInvalidForBlankDetailsAndZeroNumberOfPeople() {
         //given
         OtherDependants otherDependants = OtherDependants.builder()
-            .details("")
-            .numberOfPeople(0)
-            .build();
+                .details("")
+                .numberOfPeople(0)
+                .build();
         //when
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(2)
-            .contains("numberOfPeople : must be greater than or equal to 1");
+                .hasSize(2)
+                .contains("numberOfPeople : must be greater than or equal to 1");
     }
 
     @Test
     public void shouldBeInvalidForNullNumberOfPeople() {
         //given
         OtherDependants otherDependants = OtherDependants.builder()
-            .details("details")
-            .build();
+                .details("details")
+                .build();
         //when
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("numberOfPeople : may not be null");
+                .hasSize(1)
+                .contains("numberOfPeople : may not be null");
     }
 
     @Test
     public void shouldBeInvalidForZeroNumberOfPeople() {
         //given
         OtherDependants otherDependants = OtherDependants.builder()
-            .numberOfPeople(0)
-            .details("details")
-            .build();
+                .numberOfPeople(0)
+                .details("details")
+                .build();
         //when
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(1);
+                .hasSize(1);
     }
 
     @Test
     public void shouldBeInvalidForBlankDependantDetails() {
         //given
         OtherDependants otherDependants = OtherDependants.builder()
-            .details("")
-            .numberOfPeople(3)
-            .build();
+                .details("")
+                .numberOfPeople(3)
+                .build();
         //when
         Set<String> errors = validate(otherDependants);
         //then
         assertThat(errors)
-            .hasSize(1)
-            .contains("details : may not be empty");
+                .hasSize(1)
+                .contains("details : may not be empty");
     }
 }

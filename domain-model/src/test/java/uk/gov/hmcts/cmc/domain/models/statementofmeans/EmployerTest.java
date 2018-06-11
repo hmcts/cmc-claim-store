@@ -8,14 +8,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class EmployerTest {
+    public static Employer.EmployerBuilder newSampleOfEmployerBuilder() {
+        return Employer.builder()
+                .jobTitle("My job")
+                .name("My Company");
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectEmployer() {
         //given
-        Employer employer = Employer.builder()
-            .jobTitle("My job")
-            .name("My Company")
-            .build();
+        Employer employer = newSampleOfEmployerBuilder().build();
         //when
         Set<String> response = validate(employer);
         //then

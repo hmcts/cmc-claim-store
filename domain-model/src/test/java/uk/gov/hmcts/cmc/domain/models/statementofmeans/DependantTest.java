@@ -10,23 +10,17 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.UNDER_11;
 
 public class DependantTest {
+    public static Dependant.DependantBuilder newSampleOfDependantBuilder() {
+        return Dependant.builder()
+                .numberOfMaintainedChildren(1)
+                .children(Arrays.asList(ChildTest.newSampleOfChildBuilder().build()))
+                .otherDependants(OtherDependantsTest.newSampleOfOtherDependantsBuilder().build());
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectDependant() {
         //given
-        Child child = Child.builder()
-                .ageGroupType(UNDER_11)
-                .numberOfChildren(2)
-                .build();
-        OtherDependants otherDependants = OtherDependants.builder()
-                .details("Details")
-                .numberOfPeople(1)
-                .build();
-        Dependant dependant = Dependant.builder()
-                .children(Arrays.asList(child))
-                .numberOfMaintainedChildren(1)
-                .otherDependants(otherDependants)
-                .build();
+        Dependant dependant =newSampleOfDependantBuilder().build();
         //when
         Set<String> response = validate(dependant);
         //then

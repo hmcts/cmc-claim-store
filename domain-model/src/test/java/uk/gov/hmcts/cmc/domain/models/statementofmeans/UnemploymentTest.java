@@ -8,18 +8,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class UnemploymentTest {
+    public static Unemployment.UnemploymentBuilder newSampleOfUnemploymentBuilder() {
+        return Unemployment.builder()
+                .unemployed(UnemployedTest.newSampleOfUnemployedBuilder().build())
+                .retired(true)
+                .other("other");
+    }
+
     @Test
     public void shouldBeSuccessfulValidationForUnemployment() {
         //given
-        Unemployed unemployed = Unemployed.builder()
-            .numberOfMonths(10)
-            .numberOfYears(2)
-            .build();
-        Unemployment unemployment = Unemployment.builder()
-            .unemployed(unemployed)
-            .retired(true)
-            .other("other")
-            .build();
+        Unemployment unemployment = newSampleOfUnemploymentBuilder().build();
         //when
         Set<String> response = validate(unemployment);
         //then

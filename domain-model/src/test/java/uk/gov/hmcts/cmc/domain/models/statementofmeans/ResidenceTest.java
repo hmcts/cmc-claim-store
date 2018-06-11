@@ -9,14 +9,16 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.OTHER;
 
 public class ResidenceTest {
+    public static Residence.ResidenceBuilder newSampleOfResidenceBuilder() {
+        return Residence.builder()
+                .type(OTHER)
+                .otherDetail("Other details");
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectResidence() {
         //given
-        Residence residence = Residence.builder()
-                .type(OTHER)
-                .otherDetail("Other details")
-                .build();
+        Residence residence = newSampleOfResidenceBuilder().build();
         //when
         Set<String> response = validate(residence);
         //then

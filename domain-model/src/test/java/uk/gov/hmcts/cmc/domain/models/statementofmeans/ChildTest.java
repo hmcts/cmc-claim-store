@@ -10,15 +10,17 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.UNDER_11;
 
 public class ChildTest {
+    public static Child.ChildBuilder newSampleOfChildBuilder() {
+        return Child.builder()
+                .ageGroupType(BETWEEN_16_AND_19)
+                .numberOfChildren(2)
+                .numberOfChildrenLivingWithYou(1);
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForChild() {
         //given
-        Child child = Child.builder()
-            .ageGroupType(BETWEEN_16_AND_19)
-            .numberOfChildren(2)
-            .numberOfChildrenLivingWithYou(1)
-                .build();
+        Child child = newSampleOfChildBuilder().build();
         //when
         Set<String> response = validate(child);
         //then

@@ -11,16 +11,18 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseTyp
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
 
 public class ExpenseTest {
+    public static Expense.ExpenseBuilder newSampleOfExpenseBuilder() {
+        return Expense.builder()
+                .type(MORTGAGE)
+                .otherExpense("Other expense")
+                .frequency(MONTH)
+                .amountPaid(BigDecimal.valueOf(10));
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForExpense() {
         //given
-        Expense expense = Expense.builder()
-                .type(MORTGAGE)
-                .otherExpense("Other expense")
-                .frequency(MONTH)
-                .amountPaid(BigDecimal.valueOf(10))
-                .build();
+        Expense expense = newSampleOfExpenseBuilder().build();
         //when
         Set<String> response = validate(expense);
         //then

@@ -10,6 +10,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class EmploymentTest {
+    public static Employment.EmploymentBuilder newSampleOfEmploymentBuilder(){
+        return Employment.builder()
+                .employers(Arrays.asList(EmployerTest.newSampleOfEmployerBuilder().build()))
+                .selfEmployment(SelfEmploymentTest.newSampleOfSelfEmploymentBuilder().build())
+                .unemployment(UnemploymentTest.newSampleOfUnemploymentBuilder().build());
+    }
+
     @Test
     public void shouldBeSuccessfulValidationForEmployment() {
         //given

@@ -11,15 +11,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class DebtTest {
+    public static Debt.DebtBuilder newSampleOfDebtBuilder() {
+        return Debt.builder()
+                .description("My debt")
+                .monthlyPayments(ONE)
+                .totalOwed(TEN);
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectDebt() {
         //given
-        Debt debt = Debt.builder()
-            .description("My debt")
-            .monthlyPayments(ONE)
-            .totalOwed(TEN)
-            .build();
+        Debt debt = newSampleOfDebtBuilder().build();
         //when
         Set<String> response = validate(debt);
         //then

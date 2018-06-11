@@ -11,15 +11,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class CourtOrderTest {
+    public static CourtOrder.CourtOrderBuilder newSampleOfCourtOrderBuilder() {
+        return CourtOrder.builder()
+                .monthlyInstalmentAmount(ONE)
+                .amountOwed(TEN)
+                .claimNumber("My claim no");
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectCourtOrder() {
         //given
-        CourtOrder courtOrder = CourtOrder.builder()
-            .monthlyInstalmentAmount(ONE)
-            .amountOwed(TEN)
-            .claimNumber("My claim no")
-            .build();
+        CourtOrder courtOrder = newSampleOfCourtOrderBuilder().build();
         //when
         Set<String> response = validate(courtOrder);
         //then

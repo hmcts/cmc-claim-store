@@ -9,20 +9,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
 public class SelfEmploymentTest {
+    public static SelfEmployment.SelfEmploymentBuilder newSampleOfSelfEmploymentBuilder() {
+        return SelfEmployment.builder()
+                .jobTitle("CEO")
+                .annualTurnover(BigDecimal.TEN)
+                .onTaxPayments(OnTaxPaymentsTest.newSampleOfOnTaxPaymentsBuilder().build());
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForUnemployed() {
         //given
-        OnTaxPayments onTaxPayments = OnTaxPayments.builder()
-            .amountYouOwe(BigDecimal.ONE)
-            .reason("Whatever")
-            .build();
-
-        SelfEmployment selfEmployment = SelfEmployment.builder()
-            .jobTitle("CEO")
-            .annualTurnover(BigDecimal.TEN)
-            .onTaxPayments(onTaxPayments)
-            .build();
+        SelfEmployment selfEmployment = newSampleOfSelfEmploymentBuilder().build();
         //when
         Set<String> response = validate(selfEmployment);
         //then

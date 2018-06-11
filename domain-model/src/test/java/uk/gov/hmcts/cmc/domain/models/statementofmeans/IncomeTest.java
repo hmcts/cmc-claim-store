@@ -11,16 +11,18 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
 
 public class IncomeTest {
+    public static Income.IncomeBuilder newSampleOfIncomeBuilder() {
+        return Income.builder()
+                .type(JOB)
+                .otherSource("Other source")
+                .frequency(MONTH)
+                .amountReceived(BigDecimal.valueOf(10));
+    }
 
     @Test
     public void shouldBeSuccessfulValidationForIncome() {
         //given
-        Income income = Income.builder()
-                .type(JOB)
-                .otherSource("Other source")
-                .frequency(MONTH)
-                .amountReceived(BigDecimal.valueOf(10))
-                .build();
+        Income income = newSampleOfIncomeBuilder().build();
         //when
         Set<String> response = validate(income);
         //then
