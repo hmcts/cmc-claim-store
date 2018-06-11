@@ -43,6 +43,12 @@ public class RespondToClaimTest extends BaseCitizenTest {
         shouldBeAbleToSuccessfullySubmit(fullDefenceAlreadyPaidResponse);
     }
 
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
+        Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
+        shouldBeAbleToSuccessfullySubmit(fullAdmissionResponse);
+    }
+
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
         String claimantId = solicitor.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(

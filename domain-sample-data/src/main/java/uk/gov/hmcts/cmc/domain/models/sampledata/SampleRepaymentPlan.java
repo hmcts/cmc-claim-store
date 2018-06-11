@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
-import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
