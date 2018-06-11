@@ -52,7 +52,7 @@ public class AmountRangeTest {
         //when
         Set<String> errors = validate(amountRow);
         //then
-        assertThat(errors).containsExactly("higherValue : can not be more than 2 fractions");
+        assertThat(errors).containsExactlyInAnyOrder("higherValue : can not be more than 2 fractions");
     }
 
     @Test
@@ -68,6 +68,6 @@ public class AmountRangeTest {
         String[] expectedErroMessages = {"higherValue : must be greater than or equal to 0.01",
             "lowerValue : must be greater than or equal to 0.01"};
 
-        assertThat(errors).containsExactly(expectedErroMessages);
+        assertThat(errors).containsExactlyInAnyOrder(expectedErroMessages);
     }
 }
