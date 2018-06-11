@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.ccj;
+package uk.gov.hmcts.cmc.domain.models;
 
 public enum PaymentOption {
     IMMEDIATELY("Immediately"),

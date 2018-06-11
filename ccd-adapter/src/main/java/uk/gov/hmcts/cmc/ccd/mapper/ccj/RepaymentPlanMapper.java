@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.ccd.mapper.ccj;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDRepaymentPlan;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
-import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
 
 import static uk.gov.hmcts.cmc.ccd.domain.ccj.CCDPaymentSchedule.valueOf;
 

@@ -160,15 +160,28 @@ public class JsonMapperTest {
     }
 
     @Test
-    public void shouldProcessDependantResponseFromJson() {
+    public void shouldProcessDependantResponseFullDefenceFromJson() {
         //given
-        String input = new ResourceReader().read("/defendant-response.json");
+        String input = new ResourceReader().read("/defendant-response-full-defence.json");
 
         //when
         Response output = processor.fromJson(input, Response.class);
 
         //then
         Response expected = SampleResponse.validDefaults();
+        assertThat(output).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldProcessDependantResponseFullAdmissionFromJson() {
+        //given
+        String input = new ResourceReader().read("/defendant-response-full-admission.json");
+
+        //when
+        Response output = processor.fromJson(input, Response.class);
+
+        //then
+        Response expected = SampleResponse.FullAdmission.builder().build();
         assertThat(output).isEqualTo(expected);
     }
 
