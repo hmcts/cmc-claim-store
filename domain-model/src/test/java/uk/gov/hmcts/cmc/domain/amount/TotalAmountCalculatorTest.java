@@ -425,6 +425,25 @@ public class TotalAmountCalculatorTest {
                 .isEqualTo(Optional.of(format(new BigDecimal("40.02"))));
     }
 
+    @Test
+    public void amountWithInterestShouldReturnClaimAmountPlusInterestWithNoFee() {
+        Claim claimStandardInterest = SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withAmount(validDefaults())
+                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                    .withInterest(
+                        standardInterestBuilder()
+                            .withInterestDate(SampleInterestDate.submission())
+                            .build())
+                    .build()
+            )
+            .withIssuedOn(LocalDate.now().minusDays(1))
+            .build();
+
+        assertThat(TotalAmountCalculator.amountWithInterest(claimStandardInterest))
+            .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
+    }
 
     private static Claim claimWithAmountRange() {
         return SampleClaim.builder()
