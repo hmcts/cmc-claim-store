@@ -20,7 +20,7 @@ public class DependantTest {
     @Test
     public void shouldBeSuccessfulValidationForCorrectDependant() {
         //given
-        Dependant dependant =newSampleOfDependantBuilder().build();
+        Dependant dependant = newSampleOfDependantBuilder().build();
         //when
         Set<String> response = validate(dependant);
         //then
