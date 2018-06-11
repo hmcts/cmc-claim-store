@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import org.flywaydb.core.Flyway;
-import org.mockito.Answers;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +12,6 @@ import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 
-import javax.sql.DataSource;
-
 @Configuration
 @Profile("mocked-database-tests")
 @SuppressWarnings("unused")
@@ -22,12 +19,6 @@ class MockedDatabaseConfiguration {
 
     @MockBean
     private Flyway flyway;
-
-    @MockBean(name = "claimStoreDataSource", value = DataSource.class, answer = Answers.RETURNS_MOCKS)
-    private DataSource dataSource;
-
-    @MockBean(name = "schedulerDataSource", value = DataSource.class, answer = Answers.RETURNS_MOCKS)
-    private DataSource schedulerDataSource;
 
     @MockBean
     private ClaimRepository claimRepository;
