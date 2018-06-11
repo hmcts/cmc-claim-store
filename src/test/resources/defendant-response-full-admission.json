@@ -1,0 +1,104 @@
+{
+  "responseType": "FULL_ADMISSION",
+  "moreTimeNeeded": "no",
+  "defendant": {
+    "type": "individual",
+    "name": "John Rambo",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "correspondenceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "mobilePhone": "07873727165",
+    "representative": {
+      "organisationName": "Trading ltd",
+      "organisationAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "organisationContactDetails": {
+        "phone": "7873738547",
+        "email": "representative@example.org",
+        "dxAddress": "DX123456"
+      }
+    },
+    "dateOfBirth": "1968-01-02"
+  },
+  "paymentOption": "INSTALMENTS",
+  "repaymentPlan": {
+    "instalmentAmount": 100,
+    "firstPaymentDate": "2100-10-10",
+    "paymentSchedule": "EACH_WEEK"
+  },
+  "statementOfMeans": {
+    "residence": {
+      "type": "JOINT_OWN_HOME"
+    },
+    "dependant": {
+      "children": [{
+        "ageGroupType": "BETWEEN_11_AND_15",
+        "numberOfChildren": 2
+      }],
+      "numberOfMaintainedChildren": 2,
+      "otherDependants": {
+        "numberOfPeople": 3,
+        "details": "Three other dependants"
+      }
+    },
+    "employment": {
+      "employers": [{
+        "jobTitle": "My sweet job",
+        "name": "CMC"
+      }],
+      "selfEmployment": {
+        "jobTitle": "Director",
+        "annualTurnover": 10,
+        "onTaxPayments": {
+          "amountYouOwe": 10,
+          "reason": "Genuine reason"
+        }
+      },
+      "unemployment": {
+        "retired": true
+      }
+    },
+    "bankAccounts": [{
+      "type": "SAVINGS_ACCOUNT",
+      "joint": true,
+      "balance": 10
+    }],
+    "debts": [{
+      "description": "Reference",
+      "totalOwed": 10,
+      "monthlyPayments": 1
+    }],
+    "incomes": [{
+      "type": "JOB",
+      "frequency": "MONTH",
+      "amountReceived": 10
+    }],
+    "expenses": [{
+      "type": "COUNCIL_TAX",
+      "frequency": "MONTH",
+      "amountPaid": 10
+    }],
+    "courtOrders": [{
+      "claimNumber": "Reference",
+      "amountOwed": 10,
+      "monthlyInstalmentAmount": 1
+    }],
+    "reason": "My reason"
+  }
+}

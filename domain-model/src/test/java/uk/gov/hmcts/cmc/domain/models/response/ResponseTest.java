@@ -1,7 +1,6 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.util.Set;
