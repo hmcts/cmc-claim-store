@@ -29,11 +29,15 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> totalTillToday(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, LocalDate.now()));
+        return Optional.ofNullable(calculateTotalAmount(claim, LocalDate.now(), true));
+    }
+
+    public static Optional<BigDecimal> amountWithInterest(Claim claim) {
+        return Optional.ofNullable(calculateTotalAmount(claim, LocalDate.now(), false));
     }
 
     public static Optional<BigDecimal> totalTillDateOfIssue(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn()));
+        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), true));
     }
 
     public static Optional<BigDecimal> calculateInterestForClaim(Claim claim) {
@@ -125,15 +129,21 @@ public class TotalAmountCalculator {
         return interestRate.divide(HUNDRED, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP);
     }
 
-    private static BigDecimal calculateTotalAmount(Claim claim, LocalDate toDate) {
+    private static BigDecimal calculateTotalAmount(Claim claim, LocalDate toDate, boolean withFees) {
         ClaimData data = claim.getClaimData();
 
         if (data.getAmount() instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) data.getAmount()).getTotalAmount();
-            BigDecimal feesPaid = data.getFeesPaidInPound();
+
             BigDecimal interest = calculateInterest(claim, toDate).orElse(ZERO);
 
-            return claimAmount.add(interest.add(feesPaid));
+            if(withFees){
+                BigDecimal feesPaid = data.getFeesPaidInPound();
+                return claimAmount.add(interest.add(feesPaid));
+            } else {
+                return claimAmount.add(interest);
+            }
+
         }
 
         return null;

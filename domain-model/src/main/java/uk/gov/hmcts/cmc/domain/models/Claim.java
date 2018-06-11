@@ -181,6 +181,10 @@ public class Claim {
         return TotalAmountCalculator.totalTillToday(this);
     }
 
+    public Optional<BigDecimal> getAmountWithInterest() {
+        return TotalAmountCalculator.amountWithInterest(this);
+    }
+
     public Optional<BigDecimal> getTotalAmountTillDateOfIssue() {
         return TotalAmountCalculator.totalTillDateOfIssue(this);
     }
