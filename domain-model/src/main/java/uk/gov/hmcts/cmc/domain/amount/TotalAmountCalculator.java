@@ -28,12 +28,12 @@ public class TotalAmountCalculator {
         // do not instantiate
     }
 
-    public static Optional<BigDecimal> totalTillToday(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(claim, LocalDate.now(), true));
-    }
-
     public static Optional<BigDecimal> amountWithInterest(Claim claim) {
         return Optional.ofNullable(calculateTotalAmount(claim, LocalDate.now(), false));
+    }
+
+    public static Optional<BigDecimal> totalTillToday(Claim claim) {
+        return Optional.ofNullable(calculateTotalAmount(claim, LocalDate.now(), true));
     }
 
     public static Optional<BigDecimal> totalTillDateOfIssue(Claim claim) {
@@ -137,7 +137,7 @@ public class TotalAmountCalculator {
 
             BigDecimal interest = calculateInterest(claim, toDate).orElse(ZERO);
 
-            if(withFees){
+            if (withFees) {
                 BigDecimal feesPaid = data.getFeesPaidInPound();
                 return claimAmount.add(interest.add(feesPaid));
             } else {
