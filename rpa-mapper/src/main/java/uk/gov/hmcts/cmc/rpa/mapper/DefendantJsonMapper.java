@@ -29,7 +29,7 @@ public class DefendantJsonMapper {
         this.addressMapper = addressMapper;
     }
 
-    public JsonArray map(TheirDetails defendant){
+    public JsonArray map(TheirDetails defendant) {
         JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder()
             .add("type", defendant.getClass().getSimpleName().replace("Details", ""))
             .add("name", defendant.getName())
