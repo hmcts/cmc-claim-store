@@ -35,13 +35,12 @@ public class RequestForJudgementJsonMapper {
     private String getPaymentValue(CountyCourtJudgment countyCourtJudgment) {
         PaymentOption paymentOption = countyCourtJudgment.getPaymentOption();
         switch (paymentOption) {
+            case FULL_BY_SPECIFIED_DATE:
             case IMMEDIATELY:
                 return paymentOption.getDescription();
             case INSTALMENTS:
                 return countyCourtJudgment.getRepaymentPlan().map(repaymentPlan -> repaymentPlan.getPaymentSchedule()
                     .getDescription()).orElseThrow(IllegalStateException::new);
-            case FULL_BY_SPECIFIED_DATE:
-                return paymentOption.getDescription();
             default:
                 throw new IllegalStateException("Payment option not found");
         }

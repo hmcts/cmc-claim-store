@@ -5,10 +5,10 @@
   "defendants": [
     {
       "type": "Organisation",
-      "name": "John Smith",
+      "name": "John Rambo",
       "businessName": null,
-      "companiesHouseNumber": "09047000",
-      "contactPerson": "Arnold Schwarzenegger",
+      "companiesHouseNumber": null,
+      "contactPerson": "Steven Seagal",
       "addressAmended": "no",
       "address": {
         "line1": "52",
@@ -22,6 +22,6 @@
     }
   ],
   "dateOfBirth": null,
-  "phoneNumber": null,
+  "phoneNumber": "07873727165",
   "mediation": "no"
 }

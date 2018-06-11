@@ -5,7 +5,7 @@
   "defendants": [
     {
       "type": "Individual",
-      "name": "John Smith",
+      "name": "John Rambo",
       "businessName": null,
       "companiesHouseNumber": null,
       "contactPerson": null,
@@ -18,10 +18,16 @@
         "postcode": "DF1 3LJ"
       },
       "emailAddress": "j.smith@example.com",
-      "correspondenceAddress": null
+      "correspondenceAddress": {
+        "line1": "102",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      }
     }
   ],
-  "dateOfBirth": null,
-  "phoneNumber": null,
+  "dateOfBirth": "02-Jan-1968",
+  "phoneNumber": "07873727165",
   "mediation": "yes"
 }

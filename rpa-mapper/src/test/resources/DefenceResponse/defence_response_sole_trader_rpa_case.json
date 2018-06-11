@@ -5,7 +5,7 @@
   "defendants": [
     {
       "type": "SoleTrader",
-      "name": "John Smith",
+      "name": "John Rambo",
       "businessName": "Trading as Sole Trading & Sons",
       "companiesHouseNumber": null,
       "contactPerson": null,
@@ -22,6 +22,6 @@
     }
   ],
   "dateOfBirth": null,
-  "phoneNumber": null,
+  "phoneNumber": "07873727165",
   "mediation": "yes"
 }
