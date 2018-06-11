@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.util.Set;
 import javax.validation.ConstraintViolation;
@@ -10,6 +9,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
@@ -66,10 +66,8 @@ public class ResponseTest {
     @Test
     public void shouldHaveValidationMessagesWhenDefenceExceedsSizeLimit() {
         //given
-        String defence = new ResourceReader().read("/defence_exceeding_size_limit.text");
-
         Response response = SampleResponse.FullDefence.builder()
-            .withDefence(defence)
+            .withDefence(randomAlphanumeric(99001))
             .build();
 
         //when
