@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
+import uk.gov.hmcts.cmc.domain.constraints.ValidInterestDate;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@ValidInterestDate
 public class InterestDate {
     public enum InterestDateType {
         @JsonProperty("custom")
@@ -29,7 +30,6 @@ public class InterestDate {
         SUBMISSION
     }
 
-    @NotNull
     private final InterestDateType type;
 
     @JsonUnwrapped
