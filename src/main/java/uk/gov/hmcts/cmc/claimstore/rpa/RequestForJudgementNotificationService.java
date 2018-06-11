@@ -38,7 +38,7 @@ public class RequestForJudgementNotificationService {
     }
 
     @EventListener
-    public void notifyRobotOfCCJRequested(CountyCourtJudgmentRequestedEvent event) {
+    public void notifyRobotics(CountyCourtJudgmentRequestedEvent event) {
         requireNonNull(event);
 
         EmailData emailData = prepareEmailData(event.getClaim());

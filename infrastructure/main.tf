@@ -58,10 +58,6 @@ data "vault_generic_secret" "rpa_email_defence_response" {
   path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-defence-response"
 }
 
-data "vault_generic_secret" "rpa_email_additional_time" {
-  path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-additional-time"
-}
-
 data "vault_generic_secret" "rpa_email_default_judgment" {
   path = "secret/${var.vault_section}/cmc/claim-store/rpa-email-default-judgment"
 }
@@ -151,7 +147,6 @@ module "claim-store-api" {
 
     RPA_NOTIFICATIONS_DEFENCE_RESPONSE = "${data.vault_generic_secret.rpa_email_defence_response.data["value"]}"
     RPA_NOTIFICATIONS_DEFAULT_JUDGEMENT = "${data.vault_generic_secret.rpa_email_default_judgment.data["value"]}"
-    RPA_NOTIFICATIONS_ADDITIONAL_TIME = "${data.vault_generic_secret.rpa_email_additional_time.data["value"]}"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
