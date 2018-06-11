@@ -100,7 +100,7 @@ public class StatementOfMeansTest {
     @Test
     public void shouldBeInvalidForInvalidEmployment() {
         //given
-        Employment invalidEmployment = EmploymentTest.newSampleOfEmploymentBuilder()
+        Employment invalidEmployment = newSampleOfEmploymentBuilder()
                 .selfEmployment(SelfEmployment.builder().build())
                 .build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()

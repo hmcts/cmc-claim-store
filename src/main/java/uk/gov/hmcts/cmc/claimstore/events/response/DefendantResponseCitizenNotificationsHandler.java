@@ -35,10 +35,7 @@ public class DefendantResponseCitizenNotificationsHandler {
 
     private boolean isFullAdmission(Claim claim) {
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
-        if (responseType == ResponseType.FULL_ADMISSION) {
-            return true;
-        }
-        return false;
+        return responseType == ResponseType.FULL_ADMISSION;
     }
 
     @EventListener
