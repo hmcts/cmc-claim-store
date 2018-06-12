@@ -206,10 +206,10 @@ public class CCDCaseApi {
             CaseEvent.LINK_DEFENDANT
         );
 
-        scheduleEmailNotificationsForResponse(caseId, defendantId, defendantEmail, caseDetails);
+        scheduleEmailNotificationsForDefendantResponse(caseId, defendantId, defendantEmail, caseDetails);
     }
 
-    private void scheduleEmailNotificationsForResponse(
+    private void scheduleEmailNotificationsForDefendantResponse(
         String caseId,
         String defendantId,
         String defendantEmail,

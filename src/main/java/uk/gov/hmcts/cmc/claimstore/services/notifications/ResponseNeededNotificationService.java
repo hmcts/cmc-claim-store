@@ -28,14 +28,14 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
 
 @Service
-public class DefendantResponseNeededNotificationService implements ResponseNeededNotification {
-    private final Logger logger = LoggerFactory.getLogger(DefendantResponseNeededNotificationService.class);
+public class ResponseNeededNotificationService implements ResponseNeededNotification {
+    private final Logger logger = LoggerFactory.getLogger(ResponseNeededNotificationService.class);
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public DefendantResponseNeededNotificationService(
+    public ResponseNeededNotificationService(
         NotificationClient notificationClient,
         NotificationsProperties notificationsProperties
     ) {
@@ -65,8 +65,8 @@ public class DefendantResponseNeededNotificationService implements ResponseNeede
         Map<String, Object> emailData
     ) {
         String errorMessage = "Failure: "
-            + " failed to send defendant response needed notification (" + emailData.get("caseReference")
-            + " to " + emailData.get("defendantEmail") + ") "
+            + " failed to send response needed notification (" + emailData.get("caseReference")
+            + " to defendant at " + emailData.get("defendantEmail") + ") "
             + " due to " + exception.getMessage();
 
         logger.info(errorMessage, exception);

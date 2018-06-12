@@ -38,6 +38,7 @@ public class JobService {
                     .build(),
                 newTrigger()
                     .startAt(Date.from(startDateTime.toInstant()))
+                    .withIdentity(jobData.getId(), jobData.getGroup())
                     .withSchedule(
                         simpleSchedule()
                             .withMisfireHandlingInstructionNowWithExistingCount()

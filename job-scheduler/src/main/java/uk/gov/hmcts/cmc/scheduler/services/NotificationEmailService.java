@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.scheduler.services;
 
-import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -9,9 +9,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 
 @Service
 public class NotificationEmailService {
@@ -28,13 +25,9 @@ public class NotificationEmailService {
         value = {JobExecutionException.class},
         backoff = @Backoff(delay = 10000))
     public void process(JobExecutionContext context) throws JobExecutionException {
-        logger.info("Now: " + ZonedDateTime.now());
-        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-        logger.info("Data: " + jobDataMap);
-
-        defendantResponseNeededNotificationService.sendMail(jobDataMap);
-
-        logger.info("Completed job work...");
+        JobDetail jobDetail = context.getJobDetail();
+        defendantResponseNeededNotificationService.sendMail(jobDetail.getJobDataMap());
+        logger.info("Completed job work for id %s", jobDetail.getKey().getName());
     }
 
     @Recover
