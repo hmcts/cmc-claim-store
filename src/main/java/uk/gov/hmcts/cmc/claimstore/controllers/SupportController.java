@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @RestController
@@ -64,13 +68,12 @@ public class SupportController {
     @ApiOperation("Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
-        @PathVariable("event") String event
+        @PathVariable("event") String event,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
     ) throws ServletRequestBindingException {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
-
-        String authorisation = userService.authenticateAnonymousCaseWorker().getAuthorisation();
 
         switch (event) {
             case "claim-issued":
@@ -100,6 +103,10 @@ public class SupportController {
     }
 
     private void resendStaffNotificationsOnClaimIssued(Claim claim, String authorisation) {
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException("Authorisation is required");
+        }
+
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
         }
@@ -108,7 +115,7 @@ public class SupportController {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
-            String fullName = claim.getClaimData().getClaimant().getName();
+            String fullName = userService.getUserDetails(authorisation).getFullName();
 
             documentGenerator.generateForNonRepresentedClaim(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
