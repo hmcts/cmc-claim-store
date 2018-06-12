@@ -29,6 +29,16 @@ public class TestData {
             );
     }
 
+    public SampleClaimData submittedBySolicitorBuilder() {
+        return SampleClaimData.submittedByLegalRepresentativeBuilder()
+            .withDefendant(
+                SampleTheirDetails.builder()
+                    .withEmail(nextUserEmail())
+                    .withRepresentative(null)
+                    .individualDetails()
+            );
+    }
+
     public String nextUserEmail() {
         return format(aatConfiguration.getGeneratedUserEmailPattern(), RandomStringUtils.randomAlphanumeric(10));
     }

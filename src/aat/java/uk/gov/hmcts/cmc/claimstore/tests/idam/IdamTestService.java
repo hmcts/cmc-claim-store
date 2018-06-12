@@ -50,6 +50,12 @@ public class IdamTestService {
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
+    public User createSolicitor() {
+        String email = testData.nextUserEmail();
+        idamTestApi.createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
+        return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
+    }
+
     public User createDefendant(final String letterHolderId) {
         String email = testData.nextUserEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
@@ -85,6 +91,14 @@ public class IdamTestService {
     }
 
     private CreateUserRequest createCitizenRequest(String username, String password) {
+        return new CreateUserRequest(
+            username,
+            new UserGroup("cmc-private-beta"),
+            password
+        );
+    }
+
+    private CreateUserRequest createSolicitorRequest(String username, String password) {
         return new CreateUserRequest(
             username,
             new UserGroup("cmc-private-beta"),
