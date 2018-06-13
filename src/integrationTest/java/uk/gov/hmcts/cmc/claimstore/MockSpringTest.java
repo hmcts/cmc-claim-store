@@ -28,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollectio
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -116,6 +117,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    protected JobService jobService;
 
     @MockBean
     protected AppInsights appInsights;
