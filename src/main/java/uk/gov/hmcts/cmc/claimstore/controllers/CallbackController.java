@@ -3,10 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -19,8 +21,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDocument;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
-
-import static java.util.Arrays.asList;
 
 @Api
 @RestController
@@ -67,21 +67,12 @@ public class CallbackController {
 
     @PostMapping(path = "/print")
     @ApiOperation("Handles print callback from CCD")
-    public List<CaseDocument> printCallback(@NotNull @RequestBody CaseDetails caseDetails) {
-        return asList(
-            CaseDocument.builder()
-                .name("Awesome doco")
-                .description("Saving the world")
-                .type("netflix")
-                .url("http://wow")
-                .build()
-            ,
-            CaseDocument.builder()
-                .name("Whale")
-                .description("Blue whales")
-                .type("netflix")
-                .url("http://wow")
-                .build()
+    public List<CaseDocument> printCallback(
+        @NotNull @RequestBody CaseDetails caseDetails,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.getAllRelatedDocuments(
+            caseDetails.getData(),
+            authorisation
         );
     }
 }

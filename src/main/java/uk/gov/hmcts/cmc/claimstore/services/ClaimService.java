@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDocument;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.net.URI;
@@ -32,11 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
@@ -51,6 +57,8 @@ public class ClaimService {
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final AppInsights appInsights;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final DocumentManagementService documentManagementService;
+    private final SealedClaimPdfService sealedClaimPdfService;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -63,7 +71,9 @@ public class ClaimService {
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
         AppInsights appInsights,
-        CCDCaseDataToClaim ccdCaseDataToClaim
+        CCDCaseDataToClaim ccdCaseDataToClaim,
+        DocumentManagementService documentManagementService,
+        SealedClaimPdfService sealedClaimPdfService
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -74,6 +84,8 @@ public class ClaimService {
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.appInsights = appInsights;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.documentManagementService = documentManagementService;
+        this.sealedClaimPdfService = sealedClaimPdfService;
     }
 
     public Claim getClaimById(long claimId) {
@@ -153,6 +165,7 @@ public class ClaimService {
             .build();
 
         Claim issuedClaim = caseRepository.saveClaim(authorisation, claim);
+        downloadOrGenerateAndUpload(issuedClaim, authorisation);
 
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
@@ -222,6 +235,17 @@ public class ClaimService {
             .build();
     }
 
+    public List<CaseDocument> getAllRelatedDocuments(Map<String, Object> claimDataMap, String authorisation) {
+        return asList(
+            CaseDocument.builder()
+                .name("Claim " + claimDataMap.get("referenceNumber").toString())
+                .description("Claim document")
+                .type("CMC")
+                .url(claimDataMap.get("sealedClaimDocument").toString())
+                .build()
+        );
+    }
+
     public SubmittedCallbackResponse requestMoreTimeOnPaperSubmitted(CallbackRequest callbackRequest) {
         Claim claim = convertCallbackToClaim(callbackRequest);
 
@@ -268,5 +292,21 @@ public class ClaimService {
         String authorization
     ) {
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
+    }
+
+    @SuppressWarnings("squid:S3655")
+    public byte[] downloadOrGenerateAndUpload(Claim claim, String authorisation) {
+        if (claim.getSealedClaimDocument().isPresent()) {
+            URI documentSelf = claim.getSealedClaimDocument().get();
+            return documentManagementService.downloadDocument(authorisation, documentSelf);
+        } else {
+            byte[] documentSupplier = sealedClaimPdfService.createPdf(claim);
+            PDF document = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), documentSupplier);
+
+            URI documentUri = documentManagementService.uploadDocument(authorisation, document);
+            linkSealedClaimDocument(authorisation, claim, documentUri);
+
+            return document.getBytes();
+        }
     }
 }

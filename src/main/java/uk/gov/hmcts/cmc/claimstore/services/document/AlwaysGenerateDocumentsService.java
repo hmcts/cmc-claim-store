@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.util.List;
+
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url", havingValue = "false")
 public class AlwaysGenerateDocumentsService implements DocumentsService {
