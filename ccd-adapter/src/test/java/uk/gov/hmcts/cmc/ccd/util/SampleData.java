@@ -27,6 +27,17 @@ import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDChild;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDDependant;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployer;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployment;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.math.BigDecimal;
@@ -34,6 +45,9 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.TEN;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -41,6 +55,13 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount.BankAccountType.SAVINGS_ACCOUNT;
+import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDChild.AgeGroupType.BETWEEN_11_AND_15;
+import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense.ExpenseType.COUNCIL_TAX;
+import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome.IncomeType.JOB;
+import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDPaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence.ResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -280,6 +301,74 @@ public class SampleData {
         return CCDResponse.builder()
             .responseType(CCDResponseType.FULL_DEFENCE)
             .fullDefenceResponse(getFullDefenceResponse())
+            .build();
+    }
+
+    public static CCDStatementOfMeans getCCDStatementOfMeans() {
+        return CCDStatementOfMeans.builder()
+            .residence(CCDResidence.builder().type(JOINT_OWN_HOME).build())
+            .reason("My reason")
+            .dependant(CCDDependant.builder()
+                .children(asList(CCDCollectionElement.<CCDChild>builder()
+                    .value(CCDChild.builder()
+                        .numberOfChildren(4)
+                        .numberOfChildrenLivingWithYou(1)
+                        .ageGroupType(BETWEEN_11_AND_15)
+                        .build())
+                    .build())
+                )
+                .build()
+            )
+            .employment(CCDEmployment.builder()
+                .employers(asList(
+                    CCDCollectionElement.<CCDEmployer>builder().value(CCDEmployer.builder()
+                        .jobTitle("A job")
+                        .name("A Company")
+                        .build()
+                    ).build()
+                ))
+                .build()
+            )
+            .incomes(asList(
+                CCDCollectionElement.<CCDIncome>builder().value(CCDIncome.builder()
+                    .type(JOB)
+                    .frequency(MONTH)
+                    .amountReceived(TEN)
+                    .build()
+                ).build()
+            ))
+            .expenses(asList(
+                CCDCollectionElement.<CCDExpense>builder().value(CCDExpense.builder()
+                    .type(COUNCIL_TAX)
+                    .frequency(MONTH)
+                    .amountPaid(TEN)
+                    .build()
+                ).build()
+            ))
+            .debts(asList(
+                CCDCollectionElement.<CCDDebt>builder().value(CCDDebt.builder()
+                    .totalOwed(TEN)
+                    .description("Reference")
+                    .monthlyPayments(ONE)
+                    .build()
+                ).build()
+            ))
+            .bankAccounts(asList(
+                CCDCollectionElement.<CCDBankAccount>builder().value(CCDBankAccount.builder()
+                    .balance(BigDecimal.valueOf(100))
+                    .joint(NO)
+                    .type(SAVINGS_ACCOUNT)
+                    .build()
+                ).build()
+            ))
+            .courtOrders(asList(
+                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder().build().builder()
+                    .amountOwed(TEN)
+                    .claimNumber("Reference")
+                    .monthlyInstalmentAmount(ONE)
+                    .build()
+                ).build()
+            ))
             .build();
     }
 }
