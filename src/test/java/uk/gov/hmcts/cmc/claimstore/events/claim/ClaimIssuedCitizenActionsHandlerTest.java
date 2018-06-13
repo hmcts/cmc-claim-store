@@ -46,8 +46,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     public void setup() {
         claimIssuedCitizenActionsHandler = new ClaimIssuedCitizenActionsHandler(
             claimIssuedNotificationService,
-            properties,
-            jobService
+            properties
         );
 
         when(properties.getTemplates()).thenReturn(templates);

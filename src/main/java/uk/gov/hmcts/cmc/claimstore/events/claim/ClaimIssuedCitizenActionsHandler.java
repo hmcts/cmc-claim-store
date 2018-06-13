@@ -8,24 +8,20 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.scheduler.services.JobService;
 
 @Component
 public class ClaimIssuedCitizenActionsHandler {
 
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
-    private final JobService jobService;
 
     @Autowired
     public ClaimIssuedCitizenActionsHandler(
         ClaimIssuedNotificationService claimIssuedNotificationService,
-        NotificationsProperties notificationsProperties,
-        JobService jobService
+        NotificationsProperties notificationsProperties
     ) {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
-        this.jobService = jobService;
     }
 
     @EventListener

@@ -50,6 +50,22 @@ import java.util.List;
 @ContextConfiguration(initializers = {MockSpringTest.Initializer.class})
 public abstract class MockSpringTest {
 
+    @ClassRule
+    public static PostgreSQLContainer claimStorePostgreSQLContainer =
+        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
+            .withDatabaseName("claimstore")
+            .withUsername("claimstore")
+            .withPassword("claimstore")
+            .withStartupTimeout(Duration.ofSeconds(600));
+
+    @ClassRule
+    public static PostgreSQLContainer schedulerPostgreSQLContainer =
+        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
+            .withDatabaseName("scheduler")
+            .withUsername("scheduler")
+            .withPassword("scheduler")
+            .withStartupTimeout(Duration.ofSeconds(600));
+
     @Autowired
     protected JsonMapper jsonMapper;
 
@@ -118,22 +134,6 @@ public abstract class MockSpringTest {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), new TypeReference<List<Claim>>() {
         });
     }
-
-    @ClassRule
-    public static PostgreSQLContainer claimStorePostgreSQLContainer =
-        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
-            .withDatabaseName("claimstore")
-            .withUsername("claimstore")
-            .withPassword("claimstore")
-            .withStartupTimeout(Duration.ofSeconds(600));
-
-    @ClassRule
-    public static PostgreSQLContainer schedulerPostgreSQLContainer =
-        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
-            .withDatabaseName("scheduler")
-            .withUsername("scheduler")
-            .withPassword("scheduler")
-            .withStartupTimeout(Duration.ofSeconds(600));
 
     static class Initializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
