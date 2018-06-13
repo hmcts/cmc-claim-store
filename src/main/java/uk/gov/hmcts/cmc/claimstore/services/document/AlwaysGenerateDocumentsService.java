@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
+
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url", havingValue = "false")
 public class AlwaysGenerateDocumentsService implements DocumentsService {
@@ -64,6 +66,6 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     private Claim getClaimByExternalId(String externalId, String authorisation) {
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return claimService.getClaimByExternalId(externalId, authorisation, OPEN);
     }
 }

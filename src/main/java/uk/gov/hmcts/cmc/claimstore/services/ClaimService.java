@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -92,15 +93,9 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
     }
 
-    public Claim getClaimByExternalId(String externalId, String authorisation) {
+    public Claim getClaimByExternalId(String externalId, String authorisation, CaseState caseState) {
         return caseRepository
-            .getClaimByExternalId(externalId, authorisation)
-            .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
-    }
-
-    public Claim getClosedClaimByExternalId(String externalId, String authorisation) {
-        return caseRepository
-            .getCase(externalId, authorisation, CaseState.CLOSED)
+            .getClaimByExternalId(externalId, authorisation, caseState)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
@@ -167,7 +162,7 @@ public class ClaimService {
             authorisation
         );
 
-        Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
+        Claim retrievedClaim = getClaimByExternalId(externalId, authorisation, OPEN);
         trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
 
         return retrievedClaim;
@@ -182,7 +177,7 @@ public class ClaimService {
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
+        Claim claim = getClaimByExternalId(externalId, authorisation, OPEN);
 
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
@@ -190,7 +185,7 @@ public class ClaimService {
 
         caseRepository.requestMoreTimeForResponse(authorisation, claim, newDeadline);
 
-        claim = getClaimByExternalId(externalId, authorisation);
+        claim = getClaimByExternalId(externalId, authorisation, OPEN);
         UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
 

@@ -14,9 +14,7 @@ import java.util.Optional;
 public interface CaseRepository {
     List<Claim> getBySubmitterId(String submitterId, String authorisation);
 
-    Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
-
-    Optional<Claim> getCase(String externalId, String authorisation, CaseState caseState);
+    Optional<Claim> getClaimByExternalId(String externalId, String authorisation, CaseState caseState);
 
     Long getOnHoldIdByExternalId(String externalId, String authorisation);
 

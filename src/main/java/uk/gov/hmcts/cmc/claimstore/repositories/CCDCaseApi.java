@@ -87,28 +87,14 @@ public class CCDCaseApi {
         return claims.stream().findAny();
     }
 
-    public Optional<Claim> getByExternalId(String externalId, String authorisation) {
+    public Optional<Claim> getByExternalId(String externalId, String authorisation, CaseState caseState) {
         User user = userService.getUser(authorisation);
 
-        List<CaseDetails> result = searchByCaseState(user, ImmutableMap.of("case.externalId", externalId), OPEN);
+        List<CaseDetails> result = searchByCaseState(user, ImmutableMap.of("case.externalId", externalId), caseState);
 
         if (result.size() == 1 && isCaseOnHold(result.get(0))) {
             throw new OnHoldClaimAccessAttemptException("Case is on hold " + externalId);
         }
-
-        List<Claim> claims = extractClaims(result);
-
-        if (claims.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by externalId " + externalId);
-        }
-
-        return claims.stream().findAny();
-    }
-
-    public Optional<Claim> getClosedCasesByExternalId(String externalId, String authorisation, CaseState caseState) {
-        User user = userService.getUser(authorisation);
-
-        List<CaseDetails> result = searchByCaseState(user, ImmutableMap.of("case.externalId", externalId), caseState);
 
         List<Claim> claims = extractClaims(result);
 

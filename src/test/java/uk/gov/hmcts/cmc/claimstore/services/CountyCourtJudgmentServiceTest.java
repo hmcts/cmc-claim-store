@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -57,7 +58,7 @@ public class CountyCourtJudgmentServiceTest {
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2)).build();
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION), eq(OPEN))).thenReturn(claim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
 
@@ -68,7 +69,7 @@ public class CountyCourtJudgmentServiceTest {
     @Test(expected = NotFoundException.class)
     public void saveThrowsNotFoundExceptionWhenClaimDoesNotExist() {
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION), eq(OPEN)))
             .thenThrow(new NotFoundException("Claim not found by id"));
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
@@ -81,7 +82,7 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim claim = SampleClaim.getDefault();
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION), eq(OPEN))).thenReturn(claim);
 
         countyCourtJudgmentService.save(differentUser, DATA, EXTERNAL_ID, AUTHORISATION);
     }
@@ -91,7 +92,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.builder().withRespondedAt(LocalDateTime.now().minusDays(2)).build();
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION), eq(OPEN)))
+            .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
@@ -101,7 +103,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(12));
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION), eq(OPEN)))
+            .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
@@ -111,7 +114,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getDefault();
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION), eq(OPEN)))
+            .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }

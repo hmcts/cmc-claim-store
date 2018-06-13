@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.function.Supplier;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Service
@@ -75,7 +76,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     private Claim getClaimByExternalId(String externalId, String authorisation) {
-        return claimService.getClaimByExternalId(externalId, authorisation);
+        return claimService.getClaimByExternalId(externalId, authorisation, OPEN);
     }
 
     @SuppressWarnings("squid:S3655")

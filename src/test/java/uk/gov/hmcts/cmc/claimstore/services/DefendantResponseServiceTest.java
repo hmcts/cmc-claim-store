@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
@@ -77,7 +78,7 @@ public class DefendantResponseServiceTest {
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(
             SampleUserDetails.builder().withUserId(USER_ID).withMail(DEFENDANT_EMAIL).build());
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(claim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN))).thenReturn(claim);
 
         //when
         responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
@@ -93,7 +94,7 @@ public class DefendantResponseServiceTest {
     @Test(expected = DefendantLinkingException.class)
     public void saveShouldThrowDefendantLinkingExceptionWhenClaimIsLinkedToOtherDefendant() {
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
             .thenReturn(SampleClaim.builder().withDefendantId("not-mine-claim").build());
 
         responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
@@ -102,7 +103,7 @@ public class DefendantResponseServiceTest {
     @Test(expected = DefendantLinkingException.class)
     public void saveShouldThrowDefendantLinkingExceptionWhenClaimIsNotLinkedToAnyUser() {
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
             .thenReturn(SampleClaim.builder().withDefendantId(null).build());
 
         responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
@@ -111,7 +112,7 @@ public class DefendantResponseServiceTest {
     @Test(expected = DefendantLinkingException.class)
     public void saveShouldThrowDefendantLinkingExceptionWhenClaimDefendantIdIsNullAndGivenDefendantIdIsNull() {
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
             .thenReturn(SampleClaim.builder().withDefendantId(null).build());
 
         responseService.save(EXTERNAL_ID, null, VALID_APP, AUTHORISATION);
@@ -120,7 +121,7 @@ public class DefendantResponseServiceTest {
     @Test(expected = ResponseAlreadySubmittedException.class)
     public void saveShouldThrowResponseAlreadySubmittedExceptionWhenResponseSubmitted() {
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
             .thenReturn(SampleClaim.builder().withRespondedAt(LocalDateTime.now()).build());
 
         responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
@@ -129,7 +130,7 @@ public class DefendantResponseServiceTest {
     @Test(expected = CountyCourtJudgmentAlreadyRequestedException.class)
     public void saveShouldThrowCountyCourtJudgmentAlreadyRequestedExceptionWhenCCJRequested() {
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
             .thenReturn(SampleClaim.builder().withCountyCourtJudgmentRequestedAt(LocalDateTime.now()).build());
 
         responseService.save(EXTERNAL_ID, DEFENDANT_ID, VALID_APP, AUTHORISATION);
