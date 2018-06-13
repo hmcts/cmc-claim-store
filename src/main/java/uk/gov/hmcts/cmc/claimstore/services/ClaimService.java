@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -99,7 +100,7 @@ public class ClaimService {
 
     public Claim getClosedClaimByExternalId(String externalId, String authorisation) {
         return caseRepository
-            .getClosedCaseByExternalId(externalId, authorisation)
+            .getCase(externalId, authorisation, CaseState.CLOSED)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 

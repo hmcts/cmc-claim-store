@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -47,8 +48,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> getClosedCaseByExternalId(String externalId, String authorisation) {
-        return ccdCaseApi.getClosedCasesByExternalId(externalId, authorisation);
+    public Optional<Claim> getCase(String externalId, String authorisation, CaseState caseState) {
+        return ccdCaseApi.getClosedCasesByExternalId(externalId, authorisation, caseState);
     }
 
     @Override

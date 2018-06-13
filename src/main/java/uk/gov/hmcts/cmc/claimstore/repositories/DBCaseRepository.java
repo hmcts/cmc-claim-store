@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -50,7 +51,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> getClosedCaseByExternalId(String externalId, String authorisation) {
+    public Optional<Claim> getCase(String externalId, String authorisation, CaseState caseState) {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
