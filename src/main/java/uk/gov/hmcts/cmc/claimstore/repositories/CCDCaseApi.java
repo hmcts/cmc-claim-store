@@ -37,6 +37,7 @@ public class CCDCaseApi {
 
     public static enum CaseState {
         ONHOLD("onhold"),
+        CLOSED("closed"),
         OPEN("open");
 
         private final String state;
@@ -108,6 +109,20 @@ public class CCDCaseApi {
         if (result.size() == 1 && isCaseOnHold(result.get(0))) {
             throw new OnHoldClaimAccessAttemptException("Case is on hold " + externalId);
         }
+
+        List<Claim> claims = extractClaims(result);
+
+        if (claims.size() > 1) {
+            throw new CoreCaseDataStoreException("More than one claim found by externalId " + externalId);
+        }
+
+        return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
+    }
+
+    public Optional<Claim> getClosedCasesByExternalId(String externalId, String authorisation) {
+        User user = userService.getUser(authorisation);
+
+        List<CaseDetails> result = searchOnlyClosedCases(user, ImmutableMap.of("case.externalId", externalId));
 
         List<Claim> claims = extractClaims(result);
 
@@ -252,6 +267,10 @@ public class CCDCaseApi {
 
     private List<CaseDetails> searchOnlyOpenCases(User user, Map<String, String> searchString) {
         return search(user, searchString, 1, new ArrayList<>(), null, CaseState.OPEN);
+    }
+
+    private List<CaseDetails> searchOnlyClosedCases(User user, Map<String, String> searchString) {
+        return search(user, searchString, 1, new ArrayList<>(), null, CaseState.CLOSED);
     }
 
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only

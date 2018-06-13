@@ -97,6 +97,12 @@ public class ClaimService {
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
     }
 
+    public Claim getClosedClaimByExternalId(String externalId, String authorisation) {
+        return caseRepository
+            .getClosedCaseByExternalId(externalId, authorisation)
+            .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
+    }
+
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
         return caseRepository
             .getByClaimReferenceNumber(reference, authorisation);

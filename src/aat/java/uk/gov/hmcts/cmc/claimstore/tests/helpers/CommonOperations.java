@@ -36,8 +36,17 @@ public class CommonOperations {
         ClaimData claimData = testData.submittedByClaimantBuilder()
             .withExternalId(externalId)
             .build();
-
+        submitPrePaymentClaim(externalId.toString(), userAuthentication);
         return saveClaim(claimData, userAuthentication, userId).then().extract().body().as(Claim.class);
+    }
+
+    public Response submitPrePaymentClaim(String externalId, String userAuthentication) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .when()
+            .post("/claims/" + externalId + "/pre-payment");
     }
 
     private Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {

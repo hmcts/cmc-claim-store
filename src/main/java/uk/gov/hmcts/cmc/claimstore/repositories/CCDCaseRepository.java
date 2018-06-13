@@ -47,6 +47,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Optional<Claim> getClosedCaseByExternalId(String externalId, String authorisation) {
+        return ccdCaseApi.getClosedCasesByExternalId(externalId, authorisation);
+    }
+
+    @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         return ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
     }

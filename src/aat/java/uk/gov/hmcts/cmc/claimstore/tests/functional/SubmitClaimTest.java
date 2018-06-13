@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.helpers.CommonOperations;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -35,8 +36,12 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
+        UUID externalId = UUID.randomUUID();
         ClaimData claimData = testData.submittedByClaimantBuilder()
+            .withExternalId(externalId)
             .build();
+
+        commonOperations.submitPrePaymentClaim(externalId.toString(), claimant.getAuthorisation());
 
         Claim createdCase = submitClaim(claimData)
             .then()
@@ -67,6 +72,8 @@ public class SubmitClaimTest extends BaseTest {
         ClaimData claimData = testData.submittedByClaimantBuilder()
             .withExternalId(externalId)
             .build();
+
+        commonOperations.submitPrePaymentClaim(externalId.toString(), claimant.getAuthorisation());
 
         submitClaim(claimData)
             .andReturn();

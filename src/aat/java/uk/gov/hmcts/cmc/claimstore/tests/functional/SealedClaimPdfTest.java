@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,8 +69,13 @@ public class SealedClaimPdfTest extends BaseTest {
     }
 
     private Claim createCase() {
+        UUID externalId = UUID.randomUUID();
+
         ClaimData claimData = testData.submittedByClaimantBuilder()
+            .withExternalId(externalId)
             .build();
+
+        commonOperations.submitPrePaymentClaim(externalId.toString(), claimant.getAuthorisation());
 
         return submitClaim(claimData)
             .then()

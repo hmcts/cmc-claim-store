@@ -50,6 +50,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Optional<Claim> getClosedCaseByExternalId(String externalId, String authorisation) {
+        return claimRepository.getClaimByExternalId(externalId);
+    }
+
+    @Override
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
         getClaimByExternalId(externalId, authorisation)
             .ifPresent(claim -> {

@@ -97,7 +97,7 @@ public class OffersService {
         settlement.countersign(party);
 
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
-        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+        Claim updated = claimService.getClosedClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
         appInsights.trackEvent(SETTLEMENT_REACHED, updated.getReferenceNumber());
         return updated;
