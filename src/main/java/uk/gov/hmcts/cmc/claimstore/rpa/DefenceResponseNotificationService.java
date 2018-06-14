@@ -48,7 +48,7 @@ public class DefenceResponseNotificationService {
 
     private EmailData prepareEmailData(Claim claim) {
 
-        return new EmailData(emailProperties.getRecipient(),
+        return new EmailData(emailProperties.getDefenceResponseRecipient(),
             "J defence response " + claim.getReferenceNumber(),
             "",
             Collections.singletonList(createDefenceResponseAttachment(claim))

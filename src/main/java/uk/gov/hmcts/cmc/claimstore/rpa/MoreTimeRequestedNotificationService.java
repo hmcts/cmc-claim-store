@@ -48,7 +48,7 @@ public class MoreTimeRequestedNotificationService {
 
     private EmailData prepareEmailData(Claim claim) {
 
-        return new EmailData(emailProperties.getRecipient(),
+        return new EmailData(emailProperties.getRecipientMoreTimeRecipient(),
             "J additional time " + claim.getReferenceNumber(),
             "",
             Collections.singletonList(createMoreTimeRequestedAttachment(claim))
