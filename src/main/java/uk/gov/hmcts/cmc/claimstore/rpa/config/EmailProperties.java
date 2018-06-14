@@ -16,20 +16,16 @@ public class EmailProperties {
     private String sender;
 
     @NotBlank
-    @Value("recipient-sealed-claim")
-    private String recipient;
+    private String sealedClaimRecipient;
 
     @NotBlank
-    @Value("defence-response")
     private String defenceResponseRecipient;
 
     @NotBlank
-    @Value("default-judgement")
     private String defaultJudgementRecipient;
 
     @NotBlank
-    @Value("recipient-more-time")
-    private String recipientMoreTimeRecipient;
+    private String moreTimeRequestedRecipient;
 
     public String getSender() {
         return sender;
@@ -39,35 +35,35 @@ public class EmailProperties {
         this.sender = sender;
     }
 
-    public String getRecipient() {
-        return recipient;
+    public String getSealedClaimRecipient() {
+        return sealedClaimRecipient;
     }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
+    public void setSealedClaimRecipient(String sealedClaimRecipient) {
+        this.sealedClaimRecipient = sealedClaimRecipient;
     }
 
     public String getDefenceResponseRecipient() {
         return defenceResponseRecipient;
     }
 
-    public String getDefaultJudgementRecipient() {
-        return defaultJudgementRecipient;
-    }
-
-    public String getRecipientMoreTimeRecipient() {
-        return recipientMoreTimeRecipient;
-    }
-
     public void setDefenceResponseRecipient(String defenceResponseRecipient) {
         this.defenceResponseRecipient = defenceResponseRecipient;
+    }
+
+    public String getDefaultJudgementRecipient() {
+        return defaultJudgementRecipient;
     }
 
     public void setDefaultJudgementRecipient(String defaultJudgementRecipient) {
         this.defaultJudgementRecipient = defaultJudgementRecipient;
     }
 
-    public void setRecipientMoreTimeRecipient(String recipientMoreTimeRecipient) {
-        this.recipientMoreTimeRecipient = recipientMoreTimeRecipient;
+    public String getMoreTimeRequestedRecipient() {
+        return moreTimeRequestedRecipient;
+    }
+
+    public void setMoreTimeRequestedRecipient(String moreTimeRequestedRecipient) {
+        this.moreTimeRequestedRecipient = moreTimeRequestedRecipient;
     }
 }
