@@ -1,8 +1,6 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.evidence;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
-import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 
 import java.util.Set;
 
