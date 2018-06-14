@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -130,8 +129,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
         return ImmutableMap.of(
             "case.submitterId", USER_ID,
             "page", String.valueOf(page),
-            "sortDirection", "desc",
-            "state", CaseState.OPEN.getValue()
+            "sortDirection", "desc"
         );
     }
 

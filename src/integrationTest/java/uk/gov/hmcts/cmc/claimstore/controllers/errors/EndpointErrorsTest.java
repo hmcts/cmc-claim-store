@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
 @TestPropertySource(
@@ -49,7 +48,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(caseRepository.getClaimByExternalId(externalId, BEARER_TOKEN, OPEN)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId, BEARER_TOKEN)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + externalId)
@@ -129,7 +128,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void requestForMoreTimeShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
-        given(caseRepository.getClaimByExternalId(externalId, anyString(), OPEN)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId, anyString())).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(post("/claims/" + externalId + "/request-more-time")
@@ -182,7 +181,7 @@ public class EndpointErrorsTest extends MockSpringTest {
         Claim claim = SampleClaim.getDefault();
         String externalId = claim.getExternalId();
 
-        given(caseRepository.getClaimByExternalId(externalId, anyString(), OPEN))
+        given(caseRepository.getClaimByExternalId(externalId, anyString()))
             .willReturn(Optional.of(claim));
 
         willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyString(), anyString(), anyString());

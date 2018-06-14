@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -14,7 +13,7 @@ import java.util.Optional;
 public interface CaseRepository {
     List<Claim> getBySubmitterId(String submitterId, String authorisation);
 
-    Optional<Claim> getClaimByExternalId(String externalId, String authorisation, CaseState caseState);
+    Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
 
     Long getOnHoldIdByExternalId(String externalId, String authorisation);
 

@@ -145,7 +145,7 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.empty();
         String externalId = "does not exist";
 
-        when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION), eq(OPEN))).thenReturn(result);
+        when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
 
         claimService.getClaimByExternalId(externalId, AUTHORISATION, OPEN);
     }
@@ -160,7 +160,7 @@ public class ClaimServiceTest {
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
         when(caseRepository.getOnHoldIdByExternalId(anyString(), eq(AUTHORISATION)))
             .thenReturn(Long.valueOf(1));
-        when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION), eq(OPEN)))
+        when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
@@ -182,7 +182,7 @@ public class ClaimServiceTest {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
             .thenReturn(Optional.of(claim));
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any()))
             .thenReturn(newDeadline);
@@ -196,7 +196,7 @@ public class ClaimServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN))).thenReturn(Optional.empty());
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.empty());
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
@@ -208,7 +208,7 @@ public class ClaimServiceTest {
             .minusDays(10);
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
             .thenReturn(Optional.of(claim));
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
@@ -218,7 +218,7 @@ public class ClaimServiceTest {
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString(), eq(OPEN)))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
             .thenReturn(Optional.of(claim));
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);

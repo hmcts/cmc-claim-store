@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -46,13 +45,13 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository.getBySubmitterId(submitterId);
     }
 
-    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation, CaseState caseState) {
+    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
     @Override
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        getClaimByExternalId(externalId, authorisation, CaseState.ONHOLD)
+        getClaimByExternalId(externalId, authorisation)
             .ifPresent(claim -> {
                 throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
             });

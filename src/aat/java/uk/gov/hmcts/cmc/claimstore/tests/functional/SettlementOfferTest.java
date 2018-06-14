@@ -238,7 +238,7 @@ public class SettlementOfferTest extends BaseTest {
         commonOperations
             .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+            .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test
@@ -259,7 +259,7 @@ public class SettlementOfferTest extends BaseTest {
         commonOperations
             .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+            .statusCode(HttpStatus.CONFLICT.value());
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
