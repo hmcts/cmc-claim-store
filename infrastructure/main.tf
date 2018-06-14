@@ -70,7 +70,7 @@ data "vault_generic_secret" "oauth_client_secret" {
   path = "secret/${var.vault_section}/ccidam/idam-api/oauth2/client-secrets/cmc-citizen"
 }
 
-module "scheduler" {
+module "scheduler-database" {
   source = "git@github.com:hmcts/moj-module-postgres?ref=cnp-449-tactical"
   product = "${var.product}-scheduler"
   location = "${var.location}"
@@ -108,11 +108,11 @@ module "claim-store-api" {
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
     //schedular db
-    SCHEDULER_DB_HOST = "${module.scheduler.host_name}"
-    SCHEDULER_DB_PORT = "${module.scheduler.postgresql_listen_port}"
-    SCHEDULER_DB_NAME = "${module.scheduler.postgresql_database}"
-    SCHEDULER_DB_USERNAME = "${module.scheduler.user_name}"
-    SCHEDULER_DB_PASSWORD = "${module.scheduler.postgresql_password}"
+    SCHEDULER_DB_HOST = "${module.scheduler-database.host_name}"
+    SCHEDULER_DB_PORT = "${module.scheduler-database.postgresql_listen_port}"
+    SCHEDULER_DB_NAME = "${module.scheduler-database.postgresql_database}"
+    SCHEDULER_DB_USERNAME = "${module.scheduler-database.user_name}"
+    SCHEDULER_DB_PASSWORD = "${module.scheduler-database.postgresql_password}"
 
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
