@@ -1,7 +1,7 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
 import java.util.Collections;
 import java.util.Set;

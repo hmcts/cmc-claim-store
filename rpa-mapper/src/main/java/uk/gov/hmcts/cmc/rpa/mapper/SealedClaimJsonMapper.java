@@ -39,7 +39,7 @@ public class SealedClaimJsonMapper {
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
             .add("serviceDate", DateFormatter.format(claim.getServiceDate()))
             .add("courtFee", claim.getClaimData().getFeesPaidInPound())
-            .add("amountWithInterest", claim.getTotalAmountTillToday().orElse(null))
+            .add("amountWithInterest", claim.getAmountWithInterest().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
             .add("defendants", defendantMapper.map(claim.getClaimData().getDefendants().stream().findFirst().orElseThrow(IllegalStateException::new)))
