@@ -30,13 +30,13 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @SuppressWarnings({"LineLength"})
 public class DefenceResponseJsonMapperTest {
 
-    private static String INDIVIDUAL = "/DefenceResponse/defence_response_individual_rpa_case.json";
-    private static String INDIVIDUAL_MEDIATION_NOT_OPTED = "/DefenceResponse/defence_response_individual_mediation_not_opted_rpa_case.json";
-    private static String INDIVIDUAL_ADDRESS_MODIFIED = "/DefenceResponse/defence_response_individual_address_modified_rpa_case.json";
-    private static String SOLE_TRADER = "/DefenceResponse/defence_response_sole_trader_rpa_case.json";
-    private static String COMPANY = "/DefenceResponse/defence_response_company_rpa_case.json";
-    private static String ORGANISATION = "/DefenceResponse/defence_response_organisation_rpa_case.json";
-    private static String ORGANISATION_ALREADY_PAID_RESPONSE = "/DefenceResponse/defence_response_organisation_rpa_case_alreadyPaid.json";
+    private static String INDIVIDUAL = "/defence/defence_response_individual_rpa_case.json";
+    private static String INDIVIDUAL_MEDIATION_NOT_OPTED = "/defence/defence_response_individual_mediation_not_opted_rpa_case.json";
+    private static String INDIVIDUAL_ADDRESS_MODIFIED = "/defence/defence_response_individual_address_modified_rpa_case.json";
+    private static String SOLE_TRADER = "/defence/defence_response_sole_trader_rpa_case.json";
+    private static String COMPANY = "/defence/defence_response_company_rpa_case.json";
+    private static String ORGANISATION = "/defence/defence_response_organisation_rpa_case.json";
+    private static String ORGANISATION_ALREADY_PAID_RESPONSE = "/defence/defence_response_organisation_rpa_case_alreadyPaid.json";
     private static final String DEFENDANT_EMAIL = "j.smith@example.com";
     @Autowired
     private DefenceResponseJsonMapper mapper;
@@ -148,7 +148,7 @@ public class DefenceResponseJsonMapperTest {
         Claim claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID)
-                .withDefendantDetails(SampleParty.builder()
+                .withDefendantDetails(SampleParty.builder().withContactPerson("The Shrek")
                     .withCorrespondenceAddress(null).organisation()).build())
             .withClaimData(SampleClaimData.builder().withDefendant(SampleTheirDetails.builder().organisationDetails())
                 .build()).withIssuedOn(LocalDate.of(2018, 4, 26)).build();

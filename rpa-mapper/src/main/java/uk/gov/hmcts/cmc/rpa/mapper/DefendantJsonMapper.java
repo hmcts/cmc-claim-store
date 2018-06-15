@@ -43,18 +43,18 @@ public class DefendantJsonMapper {
         return Json.createArrayBuilder().add(jsonObjectBuilder).build();
     }
 
-    public JsonArray map(Party ownParty, TheirDetails oppositeParty, String defendantsEmail) {
+    public JsonArray map(Party defendantFromResponse, TheirDetails defendantFromClaim, String defendantsEmail) {
 
         JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder()
-            .add("type", ownParty.getClass().getSimpleName().replace("Details", ""))
-            .add("name", ownParty.getName())
-            .add("address", addressMapper.map(ownParty.getAddress()))
-            .add("correspondenceAddress", ownParty.getCorrespondenceAddress().map(addressMapper::map).orElse(null))
+            .add("type", defendantFromResponse.getClass().getSimpleName().replace("Details", ""))
+            .add("name", defendantFromResponse.getName())
+            .add("address", addressMapper.map(defendantFromResponse.getAddress()))
+            .add("correspondenceAddress", defendantFromResponse.getCorrespondenceAddress().map(addressMapper::map).orElse(null))
             .add("emailAddress", defendantsEmail)
-            .add("addressAmended", isAddressAmended(ownParty, oppositeParty).name().toLowerCase())
-            .add("businessName", extractOptionalFromSubclass(ownParty, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
-            .add("contactPerson", extractOptionalFromSubclass(ownParty, HasContactPerson.class, HasContactPerson::getContactPerson))
-            .add("companiesHouseNumber", extractOptionalFromSubclass(ownParty, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber));
+            .add("addressAmended", isAddressAmended(defendantFromResponse, defendantFromClaim).name().toLowerCase())
+            .add("businessName", extractOptionalFromSubclass(defendantFromResponse, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
+            .add("contactPerson", extractOptionalFromSubclass(defendantFromResponse, HasContactPerson.class, HasContactPerson::getContactPerson))
+            .add("companiesHouseNumber", extractOptionalFromSubclass(defendantFromResponse, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber));
 
         return Json.createArrayBuilder().add(jsonObjectBuilder).build();
     }

@@ -38,7 +38,7 @@ public class SealedClaimJsonMapperTest {
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        String expected = new ResourceReader().read("/SealedClaim/individual_rpa_case.json").trim();
+        String expected = new ResourceReader().read("/claim/individual_rpa_case.json").trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
@@ -53,7 +53,7 @@ public class SealedClaimJsonMapperTest {
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        String expected = new ResourceReader().read("/SealedClaim/sole_trader_rpa_case.json").trim();
+        String expected = new ResourceReader().read("/claim/sole_trader_rpa_case.json").trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
@@ -68,7 +68,7 @@ public class SealedClaimJsonMapperTest {
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        String expected = new ResourceReader().read("/SealedClaim/company_rpa_case.json").trim();
+        String expected = new ResourceReader().read("/claim/company_rpa_case.json").trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
@@ -87,7 +87,7 @@ public class SealedClaimJsonMapperTest {
             .withIssuedOn(LocalDate.of(2018, 4, 26))
             .build();
 
-        String expected = new ResourceReader().read("/SealedClaim/organisation_rpa_case.json").trim();
+        String expected = new ResourceReader().read("/claim/organisation_rpa_case.json").trim();
 
         //then
         assertEquals(expected, mapper.map(claim).toString(), STRICT);

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.domain.ccj;
 
 public enum CCDPaymentSchedule {
-    EACH_WEEK("each week"),
-    EVERY_TWO_WEEKS("every two weeks"),
-    EVERY_MONTH("every month");
+    EACH_WEEK("Each week"),
+    EVERY_TWO_WEEKS("Every two weeks"),
+    EVERY_MONTH("Every month");
 
     private String description;
 
