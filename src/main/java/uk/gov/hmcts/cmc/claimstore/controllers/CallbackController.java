@@ -14,12 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDocument;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 @Api
@@ -70,9 +73,21 @@ public class CallbackController {
     public List<CaseDocument> printCallback(
         @NotNull @RequestBody CaseDetails caseDetails,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.getAllRelatedDocuments(
-            caseDetails.getData(),
-            authorisation
-        );
+        return claimService.getAllRelatedDocuments(to(caseDetails), authorisation);
+    }
+
+    /**
+     * This method does NOT populate all fields in Claim model!
+     * <p>
+     * It only populates fields that are required for logic of the endpoint(s) that use it.
+     */
+    private Claim to(CaseDetails caseDetails) {
+
+        Map<String, Object> data = caseDetails.getData();
+
+        return Claim.builder()
+            .sealedClaimDocument(URI.create(data.get("sealedClaimDocument").toString()))
+            .referenceNumber(data.get("referenceNumber").toString())
+            .build();
     }
 }

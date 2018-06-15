@@ -165,7 +165,6 @@ public class ClaimService {
             .build();
 
         Claim issuedClaim = caseRepository.saveClaim(authorisation, claim);
-        downloadOrGenerateAndUpload(issuedClaim, authorisation);
 
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
@@ -235,14 +234,19 @@ public class ClaimService {
             .build();
     }
 
-    public List<CaseDocument> getAllRelatedDocuments(Map<String, Object> claimDataMap, String authorisation) {
+    public List<CaseDocument> getAllRelatedDocuments(Claim claim, String authorisation) {
+
+        String referenceNumber = claim.getReferenceNumber();
+
         return asList(
             CaseDocument.builder()
-                .name("Claim " + claimDataMap.get("referenceNumber").toString())
+                .name("Claim " + referenceNumber)
                 .description("Claim document")
-                .type("CMC")
-                .url(claimDataMap.get("sealedClaimDocument").toString())
-                .build()
+                .type("Claim PDF")
+                .url(
+                    claim.getSealedClaimDocument()
+                        .orElseThrow(() -> new NotFoundException("No document " + referenceNumber)).toString()
+                ).build()
         );
     }
 
@@ -292,21 +296,5 @@ public class ClaimService {
         String authorization
     ) {
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
-    }
-
-    @SuppressWarnings("squid:S3655")
-    public byte[] downloadOrGenerateAndUpload(Claim claim, String authorisation) {
-        if (claim.getSealedClaimDocument().isPresent()) {
-            URI documentSelf = claim.getSealedClaimDocument().get();
-            return documentManagementService.downloadDocument(authorisation, documentSelf);
-        } else {
-            byte[] documentSupplier = sealedClaimPdfService.createPdf(claim);
-            PDF document = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), documentSupplier);
-
-            URI documentUri = documentManagementService.uploadDocument(authorisation, document);
-            linkSealedClaimDocument(authorisation, claim, documentUri);
-
-            return document.getBytes();
-        }
     }
 }

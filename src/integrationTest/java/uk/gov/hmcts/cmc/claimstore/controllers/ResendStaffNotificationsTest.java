@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -46,6 +47,9 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
     @MockBean
     protected SendLetterApi sendLetterApi;
+
+    @MockBean
+    protected DocumentManagementService documentManagementService;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
