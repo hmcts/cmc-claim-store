@@ -66,13 +66,9 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
-        UUID externalId = UUID.randomUUID();
+        ClaimData claimData = testData.submittedByClaimantBuilder().build();
 
-        ClaimData claimData = testData.submittedByClaimantBuilder()
-            .withExternalId(externalId)
-            .build();
-
-        commonOperations.submitPrePaymentClaim(externalId.toString(), claimant.getAuthorisation());
+        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), claimant.getAuthorisation());
 
         submitClaim(claimData)
             .andReturn();
