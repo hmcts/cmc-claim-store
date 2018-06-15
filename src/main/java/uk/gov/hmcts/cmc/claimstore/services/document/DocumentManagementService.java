@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
@@ -31,18 +32,21 @@ public class DocumentManagementService {
     private final DocumentDownloadClientApi documentDownloadClient;
     private final DocumentUploadClientApi documentUploadClient;
     private final AuthTokenGenerator authTokenGenerator;
+    private final UserService userService;
 
     @Autowired
     public DocumentManagementService(
         DocumentMetadataDownloadClientApi documentMetadataDownloadApi,
         DocumentDownloadClientApi documentDownloadClientApi,
         DocumentUploadClientApi documentUploadClientApi,
-        AuthTokenGenerator authTokenGenerator
+        AuthTokenGenerator authTokenGenerator,
+        UserService userService
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
         this.documentUploadClient = documentUploadClientApi;
         this.authTokenGenerator = authTokenGenerator;
+        this.userService = userService;
     }
 
     public URI uploadDocument(String authorisation, PDF document) {
@@ -59,6 +63,7 @@ public class DocumentManagementService {
         UploadResponse response = documentUploadClient.upload(
             authorisation,
             authTokenGenerator.generate(),
+            userService.getUserDetails(authorisation).getId(),
             singletonList(file)
         );
 
