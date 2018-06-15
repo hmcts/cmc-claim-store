@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
+import java.net.URI;
 import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -49,10 +51,20 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        verify(documentUploadClient).upload(AUTHORISATION_TOKEN, any(), newArrayList(new InMemoryMultipartFile("files",
-            deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdf",
-            "application/pdf", PDF_BYTES)
-        ));
+        verify(documentUploadClient).upload(
+            eq(AUTHORISATION_TOKEN),
+            any(),
+            eq(
+                newArrayList(
+                    new InMemoryMultipartFile(
+                        "files",
+                        deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdf",
+                        MediaType.APPLICATION_PDF_VALUE,
+                        PDF_BYTES
+                    )
+                )
+            )
+        );
     }
 
     @Test
@@ -74,7 +86,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, Claim.class).getSealedClaimDocument())
-            .isEqualTo(Optional.of("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"));
+            .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
     }
 
     @Test
