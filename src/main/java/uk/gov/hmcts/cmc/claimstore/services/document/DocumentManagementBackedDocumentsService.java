@@ -6,16 +6,24 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
+import java.net.URI;
+import java.util.function.Supplier;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
-    private final ClaimDocumentGenerator documentGenerator;
+    private final DocumentManagementService documentManagementService;
+    private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
@@ -26,13 +34,15 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     // Content providers are formatted values and aren't worth splitting into multiple models.
     public DocumentManagementBackedDocumentsService(
         ClaimService claimService,
-        ClaimDocumentGenerator documentGenerator,
+        DocumentManagementService documentManagementService,
+        SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService) {
         this.claimService = claimService;
-        this.documentGenerator = documentGenerator;
+        this.documentManagementService = documentManagementService;
+        this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
@@ -47,7 +57,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] getSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-        return documentGenerator.downloadOrGenerateAndUpload(claim, authorisation);
+        return downloadOrGenerateAndUpload(claim, () -> sealedClaimPdfService.createPdf(claim), authorisation);
     }
 
     @Override
@@ -67,5 +77,20 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     private Claim getClaimByExternalId(String externalId, String authorisation) {
         return claimService.getClaimByExternalId(externalId, authorisation);
+    }
+
+    @SuppressWarnings("squid:S3655")
+    private byte[] downloadOrGenerateAndUpload(Claim claim, Supplier<byte[]> documentSupplier, String authorisation) {
+        if (claim.getSealedClaimDocument().isPresent()) {
+            URI documentSelfPath = claim.getSealedClaimDocument().get();
+            return documentManagementService.downloadDocument(authorisation, documentSelfPath);
+        } else {
+            PDF document = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), documentSupplier.get());
+
+            URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
+            claimService.linkSealedClaimDocument(authorisation, claim, documentSelfPath);
+
+            return document.getBytes();
+        }
     }
 }
