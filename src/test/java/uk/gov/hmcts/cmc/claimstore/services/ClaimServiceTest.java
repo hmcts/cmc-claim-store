@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
@@ -16,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -80,10 +78,6 @@ public class ClaimServiceTest {
     private AppInsights appInsights;
     @Mock
     private CCDCaseDataToClaim ccdCaseDataToClaim;
-    @Mock
-    DocumentManagementService documentManagementService;
-    @Mock
-    SealedClaimPdfService sealedClaimPdfService;
 
     @Before
     public void setup() {
@@ -98,9 +92,7 @@ public class ClaimServiceTest {
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
-            ccdCaseDataToClaim,
-            documentManagementService,
-            sealedClaimPdfService
+            ccdCaseDataToClaim
         );
     }
 

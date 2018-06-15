@@ -49,11 +49,11 @@ public class ClaimDocumentGenerator {
 
     @EventListener
     public void onClaimIssued(RepresentedClaimIssuedEvent event) {
-        downloadOrGenerateAndUpload(event.getClaim(), event.getAuthorisation());
+        //downloadOrGenerateAndUpload(event.getClaim(), event.getAuthorisation());
     }
 
     @EventListener
     public void onClaimIssued(CitizenClaimIssuedEvent event) {
-        downloadOrGenerateAndUpload(event.getClaim(), event.getAuthorisation());
+        //downloadOrGenerateAndUpload(event.getClaim(), event.getAuthorisation());
     }
 }
