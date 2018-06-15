@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
@@ -170,7 +171,7 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .sealedClaimDocument(sealedClaimDocument.toString())
+            .sealedClaimDocument(CCDDocument.builder().documentUrl(sealedClaimDocument.toString()).build())
             .build();
         return update(authorisation, ccdCase, LINK_SEALED_CLAIM);
     }
