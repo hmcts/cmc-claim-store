@@ -113,9 +113,8 @@ public class CoreCaseDataService {
                 ).data(data)
                 .build();
 
-            return new CaseReference(
-                submitCreate(authorisation, eventRequestData, caseDataContent, user.isSolicitor()).getId().toString()
-            );
+            CaseDetails caseDetails = submitCreate(authorisation, eventRequestData, caseDataContent, user.isSolicitor());
+            return new CaseReference(caseDetails.getId().toString());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format("Failed storing claim in CCD store for claim %s", externalId), exception
@@ -376,9 +375,10 @@ public class CoreCaseDataService {
             );
         }
 
+        String generate = this.authTokenGenerator.generate();
         return coreCaseDataApi.startForCitizen(
             authorisation,
-            this.authTokenGenerator.generate(),
+            generate,
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),

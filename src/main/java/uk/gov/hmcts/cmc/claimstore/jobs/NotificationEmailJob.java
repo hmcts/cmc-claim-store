@@ -1,10 +1,10 @@
-package uk.gov.hmcts.cmc.scheduler.jobs;
+package uk.gov.hmcts.cmc.claimstore.jobs;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.scheduler.services.NotificationEmailService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationEmailService;
 
 @Component
 public class NotificationEmailJob implements Job {

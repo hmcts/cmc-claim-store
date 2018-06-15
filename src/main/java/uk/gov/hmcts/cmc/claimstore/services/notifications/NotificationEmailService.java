@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.scheduler.services;
+package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -14,11 +14,10 @@ import org.springframework.stereotype.Service;
 public class NotificationEmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationEmailService.class);
-    private final ResponseNeededNotification defendantResponseNeededNotificationService;
+    private final ResponseNeededNotificationService responseNeededNotificationService;
 
-    public NotificationEmailService(ResponseNeededNotification defendantResponseNeededNotificationService) {
-
-        this.defendantResponseNeededNotificationService = defendantResponseNeededNotificationService;
+    public NotificationEmailService(ResponseNeededNotificationService responseNeededNotificationService) {
+        this.responseNeededNotificationService = responseNeededNotificationService;
     }
 
     @Retryable(
@@ -26,12 +25,12 @@ public class NotificationEmailService {
         backoff = @Backoff(delay = 10000))
     public void process(JobExecutionContext context) throws JobExecutionException {
         JobDetail jobDetail = context.getJobDetail();
-        defendantResponseNeededNotificationService.sendMail(jobDetail.getJobDataMap());
+        responseNeededNotificationService.sendMail(jobDetail.getJobDataMap());
         logger.info("Completed job work for id %s", jobDetail.getKey().getName());
     }
 
     @Recover
-    public void logSendMessageWithAttachmentFailure(JobExecutionException exception) {
+    public void logSendMessageFailure(JobExecutionException exception) {
         String errorMessage = String.format(
             "NotificationEmailJob failure:  failed to send email with due to %s", exception.getMessage()
         );

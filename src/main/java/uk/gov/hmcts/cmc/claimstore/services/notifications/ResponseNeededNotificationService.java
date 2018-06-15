@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
-import uk.gov.hmcts.cmc.scheduler.services.ResponseNeededNotification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -28,7 +27,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.RESPONSE_DEADLINE;
 
 @Service
-public class ResponseNeededNotificationService implements ResponseNeededNotification {
+public class ResponseNeededNotificationService {
     private final Logger logger = LoggerFactory.getLogger(ResponseNeededNotificationService.class);
 
     private final NotificationClient notificationClient;
@@ -44,7 +43,6 @@ public class ResponseNeededNotificationService implements ResponseNeededNotifica
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    @Override
     public void sendMail(Map<String, Object> emailData) {
         Map<String, String> parameters = aggregateParams(emailData);
         try {

@@ -116,9 +116,6 @@ public abstract class MockSpringTest {
     protected ServiceAuthorisationApi serviceAuthorisationApi;
 
     @MockBean
-    protected CoreCaseDataService coreCaseDataService;
-
-    @MockBean
     protected JobService jobService;
 
     @MockBean
