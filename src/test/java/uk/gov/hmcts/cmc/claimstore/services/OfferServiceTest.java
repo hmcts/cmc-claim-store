@@ -27,8 +27,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_ACCEPTED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.CLOSED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
@@ -66,7 +64,7 @@ public class OfferServiceTest {
     @Test
     public void shouldSuccessfullySavedOffer() {
         //given
-        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION), eq(OPEN)))
+        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
 
         // when
@@ -89,7 +87,7 @@ public class OfferServiceTest {
         Claim claimWithOffer = buildClaimWithOffer();
         Claim acceptedOffer = buildClaimWithAcceptedOffer();
 
-        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION), eq(OPEN)))
+        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(acceptedOffer);
 
         Settlement settlement = acceptedOffer.getSettlement().orElse(null);
@@ -111,7 +109,7 @@ public class OfferServiceTest {
     @Test
     public void shouldSuccessfullyRejectOffer() {
         //given
-        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION), eq(OPEN)))
+        when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claimWithOffer);
 
         // when
@@ -133,7 +131,7 @@ public class OfferServiceTest {
     public void shouldSuccessfullyCountersignAgreement() {
         // given
         when(claimService.getClaimByExternalId(eq(claimWithAcceptedOffer.getExternalId()),
-            eq(AUTHORISATION), eq(CLOSED))).thenReturn(settledClaim);
+            eq(AUTHORISATION))).thenReturn(settledClaim);
 
         // when
         offersService.countersign(claimWithAcceptedOffer, madeBy, AUTHORISATION);

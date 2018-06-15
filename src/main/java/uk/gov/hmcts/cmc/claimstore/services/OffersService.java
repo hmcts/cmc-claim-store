@@ -16,8 +16,6 @@ import java.util.function.Supplier;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.CLOSED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_MADE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJECTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_REACHED;
@@ -51,7 +49,7 @@ public class OffersService {
         settlement.makeOffer(offer, party);
 
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_MADE_BY", party.name()));
-        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation, OPEN);
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
         appInsights.trackEvent(OFFER_MADE, updated.getReferenceNumber());
         return updated;
@@ -69,7 +67,7 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation,
             userAction("OFFER_ACCEPTED_BY", party.name()));
 
-        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation, OPEN);
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferAcceptedEvent(updated, party);
         return updated;
     }
@@ -84,7 +82,7 @@ public class OffersService {
 
         String userAction = userAction("OFFER_REJECTED_BY", party.name());
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
-        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation, OPEN);
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
         appInsights.trackEvent(OFFER_REJECTED, updated.getReferenceNumber());
         return updated;
@@ -99,7 +97,7 @@ public class OffersService {
         settlement.countersign(party);
 
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
-        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation, CLOSED);
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
         appInsights.trackEvent(SETTLEMENT_REACHED, updated.getReferenceNumber());
         return updated;

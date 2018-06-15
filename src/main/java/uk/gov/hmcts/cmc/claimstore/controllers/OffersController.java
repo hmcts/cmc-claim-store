@@ -24,7 +24,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.converters.MadeByEnumConverter;
 
 import javax.validation.Valid;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
 @Api
@@ -61,7 +60,7 @@ public class OffersController {
         @RequestBody @Valid Offer offer,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation, OPEN);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return offersService.makeOffer(claim, offer, party, authorisation);
     }
 
@@ -74,7 +73,7 @@ public class OffersController {
         @PathVariable("party") MadeBy party,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation, OPEN);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return offersService.accept(claim, party, authorisation);
     }
 
@@ -87,7 +86,7 @@ public class OffersController {
         @PathVariable("party") MadeBy party,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation, OPEN);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return offersService.reject(claim, party, authorisation);
     }
 
@@ -100,7 +99,7 @@ public class OffersController {
         @PathVariable("party") MadeBy party,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation, OPEN);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return offersService.countersign(claim, party, authorisation);
     }
 }

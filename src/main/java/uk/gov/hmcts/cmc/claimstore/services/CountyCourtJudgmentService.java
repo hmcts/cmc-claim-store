@@ -8,8 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
-
 @Component
 public class CountyCourtJudgmentService {
 
@@ -39,7 +37,7 @@ public class CountyCourtJudgmentService {
         String authorisation
     ) {
 
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation, OPEN);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
@@ -47,7 +45,7 @@ public class CountyCourtJudgmentService {
 
         claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
 
-        Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation, OPEN);
+        Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
         eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ, authorisation);
 

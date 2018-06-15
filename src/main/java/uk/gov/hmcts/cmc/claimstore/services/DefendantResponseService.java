@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
@@ -45,7 +44,7 @@ public class DefendantResponseService {
         Response response,
         String authorization
     ) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorization, OPEN);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorization);
 
         if (!isClaimLinkedWithDefendant(claim, defendantId)) {
             throw new DefendantLinkingException(
@@ -64,7 +63,7 @@ public class DefendantResponseService {
         String defendantEmail = userService.getUserDetails(authorization).getEmail();
         claimService.saveDefendantResponse(claim, defendantEmail, response, authorization);
 
-        Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization, OPEN);
+        Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
 

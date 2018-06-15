@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -62,7 +61,7 @@ public class ClaimController {
     @ApiOperation("Fetch claim for given external id")
     public Claim getByExternalId(@PathVariable("externalId") String externalId,
                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.getClaimByExternalId(externalId, authorisation, CaseState.OPEN);
+        return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}")
