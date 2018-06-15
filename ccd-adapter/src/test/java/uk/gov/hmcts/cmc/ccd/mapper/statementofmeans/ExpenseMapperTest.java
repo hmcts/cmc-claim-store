@@ -8,15 +8,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDPaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 
 import java.math.BigDecimal;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense.ExpenseType.COUNCIL_TAX;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.MORTGAGE;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -31,7 +30,7 @@ public class ExpenseMapperTest {
         //given
         Expense expense = Expense.builder()
             .type(MORTGAGE)
-            .frequency(PaymentFrequency.MONTH)
+            .frequency(MONTH)
             .amountPaid(BigDecimal.TEN)
             .build();
 
@@ -47,7 +46,7 @@ public class ExpenseMapperTest {
         //given
         CCDExpense ccdExpense = CCDExpense.builder()
             .type(COUNCIL_TAX)
-            .frequency(CCDPaymentFrequency.MONTH)
+            .frequency(MONTH)
             .amountPaid(BigDecimal.TEN)
             .build();
 

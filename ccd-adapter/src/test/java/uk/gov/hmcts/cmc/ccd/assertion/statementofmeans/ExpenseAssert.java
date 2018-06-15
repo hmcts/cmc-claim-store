@@ -15,7 +15,7 @@ public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
     public ExpenseAssert isEqualTo(CCDExpense ccdExpense) {
         isNotNull();
 
-        if (!Objects.equals(actual.getType().name(), ccdExpense.getType().name())) {
+        if (!Objects.equals(actual.getType(), ccdExpense.getType())) {
             failWithMessage("Expected Expense.type to be <%s> but was <%s>",
                 ccdExpense.getType(), actual.getType());
         }

@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import java.math.BigDecimal;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.CURRENT_ACCOUNT;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -29,7 +31,7 @@ public class BankAccountMapperTest {
         BankAccount bankAccount = BankAccount.builder()
             .balance(BigDecimal.valueOf(100))
             .joint(false)
-            .type(BankAccount.BankAccountType.CURRENT_ACCOUNT)
+            .type(CURRENT_ACCOUNT)
             .build();
 
         //when
@@ -45,7 +47,7 @@ public class BankAccountMapperTest {
         CCDBankAccount ccdBankAccount = CCDBankAccount.builder()
             .balance(BigDecimal.valueOf(100))
             .joint(CCDYesNoOption.NO)
-            .type(CCDBankAccount.BankAccountType.SAVINGS_ACCOUNT)
+            .type(SAVINGS_ACCOUNT)
             .build();
 
         //when

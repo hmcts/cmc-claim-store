@@ -7,8 +7,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;
 
 @Component
 public class UmemploymentMapper implements Mapper<CCDUnemployment, Unemployment> {
@@ -17,7 +16,7 @@ public class UmemploymentMapper implements Mapper<CCDUnemployment, Unemployment>
     public CCDUnemployment to(Unemployment unemployment) {
 
         CCDUnemployment.CCDUnemploymentBuilder builder = CCDUnemployment.builder()
-            .retired(unemployment.isRetired() ? YES : NO)
+            .retired(valueOf(unemployment.isRetired()))
             .other(unemployment.getOther().orElse(null));
 
         unemployment.getUnemployed()
@@ -38,7 +37,7 @@ public class UmemploymentMapper implements Mapper<CCDUnemployment, Unemployment>
         }
 
         Unemployment.UnemploymentBuilder builder = Unemployment.builder()
-            .retired(ccdUnemployment.getRetired() == YES ? true : false)
+            .retired(ccdUnemployment.getRetired().toBoolean())
             .other(ccdUnemployment.getOther());
 
         CCDUnemployed ccdUnemployed = ccdUnemployment.getUnemployed();

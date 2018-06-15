@@ -39,6 +39,7 @@ import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -56,14 +57,13 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount.BankAccountType.SAVINGS_ACCOUNT;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDChild.AgeGroupType.BETWEEN_11_AND_15;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense.ExpenseType.COUNCIL_TAX;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome.IncomeType.JOB;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDPaymentFrequency.MONTH;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence.ResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.JOINT_OWN_HOME;
 
 public class SampleData {
 
@@ -313,7 +313,7 @@ public class SampleData {
                     .value(CCDChild.builder()
                         .numberOfChildren(4)
                         .numberOfChildrenLivingWithYou(1)
-                        .ageGroupType(BETWEEN_11_AND_15)
+                        .ageGroupType(Child.AgeGroupType.BETWEEN_11_AND_15)
                         .build())
                     .build())
                 )

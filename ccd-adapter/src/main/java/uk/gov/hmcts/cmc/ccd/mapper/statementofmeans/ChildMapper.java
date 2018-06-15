@@ -15,7 +15,7 @@ public class ChildMapper implements Mapper<CCDChild, Child> {
         }
 
         return CCDChild.builder()
-            .ageGroupType(CCDChild.AgeGroupType.valueOf(child.getAgeGroupType().name()))
+            .ageGroupType(child.getAgeGroupType())
             .numberOfChildren(child.getNumberOfChildren())
             .numberOfChildrenLivingWithYou(child.getNumberOfChildrenLivingWithYou().orElse(0))
             .build();
@@ -28,7 +28,7 @@ public class ChildMapper implements Mapper<CCDChild, Child> {
         }
 
         return Child.builder()
-            .ageGroupType(Child.AgeGroupType.valueOf(ccdChild.getAgeGroupType().name()))
+            .ageGroupType(ccdChild.getAgeGroupType())
             .numberOfChildren(ccdChild.getNumberOfChildren())
             .numberOfChildrenLivingWithYou(ccdChild.getNumberOfChildrenLivingWithYou())
             .build();

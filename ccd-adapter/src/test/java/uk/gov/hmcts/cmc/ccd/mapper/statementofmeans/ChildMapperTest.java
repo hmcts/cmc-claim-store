@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDChild;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDChild.AgeGroupType.BETWEEN_11_AND_15;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_11_AND_15;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_16_AND_19;
 
 @SpringBootTest

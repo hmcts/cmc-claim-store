@@ -30,7 +30,7 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
             return null;
         }
 
-        final CCDDependant.CCDDependantBuilder builder = CCDDependant.builder()
+        CCDDependant.CCDDependantBuilder builder = CCDDependant.builder()
             .numberOfMaintainedChildren(dependant.getNumberOfMaintainedChildren().orElse(null));
 
         builder.children(dependant.getChildren().stream().map(childMapper::to)

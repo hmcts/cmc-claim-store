@@ -8,15 +8,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
-import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDPaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 
 import java.math.BigDecimal;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome.IncomeType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.OTHER;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -31,7 +30,7 @@ public class IncomeMapperTest {
         //given
         Income income = Income.builder()
             .type(JOB)
-            .frequency(PaymentFrequency.MONTH)
+            .frequency(MONTH)
             .amountReceived(BigDecimal.TEN)
             .build();
 
@@ -47,7 +46,7 @@ public class IncomeMapperTest {
         //given
         CCDIncome ccdIncome = CCDIncome.builder()
             .type(OTHER)
-            .frequency(CCDPaymentFrequency.MONTH)
+            .frequency(MONTH)
             .amountReceived(BigDecimal.TEN)
             .otherSource("Trading")
             .build();

@@ -33,9 +33,9 @@ public class BankAccountAssert extends AbstractAssert<BankAccountAssert, BankAcc
                 ccdBankAccount.getJoint().name(), actual.isJoint());
         }
 
-        if (!Objects.equals(actual.getType().name(), ccdBankAccount.getType().name())) {
+        if (!Objects.equals(actual.getType(), ccdBankAccount.getType())) {
             failWithMessage("Expected BankAccount.type to be <%s> but was <%s>",
-                ccdBankAccount.getType().name(), actual.getType().name());
+                ccdBankAccount.getType(), actual.getType());
         }
         return this;
     }

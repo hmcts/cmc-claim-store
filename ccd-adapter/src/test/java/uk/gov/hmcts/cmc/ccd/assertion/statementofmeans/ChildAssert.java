@@ -20,7 +20,7 @@ public class ChildAssert extends AbstractAssert<ChildAssert, Child> {
                 ccdChild.getNumberOfChildren(), actual.getNumberOfChildren());
         }
 
-        if (!Objects.equals(actual.getAgeGroupType().name(), ccdChild.getAgeGroupType().name())) {
+        if (!Objects.equals(actual.getAgeGroupType(), ccdChild.getAgeGroupType())) {
             failWithMessage("Expected Child.ageGroupType to be <%s> but was <%s>",
                 ccdChild.getAgeGroupType(), actual.getAgeGroupType());
         }

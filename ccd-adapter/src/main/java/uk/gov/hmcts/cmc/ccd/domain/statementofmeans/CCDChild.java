@@ -2,18 +2,12 @@ package uk.gov.hmcts.cmc.ccd.domain.statementofmeans;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
 @Builder
 @Value
 public class CCDChild {
-
-    private AgeGroupType ageGroupType;
+    private Child.AgeGroupType ageGroupType;
     private Integer numberOfChildren;
     private Integer numberOfChildrenLivingWithYou;
-
-    public enum AgeGroupType {
-        UNDER_11,
-        BETWEEN_11_AND_15,
-        BETWEEN_16_AND_19;
-    }
 }

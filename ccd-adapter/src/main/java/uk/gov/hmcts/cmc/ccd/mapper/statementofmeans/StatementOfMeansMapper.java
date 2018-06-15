@@ -61,7 +61,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .residence(
                 CCDResidence.builder()
                     .otherDetail(statementOfMeans.getResidence().getOtherDetail().orElse(null))
-                    .type(CCDResidence.ResidenceType.valueOf(statementOfMeans.getResidence().getType().name()))
+                    .type(statementOfMeans.getResidence().getType())
                     .build()
             )
             .reason(statementOfMeans.getReason());
@@ -147,7 +147,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .collect(Collectors.toList());
 
         Residence residence = Residence.builder()
-            .type(Residence.ResidenceType.valueOf(ccdStatementOfMeans.getResidence().getType().name()))
+            .type(ccdStatementOfMeans.getResidence().getType())
             .otherDetail(ccdStatementOfMeans.getResidence().getOtherDetail())
             .build();
 

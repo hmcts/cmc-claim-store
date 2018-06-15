@@ -34,8 +34,8 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
                 ccdStatementOfMeans.getReason(), actual.getReason());
         }
 
-        if (!Objects.equals(actual.getResidence().getType().name(),
-            ccdStatementOfMeans.getResidence().getType().name())) {
+        if (!Objects.equals(actual.getResidence().getType(),
+            ccdStatementOfMeans.getResidence().getType())) {
             failWithMessage("Expected StatementOfMeans.residence.type to be <%s> but was <%s>",
                 ccdStatementOfMeans.getResidence().getType(), actual.getResidence().getType());
         }
