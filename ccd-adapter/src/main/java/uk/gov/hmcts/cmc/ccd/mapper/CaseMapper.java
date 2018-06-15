@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
@@ -73,7 +74,11 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.defendantId(claim.getDefendantId());
         }
 
-        claim.getSealedClaimDocument().ifPresent(document -> builder.sealedClaimDocument(document.toString()));
+        claim.getSealedClaimDocument().ifPresent(document -> builder
+            .sealedClaimDocument(CCDDocument.builder()
+                .documentUrl(document.toString())
+                .build())
+        );
 
         return builder
             .id(claim.getId())
@@ -132,7 +137,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         );
     }
 
-    private URI mapSealedClaimDocument(String sealedClaimDocumentUri) {
-        return sealedClaimDocumentUri != null ? URI.create(sealedClaimDocumentUri) : null;
+    private URI mapSealedClaimDocument(CCDDocument sealedClaimDocumentUri) {
+        return sealedClaimDocumentUri != null ? URI.create(sealedClaimDocumentUri.getDocumentUrl()) : null;
     }
 }
