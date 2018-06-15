@@ -37,10 +37,10 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
             .map(this::mapToValue)
             .collect(Collectors.toList()));
 
-        dependant.getOtherDependants().ifPresent(d ->
+        dependant.getOtherDependants().ifPresent(otherDependants ->
             builder.otherDependants(CCDOtherDependants.builder()
-                .details(d.getDetails())
-                .numberOfPeople(d.getNumberOfPeople())
+                .details(otherDependants.getDetails())
+                .numberOfPeople(otherDependants.getNumberOfPeople())
                 .build())
         );
 

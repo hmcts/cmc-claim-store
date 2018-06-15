@@ -52,6 +52,9 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
         fullAdmissionResponse.getStatementOfMeans()
             .ifPresent(statementOfMeans -> builder.statementOfMeans(statementOfMeansMapper.to(statementOfMeans)));
 
+        fullAdmissionResponse.getStatementOfTruth()
+            .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
+
         return builder.build();
     }
 

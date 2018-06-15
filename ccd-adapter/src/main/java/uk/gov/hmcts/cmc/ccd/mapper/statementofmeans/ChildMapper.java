@@ -10,14 +10,11 @@ public class ChildMapper implements Mapper<CCDChild, Child> {
 
     @Override
     public CCDChild to(Child child) {
-        if (child == null) {
-            return null;
-        }
 
         return CCDChild.builder()
             .ageGroupType(child.getAgeGroupType())
             .numberOfChildren(child.getNumberOfChildren())
-            .numberOfChildrenLivingWithYou(child.getNumberOfChildrenLivingWithYou().orElse(0))
+            .numberOfChildrenLivingWithYou(child.getNumberOfChildrenLivingWithYou().orElse(null))
             .build();
     }
 

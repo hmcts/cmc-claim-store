@@ -10,9 +10,19 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployment;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDOnTaxPayments;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDSelfEmployment;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDUnemployed;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDUnemployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.TEN;
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
@@ -29,6 +39,24 @@ public class EmploymentMapperTest {
         //given
         Employment employment = Employment.builder()
             .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
+            .selfEmployment(SelfEmployment.builder()
+                .jobTitle("Director")
+                .annualTurnover(TEN)
+                .onTaxPayments(OnTaxPayments.builder()
+                    .amountYouOwe(ONE)
+                    .reason("My reason")
+                    .build()
+                )
+                .build()
+            )
+            .unemployment(Unemployment.builder()
+                .unemployed(Unemployed.builder()
+                    .numberOfYears(1)
+                    .numberOfMonths(4)
+                    .build())
+                .retired(false)
+                .build()
+            )
             .build();
 
         //when
@@ -49,6 +77,23 @@ public class EmploymentMapperTest {
 
         CCDEmployment ccdEmployment = CCDEmployment.builder()
             .employers(asList(CCDCollectionElement.<CCDEmployer>builder().value(ccdEmployer).build()))
+            .selfEmployment(CCDSelfEmployment.builder()
+                .jobTitle("Director")
+                .annualTurnover(TEN)
+                .onTaxPayments(CCDOnTaxPayments.builder()
+                    .amountYouOwe(ONE)
+                    .reason("My reason")
+                    .build()
+                )
+                .build()
+            )
+            .unemployment(CCDUnemployment.builder()
+                .unemployed(CCDUnemployed.builder()
+                    .numberOfYears(1)
+                    .numberOfMonths(4)
+                    .build())
+                .build()
+            )
             .build();
 
         //when

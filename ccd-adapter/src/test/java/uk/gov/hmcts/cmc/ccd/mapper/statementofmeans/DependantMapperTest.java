@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDChild;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDDependant;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDOtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
@@ -60,6 +61,12 @@ public class DependantMapperTest {
 
         CCDDependant ccdDependant = CCDDependant.builder()
             .children(asList(CCDCollectionElement.<CCDChild>builder().value(ccdChild).build()))
+            .numberOfMaintainedChildren(2)
+            .otherDependants(CCDOtherDependants.builder()
+                .numberOfPeople(2)
+                .details("Parents")
+                .build()
+            )
             .build();
         //when
         Dependant dependant = mapper.from(ccdDependant);

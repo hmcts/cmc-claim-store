@@ -80,32 +80,39 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .collect(Collectors.toList()));
 
         builder.debts(
-            asStream(statementOfMeans.getDebts())
+            statementOfMeans.getDebts()
+                .stream()
                 .map(debtMapper::to)
                 .filter(Objects::nonNull)
                 .map(debt -> CCDCollectionElement.<CCDDebt>builder().value(debt).build())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())
+        );
 
-        builder.incomes(
-            asStream(statementOfMeans.getIncomes())
-                .map(incomeMapper::to)
-                .filter(Objects::nonNull)
-                .map(income -> CCDCollectionElement.<CCDIncome>builder().value(income).build())
-                .collect(Collectors.toList()));
+        builder.incomes(statementOfMeans.getIncomes()
+            .stream()
+            .map(incomeMapper::to)
+            .filter(Objects::nonNull)
+            .map(income -> CCDCollectionElement.<CCDIncome>builder().value(income).build())
+            .collect(Collectors.toList())
+        );
 
         builder.expenses(
-            asStream(statementOfMeans.getExpenses())
+            statementOfMeans.getExpenses()
+                .stream()
                 .map(expenseMapper::to)
                 .filter(Objects::nonNull)
                 .map(expense -> CCDCollectionElement.<CCDExpense>builder().value(expense).build())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())
+        );
 
         builder.courtOrders(
-            asStream(statementOfMeans.getCourtOrders())
+            statementOfMeans.getCourtOrders()
+                .stream()
                 .map(courtOrderMapper::to)
                 .filter(Objects::nonNull)
                 .map(courtOrder -> CCDCollectionElement.<CCDCourtOrder>builder().value(courtOrder).build())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())
+        );
 
         return builder.build();
     }

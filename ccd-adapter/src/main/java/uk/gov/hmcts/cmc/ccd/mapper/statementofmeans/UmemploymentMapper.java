@@ -37,7 +37,7 @@ public class UmemploymentMapper implements Mapper<CCDUnemployment, Unemployment>
         }
 
         Unemployment.UnemploymentBuilder builder = Unemployment.builder()
-            .retired(ccdUnemployment.getRetired().toBoolean())
+            .retired(ccdUnemployment.getRetired() != null ? ccdUnemployment.getRetired().toBoolean() : false)
             .other(ccdUnemployment.getOther());
 
         CCDUnemployed ccdUnemployed = ccdUnemployment.getUnemployed();
