@@ -141,7 +141,7 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.vault_generic_secret.staff_email.data["value"]}"
 
     // robot notifications
-    RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
+    RPANOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     RPANOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.vault_generic_secret.rpa_email_sealed_claim.data["value"]}"
     RPANOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT = "${data.vault_generic_secret.rpa_email_more_time_requested.data["value"]}"
     RPANOTIFICATIONS_DEFENCERESPONSERECIPIENT = "${data.vault_generic_secret.rpa_email_defence_response.data["value"]}"
