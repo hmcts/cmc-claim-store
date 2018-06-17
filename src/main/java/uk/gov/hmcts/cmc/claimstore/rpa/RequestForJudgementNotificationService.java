@@ -47,7 +47,7 @@ public class RequestForJudgementNotificationService {
 
     private EmailData prepareEmailData(Claim claim) {
 
-        return new EmailData(emailProperties.getDefaultJudgementRecipient(),
+        return new EmailData(emailProperties.getCountyCourtJudgementRecipient(),
           "J default judgement request " + claim.getReferenceNumber(),
             "",
             Lists.newArrayList(createRequestForJudgementJsonAttachment(claim))

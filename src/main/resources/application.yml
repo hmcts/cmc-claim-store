@@ -85,11 +85,10 @@ staff-notifications:
 
 rpa-notifications:
   sender:
-  sealedClaimRecipient: "${RPA_NOTIFICATIONS_RECIPIENT_SEALED_CLAIM:}"
-  defenceResponseRecipient: "${RPA_NOTIFICATIONS_DEFENCE_RESPONSE:}"
-  defaultJudgementRecipient: "${RPA_NOTIFICATIONS_DEFAULT_JUDGEMENT:}"
-  moreTimeRequestedRecipient: "${RPA_NOTIFICATIONS_MORE_TIME_REQUESTED:}"
-
+  sealedClaimRecipient:
+  defenceResponseRecipient:
+  countyCourtJudgementRecipient:
+  moreTimeRequestedRecipient:
 
 feature_toggles:
   watermark_pdf: false

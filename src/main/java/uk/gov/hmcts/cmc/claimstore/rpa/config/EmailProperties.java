@@ -21,7 +21,7 @@ public class EmailProperties {
     private String defenceResponseRecipient;
 
     @NotBlank
-    private String defaultJudgementRecipient;
+    private String countyCourtJudgementRecipient;
 
     @NotBlank
     private String moreTimeRequestedRecipient;
@@ -50,12 +50,12 @@ public class EmailProperties {
         this.defenceResponseRecipient = defenceResponseRecipient;
     }
 
-    public String getDefaultJudgementRecipient() {
-        return defaultJudgementRecipient;
+    public String getCountyCourtJudgementRecipient() {
+        return countyCourtJudgementRecipient;
     }
 
-    public void setDefaultJudgementRecipient(String defaultJudgementRecipient) {
-        this.defaultJudgementRecipient = defaultJudgementRecipient;
+    public void setCountyCourtJudgementRecipient(String countyCourtJudgementRecipient) {
+        this.countyCourtJudgementRecipient = countyCourtJudgementRecipient;
     }
 
     public String getMoreTimeRequestedRecipient() {
