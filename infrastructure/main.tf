@@ -142,10 +142,10 @@ module "claim-store-api" {
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
-    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.vault_generic_secret.rpa_email_sealed_claim.data["value"]}"
-    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT = "${data.vault_generic_secret.rpa_email_more_time_requested.data["value"]}"
-    RPA_NOTIFICATIONS_DEFENCERESPONSERECIPIENT = "${data.vault_generic_secret.rpa_email_defence_response.data["value"]}"
-    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT = "${data.vault_generic_secret.rpa_email_default_judgment.data["value"]}"
+    RPANOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.vault_generic_secret.rpa_email_sealed_claim.data["value"]}"
+    RPANOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT = "${data.vault_generic_secret.rpa_email_more_time_requested.data["value"]}"
+    RPANOTIFICATIONS_DEFENCERESPONSERECIPIENT = "${data.vault_generic_secret.rpa_email_defence_response.data["value"]}"
+    RPANOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT = "${data.vault_generic_secret.rpa_email_default_judgment.data["value"]}"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
