@@ -30,7 +30,6 @@ public class CourtOrderAssert extends AbstractAssert<CourtOrderAssert, CourtOrde
                 ccdCourtOrder.getMonthlyInstalmentAmount(), actual.getMonthlyInstalmentAmount());
         }
 
-
         return this;
     }
 
