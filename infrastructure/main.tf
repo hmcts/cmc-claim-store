@@ -88,7 +88,7 @@ module "scheduler-database" {
   env = "${var.env}"
   postgresql_user = "scheduler"
   database_name = "scheduler"
-  version = "10"
+  postgresql_version = "10"
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
   storage_mb = "51200"
