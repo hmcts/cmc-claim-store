@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.ccd.domain.ccj;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 
 import java.math.BigDecimal;
