@@ -171,11 +171,6 @@ public class ClaimServiceTest {
             anyString(), eq(AUTHORISATION));
     }
 
-    @Test(expected = NotFoundException.class)
-    public void saveClaimShouldThrowNotFoundExceptionWhenOnHoldClaimDoesntExist() {
-        claimService.saveClaim(USER_ID, SampleClaimData.validDefaults(), AUTHORISATION);
-    }
-
     @Test
     public void requestMoreTimeToRespondShouldFinishSuccessfully() {
 

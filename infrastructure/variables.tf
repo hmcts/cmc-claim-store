@@ -34,6 +34,10 @@ variable "mail-host" {
   default = "mta.reform.hmcts.net"
 }
 
+variable "dm_url" {
+  default = "false"
+}
+
 variable "ilbIp" {}
 
 variable "tenant_id" {
