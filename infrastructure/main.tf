@@ -1,3 +1,13 @@
+provider "vault" {
+  //  # It is strongly recommended to configure this provider through the
+  //  # environment variables described above, so that each user can have
+  //  # separate credentials set in the environment.
+  //  #
+  //  # This will default to using $VAULT_ADDR
+  //  # But can be set explicitly
+  address = "https://vault.reform.hmcts.net:6200"
+}
+
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
 
@@ -114,7 +124,7 @@ module "claim-store-api" {
     FRONTEND_BASE_URL = "${var.frontend_url}"
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
-    DOCUMENT_MANAGEMENT_API_GATEWAY_URL = "false"
+    DOCUMENT_MANAGEMENT_URL = "${var.dm_url}"
     CORE_CASE_DATA_API_URL = "${local.ccdApiUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 

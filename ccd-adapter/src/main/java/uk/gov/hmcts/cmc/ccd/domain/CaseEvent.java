@@ -16,7 +16,8 @@ public enum CaseEvent {
     OFFER_MADE_BY_CLAIMANT("OfferMadeByClaimant"),
     OFFER_MADE_BY_DEFENDANT("OfferMadeByDefendant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
-    LINK_DEFENDANT("LinkDefendant");
+    LINK_DEFENDANT("LinkDefendant"),
+    LINK_SEALED_CLAIM("LinkSealedClaimDocument");
 
     private String value;
 

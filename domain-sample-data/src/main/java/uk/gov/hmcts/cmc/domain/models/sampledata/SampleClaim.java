@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
-    private String sealedClaimDocumentSelfPath = null;
+    private URI sealedClaimDocument = null;
 
     private SampleClaim() {
     }
@@ -157,7 +158,7 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocumentSelfPath
+            sealedClaimDocument
         );
     }
 
@@ -256,8 +257,8 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withSealedClaimDocumentSelfPath(String sealedClaimDocumentSelfPath) {
-        this.sealedClaimDocumentSelfPath = sealedClaimDocumentSelfPath;
+    public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
+        this.sealedClaimDocument = sealedClaimDocument;
         return this;
     }
 }
