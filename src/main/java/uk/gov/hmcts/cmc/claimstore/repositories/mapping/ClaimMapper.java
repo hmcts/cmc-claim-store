@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -41,8 +42,12 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at")),
             toNullableSettlement(result.getString("settlement")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
-            result.getString("sealed_claim_document_management_self_path")
+            mapNullableUri(result.getString("sealed_claim_document_management_self_path"))
         );
+    }
+
+    private URI mapNullableUri(String uri) {
+        return uri != null ? URI.create(uri) : null;
     }
 
     private ClaimData toClaimData(String input) {

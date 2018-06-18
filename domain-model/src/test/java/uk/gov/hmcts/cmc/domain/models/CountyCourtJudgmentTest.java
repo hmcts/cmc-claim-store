@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 

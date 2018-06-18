@@ -1,0 +1,51 @@
+{
+  "responseType": "FULL_DEFENCE",
+  "defenceType": "DISPUTE",
+  "paymentDeclaration": {
+    "paidDate": "2016-01-02",
+    "explanation": "Paid cash"
+  },
+  "defence": "defence string",
+  "freeMediation": "yes",
+  "moreTimeNeeded": "yes",
+  "defendant": {
+    "type": "individual",
+    "title": "Dr.",
+    "name": "John Rambo",
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "correspondenceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "dateOfBirth": "1968-01-02",
+    "mobilePhone": "07873727165",
+    "email": "test@example.com"
+  },
+  "timeline": {
+    "rows": [
+      {
+        "date": "Last Year",
+        "description": "signed a contract"
+      }
+    ],
+    "comment": "More information"
+  },
+  "evidence": {
+    "rows": [
+      {
+        "type": "CORRESPONDENCE",
+        "description": "description"
+      }
+    ],
+    "comment": "More information"
+  }
+}
