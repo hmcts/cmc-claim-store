@@ -113,7 +113,7 @@ module "claim-store-api" {
     FRONTEND_BASE_URL = "${var.frontend_url}"
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
-    DOCUMENT_MANAGEMENT_URL = "false"
+    DOCUMENT_MANAGEMENT_URL = "${var.dm_url}"
     CORE_CASE_DATA_API_URL = "${local.ccdApiUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 

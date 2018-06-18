@@ -4,10 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
+import java.net.URI;
 import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -36,11 +38,13 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
     public void setup() {
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
+
+        given(userService.getUserDetails(any())).willReturn(SampleUserDetails.getDefault());
     }
 
     @Test
     public void shouldUploadSealedClaimWhenDocumentHasNotBeenUploadedYet() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
@@ -49,13 +53,15 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        verify(documentUploadClient).upload(AUTHORISATION_TOKEN, any(), newArrayList(new InMemoryMultipartFile("files",
-            claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)));
+        verify(documentUploadClient).upload(eq(AUTHORISATION_TOKEN), any(), any(),
+            eq(newArrayList(new InMemoryMultipartFile("files",
+            claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)))
+        );
     }
 
     @Test
     public void shouldLinkSealedClaimWhenDocumentHasNotBeenUploadedYet() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
@@ -65,12 +71,12 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(content().bytes(PDF_BYTES));
 
         assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
-            .isEqualTo(Optional.of("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"));
+            .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
     }
 
     @Test
     public void shouldReturnServerErrorWhenUploadToDocumentManagementStoreFailed() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());

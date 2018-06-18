@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -187,6 +186,6 @@ public class SaveClaimTest extends BaseSaveTest {
         makeRequest(claimData)
             .andExpect(status().isOk());
 
-        verify(documentUploadClient, never()).upload(any(), any(),anyList());
+        verify(documentUploadClient, never()).upload(any(), any(), any(), any());
     }
 }

@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDocument;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.net.URI;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -224,22 +222,6 @@ public class ClaimService {
             .build();
     }
 
-    public List<CaseDocument> getAllRelatedDocuments(Claim claim, String authorisation) {
-
-        String referenceNumber = claim.getReferenceNumber();
-
-        return asList(
-            CaseDocument.builder()
-                .name("Claim " + referenceNumber)
-                .description("Claim document")
-                .type("Claim PDF")
-                .url(
-                    claim.getSealedClaimDocument()
-                        .orElseThrow(() -> new NotFoundException("No document " + referenceNumber)).toString()
-                ).build()
-        );
-    }
-
     public SubmittedCallbackResponse requestMoreTimeOnPaperSubmitted(CallbackRequest callbackRequest) {
         Claim claim = convertCallbackToClaim(callbackRequest);
 
@@ -270,8 +252,8 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentSelfPath) {
-        caseRepository.linkSealedClaimDocument(authorisation, claim, documentSelfPath);
+    public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
+        caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
     }
 
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {

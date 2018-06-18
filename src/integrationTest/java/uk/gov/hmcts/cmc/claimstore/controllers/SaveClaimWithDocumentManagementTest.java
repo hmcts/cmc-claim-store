@@ -16,7 +16,6 @@ import java.util.Optional;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -44,7 +43,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     }
 
     private void assertSealedClaimIsUploadedIntoDocumentManagementStore(ClaimData claimData) throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         MvcResult result = makeRequest(claimData)
@@ -53,6 +52,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
         verify(documentUploadClient).upload(
             eq(AUTHORISATION_TOKEN),
+            any(),
             any(),
             eq(
                 newArrayList(
@@ -78,7 +78,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     }
 
     private void assertSealedClaimIsLinked(ClaimData claimData) throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         MvcResult result = makeRequest(claimData)
@@ -91,7 +91,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldReturn500HttpStatusAndNotSendStaffEmailWhenDocumentUploadFailed() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         makeRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build())
