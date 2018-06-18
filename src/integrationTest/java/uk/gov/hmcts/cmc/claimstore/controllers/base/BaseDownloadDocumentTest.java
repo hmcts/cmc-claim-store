@@ -23,6 +23,4 @@ public abstract class BaseDownloadDocumentTest extends BaseIntegrationTest {
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }
-
-
 }
