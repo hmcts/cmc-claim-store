@@ -31,7 +31,7 @@ public class DefenceResponseJsonMapper {
         String defendantsEmail = claim.getDefendantEmail();
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
-            .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
+            .add("defenceSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
             .add("defenceResponse", extractFromSubclass(response, FullDefenceResponse.class, fullDefenceResponse -> fullDefenceResponse.getDefenceType().getDescription()))
             .add("defendants", defendantMapper.map(response.getDefendant(), claim.getClaimData().getDefendant(), defendantsEmail))
             .add("dateOfBirth", extractFromSubclass(response.getDefendant(),

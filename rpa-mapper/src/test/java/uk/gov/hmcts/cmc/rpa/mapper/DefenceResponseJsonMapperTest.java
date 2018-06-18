@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -50,7 +50,7 @@ public class DefenceResponseJsonMapperTest {
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL).trim();
@@ -67,7 +67,7 @@ public class DefenceResponseJsonMapperTest {
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL_MEDIATION_NOT_OPTED).trim();
@@ -86,7 +86,7 @@ public class DefenceResponseJsonMapperTest {
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL_ADDRESS_MODIFIED).trim();
@@ -104,7 +104,7 @@ public class DefenceResponseJsonMapperTest {
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().soleTraderDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(SOLE_TRADER).trim();
@@ -121,7 +121,7 @@ public class DefenceResponseJsonMapperTest {
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().companyDetails())
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(COMPANY).trim();
@@ -136,7 +136,7 @@ public class DefenceResponseJsonMapperTest {
             .withResponse(SampleResponse.FullDefence.builder()
                 .withDefendantDetails(SampleParty.builder().withCorrespondenceAddress(null).organisation()).build())
             .withClaimData(SampleClaimData.builder().withDefendant(SampleTheirDetails.builder().organisationDetails())
-                .build()).withIssuedOn(LocalDate.of(2018, 4, 26)).build();
+                .build()).withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1)).build();
 
         String expected = new ResourceReader().read(ORGANISATION).trim();
 
@@ -151,7 +151,7 @@ public class DefenceResponseJsonMapperTest {
                 .withDefendantDetails(SampleParty.builder().withContactPerson("The Shrek")
                     .withCorrespondenceAddress(null).organisation()).build())
             .withClaimData(SampleClaimData.builder().withDefendant(SampleTheirDetails.builder().organisationDetails())
-                .build()).withIssuedOn(LocalDate.of(2018, 4, 26)).build();
+                .build()).withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1)).build();
 
         String expected = new ResourceReader().read(ORGANISATION_ALREADY_PAID_RESPONSE).trim();
 
