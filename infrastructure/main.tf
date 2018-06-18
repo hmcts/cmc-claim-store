@@ -67,7 +67,7 @@ data "azurerm_key_vault_secret" "system_update_password" {
 }
 
 data "azurerm_key_vault_secret" "oauth_client_secret" {
-  name = "oauth-client-secret"
+  name = "citizen-oauth-client-secret"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
