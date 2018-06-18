@@ -82,7 +82,7 @@ data "azurerm_key_vault_secret" "oauth_client_secret" {
 }
 
 module "scheduler-database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=cnp-449-tactical"
+  source = "git@github.com:hmcts/moj-module-postgres?ref=uksouth-v10"
   product = "${var.product}-scheduler"
   location = "${var.location}"
   env = "${var.env}"
