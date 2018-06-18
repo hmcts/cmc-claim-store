@@ -375,10 +375,9 @@ public class CoreCaseDataService {
             );
         }
 
-        String generate = this.authTokenGenerator.generate();
         return coreCaseDataApi.startForCitizen(
             authorisation,
-            generate,
+            authTokenGenerator.generate(),
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),

@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
@@ -70,7 +71,17 @@ public class LinkDefendantToClaimWithCoreCaseTest extends BaseIntegrationTest {
             eq(CASE_TYPE_ID),
             eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
             )
-        ).willReturn(Collections.emptyList());
+        ).willReturn(Collections.emptyList(), listOfCaseDetails());
+
+        given(coreCaseDataApi.startForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq("SubmitPrePayment")
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
         given(coreCaseDataApi.startForCitizen(
             eq(AUTHORISATION_TOKEN),
@@ -100,7 +111,7 @@ public class LinkDefendantToClaimWithCoreCaseTest extends BaseIntegrationTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult prepayment = makeRequestPrePayment(externalId.toString())
+        makeRequestPrePayment(externalId.toString())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -108,18 +119,18 @@ public class LinkDefendantToClaimWithCoreCaseTest extends BaseIntegrationTest {
             .andExpect(status().isOk())
             .andReturn();
 
-//        User defendant = SampleUser.builder()
-//            .withAuthorisation(BEARER_TOKEN)
-//            .withUserDetails(defendantDetails)
-//            .build();
-//
-//        given(userService.getUser(BEARER_TOKEN)).willReturn(defendant);
+        User defendant = SampleUser.builder()
+            .withAuthorisation(BEARER_TOKEN)
+            .withUserDetails(defendantDetails)
+            .build();
+
+        given(userService.getUser(BEARER_TOKEN)).willReturn(defendant);
 
 
-//        webClient
-//            .perform(put("/claims/defendant/link")
-//                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
-//            .andExpect(status().isOk());
+        webClient
+            .perform(put("/claims/defendant/link")
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
+            .andExpect(status().isOk());
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
