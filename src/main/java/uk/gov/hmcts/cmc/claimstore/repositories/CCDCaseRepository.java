@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -112,5 +113,10 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim saveClaim(String authorisation, Claim claim) {
         return coreCaseDataService.submitPostPayment(authorisation, claim);
+    }
+
+    @Override
+    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI) {
+        coreCaseDataService.linkSealedClaimDocument(authorisation, claim.getId(), documentURI);
     }
 }
