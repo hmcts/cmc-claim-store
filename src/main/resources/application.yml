@@ -83,13 +83,6 @@ staff-notifications:
   sender:
   recipient:
 
-rpa-notifications:
-  sender:
-  sealedClaimRecipient:
-  defenceResponseRecipient:
-  countyCourtJudgementRecipient:
-  moreTimeRequestedRecipient:
-
 feature_toggles:
   watermark_pdf: false
   emailToStaff: true

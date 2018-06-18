@@ -1,5 +1,7 @@
-variable "product" {
-  default = "cmc"
+variable "product" {}
+
+variable "raw_product" {
+  default = "cmc" // jenkins-library overrides product for PRs and adds e.g. pr-118-cmc
 }
 
 variable "microservice" {
@@ -33,10 +35,6 @@ variable "mail-host" {
 }
 
 variable "ilbIp" {}
-
-variable "component" {
-  default = "backend"
-}
 
 variable "tenant_id" {
   description = "(Required) The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. This is usually sourced from environemnt variables and not normally required to be specified."
