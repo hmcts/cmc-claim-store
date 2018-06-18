@@ -1,28 +1,18 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
-import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
-import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -34,15 +24,21 @@ public class DefendantResponseContentProvider {
     private final PartyDetailsContentProvider partyDetailsContentProvider;
     private final ClaimDataContentProvider claimDataContentProvider;
     private final NotificationsProperties notificationsProperties;
+    private final FullDefenceResponseContentProvider fullDefenceResponseContentProvider;
+    private final FullAdmissionResponseContentProvider fullAdmissionResponseContentProvider;
 
     public DefendantResponseContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider,
         ClaimDataContentProvider claimDataContentProvider,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        FullDefenceResponseContentProvider fullDefenceResponseContentProvider,
+        FullAdmissionResponseContentProvider fullAdmissionResponseContentProvider
     ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
         this.claimDataContentProvider = claimDataContentProvider;
         this.notificationsProperties = notificationsProperties;
+        this.fullDefenceResponseContentProvider = fullDefenceResponseContentProvider;
+        this.fullAdmissionResponseContentProvider = fullAdmissionResponseContentProvider;
     }
 
     public Map<String, Object> createContent(Claim claim) {
@@ -75,54 +71,15 @@ public class DefendantResponseContentProvider {
             claim.getSubmitterEmail()
         ));
 
-        List<TimelineEvent> events = null;
-        List<EvidenceContent> evidences = null;
-        String timelineComment = null;
-        String evidenceComment = null;
         if (defendantResponse instanceof FullDefenceResponse) {
-            FullDefenceResponse fullDefence = (FullDefenceResponse) defendantResponse;
-
-            content.put("responseDefence", fullDefence.getDefence().orElse(null));
-            content.put("responseTypeSelected", fullDefence.getDefenceType().getDescription());
-            if (fullDefence.getDefenceType().equals(DefenceType.ALREADY_PAID)) {
-                content.put("hasDefendantAlreadyPaid", true);
-            }
-
-            fullDefence.getPaymentDeclaration().ifPresent(paymentDeclaration ->
-                content.put("paymentDeclaration", createContentFor(paymentDeclaration))
+            content.putAll(
+                fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
             );
-
-            Optional<DefendantTimeline> defenceTimeline = fullDefence.getTimeline();
-            if (defenceTimeline.isPresent()) {
-                DefendantTimeline defendantTimeline = defenceTimeline.get();
-                events = defendantTimeline.getEvents();
-                timelineComment = defendantTimeline.getComment().orElse(null);
-            }
-
-            Optional<DefendantEvidence> defenceEvidence = fullDefence.getEvidence();
-            if (defenceEvidence.isPresent()) {
-                DefendantEvidence defendantEvidence = defenceEvidence.get();
-                evidences = Optional.ofNullable(defendantEvidence.getRows())
-                    .orElseGet(Collections::emptyList)
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
-                    .collect(Collectors.toList());
-                evidenceComment = defendantEvidence.getComment().orElse(null);
-            }
+        } else if (defendantResponse instanceof FullAdmissionResponse) {
+            content.putAll(
+                fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
+            );
         }
-        content.put("events", events);
-        content.put("timelineComment", timelineComment);
-        content.put("evidences", evidences);
-        content.put("evidenceComment", evidenceComment);
-
         return content;
-    }
-
-    private Map<Object, Object> createContentFor(PaymentDeclaration paymentDeclaration) {
-        return ImmutableMap.builder()
-            .put("paidDate", formatDate(paymentDeclaration.getPaidDate()))
-            .put("explanation", paymentDeclaration.getExplanation())
-            .build();
     }
 }

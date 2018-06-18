@@ -28,7 +28,11 @@ public class DefendantResponseContentProviderTest {
                 new InterestCalculationService(Clock.systemDefaultZone())
             )
         ),
-        new NotificationsProperties()
+        new NotificationsProperties(),
+        new FullDefenceResponseContentProvider(),
+        new FullAdmissionResponseContentProvider(
+            new StatementOfMeansContentProvider()
+        )
     );
 
     @Test(expected = NullPointerException.class)
