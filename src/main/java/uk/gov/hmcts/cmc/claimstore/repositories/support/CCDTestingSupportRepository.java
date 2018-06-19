@@ -35,7 +35,7 @@ public class CCDTestingSupportRepository implements SupportRepository {
     }
 
     @Override
-    public void linkDefendantToClaim(Claim claim, User defendant) {
-        this.ccdCaseApi.linkDefendantToCaseByCaseId(claim.getId().toString(), defendant);
+    public void linkDefendantToClaim(Claim claim, String defendantId) {
+        this.ccdCaseApi.linkDefendantToCaseByCaseId(claim.getId().toString(), defendantId);
     }
 }

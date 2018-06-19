@@ -163,18 +163,16 @@ public class CCDCaseApi {
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
     }
 
-    public void linkDefendantToCaseByCaseId(String caseId, User defendantUser) {
+    public void linkDefendantToCaseByCaseId(String caseId, String defendantId) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        this.linkToCaseWithoutRevoking(defendantUser, anonymousCaseWorker, caseId);
+        this.linkToCaseWithoutRevoking(defendantId, anonymousCaseWorker, caseId);
     }
 
-    private void linkToCaseWithoutRevoking(User defendantUser, User anonymousCaseWorker, String caseId) {
-        String defendantId = defendantUser.getUserDetails().getId();
-        
+    private void linkToCaseWithoutRevoking(String defendantId, User anonymousCaseWorker, String caseId) {
         LOGGER.info("Granting access to case: {} for user: {}", caseId, defendantId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
-        this.updateCase(defendantUser, caseId, defendantId);
+        this.updateCase(anonymousCaseWorker, caseId, defendantId);
     }
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {

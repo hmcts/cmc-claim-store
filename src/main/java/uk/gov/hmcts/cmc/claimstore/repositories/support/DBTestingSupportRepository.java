@@ -32,7 +32,7 @@ public class DBTestingSupportRepository implements SupportRepository {
     }
 
     @Override
-    public void linkDefendantToClaim(Claim claim, User defendant) {
-        this.testingSupportRepository.updateDefendantId(claim.getExternalId(), defendant.getUserDetails().getId());
+    public void linkDefendantToClaim(Claim claim, String defendantId) {
+        this.testingSupportRepository.updateDefendantId(claim.getExternalId(), defendantId);
     }
 }

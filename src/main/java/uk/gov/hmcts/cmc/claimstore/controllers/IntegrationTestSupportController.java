@@ -64,18 +64,17 @@ public class IntegrationTestSupportController {
         return getClaim(claimReferenceNumber, authorisation);
     }
 
-    @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantUsername}")
+    @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantId}")
     public Claim linkDefendantToClaim(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
-        @PathVariable("defendantUsername") String defendantUsername,
+        @PathVariable("defendantId") String defendantId,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
     ) {
         Claim claim = getClaim(claimReferenceNumber, authorisation);
 
         //todo how we should store default password? const? properties?
-        User defendant = this.userService.authenticateUser(defendantUsername, "Password12");
 
-        supportRepository.linkDefendantToClaim(claim, defendant);
+        supportRepository.linkDefendantToClaim(claim, defendantId);
 
         return getClaim(claimReferenceNumber, authorisation);
     }
