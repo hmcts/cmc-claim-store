@@ -141,24 +141,6 @@ public class CCDCaseApi {
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
     }
 
-    private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
-        User user = userService.getUser(authorisation);
-
-        List<CaseDetails> result = searchAll(user, searchString);
-
-        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
-            return Optional.empty();
-        }
-
-        List<Claim> claims = extractClaims(result);
-
-        if (claims.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by search String " + searchString);
-        }
-
-        return claims.stream().findAny();
-    }
-
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
         LOGGER.info("Granting access to case: {} for user: {} with letter-holder id: {}",
