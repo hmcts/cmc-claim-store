@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
@@ -47,7 +48,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             JdbcTestUtils.deleteFromTables(new JdbcTemplate(dataSource), "claim");
         }
     }
-    
+
     protected ResultActions makeRequest(ClaimData claimData) throws Exception {
         return webClient
             .perform(post("/claims/" + USER_ID)
@@ -63,5 +64,13 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
+    }
+
+    protected ImmutableMap<String, String> searchCriteria(String externalId) {
+        return ImmutableMap.of(
+            "page", String.valueOf(1),
+            "sortDirection", "desc",
+            "case.externalId", externalId
+        );
     }
 }

@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 
 public abstract class BaseSaveTest extends BaseIntegrationTest {
+    public static final String ANONYMOUS_BEARER_TOKEN = "Anonymous Bearer token";
+    public static final String ANONYMOUS_USER_ID = "3";
 
     @Before
     public void setup() {
@@ -23,5 +25,9 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(PDF_BYTES);
+
+        given(userService.authenticateAnonymousCaseWorker())
+            .willReturn(new User(ANONYMOUS_BEARER_TOKEN,
+                SampleUserDetails.builder().withUserId(ANONYMOUS_USER_ID).build()));
     }
 }

@@ -102,7 +102,7 @@ public class CoreCaseDataService {
 
             StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData, user.isSolicitor());
 
-            CaseDataContent caseDataContent = CaseDataContent.builder()
+            CaseDataContent caseData = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
                 .event(
                     Event.builder()
@@ -113,7 +113,7 @@ public class CoreCaseDataService {
                 ).data(data)
                 .build();
 
-            CaseDetails caseDetails = submitCreate(authorisation, eventRequestData, caseDataContent, user.isSolicitor());
+            CaseDetails caseDetails = submitCreate(authorisation, eventRequestData, caseData, user.isSolicitor());
             return new CaseReference(caseDetails.getId().toString());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(

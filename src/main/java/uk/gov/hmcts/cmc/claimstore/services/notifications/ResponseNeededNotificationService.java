@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 import com.google.common.collect.ImmutableMap;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +45,8 @@ public class ResponseNeededNotificationService {
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void sendMail(Map<String, Object> emailData) {
+    public void sendMail(JobDetail jobDetail) {
+        JobDataMap emailData = jobDetail.getJobDataMap();
         Map<String, String> parameters = aggregateParams(emailData);
         try {
             notificationClient.sendEmail(
@@ -60,26 +63,25 @@ public class ResponseNeededNotificationService {
     @Recover
     public void logNotificationFailure(
         NotificationException exception,
-        Map<String, Object> emailData
+        JobDetail jobDetail
     ) {
-        String errorMessage = "Failure: "
-            + " failed to send response needed notification (" + emailData.get("caseReference")
-            + " to defendant at " + emailData.get("defendantEmail") + ") "
-            + " due to " + exception.getMessage();
-
-        logger.info(errorMessage, exception);
+        JobDataMap emailData = jobDetail.getJobDataMap();
+        logger.info("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
+            emailData.get("caseReference"),
+            emailData.get("defendantEmail"),
+            exception.getMessage(),
+            exception);
     }
 
     private Map<String, String> aggregateParams(Map<String, Object> emailData) {
-        ImmutableMap.Builder<String, String> parameters = new ImmutableMap.Builder<>();
-        parameters.put(CLAIM_REFERENCE_NUMBER, (String) emailData.get("caseReference"));
-
-        parameters.put(CLAIMANT_NAME, (String) emailData.get("claimantName"));
-        parameters.put(DEFENDANT_NAME, (String) emailData.get("defendantName"));
-        parameters.put(RESPONSE_DEADLINE, Formatting.formatDate((LocalDate) emailData.get("responseDeadline")));
-        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
-        return parameters.build();
+        return new ImmutableMap.Builder<String, String>()
+            .put(CLAIM_REFERENCE_NUMBER, (String) emailData.get("caseReference"))
+            .put(CLAIMANT_NAME, (String) emailData.get("claimantName"))
+            .put(DEFENDANT_NAME, (String) emailData.get("defendantName"))
+            .put(RESPONSE_DEADLINE, Formatting.formatDate((LocalDate) emailData.get("responseDeadline")))
+            .put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl())
+            .put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl())
+            .build();
     }
 
     private EmailTemplates getEmailTemplates() {

@@ -135,24 +135,6 @@ public class CCDCaseApi {
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
     }
 
-    private Optional<Claim> getCaseBy(String input, String authorisation, ImmutableMap<String, String> searchString) {
-        User user = userService.getUser(authorisation);
-
-        List<CaseDetails> result = searchAll(user, searchString);
-
-        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
-            throw new OnHoldClaimAccessAttemptException("Case is on hold " + input);
-        }
-
-        List<Claim> claims = extractClaims(result);
-
-        if (claims.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by input " + input);
-        }
-
-        return claims.stream().findAny();
-    }
-
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
         LOGGER.info("Granting access to case: {} for user: {} with letter-holder id: {}",
@@ -211,7 +193,7 @@ public class CCDCaseApi {
 
         jobService.scheduleJob(
             JobData.builder()
-                .id(UUID.randomUUID().toString())
+                .id("reminder:defence-due-in-5-days:000MC001-" + UUID.randomUUID().toString())
                 .group("Reminders")
                 .description("Defendant reminder email 5 days before response deadline")
                 .jobClass(NotificationEmailJob.class)
@@ -221,12 +203,30 @@ public class CCDCaseApi {
 
         jobService.scheduleJob(
             JobData.builder()
-                .id(UUID.randomUUID().toString())
+                .id("reminder:defence-due-in-1-days:000MC001-" + UUID.randomUUID().toString())
                 .group("Reminders")
                 .description("Defendant reminder email 1 days before response deadline")
                 .jobClass(NotificationEmailJob.class)
                 .data(emailData.build()).build(),
             responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
+    }
+
+    private Optional<Claim> getCaseBy(String input, String authorisation, ImmutableMap<String, String> searchString) {
+        User user = userService.getUser(authorisation);
+
+        List<CaseDetails> result = searchAll(user, searchString);
+
+        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
+            throw new OnHoldClaimAccessAttemptException("Case is on hold " + input);
+        }
+
+        List<Claim> claims = extractClaims(result);
+
+        if (claims.size() > 1) {
+            throw new CoreCaseDataStoreException("More than one claim found by input " + input);
+        }
+
+        return claims.stream().findAny();
     }
 
     private boolean isLetterHolderRole(String role) {
@@ -317,7 +317,7 @@ public class CCDCaseApi {
 
             if (numOfPages > page && page < MAX_NUM_OF_PAGES_TO_CHECK) {
                 ++page;
-                return search(user, searchString, page, results, numOfPages, state);
+                return search(user, searchCriteria, page, results, numOfPages, state);
             }
         }
 

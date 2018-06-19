@@ -25,7 +25,7 @@ public class NotificationEmailService {
         backoff = @Backoff(delay = 10000))
     public void process(JobExecutionContext context) throws JobExecutionException {
         JobDetail jobDetail = context.getJobDetail();
-        responseNeededNotificationService.sendMail(jobDetail.getJobDataMap());
+        responseNeededNotificationService.sendMail(jobDetail);
         logger.info("Completed job work for id %s", jobDetail.getKey().getName());
     }
 

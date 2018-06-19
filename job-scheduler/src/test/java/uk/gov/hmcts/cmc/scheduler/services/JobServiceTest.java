@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -12,7 +13,6 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import uk.gov.hmcts.cmc.scheduler.jobs.NotificationEmailJob;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 
 import java.time.LocalDate;
@@ -56,7 +56,7 @@ public class JobServiceTest {
             .group(group)
             .description("Mock job scheduler")
             .data(data)
-            .jobClass(NotificationEmailJob.class)
+            .jobClass(Job.class)
             .build();
 
         ZonedDateTime startDateTime = LocalDate.now().atStartOfDay(ZoneOffset.UTC);
