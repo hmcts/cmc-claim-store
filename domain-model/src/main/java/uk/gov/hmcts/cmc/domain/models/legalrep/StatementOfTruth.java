@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models.legalrep;
 
+import lombok.Builder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Objects;
 import javax.validation.constraints.Size;
 
+@Builder
 public class StatementOfTruth {
 
     @NotBlank

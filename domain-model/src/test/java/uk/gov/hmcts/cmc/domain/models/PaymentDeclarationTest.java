@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
-import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.LocalDate;
 import java.util.Set;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
@@ -83,10 +83,8 @@ public class PaymentDeclarationTest {
     @Test
     public void shouldHaveValidationMessageWhenExplanationExceedsSizeLimit() {
         //given
-        String explanation = new ResourceReader().read("/defence_exceeding_size_limit.text");
-
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation(explanation)
+            .withExplanation(randomAlphanumeric(99001))
             .build();
         //when
         Set<String> errors = validate(paymentDeclaration);

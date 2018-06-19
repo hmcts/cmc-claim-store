@@ -110,7 +110,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
     @Test
     public void shouldModifyResponseDeadlineOnAboutToSubmit() throws Exception {
-        LocalDate responseDeadline = LocalDate.now().plusDays(3);
+        LocalDate responseDeadline = LocalDate.now().plusDays(14);
         MvcResult mvcResult = makeRequest(ABOUT_TO_SUBMIT_CALLBACK, responseDeadline, false)
             .andExpect(status().isOk())
             .andReturn();

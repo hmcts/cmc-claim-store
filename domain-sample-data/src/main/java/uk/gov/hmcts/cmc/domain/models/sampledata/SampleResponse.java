@@ -1,16 +1,35 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
+
+    public static class FullAdmission extends SampleResponse<FullAdmission> {
+        public static FullAdmission builder() {
+            return new FullAdmission();
+        }
+
+        public FullAdmissionResponse build() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .paymentOption(PaymentOption.INSTALMENTS)
+                .defendant(SampleParty.builder().individual())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build();
+        }
+    }
 
     public static class FullDefence extends SampleResponse<FullDefence> {
         private DefenceType defenceType = DefenceType.DISPUTE;
