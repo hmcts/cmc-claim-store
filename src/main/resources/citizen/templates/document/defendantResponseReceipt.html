@@ -352,6 +352,117 @@
   </div>
 </div>
 
+{% if paymentOption is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>When the defendant will pay</strong>
+  </div>
+    <div class="section-body">
+      <table>
+        {% if paymentOption == "Immediately" %}
+        <tr>
+          <td><strong>When will they pay:</strong></td>
+          <td>
+            {{ paymentOption }}
+          </td>
+        </tr>
+
+        {% if paymentOption == "By a set date" %}
+        <tr class="no-border">
+          <td><strong>When will they pay:</strong></td>
+          <td>
+            {{ paymentOption }}
+          </td>
+        </tr>
+        {% endif %}
+        {% if paymentOption == "By instalments" %}
+        <tr class="no-border">
+          <td><strong>When will they pay:</strong></td>
+          <td>
+            {{ paymentOption }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Regular payments of:</strong></td>
+          <td>
+            {{ repaymentPlan.instalmentAmount }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Frequency of payments:</strong></td>
+          <td>
+            {{ repaymentPlan.paymentSchedule }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Make the first payment on:</strong></td>
+          <td>
+            {{ repaymentPlan.firstPaymentDate}}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Explain why you can't pay the full amount now:</strong></td>
+          <td>
+            {{ statementOfMeans.reason}}
+          </td>
+        </tr>
+        {% endif %}
+      </table>
+    </div>
+</div>
+
+{% if statementOfMeans is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>The defendant's financial details</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr class="no-border">
+        <td><strong>Where are they living?:</strong></td>
+        <td>
+          {{ residence.type}}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Children:</strong></td>
+      </tr>
+      {% for child in children %}
+        <tr>
+        <td><strong>Do any children live with them?:</strong></td>
+        {% if children is defined and children is not empty %}
+          <td>
+            Yes
+          </td>
+          {% else %}
+          <td>
+            No
+          </td>
+        {% endif %}
+        </tr>
+        <tr class="no-border">
+          <td>
+            {{ child.ageGroupType | trim }}
+          </td>
+          <td>
+            {{ child.numberOfChildren | trim }}
+          </td>
+        </tr>
+        {% if child.ageGroupType equals "BETWEEN_16_AND_19" %}
+        <tr>
+          <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
+          <td>
+            {{ child.numberOfChildrenLivingWithYou | trim }}
+          </td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endif %}
+
+
 <div class="section">
   <div class="section-heading">
     <strong>Statement of truth</strong>
