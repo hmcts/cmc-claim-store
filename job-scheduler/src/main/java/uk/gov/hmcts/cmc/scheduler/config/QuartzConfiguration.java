@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,16 +45,24 @@ public class QuartzConfiguration {
     @Bean("schedulerDataSource")
     @ConfigurationProperties("spring.datasource.scheduler")
     public DataSource schedulerDataSource() {
-        migrateFlyway(schedulerDataSourceProperties());
-        return schedulerDataSourceProperties().initializeDataSourceBuilder().build();
+        DataSourceProperties dataSourceProperties = schedulerDataSourceProperties();
+        migrateFlyway(dataSourceProperties);
+
+        return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
-    private void migrateFlyway(DataSourceProperties flywayProperties) {
+    private void migrateFlyway(DataSourceProperties dataSourceProperties) {
+        // Needed because for some reason during tests they try to modify the hikari connection pool once started
+        // This works around it by creating a special datasource for flyway
+        DataSource flywayDatasource = DataSourceBuilder.create()
+            .url(dataSourceProperties.getUrl())
+            .driverClassName(dataSourceProperties.getDriverClassName())
+            .username(dataSourceProperties.getUsername())
+            .password(dataSourceProperties.getPassword())
+            .build();
+
         final Flyway flyway = new Flyway();
-        flyway.setDataSource(
-            flywayProperties.getUrl(),
-            flywayProperties.getUsername(),
-            flywayProperties.getPassword());
+        flyway.setDataSource(flywayDatasource);
         flyway.setLocations("scheduler/db/migration");
         flyway.migrate();
     }
