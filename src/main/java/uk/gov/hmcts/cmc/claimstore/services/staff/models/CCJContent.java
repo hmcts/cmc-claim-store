@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContent;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RepaymentPlanContentProvider;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -11,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.services.staff.content.RepaymentPlanContentProvider.create;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class CCJContent {
@@ -37,7 +37,10 @@ public class CCJContent {
         this.amount = amount;
         this.defendantDateOfBirth = countyCourtJudgment.getDefendantDateOfBirth()
             .map(Formatting::formatDate).orElse(null);
-        this.repaymentPlan = RepaymentPlanContentProvider.create(countyCourtJudgment);
+        this.repaymentPlan = create(countyCourtJudgment.getPaymentOption(),
+            countyCourtJudgment.getRepaymentPlan().orElse(null),
+            countyCourtJudgment.getPayBySetDate().orElse(null)
+        );
         this.requestedAt = Formatting.formatDateTime(countyCourtJudgmentRequestedAt);
         this.requestedDate = formatDate(countyCourtJudgmentRequestedAt);
 
