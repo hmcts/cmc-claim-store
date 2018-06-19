@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 
-import static uk.gov.hmcts.cmc.ccd.domain.ccj.CCDPaymentOption.valueOf;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.valueOf;
 
 @Component
 public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment, CountyCourtJudgment> {
