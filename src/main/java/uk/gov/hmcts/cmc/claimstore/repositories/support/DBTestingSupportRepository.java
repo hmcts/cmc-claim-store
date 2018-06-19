@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.repositories.support;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
