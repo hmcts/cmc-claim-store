@@ -77,17 +77,21 @@ public class CCDCaseApi {
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
-        List<CaseDetails> result = searchAll(user, ImmutableMap.of("case.submitterId", submitterId));
-        List<CaseDetails> validCases = result.stream().filter(c -> !isCaseOnHold(c)).collect(Collectors.toList());
+
+        List<CaseDetails> validCases = searchAll(user, ImmutableMap.of("case.submitterId", submitterId))
+            .stream()
+            .filter(c -> !isCaseOnHold(c))
+            .collect(Collectors.toList());
+
         return extractClaims(validCases);
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
-        return getCaseBy(referenceNumber, authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        return getCaseBy(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
     }
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
-        return getCaseBy(externalId, authorisation, ImmutableMap.of("case.externalId", externalId));
+        return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
     }
 
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
@@ -211,7 +215,7 @@ public class CCDCaseApi {
             responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
     }
 
-    private Optional<Claim> getCaseBy(String input, String authorisation, ImmutableMap<String, String> searchString) {
+    private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
         User user = userService.getUser(authorisation);
 
         List<CaseDetails> result = searchAll(user, searchString);
@@ -223,7 +227,7 @@ public class CCDCaseApi {
         List<Claim> claims = extractClaims(result);
 
         if (claims.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by input " + input);
+            throw new CoreCaseDataStoreException("More than one claim found by search String " + searchString);
         }
 
         return claims.stream().findAny();
