@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.junit.ClassRule;
 import org.junit.runner.RunWith;
+import org.jetbrains.annotations.NotNull;
+import org.junit.ClassRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,15 +45,28 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@DirtiesContext
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
-@DirtiesContext
 @ContextConfiguration(initializers = {MockSpringTest.Initializer.class})
 public abstract class MockSpringTest {
 
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                "spring.datasource.claimstore.url=" + claimStorePostgreSQLContainer.getJdbcUrl(),
+                "spring.datasource.claimstore.username=" + claimStorePostgreSQLContainer.getUsername(),
+                "spring.datasource.claimstore.password=" + claimStorePostgreSQLContainer.getPassword(),
+                "spring.datasource.scheduler.url=" + schedulerPostgreSQLContainer.getJdbcUrl(),
+                "spring.datasource.scheduler.username=" + schedulerPostgreSQLContainer.getUsername(),
+                "spring.datasource.scheduler.password=" + schedulerPostgreSQLContainer.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
+    }
+
     @ClassRule
     public static PostgreSQLContainer claimStorePostgreSQLContainer =
-        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
+        (PostgreSQLContainer) new PostgreSQLContainer("postgres:9.6-alpine")
             .withDatabaseName("claimstore")
             .withUsername("claimstore")
             .withPassword("claimstore")
@@ -60,7 +74,7 @@ public abstract class MockSpringTest {
 
     @ClassRule
     public static PostgreSQLContainer schedulerPostgreSQLContainer =
-        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.4")
+        (PostgreSQLContainer) new PostgreSQLContainer("postgres:10.3-alpine")
             .withDatabaseName("scheduler")
             .withUsername("scheduler")
             .withPassword("scheduler")
@@ -133,19 +147,5 @@ public abstract class MockSpringTest {
     protected List<Claim> deserializeListFrom(MvcResult result) throws UnsupportedEncodingException {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), new TypeReference<List<Claim>>() {
         });
-    }
-
-    static class Initializer
-        implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues.of(
-                "spring.datasource.claimstore.url=" + claimStorePostgreSQLContainer.getJdbcUrl(),
-                "spring.datasource.claimstore.username=" + claimStorePostgreSQLContainer.getUsername(),
-                "spring.datasource.claimstore.password=" + claimStorePostgreSQLContainer.getPassword(),
-                "spring.datasource.scheduler.url=" + schedulerPostgreSQLContainer.getJdbcUrl(),
-                "spring.datasource.scheduler.username=" + schedulerPostgreSQLContainer.getUsername(),
-                "spring.datasource.scheduler.password=" + schedulerPostgreSQLContainer.getPassword()
-            ).applyTo(configurableApplicationContext.getEnvironment());
-        }
     }
 }

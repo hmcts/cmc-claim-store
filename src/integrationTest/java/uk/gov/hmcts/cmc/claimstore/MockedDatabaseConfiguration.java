@@ -17,6 +17,23 @@ import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 @SuppressWarnings("unused")
 class MockedDatabaseConfiguration {
 
+    private static final PlatformTransactionManager NO_OP_TRANSACTION_MANAGER = new PlatformTransactionManager() {
+        @Override
+        public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
+            return null;
+        }
+
+        @Override
+        public void commit(TransactionStatus status) throws TransactionException {
+            // NO-OP
+        }
+
+        @Override
+        public void rollback(TransactionStatus status) throws TransactionException {
+            // NO-OP
+        }
+    };
+
     @MockBean
     private Flyway flyway;
 
@@ -28,42 +45,12 @@ class MockedDatabaseConfiguration {
 
     @Bean
     protected PlatformTransactionManager transactionManager() {
-        return new PlatformTransactionManager() {
-            @Override
-            public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
-                return null;
-            }
-
-            @Override
-            public void commit(TransactionStatus status) throws TransactionException {
-                // NO-OP
-            }
-
-            @Override
-            public void rollback(TransactionStatus status) throws TransactionException {
-                // NO-OP
-            }
-        };
+        return NO_OP_TRANSACTION_MANAGER;
     }
 
     @Bean
     protected PlatformTransactionManager schedulerTransactionManager() {
-        return new PlatformTransactionManager() {
-            @Override
-            public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
-                return null;
-            }
-
-            @Override
-            public void commit(TransactionStatus status) throws TransactionException {
-                // NO-OP
-            }
-
-            @Override
-            public void rollback(TransactionStatus status) throws TransactionException {
-                // NO-OP
-            }
-        };
+        return NO_OP_TRANSACTION_MANAGER;
     }
 
 }

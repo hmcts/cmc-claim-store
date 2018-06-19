@@ -16,10 +16,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("/environment.properties")
-@ActiveProfiles({
-    "aat",
-    "mocked-database-tests"
-})
+@ActiveProfiles({"aat"})
 public abstract class BaseTest {
 
     @Autowired
