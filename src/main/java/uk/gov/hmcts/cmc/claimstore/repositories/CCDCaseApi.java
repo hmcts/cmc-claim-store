@@ -38,6 +38,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
+
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseApi {
@@ -137,6 +139,24 @@ public class CCDCaseApi {
                 CASE_TYPE_ID,
                 letterHolderId
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+    }
+
+    private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
+        User user = userService.getUser(authorisation);
+
+        List<CaseDetails> result = searchAll(user, searchString);
+
+        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
+            return Optional.empty();
+        }
+
+        List<Claim> claims = extractClaims(result);
+
+        if (claims.size() > 1) {
+            throw new CoreCaseDataStoreException("More than one claim found by search String " + searchString);
+        }
+
+        return claims.stream().findAny();
     }
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
@@ -244,7 +264,7 @@ public class CCDCaseApi {
         User defendant = userService.getUser(authorisation);
 
         return extractClaims(
-            searchOnlyOpenCases(defendant, ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()))
+            searchByCaseState(defendant, ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()), OPEN)
         );
     }
 
@@ -290,8 +310,8 @@ public class CCDCaseApi {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
     }
 
-    private List<CaseDetails> searchOnlyOpenCases(User user, Map<String, String> searchString) {
-        return search(user, searchString, 1, new ArrayList<>(), null, CaseState.OPEN);
+    private List<CaseDetails> searchByCaseState(User user, Map<String, String> searchString, CaseState caseState) {
+        return search(user, searchString, 1, new ArrayList<>(), null, caseState);
     }
 
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
