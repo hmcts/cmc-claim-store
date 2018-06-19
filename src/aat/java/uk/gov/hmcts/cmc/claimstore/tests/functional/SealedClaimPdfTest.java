@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
