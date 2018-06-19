@@ -9,10 +9,12 @@ import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 
+import java.net.URI;
+
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
 
 @Component
-@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url")
+@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentUploader {
 
     private final DocumentManagementService documentManagementService;
@@ -28,11 +30,15 @@ public class DocumentUploader {
     @EventListener
     public void uploadIntoDocumentManagementStore(DocumentGeneratedEvent event) {
         event.getDocuments().forEach(document -> {
-            String documentSelfPath = this.documentManagementService.uploadDocument(event.getAuthorisation(),
-                document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
+            URI documentUri = this.documentManagementService.uploadDocument(
+                event.getAuthorisation(),
+                document.getFilename(),
+                document.getBytes(),
+                PDF.CONTENT_TYPE
+            );
 
             if (isSealedClaim(document.getFilename())) {
-                claimService.linkSealedClaimDocument(event.getClaim().getId(), documentSelfPath);
+                claimService.linkSealedClaimDocument(event.getAuthorisation(), event.getClaim(), documentUri);
             }
         });
     }

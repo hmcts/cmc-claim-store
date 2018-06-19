@@ -13,4 +13,12 @@ public enum CCDYesNoOption {
     public String getValue() {
         return value;
     }
+
+    public boolean toBoolean() {
+        return this == YES;
+    }
+
+    public static CCDYesNoOption valueOf(boolean value) {
+        return value ? YES : NO;
+    }
 }
