@@ -193,7 +193,7 @@ public class CCDCaseApi {
 
         jobService.scheduleJob(
             JobData.builder()
-                .id("reminder:defence-due-in-5-days:000MC001-" + UUID.randomUUID().toString())
+                .id("reminder:defence-due-in-5-days:" + claim.getReferenceNumber() + "-" + UUID.randomUUID().toString())
                 .group("Reminders")
                 .description("Defendant reminder email 5 days before response deadline")
                 .jobClass(NotificationEmailJob.class)
@@ -203,7 +203,7 @@ public class CCDCaseApi {
 
         jobService.scheduleJob(
             JobData.builder()
-                .id("reminder:defence-due-in-1-days:000MC001-" + UUID.randomUUID().toString())
+                .id("reminder:defence-due-in-1-days:" + claim.getReferenceNumber() + "-" + UUID.randomUUID().toString())
                 .group("Reminders")
                 .description("Defendant reminder email 1 days before response deadline")
                 .jobClass(NotificationEmailJob.class)
@@ -217,7 +217,7 @@ public class CCDCaseApi {
         List<CaseDetails> result = searchAll(user, searchString);
 
         if (result.size() == 1 && isCaseOnHold(result.get(0))) {
-            throw new OnHoldClaimAccessAttemptException("Case is on hold " + input);
+            return Optional.empty();
         }
 
         List<Claim> claims = extractClaims(result);
