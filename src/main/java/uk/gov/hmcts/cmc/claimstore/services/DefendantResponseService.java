@@ -37,7 +37,7 @@ public class DefendantResponseService {
         this.appInsights = appInsights;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public Claim save(
         String externalId,
         String defendantId,
