@@ -35,4 +35,3 @@ public class DefendantAddressUpdateEvent {
         return Objects.hash(claim, defendant);
     }
 }
-}
