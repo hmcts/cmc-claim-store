@@ -51,10 +51,10 @@ public class QuartzConfiguration {
     public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(
         @Qualifier("schedulerDataSource") DataSource dataSource
     ) {
-        TransactionAwareDataSourceProxy transactionAwareDataSourceProxy = new TransactionAwareDataSourceProxy(dataSource);
+        TransactionAwareDataSourceProxy dataSourceProxy = new TransactionAwareDataSourceProxy(dataSource);
 
-        migrateFlyway(transactionAwareDataSourceProxy);
-        return transactionAwareDataSourceProxy;
+        migrateFlyway(dataSourceProxy);
+        return dataSourceProxy;
     }
 
     private void migrateFlyway(DataSource dataSource) {
