@@ -1,7 +1,7 @@
 {
   "caseNumber": "000CM001",
   "defenceSubmittedOn": "26-Apr-2018",
-  "defenceResponse": "I dispute all the claim",
+  "defenceResponse": "DISPUTE",
   "defendants": [
     {
       "type": "Organisation",
@@ -18,10 +18,10 @@
         "postcode": "DF1 3LJ"
       },
       "emailAddress": "j.smith@example.com",
-      "correspondenceAddress": null
+      "correspondenceAddress": null,
+      "dateOfBirth": null,
+      "phoneNumber": "07873727165"
     }
   ],
-  "dateOfBirth": null,
-  "phoneNumber": "07873727165",
   "mediation": "yes"
 }

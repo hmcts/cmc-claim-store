@@ -25,17 +25,18 @@ public class DefenceResponseNotificationService {
 
     private final EmailService emailService;
     private final EmailProperties emailProperties;
-    private final DefenceResponseJsonMapper jsonMapper;
+    private final DefenceResponseJsonMapper responseJsonMapper;
 
     @Autowired
     public DefenceResponseNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
-        DefenceResponseJsonMapper jsonMapper
+        DefenceResponseJsonMapper responseJsonMapper
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
-        this.jsonMapper = jsonMapper;
+        this.responseJsonMapper = responseJsonMapper;
+
     }
 
     @EventListener
@@ -47,16 +48,15 @@ public class DefenceResponseNotificationService {
     }
 
     private EmailData prepareEmailData(Claim claim) {
-
-        return new EmailData(emailProperties.getDefenceResponseRecipient(),
+        return new EmailData(emailProperties.getResponseRecipient(),
             "J defence response " + claim.getReferenceNumber(),
             "",
-            Collections.singletonList(createDefenceResponseAttachment(claim))
+            Collections.singletonList(createResponseJsonAttachment(claim))
         );
     }
 
-    private EmailAttachment createDefenceResponseAttachment(Claim claim) {
-        return EmailAttachment.json(jsonMapper.map(claim).toString().getBytes(),
+    private EmailAttachment createResponseJsonAttachment(Claim claim) {
+        return EmailAttachment.json(responseJsonMapper.map(claim).toString().getBytes(),
             DocumentNameUtils.buildJsonDefenceResponseFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
     }
 

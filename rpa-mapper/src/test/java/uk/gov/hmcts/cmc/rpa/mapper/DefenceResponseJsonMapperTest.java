@@ -30,27 +30,26 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @SuppressWarnings({"LineLength"})
 public class DefenceResponseJsonMapperTest {
 
-    private static String INDIVIDUAL = "/defence/defence_response_individual_rpa_case.json";
-    private static String INDIVIDUAL_MEDIATION_NOT_OPTED = "/defence/defence_response_individual_mediation_not_opted_rpa_case.json";
-    private static String INDIVIDUAL_ADDRESS_MODIFIED = "/defence/defence_response_individual_address_modified_rpa_case.json";
-    private static String SOLE_TRADER = "/defence/defence_response_sole_trader_rpa_case.json";
-    private static String COMPANY = "/defence/defence_response_company_rpa_case.json";
-    private static String ORGANISATION = "/defence/defence_response_organisation_rpa_case.json";
-    private static String ORGANISATION_ALREADY_PAID_RESPONSE = "/defence/defence_response_organisation_rpa_case_alreadyPaid.json";
+    private static final String INDIVIDUAL = "/defence/defence_response_individual_rpa_case.json";
+    private static final String INDIVIDUAL_MEDIATION_NOT_OPTED = "/defence/defence_response_individual_mediation_not_opted_rpa_case.json";
+    private static final String INDIVIDUAL_ADDRESS_MODIFIED = "/defence/defence_response_individual_address_modified_rpa_case.json";
+    private static final String SOLE_TRADER = "/defence/defence_response_sole_trader_rpa_case.json";
+    private static final String COMPANY = "/defence/defence_response_company_rpa_case.json";
+    private static final String ORGANISATION = "/defence/defence_response_organisation_rpa_case.json";
+    private static final String ORGANISATION_ALREADY_PAID_RESPONSE = "/defence/defence_response_organisation_rpa_case_alreadyPaid.json";
     private static final String DEFENDANT_EMAIL = "j.smith@example.com";
+
     @Autowired
     private DefenceResponseJsonMapper mapper;
 
     @Test
     public void shouldMapIndividualDefenceResponseToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
+        Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder().withDefendantDetails(SampleParty.builder()
                 .withCorrespondenceAddress(SampleAddress.builder().withLine1("102").build()).individual()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL).trim();
@@ -60,14 +59,12 @@ public class DefenceResponseJsonMapperTest {
 
     @Test
     public void shouldMapIndividualDefenceResponseWithMediationNotOptedToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
+        Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder().withMediation(YesNoOption.NO).withDefendantDetails(SampleParty.builder()
                 .withCorrespondenceAddress(null).individual()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL_MEDIATION_NOT_OPTED).trim();
@@ -78,15 +75,13 @@ public class DefenceResponseJsonMapperTest {
 
     @Test
     public void shouldMapIndividualAddressModifiedDefenceResponseToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
+        Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
                 .withDefendantDetails(SampleParty.builder().withAddress(SampleAddress.builder()
                     .withPostcode("MK3 0AL").build()).withCorrespondenceAddress(null).individual()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL_ADDRESS_MODIFIED).trim();
@@ -96,15 +91,13 @@ public class DefenceResponseJsonMapperTest {
 
     @Test
     public void shouldMapSoleTraderDefenceResponseToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
+        Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
                 .withDefendantDetails(SampleParty.builder().withBusinessName("Sole Trading & Sons")
                     .withCorrespondenceAddress(null).soleTrader()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().soleTraderDetails())
                 .build())
-            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(SOLE_TRADER).trim();
@@ -114,14 +107,12 @@ public class DefenceResponseJsonMapperTest {
 
     @Test
     public void shouldMapCompanyDefenceResponseToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
+        Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
                 .withDefendantDetails(SampleParty.builder().withCorrespondenceAddress(null).company()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().companyDetails())
                 .build())
-            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
         String expected = new ResourceReader().read(COMPANY).trim();
@@ -131,12 +122,12 @@ public class DefenceResponseJsonMapperTest {
 
     @Test
     public void shouldMapOrganisationDefenceResponseToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
+        Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
                 .withDefendantDetails(SampleParty.builder().withCorrespondenceAddress(null).organisation()).build())
             .withClaimData(SampleClaimData.builder().withDefendant(SampleTheirDetails.builder().organisationDetails())
-                .build()).withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1)).build();
+                .build())
+            .build();
 
         String expected = new ResourceReader().read(ORGANISATION).trim();
 
@@ -145,17 +136,22 @@ public class DefenceResponseJsonMapperTest {
 
     @Test
     public void shouldMapOrganisationAlreadyPaidDefenceResponseToRPA() throws JSONException {
-        Claim claim = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
+        Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID)
                 .withDefendantDetails(SampleParty.builder().withContactPerson("The Shrek")
                     .withCorrespondenceAddress(null).organisation()).build())
-            .withClaimData(SampleClaimData.builder().withDefendant(SampleTheirDetails.builder().organisationDetails())
-                .build()).withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1)).build();
+            .withClaimData(SampleClaimData.builder().withDefendant(SampleTheirDetails.builder().organisationDetails()).build())
+            .build();
 
         String expected = new ResourceReader().read(ORGANISATION_ALREADY_PAID_RESPONSE).trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
+    }
+
+    private SampleClaim withCommonDefEmailAndRespondedAt() {
+        return SampleClaim.builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1));
     }
 
 

@@ -37,8 +37,8 @@ data "azurerm_key_vault_secret" "db_password" {
 }
 
 data "azurerm_key_vault_secret" "staff_email" {
-name = "staff-email"
-vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+  name = "staff-email"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "rpa_email_sealed_claim" {
@@ -145,11 +145,11 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.azurerm_key_vault_secret.staff_email.value}"
 
     // robot notifications
-    RPANOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
-    RPANOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_sealed_claim.value}"
-    RPANOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT = "${ data.azurerm_key_vault_secret.rpa_email_more_time_requested.value}"
-    RPANOTIFICATIONS_DEFENCERESPONSERECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_defence_response.value}"
-    RPANOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_ccj.value}"
+    RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
+    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_sealed_claim.value}"
+    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT = "${ data.azurerm_key_vault_secret.rpa_email_more_time_requested.value}"
+    RPA_NOTIFICATIONS_RESPONSERECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_defence_response.value}"
+    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_ccj.value}"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"

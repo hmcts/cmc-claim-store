@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -33,45 +34,59 @@ public class RequestForJudgementJsonMapperTest {
     private static final LocalDate PAY_BY_SET_DATE = LocalDate.of(2200, 3, 12);
     private static final BigDecimal PAID_ALREADY = new BigDecimal(10);
     private static final LocalDate FIRST_PAYMENT_DATE = LocalDate.of(2200, 3, 02);
+
     @Autowired
     private RequestForJudgementJsonMapper mapper;
 
     @Test
-    public void shouldMapRequestForJudgementForthWith() throws JSONException {
-        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
+    public void shouldMapRequestForJudgementImmediatelyWithPaidAlready() throws JSONException {
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .withPaidAmount(PAID_ALREADY)
+            .build();
+
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
-            .withCountyCourtJudgment(countyCourtJudgment.build())
+            .withCountyCourtJudgment(countyCourtJudgment)
             .build();
-        String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_immediately.json")
-            .trim();
+
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_judgement_immediately.json").trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
     @Test
     public void shouldMapRequestForJudgementImmediatelyButNothingPaid() throws JSONException {
-        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(null);
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .withPaidAmount(null)
+            .build();
+
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
-            .withCountyCourtJudgment(countyCourtJudgment.build())
+            .withCountyCourtJudgment(countyCourtJudgment)
             .build();
-        String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_immediately_nothing_paid.json")
-            .trim();
+
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_judgement_immediately_nothing_paid.json").trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
     @Test
     public void shouldMapRequestForJudgementPaidInFull() throws JSONException {
-        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
-        countyCourtJudgment.withPayBySetDate(PAY_BY_SET_DATE);
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .withPaidAmount(PAID_ALREADY)
+            .withPayBySetDate(PAY_BY_SET_DATE)
+            .build();
+
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
-            .withCountyCourtJudgment(countyCourtJudgment.build()).build();
-        String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_full_by_set_date.json")
-            .trim();
+            .withCountyCourtJudgment(countyCourtJudgment)
+            .build();
+
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_judgement_full_by_set_date.json").trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
@@ -81,17 +96,20 @@ public class RequestForJudgementJsonMapperTest {
             .builder()
             .withPaymentSchedule(PaymentSchedule.EVERY_TWO_WEEKS)
             .withFirstPaymentDate(FIRST_PAYMENT_DATE)
-            .withInstalmentAmount(BigDecimal.valueOf(100.00)).build();
-        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
-        countyCourtJudgment.withRepaymentPlan(repaymentPlan);
+            .withInstalmentAmount(BigDecimal.valueOf(100.00))
+            .build();
+
+        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment()
+            .withPaidAmount(PAID_ALREADY)
+            .withRepaymentPlan(repaymentPlan);
 
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
-            .withCountyCourtJudgment(countyCourtJudgment.build()).build();
+            .withCountyCourtJudgment(countyCourtJudgment.build())
+            .build();
 
-        String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_fortnightly.json")
-            .trim();
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_judgement_fortnightly.json").trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
@@ -100,14 +118,19 @@ public class RequestForJudgementJsonMapperTest {
         RepaymentPlan repaymentPlan = SampleRepaymentPlan
             .builder()
             .withPaymentSchedule(PaymentSchedule.EACH_WEEK)
-            .withFirstPaymentDate(PAY_BY_SET_DATE).build();
-        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
-        countyCourtJudgment.withRepaymentPlan(repaymentPlan);
+            .withFirstPaymentDate(PAY_BY_SET_DATE)
+            .build();
+
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .withPaidAmount(PAID_ALREADY)
+            .withRepaymentPlan(repaymentPlan)
+            .build();
 
         Claim claim = SampleClaim.builder().withDefendantEmail("defendant@email.com")
             .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
-            .withCountyCourtJudgment(countyCourtJudgment.build()).build();
+            .withCountyCourtJudgment(countyCourtJudgment)
+            .build();
 
         String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_weekly.json")
             .trim();
@@ -116,20 +139,25 @@ public class RequestForJudgementJsonMapperTest {
 
     @Test
     public void shouldMapRequestForJudgementPayingMonthly() throws JSONException {
-        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment();
-        countyCourtJudgment.withPaidAmount(PAID_ALREADY);
-        SampleRepaymentPlan sampleRepaymentPlan = SampleRepaymentPlan
+        RepaymentPlan replaymentPlan = SampleRepaymentPlan
             .builder()
             .withPaymentSchedule(PaymentSchedule.EVERY_MONTH)
-            .withFirstPaymentDate(PAY_BY_SET_DATE);
-        countyCourtJudgment.withRepaymentPlan(sampleRepaymentPlan.build());
+            .withFirstPaymentDate(PAY_BY_SET_DATE)
+            .build();
+
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .withPaidAmount(PAID_ALREADY)
+            .withRepaymentPlan(replaymentPlan)
+            .build();
 
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
-            .withCountyCourtJudgment(countyCourtJudgment.build()).build();
+            .withCountyCourtJudgment(countyCourtJudgment)
+            .build();
 
-        String expected = new ResourceReader().read("/judgement/rpa_request_for_judgement_monthly.json")
-            .trim();
+        String expected = new ResourceReader()
+            .read("/judgement/rpa_request_for_judgement_monthly.json").trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 }

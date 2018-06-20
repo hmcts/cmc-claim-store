@@ -1,7 +1,7 @@
 {
   "caseNumber": "000CM001",
   "defenceSubmittedOn": "26-Apr-2018",
-  "defenceResponse": "I dispute all the claim",
+  "defenceResponse": "DISPUTE",
   "defendants": [
     {
       "type": "Individual",
@@ -24,10 +24,10 @@
         "line3": "Salford",
         "city": "Manchester",
         "postcode": "DF1 3LJ"
-      }
+      },
+      "dateOfBirth": "02-Jan-1968",
+      "phoneNumber": "07873727165"
     }
   ],
-  "dateOfBirth": "02-Jan-1968",
-  "phoneNumber": "07873727165",
   "mediation": "yes"
 }

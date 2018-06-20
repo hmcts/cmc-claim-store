@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 @Component
 @Validated
-@ConfigurationProperties(prefix = "rpa-notifications")
+@ConfigurationProperties(prefix = "rpa.notifications")
 public class EmailProperties {
 
     @NotBlank
@@ -18,7 +18,7 @@ public class EmailProperties {
     private String sealedClaimRecipient;
 
     @NotBlank
-    private String defenceResponseRecipient;
+    private String responseRecipient;
 
     @NotBlank
     private String countyCourtJudgementRecipient;
@@ -42,12 +42,12 @@ public class EmailProperties {
         this.sealedClaimRecipient = sealedClaimRecipient;
     }
 
-    public String getDefenceResponseRecipient() {
-        return defenceResponseRecipient;
+    public String getResponseRecipient() {
+        return responseRecipient;
     }
 
-    public void setDefenceResponseRecipient(String defenceResponseRecipient) {
-        this.defenceResponseRecipient = defenceResponseRecipient;
+    public void setResponseRecipient(String responseRecipient) {
+        this.responseRecipient = responseRecipient;
     }
 
     public String getCountyCourtJudgementRecipient() {
