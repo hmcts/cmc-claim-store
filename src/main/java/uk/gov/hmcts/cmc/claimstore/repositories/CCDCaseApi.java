@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -38,11 +37,25 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
-
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseApi {
+
+    public static enum CaseState {
+        ONHOLD("onhold"),
+        OPEN("open");
+
+        private final String state;
+
+        CaseState(String state) {
+            this.state = state;
+        }
+
+        public String getValue() {
+            return state;
+        }
+    }
+
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
@@ -80,12 +93,7 @@ public class CCDCaseApi {
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        List<CaseDetails> validCases = searchAll(user, ImmutableMap.of("case.submitterId", submitterId))
-            .stream()
-            .filter(c -> !isCaseOnHold(c))
-            .collect(Collectors.toList());
-
-        return extractClaims(validCases);
+        return getAllCasesBy(user, ImmutableMap.of("case.submitterId", submitterId));
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
@@ -94,6 +102,12 @@ public class CCDCaseApi {
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
+    }
+
+    public List<Claim> getByDefendantId(String id, String authorisation) {
+        User user = userService.getUser(authorisation);
+
+        return getAllCasesBy(user, ImmutableMap.of("case.defendantId", id));
     }
 
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
@@ -139,6 +153,33 @@ public class CCDCaseApi {
                 CASE_TYPE_ID,
                 letterHolderId
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+    }
+
+    private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
+        List<CaseDetails> validCases = searchAll(user, searchString)
+            .stream()
+            .filter(c -> !isCaseOnHold(c))
+            .collect(Collectors.toList());
+
+        return extractClaims(validCases);
+    }
+
+    private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
+        User user = userService.getUser(authorisation);
+
+        List<CaseDetails> result = searchAll(user, searchString);
+
+        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
+            return Optional.empty();
+        }
+
+        List<Claim> claims = extractClaims(result);
+
+        if (claims.size() > 1) {
+            throw new CoreCaseDataStoreException("More than one claim found by search string " + searchString);
+        }
+
+        return claims.stream().findAny();
     }
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
@@ -217,37 +258,11 @@ public class CCDCaseApi {
             responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
     }
 
-    private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
-        User user = userService.getUser(authorisation);
-
-        List<CaseDetails> result = searchAll(user, searchString);
-
-        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
-            return Optional.empty();
-        }
-
-        List<Claim> claims = extractClaims(result);
-
-        if (claims.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by search String " + searchString);
-        }
-
-        return claims.stream().findAny();
-    }
-
     private boolean isLetterHolderRole(String role) {
         Objects.requireNonNull(role);
         return role.startsWith("letter")
             && !role.equals("letter-holder")
             && !role.endsWith("loa1");
-    }
-
-    public List<Claim> getByDefendantId(String id, String authorisation) {
-        User defendant = userService.getUser(authorisation);
-
-        return extractClaims(
-            searchByCaseState(defendant, ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()), OPEN)
-        );
     }
 
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
@@ -290,10 +305,6 @@ public class CCDCaseApi {
 
     private List<CaseDetails> searchAll(User user, Map<String, String> searchString) {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
-    }
-
-    private List<CaseDetails> searchByCaseState(User user, Map<String, String> searchString, CaseState caseState) {
-        return search(user, searchString, 1, new ArrayList<>(), null, caseState);
     }
 
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
