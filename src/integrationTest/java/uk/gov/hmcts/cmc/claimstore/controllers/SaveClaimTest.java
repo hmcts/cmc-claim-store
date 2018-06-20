@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,7 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false",
+        "document_management.url=false",
         "core_case_data.api.url=false"
     }
 )
@@ -187,6 +186,6 @@ public class SaveClaimTest extends BaseSaveTest {
         makeRequest(claimData)
             .andExpect(status().isOk());
 
-        verify(documentUploadClient, never()).upload(anyString(), anyList());
+        verify(documentUploadClient, never()).upload(any(), any(), any(), any());
     }
 }

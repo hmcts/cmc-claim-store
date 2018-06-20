@@ -33,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false",
+        "document_management.url=false",
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
