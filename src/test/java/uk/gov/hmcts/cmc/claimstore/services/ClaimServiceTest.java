@@ -176,7 +176,8 @@ public class ClaimServiceTest {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(Optional.of(claim));
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any()))
             .thenReturn(newDeadline);
 
@@ -201,7 +202,8 @@ public class ClaimServiceTest {
             .minusDays(10);
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(Optional.of(claim));
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
@@ -210,7 +212,8 @@ public class ClaimServiceTest {
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.of(claim));
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(Optional.of(claim));
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
