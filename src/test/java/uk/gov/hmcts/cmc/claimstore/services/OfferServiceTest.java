@@ -130,8 +130,8 @@ public class OfferServiceTest {
     @Test
     public void shouldSuccessfullyCountersignAgreement() {
         // given
-        when(claimService.getClaimByExternalId(eq(claimWithAcceptedOffer.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(settledClaim);
+        when(claimService.getClaimByExternalId(eq(claimWithAcceptedOffer.getExternalId()),
+            eq(AUTHORISATION))).thenReturn(settledClaim);
 
         // when
         offersService.countersign(claimWithAcceptedOffer, madeBy, AUTHORISATION);
