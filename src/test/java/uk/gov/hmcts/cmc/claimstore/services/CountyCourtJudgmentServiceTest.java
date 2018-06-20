@@ -91,7 +91,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.builder().withRespondedAt(LocalDateTime.now().minusDays(2)).build();
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+            .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
@@ -101,7 +102,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(12));
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+            .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
@@ -111,7 +113,8 @@ public class CountyCourtJudgmentServiceTest {
 
         Claim respondedClaim = SampleClaim.getDefault();
 
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(respondedClaim);
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+            .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
     }
