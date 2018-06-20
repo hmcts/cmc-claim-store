@@ -84,6 +84,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
             .paymentDate(LocalDate.now().plusDays(3))
+            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
@@ -95,6 +96,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
             .paymentDate(LocalDate.now().minusDays(3))
+            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
@@ -114,6 +116,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.INSTALMENTS)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
@@ -139,23 +142,12 @@ public class ValidFullAdmissionConstraintValidatorTest {
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
     }
 
-    @Test
-    public void shouldBeValidWhenTypeIsInstalmentsAndRepaymentPlanIsInvalid() {
-        FullAdmissionResponse fullAdmissionResponse = builder()
-            .paymentOption(PaymentOption.INSTALMENTS)
-            .repaymentPlan(SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().minusDays(10)).build())
-            .build();
-
-        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
-    }
-
     private static FullAdmissionResponse.FullAdmissionResponseBuilder builder() {
         return FullAdmissionResponse.builder()
             .freeMediation(YesNoOption.YES)
             .moreTimeNeeded(YesNoOption.NO)
             .statementOfTruth(StatementOfTruth.builder().build())
-            .defendant(SampleParty.builder().individual())
-            .statementOfMeans(StatementOfMeans.builder().build());
+            .defendant(SampleParty.builder().individual());
     }
 
 }
