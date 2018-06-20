@@ -29,7 +29,7 @@ public class CountyCourtJudgmentService {
         this.countyCourtJudgmentRule = countyCourtJudgmentRule;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public Claim save(
         String submitterId,
         CountyCourtJudgment countyCourtJudgment,
