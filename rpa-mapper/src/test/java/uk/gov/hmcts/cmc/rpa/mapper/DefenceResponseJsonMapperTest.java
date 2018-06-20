@@ -30,13 +30,13 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @SuppressWarnings({"LineLength"})
 public class DefenceResponseJsonMapperTest {
 
-    private static final String INDIVIDUAL = "/defence/defence_response_individual_rpa_case.json";
-    private static final String INDIVIDUAL_MEDIATION_NOT_OPTED = "/defence/defence_response_individual_mediation_not_opted_rpa_case.json";
-    private static final String INDIVIDUAL_ADDRESS_MODIFIED = "/defence/defence_response_individual_address_modified_rpa_case.json";
-    private static final String SOLE_TRADER = "/defence/defence_response_sole_trader_rpa_case.json";
-    private static final String COMPANY = "/defence/defence_response_company_rpa_case.json";
-    private static final String ORGANISATION = "/defence/defence_response_organisation_rpa_case.json";
-    private static final String ORGANISATION_ALREADY_PAID_RESPONSE = "/defence/defence_response_organisation_rpa_case_alreadyPaid.json";
+    private static final String INDIVIDUAL = "/defence/individual_rpa_case.json";
+    private static final String INDIVIDUAL_MEDIATION_NOT_OPTED = "/defence/individual_mediation_not_opted_rpa_case.json";
+    private static final String INDIVIDUAL_ADDRESS_MODIFIED = "/defence/individual_address_modified_rpa_case.json";
+    private static final String SOLE_TRADER = "/defence/sole_trader_rpa_case.json";
+    private static final String COMPANY = "/defence/company_rpa_case.json";
+    private static final String ORGANISATION = "/defence/organisation_rpa_case.json";
+    private static final String ORGANISATION_ALREADY_PAID_RESPONSE = "/defence/organisation_rpa_case_alreadyPaid.json";
     private static final String DEFENDANT_EMAIL = "j.smith@example.com";
 
     @Autowired
