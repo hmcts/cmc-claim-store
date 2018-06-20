@@ -30,7 +30,7 @@ public class QuartzConfiguration {
 
     private final Map<String, String> quartzProperties = new HashMap<>();
 
-    // this getter is needed by the framework
+    @SuppressWarnings("unused") // this getter is needed by the framework
     public Map<String, String> getQuartzProperties() {
         return quartzProperties;
     }
@@ -44,25 +44,24 @@ public class QuartzConfiguration {
     @Bean("schedulerDataSource")
     @ConfigurationProperties("spring.datasource.scheduler")
     public DataSource schedulerDataSource() {
-        migrateFlyway(schedulerDataSourceProperties());
         return schedulerDataSourceProperties().initializeDataSourceBuilder().build();
-    }
-
-    private void migrateFlyway(DataSourceProperties flywayProperties) {
-        final Flyway flyway = new Flyway();
-        flyway.setDataSource(
-            flywayProperties.getUrl(),
-            flywayProperties.getUsername(),
-            flywayProperties.getPassword());
-        flyway.setLocations("scheduler/db/migration");
-        flyway.migrate();
     }
 
     @Bean("schedulerTransactionAwareDataSourceProxy")
     public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(
         @Qualifier("schedulerDataSource") DataSource dataSource
     ) {
-        return new TransactionAwareDataSourceProxy(dataSource);
+        TransactionAwareDataSourceProxy dataSourceProxy = new TransactionAwareDataSourceProxy(dataSource);
+
+        migrateFlyway(dataSourceProxy);
+        return dataSourceProxy;
+    }
+
+    private void migrateFlyway(DataSource dataSource) {
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        flyway.setLocations("scheduler/db/migration");
+        flyway.migrate();
     }
 
     @Bean("schedulerTransactionManager")
