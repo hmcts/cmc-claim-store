@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
@@ -108,8 +110,9 @@ public class ClaimController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")
     @ApiOperation("Updates response deadline. Can be called only once per each claim")
     public Claim requestMoreTimeToRespond(@PathVariable("externalId") String externalId,
+                                          @RequestParam("defendant") TheirDetails defendant,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.requestMoreTimeForResponse(externalId, authorisation);
+        return claimService.requestMoreTimeForResponse(externalId, authorisation, defendant);
     }
 
     @GetMapping("/{caseReference}/defendant-link-status")

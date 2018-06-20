@@ -14,4 +14,12 @@ public class EmailTemplates {
     public String getClaimIssuedEmailBody() {
         return readString("/rpa/templates/email/claimIssued/body.txt");
     }
+
+    public String getDefendantAddressChangeEmailSubject()  {
+        return readString("/rpa/templates/email/defendantAddressChange/subject.txt");
+    }
+
+    public String getDefendantAddressChangeEmailBody()  {
+        return readString("/rpa/templates/email/defendantAddressChange/body.txt");
+    }
 }

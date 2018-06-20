@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.AddressDiff;
-import uk.gov.hmcts.cmc.claimstore.services.DefendantAddressDiffer;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimDefendantComparator;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -33,7 +33,7 @@ public class DefendantAddressChangeStaffNotificationService {
 
     public void notifyStaffIfDefendantAddressChanged(Claim claim, Response response)
     {
-        DefendantAddressDiffer differ = new DefendantAddressDiffer(claim, response);
+        ClaimDefendantComparator differ = new ClaimDefendantComparator(claim, response);
         AddressDiff diff = differ.getDiff();
 
         if(diff.isEmpty()) {

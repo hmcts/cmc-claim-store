@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -174,7 +175,7 @@ public class ClaimService {
         }
     }
 
-    public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
+    public Claim requestMoreTimeForResponse(String externalId, String authorisation, TheirDetails responseDefendant) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
@@ -186,6 +187,7 @@ public class ClaimService {
         claim = getClaimByExternalId(externalId, authorisation);
         UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
+        eventProducer.createDefendantAddressUpdateEvent(claim, responseDefendant);
 
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, claim.getReferenceNumber());
         return claim;
