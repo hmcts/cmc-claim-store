@@ -121,7 +121,7 @@ public class ClaimService {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
