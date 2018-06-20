@@ -2,13 +2,13 @@ package uk.gov.hmcts.cmc.domain.constraints;
 
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 
+import java.util.Set;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Set;
 
 import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
 public class ValidFullAdmissionConstraintValidator
