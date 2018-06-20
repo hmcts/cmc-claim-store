@@ -114,6 +114,7 @@ module "claim-store-api" {
     SCHEDULER_DB_NAME = "${module.database.postgresql_database}"
     SCHEDULER_DB_USERNAME = "${module.database.user_name}"
     SCHEDULER_DB_PASSWORD = "${module.database.postgresql_password}"
+    SCHEDULER_DB_CONNECTION_OPTIONS = "?ssl"
 
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
