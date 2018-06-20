@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.ccj.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 

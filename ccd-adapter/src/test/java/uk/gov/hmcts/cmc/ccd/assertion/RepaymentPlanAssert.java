@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDRepaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.ccj.RepaymentPlan;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 
 import java.util.Objects;
 

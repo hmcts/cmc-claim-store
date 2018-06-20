@@ -1,5 +1,7 @@
-variable "product" {
-  default = "cmc"
+variable "product" {}
+
+variable "raw_product" {
+  default = "cmc" // jenkins-library overrides product for PRs and adds e.g. pr-118-cmc
 }
 
 variable "microservice" {
@@ -32,11 +34,11 @@ variable "mail-host" {
   default = "mta.reform.hmcts.net"
 }
 
-variable "ilbIp" {}
-
-variable "component" {
-  default = "backend"
+variable "dm_url" {
+  default = "false"
 }
+
+variable "ilbIp" {}
 
 variable "tenant_id" {
   description = "(Required) The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. This is usually sourced from environemnt variables and not normally required to be specified."
@@ -64,4 +66,12 @@ variable "appinsights_instrumentation_key" {
 
 variable "db_host" {
   default = "test-data-lb.moneyclaim.reform.hmcts.net"
+}
+
+variable "capacity" {
+  default = "1"
+}
+
+variable "enable_staff_email" {
+  default = "true"
 }

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -36,7 +37,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_SUBMITTED;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
@@ -252,8 +252,8 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
-        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+    public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
+        caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
     }
 
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
@@ -268,6 +268,5 @@ public class ClaimService {
         String authorization
     ) {
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
-        appInsights.trackEvent(RESPONSE_SUBMITTED, claim.getReferenceNumber());
     }
 }

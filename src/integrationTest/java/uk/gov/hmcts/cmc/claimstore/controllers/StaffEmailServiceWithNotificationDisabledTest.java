@@ -38,7 +38,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false",
+        "document_management.url=false",
         "core_case_data.api.url=false",
         "feature_toggles.emailToStaff=false"
     }

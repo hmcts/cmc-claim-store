@@ -32,7 +32,7 @@ public class SealedClaimJsonMapper {
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
             .add("serviceDate", DateFormatter.format(claim.getServiceDate()))
             .add("courtFee", claim.getClaimData().getFeesPaidInPound())
-            .add("amountWithInterest", claim.getTotalAmountTillToday().orElse(null))
+            .add("amountWithInterest", claim.getAmountWithInterest().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
             .add("defendants", mapDefendants(claim.getClaimData().getDefendants()))
@@ -48,7 +48,7 @@ public class SealedClaimJsonMapper {
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
                 .add("phoneNumber", claimant.getMobilePhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, SoleTrader::getBusinessName))
+                .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(this::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(claimant, Organisation.class, Organisation::getCompaniesHouseNumber))
                 .build())
@@ -63,7 +63,7 @@ public class SealedClaimJsonMapper {
                 .add("address", mapAddress(defendant.getAddress()))
                 .add("correspondenceAddress", defendant.getServiceAddress().map(this::mapAddress).orElse(null))
                 .add("emailAddress", defendant.getEmail().orElse(null))
-                .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, SoleTraderDetails::getBusinessName))
+                .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, value -> value.getBusinessName().map(this::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
                 .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
                 .build())
@@ -78,6 +78,10 @@ public class SealedClaimJsonMapper {
             .add("city", address.getCity())
             .add("postcode", address.getPostcode())
             .build();
+    }
+
+    private String prependWithTradingAs(String value) {
+        return "Trading as " + value;
     }
 
 }
