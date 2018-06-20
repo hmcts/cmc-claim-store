@@ -15,7 +15,7 @@ variable "location" {
 variable "env" {}
 
 variable "idam_api_url" {
-  default = "http://betaDevBccidamAppLB.reform.hmcts.net"
+  default = "http://idam-api-idam-saat.service.core-compute-saat.internal"
 }
 
 variable "frontend_url" {
