@@ -66,18 +66,18 @@ public class ValidFullAdmissionConstraintValidator
 
     private boolean validateInstalments(FullAdmissionResponse value, ConstraintValidatorContext context) {
         boolean valid = true;
-        String bySetDate = INSTALMENTS.getDescription();
+        String instalments = INSTALMENTS.getDescription();
 
         if (value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, "paymentDate", mayNotBeProvidedErrorForType(bySetDate));
+            setValidationErrors(context, "paymentDate", mayNotBeProvidedErrorForType(instalments));
             valid = false;
         }
 
         if (!value.getRepaymentPlan().isPresent()) {
-            setValidationErrors(context, "repaymentPlan", mayNotBeNullErrorForType(bySetDate));
+            setValidationErrors(context, "repaymentPlan", mayNotBeNullErrorForType(instalments));
             valid = false;
         } else {
-            valid = valid && validateField(context, value.getPaymentDate().get(), "repaymentPlan");
+            valid = valid && validateField(context, value.getRepaymentPlan().get(), "repaymentPlan");
         }
 
         return valid;
