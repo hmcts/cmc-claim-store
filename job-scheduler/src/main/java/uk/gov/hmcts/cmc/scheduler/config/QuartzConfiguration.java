@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +30,7 @@ public class QuartzConfiguration {
 
     private final Map<String, String> quartzProperties = new HashMap<>();
 
-    // this getter is needed by the framework
+    @SuppressWarnings("unused") // this getter is needed by the framework
     public Map<String, String> getQuartzProperties() {
         return quartzProperties;
     }
@@ -45,33 +44,24 @@ public class QuartzConfiguration {
     @Bean("schedulerDataSource")
     @ConfigurationProperties("spring.datasource.scheduler")
     public DataSource schedulerDataSource() {
-        DataSourceProperties dataSourceProperties = schedulerDataSourceProperties();
-        migrateFlyway(dataSourceProperties);
-
-        return dataSourceProperties.initializeDataSourceBuilder().build();
-    }
-
-    private void migrateFlyway(DataSourceProperties dataSourceProperties) {
-        // Needed because for some reason during tests they try to modify the hikari connection pool once started
-        // This works around it by creating a special datasource for flyway
-        DataSource flywayDatasource = DataSourceBuilder.create()
-            .url(dataSourceProperties.getUrl())
-            .driverClassName(dataSourceProperties.getDriverClassName())
-            .username(dataSourceProperties.getUsername())
-            .password(dataSourceProperties.getPassword())
-            .build();
-
-        final Flyway flyway = new Flyway();
-        flyway.setDataSource(flywayDatasource);
-        flyway.setLocations("scheduler/db/migration");
-        flyway.migrate();
+        return schedulerDataSourceProperties().initializeDataSourceBuilder().build();
     }
 
     @Bean("schedulerTransactionAwareDataSourceProxy")
     public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(
         @Qualifier("schedulerDataSource") DataSource dataSource
     ) {
-        return new TransactionAwareDataSourceProxy(dataSource);
+        TransactionAwareDataSourceProxy transactionAwareDataSourceProxy = new TransactionAwareDataSourceProxy(dataSource);
+
+        migrateFlyway(transactionAwareDataSourceProxy);
+        return transactionAwareDataSourceProxy;
+    }
+
+    private void migrateFlyway(DataSource dataSource) {
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        flyway.setLocations("scheduler/db/migration");
+        flyway.migrate();
     }
 
     @Bean("schedulerTransactionManager")
