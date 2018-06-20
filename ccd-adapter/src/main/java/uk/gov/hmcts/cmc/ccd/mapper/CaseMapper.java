@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -72,6 +74,12 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.defendantId(claim.getDefendantId());
         }
 
+        claim.getSealedClaimDocument().ifPresent(document -> builder
+            .sealedClaimDocument(CCDDocument.builder()
+                .documentUrl(document.toString())
+                .build())
+        );
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -125,7 +133,11 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()),
             settlement,
             fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()),
-            null
+            mapSealedClaimDocument(ccdCase.getSealedClaimDocument())
         );
+    }
+
+    private URI mapSealedClaimDocument(CCDDocument sealedClaimDocumentUri) {
+        return sealedClaimDocumentUri != null ? URI.create(sealedClaimDocumentUri.getDocumentUrl()) : null;
     }
 }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -44,6 +45,7 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
+    @Ignore("Full Admission is not implemented, please enable once done")
     public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
         Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
         shouldBeAbleToSuccessfullySubmit(fullAdmissionResponse);

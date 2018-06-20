@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -121,7 +122,7 @@ public class ClaimService {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
         String externalId = claimData.getExternalId().toString();
 
@@ -253,8 +254,8 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void linkSealedClaimDocument(Long claimId, String documentSelfPath) {
-        claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
+    public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
+        caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
     }
 
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
