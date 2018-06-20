@@ -1,0 +1,1 @@
+Pay {{ paymentOption }} {{ claim.referenceNumber }}: {{ claim.claimData.claimant.name }} v {{ claim.claimData.defendant.name }}

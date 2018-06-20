@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullAdmissionStaffEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
@@ -24,18 +26,21 @@ public class DefendantResponseStaffNotificationService {
 
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
-    private final DefendantResponseStaffNotificationEmailContentProvider emailContentProvider;
+    private final FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider;
+    private final FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
 
     @Autowired
     public DefendantResponseStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties emailProperties,
-        DefendantResponseStaffNotificationEmailContentProvider emailContentProvider,
+        FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
+        FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider,
         DefendantResponseReceiptService defendantResponseReceiptService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
-        this.emailContentProvider = emailContentProvider;
+        this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;
+        this.fullAdmissionStaffEmailContentProvider = fullAdmissionStaffEmailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
@@ -43,9 +48,12 @@ public class DefendantResponseStaffNotificationService {
         Claim claim,
         String defendantEmail
     ) {
-        EmailContent emailContent = emailContentProvider.createContent(
-            wrapInMap(claim, defendantEmail)
-        );
+
+        Map<String, Object> input = wrapInMap(claim, defendantEmail);
+        EmailContent emailContent = isFullAdmission(claim)
+            ? fullAdmissionStaffEmailContentProvider.createContent(input)
+            : fullDefenceStaffEmailContentProvider.createContent(input);
+
         byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
@@ -59,6 +67,11 @@ public class DefendantResponseStaffNotificationService {
                 ))
             )
         );
+    }
+
+    private boolean isFullAdmission(Claim claim) {
+        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
+        return responseType == ResponseType.FULL_ADMISSION;
     }
 
     public static Map<String, Object> wrapInMap(
