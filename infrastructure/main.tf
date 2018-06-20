@@ -1,13 +1,3 @@
-provider "vault" {
-  //  # It is strongly recommended to configure this provider through the
-  //  # environment variables described above, so that each user can have
-  //  # separate credentials set in the environment.
-  //  #
-  //  # This will default to using $VAULT_ADDR
-  //  # But can be set explicitly
-  address = "https://vault.reform.hmcts.net:6200"
-}
-
 locals {
   aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
 
@@ -81,6 +71,19 @@ data "azurerm_key_vault_secret" "oauth_client_secret" {
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
+module "database" {
+  source = "git@github.com:hmcts/moj-module-postgres?ref=cnp-449-tactical"
+  product = "${var.product}"
+  location = "${var.location}"
+  env = "${var.env}"
+  postgresql_user = "cmc"
+  database_name = "cmc"
+  postgresql_version = "10"
+  sku_name = "GP_Gen5_2"
+  sku_tier = "GeneralPurpose"
+  storage_mb = "51200"
+}
+
 module "claim-store-api" {
   source = "git@github.com:hmcts/moj-module-webapp.git?ref=RPE-389/local-cache"
   product = "${var.product}-${var.microservice}"
@@ -105,6 +108,13 @@ module "claim-store-api" {
     CLAIM_STORE_DB_PASSWORD = "${data.azurerm_key_vault_secret.db_password.value}"
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
+
+    SCHEDULER_DB_HOST = "${module.database.host_name}"
+    SCHEDULER_DB_PORT = "${module.database.postgresql_listen_port}"
+    SCHEDULER_DB_NAME = "${module.database.postgresql_database}"
+    SCHEDULER_DB_USERNAME = "${module.database.user_name}"
+    SCHEDULER_DB_PASSWORD = "${module.database.postgresql_password}"
+    SCHEDULER_DB_CONNECTION_OPTIONS = "?ssl"
 
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
