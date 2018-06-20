@@ -165,7 +165,7 @@ public class CCDCaseApi {
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
-        LOGGER.info("Granting access to case: {} for user: {} with letter-holder id: {}",
+        LOGGER.debug("Granting access to case: {} for user: {} with letter-holder id: {}",
             caseId, defendantId, letterHolderId);
         caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
@@ -176,7 +176,7 @@ public class CCDCaseApi {
             new UserId(defendantId)
         );
 
-        LOGGER.info("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+        LOGGER.debug("Revoking access to case: {} for user: {}", caseId, letterHolderId);
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
