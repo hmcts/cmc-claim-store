@@ -8,7 +8,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -130,8 +129,7 @@ public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest 
         return ImmutableMap.of(
             "case.submitterId", USER_ID,
             "page", String.valueOf(page),
-            "sortDirection", "desc",
-            "state", CCDCaseApi.CaseState.OPEN.getValue()
+            "sortDirection", "desc"
         );
     }
 
