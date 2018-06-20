@@ -84,12 +84,7 @@ public class CCDCaseApi {
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        List<CaseDetails> validCases = searchAll(user, ImmutableMap.of("case.submitterId", submitterId))
-            .stream()
-            .filter(c -> !isCaseOnHold(c))
-            .collect(Collectors.toList());
-
-        return extractClaims(validCases);
+        return getAllCasesBy(user, ImmutableMap.of("case.submitterId", submitterId));
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
@@ -98,6 +93,12 @@ public class CCDCaseApi {
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
+    }
+
+    public List<Claim> getByDefendantId(String id, String authorisation) {
+        User user = userService.getUser(authorisation);
+
+        return getAllCasesBy(user, ImmutableMap.of("case.defendantId", id));
     }
 
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
@@ -143,6 +144,15 @@ public class CCDCaseApi {
                 CASE_TYPE_ID,
                 letterHolderId
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
+    }
+
+    private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
+        List<CaseDetails> validCases = searchAll(user, searchString)
+            .stream()
+            .filter(c -> !isCaseOnHold(c))
+            .collect(Collectors.toList());
+
+        return extractClaims(validCases);
     }
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
@@ -200,15 +210,6 @@ public class CCDCaseApi {
             && !role.endsWith("loa1");
     }
 
-    public List<Claim> getByDefendantId(String id, String authorisation) {
-        User defendant = userService.getUser(authorisation);
-
-        return extractClaims(
-            searchByCaseState(defendant,
-                ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()), CaseState.OPEN)
-        );
-    }
-
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
 
@@ -251,10 +252,6 @@ public class CCDCaseApi {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
     }
 
-    private List<CaseDetails> searchByCaseState(User user, Map<String, String> searchString, CaseState caseState) {
-        return search(user, searchString, 1, new ArrayList<>(), null, caseState);
-    }
-
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
     private List<CaseDetails> search(
         User user,
@@ -282,7 +279,7 @@ public class CCDCaseApi {
 
             if (numOfPages > page && page < MAX_NUM_OF_PAGES_TO_CHECK) {
                 ++page;
-                return search(user, searchString, page, results, numOfPages, state);
+                return search(user, searchCriteria, page, results, numOfPages, state);
             }
         }
 
