@@ -35,7 +35,7 @@ spring:
       driverClassName: org.postgresql.Driver
       username: ${SCHEDULER_DB_USERNAME:-}
       password: ${SCHEDULER_DB_PASSWORD:-}
-      url: jdbc:postgresql://${SCHEDULER_DB_HOST:}:${SCHEDULER_DB_PORT:}/${SCHEDULER_DB_NAME:scheduler}
+      url: jdbc:postgresql://${SCHEDULER_DB_HOST:}:${SCHEDULER_DB_PORT:}/${SCHEDULER_DB_NAME:scheduler}${SCHEDULER_DB_CONNECTION_OPTIONS:}
 
 quartzProperties:
   org.quartz:
