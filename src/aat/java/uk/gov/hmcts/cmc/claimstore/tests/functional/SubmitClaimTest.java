@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,14 +34,11 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
-        UUID externalId = UUID.randomUUID();
-        ClaimData claimData = testData.submittedByClaimantBuilder()
-            .withExternalId(externalId)
-            .build();
-
-        commonOperations.submitPrePaymentClaim(externalId.toString(), claimant.getAuthorisation());
-
-        Claim createdCase = submitClaim(claimData)
+        ClaimData claimData = testData.submittedByClaimantBuilder().build();
+        
+      commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), claimant.getAuthorisation());
+      
+      Claim createdCase = submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
