@@ -2,17 +2,21 @@ package uk.gov.hmcts.cmc.domain.constraints;
 
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 
-import java.util.Set;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.constraints.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
 public class ValidFullAdmissionConstraintValidator
     implements ConstraintValidator<ValidFullAdmission, FullAdmissionResponse> {
+
+    public static class Fields {
+        static final String PAYMENT_DATE = "paymentDate";
+        static final String REPAYMENT_PLAN = "repaymentPlan";
+        static final String STATEMENT_OF_MEANS = "statementOfMeans";
+    }
 
     @Override
     public boolean isValid(FullAdmissionResponse fullAdmissionResponse, ConstraintValidatorContext context) {
@@ -33,12 +37,17 @@ public class ValidFullAdmissionConstraintValidator
         String immediately = IMMEDIATELY.getDescription();
 
         if (value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, "paymentDate", mayNotBeProvidedErrorForType(immediately));
+            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeProvidedErrorForType(immediately));
             valid = false;
         }
 
         if (value.getRepaymentPlan().isPresent()) {
-            setValidationErrors(context, "repaymentPlan", mayNotBeProvidedErrorForType(immediately));
+            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeProvidedErrorForType(immediately));
+            valid = false;
+        }
+
+        if (value.getStatementOfMeans().isPresent()) {
+            setValidationErrors(context, Fields.STATEMENT_OF_MEANS, mayNotBeProvidedErrorForType(immediately));
             valid = false;
         }
 
@@ -50,14 +59,17 @@ public class ValidFullAdmissionConstraintValidator
         String bySetDate = FULL_BY_SPECIFIED_DATE.getDescription();
 
         if (!value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, "paymentDate", mayNotBeNullErrorForType(bySetDate));
+            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeNullErrorForType(bySetDate));
             valid = false;
-        } else {
-            valid = validateField(context, value.getPaymentDate().get(), "paymentDate");
         }
 
         if (value.getRepaymentPlan().isPresent()) {
-            setValidationErrors(context, "repaymentPlan", mayNotBeProvidedErrorForType(bySetDate));
+            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeProvidedErrorForType(bySetDate));
+            valid = false;
+        }
+
+        if (!value.getStatementOfMeans().isPresent()) {
+            setValidationErrors(context, Fields.STATEMENT_OF_MEANS, mayNotBeNullErrorForType(bySetDate));
             valid = false;
         }
 
@@ -69,15 +81,18 @@ public class ValidFullAdmissionConstraintValidator
         String instalments = INSTALMENTS.getDescription();
 
         if (value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, "paymentDate", mayNotBeProvidedErrorForType(instalments));
+            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeProvidedErrorForType(instalments));
             valid = false;
         }
 
         if (!value.getRepaymentPlan().isPresent()) {
-            setValidationErrors(context, "repaymentPlan", mayNotBeNullErrorForType(instalments));
+            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeNullErrorForType(instalments));
             valid = false;
-        } else {
-            valid = valid && validateField(context, value.getRepaymentPlan().get(), "repaymentPlan");
+        }
+
+        if (!value.getStatementOfMeans().isPresent()) {
+            setValidationErrors(context, Fields.STATEMENT_OF_MEANS, mayNotBeNullErrorForType(instalments));
+            valid = false;
         }
 
         return valid;
@@ -92,20 +107,6 @@ public class ValidFullAdmissionConstraintValidator
         }
     }
 
-    private boolean validateField(ConstraintValidatorContext validatorContext, Object field, String fieldName) {
-        Set<String> validationErrors = validate(field);
-        if (!validationErrors.isEmpty()) {
-            setValidationErrors(validatorContext, fieldName, toArray(validationErrors));
-            return false;
-        }
-        return true;
-    }
-
-    private String[] toArray(Set<String> set) {
-        return set.toArray(new String[]{});
-    }
-
-
     private String mayNotBeNullErrorForType(String type) {
         return String.format("may not be null when payment plan is '%s'", type);
     }
@@ -113,5 +114,4 @@ public class ValidFullAdmissionConstraintValidator
     private String mayNotBeProvidedErrorForType(String type) {
         return String.format("may not be provided when payment plan is '%s'", type);
     }
-
 }
