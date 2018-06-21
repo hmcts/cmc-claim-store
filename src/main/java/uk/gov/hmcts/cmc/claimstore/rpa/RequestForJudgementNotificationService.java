@@ -7,12 +7,15 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
+import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
+
+import javax.validation.constraints.Email;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,16 +28,19 @@ public class RequestForJudgementNotificationService {
     private final EmailService emailService;
     private final EmailProperties emailProperties;
     private final RequestForJudgementJsonMapper jsonMapper;
+    private final CCJStaffNotificationService ccjStaffNotificationService;
 
     @Autowired
     public RequestForJudgementNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
-        RequestForJudgementJsonMapper jsonMapper
+        RequestForJudgementJsonMapper jsonMapper,
+        CCJStaffNotificationService ccjStaffNotificationService
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.jsonMapper = jsonMapper;
+        this.ccjStaffNotificationService = ccjStaffNotificationService;
     }
 
     @EventListener
@@ -46,11 +52,12 @@ public class RequestForJudgementNotificationService {
     }
 
     private EmailData prepareEmailData(Claim claim) {
+        EmailAttachment ccjPdfAttachment = ccjStaffNotificationService.generateCountyCourtJudgmentPdf(claim);
 
         return new EmailData(emailProperties.getCountyCourtJudgementRecipient(),
           "J default judgement request " + claim.getReferenceNumber(),
             "",
-            Lists.newArrayList(createRequestForJudgementJsonAttachment(claim))
+            Lists.newArrayList(createRequestForJudgementJsonAttachment(claim), ccjPdfAttachment)
         );
     }
 

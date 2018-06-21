@@ -99,8 +99,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         Response response = SampleResponse.validDefaults();
 
-        makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
-            .andExpect(status().isOk());
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, response).andExpect(status().isOk());
 
         verify(notificationClient, times(2))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());

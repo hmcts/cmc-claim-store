@@ -32,7 +32,13 @@ public class DocumentNameUtils {
         return format("%s-json-more-time-requested", number);
     }
 
-    public static String buildJsonDefenceResponseFileBaseName(String number) {
+    public static String buildResponseFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-json-defence-response", caseRef);
+    }
+
+    public static String buildJsonResponseFileBaseName(String number) {
         requireNonBlank(number);
 
         return format("%s-json-defence-response", number);

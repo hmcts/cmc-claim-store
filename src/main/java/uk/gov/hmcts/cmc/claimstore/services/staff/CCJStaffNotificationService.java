@@ -48,6 +48,19 @@ public class CCJStaffNotificationService {
         emailService.sendEmail(staffEmailProperties.getSender(), prepareEmailData(claim));
     }
 
+    public EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
+        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
+
+        return pdf(
+            generatedPdf,
+            format(
+                FILE_NAME_FORMAT,
+                claim.getReferenceNumber(),
+                claim.getClaimData().getDefendant().getName()
+            )
+        );
+    }
+
     private EmailData prepareEmailData(Claim claim) {
         Map<String, Object> map = createParameterMap(claim);
 
@@ -67,19 +80,7 @@ public class CCJStaffNotificationService {
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
         map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
+
         return map;
-    }
-
-    private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
-        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
-
-        return pdf(
-            generatedPdf,
-            format(
-                FILE_NAME_FORMAT,
-                claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()
-            )
-        );
     }
 }

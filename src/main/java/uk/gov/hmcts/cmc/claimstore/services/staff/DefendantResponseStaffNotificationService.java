@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
@@ -39,32 +40,20 @@ public class DefendantResponseStaffNotificationService {
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
-    public void notifyStaffDefenceSubmittedFor(
-        Claim claim,
-        String defendantEmail
-    ) {
-        EmailContent emailContent = emailContentProvider.createContent(
-            wrapInMap(claim, defendantEmail)
-        );
-        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+    public void notifyStaffDefenceSubmittedFor(Claim claim, String defendantEmail) {
+        EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim, defendantEmail));
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
                 emailProperties.getRecipient(),
                 emailContent.getSubject(),
                 emailContent.getBody(),
-                singletonList(pdf(
-                    defendantResponse,
-                    format(FILE_NAME_FORMAT, claim.getReferenceNumber())
-                ))
+                singletonList(createResponsePdfAttachment(claim))
             )
         );
     }
 
-    public static Map<String, Object> wrapInMap(
-        Claim claim,
-        String defendantEmail
-    ) {
+    public static Map<String, Object> wrapInMap(Claim claim, String defendantEmail) {
         Map<String, Object> map = new HashMap<>();
         map.put("claim", claim);
         map.put("response", claim.getResponse().orElseThrow(IllegalStateException::new));
@@ -75,6 +64,10 @@ public class DefendantResponseStaffNotificationService {
             .getMobilePhone()
             .orElse(null));
         return map;
+    }
+
+    public EmailAttachment createResponsePdfAttachment(Claim claim) {
+        return pdf(defendantResponseReceiptService.createPdf(claim), format(FILE_NAME_FORMAT, claim.getReferenceNumber()));
     }
 
 }
