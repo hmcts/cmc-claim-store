@@ -169,23 +169,22 @@ public class CCDCaseApi {
     }
 
     private void linkToCaseWithoutRevoking(String defendantId, User anonymousCaseWorker, String caseId) {
-        LOGGER.debug("Granting access to case: {} for user: {}", caseId, defendantId);
+        LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
-        this.updateCase(anonymousCaseWorker, caseId, defendantId);
+        this.updateDefendantId(anonymousCaseWorker, caseId, defendantId);
     }
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
-        LOGGER.debug("Granting access to case: {} for user: {} with letter-holder id: {}",
 
-            caseId, defendantId, letterHolderId);
+        LOGGER.debug("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
-        LOGGER.debug("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         this.revokeAccessToCase(anonymousCaseWorker, letterHolderId, caseId);
 
-        this.updateCase(defendantUser, caseId, defendantId);
+        this.updateDefendantId(defendantUser, caseId, defendantId);
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
@@ -200,7 +199,7 @@ public class CCDCaseApi {
     }
 
     private void revokeAccessToCase(User anonymousCaseWorker, String letterHolderId, String caseId) {
-        LOGGER.debug("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
@@ -211,7 +210,7 @@ public class CCDCaseApi {
         );
     }
 
-    private void updateCase(User defendantUser, String caseId, String defendantId) {
+    private void updateDefendantId(User defendantUser, String caseId, String defendantId) {
         coreCaseDataService.update(
             defendantUser.getAuthorisation(),
             CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
