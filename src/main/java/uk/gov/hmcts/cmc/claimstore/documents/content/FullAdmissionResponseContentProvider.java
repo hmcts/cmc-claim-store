@@ -33,7 +33,7 @@ public class FullAdmissionResponseContentProvider {
             repaymentPlan = optionalRepaymentPlan.get();
         }
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
-
+        contentBuilder.put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription());
 
         switch (type) {
             case IMMEDIATELY:

@@ -359,28 +359,13 @@
   </div>
     <div class="section-body">
       <table>
-        {% if paymentOption == "Immediately" %}
-        <tr>
+        <tr class="no-border">
           <td><strong>When will they pay:</strong></td>
           <td>
             {{ paymentOption }}
           </td>
-        </tr>
 
-        {% if paymentOption == "By a set date" %}
-        <tr class="no-border">
-          <td><strong>When will they pay:</strong></td>
-          <td>
-            {{ paymentOption }}
-          </td>
-        </tr>
-        {% endif %}
-        {% if paymentOption == "By instalments" %}
-        <tr class="no-border">
-          <td><strong>When will they pay:</strong></td>
-          <td>
-            {{ paymentOption }}
-          </td>
+        {% if repaymentPlan is defined %}
         </tr>
         <tr class="no-border">
           <td><strong>Regular payments of:</strong></td>
@@ -400,6 +385,7 @@
             {{ repaymentPlan.firstPaymentDate}}
           </td>
         </tr>
+        {% if statementOfMeans is defined %}
         <tr class="no-border">
           <td><strong>Explain why you can't pay the full amount now:</strong></td>
           <td>
@@ -407,11 +393,13 @@
           </td>
         </tr>
         {% endif %}
+        {% endif %}
       </table>
     </div>
 </div>
+{% endif %}
 
-{% if paymentOption == "By instalments" or  paymentOption == "By a set date" %}
+{% if paymentOption == 'By instalments' or  paymentOption == 'By a set date' %}
 <div class="section">
   <div class="section-heading">
     <strong>The defendant's financial details</strong>
@@ -419,7 +407,7 @@
   <div class="section-body">
     <table>
       <tr class="no-border">
-        <td><strong>Where are they living?:</strong></td>
+        <td><strong>Where are they living?</strong></td>
         <td>
           {{ residence.type}}
         </td>
@@ -428,7 +416,7 @@
         <td colspan="2" class="keep-white-space"><strong>Children:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Do any children live with them?:</strong></td>
+        <td><strong>Do any children live with them?</strong></td>
         {% if children is defined and children is not empty %}
         <td>
           Yes
@@ -442,13 +430,13 @@
       {% for child in children %}
         <tr class="no-border">
           <td>
-            {{ child.ageGroupType | trim }}
+            {{ child.ageGroupType }}
           </td>
           <td>
             {{ child.numberOfChildren | trim }}
           </td>
         </tr>
-        {% if child.ageGroupType equals "BETWEEN_16_AND_19" %}
+        {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
         <tr>
           <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
           <td>
@@ -470,7 +458,7 @@
         <td colspan="2" class="keep-white-space"><strong>Financial support:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Do they support anyone else financially?:</strong></td>
+        <td><strong>Do they support anyone else financially?</strong></td>
         {% if employment is defined and employment is not empty %}
         <td>
           Yes
@@ -497,7 +485,7 @@
         <td colspan="2" class="keep-white-space"><strong>Employment details:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Are they currently working?:</strong></td>
+        <td><strong>Are they currently working?</strong></td>
         {% if employment is defined and employment is not empty %}
         <td>
           Yes
@@ -510,33 +498,31 @@
       </tr>
       <tr class="no-border">
         <td><strong>Type of job:</strong></td>
-        {% if employment is defined and employment is not empty %}
+        {% if jobType is defined %}
         <td>
-          Employed
-        </td>
-        {% else %}
-        <td>
-          self-employed
+          {{ jobType }}
         </td>
         {% endif %}
       </tr>
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Who employs them?:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Who employs them?</strong></td>
       </tr>
       <tr class="no-border">
-        {% for employment in employments %}
+        {% for employer in employers %}
         <td><strong>Employer name:</strong></td>
         <td>
-          {{ employment.name }}
+          {{ employer.name }}
         </td>
       </tr>
       <tr class="no-border">
         <td><strong>Job title:</strong></td>
         <td>
-          {{ employment.jobTitle }}
+          {{ employer.jobTitle }}
         </td>
       </tr>
       {% endfor %}
+
+      {% if selfEmployment is defined %}
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Self-employment details:</strong></td>
       </tr>
@@ -553,8 +539,8 @@
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Are they behind on tax payments?:</strong></td>
-        {% if onTaxPayments is defined and onTaxPayments is not empty %}
+        <td><strong>Are they behind on tax payments?</strong></td>
+        {% if onTaxPayments is defined %}
         <td>
           Yes
         </td>
@@ -565,7 +551,7 @@
         {% endif %}
       </tr>
       <tr class="no-border">
-        <td><strong>Amount they owe?:</strong></td>
+        <td><strong>Amount they owe?</strong></td>
         <td>
           {{ onTaxPayments.amountYouOwe }}
         </td>
@@ -576,6 +562,8 @@
           {{ onTaxPayments.reason }}
         </td>
       </tr>
+      {% endif %}
+
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts:</strong></td>
       </tr>
@@ -592,7 +580,18 @@
           {{ bankAccount.balance }}
         </td>
       </tr>
+      <tr class="no-border">
+        <td><strong>Joint account:</strong></td>
+        <td>
+          {% if  bankAccount.joint %}
+            Yes
+          {% else %}
+            No
+          {% endif %}
+        </td>
+      </tr>
       {% endfor %}
+
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Monthly income:</strong></td>
       </tr>
@@ -605,6 +604,9 @@
           {{ income.amountReceived | trim }}
         </td>
       </tr>
+      {% endfor %}
+
+      <tr>
         <td colspan="2" class="keep-white-space"><strong>Monthly expenses:</strong></td>
       </tr>
       {% for expense in expenses %}
@@ -613,14 +615,16 @@
           {{ expense.type | trim }}
         </td>
         <td>
-          {{ expense.amountReceived | trim }}
+          {{ expense.amountPaid | trim }}
         </td>
       </tr>
+      {% endfor %}
+
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Debts:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Do they have any debts?:</strong></td>
+        <td><strong>Do they have any debts?</strong></td>
         {% if debts is defined and debts is not empty %}
         <td>
           Yes
@@ -651,11 +655,12 @@
         </td>
       </tr>
       {% endfor %}
+
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Court orders:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Has a court ordered them to pay anyone else?:</strong></td>
+        <td><strong>Has a court ordered them to pay anyone else?</strong></td>
         {% if courtOrders is defined and courtOrders is not empty %}
         <td>
           Yes

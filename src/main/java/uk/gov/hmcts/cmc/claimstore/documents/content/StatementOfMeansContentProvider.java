@@ -72,8 +72,21 @@ public class StatementOfMeansContentProvider {
                     OnTaxPayments onTaxPayments = optionalTaxPayments.get();
                     content.put("onTaxPayments", onTaxPayments);
                 }
+                content.put("jobType", createJobType(employment));
             }
         }
         return content;
+    }
+
+    private String createJobType(Employment employment) {
+        if (employment.getEmployers().size() > 0 && employment.getSelfEmployment().isPresent()) {
+            return "Employed and self-employed";
+        } else if (employment.getSelfEmployment().isPresent()) {
+            return "Self-employed";
+        } else if (employment.getEmployers().size() > 0) {
+            return "Employed";
+        } else {
+            return "Un-Employed";
+        }
     }
 }
