@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.domain.CaseState;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -32,11 +31,25 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseState.OPEN;
-
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseApi {
+
+    public static enum CaseState {
+        ONHOLD("onhold"),
+        OPEN("open");
+
+        private final String state;
+
+        CaseState(String state) {
+            this.state = state;
+        }
+
+        public String getValue() {
+            return state;
+        }
+    }
+
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
@@ -194,7 +207,7 @@ public class CCDCaseApi {
             && !role.equals("letter-holder")
             && !role.endsWith("loa1");
     }
-  
+
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
 
