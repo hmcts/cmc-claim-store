@@ -10,10 +10,10 @@ import javax.validation.Payload;
 
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ValidResidenceConstraintValidator.class})
+@Constraint(validatedBy = {ValidUnemploymentConstraintValidator.class})
 @Documented
-public @interface ValidResidence {
-    String message() default "Invalid residence";
+public @interface ValidUnemployment {
+    String message() default "Invalid unemployment";
 
     Class<?>[] groups() default {};
 
