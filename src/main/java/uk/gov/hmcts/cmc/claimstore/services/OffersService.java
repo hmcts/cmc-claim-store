@@ -21,6 +21,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJ
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_REACHED;
 
 @Service
+@Transactional(transactionManager = "transactionManager")
 public class OffersService {
 
     private final ClaimService claimService;
@@ -41,7 +42,6 @@ public class OffersService {
         this.appInsights = appInsights;
     }
 
-    @Transactional
     public Claim makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
@@ -55,7 +55,6 @@ public class OffersService {
         return updated;
     }
 
-    @Transactional
     public Claim accept(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
@@ -72,7 +71,6 @@ public class OffersService {
         return updated;
     }
 
-    @Transactional
     public Claim reject(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
@@ -88,7 +86,6 @@ public class OffersService {
         return updated;
     }
 
-    @Transactional
     public Claim countersign(Claim claim, MadeBy party, String authorisation) {
         assertSettlementIsNotReached(claim);
 
