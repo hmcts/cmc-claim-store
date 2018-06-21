@@ -63,4 +63,11 @@
         <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
         <cve>CVE-2018-1115</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   relates to CORS
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-8014</cve>
+    </suppress>
 </suppressions>
