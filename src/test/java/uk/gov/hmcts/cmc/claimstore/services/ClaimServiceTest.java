@@ -92,8 +92,7 @@ public class ClaimServiceTest {
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
-            ccdCaseDataToClaim,
-            jobService);
+            ccdCaseDataToClaim);
     }
 
     @Test
