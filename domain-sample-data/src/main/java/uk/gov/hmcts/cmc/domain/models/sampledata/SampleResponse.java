@@ -23,14 +23,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .paymentOption(PaymentOption.IMMEDIATELY)
+                .paymentOption(PaymentOption.INSTALMENTS)
                 .defendant(SampleParty.builder().individual())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .repaymentPlan(SampleRepaymentPlan.builder().build())
                 .build();
         }
 
-        public FullAdmissionResponse buildWithSpecifiedDate() {
+        public FullAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
                 .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
@@ -40,13 +40,11 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .build();
         }
 
-        public FullAdmissionResponse buildWithInstalments() {
+        public FullAdmissionResponse buildWithPaymentOptionImmediately() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .paymentOption(PaymentOption.INSTALMENTS)
+                .paymentOption(PaymentOption.IMMEDIATELY)
                 .defendant(SampleParty.builder().individual())
-                .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .repaymentPlan(SampleRepaymentPlan.builder().build())
                 .build();
         }
     }

@@ -35,23 +35,29 @@ public class FullAdmissionResponseContentProvider {
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
 
-        switch(type) {
+        switch (type) {
             case IMMEDIATELY:
                 contentBuilder.put("paymentOption", type.getDescription());
                 break;
             case FULL_BY_SPECIFIED_DATE:
                 contentBuilder.put("paymentOption", type.getDescription());
                 fullAdmissionResponse.getStatementOfMeans().ifPresent(
-                    statementOfMeans -> contentBuilder.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
+                    statementOfMeans -> contentBuilder.putAll(
+                        statementOfMeansContentProvider.createContent(statementOfMeans)
+                    )
                 );
                 break;
             case INSTALMENTS:
                 contentBuilder.put("paymentOption", type.getDescription());
                 contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()));
                 fullAdmissionResponse.getStatementOfMeans().ifPresent(
-                    statementOfMeans -> contentBuilder.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
+                    statementOfMeans -> contentBuilder.putAll(
+                        statementOfMeansContentProvider.createContent(statementOfMeans)
+                    )
                 );
                 break;
+            default:
+                throw new IllegalStateException("Invalid response type " + type);
         }
         return contentBuilder.build();
     }

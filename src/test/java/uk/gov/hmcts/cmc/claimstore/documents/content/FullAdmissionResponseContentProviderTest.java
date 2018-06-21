@@ -2,20 +2,16 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmission.builder;
 
 public class FullAdmissionResponseContentProviderTest {
 
-    private FullAdmissionResponse fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
-    private FullAdmissionResponse fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().buildWithInstalments();
-    private FullAdmissionResponse fullAdmissionResponseWithSetDate = SampleResponse.FullAdmission.builder().buildWithSpecifiedDate();
-
-
     private FullAdmissionResponseContentProvider provider = new FullAdmissionResponseContentProvider(
-            new StatementOfMeansContentProvider()
+        new StatementOfMeansContentProvider()
     );
 
     @Test(expected = NullPointerException.class)
@@ -25,6 +21,17 @@ public class FullAdmissionResponseContentProviderTest {
 
     @Test
     public void shouldProvideFullAdmissionPaymentOptionImmediately() {
+        FullAdmissionResponse fullAdmissionResponse = builder().build();
+        Map<String, Object> content = provider.createContent(fullAdmissionResponse);
+
+        assertThat(content)
+            .containsKeys("paymentOption");
+        assertThat(content).containsValues("By instalments");
+    }
+
+    @Test
+    public void shouldProvideFullAdmissionPaymentOptionInstalments() {
+        FullAdmissionResponse fullAdmissionResponse = builder().buildWithPaymentOptionImmediately();
         Map<String, Object> content = provider.createContent(fullAdmissionResponse);
 
         assertThat(content)
@@ -33,17 +40,9 @@ public class FullAdmissionResponseContentProviderTest {
     }
 
     @Test
-    public void shouldProvideFullAdmissionPaymentOptionInstalments() {
-        Map<String, Object> content = provider.createContent(fullAdmissionResponseWithInstalments);
-
-        assertThat(content)
-            .containsKeys("paymentOption");
-        assertThat(content).containsValues("By instalments");
-    }
-
-    @Test
     public void shouldProvideFullAdmissionPaymentOptionBySetDate() {
-        Map<String, Object> content = provider.createContent(fullAdmissionResponseWithSetDate);
+        FullAdmissionResponse fullAdmissionResponse = builder().buildWithPaymentOptionBySpecifiedDate();
+        Map<String, Object> content = provider.createContent(fullAdmissionResponse);
 
         assertThat(content)
             .containsKeys("paymentOption");
