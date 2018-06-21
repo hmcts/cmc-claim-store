@@ -8,6 +8,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullAdmissionStaffEmai
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -16,7 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -79,14 +83,30 @@ public class DefendantResponseStaffNotificationService {
         String defendantEmail
     ) {
         Map<String, Object> map = new HashMap<>();
+
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         map.put("claim", claim);
-        map.put("response", claim.getResponse().orElseThrow(IllegalStateException::new));
+        map.put("response", response);
         map.put("defendantEmail", defendantEmail);
-        map.put("defendantMobilePhone", claim.getResponse()
-            .orElseThrow(IllegalStateException::new)
-            .getDefendant()
-            .getMobilePhone()
-            .orElse(null));
+
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                map.put("defendantMobilePhone", claim.getResponse()
+                    .orElseThrow(IllegalStateException::new)
+                    .getDefendant()
+                    .getMobilePhone()
+                    .orElse(null));
+                break;
+            case FULL_ADMISSION:
+                FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
+                map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
+                map.put("paymentOptionDescription", fullAdmissionResponse.getPaymentOption().getDescription());
+                map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
+                map.put("FourteenDaysFromNow", formatDate(now().plusDays(14)));
+                break;
+            default:
+                throw new IllegalStateException("Invalid response type " + response.getResponseType());
+        }
         return map;
     }
 
