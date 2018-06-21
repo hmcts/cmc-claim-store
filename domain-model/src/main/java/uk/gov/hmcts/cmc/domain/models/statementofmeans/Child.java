@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.Objects;
 import java.util.Optional;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -22,8 +23,10 @@ public class Child {
     private final AgeGroupType ageGroupType;
 
     @NotNull
+    @Min(0)
     private final Integer numberOfChildren;
 
+    @Min(0)
     private final Integer numberOfChildrenLivingWithYou;
 
     public Child(
