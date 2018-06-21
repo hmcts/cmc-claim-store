@@ -364,9 +364,9 @@
           <td>
             {{ paymentOption }}
           </td>
+        </tr>
 
         {% if repaymentPlan is defined %}
-        </tr>
         <tr class="no-border">
           <td><strong>Regular payments of:</strong></td>
           <td>
@@ -409,7 +409,7 @@
       <tr class="no-border">
         <td><strong>Where are they living?</strong></td>
         <td>
-          {{ residence.type}}
+          {{ residence.type }}
         </td>
       </tr>
       <tr>
@@ -508,7 +508,7 @@
         <td colspan="2" class="keep-white-space"><strong>Who employs them?</strong></td>
       </tr>
       <tr class="no-border">
-        {% for employer in employers %}
+        {% for employer in employment.employers %}
         <td><strong>Employer name:</strong></td>
         <td>
           {{ employer.name }}
@@ -639,7 +639,7 @@
       <tr class="no-border">
         <td><strong>Debt:</strong></td>
         <td>
-          {{ debt.description }}
+          {{ debt }}
         </td>
       </tr>
       <tr class="no-border">
