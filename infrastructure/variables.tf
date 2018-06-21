@@ -15,11 +15,11 @@ variable "location" {
 variable "env" {}
 
 variable "idam_api_url" {
-  default = "http://betaDevBccidamAppLB.reform.hmcts.net"
+  default = "http://idam-api-idam-saat.service.core-compute-saat.internal"
 }
 
 variable "frontend_url" {
-  default = "https://moneyclaim.nonprod.platform.hmcts.net"
+  default = "https://cmc-citizen-frontend-saat-staging.service.core-compute-saat.internal"
 }
 
 variable "respond_to_claim_url" {
