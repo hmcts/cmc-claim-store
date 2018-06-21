@@ -433,14 +433,14 @@
             {{ child.ageGroupType }}
           </td>
           <td>
-            {{ child.numberOfChildren | trim }}
+            {{ child.numberOfChildren }}
           </td>
         </tr>
         {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
         <tr>
           <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
           <td>
-            {{ child.numberOfChildrenLivingWithYou | trim }}
+            {{ child.numberOfChildrenLivingWithYou }}
           </td>
         </tr>
         {% endif %}
@@ -598,10 +598,10 @@
       {% for income in incomes %}
       <tr class="no-border">
         <td>
-          {{ income.type | trim }}
+          {{ income.type }}
         </td>
         <td>
-          {{ income.amountReceived | trim }}
+          {{ income.amountReceived }}
         </td>
       </tr>
       {% endfor %}
@@ -612,10 +612,10 @@
       {% for expense in expenses %}
       <tr class="no-border">
         <td>
-          {{ expense.type | trim }}
+          {{ expense.type }}
         </td>
         <td>
-          {{ expense.amountPaid | trim }}
+          {{ expense.amountPaid }}
         </td>
       </tr>
       {% endfor %}
