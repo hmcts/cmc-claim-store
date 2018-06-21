@@ -105,7 +105,7 @@ public class CoreCaseDataService {
 
             StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData, user.isSolicitor());
 
-            CaseDataContent caseData = CaseDataContent.builder()
+            CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
                 .event(
                     Event.builder()
@@ -116,8 +116,9 @@ public class CoreCaseDataService {
                 ).data(data)
                 .build();
 
-            CaseDetails caseDetails = submitCreate(authorisation, eventRequestData, caseData, user.isSolicitor());
-            return new CaseReference(caseDetails.getId().toString());
+            return new CaseReference(
+                submitCreate(authorisation, eventRequestData, caseDataContent, user.isSolicitor()).getId().toString()
+            );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format("Failed storing claim in CCD store for claim %s", externalId), exception

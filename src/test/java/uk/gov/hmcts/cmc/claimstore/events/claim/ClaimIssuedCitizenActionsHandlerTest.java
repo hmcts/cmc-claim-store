@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.Mockito.never;
@@ -39,8 +38,6 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
-    @Mock
-    private JobService jobService;
 
     @Before
     public void setup() {

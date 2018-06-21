@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.notifications;
 import com.google.common.collect.ImmutableMap;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class ResponseNeededNotificationService {
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void sendMail(JobDetail jobDetail) {
+    public void sendMail(JobDetail jobDetail) throws JobExecutionException {
         JobDataMap emailData = jobDetail.getJobDataMap();
         Map<String, String> parameters = aggregateParams(emailData);
         try {
@@ -56,21 +57,24 @@ public class ResponseNeededNotificationService {
                 (String) emailData.get("caseReference")
             );
         } catch (NotificationClientException e) {
-            throw new NotificationException(e);
+            throw new JobExecutionException(e);
         }
     }
 
     @Recover
     public void logNotificationFailure(
-        NotificationException exception,
+        JobExecutionException exception,
         JobDetail jobDetail
-    ) {
+    ) throws JobExecutionException {
         JobDataMap emailData = jobDetail.getJobDataMap();
         logger.info("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
             emailData.get("caseReference"),
             emailData.get("defendantEmail"),
             exception.getMessage(),
             exception);
+
+        exception.setRefireImmediately(true);
+        throw exception;
     }
 
     private Map<String, String> aggregateParams(Map<String, Object> emailData) {

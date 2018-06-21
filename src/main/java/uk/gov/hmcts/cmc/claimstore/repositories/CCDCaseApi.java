@@ -13,28 +13,23 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.jobs.NotificationEmailJob;
+import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.scheduler.model.JobData;
-import uk.gov.hmcts.cmc.scheduler.services.JobService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,7 +60,7 @@ public class CCDCaseApi {
     private final CaseAccessApi caseAccessApi;
     private final CoreCaseDataService coreCaseDataService;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
-    private final JobService jobService;
+    private final JobSchedulerService jobSchedulerService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
@@ -79,7 +74,7 @@ public class CCDCaseApi {
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CCDCaseDataToClaim ccdCaseDataToClaim,
-        JobService jobService
+        JobSchedulerService jobSchedulerService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -87,7 +82,7 @@ public class CCDCaseApi {
         this.caseAccessApi = caseAccessApi;
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
-        this.jobService = jobService;
+        this.jobSchedulerService = jobSchedulerService;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -216,46 +211,9 @@ public class CCDCaseApi {
             CaseEvent.LINK_DEFENDANT
         );
 
-        scheduleEmailNotificationsForDefendantResponse(caseId, defendantId, defendantEmail, caseDetails);
-    }
-
-    private void scheduleEmailNotificationsForDefendantResponse(
-        String caseId,
-        String defendantId,
-        String defendantEmail,
-        CaseDetails caseDetails
-    ) {
         Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        LocalDate responseDeadline = claim.getResponseDeadline();
-        String defendantName = claim.getClaimData().getDefendant().getName();
-        String claimantName = claim.getClaimData().getClaimant().getName();
-        ImmutableMap.Builder<String, Object> emailData = ImmutableMap.builder();
-        emailData.put("caseId", caseId);
-        emailData.put("caseReference", claim.getReferenceNumber());
-        emailData.put("defendantEmail", defendantEmail);
-        emailData.put("defendantId", defendantId);
-        emailData.put("defendantName", defendantName);
-        emailData.put("claimantName", claimantName);
-        emailData.put("responseDeadline", responseDeadline);
+        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(defendantId, defendantEmail, claim);
 
-        jobService.scheduleJob(
-            JobData.builder()
-                .id("reminder:defence-due-in-5-days:" + claim.getReferenceNumber() + "-" + UUID.randomUUID().toString())
-                .group("Reminders")
-                .description("Defendant reminder email 5 days before response deadline")
-                .jobClass(NotificationEmailJob.class)
-                .data(emailData.build()).build(),
-            responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC)
-        );
-
-        jobService.scheduleJob(
-            JobData.builder()
-                .id("reminder:defence-due-in-1-days:" + claim.getReferenceNumber() + "-" + UUID.randomUUID().toString())
-                .group("Reminders")
-                .description("Defendant reminder email 1 days before response deadline")
-                .jobClass(NotificationEmailJob.class)
-                .data(emailData.build()).build(),
-            responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
     }
 
     private boolean isLetterHolderRole(String role) {
