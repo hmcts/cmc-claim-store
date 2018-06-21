@@ -1,13 +1,11 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
@@ -80,6 +78,16 @@ public class ValidFullAdmissionConstraintValidatorTest {
     }
 
     @Test
+    public void shouldBeInvalidWhenTypeIsImmediatelyAndStatementOfMeansIsNotNull() {
+        FullAdmissionResponse fullAdmissionResponse = builder()
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .statementOfMeans(StatementOfMeans.builder().build())
+            .build();
+
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
+    }
+
+    @Test
     public void shouldBeValidWhenTypeIsBySetDateAndPaymentDateIsValid() {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
@@ -91,21 +99,21 @@ public class ValidFullAdmissionConstraintValidatorTest {
     }
 
     @Test
-    @Ignore // as I have wrong context. I cannot be mocked if I want to get accurate validation
-    public void shouldBeInvalidWhenTypeIsBySetDateAndPaymentDateIsInThePast() {
+    public void shouldBeInvalidWhenTypeIsBySetDateAndEverythingElseIsNotPopulated() {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
-            .paymentDate(LocalDate.now().minusDays(3))
-            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
     }
 
     @Test
-    public void shouldBeInvalidWhenTypeIsBySetDateAndEverythingElseIsNotPopulated() {
+    public void shouldBeInvalidWhenTypeIsBySetDateAndRepaymentPlanIsPopulated() {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+            .paymentDate(LocalDate.now().plusDays(3))
+            .statementOfMeans(StatementOfMeans.builder().build())
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
@@ -146,8 +154,6 @@ public class ValidFullAdmissionConstraintValidatorTest {
         return FullAdmissionResponse.builder()
             .freeMediation(YesNoOption.YES)
             .moreTimeNeeded(YesNoOption.NO)
-            .statementOfTruth(StatementOfTruth.builder().build())
             .defendant(SampleParty.builder().individual());
     }
-
 }

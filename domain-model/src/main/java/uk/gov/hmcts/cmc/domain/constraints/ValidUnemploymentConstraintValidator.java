@@ -11,7 +11,7 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
     public boolean isValid(Unemployment unemployment, ConstraintValidatorContext context) {
         boolean valid = true;
         boolean isRetiredPopulated = unemployment.isRetired();
-        boolean otherPopulated = unemployment.getOther().isPresent() && unemployment.getOther().get().isEmpty();
+        boolean otherPopulated = unemployment.getOther().isPresent();
         boolean unemployedPopulated = unemployment.getUnemployed().isPresent();
 
         if (isRetiredPopulated) {
