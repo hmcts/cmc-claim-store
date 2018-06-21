@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -11,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
@@ -30,58 +30,50 @@ public class StatementOfMeansContentProvider {
 
         Map<String, Object> content = new HashMap<>();
 
-        List<BankAccount> bankAccounts = null;
-        List<CourtOrder> courtOrders = null;
-        List<Expense> expenses = null;
-        List<Income> incomes = null;
-        List<Child> children = null;
-        List<Debt> debts = null;
-
-        Residence residence = null;
-        RepaymentPlan repaymentPlan = null;
-        Employment employment;
-        SelfEmployment selfEmployment;
-        OnTaxPayments onTaxPayments = null;
-        Integer maintainedChildren = null;
-
-        residence = statementOfMeans.getResidence();
+        Residence residence = statementOfMeans.getResidence();
         content.put("residence", residence);
 
         Optional<Dependant> optionalDependant = statementOfMeans.getDependant();
         if (optionalDependant.isPresent()) {
             Dependant dependant = optionalDependant.get();
-            children = dependant.getChildren();
+            content.put("dependant", dependant);
+            List<Child> children = dependant.getChildren();
             content.put("children", children);
+            Optional<OtherDependants> optionalOtherDependants = dependant.getOtherDependants();
+            if (optionalOtherDependants.isPresent()) {
+                OtherDependants otherDependants = optionalOtherDependants.get();
+                content.put("otherDependants", otherDependants);
+            }
             Optional<Integer> optionalMaintainedChildren = dependant.getNumberOfMaintainedChildren();
-            maintainedChildren = optionalMaintainedChildren.get();
+            Integer maintainedChildren = optionalMaintainedChildren.get();
             content.put("maintainedChildren", maintainedChildren);
         }
-        bankAccounts = statementOfMeans.getBankAccounts();
-        courtOrders = statementOfMeans.getCourtOrders();
-        expenses = statementOfMeans.getExpenses();
-        incomes = statementOfMeans.getIncomes();
-        debts = statementOfMeans.getDebts();
+        List<BankAccount> bankAccounts = statementOfMeans.getBankAccounts();
+        content.put("bankAccounts", bankAccounts);
+        List<CourtOrder> courtOrders = statementOfMeans.getCourtOrders();
+        content.put("courtOrders", courtOrders);
+        List<Expense> expenses = statementOfMeans.getExpenses();
+        content.put("expenses", expenses);
+        List<Income> incomes = statementOfMeans.getIncomes();
+        content.put("incomes", incomes);
+        List<Debt> debts = statementOfMeans.getDebts();
+        content.put("debts", debts);
 
         Optional<Employment> optionalEmployment = statementOfMeans.getEmployment();
         if (optionalEmployment.isPresent()) {
-            employment = optionalEmployment.get();
+            Employment employment = optionalEmployment.get();
+            content.put("employment", employment);
             if (employment.getSelfEmployment().isPresent()) {
                 Optional<SelfEmployment> optionalSelfEmployment = employment.getSelfEmployment();
                 if (optionalSelfEmployment.isPresent()) {
-                    selfEmployment = optionalSelfEmployment.get();
+                    SelfEmployment selfEmployment = optionalSelfEmployment.get();
+                    content.put("selfEmployment", selfEmployment);
                     Optional<OnTaxPayments> optionalTaxPayments = selfEmployment.getOnTaxPayments();
-                    onTaxPayments = optionalTaxPayments.get();
+                    OnTaxPayments onTaxPayments = optionalTaxPayments.get();
                     content.put("onTaxPayments", onTaxPayments);
                 }
             }
         }
-
-        content.put("bankAccounts", bankAccounts);
-        content.put("expenses", expenses);
-        content.put("incomes", incomes);
-        content.put("courtOrders", courtOrders);
-        content.put("debts", debts);
-
         return content;
     }
 }

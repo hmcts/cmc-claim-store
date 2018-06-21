@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
+import static uk.gov.hmcts.cmc.claimstore.services.staff.content.RepaymentPlanContentProvider.create;
 
 @Component
 public class FullAdmissionResponseContentProvider {
@@ -28,29 +26,33 @@ public class FullAdmissionResponseContentProvider {
     public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse) {
         requireNonNull(fullAdmissionResponse);
 
+        RepaymentPlan repaymentPlan = null;
         PaymentOption type = fullAdmissionResponse.getPaymentOption();
-        Optional<RepaymentPlan> repaymentPlan = fullAdmissionResponse.getRepaymentPlan();
+        Optional<RepaymentPlan> optionalRepaymentPlan = fullAdmissionResponse.getRepaymentPlan();
+        if (optionalRepaymentPlan.isPresent()) {
+            repaymentPlan = optionalRepaymentPlan.get();
+        }
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
-        if (type.equals(IMMEDIATELY)) {
-            contentBuilder.put("paymentOption", type.getDescription());
-        }
 
-        if (type.equals(FULL_BY_SPECIFIED_DATE)) {
-            contentBuilder.put("paymentOption", type.getDescription());
-            fullAdmissionResponse.getStatementOfMeans().ifPresent(
-                statementOfMeans -> contentBuilder.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
-            );
+        switch(type) {
+            case IMMEDIATELY:
+                contentBuilder.put("paymentOption", type.getDescription());
+                break;
+            case FULL_BY_SPECIFIED_DATE:
+                contentBuilder.put("paymentOption", type.getDescription());
+                fullAdmissionResponse.getStatementOfMeans().ifPresent(
+                    statementOfMeans -> contentBuilder.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
+                );
+                break;
+            case INSTALMENTS:
+                contentBuilder.put("paymentOption", type.getDescription());
+                contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()));
+                fullAdmissionResponse.getStatementOfMeans().ifPresent(
+                    statementOfMeans -> contentBuilder.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
+                );
+                break;
         }
-
-        if (type.equals(INSTALMENTS)) {
-            contentBuilder.put("paymentOption", type.getDescription());
-            contentBuilder.put("repaymentPlan", repaymentPlan);
-            fullAdmissionResponse.getStatementOfMeans().ifPresent(
-                statementOfMeans -> contentBuilder.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
-            );
-        }
-
         return contentBuilder.build();
     }
 }

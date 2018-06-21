@@ -23,6 +23,26 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .defendant(SampleParty.builder().individual())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build();
+        }
+
+        public FullAdmissionResponse buildWithSpecifiedDate() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+                .defendant(SampleParty.builder().individual())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build();
+        }
+
+        public FullAdmissionResponse buildWithInstalments() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
                 .paymentOption(PaymentOption.INSTALMENTS)
                 .defendant(SampleParty.builder().individual())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())

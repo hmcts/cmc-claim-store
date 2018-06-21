@@ -427,19 +427,19 @@
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Children:</strong></td>
       </tr>
-      {% for child in children %}
-        <tr>
+      <tr class="no-border">
         <td><strong>Do any children live with them?:</strong></td>
         {% if children is defined and children is not empty %}
-          <td>
-            Yes
-          </td>
-          {% else %}
-          <td>
-            No
-          </td>
+        <td>
+          Yes
+        </td>
+        {% else %}
+        <td>
+          No
+        </td>
         {% endif %}
-        </tr>
+      </tr>
+      {% for child in children %}
         <tr class="no-border">
           <td>
             {{ child.ageGroupType | trim }}
@@ -456,6 +456,229 @@
           </td>
         </tr>
         {% endif %}
+      {% endfor %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Maintenance:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Number of children:</strong></td>
+        <td>
+          {{ dependant.numberOfMaintainedChildren }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Financial support:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Do they support anyone else financially?:</strong></td>
+        {% if employment is defined and employment is not empty %}
+        <td>
+          Yes
+        </td>
+        {% else %}
+        <td>
+          No
+        </td>
+        {% endif %}
+      </tr>
+      <tr class="no-border">
+        <td><strong>Number of people:</strong></td>
+        <td>
+          {{ maintainedChildren }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Give details:</strong></td>
+        <td>
+          {{ otherDependants.details }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Employment details:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Are they currently working?:</strong></td>
+        {% if employment is defined and employment is not empty %}
+        <td>
+          Yes
+        </td>
+        {% else %}
+        <td>
+          No
+        </td>
+        {% endif %}
+      </tr>
+      <tr class="no-border">
+        <td><strong>Type of job:</strong></td>
+        {% if employment is defined and employment is not empty %}
+        <td>
+          Employed
+        </td>
+        {% else %}
+        <td>
+          self-employed
+        </td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Who employs them?:</strong></td>
+      </tr>
+      <tr class="no-border">
+        {% for employment in employments %}
+        <td><strong>Employer name:</strong></td>
+        <td>
+          {{ employment.name }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Job title:</strong></td>
+        <td>
+          {{ employment.jobTitle }}
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Self-employment details:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Job title:</strong></td>
+        <td>
+          {{ selfEmployment.jobTitle }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Annual turnover:</strong></td>
+        <td>
+          {{ selfEmployment.annualTurnover }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Are they behind on tax payments?:</strong></td>
+        {% if onTaxPayments is defined and onTaxPayments is not empty %}
+        <td>
+          Yes
+        </td>
+        {% else %}
+        <td>
+          No
+        </td>
+        {% endif %}
+      </tr>
+      <tr class="no-border">
+        <td><strong>Amount they owe?:</strong></td>
+        <td>
+          {{ onTaxPayments.amountYouOwe }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Reason:</strong></td>
+        <td>
+          {{ onTaxPayments.reason }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts:</strong></td>
+      </tr>
+      {% for bankAccount in bankAccounts %}
+      <tr class="no-border">
+        <td><strong>Type of account:</strong></td>
+        <td>
+          {{ bankAccount.type }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Balance:</strong></td>
+        <td>
+          {{ bankAccount.balance }}
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Monthly income:</strong></td>
+      </tr>
+      {% for income in incomes %}
+      <tr class="no-border">
+        <td>
+          {{ income.type | trim }}
+        </td>
+        <td>
+          {{ income.amountReceived | trim }}
+        </td>
+      </tr>
+        <td colspan="2" class="keep-white-space"><strong>Monthly expenses:</strong></td>
+      </tr>
+      {% for expense in expenses %}
+      <tr class="no-border">
+        <td>
+          {{ expense.type | trim }}
+        </td>
+        <td>
+          {{ expense.amountReceived | trim }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Debts:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Do they have any debts?:</strong></td>
+        {% if debts is defined and debts is not empty %}
+        <td>
+          Yes
+        </td>
+        {% else %}
+        <td>
+          No
+        </td>
+        {% endif %}
+      </tr>
+      {% for debt in debts %}
+      <tr class="no-border">
+        <td><strong>Debt:</strong></td>
+        <td>
+          {{ debt.description }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Total owed:</strong></td>
+        <td>
+          {{ debt.totalOwed }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Monthly payments:</strong></td>
+        <td>
+          {{ debt.monthlyPayments }}
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Court orders:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Has a court ordered them to pay anyone else?:</strong></td>
+        {% if courtOrders is defined and courtOrders is not empty %}
+        <td>
+          Yes
+        </td>
+        {% else %}
+        <td>
+          No
+        </td>
+        {% endif %}
+      </tr>
+      {% for courtOrder in courtOrders %}
+      <tr class="no-border">
+        <td><strong>Details about court orders:</strong></td>
+        <td>
+          {{ courtOrder.monthlyInstalmentAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Amount they owe:</strong></td>
+        <td>
+          {{ courtOrder.amountOwed }}
+        </td>
+      </tr>
       {% endfor %}
     </table>
   </div>
