@@ -15,12 +15,20 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/claimIssued/subject.txt");
     }
 
-    public String getDefendantResponseEmailBody() {
-        return readString("/staff/templates/email/defendantResponse/body.txt");
+    public String getFullDefenceResponseEmailBody() {
+        return readString("/staff/templates/email/fullDefence/body.txt");
     }
 
-    public String getDefendantResponseEmailSubject() {
-        return readString("/staff/templates/email/defendantResponse/subject.txt");
+    public String getFullDefenceResponseEmailSubject() {
+        return readString("/staff/templates/email/fullDefence/subject.txt");
+    }
+
+    public String getFullAdmissionResponseEmailBody() {
+        return readString("/staff/templates/email/fullAdmission/body.txt");
+    }
+
+    public String getFullAdmissionResponseEmailSubject() {
+        return readString("/staff/templates/email/fullAdmission/subject.txt");
     }
 
     public String getCCJRequestSubmittedEmailBody() {

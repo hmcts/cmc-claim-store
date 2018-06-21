@@ -68,8 +68,8 @@ public class SealedClaimPdfTest extends BaseTest {
     }
 
     private Claim createCase() {
-        ClaimData claimData = testData.submittedByClaimantBuilder()
-            .build();
+        ClaimData claimData = testData.submittedByClaimantBuilder().build();
+        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), claimant.getAuthorisation());
 
         return submitClaim(claimData)
             .then()
