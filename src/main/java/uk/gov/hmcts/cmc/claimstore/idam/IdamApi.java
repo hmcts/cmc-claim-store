@@ -33,12 +33,10 @@ public interface IdamApi {
         @RequestParam("redirect_uri") final String redirectUri
     );
 
-    @RequestMapping(method = RequestMethod.POST, value = "/oauth2/authorize")
-    AuthenticateUserResponse authenticateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation);
-
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/oauth2/authorize"
+        value = "/oauth2/authorize",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     AuthenticateUserResponse authenticateUser(
         @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation,
