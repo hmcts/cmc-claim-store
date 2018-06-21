@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.scheduler.services.JobService;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -28,14 +29,16 @@ public class JobSchedulerService {
         LocalDate responseDeadline = claim.getResponseDeadline();
         String defendantName = claim.getClaimData().getDefendant().getName();
         String claimantName = claim.getClaimData().getClaimant().getName();
-        ImmutableMap.Builder<String, Object> emailData = ImmutableMap.builder();
-        emailData.put("caseId", claim.getId());
-        emailData.put("caseReference", claim.getReferenceNumber());
-        emailData.put("defendantEmail", defendantEmail);
-        emailData.put("defendantId", defendantId);
-        emailData.put("defendantName", defendantName);
-        emailData.put("claimantName", claimantName);
-        emailData.put("responseDeadline", responseDeadline);
+
+        Map<String, Object> data = ImmutableMap.<String, Object>builder()
+            .put("caseId", claim.getId())
+            .put("caseReference", claim.getReferenceNumber())
+            .put("defendantEmail", defendantEmail)
+            .put("defendantId", defendantId)
+            .put("defendantName", defendantName)
+            .put("claimantName", claimantName)
+            .put("responseDeadline", responseDeadline)
+            .build();
 
         jobService.scheduleJob(
             JobData.builder()
@@ -43,7 +46,7 @@ public class JobSchedulerService {
                 .group("Reminders")
                 .description("Defendant reminder email 5 days before response deadline")
                 .jobClass(NotificationEmailJob.class)
-                .data(emailData.build()).build(),
+                .data(data).build(),
             responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC)
         );
 
@@ -53,7 +56,7 @@ public class JobSchedulerService {
                 .group("Reminders")
                 .description("Defendant reminder email 1 days before response deadline")
                 .jobClass(NotificationEmailJob.class)
-                .data(emailData.build()).build(),
+                .data(data).build(),
             responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
 
     }

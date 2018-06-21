@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.notifications;
 import com.google.common.collect.ImmutableMap;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,8 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -35,18 +36,21 @@ public class ResponseNeededNotificationService {
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
+    private final AppInsights appInsights;
 
     @Autowired
     public ResponseNeededNotificationService(
         NotificationClient notificationClient,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        AppInsights appInsights
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
+        this.appInsights = appInsights;
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void sendMail(JobDetail jobDetail) throws JobExecutionException {
+    public void sendMail(JobDetail jobDetail) {
         JobDataMap emailData = jobDetail.getJobDataMap();
         Map<String, String> parameters = aggregateParams(emailData);
         try {
@@ -57,24 +61,24 @@ public class ResponseNeededNotificationService {
                 (String) emailData.get("caseReference")
             );
         } catch (NotificationClientException e) {
-            throw new JobExecutionException(e);
+            throw new NotificationException(e);
         }
     }
 
     @Recover
     public void logNotificationFailure(
-        JobExecutionException exception,
+        NotificationException exception,
         JobDetail jobDetail
-    ) throws JobExecutionException {
+    ) {
         JobDataMap emailData = jobDetail.getJobDataMap();
+        String caseReference = (String) emailData.get("caseReference");
         logger.info("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
-            emailData.get("caseReference"),
+            caseReference,
             emailData.get("defendantEmail"),
             exception.getMessage(),
             exception);
 
-        exception.setRefireImmediately(true);
-        throw exception;
+        appInsights.trackEvent(AppInsightsEvent.SCHEDULER_JOB_FAILED, caseReference);
     }
 
     private Map<String, String> aggregateParams(Map<String, Object> emailData) {
