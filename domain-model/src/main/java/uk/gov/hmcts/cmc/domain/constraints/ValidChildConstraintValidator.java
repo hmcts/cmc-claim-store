@@ -6,6 +6,9 @@ import java.util.Optional;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeNullError;
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_11_AND_15;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_16_AND_19;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.UNDER_11;
@@ -40,7 +43,7 @@ public class ValidChildConstraintValidator implements ConstraintValidator<ValidC
         int valueNoOfChildrenLivingWithYou = numberOfChildrenLivingWithYou.orElse(0);
 
         if (!numberOfChildrenLivingWithYou.isPresent()) {
-            setValidationErrors(context, Fields.NO_OF_CHILDREN_LIVING_WITH_YOU, mayNotBeNullErrorForType(type));
+            setValidationErrors(context, Fields.NO_OF_CHILDREN_LIVING_WITH_YOU, mayNotBeNullError("child", type));
             valid = false;
         }
 
@@ -61,27 +64,10 @@ public class ValidChildConstraintValidator implements ConstraintValidator<ValidC
         String type = UNDER_11 + " or " + BETWEEN_11_AND_15;
 
         if (child.getNumberOfChildrenLivingWithYou().isPresent()) {
-            setValidationErrors(context, Fields.NO_OF_CHILDREN_LIVING_WITH_YOU, mayNotBeProvidedErrorForType(type));
+            setValidationErrors(context, Fields.NO_OF_CHILDREN_LIVING_WITH_YOU, mayNotBeProvidedError("child", type));
             valid = false;
         }
 
         return valid;
-    }
-
-    private void setValidationErrors(ConstraintValidatorContext validatorContext, String fieldName, String... errors) {
-        validatorContext.disableDefaultConstraintViolation();
-        for (String error : errors) {
-            validatorContext.buildConstraintViolationWithTemplate(error)
-                .addPropertyNode(fieldName)
-                .addConstraintViolation();
-        }
-    }
-
-    private String mayNotBeProvidedErrorForType(String type) {
-        return String.format("may not be provided when child is '%s'", type);
-    }
-
-    private String mayNotBeNullErrorForType(String type) {
-        return String.format("may not be null when child is '%s'", type);
     }
 }

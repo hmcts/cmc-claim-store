@@ -5,6 +5,10 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeNullError;
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
+
 public class ValidResidenceConstraintValidator implements ConstraintValidator<ValidResidence, Residence> {
 
     static class Fields {
@@ -17,33 +21,20 @@ public class ValidResidenceConstraintValidator implements ConstraintValidator<Va
 
         if (type == Residence.ResidenceType.OTHER) {
             if (!residence.getOtherDetail().isPresent() || residence.getOtherDetail().get().isEmpty()) {
-                setValidationErrors(context, Fields.OTHER_DETAILS, mayNotBeNullErrorForType(type.getDescription()));
+                setValidationErrors(
+                    context, Fields.OTHER_DETAILS, mayNotBeNullError("residence", type.getDescription())
+                );
                 return false;
             }
         } else {
             if (residence.getOtherDetail().isPresent()) {
-                setValidationErrors(context, Fields.OTHER_DETAILS, mayNotBeProvidedErrorForType(type.getDescription()));
+                setValidationErrors(
+                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("residence", type.getDescription())
+                );
                 return false;
             }
         }
 
         return true;
-    }
-
-    private void setValidationErrors(ConstraintValidatorContext validatorContext, String fieldName, String... errors) {
-        validatorContext.disableDefaultConstraintViolation();
-        for (String error : errors) {
-            validatorContext.buildConstraintViolationWithTemplate(error)
-                .addPropertyNode(fieldName)
-                .addConstraintViolation();
-        }
-    }
-
-    private String mayNotBeNullErrorForType(String type) {
-        return String.format("may not be null when residence type is '%s'", type);
-    }
-
-    private String mayNotBeProvidedErrorForType(String type) {
-        return String.format("may not be provided when residence type is '%s'", type);
     }
 }
