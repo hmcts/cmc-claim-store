@@ -409,7 +409,7 @@
       <tr class="no-border">
         <td><strong>Where are they living?</strong></td>
         <td>
-          {{ residenceTypeDescription }}
+          {{ residence.typeDescription }}
         </td>
       </tr>
       <tr>
@@ -428,7 +428,7 @@
       {% for child in children %}
         <tr class="no-border">
           <td>
-            {{ child.ageGroupType }}
+            {{ child.ageGroupTypeDescription }}
           </td>
           <td>
             {{ child.numberOfChildren }}
@@ -563,7 +563,7 @@
       <tr class="no-border">
         <td><strong>Type of account:</strong></td>
         <td>
-          {{ bankAccount.type }}
+          {{ bankAccount.typeDescription }}
         </td>
       </tr>
       <tr class="no-border">
@@ -590,7 +590,7 @@
       {% for income in incomes %}
       <tr class="no-border">
         <td>
-          {{ income.type }}
+          {{ income.typeDescription }}
         </td>
         <td>
           {{ income.amountReceived }}
@@ -604,7 +604,7 @@
       {% for expense in expenses %}
       <tr class="no-border">
         <td>
-          {{ expense.type }}
+          {{ expense.typeDescription }}
         </td>
         <td>
           {{ expense.amountPaid }}
@@ -679,7 +679,6 @@
   </div>
 </div>
 {% endif %}
-
 
 <div class="section">
   <div class="section-heading">

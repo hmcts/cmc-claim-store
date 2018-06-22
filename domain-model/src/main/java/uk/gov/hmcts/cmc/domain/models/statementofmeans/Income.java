@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
@@ -12,6 +13,8 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+// Create these fields in JSON when serialize Java object, ignore them when deserialize.
+@JsonIgnoreProperties(value = "typeDescription", allowGetters = true)
 @Builder
 public class Income {
 
@@ -77,6 +80,10 @@ public class Income {
 
     public BigDecimal getAmountReceived() {
         return amountReceived;
+    }
+
+    public String getTypeDescription() {
+        return type.description;
     }
 
     @Override
