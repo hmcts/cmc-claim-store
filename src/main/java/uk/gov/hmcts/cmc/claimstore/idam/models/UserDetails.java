@@ -73,9 +73,4 @@ public class UserDetails {
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
-    @JsonIgnore
-    public boolean isCaseworker() {
-        return roles.stream().anyMatch("caseworker-cmc"::equals);
-    }
 }
