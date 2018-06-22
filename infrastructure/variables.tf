@@ -23,7 +23,7 @@ variable "frontend_url" {
 }
 
 variable "respond_to_claim_url" {
-  default = "https://cmc-citizen-frontend-saat-staging.service.core-compute-saat.internal"
+  default = "https://cmc-citizen-frontend-saat-staging.service.core-compute-saat.internal/first-contact/start"
 }
 
 variable "database-name" {
