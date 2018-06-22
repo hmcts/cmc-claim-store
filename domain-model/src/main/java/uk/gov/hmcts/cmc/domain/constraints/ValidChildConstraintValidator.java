@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.constraints;
 
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
-import java.util.Optional;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -39,15 +38,12 @@ public class ValidChildConstraintValidator implements ConstraintValidator<ValidC
         boolean valid = true;
         String type = BETWEEN_16_AND_19.toString();
 
-        Optional<Integer> numberOfChildrenLivingWithYou = child.getNumberOfChildrenLivingWithYou();
-        int valueNoOfChildrenLivingWithYou = numberOfChildrenLivingWithYou.orElse(0);
-
-        if (!numberOfChildrenLivingWithYou.isPresent()) {
+        if (!child.getNumberOfChildrenLivingWithYou().isPresent()) {
             setValidationErrors(context, Fields.NO_OF_CHILDREN_LIVING_WITH_YOU, mayNotBeNullError("child", type));
             valid = false;
         }
 
-        if (valueNoOfChildrenLivingWithYou > child.getNumberOfChildren()) {
+        if (child.getNumberOfChildrenLivingWithYou().orElse(0) > child.getNumberOfChildren()) {
             setValidationErrors(
                 context,
                 Fields.NUMBER_OF_CHILDREN,

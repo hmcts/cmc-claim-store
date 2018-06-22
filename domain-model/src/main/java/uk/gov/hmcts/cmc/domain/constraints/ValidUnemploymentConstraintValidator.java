@@ -25,13 +25,13 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
 
         if (isRetiredPopulated) {
             if (otherPopulated) {
-                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError(Fields.OTHER, Fields.IS_RETIRED));
+                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError("unemployment", Fields.IS_RETIRED));
                 valid = false;
             }
 
             if (unemployedPopulated) {
                 setValidationErrors(
-                    context, Fields.UNEMPLOYED, mayNotBeProvidedError(Fields.UNEMPLOYED, Fields.IS_RETIRED)
+                    context, Fields.UNEMPLOYED, mayNotBeProvidedError("unemployment", Fields.IS_RETIRED)
                 );
                 valid = false;
             }
@@ -39,12 +39,12 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
 
         if (otherPopulated) {
             if (isRetiredPopulated) {
-                setValidationErrors(context, Fields.IS_RETIRED, mayNotBeProvidedError(Fields.IS_RETIRED, Fields.OTHER));
+                setValidationErrors(context, Fields.IS_RETIRED, mayNotBeProvidedError("unemployment", Fields.OTHER));
                 valid = false;
             }
 
             if (unemployedPopulated) {
-                setValidationErrors(context, Fields.UNEMPLOYED, mayNotBeProvidedError(Fields.UNEMPLOYED, Fields.OTHER));
+                setValidationErrors(context, Fields.UNEMPLOYED, mayNotBeProvidedError("unemployment", Fields.OTHER));
                 valid = false;
             }
         }
@@ -52,13 +52,13 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
         if (unemployedPopulated) {
             if (isRetiredPopulated) {
                 setValidationErrors(
-                    context, Fields.IS_RETIRED, mayNotBeProvidedError(Fields.IS_RETIRED, Fields.UNEMPLOYED)
+                    context, Fields.IS_RETIRED, mayNotBeProvidedError("unemployment", Fields.UNEMPLOYED)
                 );
                 valid = false;
             }
 
             if (otherPopulated) {
-                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError(Fields.OTHER, Fields.UNEMPLOYED));
+                setValidationErrors(context, Fields.OTHER, mayNotBeProvidedError("unemployment", Fields.UNEMPLOYED));
                 valid = false;
             }
         }

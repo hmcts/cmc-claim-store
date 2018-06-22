@@ -49,9 +49,10 @@ public class ValidFullAdmissionConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidWhenTypeIsImmediatelyAndNothingElseIsPopulated() {
+    public void shouldBeValidWhenTypeIsImmediatelyAndPaymentDateIsPopulated() {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
+            .paymentDate(LocalDate.now())
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
@@ -61,7 +62,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     public void shouldBeInvalidWhenTypeIsImmediatelyAndPaymentDateIsNotNull() {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
-            .paymentDate(LocalDate.now().plusDays(10))
+            .paymentDate(null)
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();

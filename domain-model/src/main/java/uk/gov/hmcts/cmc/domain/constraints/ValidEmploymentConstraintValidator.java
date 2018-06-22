@@ -30,15 +30,16 @@ public class ValidEmploymentConstraintValidator implements ConstraintValidator<V
             }
         }
 
-        if (employment.getSelfEmployment().isPresent() || employment.getEmployers().size() > 0) {
-            if (employment.getUnemployment().isPresent()) {
-                setValidationErrors(
-                    context,
-                    "selfEmployment",
-                    mayNotBeProvidedError("employment", "selfEmployment or employers")
-                );
-                valid = false;
-            }
+        if ((employment.getSelfEmployment().isPresent()
+            || employment.getEmployers().size() > 0)
+            && employment.getUnemployment().isPresent()) {
+            setValidationErrors(
+                context,
+                "unemployment",
+                mayNotBeProvidedError("employment", "selfEmployment or employers")
+            );
+            valid = false;
+
         }
 
         return valid;

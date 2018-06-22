@@ -18,7 +18,6 @@ public class ValidFullAdmissionConstraintValidator
     public static class Fields {
         static final String PAYMENT_DATE = "paymentDate";
         static final String REPAYMENT_PLAN = "repaymentPlan";
-        static final String STATEMENT_OF_MEANS = "statementOfMeans";
     }
 
     @Override
@@ -39,18 +38,13 @@ public class ValidFullAdmissionConstraintValidator
         boolean valid = true;
         String immediately = IMMEDIATELY.getDescription();
 
-        if (value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeProvidedError("paymentType", immediately));
+        if (!value.getPaymentDate().isPresent()) {
+            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeNullError("paymentType", immediately));
             valid = false;
         }
 
         if (value.getRepaymentPlan().isPresent()) {
             setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeProvidedError("paymentType", immediately));
-            valid = false;
-        }
-
-        if (value.getStatementOfMeans().isPresent()) {
-            setValidationErrors(context, Fields.STATEMENT_OF_MEANS, mayNotBeProvidedError("paymentType", immediately));
             valid = false;
         }
 
@@ -71,11 +65,6 @@ public class ValidFullAdmissionConstraintValidator
             valid = false;
         }
 
-        if (!value.getStatementOfMeans().isPresent()) {
-            setValidationErrors(context, Fields.STATEMENT_OF_MEANS, mayNotBeNullError("paymentType", bySetDate));
-            valid = false;
-        }
-
         return valid;
     }
 
@@ -90,11 +79,6 @@ public class ValidFullAdmissionConstraintValidator
 
         if (!value.getRepaymentPlan().isPresent()) {
             setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeNullError("paymentType", instalments));
-            valid = false;
-        }
-
-        if (!value.getStatementOfMeans().isPresent()) {
-            setValidationErrors(context, Fields.STATEMENT_OF_MEANS, mayNotBeNullError("paymentType", instalments));
             valid = false;
         }
 
