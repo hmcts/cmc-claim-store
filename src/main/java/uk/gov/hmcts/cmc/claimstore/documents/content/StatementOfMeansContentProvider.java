@@ -86,7 +86,7 @@ public class StatementOfMeansContentProvider {
         } else if (employment.getEmployers().size() > 0) {
             return "Employed";
         } else {
-            return "Un-Employed";
+            return "Unemployed";
         }
     }
 }
