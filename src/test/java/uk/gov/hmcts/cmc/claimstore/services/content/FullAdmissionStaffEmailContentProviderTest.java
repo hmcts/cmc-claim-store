@@ -55,9 +55,11 @@ public class FullAdmissionStaffEmailContentProviderTest {
             .withRespondedAt(LocalDateTime.now())
             .build();
         EmailContent content = service.createContent(wrapInMap(claimWithFullAdmission, DEFENDANT_EMAIL));
+
         assertThat(content.getBody())
-            .contains("The defendant has offered to pay immediately in response to the " +
-                "money claim made against them by John Rambo.");
+            .contains("The defendant has offered to pay immediately in response to the ")
+
+            .contains("money claim made against them by John Rambo.");
     }
 
     @Test
@@ -67,11 +69,12 @@ public class FullAdmissionStaffEmailContentProviderTest {
             .withRespondedAt(LocalDateTime.now())
             .build();
         EmailContent content = service.createContent(wrapInMap(claimWithFullAdmission, DEFENDANT_EMAIL));
+
         assertThat(content.getSubject())
             .contains("Pay by instalments 000CM001: John Rambo v John Smith");
         assertThat(content.getBody())
-            .contains("The defendant has offered to pay by instalments in response to the " +
-                "money claim made against them by John Rambo");
+            .contains("The defendant has offered to pay by instalments in response to the ")
+            .contains("money claim made against them by John Rambo.");
     }
 
     @Test
@@ -81,10 +84,11 @@ public class FullAdmissionStaffEmailContentProviderTest {
             .withRespondedAt(LocalDateTime.now())
             .build();
         EmailContent content = service.createContent(wrapInMap(claimWithFullAdmission, DEFENDANT_EMAIL));
+
         assertThat(content.getSubject())
             .contains("Pay by a set date 000CM001: John Rambo v John Smith");
         assertThat(content.getBody())
-            .contains("The defendant has offered to pay by a set date in response to the " +
-                "money claim made against them by John Rambo");
+            .contains("The defendant has offered to pay by a set date in response to the ")
+            .contains("money claim made against them by John Rambo.");
     }
 }
