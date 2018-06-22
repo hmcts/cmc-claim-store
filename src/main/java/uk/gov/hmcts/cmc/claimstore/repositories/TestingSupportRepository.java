@@ -28,4 +28,13 @@ public interface TestingSupportRepository {
     @SingleValueResult
     @SqlQuery("SELECT * FROM claim WHERE claim.reference_number = :claimReferenceNumber")
     Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
+
+    @SqlUpdate(
+        "UPDATE claim SET defendant_id = :defendantId "
+            + "WHERE external_id = :externalId"
+    )
+    void updateDefendantId(
+        @Bind("externalId") String externalId,
+        @Bind("defendantId") String defendantId
+    );
 }
