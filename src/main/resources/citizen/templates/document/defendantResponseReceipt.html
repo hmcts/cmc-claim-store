@@ -382,7 +382,7 @@
         <tr class="no-border">
           <td><strong>Make the first payment on:</strong></td>
           <td>
-            {{ repaymentPlan.firstPaymentDate}}
+            {{ repaymentPlan.firstPaymentDate }}
           </td>
         </tr>
         {% if statementOfMeans is defined %}
@@ -409,7 +409,7 @@
       <tr class="no-border">
         <td><strong>Where are they living?</strong></td>
         <td>
-          {{ residence.type }}
+          {{ residenceTypeDescription }}
         </td>
       </tr>
       <tr>
@@ -417,15 +417,13 @@
       </tr>
       <tr class="no-border">
         <td><strong>Do any children live with them?</strong></td>
+        <td>
         {% if children is defined and children is not empty %}
-        <td>
           Yes
-        </td>
         {% else %}
-        <td>
           No
-        </td>
         {% endif %}
+        </td>
       </tr>
       {% for child in children %}
         <tr class="no-border">
@@ -459,15 +457,13 @@
       </tr>
       <tr class="no-border">
         <td><strong>Do they support anyone else financially?</strong></td>
+        <td>
         {% if employment is defined and employment is not empty %}
-        <td>
           Yes
-        </td>
         {% else %}
-        <td>
           No
-        </td>
         {% endif %}
+        </td>
       </tr>
       <tr class="no-border">
         <td><strong>Number of people:</strong></td>
@@ -486,15 +482,13 @@
       </tr>
       <tr class="no-border">
         <td><strong>Are they currently working?</strong></td>
+        <td>
         {% if employment is defined and employment is not empty %}
-        <td>
           Yes
-        </td>
         {% else %}
-        <td>
           No
-        </td>
         {% endif %}
+        </td>
       </tr>
       <tr class="no-border">
         <td><strong>Type of job:</strong></td>
@@ -540,15 +534,13 @@
       </tr>
       <tr class="no-border">
         <td><strong>Are they behind on tax payments?</strong></td>
+        <td>
         {% if onTaxPayments is defined %}
-        <td>
           Yes
-        </td>
         {% else %}
-        <td>
           No
-        </td>
         {% endif %}
+        </td>
       </tr>
       <tr class="no-border">
         <td><strong>Amount they owe?</strong></td>
@@ -625,21 +617,19 @@
       </tr>
       <tr class="no-border">
         <td><strong>Do they have any debts?</strong></td>
+        <td>
         {% if debts is defined and debts is not empty %}
-        <td>
           Yes
-        </td>
         {% else %}
-        <td>
           No
-        </td>
         {% endif %}
+        </td>
       </tr>
       {% for debt in debts %}
       <tr class="no-border">
         <td><strong>Debt:</strong></td>
         <td>
-          {{ debt }}
+          {{ debt.description }}
         </td>
       </tr>
       <tr class="no-border">

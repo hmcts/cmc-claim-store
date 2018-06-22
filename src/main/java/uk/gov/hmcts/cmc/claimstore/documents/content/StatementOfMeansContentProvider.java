@@ -32,6 +32,7 @@ public class StatementOfMeansContentProvider {
 
         Residence residence = statementOfMeans.getResidence();
         content.put("residence", residence);
+        content.put("residenceTypeDescription", residence.getType().getDescription());
 
         Optional<Dependant> optionalDependant = statementOfMeans.getDependant();
         if (optionalDependant.isPresent()) {
