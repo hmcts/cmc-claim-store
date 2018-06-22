@@ -82,9 +82,21 @@ public class DefendantResponseNotificationService {
         Claim claim,
         String reference
     ) {
-        Map<String, String> parameters = aggregateParams(claim, claim.getResponse()
-            .orElseThrow(IllegalStateException::new));
-        notify(claim.getSubmitterEmail(), getEmailTemplates().getClaimantResponseIssued(), parameters, reference);
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Map<String, String> parameters = aggregateParams(claim, response);
+
+        String emailTemplate = getClaimantEmailTemplate(response);
+
+        notify(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
+    }
+
+    private String getClaimantEmailTemplate(Response response) {
+        YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.NO);
+        if (mediation == YesNoOption.YES) {
+            return getEmailTemplates().getClaimantResponseWithMediationIssued();
+        } else {
+            return getEmailTemplates().getClaimantResponseIssued();
+        }
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
