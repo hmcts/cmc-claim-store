@@ -82,7 +82,7 @@ public class StatementOfMeansContentProviderTest {
             .build();
         String jobType = provider.createJobType(employment);
         assertThat(jobType)
-            .isEqualTo("Un-Employed");
+            .isEqualTo("Unemployed");
     }
 
 }
