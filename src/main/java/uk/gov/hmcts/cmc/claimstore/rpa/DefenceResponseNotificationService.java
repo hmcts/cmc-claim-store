@@ -39,7 +39,6 @@ public class DefenceResponseNotificationService {
         this.emailProperties = emailProperties;
         this.responseJsonMapper = responseJsonMapper;
         this.defendantResponseStaffNotificationService = defendantResponseStaffNotificationService;
-
     }
 
     @EventListener
@@ -51,7 +50,8 @@ public class DefenceResponseNotificationService {
     }
 
     private EmailData prepareEmailData(Claim claim) {
-        EmailAttachment responsePDFAttachment = defendantResponseStaffNotificationService.createResponsePdfAttachment(claim);
+        EmailAttachment responsePDFAttachment = defendantResponseStaffNotificationService
+            .createResponsePdfAttachment(claim);
 
         return new EmailData(emailProperties.getResponseRecipient(),
             "J defence response " + claim.getReferenceNumber(),

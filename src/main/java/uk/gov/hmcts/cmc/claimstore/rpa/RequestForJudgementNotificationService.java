@@ -15,8 +15,6 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
 
-import javax.validation.constraints.Email;
-
 import static java.util.Objects.requireNonNull;
 
 @Service("rpa/request-judgement-notification-service")

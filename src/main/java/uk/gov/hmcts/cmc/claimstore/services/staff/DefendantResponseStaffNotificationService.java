@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -67,7 +68,10 @@ public class DefendantResponseStaffNotificationService {
     }
 
     public EmailAttachment createResponsePdfAttachment(Claim claim) {
-        return pdf(defendantResponseReceiptService.createPdf(claim), format(FILE_NAME_FORMAT, claim.getReferenceNumber()));
+        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+        requireNonNull(defendantResponse);
+
+        return pdf(defendantResponse, format(FILE_NAME_FORMAT, claim.getReferenceNumber()));
     }
 
 }
