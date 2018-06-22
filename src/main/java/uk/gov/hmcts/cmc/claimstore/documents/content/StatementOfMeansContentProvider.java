@@ -78,7 +78,7 @@ public class StatementOfMeansContentProvider {
         return content;
     }
 
-    private String createJobType(Employment employment) {
+    public String createJobType(Employment employment) {
         if (employment.getEmployers().size() > 0 && employment.getSelfEmployment().isPresent()) {
             return "Employed and self-employed";
         } else if (employment.getSelfEmployment().isPresent()) {
