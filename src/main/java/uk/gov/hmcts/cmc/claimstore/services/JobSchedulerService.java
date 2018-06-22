@@ -54,7 +54,7 @@ public class JobSchedulerService {
             JobData.builder()
                 .id("reminder:defence-due-in-1-days:" + claim.getReferenceNumber() + "-" + UUID.randomUUID().toString())
                 .group("Reminders")
-                .description("Defendant reminder email 1 days before response deadline")
+                .description("Defendant reminder email 1 day before response deadline")
                 .jobClass(NotificationEmailJob.class)
                 .data(data).build(),
             responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
