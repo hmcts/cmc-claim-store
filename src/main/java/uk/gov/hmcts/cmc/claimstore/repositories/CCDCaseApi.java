@@ -83,39 +83,20 @@ public class CCDCaseApi {
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
-        return extractClaims(searchOnlyOpenCases(user, ImmutableMap.of("case.submitterId", submitterId)));
+        return getAllCasesBy(user, ImmutableMap.of("case.submitterId", submitterId));
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
-        User user = userService.getUser(authorisation);
-
-        List<Claim> claims = extractClaims(
-            searchOnlyOpenCases(user, ImmutableMap.of("case.referenceNumber", referenceNumber))
-        );
-
-        if (claims.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by claim reference " + referenceNumber);
-        }
-
-        return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
+        return getCaseBy(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
     }
 
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
+        return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
+    }
+
+    public List<Claim> getByDefendantId(String id, String authorisation) {
         User user = userService.getUser(authorisation);
-
-        List<CaseDetails> result = searchOnlyOpenCases(user, ImmutableMap.of("case.externalId", externalId));
-
-        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
-            throw new OnHoldClaimAccessAttemptException("Case is on hold " + externalId);
-        }
-
-        List<Claim> claims = extractClaims(result);
-
-        if (claims.size() > 1) {
-            throw new CoreCaseDataStoreException("More than one claim found by externalId " + externalId);
-        }
-
-        return claims.isEmpty() ? Optional.empty() : Optional.of(claims.get(0));
+        return getAllCasesBy(user, ImmutableMap.of("case.defendantId", id));
     }
 
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
@@ -163,10 +144,58 @@ public class CCDCaseApi {
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
     }
 
+    public void linkDefendant(String caseId, String defendantId) {
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        this.linkToCaseWithoutRevoking(defendantId, anonymousCaseWorker, caseId);
+    }
+
+    private void linkToCaseWithoutRevoking(String defendantId, User anonymousCaseWorker, String caseId) {
+        LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
+        this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
+
+        this.updateDefendantId(anonymousCaseWorker, caseId, defendantId);
+    }
+
+    private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
+        List<CaseDetails> validCases = searchAll(user, searchString)
+            .stream()
+            .filter(c -> !isCaseOnHold(c))
+            .collect(Collectors.toList());
+
+        return extractClaims(validCases);
+    }
+
+    private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
+        User user = userService.getUser(authorisation);
+
+        List<CaseDetails> result = searchAll(user, searchString);
+
+        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
+            return Optional.empty();
+        }
+
+        List<Claim> claims = extractClaims(result);
+
+        if (claims.size() > 1) {
+            throw new CoreCaseDataStoreException("More than one claim found by search string " + searchString);
+        }
+
+        return claims.stream().findAny();
+    }
+
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
-        LOGGER.info("Granting access to case: {} for user: {} with letter-holder id: {}",
-            caseId, defendantId, letterHolderId);
+
+        LOGGER.debug("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
+        this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
+
+        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
+        this.revokeAccessToCase(anonymousCaseWorker, letterHolderId, caseId);
+
+        this.updateDefendantId(defendantUser, caseId, defendantId);
+    }
+
+    private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
         caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
@@ -175,8 +204,10 @@ public class CCDCaseApi {
             caseId,
             new UserId(defendantId)
         );
+    }
 
-        LOGGER.info("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+    private void revokeAccessToCase(User anonymousCaseWorker, String letterHolderId, String caseId) {
+        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
@@ -185,7 +216,9 @@ public class CCDCaseApi {
             caseId,
             letterHolderId
         );
+    }
 
+    private void updateDefendantId(User defendantUser, String caseId, String defendantId) {
         coreCaseDataService.update(
             defendantUser.getAuthorisation(),
             CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
@@ -198,14 +231,6 @@ public class CCDCaseApi {
         return role.startsWith("letter")
             && !role.equals("letter-holder")
             && !role.endsWith("loa1");
-    }
-
-    public List<Claim> getByDefendantId(String id, String authorisation) {
-        User defendant = userService.getUser(authorisation);
-
-        return extractClaims(
-            searchOnlyOpenCases(defendant, ImmutableMap.of("case.defendantId", defendant.getUserDetails().getId()))
-        );
     }
 
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
@@ -250,10 +275,6 @@ public class CCDCaseApi {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
     }
 
-    private List<CaseDetails> searchOnlyOpenCases(User user, Map<String, String> searchString) {
-        return search(user, searchString, 1, new ArrayList<>(), null, CaseState.OPEN);
-    }
-
     @SuppressWarnings("ParameterAssignment") // recursively modifying it internally only
     private List<CaseDetails> search(
         User user,
@@ -281,7 +302,7 @@ public class CCDCaseApi {
 
             if (numOfPages > page && page < MAX_NUM_OF_PAGES_TO_CHECK) {
                 ++page;
-                return search(user, searchString, page, results, numOfPages, state);
+                return search(user, searchCriteria, page, results, numOfPages, state);
             }
         }
 

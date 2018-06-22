@@ -56,4 +56,18 @@
         <gav regex="true">^org\.springframework:spring-context-support:.*$</gav>
         <cve>CVE-2018-1199</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   relates to admin pack extension which is not installed for us
+   ]]></notes>
+        <gav regex="true">^org\.postgresql:postgresql:.*$</gav>
+        <cve>CVE-2018-1115</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   relates to CORS
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-8014</cve>
+    </suppress>
 </suppressions>

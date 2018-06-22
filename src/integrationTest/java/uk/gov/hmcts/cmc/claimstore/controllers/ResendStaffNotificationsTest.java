@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -38,13 +39,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "document_management.api_gateway.url=false",
+        "document_management.url=false",
         "core_case_data.api.url=false"
     }
 )
 public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     @MockBean
     protected SendLetterApi sendLetterApi;
+
+    @MockBean
+    protected DocumentManagementService documentManagementService;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;

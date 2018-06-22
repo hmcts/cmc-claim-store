@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
@@ -21,7 +23,7 @@ import java.net.URI;
 import static java.util.Collections.singletonList;
 
 @Service
-@ConditionalOnProperty(prefix = "document_management", name = "api_gateway.url")
+@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementService {
 
     private static final String FILES_NAME = "files";
@@ -29,45 +31,62 @@ public class DocumentManagementService {
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final DocumentDownloadClientApi documentDownloadClient;
     private final DocumentUploadClientApi documentUploadClient;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final UserService userService;
 
     @Autowired
     public DocumentManagementService(
         DocumentMetadataDownloadClientApi documentMetadataDownloadApi,
         DocumentDownloadClientApi documentDownloadClientApi,
-        DocumentUploadClientApi documentUploadClientApi
+        DocumentUploadClientApi documentUploadClientApi,
+        AuthTokenGenerator authTokenGenerator,
+        UserService userService
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
         this.documentUploadClient = documentUploadClientApi;
+        this.authTokenGenerator = authTokenGenerator;
+        this.userService = userService;
     }
 
-    public String uploadDocument(String authorisation, PDF document) {
+    public URI uploadDocument(String authorisation, PDF document) {
         return uploadDocument(authorisation, document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
     }
 
-    public String uploadDocument(
+    public URI uploadDocument(
         String authorisation,
         String originalFileName,
         byte[] documentBytes,
         String contentType
     ) {
         MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
-        UploadResponse response = documentUploadClient.upload(authorisation, singletonList(file));
+        UploadResponse response = documentUploadClient.upload(
+            authorisation,
+            authTokenGenerator.generate(),
+            userService.getUserDetails(authorisation).getId(),
+            singletonList(file)
+        );
 
         Document document = response.getEmbedded().getDocuments().stream()
             .findFirst()
             .orElseThrow(() ->
                 new DocumentManagementException("Document management failed uploading file" + originalFileName));
 
-        return URI.create(document.links.self.href).getPath();
+        return URI.create(document.links.self.href);
     }
 
-    public byte[] downloadDocument(String authorisation, String documentSelfPath) {
-        Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(authorisation,
-            documentSelfPath);
+    public byte[] downloadDocument(String authorisation, URI documentSelf) {
+        Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
+            authorisation,
+            authTokenGenerator.generate(),
+            documentSelf.getPath()
+        );
 
-        ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(authorisation,
-            URI.create(documentMetadata.links.binary.href).getPath());
+        ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
+            authorisation,
+            authTokenGenerator.generate(),
+            URI.create(documentMetadata.links.binary.href).getPath()
+        );
 
         ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
         return resource.getByteArray();

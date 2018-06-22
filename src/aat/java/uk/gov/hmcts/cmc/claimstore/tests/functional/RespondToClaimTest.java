@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.temporal.ChronoUnit;
@@ -30,7 +32,20 @@ public class RespondToClaimTest extends BaseTest {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
             .withDefenceType(DefenceType.DISPUTE)
+            .withMediation(null)
             .build();
+        shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
+    }
+
+
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitFreeMediationRequestOnDefence() {
+        Response fullDefenceDisputeResponse = SampleResponse.FullDefence
+            .builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .withMediation(YesNoOption.YES)
+            .build();
+
         shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
     }
 
@@ -44,6 +59,7 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
+    @Ignore("Full Admission is not implemented, please enable once done")
     public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
         Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
         shouldBeAbleToSuccessfullySubmit(fullAdmissionResponse);

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain.ccj;
+package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CCDPaymentOption {
     IMMEDIATELY("immediately"),

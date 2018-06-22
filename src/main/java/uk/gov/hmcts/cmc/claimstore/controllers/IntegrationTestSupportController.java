@@ -57,9 +57,18 @@ public class IntegrationTestSupportController {
         return getClaim(claimReferenceNumber, authorisation);
     }
 
+    @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantId}")
+    public void linkDefendantToClaim(
+        @PathVariable("claimReferenceNumber") String claimReferenceNumber,
+        @PathVariable("defendantId") String defendantId
+    ) {
+        Claim claim = getClaim(claimReferenceNumber, null);
+
+        supportRepository.linkDefendantToClaim(claim, defendantId);
+    }
+
     private Claim getClaim(String claimReferenceNumber, String authorisation) {
         return supportRepository.getByClaimReferenceNumber(claimReferenceNumber, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by ref no: " + claimReferenceNumber));
     }
-
 }

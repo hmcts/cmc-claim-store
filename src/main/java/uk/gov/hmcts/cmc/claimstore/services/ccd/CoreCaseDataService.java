@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +39,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
@@ -100,7 +103,8 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData, user.isSolicitor());
+            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData,
+                user.isSolicitor() || user.isCaseworker());
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
@@ -114,7 +118,8 @@ public class CoreCaseDataService {
                 .build();
 
             return new CaseReference(
-                submitCreate(authorisation, eventRequestData, caseDataContent, user.isSolicitor()).getId().toString()
+                submitCreate(authorisation, eventRequestData, caseDataContent,
+                    user.isSolicitor() || user.isCaseworker()).getId().toString()
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -125,7 +130,7 @@ public class CoreCaseDataService {
 
     public Claim submitPostPayment(String authorisation, Claim claim) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
-        boolean isRepresented = userDetails.isSolicitor();
+        boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
         CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
 
@@ -159,6 +164,18 @@ public class CoreCaseDataService {
         ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
 
         return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+    }
+
+    public CaseDetails linkSealedClaimDocument(
+        String authorisation,
+        Long caseId,
+        URI sealedClaimDocument
+    ) {
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .sealedClaimDocument(CCDDocument.builder().documentUrl(sealedClaimDocument.toString()).build())
+            .build();
+        return update(authorisation, ccdCase, LINK_SEALED_CLAIM);
     }
 
     public CaseDetails saveDefendantResponse(
@@ -234,7 +251,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor()
+                userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -247,7 +264,8 @@ public class CoreCaseDataService {
                 .data(ccdCase)
                 .build();
 
-            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId, userDetails.isSolicitor());
+            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(

@@ -29,4 +29,9 @@ public class DBTestingSupportRepository implements SupportRepository {
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         return this.testingSupportRepository.getByClaimReferenceNumber(claimReferenceNumber);
     }
+
+    @Override
+    public void linkDefendantToClaim(Claim claim, String defendantId) {
+        this.testingSupportRepository.updateDefendantId(claim.getExternalId(), defendantId);
+    }
 }
