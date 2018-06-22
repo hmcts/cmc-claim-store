@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
 import java.util.Map;
 
@@ -62,6 +63,26 @@ public class StatementOfMeansContentProviderTest {
         String jobType = provider.createJobType(employment);
         assertThat(jobType)
             .isEqualTo("Self-employed");
+    }
+
+    @Test
+    public void shouldProvideJobTypeEmployed() {
+        Employment employment = Employment.builder()
+            .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
+            .build();
+        String jobType = provider.createJobType(employment);
+        assertThat(jobType)
+            .isEqualTo("Employed");
+    }
+
+    @Test
+    public void shouldProvideJobTypeUnEmployed() {
+        Employment employment = Employment.builder()
+            .unemployment(Unemployment.builder().retired(true).build())
+            .build();
+        String jobType = provider.createJobType(employment);
+        assertThat(jobType)
+            .isEqualTo("Un-Employed");
     }
 
 }
