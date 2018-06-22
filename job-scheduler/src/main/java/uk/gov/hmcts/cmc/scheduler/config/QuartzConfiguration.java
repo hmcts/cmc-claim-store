@@ -66,7 +66,8 @@ public class QuartzConfiguration {
 
     @Bean("schedulerTransactionManager")
     public PlatformTransactionManager transactionManager(
-        TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy
+        @Qualifier("schedulerTransactionAwareDataSourceProxy")
+            TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy
     ) {
         return new DataSourceTransactionManager(schedulerTransactionAwareDataSourceProxy);
     }
