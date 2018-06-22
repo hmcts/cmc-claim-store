@@ -100,7 +100,8 @@ public class DefendantResponseStaffNotificationService {
             case FULL_ADMISSION:
                 FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
                 map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
-                map.put("paymentOptionDescription", fullAdmissionResponse.getPaymentOption().getDescription());
+                map.put("paymentOptionDescription", fullAdmissionResponse
+                    .getPaymentOption().getDescription().toLowerCase());
                 map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
                 map.put("FourteenDaysFromNow", formatDate(now().plusDays(14)));
                 break;
