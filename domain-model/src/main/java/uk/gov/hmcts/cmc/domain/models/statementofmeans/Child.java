@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonIgnoreProperties(value = "getAgeGroupTypeDescription", allowGetters = true)
+@JsonIgnoreProperties(value = "ageGroupTypeDescription", allowGetters = true)
 @Builder
 public class Child {
 
