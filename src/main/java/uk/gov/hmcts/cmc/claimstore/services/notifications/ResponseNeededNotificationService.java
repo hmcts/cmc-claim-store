@@ -72,7 +72,7 @@ public class ResponseNeededNotificationService {
     ) {
         JobDataMap emailData = jobDetail.getJobDataMap();
         String caseReference = (String) emailData.get("caseReference");
-        logger.info("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
+        logger.warn("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
             caseReference,
             emailData.get("defendantEmail"),
             exception.getMessage(),

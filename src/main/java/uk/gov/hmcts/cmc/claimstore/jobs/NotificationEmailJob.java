@@ -21,6 +21,6 @@ public class NotificationEmailJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDetail jobDetail = context.getJobDetail();
         responseNeededNotificationService.sendMail(jobDetail);
-        logger.info("Completed job work for id %s", jobDetail.getKey().getName());
+        logger.debug("Completed job work for id {}", jobDetail.getKey().getName());
     }
 }
