@@ -103,7 +103,8 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData, user.isSolicitor() || user.isCaseworker());
+            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData,
+                user.isSolicitor() || user.isCaseworker());
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
@@ -117,7 +118,8 @@ public class CoreCaseDataService {
                 .build();
 
             return new CaseReference(
-                submitCreate(authorisation, eventRequestData, caseDataContent, user.isSolicitor() || user.isCaseworker()).getId().toString()
+                submitCreate(authorisation, eventRequestData, caseDataContent,
+                    user.isSolicitor() || user.isCaseworker()).getId().toString()
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -262,7 +264,8 @@ public class CoreCaseDataService {
                 .data(ccdCase)
                 .build();
 
-            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId, userDetails.isSolicitor() || userDetails.isCaseworker());
+            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
