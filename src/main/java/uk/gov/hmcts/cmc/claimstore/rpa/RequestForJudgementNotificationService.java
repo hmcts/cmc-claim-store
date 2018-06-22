@@ -55,7 +55,7 @@ public class RequestForJudgementNotificationService {
         return new EmailData(emailProperties.getCountyCourtJudgementRecipient(),
           "J default judgement request " + claim.getReferenceNumber(),
             "",
-            Lists.newArrayList(createRequestForJudgementJsonAttachment(claim), ccjPdfAttachment)
+            Lists.newArrayList(ccjPdfAttachment, createRequestForJudgementJsonAttachment(claim))
         );
     }
 
