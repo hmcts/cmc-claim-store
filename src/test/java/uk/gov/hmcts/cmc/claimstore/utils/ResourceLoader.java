@@ -49,9 +49,4 @@ public class ResourceLoader {
         String response = new ResourceReader().read("/core-case-data/search-response.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
-
-    public static List<CaseDetails> listOfCaseOnHold() {
-        String response = new ResourceReader().read("/core-case-data/pre-payment-search-response.success.json");
-        return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
-    }
 }
