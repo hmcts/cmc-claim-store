@@ -30,7 +30,7 @@ public class ValidEmploymentConstraintValidatorTest {
     private ValidEmploymentConstraintValidator validator = new ValidEmploymentConstraintValidator();
 
     @Before
-    public void setup() {
+    public void setUp() {
         ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
             ConstraintValidatorContext.ConstraintViolationBuilder.class
         );

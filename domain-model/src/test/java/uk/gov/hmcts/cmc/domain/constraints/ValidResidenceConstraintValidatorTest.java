@@ -24,7 +24,7 @@ public class ValidResidenceConstraintValidatorTest {
     private ValidResidenceConstraintValidator validator = new ValidResidenceConstraintValidator();
 
     @Before
-    public void setup() {
+    public void setUp() {
         ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
             ConstraintValidatorContext.ConstraintViolationBuilder.class
         );

@@ -10,10 +10,10 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 
 public class ValidUnemploymentConstraintValidator implements ConstraintValidator<ValidEmployment, Unemployment> {
 
-    static class Fields {
-        static final String UNEMPLOYED = "unemployed";
-        static final String IS_RETIRED = "isRetired";
-        static final String OTHER = "other";
+    public static class Fields {
+        public static final String UNEMPLOYED = "unemployed";
+        public static final String IS_RETIRED = "isRetired";
+        public static final String OTHER = "other";
     }
 
     @Override

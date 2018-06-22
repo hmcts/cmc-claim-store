@@ -30,7 +30,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     private ValidFullAdmissionConstraintValidator validator = new ValidFullAdmissionConstraintValidator();
 
     @Before
-    public void setup() {
+    public void setUp() {
         ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
             ConstraintValidatorContext.ConstraintViolationBuilder.class
         );

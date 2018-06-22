@@ -76,10 +76,6 @@ public class EmploymentTest {
             .reason("Whatever")
             .build();
 
-        Unemployed unemployed = Unemployed.builder()
-            .numberOfMonths(10)
-            .build();
-
         SelfEmployment selfEmployment = SelfEmployment.builder()
             .annualTurnover(BigDecimal.TEN)
             .onTaxPayments(onTaxPayments)

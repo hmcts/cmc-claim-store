@@ -10,6 +10,12 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 
 public class ValidEmploymentConstraintValidator implements ConstraintValidator<ValidEmployment, Employment> {
 
+    public static class Fields {
+        public static final String EMPLOYERS = "employers";
+        public static final String SELF_EMPLOYMENT = "selfEmployment";
+        public static final String UNEMPLOYMENT = "unemployment";
+    }
+
     @Override
     public boolean isValid(Employment employment, ConstraintValidatorContext context) {
         boolean valid = true;
@@ -17,14 +23,14 @@ public class ValidEmploymentConstraintValidator implements ConstraintValidator<V
         if (employment.getUnemployment().isPresent()) {
             if (employment.getEmployers().size() > 0) {
                 setValidationErrors(
-                    context, "employers", mayNotBeProvidedError("employment", "unemployment")
+                    context, Fields.EMPLOYERS, mayNotBeProvidedError("employment", Fields.UNEMPLOYMENT)
                 );
                 valid = false;
             }
 
             if (employment.getSelfEmployment().isPresent()) {
                 setValidationErrors(
-                    context, "selfEmployment", mayNotBeProvidedError("employment", "unemployment")
+                    context, Fields.SELF_EMPLOYMENT, mayNotBeProvidedError("employment", Fields.UNEMPLOYMENT)
                 );
                 valid = false;
             }
@@ -35,8 +41,8 @@ public class ValidEmploymentConstraintValidator implements ConstraintValidator<V
             && employment.getUnemployment().isPresent()) {
             setValidationErrors(
                 context,
-                "unemployment",
-                mayNotBeProvidedError("employment", "selfEmployment or employers")
+                Fields.UNEMPLOYMENT,
+                mayNotBeProvidedError("employment", Fields.SELF_EMPLOYMENT + " or " + Fields.EMPLOYERS)
             );
             valid = false;
 

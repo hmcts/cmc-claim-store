@@ -16,8 +16,8 @@ public class ValidFullAdmissionConstraintValidator
     implements ConstraintValidator<ValidFullAdmission, FullAdmissionResponse> {
 
     public static class Fields {
-        static final String PAYMENT_DATE = "paymentDate";
-        static final String REPAYMENT_PLAN = "repaymentPlan";
+        public static final String PAYMENT_DATE = "paymentDate";
+        public static final String REPAYMENT_PLAN = "repaymentPlan";
     }
 
     @Override

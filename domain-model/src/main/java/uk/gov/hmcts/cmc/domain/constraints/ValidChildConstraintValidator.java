@@ -14,9 +14,9 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType
 
 public class ValidChildConstraintValidator implements ConstraintValidator<ValidChild, Child> {
 
-    static class Fields {
-        static final String NO_OF_CHILDREN_LIVING_WITH_YOU = "numberOfChildrenLivingWithYou";
-        static final String NUMBER_OF_CHILDREN = "numberOfChildren";
+    public static class Fields {
+        public static final String NO_OF_CHILDREN_LIVING_WITH_YOU = "numberOfChildrenLivingWithYou";
+        public static final String NUMBER_OF_CHILDREN = "numberOfChildren";
     }
 
     @Override

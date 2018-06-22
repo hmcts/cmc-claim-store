@@ -11,8 +11,8 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 
 public class ValidResidenceConstraintValidator implements ConstraintValidator<ValidResidence, Residence> {
 
-    static class Fields {
-        static final String OTHER_DETAILS = "otherDetail";
+    public static class Fields {
+        public static final String OTHER_DETAILS = "otherDetail";
     }
 
     @Override

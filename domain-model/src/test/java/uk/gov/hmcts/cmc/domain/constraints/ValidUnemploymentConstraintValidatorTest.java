@@ -25,7 +25,7 @@ public class ValidUnemploymentConstraintValidatorTest {
     private ValidUnemploymentConstraintValidator validator = new ValidUnemploymentConstraintValidator();
 
     @Before
-    public void setup() {
+    public void setUp() {
         ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
             ConstraintValidatorContext.ConstraintViolationBuilder.class
         );
