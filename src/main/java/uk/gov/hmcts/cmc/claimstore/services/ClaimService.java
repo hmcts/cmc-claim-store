@@ -8,7 +8,9 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
@@ -104,8 +106,14 @@ public class ClaimService {
     }
 
     public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
-        return claimRepository
-            .getByClaimReferenceNumberAnonymous(reference);
+        String authorisation = null;
+
+        if (caseRepository instanceof CCDCaseRepository) {
+            User user = userService.authenticateAnonymousCaseWorker();
+            authorisation = user.getAuthorisation();
+        }
+
+        return caseRepository.getByClaimReferenceNumber(reference, authorisation);
     }
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
@@ -248,12 +256,12 @@ public class ClaimService {
         caseRepository.linkDefendant(authorisation);
     }
 
-    public void linkLetterHolder(Long claimId, String userId) {
-        claimRepository.linkLetterHolder(claimId, userId);
-    }
-
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
         caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
+    }
+
+    public void linkLetterHolder(Long claimId, String userId) {
+        claimRepository.linkLetterHolder(claimId, userId);
     }
 
     public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @RestController
@@ -67,7 +69,7 @@ public class SupportController {
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("event") String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
     ) throws ServletRequestBindingException {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
@@ -101,6 +103,10 @@ public class SupportController {
     }
 
     private void resendStaffNotificationsOnClaimIssued(Claim claim, String authorisation) {
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException("Authorisation is required");
+        }
+
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
         }
@@ -108,8 +114,6 @@ public class SupportController {
         if (!claim.getClaimData().isClaimantRepresented()) {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
-
-            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
 
