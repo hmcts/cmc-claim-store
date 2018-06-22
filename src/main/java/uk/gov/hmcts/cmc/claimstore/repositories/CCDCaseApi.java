@@ -87,7 +87,6 @@ public class CCDCaseApi {
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
-
         return getAllCasesBy(user, ImmutableMap.of("case.submitterId", submitterId));
     }
 
@@ -101,7 +100,6 @@ public class CCDCaseApi {
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
         User user = userService.getUser(authorisation);
-
         return getAllCasesBy(user, ImmutableMap.of("case.defendantId", id));
     }
 

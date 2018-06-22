@@ -28,6 +28,9 @@ public class EmailTemplates {
     private String claimantResponseIssued;
 
     @NotEmpty
+    private String claimantResponseWithMediationIssued;
+
+    @NotEmpty
     private String staffMoreTimeRequested;
 
     @NotEmpty
@@ -216,5 +219,13 @@ public class EmailTemplates {
 
     public void setDefendantResponseNeeded(String defendantResponseNeeded) {
         this.defendantResponseNeeded = defendantResponseNeeded;
+    }
+
+    public String getClaimantResponseWithMediationIssued() {
+        return claimantResponseWithMediationIssued;
+    }
+
+    public void setClaimantResponseWithMediationIssued(String claimantResponseWithMediationIssued) {
+        this.claimantResponseWithMediationIssued = claimantResponseWithMediationIssued;
     }
 }
