@@ -58,16 +58,13 @@ public class IntegrationTestSupportController {
     }
 
     @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantId}")
-    public Claim linkDefendantToClaim(
+    public void linkDefendantToClaim(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
-        @PathVariable("defendantId") String defendantId,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
+        @PathVariable("defendantId") String defendantId
     ) {
-        Claim claim = getClaim(claimReferenceNumber, authorisation);
+        Claim claim = getClaim(claimReferenceNumber, null);
 
         supportRepository.linkDefendantToClaim(claim, defendantId);
-
-        return getClaim(claimReferenceNumber, authorisation);
     }
 
     private Claim getClaim(String claimReferenceNumber, String authorisation) {

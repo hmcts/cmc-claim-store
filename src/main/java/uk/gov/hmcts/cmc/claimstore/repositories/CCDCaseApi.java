@@ -311,7 +311,7 @@ public class CCDCaseApi {
 
     private List<CaseDetails> performSearch(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
         List<CaseDetails> result;
-        if (user.getUserDetails().isSolicitor()) {
+        if (user.getUserDetails().isSolicitor() || user.getUserDetails().isCaseworker()) {
 
             result = coreCaseDataApi.searchForCaseworker(
                 user.getAuthorisation(),
@@ -336,7 +336,7 @@ public class CCDCaseApi {
 
     private int getTotalPagesCount(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
         int result;
-        if (user.getUserDetails().isSolicitor()) {
+        if (user.getUserDetails().isSolicitor() || user.getUserDetails().isCaseworker()) {
             result = coreCaseDataApi
                 .getPaginationInfoForSearchForCaseworkers(
                     user.getAuthorisation(),
