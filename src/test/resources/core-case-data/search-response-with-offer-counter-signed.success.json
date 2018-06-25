@@ -1,7 +1,7 @@
 {
   "id": 1516189555935242,
   "jurisdiction": "CMC",
-  "state": "open",
+  "state": "claimIssued",
   "case_type_id": "MoneyClaimCase",
   "created_date": "2018-01-17T11:45:55.944",
   "last_modified": "2018-01-17T11:45:55.989",
@@ -11,6 +11,9 @@
     "submitterId": "20",
     "submittedOn": "2018-01-17T11:45:46.872525",
     "responseDeadline": "2018-01-18",
+    "defendantId": "100",
+    "defendantEmail": "j.smith@example.com",
+    "moreTimeRequested": "YES",
     "claimData": {
       "amount": {
         "type": "BREAK_DOWN",
@@ -40,8 +43,7 @@
         "interestDate": {
           "date": "2015-02-02",
           "type": "CUSTOM",
-          "reason": "I want to claim from this date because that's when that happened",
-          "endDateType": "SUBMISSION"
+          "reason": "I want to claim from this date because that's when that happened"
         }
       },
       "claimants": [
@@ -77,6 +79,7 @@
             "individual": {
               "name": "John Smith",
               "email": "john.smith@server.net",
+              "dateOfBirth": "1968-01-02",
               "address": {
                 "city": "Manchester",
                 "line1": "52",
@@ -91,9 +94,67 @@
       "feeAmountInPennies": 4000
     },
     "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
+    "response": {
+      "responseType": "FULL_DEFENCE",
+      "fullDefenceResponse": {
+        "defenceType": "DISPUTE",
+        "paymentDeclaration": {
+          "paidDate": "2016-01-02",
+          "explanation": "Paid cash"
+        },
+        "defence": "defence string",
+        "freeMediationOption": "NO",
+        "moreTimeNeededOption": "YES",
+        "defendant": {
+          "type": "INDIVIDUAL",
+          "individual": {
+            "name": "John Smith2",
+            "email": "j.smith@example.com",
+            "phoneNumber": "07873727165",
+            "dateOfBirth": "1970-01-02",
+            "address": {
+              "city": "Manchester",
+              "line1": "52",
+              "line2": "Down Street",
+              "postcode": "DF1 3LJ"
+            }
+          }
+        }
+      }
+    },
+    "settlement": {
+      "partyStatements": [
+        {
+          "id": "eda3bdb5-1a46-4803-9cdf-225c2974dac8",
+          "value": {
+            "type": "OFFER",
+            "offer": {
+              "content": "I will fix the leaking roof",
+              "completionDate": "2018-05-31"
+            },
+            "madeBy": "DEFENDANT"
+          }
+        },
+        {
+          "id": "9a660b7d-6f40-4fa3-a780-fff9dd9f37e9",
+          "value": {
+            "type": "ACCEPTATION",
+            "madeBy": "CLAIMANT"
+          }
+        },
+        {
+          "id": "30d58b83-1e97-4fad-a481-8f678dbfe346",
+          "value": {
+            "type": "COUNTERSIGNATURE",
+            "madeBy": "DEFENDANT"
+          }
+        }
+      ]
+    },
     "id": 26,
     "issuedOn": "2018-01-17",
-    "responseDeadline": "2020-06-04",
+    "respondedAt": "2018-01-17T11:45:55.944",
+    "settlementReachedAt": "2018-05-17T12:55:58.505",
     "submitterEmail": "me@server.net"
   },
   "data_classification": {

@@ -119,7 +119,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void retrieveDefendantLinkStatusShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String referenceNumber = "000MC001";
 
-        given(claimRepository.getByClaimReferenceNumberAnonymous(referenceNumber)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.getByClaimReferenceNumber(referenceNumber)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + referenceNumber + "/defendant-link-status"))

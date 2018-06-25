@@ -22,14 +22,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @DirtiesContext
 @TestExecutionListeners(listeners = {BaseIntegrationTest.CleanDatabaseListener.class}, mergeMode = MERGE_WITH_DEFAULTS)
 public abstract class BaseIntegrationTest extends MockSpringTest {
-
     protected static final String SUBMITTER_ID = "123";
     protected static final String DEFENDANT_ID = "555";
     protected static final String DEFENDANT_EMAIL = "j.smith@example.com";
     protected static final String BEARER_TOKEN = "Bearer let me in";
+    protected static final String SERVICE_TOKEN = "S2S token";
 
     protected static final String AUTHORISATION_TOKEN = "Bearer token";
-    protected static final String SERVICE_TOKEN = "S2S token";
 
     protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 

@@ -148,6 +148,18 @@ public class CCDCaseApi {
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
     }
 
+    public void linkDefendant(String caseId, String defendantId) {
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        this.linkToCaseWithoutRevoking(defendantId, anonymousCaseWorker, caseId);
+    }
+
+    private void linkToCaseWithoutRevoking(String defendantId, User anonymousCaseWorker, String caseId) {
+        LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
+        this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
+
+        this.updateDefendantId(anonymousCaseWorker, caseId, defendantId);
+    }
+
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
         List<CaseDetails> validCases = searchAll(user, searchString)
             .stream()
@@ -177,8 +189,20 @@ public class CCDCaseApi {
 
     private void linkToCase(User defendantUser, User anonymousCaseWorker, String letterHolderId, String caseId) {
         String defendantId = defendantUser.getUserDetails().getId();
-        LOGGER.info("Granting access to case: {} for user: {} with letter-holder id: {}",
-            caseId, defendantId, letterHolderId);
+
+        LOGGER.debug("Granting access to case {} for defendant {} with letter {}", caseId, defendantId, letterHolderId);
+        this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
+
+        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
+        this.revokeAccessToCase(anonymousCaseWorker, letterHolderId, caseId);
+
+        CaseDetails caseDetails = this.updateDefendantId(defendantUser, caseId, defendantId);
+
+        Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
+        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(defendantUser.getAuthorisation(), claim);
+    }
+
+    private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
         caseAccessApi.grantAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
@@ -187,8 +211,10 @@ public class CCDCaseApi {
             caseId,
             new UserId(defendantId)
         );
+    }
 
-        LOGGER.info("Revoking access to case: {} for user: {}", caseId, letterHolderId);
+    private void revokeAccessToCase(User anonymousCaseWorker, String letterHolderId, String caseId) {
+        LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),
@@ -197,21 +223,14 @@ public class CCDCaseApi {
             caseId,
             letterHolderId
         );
+    }
 
-        String defendantEmail = defendantUser.getUserDetails().getEmail();
-        CaseDetails caseDetails = coreCaseDataService.update(
+    private CaseDetails updateDefendantId(User defendantUser, String caseId, String defendantId) {
+        return coreCaseDataService.update(
             defendantUser.getAuthorisation(),
-            CCDCase.builder()
-                .id(Long.valueOf(caseId))
-                .defendantId(defendantId)
-                .defendantEmail(defendantEmail)
-                .build(),
+            CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
             CaseEvent.LINK_DEFENDANT
         );
-
-        Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(defendantUser.getAuthorisation(), claim);
-
     }
 
     private boolean isLetterHolderRole(String role) {
@@ -299,7 +318,7 @@ public class CCDCaseApi {
 
     private List<CaseDetails> performSearch(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
         List<CaseDetails> result;
-        if (user.getUserDetails().isSolicitor()) {
+        if (user.getUserDetails().isSolicitor() || user.getUserDetails().isCaseworker()) {
 
             result = coreCaseDataApi.searchForCaseworker(
                 user.getAuthorisation(),
@@ -324,7 +343,7 @@ public class CCDCaseApi {
 
     private int getTotalPagesCount(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
         int result;
-        if (user.getUserDetails().isSolicitor()) {
+        if (user.getUserDetails().isSolicitor() || user.getUserDetails().isCaseworker()) {
             result = coreCaseDataApi
                 .getPaginationInfoForSearchForCaseworkers(
                     user.getAuthorisation(),

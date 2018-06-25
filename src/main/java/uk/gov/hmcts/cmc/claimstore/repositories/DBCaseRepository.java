@@ -65,8 +65,12 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
-        String submitterId = userService.getUserDetails(authorisation).getId();
-        return claimRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
+        if (authorisation != null) {
+            String submitterId = userService.getUserDetails(authorisation).getId();
+            return claimRepository.getByClaimReferenceAndSubmitter(claimReferenceNumber, submitterId);
+        }
+
+        return claimRepository.getByClaimReferenceNumber(claimReferenceNumber);
     }
 
     @Override

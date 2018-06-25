@@ -49,4 +49,25 @@ public class ResourceLoader {
         String response = new ResourceReader().read("/core-case-data/search-response.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
+
+    public static List<CaseDetails> listOfCaseDetailsWithDefendant() {
+        String response = new ResourceReader().read("/core-case-data/search-response-with-def.success.json");
+        return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
+
+    public static List<CaseDetails> listOfCaseDetailsWithCCJ() {
+        String response = new ResourceReader().read("/core-case-data/search-response-CCJ.success.json");
+        return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
+
+    public static List<CaseDetails> listOfCaseDetailsWithOfferCounterSigned() {
+        String response
+            = new ResourceReader().read("/core-case-data/search-response-with-offer-counter-signed.success.json");
+        return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
+
+    public static List<CaseDetails> listOfCaseDetailsWithDefResponse() {
+        String response = new ResourceReader().read("/core-case-data/search-response-with-def-res.success.json");
+        return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
 }

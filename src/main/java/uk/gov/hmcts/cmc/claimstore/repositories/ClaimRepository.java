@@ -42,7 +42,7 @@ public interface ClaimRepository {
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
-    Optional<Claim> getByClaimReferenceNumberAnonymous(@Bind("claimReferenceNumber") String claimReferenceNumber);
+    Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber "
