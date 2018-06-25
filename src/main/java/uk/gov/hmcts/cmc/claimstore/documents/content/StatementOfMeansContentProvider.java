@@ -28,26 +28,21 @@ public class StatementOfMeansContentProvider {
         Residence residence = statementOfMeans.getResidence();
         contentBuilder.put("residence", residence);
 
-        Optional<Dependant> optionalDependant = statementOfMeans.getDependant();
-        if (optionalDependant.isPresent()) {
-            Dependant dependant = optionalDependant.get();
-            contentBuilder.put("dependant", dependant);
-            List<Child> children = dependant.getChildren();
-            contentBuilder.put("children", children);
-            Optional<OtherDependants> optionalOtherDependants = dependant.getOtherDependants();
-            if (optionalOtherDependants.isPresent()) {
-                OtherDependants otherDependants = optionalOtherDependants.get();
-                contentBuilder.put("otherDependants", otherDependants);
-            }
-            Optional<Integer> optionalMaintainedChildren = dependant.getNumberOfMaintainedChildren();
-            Integer maintainedChildren = optionalMaintainedChildren.get();
-            contentBuilder.put("maintainedChildren", maintainedChildren);
-        }
+        contentBuilder.putAll(createDependant(statementOfMeans));
+
         contentBuilder.put("bankAccounts", statementOfMeans.getBankAccounts());
         contentBuilder.put("courtOrders", statementOfMeans.getCourtOrders());
         contentBuilder.put("expenses", statementOfMeans.getExpenses());
         contentBuilder.put("incomes", statementOfMeans.getIncomes());
         contentBuilder.put("debts", statementOfMeans.getDebts());
+
+        contentBuilder.putAll(createEmployment(statementOfMeans));
+
+        return contentBuilder.build();
+    }
+
+    private Map<String, Object> createEmployment(StatementOfMeans statementOfMeans) {
+        ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
         Optional<Employment> optionalEmployment = statementOfMeans.getEmployment();
         if (optionalEmployment.isPresent()) {
@@ -65,6 +60,28 @@ public class StatementOfMeansContentProvider {
                 contentBuilder.put("jobType", createJobType(employment));
             }
         }
+        return contentBuilder.build();
+    }
+
+    private Map<String, Object> createDependant(StatementOfMeans statementOfMeans) {
+        ImmutableMap.Builder<java.lang.String, java.lang.Object> contentBuilder = ImmutableMap.builder();
+
+        Optional<Dependant> optionalDependant = statementOfMeans.getDependant();
+        if (optionalDependant.isPresent()) {
+            Dependant dependant = optionalDependant.get();
+            contentBuilder.put("dependant", dependant);
+            List<Child> children = dependant.getChildren();
+            contentBuilder.put("children", children);
+            Optional<OtherDependants> optionalOtherDependants = dependant.getOtherDependants();
+            if (optionalOtherDependants.isPresent()) {
+                OtherDependants otherDependants = optionalOtherDependants.get();
+                contentBuilder.put("otherDependants", otherDependants);
+            }
+            Optional<Integer> optionalMaintainedChildren = dependant.getNumberOfMaintainedChildren();
+            Integer maintainedChildren = optionalMaintainedChildren.get();
+            contentBuilder.put("maintainedChildren", maintainedChildren);
+        }
+
         return contentBuilder.build();
     }
 
