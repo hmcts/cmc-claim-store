@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.idam;
 
-import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
