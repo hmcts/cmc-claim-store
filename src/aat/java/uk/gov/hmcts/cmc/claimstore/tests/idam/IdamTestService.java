@@ -55,8 +55,8 @@ public class IdamTestService {
         this.testData = testData;
         this.aatConfiguration = aatConfiguration;
         this.oauth2 = oauth2;
-        this.strategicIdam = StringUtils.contains(idamUrl, "core-compute") ||
-            StringUtils.contains(idamUrl, "platform.hmcts.net");
+        this.strategicIdam = StringUtils.contains(idamUrl, "core-compute")
+            || StringUtils.contains(idamUrl, "platform.hmcts.net");
     }
 
     public User createCitizen() {
