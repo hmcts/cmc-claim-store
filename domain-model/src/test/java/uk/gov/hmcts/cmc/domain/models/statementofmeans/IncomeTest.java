@@ -8,15 +8,15 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
 
 public class IncomeTest {
     public static Income.IncomeBuilder newSampleOfIncomeBuilder() {
         return Income.builder()
-                .type(JOB)
-                .otherSource("Other source")
-                .frequency(MONTH)
-                .amountReceived(BigDecimal.valueOf(10));
+            .type(JOB)
+            .frequency(MONTH)
+            .amountReceived(BigDecimal.valueOf(10));
     }
 
     @Test
@@ -30,6 +30,51 @@ public class IncomeTest {
     }
 
     @Test
+    public void shouldBeSuccessfulValidationForOtherSourceOfIncome() {
+        //given
+        Income income = Income.builder()
+            .type(OTHER)
+            .otherSource("Other source of income")
+            .frequency(MONTH)
+            .amountReceived(BigDecimal.valueOf(10))
+            .build();
+        //when
+        Set<String> response = validate(income);
+        //then
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldBeInvalidForOtherSourceOfIncomeWhenNoDescriptionGiven() {
+        //given
+        Income income = Income.builder()
+            .type(OTHER)
+            .frequency(MONTH)
+            .amountReceived(BigDecimal.valueOf(10))
+            .build();
+        //when
+        Set<String> response = validate(income);
+        //then
+        assertThat(response).hasSize(1).contains("otherSource : may not be null when incomeType is 'Other'");
+    }
+
+    @Test
+    public void shouldBeInvalidForOtherSourcePopulatedWhenTypeIsNotOther() {
+        //given
+        Income income = Income.builder()
+            .type(JOB)
+            .otherSource("This shouldn't be populated")
+            .frequency(MONTH)
+            .amountReceived(BigDecimal.valueOf(10))
+            .build();
+        //when
+        Set<String> response = validate(income);
+        //then
+        assertThat(response).hasSize(1)
+            .contains("otherSource : may not be provided when incomeType is 'Income from your job'");
+    }
+
+    @Test
     public void shouldBeInvalidForAllNullFields() {
         //given
         Income income = Income.builder().build();
@@ -37,88 +82,83 @@ public class IncomeTest {
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
-                .hasSize(3);
+            .hasSize(3);
     }
 
     @Test
     public void shouldBeInvalidForNullType() {
         //given
         Income income = Income.builder()
-                .otherSource("Other source")
-                .frequency(MONTH)
-                .amountReceived(BigDecimal.valueOf(10))
-                .build();
+            .frequency(MONTH)
+            .amountReceived(BigDecimal.valueOf(10))
+            .build();
         //when
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
-                .hasSize(1)
-                .contains("type : may not be null");
+            .hasSize(1)
+            .contains("type : may not be null");
     }
 
     @Test
     public void shouldBeInvalidForNullPaymentFrequency() {
         //given
         Income income = Income.builder()
-                .type(JOB)
-                .otherSource("Other source")
-                .amountReceived(BigDecimal.valueOf(10))
-                .build();
+            .type(JOB)
+            .amountReceived(BigDecimal.valueOf(10))
+            .build();
         //when
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
-                .hasSize(1)
-                .contains("frequency : may not be null");
+            .hasSize(1)
+            .contains("frequency : may not be null");
     }
 
     @Test
     public void shouldBeInvalidForNullAmountReceived() {
         //given
         Income income = Income.builder()
-                .type(JOB)
-                .otherSource("Other source")
-                .frequency(MONTH)
-                .build();
+            .type(JOB)
+            .frequency(MONTH)
+            .build();
         //when
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
-                .hasSize(1)
-                .contains("amountReceived : may not be null");
+            .hasSize(1)
+            .contains("amountReceived : may not be null");
     }
 
     @Test
     public void shouldBeInvalidForAmountReceivedWithMoreThanTwoFractions() {
         //given
         Income income = Income.builder()
-                .type(JOB)
-                .otherSource("Other source")
-                .frequency(MONTH)
-                .amountReceived(BigDecimal.valueOf(0.123f))
-                .build();
+            .type(JOB)
+            .frequency(MONTH)
+            .amountReceived(BigDecimal.valueOf(0.123f))
+            .build();
         //when
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
-                .hasSize(1)
-                .contains("amountReceived : can not be more than 2 fractions");
+            .hasSize(1)
+            .contains("amountReceived : can not be more than 2 fractions");
     }
 
     @Test
     public void shouldBeInvalidForAmountReceivedWithLessThanMinimalDecimalValue() {
         //given
         Income income = Income.builder()
-                .type(JOB)
-                .otherSource("Other source")
-                .frequency(MONTH)
-                .amountReceived(BigDecimal.valueOf(0))
-                .build();
+            .type(JOB)
+            .frequency(MONTH)
+            .amountReceived(BigDecimal.valueOf(0))
+            .build();
         //when
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
-                .hasSize(1)
-                .contains("amountReceived : must be greater than or equal to 0.01");
+            .hasSize(1)
+            .contains("amountReceived : must be greater than or equal to 0.01");
     }
 }

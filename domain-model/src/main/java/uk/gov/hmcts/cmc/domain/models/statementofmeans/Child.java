@@ -22,8 +22,8 @@ public class Child {
     @NotNull
     private final AgeGroupType ageGroupType;
 
-    @NotNull
     @Min(0)
+    @NotNull
     private final Integer numberOfChildren;
 
     @Min(0)
