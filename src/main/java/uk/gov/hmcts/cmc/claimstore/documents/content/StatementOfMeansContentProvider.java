@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -72,7 +71,7 @@ public class StatementOfMeansContentProvider {
 
         return new ImmutableMap.Builder<String, Object>()
             .put("type", expense.getType().getDescription())
-            .put("amountPaid", expense.getClass())
+            .put("amountPaid", expense.getAmountPaid())
             .put("frequency", expense.getFrequency().getDescription())
             .build();
     }
@@ -106,8 +105,12 @@ public class StatementOfMeansContentProvider {
         if (optionalDependant.isPresent()) {
             Dependant dependant = optionalDependant.get();
             contentBuilder.put("dependant", dependant);
-            List<Child> children = dependant.getChildren();
-            contentBuilder.put("children", children);
+            contentBuilder.put("children", dependant.getChildren()
+                .stream()
+                .map(this::createChild)
+                .collect(toList())
+            );
+
             Optional<OtherDependants> optionalOtherDependants = dependant.getOtherDependants();
             if (optionalOtherDependants.isPresent()) {
                 OtherDependants otherDependants = optionalOtherDependants.get();
@@ -119,6 +122,16 @@ public class StatementOfMeansContentProvider {
         }
 
         return contentBuilder.build();
+    }
+
+    private Map<String, Object> createChild(Child child) {
+        requireNonNull(child);
+
+        return new ImmutableMap.Builder<String, Object>()
+            .put("ageGroupType", child.getAgeGroupType().getDescription())
+            .put("numberOfChildren", child.getNumberOfChildren())
+            .put("numberOfChildrenLivingWithYou", child.getNumberOfChildrenLivingWithYou())
+            .build();
     }
 
     public String createJobType(Employment employment) {
