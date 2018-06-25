@@ -25,11 +25,13 @@ public class FullAdmissionResponseContentProvider {
 
     public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse) {
         requireNonNull(fullAdmissionResponse);
-        ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
+
         PaymentOption type = fullAdmissionResponse.getPaymentOption();
 
-        contentBuilder.put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription());
-        contentBuilder.put("paymentOption", type.getDescription());
+        ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
+            .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
+            .put("paymentOption", type.getDescription());
+
         Optional<RepaymentPlan> optionalRepaymentPlan = fullAdmissionResponse.getRepaymentPlan();
         if (optionalRepaymentPlan.isPresent()) {
             RepaymentPlan repaymentPlan = optionalRepaymentPlan.get();

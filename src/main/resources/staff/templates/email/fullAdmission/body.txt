@@ -1,4 +1,3 @@
-
 The defendant has offered to pay {{ paymentOptionDescription }} in response to the money claim made against them by {{ claim.claimData.claimant.name }}.
 {% if paymentOption == 'IMMEDIATELY' %}
 The defendant needs to tell the claimant and the court when they get paid on or before {{ responseDeadline }}.
