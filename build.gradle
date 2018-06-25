@@ -294,8 +294,6 @@ def listFiles(String pattern) {
     .collect(Collectors.joining(","))
 }
 
-
-
 sonarqube {
   properties {
 
