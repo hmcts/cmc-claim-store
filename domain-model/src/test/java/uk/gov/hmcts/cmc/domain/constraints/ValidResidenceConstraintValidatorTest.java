@@ -83,11 +83,6 @@ public class ValidResidenceConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenResidenceTypeIsOtherAndOtherDetailsIsEmpty() {
-        assertIsInvalid(Residence.builder().type(Residence.ResidenceType.OTHER).otherDetail("").build());
-    }
-
-    @Test
     public void shouldBeInvalidWhenResidenceTypeIsOtherAndOtherDetailsIsNull() {
         assertIsInvalid(Residence.builder().type(Residence.ResidenceType.OTHER).otherDetail(null).build());
     }

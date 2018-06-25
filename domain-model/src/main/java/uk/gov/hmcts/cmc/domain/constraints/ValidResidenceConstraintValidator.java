@@ -20,7 +20,7 @@ public class ValidResidenceConstraintValidator implements ConstraintValidator<Va
         Residence.ResidenceType type = residence.getType();
 
         if (type == Residence.ResidenceType.OTHER) {
-            if (!residence.getOtherDetail().isPresent() || residence.getOtherDetail().get().isEmpty()) {
+            if (!residence.getOtherDetail().isPresent()) {
                 setValidationErrors(
                     context, Fields.OTHER_DETAILS, mayNotBeNullError("residence", type.getDescription())
                 );

@@ -20,7 +20,7 @@ public class ValidIncomeConstraintValidator implements ConstraintValidator<Valid
         Income.IncomeType type = income.getType();
 
         if (type == Income.IncomeType.OTHER) {
-            if (!income.getOtherSource().isPresent() || income.getOtherSource().get().isEmpty()) {
+            if (!income.getOtherSource().isPresent()) {
                 setValidationErrors(
                     context, Fields.OTHER_DETAILS, mayNotBeNullError("incomeType", type.getDescription())
                 );
