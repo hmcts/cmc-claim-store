@@ -11,6 +11,8 @@
     "submitterId": "20",
     "submittedOn": "2018-01-17T11:45:46.872525",
     "responseDeadline": "2018-01-18",
+    "defendantId": "100",
+    "moreTimeRequested": "YES",
     "claimData": {
       "amount": {
         "type": "BREAK_DOWN",
@@ -40,8 +42,7 @@
         "interestDate": {
           "date": "2015-02-02",
           "type": "CUSTOM",
-          "reason": "I want to claim from this date because that's when that happened",
-          "endDateType": "SUBMISSION"
+          "reason": "I want to claim from this date because that's when that happened"
         }
       },
       "claimants": [
@@ -93,6 +94,7 @@
     "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
     "id": 26,
     "issuedOn": "2018-01-17",
+    "letterHolderId": "575",
     "submitterEmail": "me@server.net"
   },
   "data_classification": {
