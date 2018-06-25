@@ -210,7 +210,7 @@ public class CCDCaseApi {
         );
 
         Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(defendantId, defendantEmail, claim);
+        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(defendantUser.getAuthorisation(), claim);
 
     }
 

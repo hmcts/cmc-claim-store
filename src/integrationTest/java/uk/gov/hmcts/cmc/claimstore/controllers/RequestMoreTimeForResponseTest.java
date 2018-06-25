@@ -21,9 +21,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -76,6 +78,17 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         verify(notificationClient, times(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
+
+    }
+
+    @Test
+    public void shouldRescheduleNotificationJobWhenEverythingIsOk() throws Exception {
+        caseRepository.linkDefendant(BEARER_TOKEN);
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isOk());
+
+        verify(jobService, atLeast(2)).rescheduleJob(any(), any());
     }
 
     @Test

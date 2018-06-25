@@ -12,9 +12,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,5 +55,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
         assertThat(claimStore.getClaim(claim.getId()))
             .extracting(Claim::getId, Claim::getDefendantId)
             .containsExactly(claim.getId(), "555");
+
+        verify(jobService, atLeast(2)).scheduleJob(any(), any());
     }
 }

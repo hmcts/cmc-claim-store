@@ -92,6 +92,7 @@
     "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
     "id": 26,
     "issuedOn": "2018-01-17",
+    "responseDeadline": "2020-06-04",
     "submitterEmail": "me@server.net"
   },
   "data_classification": {

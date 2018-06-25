@@ -15,13 +15,16 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
@@ -37,29 +40,39 @@ public class ResponseNeededNotificationService {
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
     private final AppInsights appInsights;
+    private final ClaimService claimService;
 
     @Autowired
     public ResponseNeededNotificationService(
         NotificationClient notificationClient,
         NotificationsProperties notificationsProperties,
-        AppInsights appInsights
-    ) {
+        AppInsights appInsights,
+        ClaimService claimService) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
         this.appInsights = appInsights;
+        this.claimService = claimService;
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(JobDetail jobDetail) {
         JobDataMap emailData = jobDetail.getJobDataMap();
         Map<String, String> parameters = aggregateParams(emailData);
+
         try {
-            notificationClient.sendEmail(
-                getEmailTemplates().getDefendantResponseNeeded(),
-                (String) emailData.get("defendantEmail"),
-                parameters,
-                (String) emailData.get("caseReference")
-            );
+            String caseReference = (String) emailData.get("caseReference");
+            Optional<Claim> claim = claimService.getClaimByReferenceAnonymous(caseReference);
+            if (claim.isPresent() && claim.get().getRespondedAt() == null) {
+                logger.debug("Claim is not yet responded for case {}, so sending notification to defendant",
+                    caseReference);
+
+                notificationClient.sendEmail(
+                    getEmailTemplates().getDefendantResponseNeeded(),
+                    (String) emailData.get("defendantEmail"),
+                    parameters,
+                    caseReference
+                );
+            }
         } catch (NotificationClientException e) {
             throw new NotificationException(e);
         }

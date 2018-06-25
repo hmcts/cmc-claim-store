@@ -83,7 +83,7 @@ public class DBCaseRepository implements CaseRepository {
                 if (noOfRows != 0) {
                     claimRepository.getByLetterHolderId(letterHolderId)
                         .ifPresent(claim -> jobSchedulerService
-                            .scheduleEmailNotificationsForDefendantResponse(defendantId, defendantEmail, claim));
+                            .scheduleEmailNotificationsForDefendantResponse(authorisation, claim));
                 }
             });
     }
@@ -124,6 +124,7 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
         claimRepository.requestMoreTime(claim.getExternalId(), newResponseDeadline);
+        jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(authorisation, claim, newResponseDeadline);
     }
 
     @Override
