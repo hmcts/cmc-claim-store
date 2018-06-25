@@ -366,7 +366,7 @@
           </td>
         </tr>
 
-        {% if repaymentPlan is defined %}
+        {% if repaymentPlan.repaymentOption == "By instalments" %}
         <tr class="no-border">
           <td><strong>Regular payments of:</strong></td>
           <td>
@@ -385,6 +385,7 @@
             {{ repaymentPlan.firstPaymentDate }}
           </td>
         </tr>
+        {% endif %}
         {% if statementOfMeans is defined %}
         <tr class="no-border">
           <td><strong>Explain why you can’t pay the full amount now:</strong></td>
@@ -392,7 +393,6 @@
             {{ statementOfMeans.reason}}
           </td>
         </tr>
-        {% endif %}
         {% endif %}
       </table>
     </div>
@@ -468,7 +468,7 @@
       <tr class="no-border">
         <td><strong>Number of people:</strong></td>
         <td>
-          {{ maintainedChildren }}
+          {{ otherDependants.numberOfPeople }}
         </td>
       </tr>
       <tr class="no-border">
@@ -721,7 +721,7 @@
   </div>
 </div>
 
-{% if hasDefendantAlreadyPaid is not defined %}
+{% if hasDefendantAlreadyPaid is not defined and paymentOption is not defined%}
 <div class="section">
   <h3>What happens next</h3>
 </div>

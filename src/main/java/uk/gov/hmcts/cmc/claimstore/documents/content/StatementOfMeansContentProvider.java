@@ -4,21 +4,18 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
 public class StatementOfMeansContentProvider {
@@ -68,7 +65,7 @@ public class StatementOfMeansContentProvider {
         return new ImmutableMap.Builder<String, Object>()
             .put("type", bankAccount.getType().getDescription())
             .put("joint", bankAccount.isJoint())
-            .put("balance", bankAccount.getBalance())
+            .put("balance", formatMoney(bankAccount.getBalance()))
             .build();
     }
 
@@ -77,17 +74,17 @@ public class StatementOfMeansContentProvider {
 
         return new ImmutableMap.Builder<String, Object>()
             .put("type", income.getType().getDescription())
-            .put("amountReceived", income.getAmountReceived())
+            .put("amountReceived", formatMoney(income.getAmountReceived()))
             .put("frequency", income.getFrequency().getDescription())
             .build();
     }
 
-    public Map<String, Object> createExpense(Expense expense) {
+    private Map<String, Object> createExpense(Expense expense) {
         requireNonNull(expense);
 
         return new ImmutableMap.Builder<String, Object>()
             .put("type", expense.getType().getDescription())
-            .put("amountPaid", expense.getAmountPaid())
+            .put("amountPaid", formatMoney(expense.getAmountPaid()))
             .put("frequency", expense.getFrequency().getDescription())
             .build();
     }
@@ -95,47 +92,44 @@ public class StatementOfMeansContentProvider {
     private Map<String, Object> createEmployment(StatementOfMeans statementOfMeans) {
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
-        Optional<Employment> optionalEmployment = statementOfMeans.getEmployment();
-        if (optionalEmployment.isPresent()) {
-            Employment employment = optionalEmployment.get();
+        statementOfMeans.getEmployment().ifPresent(employment -> {
+            contentBuilder.put("jobType", createJobType(employment));
             contentBuilder.put("employment", employment);
-            if (employment.getSelfEmployment().isPresent()) {
-                Optional<SelfEmployment> optionalSelfEmployment = employment.getSelfEmployment();
-                if (optionalSelfEmployment.isPresent()) {
-                    SelfEmployment selfEmployment = optionalSelfEmployment.get();
-                    contentBuilder.put("selfEmployment", selfEmployment);
-                    Optional<OnTaxPayments> optionalTaxPayments = selfEmployment.getOnTaxPayments();
-                    OnTaxPayments onTaxPayments = optionalTaxPayments.get();
-                    contentBuilder.put("onTaxPayments", onTaxPayments);
-                }
-                contentBuilder.put("jobType", createJobType(employment));
-            }
-        }
+            employment.getSelfEmployment().ifPresent(selfEmployment -> {
+                contentBuilder.put("selfEmployment", selfEmployment);
+                selfEmployment.getOnTaxPayments().ifPresent(onTaxPayments -> {
+                    contentBuilder.put("onTaxPayments", createOnTaxPayments(onTaxPayments));
+                });
+            });
+        });
+
         return contentBuilder.build();
+    }
+
+    private Map<String, Object> createOnTaxPayments(OnTaxPayments onTaxPayments) {
+        return new ImmutableMap.Builder<String, Object>()
+            .put("amountYouOwe", formatMoney(onTaxPayments.getAmountYouOwe()))
+            .put("reason", onTaxPayments.getReason())
+            .build();
     }
 
     private Map<String, Object> createDependant(StatementOfMeans statementOfMeans) {
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
-        Optional<Dependant> optionalDependant = statementOfMeans.getDependant();
-        if (optionalDependant.isPresent()) {
-            Dependant dependant = optionalDependant.get();
+        statementOfMeans.getDependant().ifPresent(dependant -> {
             contentBuilder.put("dependant", dependant);
             contentBuilder.put("children", dependant.getChildren()
                 .stream()
                 .map(this::createChild)
                 .collect(toList())
             );
-
-            Optional<OtherDependants> optionalOtherDependants = dependant.getOtherDependants();
-            if (optionalOtherDependants.isPresent()) {
-                OtherDependants otherDependants = optionalOtherDependants.get();
+            dependant.getOtherDependants().ifPresent(otherDependants -> {
                 contentBuilder.put("otherDependants", otherDependants);
-            }
-            Optional<Integer> optionalMaintainedChildren = dependant.getNumberOfMaintainedChildren();
-            Integer maintainedChildren = optionalMaintainedChildren.get();
-            contentBuilder.put("maintainedChildren", maintainedChildren);
-        }
+            });
+            dependant.getNumberOfMaintainedChildren().ifPresent(
+                maintainedChildren -> contentBuilder.put("maintainedChildren", maintainedChildren)
+            );
+        });
 
         return contentBuilder.build();
     }
