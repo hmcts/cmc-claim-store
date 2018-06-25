@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
@@ -33,7 +34,12 @@ public class StatementOfMeansContentProvider {
 
         contentBuilder.putAll(createDependant(statementOfMeans));
 
-        contentBuilder.put("bankAccounts", statementOfMeans.getBankAccounts());
+        contentBuilder.put("bankAccounts", statementOfMeans.getBankAccounts()
+            .stream()
+            .map(this::createBankAccount)
+            .collect(toList())
+        );
+
         contentBuilder.put("courtOrders", statementOfMeans.getCourtOrders());
         contentBuilder.put("debts", statementOfMeans.getDebts());
 
@@ -54,6 +60,16 @@ public class StatementOfMeansContentProvider {
         );
 
         return contentBuilder.build();
+    }
+
+    private Map<String, Object> createBankAccount(BankAccount bankAccount) {
+        requireNonNull(bankAccount);
+
+        return new ImmutableMap.Builder<String, Object>()
+            .put("type", bankAccount.getType().getDescription())
+            .put("joint", bankAccount.isJoint())
+            .put("balance", bankAccount.getBalance())
+            .build();
     }
 
     private Map<String, Object> createIncome(Income income) {
