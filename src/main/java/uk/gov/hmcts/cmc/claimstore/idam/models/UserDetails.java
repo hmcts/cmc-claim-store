@@ -64,6 +64,11 @@ public class UserDetails {
         return roles.stream().anyMatch("solicitor"::equals);
     }
 
+    @JsonIgnore
+    public boolean isCaseworker() {
+        return roles.stream().anyMatch("caseworker-cmc"::equals);
+    }
+
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());

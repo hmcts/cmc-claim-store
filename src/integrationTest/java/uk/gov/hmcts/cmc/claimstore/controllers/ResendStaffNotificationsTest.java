@@ -44,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class ResendStaffNotificationsTest extends BaseIntegrationTest {
-
     @MockBean
     protected SendLetterApi sendLetterApi;
 
@@ -56,16 +55,20 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
     @Before
     public void setup() {
+        UserDetails userDetails = SampleUserDetails.getDefault();
+        User user = new User(BEARER_TOKEN, userDetails);
+        given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
+        given(userService.authenticateAnonymousCaseWorker()).willReturn(user);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(user);
+
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(new byte[]{1, 2, 3, 4});
-
-        given(userService.getUserDetails(anyString())).willReturn(SampleUserDetails.getDefault());
     }
 
     @Test
     public void shouldRespond404WhenClaimDoesNotExist() throws Exception {
         String nonExistingClaimReference = "something";
-        String event = "claim-issue";
+        String event = "claim-issued";
 
         makeRequest(nonExistingClaimReference, event)
             .andExpect(status().isNotFound());
@@ -102,13 +105,27 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldRespond400AndNotProceedForClaimIssuedEventWhenAuthorisationIsMissing() throws Exception {
+        String event = "claim-issued";
+        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
+
+        webClient
+            .perform(put("/support/claim/"
+                    + claim.getReferenceNumber()
+                    + "/event/" + event + "/resend-staff-notifications"))
+            .andExpect(status().isBadRequest());
+
+        verify(emailService, never()).sendEmail(any(), any());
+    }
+
+    @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         String event = "claim-issued";
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
-        given(userService.generatePin(anyString(), eq("ABC123"))).willReturn(pinResponse);
+        given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
         given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(claim.getReferenceNumber(), event)
@@ -194,6 +211,6 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     private ResultActions makeRequest(String referenceNumber, String event) throws Exception {
         return webClient
             .perform(put("/support/claim/" + referenceNumber + "/event/" + event + "/resend-staff-notifications")
-                .header(HttpHeaders.AUTHORIZATION, "ABC123"));
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
 }

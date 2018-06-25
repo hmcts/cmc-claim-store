@@ -16,11 +16,11 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
 @DirtiesContext
 @TestExecutionListeners(listeners = {BaseIntegrationTest.CleanDatabaseListener.class}, mergeMode = MERGE_WITH_DEFAULTS)
 public abstract class BaseIntegrationTest extends MockSpringTest {
-
     protected static final String SUBMITTER_ID = "123";
     protected static final String DEFENDANT_ID = "555";
     protected static final String DEFENDANT_EMAIL = "j.smith@example.com";
     protected static final String BEARER_TOKEN = "Bearer let me in";
+    protected static final String SERVICE_TOKEN = "S2S token";
 
     @Autowired
     protected ClaimStore claimStore;
