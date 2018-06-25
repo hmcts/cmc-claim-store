@@ -42,7 +42,7 @@ public class SealedClaimJsonMapper {
             .add("amountWithInterest", claim.getAmountWithInterest().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
-            .add("defendants", defendantMapper.map(claim.getClaimData().getDefendants().stream().findFirst().orElseThrow(IllegalStateException::new)))
+            .add("defendants", defendantMapper.map(claim.getClaimData().getDefendants()))
             .build();
     }
 

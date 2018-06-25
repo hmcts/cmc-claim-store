@@ -5,12 +5,10 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
-import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -21,12 +19,14 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 
 public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
@@ -36,17 +36,11 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
     @Autowired
     private EmailProperties emailProperties;
 
-    @MockBean
-    private CCJStaffNotificationService ccjStaffNotificationService;
-
     @Captor
     private ArgumentCaptor<String> senderArgument;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
-
-    @Captor
-    private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     private Claim claim;
 
@@ -63,6 +57,8 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
         event = new CountyCourtJudgmentRequestedEvent(claim, "AUTH_CODE");
 
+        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
+
     }
 
     @Test(expected = NullPointerException.class)
@@ -72,12 +68,10 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendResponseEmailWithConfiguredValues() {
-        countyCourtJudgementStub();
 
         service.notifyRobotics(event);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
-        verify(ccjStaffNotificationService).generateCountyCourtJudgmentPdf(claimArgumentCaptor.capture());
 
         assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getResponseRecipient());
@@ -88,7 +82,6 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithConfiguredValuesAndAttachments() {
-        countyCourtJudgementStub();
 
         service.notifyRobotics(event);
 
@@ -98,7 +91,8 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
             .getAttachments()
             .get(0);
 
-        String expectedPdfFilename = buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION;
+        String expectedPdfFilename = buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
+            claim.getClaimData().getDefendant().getName()) + EXTENSION;
 
         assertThat(ccjPdfAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(ccjPdfAttachment.getFilename()).isEqualTo(expectedPdfFilename);
@@ -113,11 +107,4 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
         assertThat(ccjJsonAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(ccjJsonAttachment.getFilename()).isEqualTo(expectedCcjJsonFilename);
     }
-
-    private void countyCourtJudgementStub() {
-        when(ccjStaffNotificationService.generateCountyCourtJudgmentPdf(claim))
-            .thenReturn(EmailAttachment.pdf(PDF_CONTENT,
-                buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION));
-    }
-
 }

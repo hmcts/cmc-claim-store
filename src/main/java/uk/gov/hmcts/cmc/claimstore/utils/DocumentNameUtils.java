@@ -20,6 +20,13 @@ public class DocumentNameUtils {
         return format("%s-json-claim", number);
     }
 
+    public static String buildRequestForJudgementFileBaseName(String caseRef, String partyName) {
+        requireNonBlank(caseRef);
+        requireNonBlank(partyName);
+
+        return format("%s-%s-county-court-judgment-details", caseRef, partyName);
+    }
+
     public static String buildJsonRequestForJudgementFileBaseName(String number) {
         requireNonBlank(number);
 
@@ -35,7 +42,7 @@ public class DocumentNameUtils {
     public static String buildResponseFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
 
-        return format("%s-json-defence-response", caseRef);
+        return format("%s-claim-response", caseRef);
     }
 
     public static String buildJsonResponseFileBaseName(String number) {

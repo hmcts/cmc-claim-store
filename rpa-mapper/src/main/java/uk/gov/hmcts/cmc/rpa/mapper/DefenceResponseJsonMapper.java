@@ -31,10 +31,10 @@ public class DefenceResponseJsonMapper {
         String defendantsEmail = claim.getDefendantEmail();
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
-            .add("defenceSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
+            .add("responseSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
             .add("defenceResponse", extractFromSubclass(response, FullDefenceResponse.class, fullDefenceResponse -> fullDefenceResponse.getDefenceType().name()))
             .add("defendants", defendantMapper.map(response.getDefendant(), claim.getClaimData().getDefendant(), defendantsEmail))
-            .add("mediation", isMediationSelected(response) ? "yes" : "no")
+            .add("mediation", isMediationSelected(response))
             .build();
     }
 

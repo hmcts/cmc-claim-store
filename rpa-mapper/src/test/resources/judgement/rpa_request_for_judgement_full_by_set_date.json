@@ -4,10 +4,13 @@
   "amountWithInterest": 80.89,
   "courtFee": 40.00,
   "alreadyPaid": 10.00,
-  "payment": "By a set date",
-  "instalmentAmount": null,
-  "firstPayment": null,
+  "paymentType": "FULL_BY_SPECIFIED_DATE",
   "fullPaymentDeadline": "12-Mar-2200",
+  "instalments": {
+    "amount": null,
+    "firstPayment": null,
+    "frequency": null
+  },
   "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null
 }
