@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.scheduler.exceptions.JobException;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -58,7 +60,7 @@ public class JobService {
 
             scheduler.rescheduleJob(new TriggerKey(jobData.getId(), jobData.getGroup()),
                 newTrigger()
-                    .startAt(Date.from(startDateTime.toInstant()))
+                    .startAt(Date.from(LocalDateTime.now().minusHours(1).plusMinutes(5).toInstant(ZoneOffset.UTC)))
                     .withIdentity(jobData.getId(), jobData.getGroup())
                     .withSchedule(
                         simpleSchedule()

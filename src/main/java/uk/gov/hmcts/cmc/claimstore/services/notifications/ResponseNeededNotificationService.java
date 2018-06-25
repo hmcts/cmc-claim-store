@@ -63,8 +63,6 @@ public class ResponseNeededNotificationService {
             String caseReference = (String) emailData.get("caseReference");
             Optional<Claim> claim = claimService.getClaimByReferenceAnonymous(caseReference);
             if (claim.isPresent() && claim.get().getRespondedAt() == null) {
-                logger.debug("Claim is not yet responded for case {}, so sending notification to defendant",
-                    caseReference);
 
                 notificationClient.sendEmail(
                     getEmailTemplates().getDefendantResponseNeeded(),

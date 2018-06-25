@@ -11,12 +11,10 @@ import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -44,16 +42,11 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
 
     private static final String DEFENDANT_ID = "100";
 
-    private Claim claim;
-
     @Before
     public void before() {
-        claim = claimStore.saveClaim(SampleClaimData.builder().withExternalId(UUID.randomUUID()).build());
-
         UserDetails userDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
             .withMail("defendant@example.com")
-            .withRoles("letter-" + claim.getLetterHolderId())
             .build();
 
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));

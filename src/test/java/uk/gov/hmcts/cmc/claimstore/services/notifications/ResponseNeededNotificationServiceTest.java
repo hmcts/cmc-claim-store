@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -55,7 +54,7 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
         String caseReference = "000MC004";
         String defendantEmailAddress = "defendant@mail.com";
 
-        ImmutableMap<String, ? extends Serializable> data = ImmutableMap.of("caseReference", caseReference,
+        ImmutableMap<String, Object> data = ImmutableMap.of("caseReference", caseReference,
             "defendantEmail", defendantEmailAddress,
             "claimantName", "Mr claimant",
             "responseDeadline", LocalDate.now(),
