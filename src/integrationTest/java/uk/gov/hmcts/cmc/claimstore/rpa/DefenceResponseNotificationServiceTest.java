@@ -41,9 +41,6 @@ public class DefenceResponseNotificationServiceTest extends MockSpringTest {
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    @Captor
-    private ArgumentCaptor<Claim> claimArgumentCaptor;
-
     private Claim claim;
 
     private DefendantResponseEvent event;
