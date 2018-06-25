@@ -359,7 +359,7 @@
   </div>
     <div class="section-body">
       <table>
-        <tr class="no-border">
+        <tr>
           <td><strong>When will they pay:</strong></td>
           <td>
             {{ paymentOption }}
@@ -409,7 +409,7 @@
       <tr class="no-border">
         <td><strong>Where are they living?</strong></td>
         <td>
-          {{ residence.typeDescription }}
+          {{ residenceTypeDescription }}
         </td>
       </tr>
       <tr>
@@ -590,7 +590,7 @@
       {% for income in incomes %}
       <tr class="no-border">
         <td>
-          {{ income.typeDescription }}
+          {{ income.type }}
         </td>
         <td>
           {{ income.amountReceived }}
@@ -604,7 +604,7 @@
       {% for expense in expenses %}
       <tr class="no-border">
         <td>
-          {{ expense.typeDescription }}
+          {{ expense.type }}
         </td>
         <td>
           {{ expense.amountPaid }}

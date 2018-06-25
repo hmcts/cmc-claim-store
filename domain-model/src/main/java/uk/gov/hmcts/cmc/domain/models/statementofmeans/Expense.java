@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
@@ -13,7 +12,6 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonIgnoreProperties(value = "typeDescription", allowGetters = true)
 @Builder
 public class Expense {
 
@@ -71,10 +69,6 @@ public class Expense {
 
     public ExpenseType getType() {
         return type;
-    }
-
-    public String getTypeDescription() {
-        return type.description;
     }
 
     public Optional<String> getOtherExpense() {

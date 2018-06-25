@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
@@ -16,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class StatementOfMeansContentProvider {
@@ -27,18 +30,51 @@ public class StatementOfMeansContentProvider {
 
         Residence residence = statementOfMeans.getResidence();
         contentBuilder.put("residence", residence);
+        contentBuilder.put("residenceTypeDescription", residence.getType().getDescription());
 
         contentBuilder.putAll(createDependant(statementOfMeans));
 
         contentBuilder.put("bankAccounts", statementOfMeans.getBankAccounts());
         contentBuilder.put("courtOrders", statementOfMeans.getCourtOrders());
-        contentBuilder.put("expenses", statementOfMeans.getExpenses());
-        contentBuilder.put("incomes", statementOfMeans.getIncomes());
         contentBuilder.put("debts", statementOfMeans.getDebts());
 
         contentBuilder.putAll(createEmployment(statementOfMeans));
 
+        contentBuilder.put("expenses",
+            statementOfMeans.getExpenses()
+                .stream()
+                .map(this::createExpense)
+                .collect(toList())
+        );
+
+        contentBuilder.put("incomes",
+            statementOfMeans.getIncomes()
+                .stream()
+                .map(this::createIncome)
+                .collect(toList())
+        );
+
         return contentBuilder.build();
+    }
+
+    private Map<String, Object> createIncome(Income income) {
+        requireNonNull(income);
+
+        return new ImmutableMap.Builder<String, Object>()
+            .put("type", income.getType().getDescription())
+            .put("amountReceived", income.getAmountReceived())
+            .put("frequency", income.getFrequency().getDescription())
+            .build();
+    }
+
+    public Map<String, Object> createExpense(Expense expense) {
+        requireNonNull(expense);
+
+        return new ImmutableMap.Builder<String, Object>()
+            .put("type", expense.getType().getDescription())
+            .put("amountPaid", expense.getClass())
+            .put("frequency", expense.getFrequency().getDescription())
+            .build();
     }
 
     private Map<String, Object> createEmployment(StatementOfMeans statementOfMeans) {

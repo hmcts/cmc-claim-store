@@ -1,13 +1,11 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
-@JsonIgnoreProperties(value = "typeDescription", allowGetters = true)
 @Builder
 public class Residence {
 
@@ -41,10 +39,6 @@ public class Residence {
 
     public ResidenceType getType() {
         return type;
-    }
-
-    public String getTypeDescription() {
-        return type.description;
     }
 
     public Optional<String> getOtherDetail() {
