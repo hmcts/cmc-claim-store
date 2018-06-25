@@ -26,15 +26,15 @@ public class FullAdmissionResponseContentProvider {
     public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse) {
         requireNonNull(fullAdmissionResponse);
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
-        RepaymentPlan repaymentPlan = null;
         PaymentOption type = fullAdmissionResponse.getPaymentOption();
-        Optional<RepaymentPlan> optionalRepaymentPlan = fullAdmissionResponse.getRepaymentPlan();
-        if (optionalRepaymentPlan.isPresent()) {
-            repaymentPlan = optionalRepaymentPlan.get();
-            contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()));
-        }
+
         contentBuilder.put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription());
         contentBuilder.put("paymentOption", type.getDescription());
+        Optional<RepaymentPlan> optionalRepaymentPlan = fullAdmissionResponse.getRepaymentPlan();
+        if (optionalRepaymentPlan.isPresent()) {
+            RepaymentPlan repaymentPlan = optionalRepaymentPlan.get();
+            contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()));
+        }
 
         fullAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> contentBuilder.putAll(

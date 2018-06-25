@@ -1,21 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,54 +23,49 @@ public class StatementOfMeansContentProvider {
     public Map<String, Object> createContent(StatementOfMeans statementOfMeans) {
         requireNonNull(statementOfMeans);
 
-        Map<String, Object> content = new HashMap<>();
+        ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
         Residence residence = statementOfMeans.getResidence();
-        content.put("residence", residence);
+        contentBuilder.put("residence", residence);
 
         Optional<Dependant> optionalDependant = statementOfMeans.getDependant();
         if (optionalDependant.isPresent()) {
             Dependant dependant = optionalDependant.get();
-            content.put("dependant", dependant);
+            contentBuilder.put("dependant", dependant);
             List<Child> children = dependant.getChildren();
-            content.put("children", children);
+            contentBuilder.put("children", children);
             Optional<OtherDependants> optionalOtherDependants = dependant.getOtherDependants();
             if (optionalOtherDependants.isPresent()) {
                 OtherDependants otherDependants = optionalOtherDependants.get();
-                content.put("otherDependants", otherDependants);
+                contentBuilder.put("otherDependants", otherDependants);
             }
             Optional<Integer> optionalMaintainedChildren = dependant.getNumberOfMaintainedChildren();
             Integer maintainedChildren = optionalMaintainedChildren.get();
-            content.put("maintainedChildren", maintainedChildren);
+            contentBuilder.put("maintainedChildren", maintainedChildren);
         }
-        List<BankAccount> bankAccounts = statementOfMeans.getBankAccounts();
-        content.put("bankAccounts", bankAccounts);
-        List<CourtOrder> courtOrders = statementOfMeans.getCourtOrders();
-        content.put("courtOrders", courtOrders);
-        List<Expense> expenses = statementOfMeans.getExpenses();
-        content.put("expenses", expenses);
-        List<Income> incomes = statementOfMeans.getIncomes();
-        content.put("incomes", incomes);
-        List<Debt> debts = statementOfMeans.getDebts();
-        content.put("debts", debts);
+        contentBuilder.put("bankAccounts", statementOfMeans.getBankAccounts());
+        contentBuilder.put("courtOrders", statementOfMeans.getCourtOrders());
+        contentBuilder.put("expenses", statementOfMeans.getExpenses());
+        contentBuilder.put("incomes", statementOfMeans.getIncomes());
+        contentBuilder.put("debts", statementOfMeans.getDebts());
 
         Optional<Employment> optionalEmployment = statementOfMeans.getEmployment();
         if (optionalEmployment.isPresent()) {
             Employment employment = optionalEmployment.get();
-            content.put("employment", employment);
+            contentBuilder.put("employment", employment);
             if (employment.getSelfEmployment().isPresent()) {
                 Optional<SelfEmployment> optionalSelfEmployment = employment.getSelfEmployment();
                 if (optionalSelfEmployment.isPresent()) {
                     SelfEmployment selfEmployment = optionalSelfEmployment.get();
-                    content.put("selfEmployment", selfEmployment);
+                    contentBuilder.put("selfEmployment", selfEmployment);
                     Optional<OnTaxPayments> optionalTaxPayments = selfEmployment.getOnTaxPayments();
                     OnTaxPayments onTaxPayments = optionalTaxPayments.get();
-                    content.put("onTaxPayments", onTaxPayments);
+                    contentBuilder.put("onTaxPayments", onTaxPayments);
                 }
-                content.put("jobType", createJobType(employment));
+                contentBuilder.put("jobType", createJobType(employment));
             }
         }
-        return content;
+        return contentBuilder.build();
     }
 
     public String createJobType(Employment employment) {

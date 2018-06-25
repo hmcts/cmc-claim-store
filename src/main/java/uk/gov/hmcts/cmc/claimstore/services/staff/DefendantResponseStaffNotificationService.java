@@ -91,8 +91,7 @@ public class DefendantResponseStaffNotificationService {
 
         switch (response.getResponseType()) {
             case FULL_DEFENCE:
-                map.put("defendantMobilePhone", claim.getResponse()
-                    .orElseThrow(IllegalStateException::new)
+                map.put("defendantMobilePhone", response
                     .getDefendant()
                     .getMobilePhone()
                     .orElse(null));
@@ -103,7 +102,7 @@ public class DefendantResponseStaffNotificationService {
                 map.put("paymentOptionDescription", fullAdmissionResponse
                     .getPaymentOption().getDescription().toLowerCase());
                 map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-                map.put("FourteenDaysFromNow", formatDate(now().plusDays(14)));
+                map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
                 break;
             default:
                 throw new IllegalStateException("Invalid response type " + response.getResponseType());

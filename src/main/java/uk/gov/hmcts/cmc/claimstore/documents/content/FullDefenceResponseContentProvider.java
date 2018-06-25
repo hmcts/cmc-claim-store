@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,21 +25,21 @@ public class FullDefenceResponseContentProvider {
 
     public Map<String, Object> createContent(FullDefenceResponse fullDefenceResponse) {
         requireNonNull(fullDefenceResponse);
-        Map<String, Object> content = new HashMap<>();
+        ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
         List<TimelineEvent> events = null;
         List<EvidenceContent> evidences = null;
         String timelineComment = null;
         String evidenceComment = null;
 
-        content.put("responseDefence", fullDefenceResponse.getDefence().orElse(null));
-        content.put("responseTypeSelected", fullDefenceResponse.getDefenceType().getDescription());
+        contentBuilder.put("responseDefence", fullDefenceResponse.getDefence().orElse(null));
+        contentBuilder.put("responseTypeSelected", fullDefenceResponse.getDefenceType().getDescription());
         if (fullDefenceResponse.getDefenceType().equals(DefenceType.ALREADY_PAID)) {
-            content.put("hasDefendantAlreadyPaid", true);
+            contentBuilder.put("hasDefendantAlreadyPaid", true);
         }
 
         fullDefenceResponse.getPaymentDeclaration().ifPresent(paymentDeclaration ->
-            content.put("paymentDeclaration", createContentFor(paymentDeclaration))
+            contentBuilder.put("paymentDeclaration", createContentFor(paymentDeclaration))
         );
 
         Optional<DefendantTimeline> defenceTimeline = fullDefenceResponse.getTimeline();
@@ -62,12 +61,12 @@ public class FullDefenceResponseContentProvider {
             evidenceComment = defendantEvidence.getComment().orElse(null);
         }
 
-        content.put("events", events);
-        content.put("timelineComment", timelineComment);
-        content.put("evidences", evidences);
-        content.put("evidenceComment", evidenceComment);
+        contentBuilder.put("events", events);
+        contentBuilder.put("timelineComment", timelineComment);
+        contentBuilder.put("evidences", evidences);
+        contentBuilder.put("evidenceComment", evidenceComment);
 
-        return content;
+        return contentBuilder.build();
     }
 
     private Map<Object, Object> createContentFor(PaymentDeclaration paymentDeclaration) {

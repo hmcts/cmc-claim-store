@@ -17,16 +17,15 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
 public class RepaymentPlanContentProviderTest {
+
     @Test
     public void createImmediatePaymentOption() {
-
         assertThat(create(IMMEDIATELY, null, null).getRepaymentOption())
             .isEqualTo("Immediately");
     }
 
     @Test
     public void createRepaymentPlanPaymentOption() {
-
         RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder()
             .withInstalmentAmount(BigDecimal.valueOf(80))
             .withFirstPaymentDate(now().plusDays(1))
@@ -43,8 +42,8 @@ public class RepaymentPlanContentProviderTest {
 
     @Test
     public void createBySetDatePaymentOption() {
-
         RepaymentPlanContent repaymentPlanContent = create(FULL_BY_SPECIFIED_DATE, null, now());
+
         assertThat(repaymentPlanContent.getRepaymentOption())
             .isEqualTo("By a set date");
         assertThat(repaymentPlanContent.getPaySetByDate())
