@@ -29,6 +29,16 @@ public class DebtTest {
     }
 
     @Test
+    public void shouldBeSuccessfulValidationForDebtWithMontlyAmountSetToZero() {
+        //given
+        Debt debt = newSampleOfDebtBuilder().monthlyPayments(BigDecimal.ZERO).build();
+        //when
+        Set<String> response = validate(debt);
+        //then
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
     public void shouldBeInvalidForAllNullFields() {
         //given
         Debt debt = Debt.builder().build();
