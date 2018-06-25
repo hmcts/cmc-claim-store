@@ -115,7 +115,7 @@ public class StatementOfMeansContentProvider {
     }
 
     private Map<String, Object> createDependant(StatementOfMeans statementOfMeans) {
-        ImmutableMap.Builder<java.lang.String, java.lang.Object> contentBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
         Optional<Dependant> optionalDependant = statementOfMeans.getDependant();
         if (optionalDependant.isPresent()) {
