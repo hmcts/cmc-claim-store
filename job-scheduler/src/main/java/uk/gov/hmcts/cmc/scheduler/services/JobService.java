@@ -60,7 +60,7 @@ public class JobService {
 
             scheduler.rescheduleJob(new TriggerKey(jobData.getId(), jobData.getGroup()),
                 newTrigger()
-                    .startAt(Date.from(LocalDateTime.now().minusHours(1).plusMinutes(5).toInstant(ZoneOffset.UTC)))
+                    .startAt(Date.from(startDateTime.toInstant()))
                     .withIdentity(jobData.getId(), jobData.getGroup())
                     .withSchedule(
                         simpleSchedule()
