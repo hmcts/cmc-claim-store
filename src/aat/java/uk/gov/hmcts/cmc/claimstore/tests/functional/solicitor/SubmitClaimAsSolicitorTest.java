@@ -33,7 +33,7 @@ public class SubmitClaimAsSolicitorTest extends BaseSolicitorTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
-        ClaimData claimData = testData.submittedByClaimantBuilder().build();
+        ClaimData claimData = testData.submittedBySolicitorBuilder().build();
         commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), solicitor.getAuthorisation());
 
         Claim createdCase = submitClaim(claimData)

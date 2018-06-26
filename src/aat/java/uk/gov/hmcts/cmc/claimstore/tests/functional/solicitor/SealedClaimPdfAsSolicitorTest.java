@@ -31,23 +31,12 @@ public class SealedClaimPdfAsSolicitorTest extends BaseSolicitorTest {
     }
 
     @Test
-    public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
-        Claim createdCase = createCase();
-        String pdfAsText = textContentOf(RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, solicitor.getAuthorisation())
-            .get("/documents/" + "claimIssueReceipt" + "/" + createdCase.getExternalId())
-            .asInputStream());
-        assertionsOnClaimPdf(createdCase, pdfAsText);
-    }
-
-    @Test
     public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
         Claim createdCase = createCase();
         String pdfAsText = textContentOf(RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, solicitor.getAuthorisation())
-            .get("/documents/" + "sealedClaim" + "/" + createdCase.getExternalId())
+            .get("/documents/sealedClaim/" + createdCase.getExternalId())
             .asInputStream());
         assertionsOnClaimPdf(createdCase, pdfAsText);
     }
