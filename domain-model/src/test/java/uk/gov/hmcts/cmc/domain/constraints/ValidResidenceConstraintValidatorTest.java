@@ -38,6 +38,11 @@ public class ValidResidenceConstraintValidatorTest {
     }
 
     @Test
+    public void shouldBeValidWhenNull() {
+        assertIsValid(null);
+    }
+
+    @Test
     public void shouldBeValidWhenResidenceTypeIsOwnHomeAndOtherDetailsIsEmpty() {
         buildAndAssertIsValidForType(Residence.ResidenceType.OWN_HOME);
     }
@@ -54,26 +59,26 @@ public class ValidResidenceConstraintValidatorTest {
 
     @Test
     public void shouldBeValidWhenResidenceTypeIsPrivateRentalAndOtherDetailsIsEmpty() {
-        buildAndAssertIsInvalidForType(Residence.ResidenceType.PRIVATE_RENTAL);
+        buildAndAssertIsValidForType(Residence.ResidenceType.PRIVATE_RENTAL);
     }
 
     @Test
-    public void shouldBeInvalidWhenResidenceTypeIsOwnHomeAndOtherDetailsIsEmpty() {
+    public void shouldBeInvalidWhenResidenceTypeIsOwnHomeAndOtherDetailsIsNotEmpty() {
         buildAndAssertIsInvalidForType(Residence.ResidenceType.OWN_HOME);
     }
 
     @Test
-    public void shouldBeInvalidWhenResidenceTypeIsJointOwnHomeAndOtherDetailsIsEmpty() {
+    public void shouldBeInvalidWhenResidenceTypeIsJointOwnHomeAndOtherDetailsIsNotEmpty() {
         buildAndAssertIsInvalidForType(Residence.ResidenceType.JOINT_OWN_HOME);
     }
 
     @Test
-    public void shouldBeInvalidWhenResidenceTypeIsCouncilHomeAndOtherDetailsIsEmpty() {
+    public void shouldBeInvalidWhenResidenceTypeIsCouncilHomeAndOtherDetailsIsNotEmpty() {
         buildAndAssertIsInvalidForType(Residence.ResidenceType.COUNCIL_OR_HOUSING_ASSN_HOME);
     }
 
     @Test
-    public void shouldBeInvalidWhenResidenceTypeIsPrivateRentalAndOtherDetailsIsEmpty() {
+    public void shouldBeInvalidWhenResidenceTypeIsPrivateRentalAndOtherDetailsIsNotEmpty() {
         buildAndAssertIsInvalidForType(Residence.ResidenceType.PRIVATE_RENTAL);
     }
 
