@@ -352,6 +352,7 @@
   </div>
 </div>
 
+{% if responseType equals "FULL_ADMISSION" %}
 {% if paymentOption is defined %}
 <div class="section">
   <div class="section-heading">
@@ -366,7 +367,7 @@
           </td>
         </tr>
 
-        {% if repaymentPlan.repaymentOption == "By instalments" %}
+        {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
         <tr class="no-border">
           <td><strong>Regular payments of:</strong></td>
           <td>
@@ -679,6 +680,7 @@
   </div>
 </div>
 {% endif %}
+{% endif %}
 
 <div class="section">
   <div class="section-heading">
@@ -721,7 +723,7 @@
   </div>
 </div>
 
-{% if hasDefendantAlreadyPaid is not defined and paymentOption is not defined%}
+{% if hasDefendantAlreadyPaid is not defined and responseType equals "FULL_DEFENCE" %}
 <div class="section">
   <h3>What happens next</h3>
 </div>

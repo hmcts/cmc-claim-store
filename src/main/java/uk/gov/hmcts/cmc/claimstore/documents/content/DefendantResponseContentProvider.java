@@ -70,6 +70,7 @@ public class DefendantResponseContentProvider {
             claim.getClaimData().getClaimant(),
             claim.getSubmitterEmail()
         ));
+        content.put("responseType", defendantResponse.getResponseType());
 
         if (defendantResponse instanceof FullDefenceResponse) {
             content.putAll(
