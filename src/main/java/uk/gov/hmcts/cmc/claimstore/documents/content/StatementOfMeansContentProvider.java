@@ -4,11 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.util.Map;
@@ -37,8 +40,19 @@ public class StatementOfMeansContentProvider {
             .collect(toList())
         );
 
-        contentBuilder.put("courtOrders", statementOfMeans.getCourtOrders());
-        contentBuilder.put("debts", statementOfMeans.getDebts());
+        contentBuilder.put("courtOrders",
+            statementOfMeans.getCourtOrders()
+                .stream()
+                .map(this::createCourtOrder)
+                .collect(toList())
+        );
+
+        contentBuilder.put("debts",
+            statementOfMeans.getDebts()
+                .stream()
+                .map(this::createDebt)
+                .collect(toList())
+        );
 
         contentBuilder.putAll(createEmployment(statementOfMeans));
 
@@ -57,6 +71,26 @@ public class StatementOfMeansContentProvider {
         );
 
         return contentBuilder.build();
+    }
+
+    private Map<String, Object> createDebt(Debt debt) {
+        requireNonNull(debt);
+
+        return new ImmutableMap.Builder<String, Object>()
+            .put("description", debt.getDescription())
+            .put("totalOwed", formatMoney(debt.getTotalOwed()))
+            .put("monthlyPayments", formatMoney(debt.getMonthlyPayments()))
+            .build();
+    }
+
+    private Map<String, Object> createCourtOrder(CourtOrder courtOrder) {
+        requireNonNull(courtOrder);
+
+        return new ImmutableMap.Builder<String, Object>()
+            .put("claimNumber", courtOrder.getClaimNumber())
+            .put("monthlyInstalmentAmount", formatMoney(courtOrder.getMonthlyInstalmentAmount()))
+            .put("amountOwed", formatMoney(courtOrder.getAmountOwed()))
+            .build();
     }
 
     private Map<String, Object> createBankAccount(BankAccount bankAccount) {
@@ -96,14 +130,21 @@ public class StatementOfMeansContentProvider {
             contentBuilder.put("jobType", createJobType(employment));
             contentBuilder.put("employment", employment);
             employment.getSelfEmployment().ifPresent(selfEmployment -> {
-                contentBuilder.put("selfEmployment", selfEmployment);
-                selfEmployment.getOnTaxPayments().ifPresent(onTaxPayments -> {
-                    contentBuilder.put("onTaxPayments", createOnTaxPayments(onTaxPayments));
-                });
+                contentBuilder.put("selfEmployment", createSelfEmployment(selfEmployment));
+                selfEmployment.getOnTaxPayments().ifPresent(onTaxPayments ->
+                    contentBuilder.put("onTaxPayments", createOnTaxPayments(onTaxPayments))
+                );
             });
         });
 
         return contentBuilder.build();
+    }
+
+    private Map<String, Object> createSelfEmployment(SelfEmployment selfEmployment) {
+        return new ImmutableMap.Builder<String, Object>()
+            .put("jobTitle", selfEmployment.getJobTitle())
+            .put("annualTurnover", formatMoney(selfEmployment.getAnnualTurnover()))
+            .build();
     }
 
     private Map<String, Object> createOnTaxPayments(OnTaxPayments onTaxPayments) {

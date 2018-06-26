@@ -561,7 +561,7 @@
       </tr>
       {% for bankAccount in bankAccounts %}
       <tr class="no-border">
-        <td><strong>Type of account:</strong></td>
+        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Type of account:</strong></td>
         <td>
           {{ bankAccount.type }}
         </td>
@@ -627,7 +627,7 @@
       </tr>
       {% for debt in debts %}
       <tr class="no-border">
-        <td><strong>Debt:</strong></td>
+        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Debt:</strong></td>
         <td>
           {{ debt.description }}
         </td>
