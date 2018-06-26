@@ -55,7 +55,7 @@ public class IncomeTest {
         //when
         Set<String> response = validate(income);
         //then
-        assertThat(response).hasSize(1).contains("otherSource : may not be null when incomeType is 'Other'");
+        assertThat(response).hasSize(1).contains("otherSource : may not be null when type is 'Other'");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class IncomeTest {
         Set<String> response = validate(income);
         //then
         assertThat(response).hasSize(1)
-            .contains("otherSource : may not be provided when incomeType is 'Income from your job'");
+            .contains("otherSource : may not be provided when type is 'Income from your job'");
     }
 
     @Test

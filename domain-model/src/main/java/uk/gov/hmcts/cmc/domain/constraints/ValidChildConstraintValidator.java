@@ -46,8 +46,8 @@ public class ValidChildConstraintValidator implements ConstraintValidator<ValidC
         if (child.getNumberOfChildrenLivingWithYou().orElse(0) > child.getNumberOfChildren()) {
             setValidationErrors(
                 context,
-                Fields.NUMBER_OF_CHILDREN,
-                "numberOfChildren must not be less than numberOfChildrenLivingWithYou"
+                Fields.NO_OF_CHILDREN_LIVING_WITH_YOU,
+                "numberOfChildrenLivingWithYou must not be greater than numberOfChildren "
             );
             valid = false;
         }

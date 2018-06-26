@@ -55,7 +55,7 @@ public class ExpenseTest {
         //when
         Set<String> response = validate(expense);
         //then
-        assertThat(response).hasSize(1).contains("otherExpense : may not be null when expenseType is 'Other'");
+        assertThat(response).hasSize(1).contains("otherExpense : may not be null when type is 'Other'");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ExpenseTest {
         Set<String> response = validate(expense);
         //then
         assertThat(response).hasSize(1)
-            .contains("otherExpense : may not be provided when expenseType is 'Mortgage'");
+            .contains("otherExpense : may not be provided when type is 'Mortgage'");
     }
 
     @Test
