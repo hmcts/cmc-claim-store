@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.assertj.core.util.Maps;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -34,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "core_case_data.api.url=false"
     }
 )
+@Ignore
 public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_ID = "100";

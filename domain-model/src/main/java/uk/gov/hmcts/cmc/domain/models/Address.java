@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.Postcode;
 
@@ -7,6 +8,8 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+//todo remove those, cleanup properties before sending json
+@JsonIgnoreProperties(value={"addressVisible", "addressSelectorVisible", "enterManually"})
 public class Address {
 
     @NotBlank(message = "Address Line1 should not be empty")

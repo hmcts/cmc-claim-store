@@ -1,0 +1,13 @@
+{% if hasAddressChanged %}
+Defendant address has changed
+{% endif %}
+
+{% if hasCorrespondenceAddressChanged %}
+Defendant correspondence address has changed
+{% endif %}
+
+{% if hasPhoneNumberChanged %}
+Defendant phone number has changed
+{% endif %}
+
+Please see claim file attached

@@ -15,7 +15,7 @@ public class DefendantAddressChangeEmailContentProvider implements EmailContentP
     private final EmailTemplates emailTemplates;
     private final TemplateService templateService;
 
-    public DefendantAddressChangeEmailContentProvider (
+    public DefendantAddressChangeEmailContentProvider(
         EmailTemplates emailTemplates,
         TemplateService templateService
     ) {

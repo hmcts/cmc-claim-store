@@ -14,8 +14,13 @@ public class DefendantAddressUpdateEvent {
         this.defendant = defendant;
     }
 
-    public Claim getClaim() { return claim; }
-    public TheirDetails getDefendant() { return defendant; }
+    public Claim getClaim() {
+        return claim;
+    }
+
+    public TheirDetails getDefendant() {
+        return defendant;
+    }
 
     @Override
     public boolean equals(Object obj) {

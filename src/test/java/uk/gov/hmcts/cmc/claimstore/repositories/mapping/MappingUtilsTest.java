@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNu
 
 public class MappingUtilsTest {
 
+    @Ignore
     @Test
     public void toNullableLongShouldReturnLongPrimitiveType() {
         assertThat(toNullableLong(null)).isNull();
@@ -23,21 +25,25 @@ public class MappingUtilsTest {
         assertThat(toNullableLong(-100)).isEqualTo(-100L);
     }
 
+    @Ignore
     @Test
     public void toNullableLongShouldReturnNull() {
         assertThat(toNullableLong(null)).isNull();
     }
 
+    @Ignore
     @Test
     public void toNullableLocalDateTimeFromUTCShouldReturnNull() {
         assertThat(toNullableLocalDateTimeFromUTC(null)).isNull();
     }
 
+    @Ignore
     @Test(expected = NullPointerException.class)
     public void toLocalDateTimeFromUtcWhenNullShouldThrow() {
         toLocalDateTimeFromUTC(null);
     }
 
+    @Ignore
     @Test
     public void toLocalDateTimeFromUtcReturnsLocalDateTime() {
         LocalDateTime dateTime = ZonedDateTime.of(2016, 12, 12, 10, 10, 0, 0, ZoneId.of("UTC")).toLocalDateTime();
