@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
+import uk.gov.hmcts.cmc.domain.constraints.ValidIncome;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
+@ValidIncome
 public class Income {
 
     public enum IncomeType {
