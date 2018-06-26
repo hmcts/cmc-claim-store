@@ -26,6 +26,7 @@ public class StatementOfMeans {
     private final Dependant dependant;
 
     @Valid
+    @NotNull
     private final Employment employment;
 
     @Valid

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.EachNotNull;
+import uk.gov.hmcts.cmc.domain.constraints.ValidEmployment;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
+@ValidEmployment
 public class Employment {
 
     @Valid
