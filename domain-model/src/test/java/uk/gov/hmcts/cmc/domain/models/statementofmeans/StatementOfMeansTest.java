@@ -11,14 +11,13 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.UNDER_11;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.EmploymentTest.newSampleOfEmploymentBuilder;
 
 public class StatementOfMeansTest {
     public static StatementOfMeans.StatementOfMeansBuilder newSampleOfStatementOfMeansBuilder() {
         return StatementOfMeans.builder()
                 .residence(ResidenceTest.newSampleOfResidenceBuilder().build())
                 .dependant(DependantTest.newSampleOfDependantBuilder().build())
-                .employment(newSampleOfEmploymentBuilder().build())
+                .employment(Employment.builder().unemployment(Unemployment.builder().retired(true).build()).build())
                 .bankAccounts(Arrays.asList(BankAccountTest.newSampleOfBankAccountBuilder().build()))
                 .debts(Arrays.asList(DebtTest.newSampleOfDebtBuilder().build()))
                 .incomes(Arrays.asList(IncomeTest.newSampleOfIncomeBuilder().build()))
@@ -45,7 +44,7 @@ public class StatementOfMeansTest {
         Set<String> errors = validate(statementOfMeans);
         //then
         assertThat(errors)
-                .hasSize(3);
+                .hasSize(4);
     }
 
     @Test
@@ -100,7 +99,7 @@ public class StatementOfMeansTest {
     @Test
     public void shouldBeInvalidForInvalidEmployment() {
         //given
-        Employment invalidEmployment = newSampleOfEmploymentBuilder()
+        Employment invalidEmployment = Employment.builder()
                 .selfEmployment(SelfEmployment.builder().build())
                 .build();
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
