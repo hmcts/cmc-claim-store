@@ -49,7 +49,7 @@ public class ValidEmploymentConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidWhenUnemployed() {
+    public void shouldBeValidWhenOnlyUnemployedIsPopulated() {
         Employment model = Employment.builder()
             .unemployment(Unemployment.builder().unemployed(new Unemployed(1, 1)).build())
             .build();

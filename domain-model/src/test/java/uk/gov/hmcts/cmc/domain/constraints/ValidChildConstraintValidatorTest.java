@@ -63,7 +63,7 @@ public class ValidChildConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenAgeGroupIsUnder11AndNumberOfChildrenLivingWithYouIs0() {
+    public void shouldBeInvalidWhenAgeGroupIsUnder11AndNumberOfChildrenLivingWithYouIsZero() {
         Child child = Child.builder()
             .ageGroupType(Child.AgeGroupType.UNDER_11)
             .numberOfChildren(1)
@@ -85,7 +85,7 @@ public class ValidChildConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenAgeGroupIsBetween11And15AndNumberOfChildrenLivingWithYouIs0() {
+    public void shouldBeInvalidWhenAgeGroupIsBetween11And15AndNumberOfChildrenLivingWithYouIsZero() {
         Child child = Child.builder()
             .ageGroupType(Child.AgeGroupType.BETWEEN_11_AND_15)
             .numberOfChildren(1)
@@ -140,7 +140,7 @@ public class ValidChildConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidWhenAgeGroupIsBetween16An19AndNumberOfChildrenLivingWithYouIsEqNumberOfChildrenBoth0() {
+    public void shouldBeValidWhenAgeGroupIsBetween16An19AndNumberOfChildrenLivingWithYouIsEqNumberOfChildrenBothZero() {
         Child child = Child.builder()
             .ageGroupType(Child.AgeGroupType.BETWEEN_16_AND_19)
             .numberOfChildren(0)
