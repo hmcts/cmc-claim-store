@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+
 @Component
 public class DependantMapper implements Mapper<CCDDependant, Dependant> {
 
@@ -57,8 +59,7 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
             return null;
         }
 
-        List<Child> children = ccdDependant.getChildren()
-            .stream()
+        List<Child> children = asStream(ccdDependant.getChildren())
             .map(CCDCollectionElement::getValue)
             .map(childMapper::from)
             .collect(Collectors.toList());
