@@ -20,6 +20,10 @@ public class ValidEmploymentConstraintValidator implements ConstraintValidator<V
     public boolean isValid(Employment employment, ConstraintValidatorContext context) {
         boolean valid = true;
 
+        if (employment == null) {
+            return true;
+        }
+
         if (employment.getUnemployment().isPresent()) {
             if (employment.getEmployers().size() > 0) {
                 setValidationErrors(

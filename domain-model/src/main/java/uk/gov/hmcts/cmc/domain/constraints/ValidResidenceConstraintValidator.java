@@ -17,19 +17,23 @@ public class ValidResidenceConstraintValidator implements ConstraintValidator<Va
 
     @Override
     public boolean isValid(Residence residence, ConstraintValidatorContext context) {
+        if (residence == null) {
+            return true;
+        }
+
         Residence.ResidenceType type = residence.getType();
 
         if (type == Residence.ResidenceType.OTHER) {
             if (!residence.getOtherDetail().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeNullError("residence", type.getDescription())
+                    context, Fields.OTHER_DETAILS, mayNotBeNullError("type", type.getDescription())
                 );
                 return false;
             }
         } else {
             if (residence.getOtherDetail().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("residence", type.getDescription())
+                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("type", type.getDescription())
                 );
                 return false;
             }
