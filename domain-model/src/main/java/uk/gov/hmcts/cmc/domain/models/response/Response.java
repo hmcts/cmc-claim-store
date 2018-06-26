@@ -26,11 +26,13 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 })
 public abstract class Response {
 
+    @NotNull
     private final ResponseType responseType;
 
     private final YesNoOption freeMediation;
 
     @JsonUnwrapped
+    @NotNull
     private final YesNoOption moreTimeNeeded;
 
     @Valid
