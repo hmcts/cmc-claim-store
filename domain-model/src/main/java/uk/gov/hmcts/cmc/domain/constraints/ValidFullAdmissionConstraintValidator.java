@@ -22,6 +22,10 @@ public class ValidFullAdmissionConstraintValidator
 
     @Override
     public boolean isValid(FullAdmissionResponse fullAdmissionResponse, ConstraintValidatorContext context) {
+        if (fullAdmissionResponse == null) {
+            return true;
+        }
+
         switch (fullAdmissionResponse.getPaymentOption()) {
             case IMMEDIATELY:
                 return validateImmediately(fullAdmissionResponse, context);
@@ -39,12 +43,12 @@ public class ValidFullAdmissionConstraintValidator
         String immediately = IMMEDIATELY.getDescription();
 
         if (!value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeNullError("paymentType", immediately));
+            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeNullError("paymentOption", immediately));
             valid = false;
         }
 
         if (value.getRepaymentPlan().isPresent()) {
-            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeProvidedError("paymentType", immediately));
+            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeProvidedError("paymentOption", immediately));
             valid = false;
         }
 
@@ -56,12 +60,12 @@ public class ValidFullAdmissionConstraintValidator
         String bySetDate = FULL_BY_SPECIFIED_DATE.getDescription();
 
         if (!value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeNullError("paymentType", bySetDate));
+            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeNullError("paymentOption", bySetDate));
             valid = false;
         }
 
         if (value.getRepaymentPlan().isPresent()) {
-            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeProvidedError("paymentType", bySetDate));
+            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeProvidedError("paymentOption", bySetDate));
             valid = false;
         }
 
@@ -73,12 +77,12 @@ public class ValidFullAdmissionConstraintValidator
         String instalments = INSTALMENTS.getDescription();
 
         if (value.getPaymentDate().isPresent()) {
-            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeProvidedError("paymentType", instalments));
+            setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeProvidedError("paymentOption", instalments));
             valid = false;
         }
 
         if (!value.getRepaymentPlan().isPresent()) {
-            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeNullError("paymentType", instalments));
+            setValidationErrors(context, Fields.REPAYMENT_PLAN, mayNotBeNullError("paymentOption", instalments));
             valid = false;
         }
 
