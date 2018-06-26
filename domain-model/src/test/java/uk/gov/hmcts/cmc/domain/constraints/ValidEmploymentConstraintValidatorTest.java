@@ -44,6 +44,11 @@ public class ValidEmploymentConstraintValidatorTest {
     }
 
     @Test
+    public void shouldBeValidWhenNull() {
+        assertThat(validator.isValid(null, validatorContext)).isTrue();
+    }
+
+    @Test
     public void shouldBeValidWhenUnemployed() {
         Employment model = Employment.builder()
             .unemployment(Unemployment.builder().unemployed(new Unemployed(1, 1)).build())

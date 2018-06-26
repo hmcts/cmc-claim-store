@@ -17,6 +17,10 @@ public class ValidExpenseConstraintValidator implements ConstraintValidator<Vali
 
     @Override
     public boolean isValid(Expense expense, ConstraintValidatorContext context) {
+        if (expense == null) {
+            return true;
+        }
+
         Expense.ExpenseType type = expense.getType();
 
         if (type == Expense.ExpenseType.OTHER) {

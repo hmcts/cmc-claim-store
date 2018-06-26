@@ -22,6 +22,10 @@ public class ValidFullAdmissionConstraintValidator
 
     @Override
     public boolean isValid(FullAdmissionResponse fullAdmissionResponse, ConstraintValidatorContext context) {
+        if (fullAdmissionResponse == null) {
+            return true;
+        }
+
         switch (fullAdmissionResponse.getPaymentOption()) {
             case IMMEDIATELY:
                 return validateImmediately(fullAdmissionResponse, context);

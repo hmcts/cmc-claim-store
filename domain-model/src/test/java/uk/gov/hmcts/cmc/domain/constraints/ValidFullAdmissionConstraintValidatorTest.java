@@ -43,9 +43,9 @@ public class ValidFullAdmissionConstraintValidatorTest {
         when(validatorContext.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerExceptionWhenInputIsNull() {
-        validator.isValid(null, validatorContext);
+    @Test
+    public void shouldBeValidWhenInputIsNull() {
+        assertThat(validator.isValid(null, validatorContext)).isTrue();
     }
 
     @Test

@@ -17,6 +17,10 @@ public class ValidResidenceConstraintValidator implements ConstraintValidator<Va
 
     @Override
     public boolean isValid(Residence residence, ConstraintValidatorContext context) {
+        if (residence == null) {
+            return true;
+        }
+
         Residence.ResidenceType type = residence.getType();
 
         if (type == Residence.ResidenceType.OTHER) {

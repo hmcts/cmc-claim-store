@@ -17,6 +17,10 @@ public class ValidIncomeConstraintValidator implements ConstraintValidator<Valid
 
     @Override
     public boolean isValid(Income income, ConstraintValidatorContext context) {
+        if (income == null) {
+            return true;
+        }
+
         Income.IncomeType type = income.getType();
 
         if (type == Income.IncomeType.OTHER) {
