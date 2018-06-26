@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.jobs.NotificationEmailJob;
@@ -17,10 +18,19 @@ public class JobSchedulerService {
 
     private final JobService jobService;
     private final UserService userService;
+    private final int firstReminderDay;
+    private final int lastReminderDay;
 
-    public JobSchedulerService(JobService jobService, UserService userService) {
+    public JobSchedulerService(
+        JobService jobService,
+        UserService userService,
+        @Value("${dateCalculations.firstResponseReminderDay}") int firstReminderDay,
+        @Value("${dateCalculations.lastResponseReminderDay}") int lastReminderDay
+    ) {
         this.jobService = jobService;
         this.userService = userService;
+        this.firstReminderDay = firstReminderDay;
+        this.lastReminderDay = lastReminderDay;
     }
 
     public void scheduleEmailNotificationsForDefendantResponse(
@@ -32,13 +42,14 @@ public class JobSchedulerService {
         Map<String, Object> data = getNotificationData(authorisation, claim, responseDeadline);
 
         jobService.scheduleJob(
-            get5DaysReminderJobData(claim, data),
-            responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC)
+            getFirstReminderJobData(claim, data),
+            responseDeadline.minusDays(firstReminderDay).atStartOfDay(ZoneOffset.UTC)
         );
 
         jobService.scheduleJob(
-            getGet1DayReminderJobData(claim, data),
-            responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
+            getLastReminderJobData(claim, data),
+            responseDeadline.minusDays(lastReminderDay).atStartOfDay(ZoneOffset.UTC)
+        );
 
     }
 
@@ -50,30 +61,43 @@ public class JobSchedulerService {
         Map<String, Object> data = getNotificationData(authorisation, claim, responseDeadline);
 
         jobService.rescheduleJob(
-            get5DaysReminderJobData(claim, data),
-            responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC)
+            getFirstReminderJobData(claim, data),
+            responseDeadline.minusDays(firstReminderDay).atStartOfDay(ZoneOffset.UTC)
         );
 
         jobService.rescheduleJob(
-            getGet1DayReminderJobData(claim, data),
-            responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC));
+            getLastReminderJobData(claim, data),
+            responseDeadline.minusDays(lastReminderDay).atStartOfDay(ZoneOffset.UTC)
+        );
 
     }
 
-    private JobData getGet1DayReminderJobData(Claim claim, Map<String, Object> data) {
+    private JobData getLastReminderJobData(Claim claim, Map<String, Object> data) {
         return JobData.builder()
-            .id("reminder:defence-due-in-1-day:" + claim.getReferenceNumber() + "-" + claim.getExternalId())
+            .id("reminder:defence-due-in-"
+                + lastReminderDay
+                + "-day:"
+                + claim.getReferenceNumber()
+                + "-"
+                + claim.getExternalId()
+            )
             .group("Reminders")
-            .description("Defendant reminder email 1 day before response deadline")
+            .description("Defendant reminder email " + lastReminderDay + " day before response deadline")
             .jobClass(NotificationEmailJob.class)
             .data(data).build();
     }
 
-    private JobData get5DaysReminderJobData(Claim claim, Map<String, Object> data) {
+    private JobData getFirstReminderJobData(Claim claim, Map<String, Object> data) {
         return JobData.builder()
-            .id("reminder:defence-due-in-5-days:" + claim.getReferenceNumber() + "-" + claim.getExternalId())
+            .id("reminder:defence-due-in-"
+                + firstReminderDay
+                + "-days:"
+                + claim.getReferenceNumber()
+                + "-"
+                + claim.getExternalId()
+            )
             .group("Reminders")
-            .description("Defendant reminder email 5 days before response deadline")
+            .description("Defendant reminder email " + firstReminderDay + " days before response deadline")
             .jobClass(NotificationEmailJob.class)
             .data(data).build();
     }

@@ -72,6 +72,8 @@ dateCalculations:
   requestedAdditionalTimeInDays: 14
   freeMediationTimeForDecisionInDays: 5
   offerMadeTimeForResponseInDays: 14
+  lastResponseReminderDay: 1
+  firstResponseReminderDay: 5
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
