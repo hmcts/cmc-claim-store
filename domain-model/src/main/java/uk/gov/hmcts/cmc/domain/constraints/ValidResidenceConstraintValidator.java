@@ -26,14 +26,14 @@ public class ValidResidenceConstraintValidator implements ConstraintValidator<Va
         if (type == Residence.ResidenceType.OTHER) {
             if (!residence.getOtherDetail().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeNullError("residence", type.getDescription())
+                    context, Fields.OTHER_DETAILS, mayNotBeNullError("type", type.getDescription())
                 );
                 return false;
             }
         } else {
             if (residence.getOtherDetail().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("residence", type.getDescription())
+                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("type", type.getDescription())
                 );
                 return false;
             }

@@ -26,14 +26,14 @@ public class ValidIncomeConstraintValidator implements ConstraintValidator<Valid
         if (type == Income.IncomeType.OTHER) {
             if (!income.getOtherSource().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeNullError("incomeType", type.getDescription())
+                    context, Fields.OTHER_DETAILS, mayNotBeNullError("type", type.getDescription())
                 );
                 return false;
             }
         } else {
             if (income.getOtherSource().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("incomeType", type.getDescription())
+                    context, Fields.OTHER_DETAILS, mayNotBeProvidedError("type", type.getDescription())
                 );
                 return false;
             }
