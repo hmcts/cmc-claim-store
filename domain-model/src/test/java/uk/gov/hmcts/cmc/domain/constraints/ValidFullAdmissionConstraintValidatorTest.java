@@ -143,7 +143,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsInstalmentsAndEverythingElseIsPopulated() {
         FullAdmissionResponse fullAdmissionResponse = builder()
-            .paymentOptiot stn(PaymentOption.INSTALMENTS)
+            .paymentOption(PaymentOption.INSTALMENTS)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .paymentDate(LocalDate.now().plusDays(1))
             .build();
