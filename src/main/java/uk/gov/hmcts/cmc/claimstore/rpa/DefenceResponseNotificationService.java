@@ -68,7 +68,7 @@ public class DefenceResponseNotificationService {
             DocumentNameUtils.buildJsonResponseFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
     }
 
-    public EmailAttachment createResponsePdfAttachment(Claim claim) {
+    private EmailAttachment createResponsePdfAttachment(Claim claim) {
         byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         requireNonNull(defendantResponse);
 
