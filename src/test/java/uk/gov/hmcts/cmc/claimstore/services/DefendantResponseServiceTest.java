@@ -32,6 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -39,7 +40,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseServiceTest {
 
-    private static final Response VALID_APP = SampleResponse.validDefaults();
+    private static final Response VALID_APP = SampleResponse.FullDefence.builder().withMediation(NO).build();
     private static final Claim claim = SampleClaim.getDefault();
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String DEFENDANT_EMAIL = "test@example.com";
@@ -69,7 +70,7 @@ public class DefendantResponseServiceTest {
     }
 
     @Test
-    public void saveShouldFinishSuccessfully() {
+    public void shouldCreateDefenceResponseEventWhenNoMediation() {
         //given
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(
             SampleUserDetails.getDefault()

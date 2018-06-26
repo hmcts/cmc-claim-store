@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.temporal.ChronoUnit;
@@ -30,7 +31,20 @@ public class RespondToClaimTest extends BaseCitizenTest {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
             .builder()
             .withDefenceType(DefenceType.DISPUTE)
+            .withMediation(null)
             .build();
+        shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
+    }
+
+
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitFreeMediationRequestOnDefence() {
+        Response fullDefenceDisputeResponse = SampleResponse.FullDefence
+            .builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .withMediation(YesNoOption.YES)
+            .build();
+
         shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
     }
 

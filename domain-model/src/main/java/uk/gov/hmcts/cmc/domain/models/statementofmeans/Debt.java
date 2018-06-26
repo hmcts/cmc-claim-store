@@ -25,7 +25,7 @@ public class Debt {
 
     @NotNull
     @Money
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.00")
     private final BigDecimal monthlyPayments;
 
     public Debt(String description, BigDecimal totalOwed, BigDecimal monthlyPayments) {
