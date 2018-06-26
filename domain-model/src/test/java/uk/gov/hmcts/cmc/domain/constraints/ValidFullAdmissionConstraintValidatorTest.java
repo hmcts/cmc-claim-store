@@ -141,7 +141,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidWhenTypeIsInstalmentsAndEverythingElseIsPopulated() {
+    public void shouldBeInalidWhenTypeIsInstalmentsAndEverythingElseIsPopulated() {
         FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentOption(PaymentOption.INSTALMENTS)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
