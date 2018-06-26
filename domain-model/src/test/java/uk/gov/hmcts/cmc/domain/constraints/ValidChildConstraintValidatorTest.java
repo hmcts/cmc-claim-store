@@ -151,7 +151,7 @@ public class ValidChildConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidWhenAgeGroupIsBetween16An19AndNumberOfChildrenLivingWithYouIsNotPopulated() {
+    public void shouldBeInvalidWhenAgeGroupIsBetween16An19AndNumberOfChildrenLivingWithYouIsNotPopulated() {
         Child child = Child.builder()
             .ageGroupType(Child.AgeGroupType.BETWEEN_16_AND_19)
             .numberOfChildren(1)
