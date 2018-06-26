@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.tests.functional;
+package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -23,20 +22,19 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-public class SubmitClaimTest extends BaseTest {
+public class SubmitClaimAsSolicitorTest extends BaseSolicitorTest {
 
-    private User claimant;
+    private User solicitor;
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        solicitor = idamTestService.createSolicitor();
     }
 
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = testData.submittedByClaimantBuilder().build();
-
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), claimant.getAuthorisation());
+        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), solicitor.getAuthorisation());
 
         Claim createdCase = submitClaim(claimData)
             .then()
@@ -51,20 +49,15 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidClaimIsSubmitted() {
-        ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
-            .withAmount(null)
-            .build();
-
-        submitClaim(invalidClaimData)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        ClaimData build = testData.submittedBySolicitorBuilder().withAmount(null).build();
+        submitClaim(build).then().statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
     public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
-        ClaimData claimData = testData.submittedByClaimantBuilder().build();
+        ClaimData claimData = testData.submittedBySolicitorBuilder().build();
 
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), claimant.getAuthorisation());
+        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), solicitor.getAuthorisation());
 
         submitClaim(claimData)
             .andReturn();
@@ -75,8 +68,10 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() {
-        ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
-            .withTimeline(SampleTimeline.builder().withEvents(asList(new TimelineEvent[1001])).build())
+        ClaimData invalidClaimData = testData.submittedBySolicitorBuilder()
+            .withTimeline(SampleTimeline.builder()
+                .withEvents(asList(new TimelineEvent[1001]))
+                .build())
             .build();
 
         submitClaim(invalidClaimData)
@@ -86,8 +81,10 @@ public class SubmitClaimTest extends BaseTest {
 
     @Test
     public void shouldReturnUnprocessableEntityWhenClaimWithInvalidEvidenceIsSubmitted() {
-        ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
-            .withEvidence(SampleEvidence.builder().withRows(asList(new EvidenceRow[1001])).build())
+        ClaimData invalidClaimData = testData.submittedBySolicitorBuilder()
+            .withEvidence(SampleEvidence.builder()
+                .withRows(asList(new EvidenceRow[1001]))
+                .build())
             .build();
 
         submitClaim(invalidClaimData)
@@ -99,10 +96,10 @@ public class SubmitClaimTest extends BaseTest {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
+            .header(HttpHeaders.AUTHORIZATION, solicitor.getAuthorisation())
             .body(jsonMapper.toJson(claimData))
             .when()
-            .post("/claims/" + claimant.getUserDetails().getId());
+            .post("/claims/" + solicitor.getUserDetails().getId());
     }
 
 }

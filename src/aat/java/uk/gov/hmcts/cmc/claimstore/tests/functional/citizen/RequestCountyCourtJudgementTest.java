@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.tests.functional;
+package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -20,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-public class RequestCountyCourtJudgementTest extends BaseTest {
+public class RequestCountyCourtJudgementTest extends BaseCitizenTest {
 
     private User claimant;
 

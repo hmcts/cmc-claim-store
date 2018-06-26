@@ -32,11 +32,13 @@ public class CommonOperations {
 
     public Claim submitClaim(String userAuthentication, String userId) {
         UUID externalId = UUID.randomUUID();
+        return submitClaim(userAuthentication, userId, testData.submittedByClaimantBuilder()
+                                                               .withExternalId(externalId)
+                                                               .build());
+    }
 
-        ClaimData claimData = testData.submittedByClaimantBuilder()
-            .withExternalId(externalId)
-            .build();
-        submitPrePaymentClaim(externalId.toString(), userAuthentication);
+    public Claim submitClaim(String userAuthentication, String userId, ClaimData claimData) {
+        submitPrePaymentClaim(claimData.getExternalId().toString(), userAuthentication);
         return saveClaim(claimData, userAuthentication, userId).then().extract().body().as(Claim.class);
     }
 

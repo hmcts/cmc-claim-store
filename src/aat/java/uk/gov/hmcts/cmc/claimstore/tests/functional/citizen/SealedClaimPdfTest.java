@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.tests.functional;
+package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -10,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -22,8 +21,7 @@ import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SealedClaimPdfTest extends BaseTest {
-
+public class SealedClaimPdfTest extends BaseCitizenTest {
     private User claimant;
 
     @Before
@@ -34,18 +32,26 @@ public class SealedClaimPdfTest extends BaseTest {
     @Test
     public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
         Claim createdCase = createCase();
-        String pdfAsText = textContentOf(retrievePdf("claimIssueReceipt", createdCase.getExternalId()));
+        String pdfAsText = textContentOf(RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
+            .get("/documents/" + "claimIssueReceipt" + "/" + createdCase.getExternalId())
+            .asInputStream());
         assertionsOnClaimPdf(createdCase, pdfAsText);
     }
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
         Claim createdCase = createCase();
-        String pdfAsText = textContentOf(retrievePdf("sealedClaim", createdCase.getExternalId()));
+        String pdfAsText = textContentOf(RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
+            .get("/documents/" + "sealedClaim" + "/" + createdCase.getExternalId())
+            .asInputStream());
         assertionsOnClaimPdf(createdCase, pdfAsText);
     }
 
-    private void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
+    private static void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
         assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
@@ -59,7 +65,7 @@ public class SealedClaimPdfTest extends BaseTest {
         assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
     }
 
-    private String getFullAddressString(Address address) {
+    private static String getFullAddressString(Address address) {
         return address.getLine1() + " \n"
             + address.getLine2() + " \n"
             + address.getLine3() + " \n"
@@ -88,17 +94,8 @@ public class SealedClaimPdfTest extends BaseTest {
             .post("/claims/" + claimant.getUserDetails().getId());
     }
 
-    private InputStream retrievePdf(String pdfName, String externalId) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
-            .get("/documents/" + pdfName + "/" + externalId)
-            .asInputStream();
-    }
-
     private static String textContentOf(InputStream inputStream) throws IOException {
         PDDocument document = PDDocument.load(inputStream);
-
         try {
             return new PDFTextStripper().getText(document);
         } finally {
