@@ -67,11 +67,10 @@ public class DefendantResponseStaffNotificationService {
         return map;
     }
 
-    public EmailAttachment createResponsePdfAttachment(Claim claim) {
+    private EmailAttachment createResponsePdfAttachment(Claim claim) {
         byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         requireNonNull(defendantResponse);
 
         return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
-
 }

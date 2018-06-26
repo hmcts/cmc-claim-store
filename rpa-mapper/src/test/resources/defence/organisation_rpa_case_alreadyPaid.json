@@ -2,26 +2,24 @@
   "caseNumber": "000CM001",
   "responseSubmittedOn": "26-Apr-2018",
   "defenceResponse": "ALREADY_PAID",
-  "defendants": [
-    {
-      "type": "Organisation",
-      "name": "John Rambo",
-      "businessName": null,
-      "companiesHouseNumber": null,
-      "contactPerson": "The Shrek",
-      "addressAmended": false,
-      "address": {
-        "line1": "52",
-        "line2": "Down Street",
-        "line3": "Salford",
-        "city": "Manchester",
-        "postcode": "DF1 3LJ"
-      },
-      "emailAddress": "j.smith@example.com",
-      "correspondenceAddress": null,
-      "dateOfBirth": null,
-      "phoneNumber": "07873727165"
-    }
-  ],
+  "defendant": {
+    "type": "Organisation",
+    "name": "John Rambo",
+    "businessName": null,
+    "companiesHouseNumber": null,
+    "contactPerson": "The Shrek",
+    "addressAmended": false,
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "emailAddress": "j.smith@example.com",
+    "correspondenceAddress": null,
+    "dateOfBirth": null,
+    "phoneNumber": "07873727165"
+  },
   "mediation": false
 }

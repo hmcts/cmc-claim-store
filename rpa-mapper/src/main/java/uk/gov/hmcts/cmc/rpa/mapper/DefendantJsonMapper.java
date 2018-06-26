@@ -14,8 +14,8 @@ import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
 import java.util.List;
-import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonCollectors;
 
@@ -46,7 +46,7 @@ public class DefendantJsonMapper {
             .build()).collect(JsonCollectors.toJsonArray());
     }
 
-    public JsonArray map(Party defendantFromResponse, TheirDetails defendantFromClaim, String defendantsEmail) {
+    public JsonObject map(Party defendantFromResponse, TheirDetails defendantFromClaim, String defendantsEmail) {
         JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder()
             .add("type", defendantFromResponse.getClass().getSimpleName().replace("Details", ""))
             .add("name", defendantFromResponse.getName())
@@ -60,7 +60,7 @@ public class DefendantJsonMapper {
             .add("dateOfBirth", extractFromSubclass(defendantFromResponse, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
             .add("phoneNumber", extractFromSubclass(defendantFromResponse, Party.class, party -> party.getMobilePhone().orElse(null)));
 
-        return Json.createArrayBuilder().add(jsonObjectBuilder).build();
+        return jsonObjectBuilder.build();
     }
 
     private boolean isAddressAmended(Party ownParty, TheirDetails oppositeParty) {
