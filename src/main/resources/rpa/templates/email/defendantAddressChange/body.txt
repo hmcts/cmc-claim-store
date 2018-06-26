@@ -1,12 +1,12 @@
-{% if hasAddressChanged %}
+{% if hasAddressChanged is true %}
 Defendant address has changed
 {% endif %}
 
-{% if hasCorrespondenceAddressChanged %}
+{% if hasCorrespondenceAddressChanged is true %}
 Defendant correspondence address has changed
 {% endif %}
 
-{% if hasPhoneNumberChanged %}
+{% if hasPhoneNumberChanged is true %}
 Defendant phone number has changed
 {% endif %}
 

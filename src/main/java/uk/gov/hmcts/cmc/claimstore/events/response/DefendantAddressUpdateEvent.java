@@ -1,15 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.events.response;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.PartyContactDetails;
 
 import java.util.Objects;
 
 public class DefendantAddressUpdateEvent {
     private final Claim claim;
-    private final TheirDetails defendant;
+    private final PartyContactDetails defendant;
 
-    public DefendantAddressUpdateEvent(Claim claim, TheirDetails defendant) {
+    public DefendantAddressUpdateEvent(Claim claim, PartyContactDetails defendant) {
         this.claim = claim;
         this.defendant = defendant;
     }
@@ -18,7 +18,7 @@ public class DefendantAddressUpdateEvent {
         return claim;
     }
 
-    public TheirDetails getDefendant() {
+    public PartyContactDetails getDefendant() {
         return defendant;
     }
 

@@ -13,8 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PartyContactDetails;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 
 import java.time.LocalDate;
 
@@ -65,7 +65,7 @@ public class EventProducer {
         publisher.publishEvent(new AgreementCountersignedEvent(claim, party));
     }
 
-    public void createDefendantAddressUpdateEvent(Claim claim, TheirDetails defendant) {
+    public void createDefendantAddressUpdateEvent(Claim claim, PartyContactDetails defendant) {
         publisher.publishEvent(new DefendantAddressUpdateEvent(claim, defendant));
     }
 }

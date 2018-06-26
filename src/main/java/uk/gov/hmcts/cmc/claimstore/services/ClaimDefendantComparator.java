@@ -1,14 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.PartyContactDetails;
 
 public class ClaimDefendantComparator {
 
     private Claim claim;
-    private TheirDetails defendant;
+    private PartyContactDetails defendant;
 
-    public ClaimDefendantComparator(Claim claim, TheirDetails defendant) {
+    public ClaimDefendantComparator(Claim claim, PartyContactDetails defendant) {
         this.claim = claim;
         this.defendant = defendant;
     }
@@ -21,7 +21,7 @@ public class ClaimDefendantComparator {
 
     public boolean isDefendantCorrespondenceAddressEqual() {
         return claim.getClaimData().getDefendant().getServiceAddress().equals(
-            defendant.getServiceAddress()
+            defendant.getCorrespondenceAddress()
         );
     }
 }

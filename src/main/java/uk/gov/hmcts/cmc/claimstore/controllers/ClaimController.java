@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PartyContactDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
@@ -109,9 +110,9 @@ public class ClaimController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/request-more-time")
     @ApiOperation("Updates response deadline. Can be called only once per each claim")
     public Claim requestMoreTimeToRespond(@PathVariable("externalId") String externalId,
-                                          @RequestBody TheirDetails defendant,
+                                          @RequestBody PartyContactDetails defendantContactDetails,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.requestMoreTimeForResponse(externalId, authorisation, defendant);
+        return claimService.requestMoreTimeForResponse(externalId, authorisation, defendantContactDetails);
     }
 
     @GetMapping("/{caseReference}/defendant-link-status")

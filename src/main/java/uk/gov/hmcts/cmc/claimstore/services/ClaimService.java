@@ -16,9 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmc.domain.models.party.Individual;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.PartyContactDetails;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -178,7 +176,7 @@ public class ClaimService {
         }
     }
 
-    public Claim requestMoreTimeForResponse(String externalId, String authorisation, TheirDetails responseDefendant) {
+    public Claim requestMoreTimeForResponse(String externalId, String authorisation, PartyContactDetails responseDefendant) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
         /*
