@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.response;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
+import uk.gov.hmcts.cmc.domain.constraints.ValidFullAdmission;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@ValidFullAdmission
 public class FullAdmissionResponse extends Response {
 
     @NotNull
