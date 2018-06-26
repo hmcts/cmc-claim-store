@@ -296,12 +296,7 @@ def listFiles(String pattern) {
 
 sonarqube {
   properties {
-
-
-    def jenkinsBranch = System.getenv('CHANGE_BRANCH')
-    def isPR =  jenkinsBranch != null && jenkinsBranch != '' && jenkinsBranch.matches(/PR-[\d]+/)
-
-    property "sonar.projectName", "CMC :: Claim Store" + isPR ? " PR" : ""
+    property "sonar.projectName", "CMC :: Claim Store"
     property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
     property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
     property "sonar.exclusions", "**/ccd/domain/**," +
