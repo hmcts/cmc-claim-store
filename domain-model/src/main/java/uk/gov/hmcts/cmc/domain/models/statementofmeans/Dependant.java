@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -17,6 +18,7 @@ public class Dependant {
     @Valid
     private final List<Child> children;
 
+    @Min(0)
     private final Integer numberOfMaintainedChildren;
 
     @Valid
