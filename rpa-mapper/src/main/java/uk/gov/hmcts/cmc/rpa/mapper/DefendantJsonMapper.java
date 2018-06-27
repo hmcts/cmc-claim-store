@@ -19,8 +19,10 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonCollectors;
 
+import static uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper.isAddressAmended;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
+
 
 @Component
 @SuppressWarnings({"LineLength"})
@@ -61,9 +63,5 @@ public class DefendantJsonMapper {
             .add("phoneNumber", extractFromSubclass(defendantFromResponse, Party.class, party -> party.getMobilePhone().orElse(null)));
 
         return jsonObjectBuilder.build();
-    }
-
-    private boolean isAddressAmended(Party ownParty, TheirDetails oppositeParty) {
-        return !ownParty.getAddress().equals(oppositeParty.getAddress()) ? true : false;
     }
 }

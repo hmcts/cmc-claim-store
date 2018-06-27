@@ -6,7 +6,6 @@
     "type": "Organisation",
     "name": "John Rambo",
     "businessName": null,
-    "companiesHouseNumber": null,
     "contactPerson": "Steven Seagal",
     "addressAmended": false,
     "address": {

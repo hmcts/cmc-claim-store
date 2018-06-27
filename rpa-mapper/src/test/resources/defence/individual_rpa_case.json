@@ -6,7 +6,6 @@
     "type": "Individual",
     "name": "John Rambo",
     "businessName": null,
-    "companiesHouseNumber": null,
     "contactPerson": null,
     "addressAmended": false,
     "address": {
