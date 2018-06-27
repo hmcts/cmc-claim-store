@@ -157,7 +157,7 @@ public class CoreCaseDataService {
         ccdCase.setMoreTimeRequested(YES);
 
         CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
-        jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(authorisation, claim, newResponseDeadline);
+        jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
         return extractClaim(updates);
     }
 

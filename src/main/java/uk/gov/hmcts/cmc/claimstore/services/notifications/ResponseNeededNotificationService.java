@@ -63,7 +63,7 @@ public class ResponseNeededNotificationService {
             try {
                 notificationClient.sendEmail(
                     getEmailTemplates().getDefendantResponseNeeded(),
-                    (String) jobData.get("defendantEmail"),
+                    claim.get().getDefendantEmail(),
                     aggregateParams(claim.get()),
                     caseReference
                 );

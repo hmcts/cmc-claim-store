@@ -10,10 +10,10 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -50,26 +50,20 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
     public void sendShouldMailToDefendant() throws NotificationClientException {
         //given
         JobDetail jobDetail = mock(JobDetail.class);
-        String caseReference = "000MC004";
-        String defendantEmailAddress = "defendant@mail.com";
+        Claim claim = SampleClaim.getDefault();
 
-        ImmutableMap<String, Object> data = ImmutableMap.of("caseReference", caseReference,
-            "defendantEmail", defendantEmailAddress,
-            "claimantName", "Mr claimant",
-            "responseDeadline", LocalDate.now(),
-            "defendantName", "Mr defendant");
+        ImmutableMap<String, Object> data = ImmutableMap.of("caseReference", claim.getReferenceNumber());
 
         JobDataMap jobData = new JobDataMap(data);
         when(jobDetail.getJobDataMap()).thenReturn(jobData);
-        when(claimService.getClaimByReferenceAnonymous(caseReference))
-            .thenReturn(Optional.of(SampleClaim.getDefault()));
+        when(claimService.getClaimByReferenceAnonymous(claim.getReferenceNumber())).thenReturn(Optional.of(claim));
         //when
         responseNeededNotificationService.sendMail(jobDetail);
         //then
 
         verify(notificationClient).sendEmail(eq(EMAIL_TEMPLATE_ID),
-            eq(defendantEmailAddress),
+            eq(claim.getDefendantEmail()),
             anyMap(),
-            eq(caseReference));
+            eq(claim.getReferenceNumber()));
     }
 }
