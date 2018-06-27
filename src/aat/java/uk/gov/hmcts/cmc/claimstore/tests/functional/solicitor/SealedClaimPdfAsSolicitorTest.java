@@ -1,48 +1,28 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.Before;
-import org.junit.Test;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.util.PDFTextStripper;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseSealedClaimPdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SealedClaimPdfAsSolicitorTest extends BaseTest {
-    private User solicitor;
+public class SealedClaimPdfAsSolicitorTest extends BaseSealedClaimPdfTest {
 
     @Before
     public void before() {
-        solicitor = idamTestService.createSolicitor();
+        user = idamTestService.createSolicitor();
     }
 
-    @Test
-    public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
-        Claim createdCase = createCase();
-        String pdfAsText = textContentOf(RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, solicitor.getAuthorisation())
-            .get("/documents/sealedClaim/" + createdCase.getExternalId())
-            .asInputStream());
-        assertionsOnClaimPdf(createdCase, pdfAsText);
-    }
-
-    private static void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
+    @Override
+    protected void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
         ClaimData claimData = createdCase.getClaimData();
         Party claimant = claimData.getClaimant();
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
@@ -56,6 +36,11 @@ public class SealedClaimPdfAsSolicitorTest extends BaseTest {
             + Formatting.formatMoney(((AmountRange) claimData.getAmount()).getHigherValue()));
     }
 
+    @Override
+    protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
+        return testData::submittedBySolicitorBuilder;
+    }
+
     private static String getFullAddressString(Address address) {
         return address.getLine1() + " \n"
             + address.getLine2() + " \n"
@@ -64,32 +49,4 @@ public class SealedClaimPdfAsSolicitorTest extends BaseTest {
             + address.getPostcode();
     }
 
-    private Claim createCase() {
-        ClaimData claimData = testData.submittedBySolicitorBuilder().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), solicitor.getAuthorisation());
-        return submitClaim(claimData)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-    }
-
-    private Response submitClaim(ClaimData claimData) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, solicitor.getAuthorisation())
-            .body(jsonMapper.toJson(claimData))
-            .when()
-            .post("/claims/" + solicitor.getUserDetails().getId());
-    }
-
-    private static String textContentOf(InputStream inputStream) throws IOException {
-        PDDocument document = PDDocument.load(inputStream);
-        try {
-            return new PDFTextStripper().getText(document);
-        } finally {
-            document.close();
-        }
-    }
 }
