@@ -9,7 +9,6 @@
       "type": "SoleTrader",
       "name": "John Rambo",
       "businessName": "Trading as AutoTraders",
-      "companiesHouseNumber": null,
       "contactPerson": null,
       "address": {
         "line1": "52",
@@ -34,7 +33,6 @@
       "type": "SoleTrader",
       "name": "John Smith",
       "businessName": "Trading as RoboticsTraders",
-      "companiesHouseNumber": null,
       "contactPerson": null,
       "address": {
         "line1": "52",

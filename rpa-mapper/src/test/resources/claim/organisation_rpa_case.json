@@ -9,7 +9,6 @@
       "type": "Organisation",
       "name": "John Rambo",
       "businessName": null,
-      "companiesHouseNumber": "09047000",
       "contactPerson": "Steven Seagal",
       "address": {
         "line1": "52",
@@ -34,7 +33,6 @@
       "type": "Organisation",
       "name": "John Smith",
       "businessName": null,
-      "companiesHouseNumber": "09047000",
       "contactPerson": "Arnold Schwarzenegger",
       "address": {
         "line1": "52",

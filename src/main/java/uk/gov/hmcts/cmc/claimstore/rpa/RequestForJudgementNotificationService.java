@@ -16,12 +16,11 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
 
 @Service("rpa/request-judgement-notification-service")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class RequestForJudgementNotificationService {
-
-    public static final String JSON_EXTENSION = ".json";
 
     private final EmailService emailService;
     private final EmailProperties emailProperties;

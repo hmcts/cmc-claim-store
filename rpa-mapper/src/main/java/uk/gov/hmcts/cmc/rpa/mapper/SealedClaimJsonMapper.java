@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
-import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
@@ -57,7 +56,6 @@ public class SealedClaimJsonMapper {
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
                 .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))
-                .add("companiesHouseNumber", extractOptionalFromSubclass(claimant, Organisation.class, Organisation::getCompaniesHouseNumber))
                 .build())
             .collect(JsonCollectors.toJsonArray());
     }

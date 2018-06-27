@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
@@ -19,9 +18,9 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonCollectors;
 
-import static uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper.isAddressAmended;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
+import static uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper.isAddressAmended;
 
 
 @Component
@@ -44,7 +43,6 @@ public class DefendantJsonMapper {
             .add("emailAddress", defendant.getEmail().orElse(null))
             .add("businessName", extractOptionalFromSubclass(defendant, SoleTraderDetails.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
             .add("contactPerson", extractOptionalFromSubclass(defendant, HasContactPerson.class, HasContactPerson::getContactPerson))
-            .add("companiesHouseNumber", extractOptionalFromSubclass(defendant, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
             .build()).collect(JsonCollectors.toJsonArray());
     }
 
@@ -58,7 +56,6 @@ public class DefendantJsonMapper {
             .add("addressAmended", isAddressAmended(defendantFromResponse, defendantFromClaim))
             .add("businessName", extractOptionalFromSubclass(defendantFromResponse, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
             .add("contactPerson", extractOptionalFromSubclass(defendantFromResponse, HasContactPerson.class, HasContactPerson::getContactPerson))
-            .add("companiesHouseNumber", extractOptionalFromSubclass(defendantFromResponse, OrganisationDetails.class, OrganisationDetails::getCompaniesHouseNumber))
             .add("dateOfBirth", extractFromSubclass(defendantFromResponse, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
             .add("phoneNumber", extractFromSubclass(defendantFromResponse, Party.class, party -> party.getMobilePhone().orElse(null)));
 

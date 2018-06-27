@@ -5,6 +5,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 
 public class DocumentNameUtils {
 
+    public static final String JSON_EXTENSION = ".json";
+
     private DocumentNameUtils() {
     }
 

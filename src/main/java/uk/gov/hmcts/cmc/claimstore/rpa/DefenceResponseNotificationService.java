@@ -17,14 +17,13 @@ import uk.gov.hmcts.cmc.rpa.mapper.DefenceResponseJsonMapper;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/defendant-response-notification-service")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class DefenceResponseNotificationService {
-
-    public static final String JSON_EXTENSION = ".json";
 
     private final EmailService emailService;
     private final EmailProperties emailProperties;
@@ -70,7 +69,6 @@ public class DefenceResponseNotificationService {
 
     private EmailAttachment createResponsePdfAttachment(Claim claim) {
         byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
-        requireNonNull(defendantResponse);
 
         return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
