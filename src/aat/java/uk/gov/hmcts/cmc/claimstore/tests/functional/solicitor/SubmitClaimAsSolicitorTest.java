@@ -10,15 +10,10 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.temporal.ChronoUnit;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
@@ -64,32 +59,6 @@ public class SubmitClaimAsSolicitorTest extends BaseSolicitorTest {
         submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
-    }
-
-    @Test
-    public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() {
-        ClaimData invalidClaimData = testData.submittedBySolicitorBuilder()
-            .withTimeline(SampleTimeline.builder()
-                .withEvents(asList(new TimelineEvent[1001]))
-                .build())
-            .build();
-
-        submitClaim(invalidClaimData)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-    }
-
-    @Test
-    public void shouldReturnUnprocessableEntityWhenClaimWithInvalidEvidenceIsSubmitted() {
-        ClaimData invalidClaimData = testData.submittedBySolicitorBuilder()
-            .withEvidence(SampleEvidence.builder()
-                .withRows(asList(new EvidenceRow[1001]))
-                .build())
-            .build();
-
-        submitClaim(invalidClaimData)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     private Response submitClaim(ClaimData claimData) {
