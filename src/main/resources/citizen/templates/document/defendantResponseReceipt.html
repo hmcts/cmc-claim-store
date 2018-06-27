@@ -487,7 +487,7 @@
       <tr class="no-border">
         <td><strong>Are they currently working?</strong></td>
         <td>
-        {% if employment is defined and employment is not empty %}
+        {% if employment.selfEmployment is defined or employment.employers is not empty %}
           Yes
         {% else %}
           No
@@ -496,17 +496,15 @@
       </tr>
       <tr class="no-border">
         <td><strong>Type of job:</strong></td>
-        {% if jobType is defined %}
         <td>
           {{ jobType }}
         </td>
-        {% endif %}
       </tr>
+      {% for employer in employment.employers %}
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Who employs them?</strong></td>
       </tr>
       <tr class="no-border">
-        {% for employer in employment.employers %}
         <td><strong>Employer name:</strong></td>
         <td>
           {{ employer.name }}

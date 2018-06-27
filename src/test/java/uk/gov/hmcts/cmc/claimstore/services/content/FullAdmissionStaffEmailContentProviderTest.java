@@ -37,7 +37,7 @@ public class FullAdmissionStaffEmailContentProviderTest {
     }
 
     @Test
-    public void shouldUseRequiredFieldsInTheSubject() {
+    public void shouldUsePaymentOptionByImmediately() {
         Claim claimWithFullAdmission = SampleClaim.builder()
             .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionImmediately())
             .withRespondedAt(LocalDateTime.now())
@@ -46,15 +46,6 @@ public class FullAdmissionStaffEmailContentProviderTest {
         assertThat(content.getSubject())
             .contains("Pay immediately 000CM001:")
             .contains("John Rambo v John Smith");
-    }
-
-    @Test
-    public void shouldUsePaymentOptionImmediatelyInTheBody() {
-        Claim claimWithFullAdmission = SampleClaim.builder()
-            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionImmediately())
-            .withRespondedAt(LocalDateTime.now())
-            .build();
-        EmailContent content = service.createContent(wrapInMap(claimWithFullAdmission, DEFENDANT_EMAIL));
 
         assertThat(content.getBody())
             .contains("The defendant has offered to pay immediately in response to the ")

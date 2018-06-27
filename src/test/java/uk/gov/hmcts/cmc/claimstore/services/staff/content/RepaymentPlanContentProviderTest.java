@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,9 +27,10 @@ public class RepaymentPlanContentProviderTest {
 
     @Test
     public void createRepaymentPlanPaymentOption() {
+        LocalDate firstPaymentDate = now().plusDays(1);
         RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder()
             .withInstalmentAmount(BigDecimal.valueOf(80))
-            .withFirstPaymentDate(now().plusDays(1))
+            .withFirstPaymentDate(firstPaymentDate)
             .build();
 
         RepaymentPlanContent repaymentPlanContent = create(INSTALMENTS, repaymentPlan, null);
@@ -38,15 +40,19 @@ public class RepaymentPlanContentProviderTest {
 
         assertThat(repaymentPlanContent.getInstalmentAmount())
             .isEqualTo(formatMoney(BigDecimal.valueOf(80)));
+
+        assertThat(repaymentPlanContent.getFirstPaymentDate())
+            .isEqualTo(formatDate(firstPaymentDate));
     }
 
     @Test
     public void createBySetDatePaymentOption() {
-        RepaymentPlanContent repaymentPlanContent = create(FULL_BY_SPECIFIED_DATE, null, now());
+        LocalDate setDate = now();
+        RepaymentPlanContent repaymentPlanContent = create(FULL_BY_SPECIFIED_DATE, null, setDate);
 
         assertThat(repaymentPlanContent.getRepaymentOption())
             .isEqualTo("By a set date");
         assertThat(repaymentPlanContent.getPaySetByDate())
-            .isEqualTo(formatDate(now()));
+            .isEqualTo(formatDate(setDate));
     }
 }
