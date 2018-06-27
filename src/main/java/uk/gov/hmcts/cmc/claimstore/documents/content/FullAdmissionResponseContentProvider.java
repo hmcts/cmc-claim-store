@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.content.RepaymentPlanContentProvider.create;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Component
 public class FullAdmissionResponseContentProvider {
@@ -28,7 +29,8 @@ public class FullAdmissionResponseContentProvider {
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
             .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
-            .put("paymentOption", type.getDescription());
+            .put("paymentOption", type.getDescription())
+            .put("whenWillTheyPay", createWhenTheyPay(fullAdmissionResponse));
 
         fullAdmissionResponse.getRepaymentPlan().ifPresent(repaymentPlan ->
             contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()))
@@ -41,5 +43,16 @@ public class FullAdmissionResponseContentProvider {
         );
 
         return contentBuilder.build();
+    }
+
+    private String createWhenTheyPay(FullAdmissionResponse fullAdmissionResponse) {
+        switch (fullAdmissionResponse.getPaymentOption()) {
+            case IMMEDIATELY:
+            case FULL_BY_SPECIFIED_DATE:
+                return "The full amount, no later than " + formatDate(fullAdmissionResponse.getPaymentDate()
+                    .orElseThrow(IllegalStateException::new));
+            default:
+                return fullAdmissionResponse.getPaymentOption().getDescription();
+        }
     }
 }
