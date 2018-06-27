@@ -38,6 +38,9 @@ public class StatementOfMeansContentProviderTest {
 
     @Test
     public void shouldProvideJobTypeEmployedAndSelfmployed() {
+        StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
+            new StatementOfMeansContentProvider.JobTypeContentProvider();
+
         Employment employment = Employment.builder()
             .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
             .selfEmployment(SelfEmployment.builder()
@@ -46,13 +49,15 @@ public class StatementOfMeansContentProviderTest {
                 .onTaxPayments(OnTaxPayments.builder().amountYouOwe(TEN).reason("Genuine reason").build())
                 .build())
             .build();
-        String jobType = provider.createJobType(employment);
+        String jobType = jobTypeContentProvider.createJobType(employment);
         assertThat(jobType)
             .isEqualTo("Employed and self-employed");
     }
 
     @Test
     public void shouldProvideJobTypeSelfEmployed() {
+        StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
+            new StatementOfMeansContentProvider.JobTypeContentProvider();
         Employment employment = Employment.builder()
             .selfEmployment(SelfEmployment.builder()
                 .jobTitle("Director")
@@ -60,27 +65,31 @@ public class StatementOfMeansContentProviderTest {
                 .onTaxPayments(OnTaxPayments.builder().amountYouOwe(TEN).reason("Genuine reason").build())
                 .build())
             .build();
-        String jobType = provider.createJobType(employment);
+        String jobType = jobTypeContentProvider.createJobType(employment);
         assertThat(jobType)
             .isEqualTo("Self-employed");
     }
 
     @Test
     public void shouldProvideJobTypeEmployed() {
+        StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
+            new StatementOfMeansContentProvider.JobTypeContentProvider();
         Employment employment = Employment.builder()
             .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
             .build();
-        String jobType = provider.createJobType(employment);
+        String jobType = jobTypeContentProvider.createJobType(employment);
         assertThat(jobType)
             .isEqualTo("Employed");
     }
 
     @Test
     public void shouldProvideJobTypeUnEmployed() {
+        StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
+            new StatementOfMeansContentProvider.JobTypeContentProvider();
         Employment employment = Employment.builder()
             .unemployment(Unemployment.builder().retired(true).build())
             .build();
-        String jobType = provider.createJobType(employment);
+        String jobType = jobTypeContentProvider.createJobType(employment);
         assertThat(jobType)
             .isEqualTo("Unemployed");
     }

@@ -19,6 +19,7 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.OTHER;
 
 @Component
 public class StatementOfMeansContentProvider {
@@ -30,7 +31,10 @@ public class StatementOfMeansContentProvider {
 
         Residence residence = statementOfMeans.getResidence();
         contentBuilder.put("residence", residence);
-        contentBuilder.put("residenceTypeDescription", residence.getType().getDescription());
+        contentBuilder.put("residenceTypeDescription",
+            residence.getType() == OTHER
+                ? residence.getOtherDetail().orElseThrow(IllegalStateException::new)
+                : residence.getType().getDescription());
 
         contentBuilder.putAll(createDependant(statementOfMeans));
 
@@ -107,7 +111,9 @@ public class StatementOfMeansContentProvider {
         requireNonNull(income);
 
         return new ImmutableMap.Builder<String, Object>()
-            .put("type", income.getType().getDescription())
+            .put("type", income.getType() == Income.IncomeType.OTHER
+                ? income.getOtherSource().orElseThrow(IllegalStateException::new)
+                : income.getType().getDescription())
             .put("amountReceived", formatMoney(income.getAmountReceived()))
             .put("frequency", income.getFrequency().getDescription())
             .build();
@@ -117,7 +123,9 @@ public class StatementOfMeansContentProvider {
         requireNonNull(expense);
 
         return new ImmutableMap.Builder<String, Object>()
-            .put("type", expense.getType().getDescription())
+            .put("type", expense.getType() == Expense.ExpenseType.OTHER
+                ? expense.getOtherExpense().orElseThrow(IllegalStateException::new)
+                : expense.getType().getDescription())
             .put("amountPaid", formatMoney(expense.getAmountPaid()))
             .put("frequency", expense.getFrequency().getDescription())
             .build();
@@ -127,7 +135,7 @@ public class StatementOfMeansContentProvider {
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
 
         statementOfMeans.getEmployment().ifPresent(employment -> {
-            contentBuilder.put("jobType", createJobType(employment));
+            contentBuilder.put("jobType", new JobTypeContentProvider().createJobType(employment));
             contentBuilder.put("employment", employment);
             employment.getSelfEmployment().ifPresent(selfEmployment -> {
                 contentBuilder.put("selfEmployment", createSelfEmployment(selfEmployment));
@@ -185,15 +193,17 @@ public class StatementOfMeansContentProvider {
             .build();
     }
 
-    public String createJobType(Employment employment) {
-        if (employment.getEmployers().size() > 0 && employment.getSelfEmployment().isPresent()) {
-            return "Employed and self-employed";
-        } else if (employment.getSelfEmployment().isPresent()) {
-            return "Self-employed";
-        } else if (employment.getEmployers().size() > 0) {
-            return "Employed";
-        } else {
-            return "Unemployed";
+    static class JobTypeContentProvider {
+        public String createJobType(Employment employment) {
+            if (employment.getEmployers().size() > 0 && employment.getSelfEmployment().isPresent()) {
+                return "Employed and self-employed";
+            } else if (employment.getSelfEmployment().isPresent()) {
+                return "Self-employed";
+            } else if (employment.getEmployers().size() > 0) {
+                return "Employed";
+            } else {
+                return "Unemployed";
+            }
         }
     }
 }

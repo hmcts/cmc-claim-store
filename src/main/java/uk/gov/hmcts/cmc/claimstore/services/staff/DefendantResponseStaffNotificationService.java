@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -75,7 +76,7 @@ public class DefendantResponseStaffNotificationService {
 
     private boolean isFullAdmission(Claim claim) {
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
-        return responseType == ResponseType.FULL_ADMISSION;
+        return responseType == FULL_ADMISSION;
     }
 
     public static Map<String, Object> wrapInMap(
@@ -88,25 +89,20 @@ public class DefendantResponseStaffNotificationService {
         map.put("claim", claim);
         map.put("response", response);
         map.put("defendantEmail", defendantEmail);
+        map.put("defendantMobilePhone", response
+            .getDefendant()
+            .getMobilePhone()
+            .orElse(null));
+        map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
+        map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
 
-        switch (response.getResponseType()) {
-            case FULL_DEFENCE:
-                map.put("defendantMobilePhone", response
-                    .getDefendant()
-                    .getMobilePhone()
-                    .orElse(null));
-                break;
-            case FULL_ADMISSION:
-                FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
-                map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
-                map.put("paymentOptionDescription", fullAdmissionResponse
-                    .getPaymentOption().getDescription().toLowerCase());
-                map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-                map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
-                break;
-            default:
-                throw new IllegalStateException("Invalid response type " + response.getResponseType());
+        if (response.getResponseType() == FULL_ADMISSION) {
+            FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
+            map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
+            map.put("paymentOptionDescription", fullAdmissionResponse
+                .getPaymentOption().getDescription().toLowerCase());
         }
+
         return map;
     }
 

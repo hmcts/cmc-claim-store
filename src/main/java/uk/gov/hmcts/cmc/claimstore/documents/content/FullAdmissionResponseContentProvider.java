@@ -3,11 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.content.RepaymentPlanContentProvider.create;
@@ -32,11 +30,9 @@ public class FullAdmissionResponseContentProvider {
             .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
             .put("paymentOption", type.getDescription());
 
-        Optional<RepaymentPlan> optionalRepaymentPlan = fullAdmissionResponse.getRepaymentPlan();
-        if (optionalRepaymentPlan.isPresent()) {
-            RepaymentPlan repaymentPlan = optionalRepaymentPlan.get();
-            contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()));
-        }
+        fullAdmissionResponse.getRepaymentPlan().ifPresent(repaymentPlan ->
+            contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()))
+        );
 
         fullAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> contentBuilder.putAll(

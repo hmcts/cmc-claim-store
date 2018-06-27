@@ -353,7 +353,6 @@
 </div>
 
 {% if responseType equals "FULL_ADMISSION" %}
-{% if paymentOption is defined %}
 <div class="section">
   <div class="section-heading">
     <strong>When the defendant will pay</strong>
@@ -391,14 +390,13 @@
         <tr class="no-border">
           <td><strong>Explain why you can’t pay the full amount now:</strong></td>
           <td>
-            {{ statementOfMeans.reason}}
+            {{ statementOfMeans.reason }}
           </td>
         </tr>
         {% endif %}
       </table>
     </div>
 </div>
-{% endif %}
 
 {% if paymentOption == 'By instalments' or  paymentOption == 'By a set date' %}
 <div class="section">
@@ -444,28 +442,32 @@
         </tr>
         {% endif %}
       {% endfor %}
+
+      {% if maintainedChildren is defined %}
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Maintenance:</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Number of children:</strong></td>
         <td>
-          {{ dependant.numberOfMaintainedChildren }}
+          {{ maintainedChildren }}
         </td>
       </tr>
+      {% endif %}
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Financial support:</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Do they support anyone else financially?</strong></td>
         <td>
-        {% if employment is defined and employment is not empty %}
+        {% if otherDependants is defined %}
           Yes
         {% else %}
           No
         {% endif %}
         </td>
       </tr>
+      {% if otherDependants is defined %}
       <tr class="no-border">
         <td><strong>Number of people:</strong></td>
         <td>
@@ -478,6 +480,7 @@
           {{ otherDependants.details }}
         </td>
       </tr>
+      {% endif %}
       <tr>
         <td colspan="2" class="keep-white-space"><strong>Employment details:</strong></td>
       </tr>
@@ -543,6 +546,7 @@
         {% endif %}
         </td>
       </tr>
+      {% if onTaxPayments is defined %}
       <tr class="no-border">
         <td><strong>Amount they owe?</strong></td>
         <td>
@@ -555,6 +559,7 @@
           {{ onTaxPayments.reason }}
         </td>
       </tr>
+      {% endif %}
       {% endif %}
 
       <tr>
