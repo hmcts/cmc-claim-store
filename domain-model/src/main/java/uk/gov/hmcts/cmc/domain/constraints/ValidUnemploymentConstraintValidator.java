@@ -18,6 +18,10 @@ public class ValidUnemploymentConstraintValidator implements ConstraintValidator
 
     @Override
     public boolean isValid(Unemployment unemployment, ConstraintValidatorContext context) {
+        if (unemployment == null) {
+            return true;
+        }
+
         boolean valid = true;
         boolean isRetiredPopulated = unemployment.isRetired();
         boolean otherPopulated = unemployment.getOther().isPresent();

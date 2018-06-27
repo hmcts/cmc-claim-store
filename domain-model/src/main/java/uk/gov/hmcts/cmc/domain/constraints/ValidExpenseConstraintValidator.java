@@ -17,19 +17,23 @@ public class ValidExpenseConstraintValidator implements ConstraintValidator<Vali
 
     @Override
     public boolean isValid(Expense expense, ConstraintValidatorContext context) {
+        if (expense == null) {
+            return true;
+        }
+
         Expense.ExpenseType type = expense.getType();
 
         if (type == Expense.ExpenseType.OTHER) {
             if (!expense.getOtherExpense().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_EXPENSE, mayNotBeNullError("expenseType", type.getDescription())
+                    context, Fields.OTHER_EXPENSE, mayNotBeNullError("type", type.getDescription())
                 );
                 return false;
             }
         } else {
             if (expense.getOtherExpense().isPresent()) {
                 setValidationErrors(
-                    context, Fields.OTHER_EXPENSE, mayNotBeProvidedError("expenseType", type.getDescription())
+                    context, Fields.OTHER_EXPENSE, mayNotBeProvidedError("type", type.getDescription())
                 );
                 return false;
             }
