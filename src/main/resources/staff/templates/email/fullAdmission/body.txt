@@ -5,4 +5,14 @@ The defendant needs to tell the claimant and the court when they get paid on or 
 The claimant needs to respond to the offer to pay by a set date on or before {{ fourteenDaysFromNow }}.
 {% endif %}
 
+Defendant's details can be found on the attached defence copy. Additional contact details are:
+
+Email: {{ defendantEmail }}
+
+{% if defendantMobilePhone is not empty %}
+Mobile number: {{ defendantMobilePhone }}
+{% else %}
+Mobile number: not given
+{% endif %}
+
 This email has been sent from the HMCTS Civil Money Claims online court.
