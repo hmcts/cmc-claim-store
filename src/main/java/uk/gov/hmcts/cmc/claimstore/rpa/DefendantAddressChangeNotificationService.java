@@ -48,7 +48,7 @@ public class DefendantAddressChangeNotificationService {
         );
 
         //if any of addresses didn't change, do nothing
-        if (comparator.isDefendantAddressEqual() && comparator.isDefendantCorrespondenceAddressEqual()) {
+        if (comparator.isAddressEqual() && comparator.isCorrespondenceAddressEqual()) {
             return;
         }
 

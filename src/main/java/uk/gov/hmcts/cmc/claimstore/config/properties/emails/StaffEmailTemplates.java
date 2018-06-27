@@ -46,4 +46,12 @@ public class StaffEmailTemplates {
     public String getBulkPrintEmailSubject() {
         return readString("/staff/templates/email/bulkPrintFailure/subject.txt");
     }
+
+    public String getDefendantAddressChangeEmailSubject()  {
+        return readString("/staff/templates/email/defendantAddressChange/subject.txt");
+    }
+
+    public String getDefendantAddressChangeEmailBody()  {
+        return readString("/staff/templates/email/defendantAddressChange/body.txt");
+    }
 }

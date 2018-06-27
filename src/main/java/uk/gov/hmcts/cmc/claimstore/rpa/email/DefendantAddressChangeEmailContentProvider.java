@@ -1,13 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.rpa.email;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimDefendantComparator;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
-
-import java.util.Map;
 
 @Component
 public class DefendantAddressChangeEmailContentProvider implements EmailContentProvider<ClaimDefendantComparator> {
@@ -26,17 +23,9 @@ public class DefendantAddressChangeEmailContentProvider implements EmailContentP
     @Override
     public EmailContent createContent(ClaimDefendantComparator comparator) {
         return new EmailContent(
-            evaluateTemplate(emailTemplates.getDefendantAddressChangeEmailSubject(), wrapInMap(comparator)),
+            emailTemplates.getDefendantAddressChangeEmailSubject(),
             emailTemplates.getDefendantAddressChangeEmailBody()
         );
-    }
-
-    private Map<String, Object> wrapInMap(ClaimDefendantComparator comparator) {
-        return ImmutableMap.<String, Object>builder()
-            .put("hasAddressChanged", comparator.isDefendantAddressEqual())
-            .put("hasCorrespondenceAddressChanged", comparator.isDefendantCorrespondenceAddressEqual())
-            .put("hasPhoneNumberChanged", false) // todo how to check this?
-            .build();
     }
 
     @Override

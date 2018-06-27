@@ -15,11 +15,11 @@ public class EmailTemplates {
         return readString("/rpa/templates/email/claimIssued/body.txt");
     }
 
-    public String getDefendantAddressChangeEmailSubject()  {
+    public String getDefendantAddressChangeEmailSubject() {
         return readString("/rpa/templates/email/defendantAddressChange/subject.txt");
     }
 
-    public String getDefendantAddressChangeEmailBody()  {
+    public String getDefendantAddressChangeEmailBody() {
         return readString("/rpa/templates/email/defendantAddressChange/body.txt");
     }
 }

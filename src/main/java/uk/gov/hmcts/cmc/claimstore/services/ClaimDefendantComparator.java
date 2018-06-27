@@ -13,15 +13,24 @@ public class ClaimDefendantComparator {
         this.defendant = defendant;
     }
 
-    public boolean isDefendantAddressEqual() {
+    public boolean isAddressEqual() {
         return claim.getClaimData().getDefendant().getAddress().equals(
             defendant.getAddress()
         );
     }
 
-    public boolean isDefendantCorrespondenceAddressEqual() {
+    public boolean isCorrespondenceAddressEqual() {
         return claim.getClaimData().getDefendant().getServiceAddress().equals(
             defendant.getCorrespondenceAddress()
         );
+    }
+
+    //there's no phoneNumber in claimant
+    public boolean isPhoneNumberEqual() {
+        return defendant.getPhoneNumber() == null;
+    }
+
+    public boolean isEqual() {
+        return this.isAddressEqual() && this.isCorrespondenceAddressEqual() && this.isPhoneNumberEqual();
     }
 }
