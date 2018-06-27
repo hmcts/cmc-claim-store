@@ -48,7 +48,7 @@ public class DefendantJsonMapper {
 
     public JsonObject map(Party defendantFromResponse, TheirDetails defendantFromClaim, String defendantsEmail) {
         JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder()
-            .add("type", defendantFromResponse.getClass().getSimpleName().replace("Details", ""))
+            .add("type", defendantFromResponse.getClass().getSimpleName())
             .add("name", defendantFromResponse.getName())
             .add("address", addressMapper.map(defendantFromResponse.getAddress()))
             .add("correspondenceAddress", defendantFromResponse.getCorrespondenceAddress().map(addressMapper::map).orElse(null))
