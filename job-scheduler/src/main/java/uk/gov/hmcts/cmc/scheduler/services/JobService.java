@@ -4,6 +4,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.Date;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
+import static org.quartz.TriggerKey.triggerKey;
 
 @Service
 public class JobService {
@@ -39,6 +41,7 @@ public class JobService {
                 newTrigger()
                     .startAt(Date.from(startDateTime.toInstant()))
                     .withIdentity(jobData.getId(), jobData.getGroup())
+                    .withDescription(jobData.getDescription())
                     .withSchedule(
                         simpleSchedule()
                             .withMisfireHandlingInstructionNowWithExistingCount()
@@ -56,16 +59,23 @@ public class JobService {
     public JobKey rescheduleJob(JobData jobData, ZonedDateTime startDateTime) {
         try {
 
-            scheduler.rescheduleJob(new TriggerKey(jobData.getId(), jobData.getGroup()),
-                newTrigger()
-                    .startAt(Date.from(startDateTime.toInstant()))
-                    .withIdentity(jobData.getId(), jobData.getGroup())
-                    .withSchedule(
-                        simpleSchedule()
-                            .withMisfireHandlingInstructionNowWithExistingCount()
-                    )
-                    .build()
-            );
+            TriggerKey triggerKey = triggerKey(jobData.getId(), jobData.getGroup());
+            SimpleTrigger newTrigger = newTrigger()
+                .startAt(Date.from(startDateTime.toInstant()))
+                .withIdentity(jobData.getId(), jobData.getGroup())
+                .withDescription(jobData.getDescription())
+                .withSchedule(
+                    simpleSchedule()
+                        .withMisfireHandlingInstructionNowWithExistingCount()
+                )
+                .build();
+
+            Date rescheduleJob = scheduler.rescheduleJob(triggerKey, newTrigger);
+
+            if (rescheduleJob == null) {
+                scheduleJob(jobData, startDateTime);
+            }
+
             return JobKey.jobKey(jobData.getId(), jobData.getGroup());
 
         } catch (SchedulerException exc) {

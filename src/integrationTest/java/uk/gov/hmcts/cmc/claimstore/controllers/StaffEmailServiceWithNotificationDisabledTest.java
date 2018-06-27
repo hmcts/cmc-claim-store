@@ -75,7 +75,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationsForCitizenClaimIssuedEvent() throws Exception {
-        makeRequest(SampleClaimData.submittedByClaimant())
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isOk())
             .andReturn();
 

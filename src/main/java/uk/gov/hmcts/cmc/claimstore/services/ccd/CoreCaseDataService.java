@@ -147,7 +147,7 @@ public class CoreCaseDataService {
         return extractClaim(caseDetails);
     }
 
-    public CaseDetails requestMoreTimeForResponse(
+    public Claim requestMoreTimeForResponse(
         String authorisation,
         Claim claim,
         LocalDate newResponseDeadline
@@ -158,7 +158,7 @@ public class CoreCaseDataService {
 
         CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
         jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(authorisation, claim, newResponseDeadline);
-        return updates;
+        return extractClaim(updates);
     }
 
     public CaseDetails saveCountyCourtJudgment(

@@ -39,15 +39,15 @@ public class JobSchedulerService {
     ) {
         LocalDate responseDeadline = claim.getResponseDeadline();
 
-        Map<String, Object> data = getNotificationData(authorisation, claim, responseDeadline);
+        Map<String, Object> data = createNotificationData(authorisation, claim.getReferenceNumber());
 
         jobService.scheduleJob(
-            getFirstReminderJobData(claim, data),
+            createReminderJobData(claim, data, firstReminderDay),
             responseDeadline.minusDays(firstReminderDay).atStartOfDay(ZoneOffset.UTC)
         );
 
         jobService.scheduleJob(
-            getLastReminderJobData(claim, data),
+            createReminderJobData(claim, data, lastReminderDay),
             responseDeadline.minusDays(lastReminderDay).atStartOfDay(ZoneOffset.UTC)
         );
 
@@ -58,66 +58,49 @@ public class JobSchedulerService {
         Claim claim,
         LocalDate responseDeadline
     ) {
-        Map<String, Object> data = getNotificationData(authorisation, claim, responseDeadline);
+        Map<String, Object> data = createNotificationData(authorisation, claim.getReferenceNumber());
 
         jobService.rescheduleJob(
-            getFirstReminderJobData(claim, data),
+            createReminderJobData(claim, data, firstReminderDay),
             responseDeadline.minusDays(firstReminderDay).atStartOfDay(ZoneOffset.UTC)
         );
 
         jobService.rescheduleJob(
-            getLastReminderJobData(claim, data),
+            createReminderJobData(claim, data, lastReminderDay),
             responseDeadline.minusDays(lastReminderDay).atStartOfDay(ZoneOffset.UTC)
         );
 
     }
 
-    private JobData getLastReminderJobData(Claim claim, Map<String, Object> data) {
+    private JobData createReminderJobData(Claim claim, Map<String, Object> data, int numberOfDaysBeforeDeadline) {
         return JobData.builder()
             .id("reminder:defence-due-in-"
-                + lastReminderDay
-                + "-day:"
+                + numberOfDaysBeforeDeadline
+                + "-day"
+                + (numberOfDaysBeforeDeadline > 1 ? "s" : "")
+                + ":"
                 + claim.getReferenceNumber()
                 + "-"
                 + claim.getExternalId()
             )
             .group("Reminders")
-            .description("Defendant reminder email " + lastReminderDay + " day before response deadline")
-            .jobClass(NotificationEmailJob.class)
-            .data(data).build();
-    }
-
-    private JobData getFirstReminderJobData(Claim claim, Map<String, Object> data) {
-        return JobData.builder()
-            .id("reminder:defence-due-in-"
-                + firstReminderDay
-                + "-days:"
-                + claim.getReferenceNumber()
-                + "-"
-                + claim.getExternalId()
+            .description("Defendant reminder email "
+                + numberOfDaysBeforeDeadline
+                + " day"
+                + (numberOfDaysBeforeDeadline > 1 ? "s" : "")
+                + " before response deadline"
             )
-            .group("Reminders")
-            .description("Defendant reminder email " + firstReminderDay + " days before response deadline")
             .jobClass(NotificationEmailJob.class)
             .data(data).build();
     }
 
-    private Map<String, Object> getNotificationData(String authorisation, Claim claim, LocalDate responseDeadline) {
+    private Map<String, Object> createNotificationData(String authorisation, String referenceNumber) {
         User defendantUser = userService.getUser(authorisation);
-
-        String defendantId = defendantUser.getUserDetails().getId();
         String defendantEmail = defendantUser.getUserDetails().getEmail();
-        String defendantName = claim.getClaimData().getDefendant().getName();
-        String claimantName = claim.getClaimData().getClaimant().getName();
 
         return ImmutableMap.<String, Object>builder()
-            .put("caseId", claim.getId())
-            .put("caseReference", claim.getReferenceNumber())
+            .put("caseReference", referenceNumber)
             .put("defendantEmail", defendantEmail)
-            .put("defendantId", defendantId)
-            .put("defendantName", defendantName)
-            .put("claimantName", claimantName)
-            .put("responseDeadline", responseDeadline)
             .build();
     }
 }

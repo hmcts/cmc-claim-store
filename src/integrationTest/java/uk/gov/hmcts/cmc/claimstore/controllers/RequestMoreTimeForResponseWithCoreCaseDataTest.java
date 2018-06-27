@@ -5,15 +5,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.scheduler.model.JobData;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -21,7 +27,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -29,8 +34,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithMoreTimeExtension;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithMoreTimeExtension;
 
 @TestPropertySource(
     properties = {
@@ -67,7 +73,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
             eq(CASE_TYPE_ID),
             eq(searchCriteria(claimData.getExternalId().toString()))
             )
-        ).thenReturn(listOfCaseDetails());
+        ).thenReturn(listOfCaseDetails(), listOfCaseDetailsWithMoreTimeExtension());
 
         given(coreCaseDataApi.startEventForCitizen(
             eq(BEARER_TOKEN),
@@ -90,18 +96,22 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
             eq(IGNORE_WARNING),
             any()
             )
-        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+        ).willReturn(successfulCoreCaseDataStoreSubmitResponseWithMoreTimeExtension());
 
-
-        makeRequest(claimData.getExternalId().toString())
+        MvcResult result = makeRequest(claimData.getExternalId().toString())
             .andExpect(status().isOk())
             .andReturn();
+        Claim claim = deserializeObjectFrom(result, Claim.class);
 
         verify(notificationClient, times(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
 
-        verify(jobService, atLeast(2)).rescheduleJob(any(), any());
+        LocalDate responseDeadline = claim.getResponseDeadline();
+        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC);
+        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC);
 
+        verify(jobService).rescheduleJob(any(JobData.class), eq(firstReminderDate));
+        verify(jobService).rescheduleJob(any(JobData.class), eq(lastReminderDate));
     }
 
     private ResultActions makeRequest(String externalId) throws Exception {

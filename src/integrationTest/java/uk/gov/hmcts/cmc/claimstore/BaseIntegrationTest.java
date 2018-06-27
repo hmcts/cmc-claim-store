@@ -50,7 +50,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
         }
     }
 
-    protected ResultActions makeRequest(ClaimData claimData) throws Exception {
+    protected ResultActions makeIssueClaimRequest(ClaimData claimData) throws Exception {
         return webClient
             .perform(post("/claims/" + USER_ID)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -59,7 +59,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             );
     }
 
-    protected ResultActions makeRequestPrePayment(String externalId) throws Exception {
+    protected ResultActions makePrePaymentRequest(String externalId) throws Exception {
         return webClient
             .perform(post("/claims/" + externalId + "/pre-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +69,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
-            "page", String.valueOf(1),
+            "page", "1",
             "sortDirection", "desc",
             "case.externalId", externalId
         );

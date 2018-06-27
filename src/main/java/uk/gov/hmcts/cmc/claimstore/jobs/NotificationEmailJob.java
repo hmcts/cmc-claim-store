@@ -15,7 +15,7 @@ public class NotificationEmailJob implements Job {
     private static final Logger logger = LoggerFactory.getLogger(NotificationEmailJob.class);
 
     @Autowired
-    public ResponseNeededNotificationService responseNeededNotificationService;
+    private ResponseNeededNotificationService responseNeededNotificationService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

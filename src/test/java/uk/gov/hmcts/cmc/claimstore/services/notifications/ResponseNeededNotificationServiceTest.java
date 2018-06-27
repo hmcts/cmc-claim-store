@@ -32,7 +32,6 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
     @Mock
     private ClaimService claimService;
 
-
     @Before
     public void before() {
         responseNeededNotificationService = new ResponseNeededNotificationService(notificationClient,

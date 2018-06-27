@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -56,23 +55,21 @@ public class ResponseNeededNotificationService {
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(JobDetail jobDetail) {
-        JobDataMap emailData = jobDetail.getJobDataMap();
-        Map<String, String> parameters = aggregateParams(emailData);
+        JobDataMap jobData = jobDetail.getJobDataMap();
+        String caseReference = (String) jobData.get("caseReference");
+        Optional<Claim> claim = claimService.getClaimByReferenceAnonymous(caseReference);
 
-        try {
-            String caseReference = (String) emailData.get("caseReference");
-            Optional<Claim> claim = claimService.getClaimByReferenceAnonymous(caseReference);
-            if (claim.isPresent() && claim.get().getRespondedAt() == null) {
-
+        if (claim.isPresent() && claim.get().getRespondedAt() == null) {
+            try {
                 notificationClient.sendEmail(
                     getEmailTemplates().getDefendantResponseNeeded(),
-                    (String) emailData.get("defendantEmail"),
-                    parameters,
+                    (String) jobData.get("defendantEmail"),
+                    aggregateParams(claim.get()),
                     caseReference
                 );
+            } catch (NotificationClientException e) {
+                throw new NotificationException(e);
             }
-        } catch (NotificationClientException e) {
-            throw new NotificationException(e);
         }
     }
 
@@ -83,7 +80,7 @@ public class ResponseNeededNotificationService {
     ) {
         JobDataMap emailData = jobDetail.getJobDataMap();
         String caseReference = (String) emailData.get("caseReference");
-        logger.warn("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
+        logger.error("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
             caseReference,
             emailData.get("defendantEmail"),
             exception.getMessage(),
@@ -92,12 +89,15 @@ public class ResponseNeededNotificationService {
         appInsights.trackEvent(AppInsightsEvent.SCHEDULER_JOB_FAILED, caseReference);
     }
 
-    private Map<String, String> aggregateParams(Map<String, Object> emailData) {
+    private Map<String, String> aggregateParams(Claim claim) {
+        String defendantName = claim.getClaimData().getDefendant().getName();
+        String claimantName = claim.getClaimData().getClaimant().getName();
+
         return new ImmutableMap.Builder<String, String>()
-            .put(CLAIM_REFERENCE_NUMBER, (String) emailData.get("caseReference"))
-            .put(CLAIMANT_NAME, (String) emailData.get("claimantName"))
-            .put(DEFENDANT_NAME, (String) emailData.get("defendantName"))
-            .put(RESPONSE_DEADLINE, Formatting.formatDate((LocalDate) emailData.get("responseDeadline")))
+            .put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber())
+            .put(CLAIMANT_NAME, claimantName)
+            .put(DEFENDANT_NAME, defendantName)
+            .put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()))
             .put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl())
             .put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl())
             .build();
