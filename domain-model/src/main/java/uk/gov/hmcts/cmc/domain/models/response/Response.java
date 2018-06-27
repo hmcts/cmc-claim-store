@@ -32,7 +32,6 @@ public abstract class Response {
     private final YesNoOption freeMediation;
 
     @JsonUnwrapped
-    @NotNull
     private final YesNoOption moreTimeNeeded;
 
     @Valid
