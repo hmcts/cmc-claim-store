@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-public abstract class BaseSealedClaimPdfTest extends BaseTest {
+public abstract class BaseClaimPdfTest extends BaseTest {
     protected User user;
 
     protected abstract void assertionsOnClaimPdf(Claim createdCase, String pdfAsText);

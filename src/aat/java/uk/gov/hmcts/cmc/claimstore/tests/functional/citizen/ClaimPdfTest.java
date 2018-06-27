@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseSealedClaimPdfTest;
+import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseClaimPdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SealedClaimPdfTest extends BaseSealedClaimPdfTest {
+public class ClaimPdfTest extends BaseClaimPdfTest {
 
     @Before
     public void before() {
