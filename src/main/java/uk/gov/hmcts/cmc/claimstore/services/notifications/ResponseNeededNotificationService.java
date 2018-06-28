@@ -23,7 +23,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
@@ -34,6 +33,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 
 @Service
 public class ResponseNeededNotificationService {
+    private static final String LOG_TEMPLATE = "Response needed notification cannot be send ({}) due to {}";
+
     private final Logger logger = LoggerFactory.getLogger(ResponseNeededNotificationService.class);
 
     private final NotificationClient notificationClient;
@@ -57,20 +58,26 @@ public class ResponseNeededNotificationService {
     public void sendMail(JobDetail jobDetail) {
         JobDataMap jobData = jobDetail.getJobDataMap();
         String caseReference = (String) jobData.get("caseReference");
-        Optional<Claim> claim = claimService.getClaimByReferenceAnonymous(caseReference);
 
-        if (claim.isPresent() && claim.get().getRespondedAt() == null) {
-            try {
-                notificationClient.sendEmail(
-                    getEmailTemplates().getDefendantResponseNeeded(),
-                    claim.get().getDefendantEmail(),
-                    aggregateParams(claim.get()),
-                    caseReference
-                );
-            } catch (NotificationClientException e) {
-                throw new NotificationException(e);
-            }
-        }
+        claimService.getClaimByReferenceAnonymous(caseReference)
+            .ifPresent(claim -> {
+                if (claim.getRespondedAt() == null) {
+                    if (claim.getDefendantEmail() == null) {
+                        logger.warn(LOG_TEMPLATE, caseReference, "missing defendant email address");
+                    } else {
+                        try {
+                            notificationClient.sendEmail(
+                                getEmailTemplates().getDefendantResponseNeeded(),
+                                claim.getDefendantEmail(),
+                                aggregateParams(claim),
+                                caseReference
+                            );
+                        } catch (NotificationClientException e) {
+                            throw new NotificationException(e);
+                        }
+                    }
+                }
+            });
     }
 
     @Recover
@@ -80,11 +87,7 @@ public class ResponseNeededNotificationService {
     ) {
         JobDataMap emailData = jobDetail.getJobDataMap();
         String caseReference = (String) emailData.get("caseReference");
-        logger.error("Failure: failed to send response needed notification ({} to defendant at {}) due to {}",
-            caseReference,
-            emailData.get("defendantEmail"),
-            exception.getMessage(),
-            exception);
+        logger.error(LOG_TEMPLATE, caseReference, exception.getMessage(), exception);
 
         appInsights.trackEvent(AppInsightsEvent.SCHEDULER_JOB_FAILED, caseReference);
     }

@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Optional;
@@ -21,6 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ResponseNeededNotificationServiceTest extends BaseNotificationServiceTest {
@@ -50,7 +53,14 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
     public void sendShouldMailToDefendant() throws NotificationClientException {
         //given
         JobDetail jobDetail = mock(JobDetail.class);
-        Claim claim = SampleClaim.getDefault();
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .withPaymentOptionImmediately()
+                    .build()
+            ).build();
 
         ImmutableMap<String, Object> data = ImmutableMap.of("caseReference", claim.getReferenceNumber());
 
