@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
-import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -16,7 +16,10 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
+import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/request-judgement-notification-service")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
@@ -25,19 +28,19 @@ public class RequestForJudgementNotificationService {
     private final EmailService emailService;
     private final EmailProperties emailProperties;
     private final RequestForJudgementJsonMapper jsonMapper;
-    private final CCJStaffNotificationService ccjStaffNotificationService;
+    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
 
     @Autowired
     public RequestForJudgementNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
         RequestForJudgementJsonMapper jsonMapper,
-        CCJStaffNotificationService ccjStaffNotificationService
+        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.jsonMapper = jsonMapper;
-        this.ccjStaffNotificationService = ccjStaffNotificationService;
+        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
     }
 
     @EventListener
@@ -49,7 +52,7 @@ public class RequestForJudgementNotificationService {
     }
 
     private EmailData prepareEmailData(Claim claim) {
-        EmailAttachment ccjPdfAttachment = ccjStaffNotificationService.generateCountyCourtJudgmentPdf(claim);
+        EmailAttachment ccjPdfAttachment = generateCountyCourtJudgmentPdf(claim);
 
         return new EmailData(emailProperties.getCountyCourtJudgementRecipient(),
           "J default judgement request " + claim.getReferenceNumber(),
@@ -61,6 +64,16 @@ public class RequestForJudgementNotificationService {
     private EmailAttachment createRequestForJudgementJsonAttachment(Claim claim) {
         return EmailAttachment.json(jsonMapper.map(claim).toString().getBytes(),
             DocumentNameUtils.buildJsonRequestForJudgementFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
+    }
+
+    private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
+        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
+
+        return pdf(
+            generatedPdf,
+            buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
+                claim.getClaimData().getDefendant().getName()) + EXTENSION
+        );
     }
 
 }
