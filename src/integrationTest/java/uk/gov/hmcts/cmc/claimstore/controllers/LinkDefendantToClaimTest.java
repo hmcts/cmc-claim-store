@@ -62,8 +62,8 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
             .containsExactly(claim.getId(), "555");
 
         LocalDate responseDeadline = claim.getResponseDeadline();
-        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC);
-        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC);
+        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atTime(8, 0).atZone(ZoneOffset.UTC);
+        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atTime(8, 0).atZone(ZoneOffset.UTC);
 
         verify(jobService).scheduleJob(any(JobData.class), eq(firstReminderDate));
         verify(jobService).scheduleJob(any(JobData.class), eq(lastReminderDate));

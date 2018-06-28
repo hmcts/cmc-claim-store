@@ -36,12 +36,12 @@ public class JobSchedulerService {
 
         jobService.scheduleJob(
             createReminderJobData(claim, notificationData, firstReminderDay),
-            responseDeadline.minusDays(firstReminderDay).atStartOfDay(ZoneOffset.UTC)
+            responseDeadline.minusDays(firstReminderDay).atTime(8,0).atZone(ZoneOffset.UTC)
         );
 
         jobService.scheduleJob(
             createReminderJobData(claim, notificationData, lastReminderDay),
-            responseDeadline.minusDays(lastReminderDay).atStartOfDay(ZoneOffset.UTC)
+            responseDeadline.minusDays(lastReminderDay).atTime(8,0).atZone(ZoneOffset.UTC)
         );
 
     }
@@ -54,12 +54,12 @@ public class JobSchedulerService {
 
         jobService.rescheduleJob(
             createReminderJobData(claim, notificationData, firstReminderDay),
-            responseDeadline.minusDays(firstReminderDay).atStartOfDay(ZoneOffset.UTC)
+            responseDeadline.minusDays(firstReminderDay).atTime(8,0).atZone(ZoneOffset.UTC)
         );
 
         jobService.rescheduleJob(
             createReminderJobData(claim, notificationData, lastReminderDay),
-            responseDeadline.minusDays(lastReminderDay).atStartOfDay(ZoneOffset.UTC)
+            responseDeadline.minusDays(lastReminderDay).atTime(8,0).atZone(ZoneOffset.UTC)
         );
 
     }

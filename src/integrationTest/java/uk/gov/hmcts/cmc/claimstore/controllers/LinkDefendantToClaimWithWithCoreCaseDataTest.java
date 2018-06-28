@@ -21,11 +21,11 @@ import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.time.ZoneOffset.UTC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -139,8 +139,8 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
         Claim claim = extractClaims(searchOutput).get(0);
 
         LocalDate responseDeadline = claim.getResponseDeadline();
-        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC);
-        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC);
+        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atTime(8, 0).atZone(UTC);
+        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atTime(8, 0).atZone(UTC);
 
         verify(jobService).scheduleJob(any(JobData.class), eq(firstReminderDate));
         verify(jobService).scheduleJob(any(JobData.class), eq(lastReminderDate));

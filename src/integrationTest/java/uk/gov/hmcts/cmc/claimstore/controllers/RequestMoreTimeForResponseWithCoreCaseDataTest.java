@@ -22,6 +22,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
+import static java.time.ZoneOffset.UTC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -107,8 +108,8 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
 
         LocalDate responseDeadline = claim.getResponseDeadline();
-        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atStartOfDay(ZoneOffset.UTC);
-        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atStartOfDay(ZoneOffset.UTC);
+        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atTime(8, 0).atZone(UTC);
+        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atTime(8, 0).atZone(UTC);
 
         verify(jobService).rescheduleJob(any(JobData.class), eq(firstReminderDate));
         verify(jobService).rescheduleJob(any(JobData.class), eq(lastReminderDate));
