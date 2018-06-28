@@ -12,7 +12,8 @@ public enum AppInsightsEvent {
     CCJ_REQUESTED("CCJ requested"),
     RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
     RESPONSE_MORE_TIME_REQUESTED_PAPER("Response - more time requested paper"),
-    BULK_PRINT_FAILED("Bulk print failed");
+    BULK_PRINT_FAILED("Bulk print failed"),
+    SCHEDULER_JOB_FAILED("Scheduler job failed");
 
     private String displayName;
 

@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
 @TestPropertySource(
@@ -105,7 +106,8 @@ public class EndpointErrorsTest extends MockSpringTest {
             .withDefendantId(null)
             .build();
         given(claimRepository.getClaimByExternalId(externalId)).willReturn(Optional.of(claim));
-        given(claimRepository.linkDefendant(claim.getLetterHolderId(), defendantId)).willThrow(UNEXPECTED_ERROR);
+        given(claimRepository.linkDefendant(claim.getLetterHolderId(), defendantId, DEFENDANT_EMAIL))
+            .willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(put("/claims/defendant/link")

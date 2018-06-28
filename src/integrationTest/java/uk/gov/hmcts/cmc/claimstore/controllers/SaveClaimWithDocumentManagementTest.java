@@ -46,7 +46,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
-        MvcResult result = makeRequest(claimData)
+        MvcResult result = makeIssueClaimRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -81,7 +81,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
-        MvcResult result = makeRequest(claimData)
+        MvcResult result = makeIssueClaimRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -94,7 +94,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
-        makeRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build())
+        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build())
             .andExpect(status().isInternalServerError());
 
         verify(emailService, never()).sendEmail(anyString(), any());

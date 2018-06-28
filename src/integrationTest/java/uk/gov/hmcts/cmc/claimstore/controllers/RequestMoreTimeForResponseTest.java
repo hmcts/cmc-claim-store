@@ -7,22 +7,28 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.testcontainers.shaded.javax.ws.rs.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -76,6 +82,25 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         verify(notificationClient, times(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
+
+    }
+
+    @Test
+    public void shouldRescheduleNotificationJobWhenEverythingIsOk() throws Exception {
+        caseRepository.linkDefendant(BEARER_TOKEN);
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isOk());
+
+        claim = caseRepository.getClaimByExternalId(this.claim.getExternalId(), BEARER_TOKEN)
+            .orElseThrow(NotFoundException::new);
+
+        LocalDate responseDeadline = this.claim.getResponseDeadline();
+        ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atTime(8, 0).atZone(UTC);
+        ZonedDateTime firstReminderDate = responseDeadline.minusDays(5).atTime(8, 0).atZone(UTC);
+
+        verify(jobService).rescheduleJob(any(JobData.class), eq(lastReminderDate));
+        verify(jobService).rescheduleJob(any(JobData.class), eq(firstReminderDate));
     }
 
     @Test
