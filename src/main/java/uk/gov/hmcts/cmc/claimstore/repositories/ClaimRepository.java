@@ -170,10 +170,14 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET defendant_id = :defendantId WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
+        "UPDATE claim SET "
+            + "defendant_id = :defendantId,"
+            + "defendant_email = :defendantEmail "
+            + "WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
     )
     Integer linkDefendant(
         @Bind("letterHolderId") String letterHolderId,
-        @Bind("defendantId") String defendantId
-    );
+        @Bind("defendantId") String defendantId,
+        @Bind("defendantEmail") String defendantEmail
+        );
 }

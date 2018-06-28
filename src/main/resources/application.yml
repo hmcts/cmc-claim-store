@@ -72,6 +72,8 @@ dateCalculations:
   requestedAdditionalTimeInDays: 14
   freeMediationTimeForDecisionInDays: 5
   offerMadeTimeForResponseInDays: 14
+  lastResponseReminderDay: 1
+  firstResponseReminderDay: 5
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
@@ -83,6 +85,7 @@ notifications:
       defendantClaimIssued: "49027a97-412e-45ee-86df-bf2fa6df6d8c"
       defendantResponseIssuedToIndividual: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseIssuedToCompany: "611ee21b-0063-4fee-a344-393b73868486"
+      defendantResponseNeeded: "15f9985a-1775-4f64-a6c7-7616bdbabb1c"
       claimantResponseIssued: "c82ab455-4786-4199-a0f3-e9e159b345f1"
       staffMoreTimeRequested: "23db60df-1dbb-405a-ab95-988b635455d1"
       claimantMoreTimeRequested: "f325bc6b-2169-4014-9a3c-32100317c6ed"

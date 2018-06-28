@@ -13,6 +13,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerKey;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 
 import java.time.LocalDate;
@@ -24,7 +25,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
@@ -45,19 +49,8 @@ public class JobServiceTest {
     public void shouldScheduleNewJob() throws SchedulerException {
         //given
         String jobId = UUID.randomUUID().toString();
-        Map<String, Object> data = new HashMap<>();
-        data.put("caseId", "234324332432432");
-        data.put("caseReference", "000MC003");
-        data.put("defendantEmail", "j.smith@example.com");
         String group = "Reminders";
-
-        JobData jobData = JobData.builder()
-            .id(jobId)
-            .group(group)
-            .description("Mock job scheduler")
-            .data(data)
-            .jobClass(Job.class)
-            .build();
+        JobData jobData = getJobData(jobId, group);
 
         ZonedDateTime startDateTime = LocalDate.now().atStartOfDay(ZoneOffset.UTC);
 
@@ -69,6 +62,79 @@ public class JobServiceTest {
         JobDetail jobDetail = getJobDetails(jobData);
         Trigger trigger = getTrigger(startDateTime, jobData);
         verify(scheduler).scheduleJob(jobDetail, trigger);
+    }
+
+    @Test
+    public void shouldRescheduleOldJob() throws SchedulerException {
+        //given
+        String jobId = UUID.randomUUID().toString();
+        String group = "Reminders";
+        JobData jobData = getJobData(jobId, group);
+        ZonedDateTime startDateTime = LocalDate.now().atStartOfDay(ZoneOffset.UTC);
+
+        //when
+
+        //schedule new job
+        JobKey jobKey = jobsService.scheduleJob(jobData, startDateTime);
+
+        //reschedule job again
+        ZonedDateTime newStartDateTime = LocalDate.now().plusDays(5).atStartOfDay(ZoneOffset.UTC);
+        when(scheduler.rescheduleJob(any(TriggerKey.class), any(Trigger.class)))
+            .thenReturn(Date.from(newStartDateTime.toInstant()));
+
+        jobsService.rescheduleJob(jobData, newStartDateTime);
+
+        //then
+
+        //verify scheduling
+        assertThat(jobKey).isEqualTo(new JobKey(jobId, group));
+        verify(scheduler).scheduleJob(getJobDetails(jobData), getTrigger(startDateTime, jobData));
+
+        //verify rescheduling
+        verify(scheduler).rescheduleJob(any(TriggerKey.class), any(Trigger.class));
+    }
+
+    @Test
+    public void shouldScheduleAnotherJobWhenReschedulingOldJobFails() throws SchedulerException {
+        //given
+        String jobId = UUID.randomUUID().toString();
+        String group = "Reminders";
+        JobData jobData = getJobData(jobId, group);
+
+        ZonedDateTime startDateTime = LocalDate.now().atStartOfDay(ZoneOffset.UTC);
+
+        //when
+        //schedule new job
+        JobKey jobKey = jobsService.scheduleJob(jobData, startDateTime);
+
+        //reschedule job again
+        ZonedDateTime newStartDateTime = LocalDate.now().plusDays(5).atStartOfDay(ZoneOffset.UTC);
+        when(scheduler.rescheduleJob(any(TriggerKey.class), any(Trigger.class)))
+            .thenReturn(null);
+
+        jobsService.rescheduleJob(jobData, newStartDateTime);
+
+        //then
+        //verify scheduling
+        assertThat(jobKey).isEqualTo(new JobKey(jobId, group));
+        verify(scheduler, atLeast(2)).scheduleJob(getJobDetails(jobData), getTrigger(startDateTime, jobData));
+        //verify rescheduling
+        verify(scheduler).rescheduleJob(any(TriggerKey.class), any(Trigger.class));
+    }
+
+    private JobData getJobData(String jobId, String group) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("caseId", "234324332432432");
+        data.put("caseReference", "000MC003");
+        data.put("defendantEmail", "j.smith@example.com");
+
+        return JobData.builder()
+            .id(jobId)
+            .group(group)
+            .description("Mock job scheduler")
+            .data(data)
+            .jobClass(Job.class)
+            .build();
     }
 
     private Trigger getTrigger(ZonedDateTime startDateTime, JobData jobData) {
