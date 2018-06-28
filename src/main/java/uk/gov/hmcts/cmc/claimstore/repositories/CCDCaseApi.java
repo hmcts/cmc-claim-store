@@ -148,16 +148,21 @@ public class CCDCaseApi {
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
     }
 
-    public void linkDefendant(String caseId, String defendantId) {
+    public void linkDefendant(String caseId, String defendantId, String defendantEmail) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        this.linkToCaseWithoutRevoking(defendantId, anonymousCaseWorker, caseId);
+        this.linkToCaseWithoutRevoking(defendantId, defendantEmail, anonymousCaseWorker, caseId);
     }
 
-    private void linkToCaseWithoutRevoking(String defendantId, User anonymousCaseWorker, String caseId) {
+    private void linkToCaseWithoutRevoking(
+        String defendantId,
+        String defendantEmail,
+        User anonymousCaseWorker,
+        String caseId
+    ) {
         LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
-        this.updateDefendantId(anonymousCaseWorker, caseId, defendantId);
+        this.updateDefendantIdAndEmail(anonymousCaseWorker, caseId, defendantId, defendantEmail);
     }
 
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
@@ -196,7 +201,8 @@ public class CCDCaseApi {
         LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         this.revokeAccessToCase(anonymousCaseWorker, letterHolderId, caseId);
 
-        CaseDetails caseDetails = this.updateDefendantId(defendantUser, caseId, defendantId);
+        String defendantEmail = defendantUser.getUserDetails().getEmail();
+        CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
         Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
         jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
@@ -225,9 +231,12 @@ public class CCDCaseApi {
         );
     }
 
-    private CaseDetails updateDefendantId(User defendantUser, String caseId, String defendantId) {
-        String defendantEmail = defendantUser.getUserDetails().getEmail();
-
+    private CaseDetails updateDefendantIdAndEmail(
+        User defendantUser,
+        String caseId,
+        String defendantId,
+        String defendantEmail
+    ) {
         return coreCaseDataService.update(
             defendantUser.getAuthorisation(),
             CCDCase.builder().id(Long.valueOf(caseId))

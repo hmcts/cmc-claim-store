@@ -44,6 +44,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
             .withAuthorisation(BEARER_TOKEN)
             .withUserDetails(SampleUserDetails.builder()
                 .withUserId(DEFENDANT_ID)
+                .withMail(DEFENDANT_EMAIL)
                 .withRoles("citizen", "letter-" + SampleClaim.LETTER_HOLDER_ID)
                 .build())
             .build()
