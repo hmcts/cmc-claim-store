@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -45,6 +47,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 )
 public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest {
 
+    public static final String DEFENDANT_BEARER_TOKEN = "token";
     @MockBean
     protected SendLetterApi sendLetterApi;
 
@@ -72,7 +75,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationsForCitizenClaimIssuedEvent() throws Exception {
-        makeRequest(SampleClaimData.submittedByClaimant())
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -141,6 +144,15 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationsForDefendantRequestedMoreTimeEvent() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withMail("defendant@example.com")
+            .withRoles("letter-" + claim.getLetterHolderId())
+            .build();
+
+        given(userService.getUser(DEFENDANT_BEARER_TOKEN)).willReturn(new User(DEFENDANT_BEARER_TOKEN, userDetails));
+        given(userService.getUserDetails(DEFENDANT_BEARER_TOKEN)).willReturn(userDetails);
+
         Claim claim = SampleClaim.builder()
             .withExternalId(UUID.randomUUID().toString())
             .withClaimData(SampleClaimData.validDefaults())
@@ -162,7 +174,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         return webClient
             .perform(post("/responses/claim/" + externalId + "/defendant/" + DEFENDANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, DEFENDANT_BEARER_TOKEN)
                 .content(jsonMapper.toJson(response))
             );
     }
