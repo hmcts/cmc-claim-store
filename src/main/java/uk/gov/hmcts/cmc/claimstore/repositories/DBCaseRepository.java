@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -29,17 +30,20 @@ public class DBCaseRepository implements CaseRepository {
     private final OffersRepository offersRepository;
     private final JsonMapper jsonMapper;
     private final UserService userService;
+    private final JobSchedulerService jobSchedulerService;
 
     public DBCaseRepository(
         ClaimRepository claimRepository,
         OffersRepository offersRepository,
         JsonMapper jsonMapper,
-        UserService userService
+        UserService userService,
+        JobSchedulerService jobSchedulerService
     ) {
         this.claimRepository = claimRepository;
         this.offersRepository = offersRepository;
         this.jsonMapper = jsonMapper;
         this.userService = userService;
+        this.jobSchedulerService = jobSchedulerService;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -73,11 +77,19 @@ public class DBCaseRepository implements CaseRepository {
     public void linkDefendant(String authorisation) {
         User defendantUser = userService.getUser(authorisation);
         String defendantId = defendantUser.getUserDetails().getId();
+        String defendantEmail = defendantUser.getUserDetails().getEmail();
 
         defendantUser.getUserDetails().getRoles().stream()
             .filter(this::isLetterHolderRole)
             .map(this::extractLetterHolderId)
-            .forEach(letterHolderId -> claimRepository.linkDefendant(letterHolderId, defendantId));
+            .forEach(letterHolderId -> {
+                Integer noOfRows = claimRepository.linkDefendant(letterHolderId, defendantId, defendantEmail);
+                if (noOfRows != 0) {
+                    claimRepository.getByLetterHolderId(letterHolderId)
+                        .ifPresent(claim -> jobSchedulerService
+                            .scheduleEmailNotificationsForDefendantResponse(claim));
+                }
+            });
     }
 
     private String extractLetterHolderId(String role) {
@@ -116,6 +128,7 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
         claimRepository.requestMoreTime(claim.getExternalId(), newResponseDeadline);
+        jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
     }
 
     @Override

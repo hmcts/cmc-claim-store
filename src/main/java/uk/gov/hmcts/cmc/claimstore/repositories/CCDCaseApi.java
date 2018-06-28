@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
@@ -59,6 +60,7 @@ public class CCDCaseApi {
     private final CaseAccessApi caseAccessApi;
     private final CoreCaseDataService coreCaseDataService;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final JobSchedulerService jobSchedulerService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
@@ -71,7 +73,8 @@ public class CCDCaseApi {
         UserService userService,
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
-        CCDCaseDataToClaim ccdCaseDataToClaim
+        CCDCaseDataToClaim ccdCaseDataToClaim,
+        JobSchedulerService jobSchedulerService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -79,6 +82,7 @@ public class CCDCaseApi {
         this.caseAccessApi = caseAccessApi;
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.jobSchedulerService = jobSchedulerService;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -144,16 +148,21 @@ public class CCDCaseApi {
             ).forEach(caseId -> linkToCase(defendantUser, anonymousCaseWorker, letterHolderId, caseId)));
     }
 
-    public void linkDefendant(String caseId, String defendantId) {
+    public void linkDefendant(String caseId, String defendantId, String defendantEmail) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        this.linkToCaseWithoutRevoking(defendantId, anonymousCaseWorker, caseId);
+        this.linkToCaseWithoutRevoking(defendantId, defendantEmail, anonymousCaseWorker, caseId);
     }
 
-    private void linkToCaseWithoutRevoking(String defendantId, User anonymousCaseWorker, String caseId) {
+    private void linkToCaseWithoutRevoking(
+        String defendantId,
+        String defendantEmail,
+        User anonymousCaseWorker,
+        String caseId
+    ) {
         LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
-        this.updateDefendantId(anonymousCaseWorker, caseId, defendantId);
+        this.updateDefendantIdAndEmail(anonymousCaseWorker, caseId, defendantId, defendantEmail);
     }
 
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
@@ -192,7 +201,11 @@ public class CCDCaseApi {
         LOGGER.debug("Revoking access to case {} for letter holder {}", caseId, letterHolderId);
         this.revokeAccessToCase(anonymousCaseWorker, letterHolderId, caseId);
 
-        this.updateDefendantId(defendantUser, caseId, defendantId);
+        String defendantEmail = defendantUser.getUserDetails().getEmail();
+        CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
+
+        Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
+        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
@@ -218,10 +231,18 @@ public class CCDCaseApi {
         );
     }
 
-    private void updateDefendantId(User defendantUser, String caseId, String defendantId) {
-        coreCaseDataService.update(
+    private CaseDetails updateDefendantIdAndEmail(
+        User defendantUser,
+        String caseId,
+        String defendantId,
+        String defendantEmail
+    ) {
+        return coreCaseDataService.update(
             defendantUser.getAuthorisation(),
-            CCDCase.builder().id(Long.valueOf(caseId)).defendantId(defendantId).build(),
+            CCDCase.builder().id(Long.valueOf(caseId))
+                .defendantId(defendantId)
+                .defendantEmail(defendantEmail)
+                .build(),
             CaseEvent.LINK_DEFENDANT
         );
     }
