@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
