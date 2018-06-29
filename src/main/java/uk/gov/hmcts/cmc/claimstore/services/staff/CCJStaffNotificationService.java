@@ -15,9 +15,10 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -67,6 +68,7 @@ public class CCJStaffNotificationService {
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
         map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
+
         return map;
     }
 
@@ -75,11 +77,8 @@ public class CCJStaffNotificationService {
 
         return pdf(
             generatedPdf,
-            format(
-                FILE_NAME_FORMAT,
-                claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()
-            )
+            buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
+                claim.getClaimData().getDefendant().getName()) + EXTENSION
         );
     }
 }
