@@ -424,7 +424,7 @@
         {% endif %}
         </td>
       </tr>
-      {% for child in children %}
+      {% for child in children | default([]) %}
         <tr class="no-border">
           <td>
             {{ child.ageGroupType }}
@@ -579,7 +579,7 @@
       <tr class="no-border">
         <td><strong>Joint account:</strong></td>
         <td>
-          {% if  bankAccount.joint %}
+          {% if bankAccount.joint %}
             Yes
           {% else %}
             No
@@ -633,7 +633,7 @@
         {% endif %}
         </td>
       </tr>
-      {% for debt in debts %}
+      {% for debt in debts | default([]) %}
       <tr class="no-border">
         <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Debt:</strong></td>
         <td>
@@ -669,7 +669,7 @@
         </td>
         {% endif %}
       </tr>
-      {% for courtOrder in courtOrders %}
+      {% for courtOrder in courtOrders | default([]) %}
       <tr class="no-border">
         <td><strong>Details about court orders:</strong></td>
         <td>
