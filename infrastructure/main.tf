@@ -109,6 +109,7 @@ module "claim-store-api" {
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   subscription = "${var.subscription}"
   capacity = "${var.capacity}"
+  common_tags = "${var.common_tags}"
 
   app_settings = {
     //    logging vars
