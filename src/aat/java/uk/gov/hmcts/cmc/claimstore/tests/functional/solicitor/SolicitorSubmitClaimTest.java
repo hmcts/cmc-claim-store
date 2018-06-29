@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.util.function.Supplier;
 
-public class SubmitClaimAsSolicitorTest extends BaseSubmitClaimTest {
+public class SolicitorSubmitClaimTest extends BaseSubmitClaimTest {
 
     @Before
     public void before() {

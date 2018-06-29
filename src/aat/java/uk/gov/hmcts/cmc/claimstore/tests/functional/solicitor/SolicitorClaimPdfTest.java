@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClaimPdfAsSolicitorTest extends BaseClaimPdfTest {
+public class SolicitorClaimPdfTest extends BaseClaimPdfTest {
 
     @Before
     public void before() {
