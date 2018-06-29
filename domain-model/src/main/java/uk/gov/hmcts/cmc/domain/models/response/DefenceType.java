@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 public enum DefenceType {
     DISPUTE("I dispute all the claim"),
+    PART_ADMISSION("I admit part of the claim"),
     ALREADY_PAID("I have paid what I believe I owe");
 
     String description;

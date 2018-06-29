@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -100,6 +101,32 @@ public class DefendantResponseContentProvider {
             }
 
             Optional<DefendantEvidence> defenceEvidence = fullDefence.getEvidence();
+            if (defenceEvidence.isPresent()) {
+                DefendantEvidence defendantEvidence = defenceEvidence.get();
+                evidences = Optional.ofNullable(defendantEvidence.getRows())
+                    .orElseGet(Collections::emptyList)
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
+                    .collect(Collectors.toList());
+                evidenceComment = defendantEvidence.getComment().orElse(null);
+            }
+        }
+        if (defendantResponse instanceof PartAdmissionResponse) {
+            PartAdmissionResponse partAdmission = (PartAdmissionResponse) defendantResponse;
+
+            content.put("responseDefence", partAdmission.getDefence());
+            content.put("responseTypeSelected", partAdmission.getDefenceType().getDescription());
+
+
+            Optional<DefendantTimeline> defenceTimeline = partAdmission.getTimeline();
+            if (defenceTimeline.isPresent()) {
+                DefendantTimeline defendantTimeline = defenceTimeline.get();
+                events = defendantTimeline.getEvents();
+                timelineComment = defendantTimeline.getComment().orElse(null);
+            }
+
+            Optional<DefendantEvidence> defenceEvidence = partAdmission.getEvidence();
             if (defenceEvidence.isPresent()) {
                 DefendantEvidence defendantEvidence = defenceEvidence.get();
                 evidences = Optional.ofNullable(defendantEvidence.getRows())

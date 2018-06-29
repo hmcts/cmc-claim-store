@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
@@ -27,6 +28,25 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .defendant(SampleParty.builder().individual())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build();
+        }
+    }
+
+    public static class PartAdmission extends SampleResponse<PartAdmission> {
+        public static PartAdmission builder() {
+            return new PartAdmission();
+        }
+
+        public PartAdmissionResponse build() {
+            return PartAdmissionResponse.builder()
+                .isAlreadyPaid(YesNoOption.YES)
+                .defenceType(DefenceType.PART_ADMISSION)
+                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .defence("defence string")
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().individual())
                 .build();
         }
     }

@@ -65,6 +65,12 @@ public class RespondToClaimTest extends BaseTest {
         shouldBeAbleToSuccessfullySubmit(fullAdmissionResponse);
     }
 
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitPartAdmission() {
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().build();
+        shouldBeAbleToSuccessfullySubmit(partAdmissionResponse);
+    }
+
     private void shouldBeAbleToSuccessfullySubmit(Response response) {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
