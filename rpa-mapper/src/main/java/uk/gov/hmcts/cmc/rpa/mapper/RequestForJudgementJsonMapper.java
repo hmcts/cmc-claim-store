@@ -22,7 +22,7 @@ public class RequestForJudgementJsonMapper {
             .add("alreadyPaid", countyCourtJudgment.getPaidAmount().orElse(null))
             .add("paymentType", countyCourtJudgment.getPaymentOption().name())
             .add("fullPaymentDeadline", countyCourtJudgment.getPayBySetDate().map(DateFormatter::format).orElse(null))
-            .add("instalments", countyCourtJudgment.getRepaymentPlan().map(this::toJson).orElse(toNullValuedJson()))
+            .add("instalments", countyCourtJudgment.getRepaymentPlan().map(this::toJson).orElse(null))
             .add("claimantEmailAddress", claim.getSubmitterEmail())
             .add("defendantEmailAddress", claim.getDefendantEmail())
             .build();
@@ -33,15 +33,6 @@ public class RequestForJudgementJsonMapper {
             .add("amount", repaymentPlan.getInstalmentAmount())
             .add("firstPayment", DateFormatter.format(repaymentPlan.getFirstPaymentDate()))
             .add("frequency", repaymentPlan.getPaymentSchedule().name())
-            .build();
-
-    }
-
-    private JsonObject toNullValuedJson() {
-        return new NullAwareJsonObjectBuilder()
-            .addNull("amount")
-            .addNull("firstPayment")
-            .addNull("frequency")
             .build();
     }
 }

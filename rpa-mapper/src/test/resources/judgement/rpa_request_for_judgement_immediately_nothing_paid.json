@@ -6,11 +6,7 @@
   "alreadyPaid": null,
   "paymentType": "IMMEDIATELY",
   "fullPaymentDeadline": null,
-  "instalments": {
-    "amount": null,
-    "firstPayment": null,
-    "frequency": null
-  },
+  "instalments": null,
   "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null
 }

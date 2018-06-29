@@ -6,11 +6,7 @@
   "alreadyPaid": 10.00,
   "paymentType": "FULL_BY_SPECIFIED_DATE",
   "fullPaymentDeadline": "12-Mar-2200",
-  "instalments": {
-    "amount": null,
-    "firstPayment": null,
-    "frequency": null
-  },
+  "instalments": null,
   "claimantEmailAddress": "claimant@mail.com",
   "defendantEmailAddress": null
 }
