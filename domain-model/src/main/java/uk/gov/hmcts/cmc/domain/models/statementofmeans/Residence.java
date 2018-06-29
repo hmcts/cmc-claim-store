@@ -1,12 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
+import uk.gov.hmcts.cmc.domain.constraints.ValidResidence;
 
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 @Builder
+@ValidResidence
 public class Residence {
 
     public enum ResidenceType {

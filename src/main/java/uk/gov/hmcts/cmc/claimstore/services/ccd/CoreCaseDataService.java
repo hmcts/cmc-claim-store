@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -62,6 +63,7 @@ public class CoreCaseDataService {
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final CaseAccessApi caseAccessApi;
+    private final JobSchedulerService jobSchedulerService;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -75,7 +77,8 @@ public class CoreCaseDataService {
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
-        CaseAccessApi caseAccessApi
+        CaseAccessApi caseAccessApi,
+        JobSchedulerService jobSchedulerService
     ) {
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
@@ -87,6 +90,7 @@ public class CoreCaseDataService {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.caseAccessApi = caseAccessApi;
+        this.jobSchedulerService = jobSchedulerService;
     }
 
     public CaseReference savePrePayment(String externalId, String authorisation) {
@@ -143,7 +147,7 @@ public class CoreCaseDataService {
         return extractClaim(caseDetails);
     }
 
-    public CaseDetails requestMoreTimeForResponse(
+    public Claim requestMoreTimeForResponse(
         String authorisation,
         Claim claim,
         LocalDate newResponseDeadline
@@ -151,7 +155,10 @@ public class CoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setResponseDeadline(newResponseDeadline);
         ccdCase.setMoreTimeRequested(YES);
-        return update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
+
+        CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
+        jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
+        return extractClaim(updates);
     }
 
     public CaseDetails saveCountyCourtJudgment(
@@ -396,7 +403,7 @@ public class CoreCaseDataService {
 
         return coreCaseDataApi.startForCitizen(
             authorisation,
-            this.authTokenGenerator.generate(),
+            authTokenGenerator.generate(),
             eventRequestData.getUserId(),
             eventRequestData.getJurisdictionId(),
             eventRequestData.getCaseTypeId(),

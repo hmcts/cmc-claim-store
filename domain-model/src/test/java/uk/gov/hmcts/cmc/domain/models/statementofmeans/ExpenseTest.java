@@ -8,13 +8,13 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.MORTGAGE;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
 
 public class ExpenseTest {
     public static Expense.ExpenseBuilder newSampleOfExpenseBuilder() {
         return Expense.builder()
                 .type(MORTGAGE)
-                .otherExpense("Other expense")
                 .frequency(MONTH)
                 .amountPaid(BigDecimal.valueOf(10));
     }
@@ -27,6 +27,51 @@ public class ExpenseTest {
         Set<String> response = validate(expense);
         //then
         assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldBeSuccessfulValidationForOtherExpense() {
+        //given
+        Expense expense = Expense.builder()
+            .type(OTHER)
+            .otherExpense("My other expense")
+            .frequency(MONTH)
+            .amountPaid(BigDecimal.valueOf(10))
+            .build();
+        //when
+        Set<String> response = validate(expense);
+        //then
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldBeInvalidForOtherExpenseWhenNoDescriptionGiven() {
+        //given
+        Expense expense = Expense.builder()
+            .type(OTHER)
+            .frequency(MONTH)
+            .amountPaid(BigDecimal.valueOf(10))
+            .build();
+        //when
+        Set<String> response = validate(expense);
+        //then
+        assertThat(response).hasSize(1).contains("otherExpense : may not be null when type is 'Other'");
+    }
+
+    @Test
+    public void shouldBeInvalidForOtherExpensePopulatedWhenTypeIsNotOther() {
+        //given
+        Expense expense = Expense.builder()
+            .type(MORTGAGE)
+            .otherExpense("This shouldn't be populated")
+            .frequency(MONTH)
+            .amountPaid(BigDecimal.valueOf(10))
+            .build();
+        //when
+        Set<String> response = validate(expense);
+        //then
+        assertThat(response).hasSize(1)
+            .contains("otherExpense : may not be provided when type is 'Mortgage'");
     }
 
     @Test
@@ -44,7 +89,6 @@ public class ExpenseTest {
     public void shouldBeInvalidForNullType() {
         //given
         Expense expense = Expense.builder()
-                .otherExpense("Other expense")
                 .frequency(MONTH)
                 .amountPaid(BigDecimal.valueOf(10))
                 .build();
@@ -61,7 +105,6 @@ public class ExpenseTest {
         //given
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
-                .otherExpense("Other expense")
                 .amountPaid(BigDecimal.valueOf(10))
                 .build();
         //when
@@ -77,7 +120,6 @@ public class ExpenseTest {
         //given
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
-                .otherExpense("Other expense")
                 .frequency(MONTH)
                 .build();
         //when
@@ -93,7 +135,6 @@ public class ExpenseTest {
         //given
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
-                .otherExpense("Other expense")
                 .frequency(MONTH)
                 .amountPaid(BigDecimal.valueOf(0.123f))
                 .build();
@@ -110,7 +151,6 @@ public class ExpenseTest {
         //given
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
-                .otherExpense("Other expense")
                 .frequency(MONTH)
                 .amountPaid(BigDecimal.valueOf(0))
                 .build();
