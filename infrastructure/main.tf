@@ -87,7 +87,7 @@ data "azurerm_key_vault_secret" "oauth_client_secret" {
 }
 
 module "database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=cnp-449-tactical"
+  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
   product = "${var.product}"
   location = "${var.location}"
   env = "${var.env}"
