@@ -15,7 +15,7 @@ public class MoreTimeRequestedJsonMapper {
     public JsonObject map(Claim claim) {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
-            .add("moreTimeRequestedSubmittedOn", DateFormatter.format(LocalDateTime.now()))
+            .add("moreTimeRequestedOn", DateFormatter.format(LocalDateTime.now()))
             .add("responseDeadline", DateFormatter.format(claim.getResponseDeadline()))
             .build();
     }

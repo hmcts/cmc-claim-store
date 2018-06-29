@@ -42,7 +42,7 @@ public class MoreTimeRequestedJsonMapperTest {
     private String getExpectedJson() {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", REFERENCE_NUMBER)
-            .add("moreTimeRequestedSubmittedOn", DateFormatter.format(LocalDateTime.now()))
+            .add("moreTimeRequestedOn", DateFormatter.format(LocalDateTime.now()))
             .add("responseDeadline", "27-May-2018")
             .build().toString();
     }
