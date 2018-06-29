@@ -70,7 +70,7 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
-        assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getRecipient());
+        assertThat(emailDataArgument.getValue().getTo()).isEqualTo(emailProperties.getSealedClaimRecipient());
     }
 
     @Test
