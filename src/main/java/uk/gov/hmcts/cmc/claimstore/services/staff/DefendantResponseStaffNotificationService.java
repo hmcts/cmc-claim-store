@@ -25,6 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -56,11 +57,12 @@ public class DefendantResponseStaffNotificationService {
     ) {
 
         Map<String, Object> input = wrapInMap(claim, defendantEmail);
-        EmailContent emailContent = isFullAdmission(claim)
+        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
+
+        EmailContent emailContent = isAnAdmission(responseType)
             ? fullAdmissionStaffEmailContentProvider.createContent(input)
             : fullDefenceStaffEmailContentProvider.createContent(input);
 
-        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
@@ -72,9 +74,8 @@ public class DefendantResponseStaffNotificationService {
         );
     }
 
-    private boolean isFullAdmission(Claim claim) {
-        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
-        return responseType == FULL_ADMISSION;
+    private static boolean isAnAdmission(ResponseType responseType) {
+        return responseType == FULL_ADMISSION || responseType == PART_ADMISSION;
     }
 
     public static Map<String, Object> wrapInMap(
@@ -94,7 +95,7 @@ public class DefendantResponseStaffNotificationService {
         map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
         map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
 
-        if (response.getResponseType() == FULL_ADMISSION) {
+        if (isAnAdmission(response.getResponseType())) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
             map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
             map.put("paymentOptionDescription", fullAdmissionResponse

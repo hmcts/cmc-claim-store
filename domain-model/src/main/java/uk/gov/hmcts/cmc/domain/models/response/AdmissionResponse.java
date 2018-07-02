@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
-import uk.gov.hmcts.cmc.domain.constraints.ValidFullAdmission;
+import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@ValidFullAdmission
+@ValidAdmission
 public abstract class AdmissionResponse extends Response {
     @NotNull
     private final PaymentOption paymentOption;
@@ -77,7 +77,8 @@ public abstract class AdmissionResponse extends Response {
             return false;
         }
         AdmissionResponse that = (AdmissionResponse) other;
-        return paymentOption == that.paymentOption
+        return super.equals(other)
+            && paymentOption == that.paymentOption
             && Objects.equals(paymentDate, that.paymentDate)
             && Objects.equals(repaymentPlan, that.repaymentPlan)
             && Objects.equals(statementOfMeans, that.statementOfMeans);

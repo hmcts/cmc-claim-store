@@ -82,6 +82,26 @@ public class PartAdmissionResponse extends AdmissionResponse {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        PartAdmissionResponse that = (PartAdmissionResponse) other;
+        return super.equals(other)
+            && isAlreadyPaid == that.isAlreadyPaid
+            && Objects.equals(paymentDetails, that.paymentDetails)
+            && Objects.equals(defence, that.defence)
+            && Objects.equals(timeline, that.timeline)
+            && Objects.equals(evidence, that.evidence);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), isAlreadyPaid, paymentDetails, defence, timeline, evidence);
     }

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import lombok.Builder;
-import uk.gov.hmcts.cmc.domain.constraints.ValidFullAdmission;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -12,7 +11,6 @@ import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 
-@ValidFullAdmission
 public class FullAdmissionResponse extends AdmissionResponse {
     @Builder
     public FullAdmissionResponse(

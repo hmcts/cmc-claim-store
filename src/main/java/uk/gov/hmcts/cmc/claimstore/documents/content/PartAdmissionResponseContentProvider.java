@@ -18,15 +18,8 @@ import java.util.stream.Collectors;
 @Component
 public class PartAdmissionResponseContentProvider {
 
-    private final StatementOfMeansContentProvider statementOfMeansContentProvider;
-
-    public PartAdmissionResponseContentProvider(
-        StatementOfMeansContentProvider statementOfMeansContentProvider
-    ) {
-        this.statementOfMeansContentProvider = statementOfMeansContentProvider;
-    }
-
     public Map<String, Object> createContent(PartAdmissionResponse partAdmissionResponse) {
+
         Map<String, Object> content = new HashMap<>();
 
         List<TimelineEvent> events = null;
@@ -38,6 +31,8 @@ public class PartAdmissionResponseContentProvider {
         content.put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription());
 
         content.put("isAlreadyPaid", partAdmissionResponse.getIsAlreadyPaid());
+        content.put("defence", partAdmissionResponse.getDefence());
+        content.put("paymentDetails", partAdmissionResponse.getPaymentDetails());
 
 
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();

@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.response.AdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -81,14 +82,19 @@ public class DefendantResponseContentProvider {
                 fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
             );
         } else if (defendantResponse instanceof FullAdmissionResponse) {
-            content.putAll(
-                fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
-            );
+            addAdmissionContent((FullAdmissionResponse) defendantResponse, content);
         } else if (defendantResponse instanceof PartAdmissionResponse) {
+            addAdmissionContent((AdmissionResponse) defendantResponse, content);
             content.putAll(
                 partAdmissionResponseContentProvider.createContent((PartAdmissionResponse) defendantResponse)
             );
         }
         return content;
+    }
+
+    private void addAdmissionContent(AdmissionResponse defendantResponse, Map<String, Object> content) {
+        content.putAll(
+            fullAdmissionResponseContentProvider.createContent(defendantResponse)
+        );
     }
 }

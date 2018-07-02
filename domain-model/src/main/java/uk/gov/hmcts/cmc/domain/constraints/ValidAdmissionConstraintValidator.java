@@ -12,8 +12,8 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DAT
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
-public class ValidFullAdmissionConstraintValidator
-    implements ConstraintValidator<ValidFullAdmission, FullAdmissionResponse> {
+public class ValidAdmissionConstraintValidator
+    implements ConstraintValidator<ValidAdmission, FullAdmissionResponse> {
 
     public static class Fields {
         public static final String PAYMENT_DATE = "paymentDate";

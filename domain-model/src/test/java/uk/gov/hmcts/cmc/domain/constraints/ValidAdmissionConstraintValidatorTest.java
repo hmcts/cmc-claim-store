@@ -22,12 +22,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidFullAdmissionConstraintValidatorTest {
+public class ValidAdmissionConstraintValidatorTest {
 
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidFullAdmissionConstraintValidator validator = new ValidFullAdmissionConstraintValidator();
+    private ValidAdmissionConstraintValidator validator = new ValidAdmissionConstraintValidator();
 
     @Before
     public void setUp() {

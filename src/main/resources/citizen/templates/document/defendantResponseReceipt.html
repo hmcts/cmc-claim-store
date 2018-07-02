@@ -352,13 +352,7 @@
   </div>
 </div>
 
-{% if responseType equals "PART_ADMISSION" %}
-<div class="section">
-
-</div>
-{% endif%}
-
-{% if responseType equals "FULL_ADMISSION" %}
+{% if responseType equals "FULL_ADMISSION" or responseType equals "PART_ADMISSION" %}
 <div class="section">
   <div class="section-heading">
     <strong>When the defendant will pay</strong>
