@@ -6,11 +6,10 @@
   "submitterEmail": "claimant@mail.com",
   "claimants": [
     {
-      "type": "SoleTrader",
+      "type": "Organisation",
       "name": "John Rambo",
-      "businessName": "Trading as AutoTraders",
-      "companiesHouseNumber": null,
-      "contactPerson": null,
+      "businessName": null,
+      "contactPerson": "Steven Seagal",
       "address": {
         "line1": "52",
         "line2": "Down Street",
@@ -31,11 +30,10 @@
   ],
   "defendants": [
     {
-      "type": "SoleTrader",
+      "type": "Organisation",
       "name": "John Smith",
-      "businessName": "Trading as RoboticsTraders",
-      "companiesHouseNumber": null,
-      "contactPerson": null,
+      "businessName": null,
+      "contactPerson": "Arnold Schwarzenegger",
       "address": {
         "line1": "52",
         "line2": "Down Street",

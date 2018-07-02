@@ -43,6 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
+    protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     @MockBean
     private DefendantResponseStaffNotificationHandler staffActionsHandler;
@@ -65,6 +66,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(userDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
+        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
         caseRepository.linkDefendant(BEARER_TOKEN);
     }
 
@@ -99,8 +101,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         Response response = SampleResponse.validDefaults();
 
-        makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
-            .andExpect(status().isOk());
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, response).andExpect(status().isOk());
 
         verify(notificationClient, times(2))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());

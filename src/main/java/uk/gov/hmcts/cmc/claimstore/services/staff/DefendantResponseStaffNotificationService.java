@@ -6,21 +6,23 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 public class DefendantResponseStaffNotificationService {
-
-    public static final String FILE_NAME_FORMAT = "%s-claim-response.pdf";
 
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
@@ -39,32 +41,20 @@ public class DefendantResponseStaffNotificationService {
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
-    public void notifyStaffDefenceSubmittedFor(
-        Claim claim,
-        String defendantEmail
-    ) {
-        EmailContent emailContent = emailContentProvider.createContent(
-            wrapInMap(claim, defendantEmail)
-        );
-        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+    public void notifyStaffDefenceSubmittedFor(Claim claim, String defendantEmail) {
+        EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim, defendantEmail));
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
                 emailProperties.getRecipient(),
                 emailContent.getSubject(),
                 emailContent.getBody(),
-                singletonList(pdf(
-                    defendantResponse,
-                    format(FILE_NAME_FORMAT, claim.getReferenceNumber())
-                ))
+                singletonList(createResponsePdfAttachment(claim))
             )
         );
     }
 
-    public static Map<String, Object> wrapInMap(
-        Claim claim,
-        String defendantEmail
-    ) {
+    public static Map<String, Object> wrapInMap(Claim claim, String defendantEmail) {
         Map<String, Object> map = new HashMap<>();
         map.put("claim", claim);
         map.put("response", claim.getResponse().orElseThrow(IllegalStateException::new));
@@ -77,4 +67,10 @@ public class DefendantResponseStaffNotificationService {
         return map;
     }
 
+    private EmailAttachment createResponsePdfAttachment(Claim claim) {
+        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+        requireNonNull(defendantResponse);
+
+        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+    }
 }
