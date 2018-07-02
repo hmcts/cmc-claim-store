@@ -75,3 +75,7 @@ variable "capacity" {
 variable "enable_staff_email" {
   default = "true"
 }
+  
+variable "common_tags" {
+  type = "map"
+}
