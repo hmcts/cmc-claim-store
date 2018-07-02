@@ -46,7 +46,6 @@ public class MoreTimeRequestedNotificationService {
     }
 
     private EmailData prepareEmailData(Claim claim) {
-
         return new EmailData(emailProperties.getMoreTimeRequestedRecipient(),
             "J additional time " + claim.getReferenceNumber(),
             "",

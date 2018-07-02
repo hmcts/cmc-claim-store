@@ -46,7 +46,6 @@ public class MoreTimeRequestedNotificationServiceTest extends MockSpringTest {
             .build();
 
         event = new MoreTimeRequestedEvent(claim, LocalDateTime.now().toLocalDate(), "<any-email>");
-
     }
 
     @Test(expected = NullPointerException.class)
