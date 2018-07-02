@@ -6,11 +6,10 @@
   "submitterEmail": "claimant@mail.com",
   "claimants": [
     {
-      "type": "Organisation",
+      "type": "Individual",
       "name": "John Rambo",
       "businessName": null,
-      "companiesHouseNumber": "09047000",
-      "contactPerson": "Steven Seagal",
+      "contactPerson": null,
       "address": {
         "line1": "52",
         "line2": "Down Street",
@@ -19,7 +18,7 @@
         "postcode": "DF1 3LJ"
       },
       "phoneNumber": "07873727165",
-      "dateOfBirth": null,
+      "dateOfBirth": "02-Jan-1968",
       "correspondenceAddress": {
         "line1": "52",
         "line2": "Down Street",
@@ -31,11 +30,10 @@
   ],
   "defendants": [
     {
-      "type": "Organisation",
+      "type": "Individual",
       "name": "John Smith",
       "businessName": null,
-      "companiesHouseNumber": "09047000",
-      "contactPerson": "Arnold Schwarzenegger",
+      "contactPerson": null,
       "address": {
         "line1": "52",
         "line2": "Down Street",

@@ -50,9 +50,9 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldReturnNewlyCreatedClaimWhenPrePaymentCalledDbEnv() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-        makeRequestPrePayment(claimData.getExternalId().toString()).andExpect(status().isOk());
+        makePrePaymentRequest(claimData.getExternalId().toString()).andExpect(status().isOk());
 
-        MvcResult result = makeRequest(claimData)
+        MvcResult result = makeIssueClaimRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -65,7 +65,7 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldReturnNewlyCreatedClaimWhenPrePaymentNotCalledDbEnv() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-        MvcResult result = makeRequest(claimData)
+        MvcResult result = makeIssueClaimRequest(claimData)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -81,7 +81,7 @@ public class SaveClaimTest extends BaseSaveTest {
         ClaimData claimData = SampleClaimData.builder().withExternalId(externalId).build();
         claimStore.saveClaim(claimData);
 
-        makeRequest(claimData)
+        makeIssueClaimRequest(claimData)
             .andExpect(status().isConflict());
     }
 
@@ -90,7 +90,7 @@ public class SaveClaimTest extends BaseSaveTest {
         doThrow(new RuntimeException("Sending failed"))
             .when(emailService).sendEmail(anyString(), any(EmailData.class));
 
-        makeRequest(SampleClaimData.submittedByClaimant())
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isInternalServerError());
     }
 
@@ -101,7 +101,7 @@ public class SaveClaimTest extends BaseSaveTest {
             .willThrow(new NotificationClientException(new RuntimeException("invalid email2")))
             .willThrow(new NotificationClientException(new RuntimeException("invalid email3")));
 
-        makeRequest(SampleClaimData.submittedByClaimant())
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isOk());
 
         verify(notificationClient, atLeast(3))
@@ -112,7 +112,7 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
         given(notificationClient.sendEmail(any(), any(), any(), any())).willReturn(null);
 
-        MvcResult result = makeRequest(SampleClaimData.submittedByLegalRepresentative())
+        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentative())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -124,7 +124,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldSendStaffNotificationsForCitizenClaimIssuedEvent() throws Exception {
-        MvcResult result = makeRequest(SampleClaimData.submittedByClaimant())
+        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -145,7 +145,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldSendStaffNotificationsForLegalClaimIssuedEvent() throws Exception {
-        MvcResult result = makeRequest(SampleClaimData.submittedByLegalRepresentative())
+        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentative())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -165,7 +165,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldNotMakeCallToStoreInCoreCaseDataStoreWhenToggledOff() throws Exception {
-        makeRequest(SampleClaimData.submittedByLegalRepresentative())
+        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentative())
             .andExpect(status().isOk());
 
         verify(coreCaseDataApi, never())
@@ -183,7 +183,7 @@ public class SaveClaimTest extends BaseSaveTest {
     }
 
     private void assertSealedClaimIsNotUploadedToDocumentManagementStore(ClaimData claimData) throws Exception {
-        makeRequest(claimData)
+        makeIssueClaimRequest(claimData)
             .andExpect(status().isOk());
 
         verify(documentUploadClient, never()).upload(any(), any(), any(), any());

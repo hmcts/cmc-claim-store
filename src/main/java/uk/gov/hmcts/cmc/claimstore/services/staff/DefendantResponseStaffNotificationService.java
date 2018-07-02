@@ -11,23 +11,24 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
 public class DefendantResponseStaffNotificationService {
-
-    public static final String FILE_NAME_FORMAT = "%s-claim-response.pdf";
 
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
@@ -54,22 +55,17 @@ public class DefendantResponseStaffNotificationService {
         String defendantEmail
     ) {
 
-        Map<String, Object> input = wrapInMap(claim, defendantEmail);
         EmailContent emailContent = isFullAdmission(claim)
-            ? fullAdmissionStaffEmailContentProvider.createContent(input)
-            : fullDefenceStaffEmailContentProvider.createContent(input);
+            ? fullAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
+            : fullDefenceStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail));
 
-        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
                 emailProperties.getRecipient(),
                 emailContent.getSubject(),
                 emailContent.getBody(),
-                singletonList(pdf(
-                    defendantResponse,
-                    format(FILE_NAME_FORMAT, claim.getReferenceNumber())
-                ))
+                singletonList(createResponsePdfAttachment(claim))
             )
         );
     }
@@ -106,4 +102,10 @@ public class DefendantResponseStaffNotificationService {
         return map;
     }
 
+    private EmailAttachment createResponsePdfAttachment(Claim claim) {
+        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+        requireNonNull(defendantResponse);
+
+        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+    }
 }

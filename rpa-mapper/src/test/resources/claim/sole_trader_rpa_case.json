@@ -6,10 +6,9 @@
   "submitterEmail": "claimant@mail.com",
   "claimants": [
     {
-      "type": "Individual",
+      "type": "SoleTrader",
       "name": "John Rambo",
-      "businessName": null,
-      "companiesHouseNumber": null,
+      "businessName": "Trading as AutoTraders",
       "contactPerson": null,
       "address": {
         "line1": "52",
@@ -19,7 +18,7 @@
         "postcode": "DF1 3LJ"
       },
       "phoneNumber": "07873727165",
-      "dateOfBirth": "02-Jan-1968",
+      "dateOfBirth": null,
       "correspondenceAddress": {
         "line1": "52",
         "line2": "Down Street",
@@ -31,10 +30,9 @@
   ],
   "defendants": [
     {
-      "type": "Individual",
+      "type": "SoleTrader",
       "name": "John Smith",
-      "businessName": null,
-      "companiesHouseNumber": null,
+      "businessName": "Trading as RoboticsTraders",
       "contactPerson": null,
       "address": {
         "line1": "52",

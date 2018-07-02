@@ -64,7 +64,7 @@ public class ClaimIssuedNotificationService {
             .map(document -> pdf(document.getBytes(), document.getFilename()))
             .findFirst().orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
 
-        return new EmailData(emailProperties.getRecipient(),
+        return new EmailData(emailProperties.getSealedClaimRecipient(),
             content.getSubject(),
             content.getBody(),
             Lists.newArrayList(sealedClaimPdfAttachment, createSealedClaimJsonAttachment(claim))
