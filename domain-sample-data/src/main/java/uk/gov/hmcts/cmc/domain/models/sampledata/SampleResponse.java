@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
+import static java.time.LocalDate.now;
+
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static class FullAdmission extends SampleResponse<FullAdmission> {
@@ -30,6 +32,26 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .repaymentPlan(SampleRepaymentPlan.builder().build())
                 .build();
         }
+
+        public FullAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+                .paymentDate(now())
+                .defendant(SampleParty.builder().individual())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build();
+        }
+
+        public FullAdmissionResponse buildWithPaymentOptionImmediately() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .paymentDate(now())
+                .defendant(SampleParty.builder().individual())
+                .build();
+        }
     }
 
     public static class PartAdmission extends SampleResponse<PartAdmission> {
@@ -40,7 +62,6 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public PartAdmissionResponse build() {
             return PartAdmissionResponse.builder()
                 .isAlreadyPaid(YesNoOption.YES)
-                .defenceType(DefenceType.PART_ADMISSION)
                 .paymentDetails(SamplePaymentDetails.validDefaults())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())

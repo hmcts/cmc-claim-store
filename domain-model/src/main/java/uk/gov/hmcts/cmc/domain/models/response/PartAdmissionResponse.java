@@ -2,12 +2,14 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
-import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -17,14 +19,12 @@ import javax.validation.constraints.Size;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-public class PartAdmissionResponse extends Response {
-    @NotNull
-    private final DefenceType defenceType;
-
+public class PartAdmissionResponse extends AdmissionResponse {
     @NotNull
     private final YesNoOption isAlreadyPaid;
 
     @Valid
+    @NotNull
     private final PaymentDetails paymentDetails;
 
     @Size(min = 1, max = 99000)
@@ -38,19 +38,22 @@ public class PartAdmissionResponse extends Response {
 
     @Builder
     public PartAdmissionResponse(
-        DefenceType defenceType,
         YesNoOption freeMediation,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
+        PaymentOption paymentOption,
+        LocalDate paymentDate,
+        RepaymentPlan repaymentPlan,
+        StatementOfMeans statementOfMeans,
         YesNoOption isAlreadyPaid,
         PaymentDetails paymentDetails,
         String defence,
         DefendantTimeline timeline,
         DefendantEvidence evidence
     ) {
-        super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
-        this.defenceType = defenceType;
+        super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth,
+            paymentOption, paymentDate, repaymentPlan, statementOfMeans);
         this.isAlreadyPaid = isAlreadyPaid;
         this.paymentDetails = paymentDetails;
         this.defence = defence;
@@ -78,14 +81,9 @@ public class PartAdmissionResponse extends Response {
         return Optional.ofNullable(evidence);
     }
 
-
-    public DefenceType getDefenceType() {
-        return defenceType;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), defenceType, isAlreadyPaid, paymentDetails, defence, timeline, evidence);
+        return Objects.hash(super.hashCode(), isAlreadyPaid, paymentDetails, defence, timeline, evidence);
     }
 
     @Override

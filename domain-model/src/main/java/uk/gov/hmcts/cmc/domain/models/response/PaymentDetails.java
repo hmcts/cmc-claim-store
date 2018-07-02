@@ -2,37 +2,46 @@ package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class PaymentDetails {
-    private final BigDecimal paidAmount;
+    @NotNull
+    @Money
+    @DecimalMin(value = "0.01")
+    private final BigDecimal paymentAmount;
+
+    @DateNotInTheFuture
     private final LocalDate paymentDate;
     private final String paymentMethod;
 
 
     @JsonCreator
-    public PaymentDetails(BigDecimal paidAmount, LocalDate paymentDate, String paymentMethod) {
-        this.paidAmount = paidAmount;
+    public PaymentDetails(BigDecimal paymentAmount, LocalDate paymentDate, String paymentMethod) {
+        this.paymentAmount = paymentAmount;
         this.paymentDate = paymentDate;
         this.paymentMethod = paymentMethod;
     }
 
-    public BigDecimal getPaidAmount() {
-        return paidAmount;
+    public BigDecimal getPaymentAmount() {
+        return paymentAmount;
     }
 
-    public LocalDate getPaymentDate() {
-        return paymentDate;
+    public Optional<LocalDate> getPaymentDate() {
+        return Optional.ofNullable(paymentDate);
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
+    public Optional<String> getPaymentMethod() {
+        return Optional.ofNullable(paymentMethod);
     }
 
     @Override
@@ -44,14 +53,14 @@ public class PaymentDetails {
             return false;
         }
         PaymentDetails that = (PaymentDetails) other;
-        return Objects.equals(paidAmount, that.paidAmount) &&
-            Objects.equals(paymentDate, that.paymentDate) &&
-            Objects.equals(paymentMethod, that.paymentMethod);
+        return Objects.equals(paymentAmount, that.paymentAmount)
+            && Objects.equals(paymentDate, that.paymentDate)
+            && Objects.equals(paymentMethod, that.paymentMethod);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paidAmount, paymentDate, paymentMethod);
+        return Objects.hash(paymentAmount, paymentDate, paymentMethod);
     }
 
     @Override

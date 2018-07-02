@@ -35,8 +35,6 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    private Claim claim;
-
     @Autowired
     private StaffEmailProperties emailProperties;
 
@@ -45,7 +43,13 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
 
     @Before
     public void beforeEachTest() {
-        claim = SampleClaim.builder()
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .thenReturn(PDF_CONTENT);
+    }
+
+    @Test
+    public void shouldSendEmailToExpectedRecipient() {
+        Claim claimWithFullDefenceResponse = SampleClaim.builder()
             .withResponse(
                 SampleResponse.FullDefence
                     .builder()
@@ -55,13 +59,8 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
             )
             .withRespondedAt(LocalDateTime.now())
             .build();
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .thenReturn(PDF_CONTENT);
-    }
 
-    @Test
-    public void shouldSendEmailToExpectedRecipient() {
-        service.notifyStaffDefenceSubmittedFor(claim, DEFENDANT_EMAIL);
+        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceResponse, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -69,8 +68,19 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
     }
 
     @Test
-    public void shouldSendEmailWithExpectedContent() {
-        service.notifyStaffDefenceSubmittedFor(claim, DEFENDANT_EMAIL);
+    public void shouldSendEmailWithExpectedContentFullDefence() {
+        Claim claimWithFullDefenceResponse = SampleClaim.builder()
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(null)
+                    .build()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceResponse, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -83,8 +93,76 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
     }
 
     @Test
+    public void shouldSendEmailWithExpectedContentFullAdmissionPayImmediately() {
+        Claim claimWithFullAdmission = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionImmediately())
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullAdmission, DEFENDANT_EMAIL);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).startsWith("Pay immediately " + claimWithFullAdmission.getReferenceNumber());
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The defendant has offered to pay immediately in response to the money claim made against them"
+        );
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedContentFullAdmissionPayBySetDate() {
+        Claim claimWithFullAdmission = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionBySpecifiedDate())
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullAdmission, DEFENDANT_EMAIL);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).startsWith("Pay by a set date " + claimWithFullAdmission.getReferenceNumber());
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The defendant has offered to pay by a set date in response to the money claim made against them"
+        );
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedContentFullAdmissionPayByInstalments() {
+        Claim claimWithFullAdmission = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().build())
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullAdmission, DEFENDANT_EMAIL);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).startsWith("Pay by instalments " + claimWithFullAdmission.getReferenceNumber());
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The defendant has offered to pay by instalments in response to the money claim made against them"
+        );
+    }
+
+    @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        service.notifyStaffDefenceSubmittedFor(claim, DEFENDANT_EMAIL);
+        Claim claimWithFullDefenceResponse = SampleClaim.builder()
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(null)
+                    .build()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+        
+        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceResponse, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -94,7 +172,7 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
 
         String expectedFileName = String.format(
             DefendantResponseStaffNotificationService.FILE_NAME_FORMAT,
-            claim.getReferenceNumber()
+            claimWithFullDefenceResponse.getReferenceNumber()
         );
 
         assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
