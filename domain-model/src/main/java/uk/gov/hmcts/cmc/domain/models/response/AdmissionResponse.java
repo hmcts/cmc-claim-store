@@ -13,13 +13,11 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @ValidAdmission
 public abstract class AdmissionResponse extends Response {
-    @NotNull
     private final PaymentOption paymentOption;
 
     @DateNotInThePast

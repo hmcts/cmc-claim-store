@@ -6,9 +6,10 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.PartAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.AdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -35,6 +36,7 @@ public class DefendantResponseStaffNotificationService {
     private final StaffEmailProperties emailProperties;
     private final FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider;
     private final FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider;
+    private final PartAdmissionStaffEmailContentProvider partAdmissionStaffEmailContentProvider;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
 
     @Autowired
@@ -43,11 +45,13 @@ public class DefendantResponseStaffNotificationService {
         StaffEmailProperties emailProperties,
         FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
         FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider,
+        PartAdmissionStaffEmailContentProvider partAdmissionStaffEmailContentProvider,
         DefendantResponseReceiptService defendantResponseReceiptService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;
         this.fullAdmissionStaffEmailContentProvider = fullAdmissionStaffEmailContentProvider;
+        this.partAdmissionStaffEmailContentProvider = partAdmissionStaffEmailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
@@ -59,9 +63,7 @@ public class DefendantResponseStaffNotificationService {
         Map<String, Object> input = wrapInMap(claim, defendantEmail);
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
 
-        EmailContent emailContent = isAnAdmission(responseType)
-            ? fullAdmissionStaffEmailContentProvider.createContent(input)
-            : fullDefenceStaffEmailContentProvider.createContent(input);
+        EmailContent emailContent = getEmailContent(input, responseType);
 
         emailService.sendEmail(
             emailProperties.getSender(),
@@ -72,6 +74,19 @@ public class DefendantResponseStaffNotificationService {
                 singletonList(createResponsePdfAttachment(claim))
             )
         );
+    }
+
+    private EmailContent getEmailContent(Map<String, Object> input, ResponseType responseType) {
+        switch (responseType) {
+            case PART_ADMISSION:
+                return partAdmissionStaffEmailContentProvider.createContent(input);
+            case FULL_ADMISSION:
+                return fullAdmissionStaffEmailContentProvider.createContent(input);
+            case FULL_DEFENCE:
+                return fullDefenceStaffEmailContentProvider.createContent(input);
+            default:
+                throw new RuntimeException("invalid response type");
+        }
     }
 
     private static boolean isAnAdmission(ResponseType responseType) {
@@ -96,10 +111,12 @@ public class DefendantResponseStaffNotificationService {
         map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
 
         if (isAnAdmission(response.getResponseType())) {
-            FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
-            map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
-            map.put("paymentOptionDescription", fullAdmissionResponse
-                .getPaymentOption().getDescription().toLowerCase());
+            AdmissionResponse admissionResponse = (AdmissionResponse) response;
+            if (admissionResponse.getPaymentOption() != null) {
+                map.put("paymentOption", admissionResponse.getPaymentOption());
+                map.put("paymentOptionDescription", admissionResponse
+                    .getPaymentOption().getDescription().toLowerCase());
+            }
         }
 
         return map;

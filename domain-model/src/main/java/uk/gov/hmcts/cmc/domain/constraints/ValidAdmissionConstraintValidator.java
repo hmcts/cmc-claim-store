@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
-import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.AdmissionResponse;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -11,34 +11,45 @@ import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setVali
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 
 public class ValidAdmissionConstraintValidator
-    implements ConstraintValidator<ValidAdmission, FullAdmissionResponse> {
+    implements ConstraintValidator<ValidAdmission, AdmissionResponse> {
 
     public static class Fields {
         public static final String PAYMENT_DATE = "paymentDate";
         public static final String REPAYMENT_PLAN = "repaymentPlan";
+        public static final String PAYMENT_OPTION = "paymentOption";
     }
 
     @Override
-    public boolean isValid(FullAdmissionResponse fullAdmissionResponse, ConstraintValidatorContext context) {
-        if (fullAdmissionResponse == null) {
+    public boolean isValid(AdmissionResponse admissionResponse, ConstraintValidatorContext context) {
+        if (admissionResponse == null) {
             return true;
         }
 
-        switch (fullAdmissionResponse.getPaymentOption()) {
+        if (admissionResponse.getPaymentOption() == null) {
+            if (admissionResponse.getResponseType() == PART_ADMISSION) {
+                return true;
+            } else {
+                setValidationErrors(context, Fields.PAYMENT_OPTION, "Payment option must not be null");
+                return false;
+            }
+        }
+
+        switch (admissionResponse.getPaymentOption()) {
             case IMMEDIATELY:
-                return validateImmediately(fullAdmissionResponse, context);
+                return validateImmediately(admissionResponse, context);
             case FULL_BY_SPECIFIED_DATE:
-                return validateBySetDate(fullAdmissionResponse, context);
+                return validateBySetDate(admissionResponse, context);
             case INSTALMENTS:
-                return validateInstalments(fullAdmissionResponse, context);
+                return validateInstalments(admissionResponse, context);
             default:
                 return false;
         }
     }
 
-    private boolean validateImmediately(FullAdmissionResponse value, ConstraintValidatorContext context) {
+    private boolean validateImmediately(AdmissionResponse value, ConstraintValidatorContext context) {
         boolean valid = true;
         String immediately = IMMEDIATELY.getDescription();
 
@@ -55,7 +66,7 @@ public class ValidAdmissionConstraintValidator
         return valid;
     }
 
-    private boolean validateBySetDate(FullAdmissionResponse value, ConstraintValidatorContext context) {
+    private boolean validateBySetDate(AdmissionResponse value, ConstraintValidatorContext context) {
         boolean valid = true;
         String bySetDate = FULL_BY_SPECIFIED_DATE.getDescription();
 
@@ -72,7 +83,7 @@ public class ValidAdmissionConstraintValidator
         return valid;
     }
 
-    private boolean validateInstalments(FullAdmissionResponse value, ConstraintValidatorContext context) {
+    private boolean validateInstalments(AdmissionResponse value, ConstraintValidatorContext context) {
         boolean valid = true;
         String instalments = INSTALMENTS.getDescription();
 

@@ -59,15 +59,20 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
-    @Ignore("Full Admission is not implemented, please enable once done")
     public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
         Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
         shouldBeAbleToSuccessfullySubmit(fullAdmissionResponse);
     }
 
     @Test
-    public void shouldBeAbleToSuccessfullySubmitPartAdmission() {
+    public void shouldBeAbleToSuccessfullySubmitPartAdmissionWithAlreadyPaidAmount() {
         Response partAdmissionResponse = SampleResponse.PartAdmission.builder().build();
+        shouldBeAbleToSuccessfullySubmit(partAdmissionResponse);
+    }
+
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitPartAdmissionWithPaymentInFuture() {
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
         shouldBeAbleToSuccessfullySubmit(partAdmissionResponse);
     }
 

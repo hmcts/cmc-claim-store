@@ -70,6 +70,22 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .defendant(SampleParty.builder().individual())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
+            return PartAdmissionResponse.builder()
+                .isAlreadyPaid(YesNoOption.NO)
+                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .defence("defence string")
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().individual())
+                .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+                .paymentDate(now())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .repaymentPlan(null)
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {

@@ -84,7 +84,9 @@ public class DefendantResponseContentProvider {
         } else if (defendantResponse instanceof FullAdmissionResponse) {
             addAdmissionContent((FullAdmissionResponse) defendantResponse, content);
         } else if (defendantResponse instanceof PartAdmissionResponse) {
-            addAdmissionContent((AdmissionResponse) defendantResponse, content);
+            if (((AdmissionResponse) defendantResponse).getPaymentOption() != null) {
+                addAdmissionContent((AdmissionResponse) defendantResponse, content);
+            }
             content.putAll(
                 partAdmissionResponseContentProvider.createContent((PartAdmissionResponse) defendantResponse)
             );
