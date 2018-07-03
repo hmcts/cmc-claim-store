@@ -14,9 +14,19 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class Child {
 
     public enum AgeGroupType {
-        UNDER_11,
-        BETWEEN_11_AND_15,
-        BETWEEN_16_AND_19;
+        UNDER_11("Under 11"),
+        BETWEEN_11_AND_15("Between 11 and 15"),
+        BETWEEN_16_AND_19("Between 16 and 19");
+
+        String description;
+
+        AgeGroupType(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return this.description;
+        }
     }
 
     @NotNull

@@ -1,7 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 public enum ResponseType {
-    FULL_DEFENCE,
-    FULL_ADMISSION,
-    PART_ADMISSION
+    FULL_DEFENCE("I reject all of the claim"),
+    FULL_ADMISSION("I admit all of the claim"),
+    PART_ADMISSION("I admit part of the claim");
+
+    String description;
+
+    ResponseType(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
 }
