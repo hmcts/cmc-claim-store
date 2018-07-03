@@ -352,6 +352,343 @@
   </div>
 </div>
 
+{% if responseType equals "FULL_ADMISSION" %}
+<div class="section">
+  <div class="section-heading">
+    <strong>When the defendant will pay</strong>
+  </div>
+    <div class="section-body">
+      <table>
+        <tr>
+          <td><strong>When will they pay:</strong></td>
+          <td>
+            {{ whenWillTheyPay }}
+          </td>
+        </tr>
+
+        {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
+        <tr class="no-border">
+          <td><strong>Regular payments of:</strong></td>
+          <td>
+            {{ repaymentPlan.instalmentAmount }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Frequency of payments:</strong></td>
+          <td>
+            {{ repaymentPlan.paymentSchedule }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Make the first payment on:</strong></td>
+          <td>
+            {{ repaymentPlan.firstPaymentDate }}
+          </td>
+        </tr>
+        {% endif %}
+        {% if statementOfMeans is defined %}
+        <tr class="no-border">
+          <td><strong>Explain why you can’t pay the full amount now:</strong></td>
+          <td>
+            {{ statementOfMeans.reason }}
+          </td>
+        </tr>
+        {% endif %}
+      </table>
+    </div>
+</div>
+
+{% if paymentOption == 'By instalments' or  paymentOption == 'By a set date' %}
+<div class="section">
+  <div class="section-heading">
+    <strong>The defendant’s financial details</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr class="no-border">
+        <td><strong>Where are they living?</strong></td>
+        <td>
+          {{ residenceTypeDescription }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Children:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Do any children live with them?</strong></td>
+        <td>
+        {% if children is defined and children is not empty %}
+          Yes
+        {% else %}
+          No
+        {% endif %}
+        </td>
+      </tr>
+      {% for child in children | default([]) %}
+        <tr class="no-border">
+          <td>
+            {{ child.ageGroupType }}
+          </td>
+          <td>
+            {{ child.numberOfChildren }}
+          </td>
+        </tr>
+        {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
+        <tr>
+          <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
+          <td>
+            {{ child.numberOfChildrenLivingWithYou }}
+          </td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+
+      {% if maintainedChildren is defined %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Maintenance:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Number of children:</strong></td>
+        <td>
+          {{ maintainedChildren }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Financial support:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Do they support anyone else financially?</strong></td>
+        <td>
+        {% if otherDependants is defined %}
+          Yes
+        {% else %}
+          No
+        {% endif %}
+        </td>
+      </tr>
+      {% if otherDependants is defined %}
+      <tr class="no-border">
+        <td><strong>Number of people:</strong></td>
+        <td>
+          {{ otherDependants.numberOfPeople }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Give details:</strong></td>
+        <td>
+          {{ otherDependants.details }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Employment details:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Are they currently working?</strong></td>
+        <td>
+        {% if employment.selfEmployment is defined or employment.employers is not empty %}
+          Yes
+        {% else %}
+          No
+        {% endif %}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Type of job:</strong></td>
+        <td>
+          {{ jobType }}
+        </td>
+      </tr>
+      {% for employer in employment.employers %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Who employs them?</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Employer name:</strong></td>
+        <td>
+          {{ employer.name }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Job title:</strong></td>
+        <td>
+          {{ employer.jobTitle }}
+        </td>
+      </tr>
+      {% endfor %}
+
+      {% if selfEmployment is defined %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Self-employment details:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Job title:</strong></td>
+        <td>
+          {{ selfEmployment.jobTitle }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Annual turnover:</strong></td>
+        <td>
+          {{ selfEmployment.annualTurnover }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Are they behind on tax payments?</strong></td>
+        <td>
+        {% if onTaxPayments is defined %}
+          Yes
+        {% else %}
+          No
+        {% endif %}
+        </td>
+      </tr>
+      {% if onTaxPayments is defined %}
+      <tr class="no-border">
+        <td><strong>Amount they owe?</strong></td>
+        <td>
+          {{ onTaxPayments.amountYouOwe }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Reason:</strong></td>
+        <td>
+          {{ onTaxPayments.reason }}
+        </td>
+      </tr>
+      {% endif %}
+      {% endif %}
+
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts:</strong></td>
+      </tr>
+      {% for bankAccount in bankAccounts %}
+      <tr class="no-border">
+        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Type of account:</strong></td>
+        <td>
+          {{ bankAccount.type }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Balance:</strong></td>
+        <td>
+          {{ bankAccount.balance }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Joint account:</strong></td>
+        <td>
+          {% if bankAccount.joint %}
+            Yes
+          {% else %}
+            No
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+
+      {% if incomes is defined and incomes is not empty %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Monthly income:</strong></td>
+      </tr>
+      {% for income in incomes %}
+      <tr class="no-border">
+        <td>
+          {{ income.type }}
+        </td>
+        <td>
+          {{ income.amountReceived }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+
+      {% if expenses is defined and expenses is not empty %}
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Monthly expenses:</strong></td>
+      </tr>
+      {% for expense in expenses %}
+      <tr class="no-border">
+        <td>
+          {{ expense.type }}
+        </td>
+        <td>
+          {{ expense.amountPaid }}
+        </td>
+      </tr>
+      {% endfor %}
+      {% endif %}
+
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Debts:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Do they have any debts?</strong></td>
+        <td>
+        {% if debts is defined and debts is not empty %}
+          Yes
+        {% else %}
+          No
+        {% endif %}
+        </td>
+      </tr>
+      {% for debt in debts | default([]) %}
+      <tr class="no-border">
+        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Debt:</strong></td>
+        <td>
+          {{ debt.description }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Total owed:</strong></td>
+        <td>
+          {{ debt.totalOwed }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Monthly payments:</strong></td>
+        <td>
+          {{ debt.monthlyPayments }}
+        </td>
+      </tr>
+      {% endfor %}
+
+      <tr>
+        <td colspan="2" class="keep-white-space"><strong>Court orders:</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Has a court ordered them to pay anyone else?</strong></td>
+        {% if courtOrders is defined and courtOrders is not empty %}
+        <td>
+          Yes
+        </td>
+        {% else %}
+        <td>
+          No
+        </td>
+        {% endif %}
+      </tr>
+      {% for courtOrder in courtOrders | default([]) %}
+      <tr class="no-border">
+        <td><strong>Details about court orders:</strong></td>
+        <td>
+          {{ courtOrder.monthlyInstalmentAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Amount they owe:</strong></td>
+        <td>
+          {{ courtOrder.amountOwed }}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
 <div class="section">
   <div class="section-heading">
     <strong>Statement of truth</strong>
@@ -393,7 +730,7 @@
   </div>
 </div>
 
-{% if hasDefendantAlreadyPaid is not defined %}
+{% if hasDefendantAlreadyPaid is not defined and responseType equals "FULL_DEFENCE" %}
 <div class="section">
   <h3>What happens next</h3>
 </div>
