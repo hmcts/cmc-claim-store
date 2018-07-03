@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
@@ -32,10 +33,24 @@ public class DefenceResponseJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("responseSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
-            .add("defenceResponse", extractFromSubclass(response, FullDefenceResponse.class, fullDefenceResponse -> fullDefenceResponse.getDefenceType().name()))
+            .add("defenceResponse", defenceResponse(response))
             .add("defendant", defendantMapper.map(response.getDefendant(), claim.getClaimData().getDefendant(), defendantsEmail))
             .add("mediation", isMediationSelected(response))
             .build();
+    }
+
+    private String defenceResponse(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                return extractFromSubclass(response, FullDefenceResponse.class,
+                    fullDefenceResponse -> fullDefenceResponse.getDefenceType().name());
+            case FULL_ADMISSION:
+                return ResponseType.FULL_ADMISSION.name();
+            case PART_ADMISSION:
+                return ResponseType.PART_ADMISSION.name();
+            default:
+                throw new RuntimeException("invalid response type");
+        }
     }
 
     private boolean isMediationSelected(Response response) {
