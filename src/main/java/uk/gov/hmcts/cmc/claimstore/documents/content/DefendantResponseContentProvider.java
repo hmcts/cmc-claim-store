@@ -5,8 +5,10 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.response.AdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -26,19 +28,22 @@ public class DefendantResponseContentProvider {
     private final NotificationsProperties notificationsProperties;
     private final FullDefenceResponseContentProvider fullDefenceResponseContentProvider;
     private final FullAdmissionResponseContentProvider fullAdmissionResponseContentProvider;
+    private final PartAdmissionResponseContentProvider partAdmissionResponseContentProvider;
 
     public DefendantResponseContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider,
         ClaimDataContentProvider claimDataContentProvider,
         NotificationsProperties notificationsProperties,
         FullDefenceResponseContentProvider fullDefenceResponseContentProvider,
-        FullAdmissionResponseContentProvider fullAdmissionResponseContentProvider
+        FullAdmissionResponseContentProvider fullAdmissionResponseContentProvider,
+        PartAdmissionResponseContentProvider partAdmissionResponseContentProvider
     ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
         this.claimDataContentProvider = claimDataContentProvider;
         this.notificationsProperties = notificationsProperties;
         this.fullDefenceResponseContentProvider = fullDefenceResponseContentProvider;
         this.fullAdmissionResponseContentProvider = fullAdmissionResponseContentProvider;
+        this.partAdmissionResponseContentProvider = partAdmissionResponseContentProvider;
     }
 
     public Map<String, Object> createContent(Claim claim) {
@@ -77,10 +82,24 @@ public class DefendantResponseContentProvider {
                 fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
             );
         } else if (defendantResponse instanceof FullAdmissionResponse) {
+            content.putAll(fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
+            );
+        } else if (defendantResponse instanceof PartAdmissionResponse) {
+
+            if (partAdmissionIsForPaymentInFuture((AdmissionResponse) defendantResponse)) {
+                content.putAll(
+                    fullAdmissionResponseContentProvider.createContent((AdmissionResponse) defendantResponse)
+                );
+            }
+
             content.putAll(
-                fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
+                partAdmissionResponseContentProvider.createContent((PartAdmissionResponse) defendantResponse)
             );
         }
         return content;
+    }
+
+    private boolean partAdmissionIsForPaymentInFuture(AdmissionResponse defendantResponse) {
+        return defendantResponse.getPaymentOption() != null;
     }
 }

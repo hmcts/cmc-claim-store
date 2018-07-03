@@ -23,7 +23,7 @@ public class DefendantResponseCitizenNotificationsHandler {
     @EventListener
     public void notifyDefendantResponse(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
-        if (isFullAdmission(claim)) {
+        if (isAdmissionResponse(claim)) {
             return;
         }
         defendantResponseNotificationService.notifyDefendant(
@@ -33,15 +33,15 @@ public class DefendantResponseCitizenNotificationsHandler {
         );
     }
 
-    private boolean isFullAdmission(Claim claim) {
+    private boolean isAdmissionResponse(Claim claim) {
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
-        return responseType == ResponseType.FULL_ADMISSION;
+        return responseType == ResponseType.FULL_ADMISSION || responseType == ResponseType.PART_ADMISSION;
     }
 
     @EventListener
     public void notifyClaimantResponse(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
-        if (isFullAdmission(claim)) {
+        if (isAdmissionResponse(claim)) {
             return;
         }
         defendantResponseNotificationService.notifyClaimant(
