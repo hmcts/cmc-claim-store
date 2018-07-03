@@ -8,7 +8,6 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -25,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 
 public class DefendantResponseStaffNotificationServiceTest extends MockSpringTest {
 
@@ -172,8 +172,8 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
             .getAttachments()
             .get(0);
 
-        String expectedFileName = DocumentNameUtils
-            .buildResponseFileBaseName(claimWithFullDefenceResponse.getReferenceNumber()) + EXTENSION;
+        String expectedFileName = buildResponseFileBaseName(claimWithFullDefenceResponse.getReferenceNumber())
+            + EXTENSION;
 
         assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedFileName);

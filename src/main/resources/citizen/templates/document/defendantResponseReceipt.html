@@ -352,7 +352,7 @@
   </div>
 </div>
 
-{% if responseType equals "FULL_ADMISSION" or (responseType equals "PART_ADMISSION" and  paymentOption is defined and paymentOption is not empty)%}
+{% if responseType equals "FULL_ADMISSION" %}
 <div class="section">
   <div class="section-heading">
     <strong>When the defendant will pay</strong>
@@ -398,7 +398,7 @@
     </div>
 </div>
 
-{% if paymentOption is defined and paymentOption is not empty and (paymentOption == 'By instalments' or  paymentOption == 'By a set date') %}
+{% if paymentOption == 'By instalments' or  paymentOption == 'By a set date' %}
 <div class="section">
   <div class="section-heading">
     <strong>The defendant’s financial details</strong>

@@ -31,14 +31,6 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/fullAdmission/subject.txt");
     }
 
-    public String getPartAdmissionResponseEmailBody() {
-        return readString("/staff/templates/email/partAdmission/body.txt");
-    }
-
-    public String getPartAdmissionResponseEmailSubject() {
-        return readString("/staff/templates/email/partAdmission/subject.txt");
-    }
-
     public String getCCJRequestSubmittedEmailBody() {
         return readString("/staff/templates/email/ccjRequestSubmitted/body.txt");
     }

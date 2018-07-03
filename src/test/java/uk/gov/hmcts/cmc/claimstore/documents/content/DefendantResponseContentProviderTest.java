@@ -32,8 +32,7 @@ public class DefendantResponseContentProviderTest {
         new FullDefenceResponseContentProvider(),
         new FullAdmissionResponseContentProvider(
             new StatementOfMeansContentProvider()
-        ),
-        new PartAdmissionResponseContentProvider()
+        )
     );
 
     @Test(expected = NullPointerException.class)

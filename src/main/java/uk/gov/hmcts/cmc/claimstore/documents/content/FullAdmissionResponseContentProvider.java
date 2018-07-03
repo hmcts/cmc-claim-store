@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.response.AdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 
 import java.util.Map;
 
@@ -22,21 +22,21 @@ public class FullAdmissionResponseContentProvider {
         this.statementOfMeansContentProvider = statementOfMeansContentProvider;
     }
 
-    public Map<String, Object> createContent(AdmissionResponse admissionResponse) {
-        requireNonNull(admissionResponse);
+    public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse) {
+        requireNonNull(fullAdmissionResponse);
 
-        PaymentOption type = admissionResponse.getPaymentOption();
+        PaymentOption type = fullAdmissionResponse.getPaymentOption();
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
-            .put("responseTypeSelected", admissionResponse.getResponseType().getDescription())
+            .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
             .put("paymentOption", type.getDescription())
-            .put("whenWillTheyPay", createWhenTheyPay(admissionResponse));
+            .put("whenWillTheyPay", createWhenTheyPay(fullAdmissionResponse));
 
-        admissionResponse.getRepaymentPlan().ifPresent(repaymentPlan ->
+        fullAdmissionResponse.getRepaymentPlan().ifPresent(repaymentPlan ->
             contentBuilder.put("repaymentPlan", create(type, repaymentPlan, repaymentPlan.getFirstPaymentDate()))
         );
 
-        admissionResponse.getStatementOfMeans().ifPresent(
+        fullAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> contentBuilder.putAll(
                 statementOfMeansContentProvider.createContent(statementOfMeans)
             )
@@ -45,7 +45,7 @@ public class FullAdmissionResponseContentProvider {
         return contentBuilder.build();
     }
 
-    private String createWhenTheyPay(AdmissionResponse fullAdmissionResponse) {
+    private String createWhenTheyPay(FullAdmissionResponse fullAdmissionResponse) {
         switch (fullAdmissionResponse.getPaymentOption()) {
             case IMMEDIATELY:
             case FULL_BY_SPECIFIED_DATE:

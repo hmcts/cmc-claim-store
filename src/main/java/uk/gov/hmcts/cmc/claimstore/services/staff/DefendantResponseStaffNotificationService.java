@@ -6,10 +6,9 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.PartAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.AdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -36,7 +35,6 @@ public class DefendantResponseStaffNotificationService {
     private final StaffEmailProperties emailProperties;
     private final FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider;
     private final FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider;
-    private final PartAdmissionStaffEmailContentProvider partAdmissionStaffEmailContentProvider;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
 
     @Autowired
@@ -45,13 +43,11 @@ public class DefendantResponseStaffNotificationService {
         StaffEmailProperties emailProperties,
         FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
         FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider,
-        PartAdmissionStaffEmailContentProvider partAdmissionStaffEmailContentProvider,
         DefendantResponseReceiptService defendantResponseReceiptService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;
         this.fullAdmissionStaffEmailContentProvider = fullAdmissionStaffEmailContentProvider;
-        this.partAdmissionStaffEmailContentProvider = partAdmissionStaffEmailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
@@ -59,11 +55,15 @@ public class DefendantResponseStaffNotificationService {
         Claim claim,
         String defendantEmail
     ) {
-
-        Map<String, Object> input = wrapInMap(claim, defendantEmail);
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
 
-        EmailContent emailContent = getEmailContent(input, responseType);
+        if(isPartAdmission(responseType)){
+            return;
+        }
+
+        EmailContent emailContent = isFullAdmission(responseType)
+            ? fullAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
+            : fullDefenceStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail));
 
         emailService.sendEmail(
             emailProperties.getSender(),
@@ -76,21 +76,12 @@ public class DefendantResponseStaffNotificationService {
         );
     }
 
-    private EmailContent getEmailContent(Map<String, Object> input, ResponseType responseType) {
-        switch (responseType) {
-            case PART_ADMISSION:
-                return partAdmissionStaffEmailContentProvider.createContent(input);
-            case FULL_ADMISSION:
-                return fullAdmissionStaffEmailContentProvider.createContent(input);
-            case FULL_DEFENCE:
-                return fullDefenceStaffEmailContentProvider.createContent(input);
-            default:
-                throw new RuntimeException("invalid response type");
-        }
+    private boolean isPartAdmission(ResponseType responseType) {
+        return responseType == PART_ADMISSION;
     }
 
-    private static boolean isAnAdmission(ResponseType responseType) {
-        return responseType == FULL_ADMISSION || responseType == PART_ADMISSION;
+    private boolean isFullAdmission(ResponseType responseType) {
+        return responseType == FULL_ADMISSION;
     }
 
     public static Map<String, Object> wrapInMap(
@@ -110,13 +101,11 @@ public class DefendantResponseStaffNotificationService {
         map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
         map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
 
-        if (isAnAdmission(response.getResponseType())) {
-            AdmissionResponse admissionResponse = (AdmissionResponse) response;
-            if (admissionResponse.getPaymentOption() != null) {
-                map.put("paymentOption", admissionResponse.getPaymentOption());
-                map.put("paymentOptionDescription", admissionResponse
-                    .getPaymentOption().getDescription().toLowerCase());
-            }
+        if (response.getResponseType() == FULL_ADMISSION) {
+            FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
+            map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
+            map.put("paymentOptionDescription", fullAdmissionResponse
+                .getPaymentOption().getDescription().toLowerCase());
         }
 
         return map;
