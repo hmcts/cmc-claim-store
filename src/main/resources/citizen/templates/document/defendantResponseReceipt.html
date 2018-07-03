@@ -283,6 +283,52 @@
       </tr>
       {% endif %}
 
+      {% if responseType equals "PART_ADMISSION" %}
+      {% if isAlreadyPaid equals "NO"%}
+      <tr>
+        <td class="no-border" colspan="2"><strong>How much money do they admit they owe?</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td colspan="2" class="single-cell">
+          <p>{{ paymentDetails.paymentAmount | trim}}</p>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td class="no-border" colspan="2"><strong>How much money have you paid?</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td colspan="2" class="single-cell">
+          <p>{{ paymentDetails.paymentAmount | trim}}</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="no-border" colspan="2"><strong>When did you pay this amount?</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td colspan="2" class="single-cell">
+          <p>{{ paymentDetails.paymentDate | trim}}</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="no-border" colspan="2"><strong>How did you pay the amount claimed?</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td colspan="2" class="single-cell">
+          <p>{{ paymentDetails.paymentMethod | trim}}</p>
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td class="no-border" colspan="2"><strong>Why are they disputing the full amount?</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td colspan="2" class="single-cell">
+          <p>{{ responseDefence | trim}}</p>
+        </td>
+      </tr>
+      {% endif %}
+
       {% if events is defined and events is not empty %}
       <tr>
         <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
@@ -352,7 +398,7 @@
   </div>
 </div>
 
-{% if responseType equals "FULL_ADMISSION" %}
+{% if responseType equals "FULL_ADMISSION" or (responseType equals "PART_ADMISSION" and  paymentOption is defined and paymentOption is not empty)%}
 <div class="section">
   <div class="section-heading">
     <strong>When the defendant will pay</strong>
