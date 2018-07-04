@@ -97,11 +97,10 @@ module "database" {
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
   storage_mb = "51200"
-  common_tags = "${var.common_tags}"
 }
 
 module "claim-store-api" {
-  source = "git@github.com:hmcts/moj-module-webapp.git?ref=RPE-389/local-cache"
+  source = "git@github.com:hmcts/moj-module-webapp.git?ref=RPE-389/old-local-cache"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
@@ -110,7 +109,6 @@ module "claim-store-api" {
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
   subscription = "${var.subscription}"
   capacity = "${var.capacity}"
-  common_tags = "${var.common_tags}"
 
   app_settings = {
     //    logging vars
