@@ -62,7 +62,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public PartAdmissionResponse build() {
             return PartAdmissionResponse.builder()
                 .isAlreadyPaid(YesNoOption.YES)
-                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .howMuchHaveYouPaid(SamplePaymentDetails.validDefaults())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .defence("defence string")
@@ -74,7 +74,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public PartAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
             return PartAdmissionResponse.builder()
                 .isAlreadyPaid(YesNoOption.NO)
-                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .howMuchHaveYouPaid(SamplePaymentDetails.validDefaults())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .defence("defence string")

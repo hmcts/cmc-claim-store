@@ -14,30 +14,30 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-public class PaymentDetails {
+public class HowMuchHaveYouPaid {
     @NotNull
     @Money
     @DecimalMin(value = "0.01")
-    private final BigDecimal paymentAmount;
+    private final BigDecimal amount;
 
     @DateNotInTheFuture
-    private final LocalDate paymentDate;
+    private final LocalDate date;
     private final String paymentMethod;
 
 
     @JsonCreator
-    public PaymentDetails(BigDecimal paymentAmount, LocalDate paymentDate, String paymentMethod) {
-        this.paymentAmount = paymentAmount;
-        this.paymentDate = paymentDate;
+    public HowMuchHaveYouPaid(BigDecimal amount, LocalDate date, String paymentMethod) {
+        this.amount = amount;
+        this.date = date;
         this.paymentMethod = paymentMethod;
     }
 
-    public BigDecimal getPaymentAmount() {
-        return paymentAmount;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public Optional<LocalDate> getPaymentDate() {
-        return Optional.ofNullable(paymentDate);
+    public Optional<LocalDate> getDate() {
+        return Optional.ofNullable(date);
     }
 
     public Optional<String> getPaymentMethod() {
@@ -52,15 +52,15 @@ public class PaymentDetails {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        PaymentDetails that = (PaymentDetails) other;
-        return Objects.equals(paymentAmount, that.paymentAmount)
-            && Objects.equals(paymentDate, that.paymentDate)
+        HowMuchHaveYouPaid that = (HowMuchHaveYouPaid) other;
+        return Objects.equals(amount, that.amount)
+            && Objects.equals(date, that.date)
             && Objects.equals(paymentMethod, that.paymentMethod);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paymentAmount, paymentDate, paymentMethod);
+        return Objects.hash(amount, date, paymentMethod);
     }
 
     @Override

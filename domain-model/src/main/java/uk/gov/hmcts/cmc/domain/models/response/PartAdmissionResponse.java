@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
@@ -21,11 +22,12 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class PartAdmissionResponse extends AdmissionResponse {
     @NotNull
+    @JsonUnwrapped
     private final YesNoOption isAlreadyPaid;
 
     @Valid
     @NotNull
-    private final PaymentDetails paymentDetails;
+    private final HowMuchHaveYouPaid howMuchHaveYouPaid;
 
     @Size(min = 1, max = 99000)
     private String defence;
@@ -47,7 +49,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
         RepaymentPlan repaymentPlan,
         StatementOfMeans statementOfMeans,
         YesNoOption isAlreadyPaid,
-        PaymentDetails paymentDetails,
+        HowMuchHaveYouPaid howMuchHaveYouPaid,
         String defence,
         DefendantTimeline timeline,
         DefendantEvidence evidence
@@ -55,7 +57,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
         super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth,
             paymentOption, paymentDate, repaymentPlan, statementOfMeans);
         this.isAlreadyPaid = isAlreadyPaid;
-        this.paymentDetails = paymentDetails;
+        this.howMuchHaveYouPaid = howMuchHaveYouPaid;
         this.defence = defence;
         this.timeline = timeline;
         this.evidence = evidence;
@@ -65,8 +67,8 @@ public class PartAdmissionResponse extends AdmissionResponse {
         return isAlreadyPaid;
     }
 
-    public PaymentDetails getPaymentDetails() {
-        return paymentDetails;
+    public HowMuchHaveYouPaid getHowMuchHaveYouPaid() {
+        return howMuchHaveYouPaid;
     }
 
     public String getDefence() {
@@ -95,7 +97,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
         PartAdmissionResponse that = (PartAdmissionResponse) other;
         return super.equals(other)
             && isAlreadyPaid == that.isAlreadyPaid
-            && Objects.equals(paymentDetails, that.paymentDetails)
+            && Objects.equals(howMuchHaveYouPaid, that.howMuchHaveYouPaid)
             && Objects.equals(defence, that.defence)
             && Objects.equals(timeline, that.timeline)
             && Objects.equals(evidence, that.evidence);
@@ -103,7 +105,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), isAlreadyPaid, paymentDetails, defence, timeline, evidence);
+        return Objects.hash(super.hashCode(), isAlreadyPaid, howMuchHaveYouPaid, defence, timeline, evidence);
     }
 
     @Override

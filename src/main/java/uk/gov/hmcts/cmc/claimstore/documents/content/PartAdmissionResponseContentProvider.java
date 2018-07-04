@@ -31,7 +31,7 @@ public class PartAdmissionResponseContentProvider {
         content.put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription());
 
         content.put("isAlreadyPaid", partAdmissionResponse.getIsAlreadyPaid());
-        content.put("paymentDetails", partAdmissionResponse.getPaymentDetails());
+        content.put("howMuchHaveYouPaid", partAdmissionResponse.getHowMuchHaveYouPaid());
 
 
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();
