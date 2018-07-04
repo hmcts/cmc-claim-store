@@ -5,7 +5,7 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantResponseStaffNotificationEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;
 
-public class DefendantResponseStaffNotificationEmailContentProviderTest {
+public class FullDefenceStaffEmailContentProviderTest {
 
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
 
@@ -27,11 +27,11 @@ public class DefendantResponseStaffNotificationEmailContentProviderTest {
 
     private StaffEmailTemplates templates = new StaffEmailTemplates();
 
-    private DefendantResponseStaffNotificationEmailContentProvider service;
+    private FullDefenceStaffEmailContentProvider service;
 
     @Before
     public void beforeEachTest() {
-        service = new DefendantResponseStaffNotificationEmailContentProvider(
+        service = new FullDefenceStaffEmailContentProvider(
             templateService,
             templates
         );
