@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-public class HowMuchHaveYouPaid {
+public class PaymentDetails {
     @NotNull
     @Money
     @DecimalMin(value = "0.01")
@@ -26,7 +26,7 @@ public class HowMuchHaveYouPaid {
 
 
     @JsonCreator
-    public HowMuchHaveYouPaid(BigDecimal amount, LocalDate date, String paymentMethod) {
+    public PaymentDetails(BigDecimal amount, LocalDate date, String paymentMethod) {
         this.amount = amount;
         this.date = date;
         this.paymentMethod = paymentMethod;
@@ -52,7 +52,7 @@ public class HowMuchHaveYouPaid {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        HowMuchHaveYouPaid that = (HowMuchHaveYouPaid) other;
+        PaymentDetails that = (PaymentDetails) other;
         return Objects.equals(amount, that.amount)
             && Objects.equals(date, that.date)
             && Objects.equals(paymentMethod, that.paymentMethod);

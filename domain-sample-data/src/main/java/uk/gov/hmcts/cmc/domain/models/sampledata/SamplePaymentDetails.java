@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.response.HowMuchHaveYouPaid;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ public class SamplePaymentDetails {
         return new SamplePaymentDetails();
     }
 
-    public static HowMuchHaveYouPaid validDefaults() {
+    public static PaymentDetails validDefaults() {
         return builder().build();
     }
 
@@ -33,8 +33,8 @@ public class SamplePaymentDetails {
         return this;
     }
 
-    public HowMuchHaveYouPaid build() {
-        return new HowMuchHaveYouPaid(paidAmount, paymentDate, paymentMethod);
+    public PaymentDetails build() {
+        return new PaymentDetails(paidAmount, paymentDate, paymentMethod);
     }
 
 }

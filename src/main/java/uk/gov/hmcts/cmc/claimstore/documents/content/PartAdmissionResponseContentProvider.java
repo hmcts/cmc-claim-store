@@ -15,6 +15,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+
 @Component
 public class PartAdmissionResponseContentProvider {
 
@@ -31,7 +34,12 @@ public class PartAdmissionResponseContentProvider {
         content.put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription());
 
         content.put("isAlreadyPaid", partAdmissionResponse.getIsAlreadyPaid());
-        content.put("howMuchHaveYouPaid", partAdmissionResponse.getHowMuchHaveYouPaid());
+        content.put("paidAmount", formatMoney(partAdmissionResponse.getPaymentDetails().getAmount()));
+
+        partAdmissionResponse.getPaymentDetails().getDate()
+            .ifPresent(date -> content.put("paymentDate", formatDate(date)));
+        partAdmissionResponse.getPaymentDetails().getPaymentMethod()
+            .ifPresent(method -> content.put("paymentMethod", method));
 
 
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();

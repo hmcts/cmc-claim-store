@@ -57,7 +57,7 @@ public class DefendantResponseStaffNotificationService {
     ) {
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
 
-        if(isPartAdmission(responseType)){
+        if (isPartAdmission(responseType)) {
             return;
         }
 

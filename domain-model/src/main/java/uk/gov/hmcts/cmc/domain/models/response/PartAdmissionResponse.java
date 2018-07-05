@@ -27,7 +27,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
 
     @Valid
     @NotNull
-    private final HowMuchHaveYouPaid howMuchHaveYouPaid;
+    private final PaymentDetails paymentDetails;
 
     @Size(min = 1, max = 99000)
     private String defence;
@@ -49,7 +49,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
         RepaymentPlan repaymentPlan,
         StatementOfMeans statementOfMeans,
         YesNoOption isAlreadyPaid,
-        HowMuchHaveYouPaid howMuchHaveYouPaid,
+        PaymentDetails paymentDetails,
         String defence,
         DefendantTimeline timeline,
         DefendantEvidence evidence
@@ -57,7 +57,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
         super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth,
             paymentOption, paymentDate, repaymentPlan, statementOfMeans);
         this.isAlreadyPaid = isAlreadyPaid;
-        this.howMuchHaveYouPaid = howMuchHaveYouPaid;
+        this.paymentDetails = paymentDetails;
         this.defence = defence;
         this.timeline = timeline;
         this.evidence = evidence;
@@ -67,8 +67,8 @@ public class PartAdmissionResponse extends AdmissionResponse {
         return isAlreadyPaid;
     }
 
-    public HowMuchHaveYouPaid getHowMuchHaveYouPaid() {
-        return howMuchHaveYouPaid;
+    public PaymentDetails getPaymentDetails() {
+        return paymentDetails;
     }
 
     public String getDefence() {
@@ -97,7 +97,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
         PartAdmissionResponse that = (PartAdmissionResponse) other;
         return super.equals(other)
             && isAlreadyPaid == that.isAlreadyPaid
-            && Objects.equals(howMuchHaveYouPaid, that.howMuchHaveYouPaid)
+            && Objects.equals(paymentDetails, that.paymentDetails)
             && Objects.equals(defence, that.defence)
             && Objects.equals(timeline, that.timeline)
             && Objects.equals(evidence, that.evidence);
@@ -105,7 +105,7 @@ public class PartAdmissionResponse extends AdmissionResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), isAlreadyPaid, howMuchHaveYouPaid, defence, timeline, evidence);
+        return Objects.hash(super.hashCode(), isAlreadyPaid, paymentDetails, defence, timeline, evidence);
     }
 
     @Override

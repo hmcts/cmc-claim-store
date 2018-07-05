@@ -9,13 +9,10 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
 import java.math.BigDecimal;
 
