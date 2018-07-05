@@ -43,14 +43,14 @@
 --
 
 WITH subquery AS (
-    SELECT id, jsonb_extract_path(response::JSONB, 'howMuchHaveYouPaid') as howMuchHaveYouPaid
+    SELECT id, jsonb_extract_path(claim::JSONB, 'interestDate') as interestDate
       FROM claim
-     WHERE jsonb_extract_path(response::JSONB, 'howMuchHaveYouPaid') IS NOT NULL
+     WHERE jsonb_extract_path(claim::JSONB, 'interestDate') IS NOT NULL
 )
 UPDATE
   claim
 SET
-  claim=jsonb_set(claim.response, '{paymentDetails}', subquery.howMuchHaveYouPaid, true) - 'howMuchHaveYouPaid'
+  claim=jsonb_set(claim.claim, '{interest, interestDate}', subquery.interestDate, true) - 'interestDate'
 FROM
   subquery
 WHERE
