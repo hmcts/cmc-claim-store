@@ -20,6 +20,8 @@ import static java.time.LocalDate.now;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
+    public static final String USER_DEFENCE = "defence string";
+
     public static class FullAdmission extends SampleResponse<FullAdmission> {
         public static FullAdmission builder() {
             return new FullAdmission();
@@ -67,7 +69,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentDetails(SamplePaymentDetails.builder().build())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
-                .defence("defence string")
+                .defence(USER_DEFENCE)
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(SampleParty.builder().individual())
                 .build();
@@ -79,7 +81,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentDetails(SamplePaymentDetails.validDefaults())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
-                .defence("defence string")
+                .defence(USER_DEFENCE)
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(SampleParty.builder().individual())
                 .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
@@ -95,7 +97,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentDetails(SamplePaymentDetails.validDefaults())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
-                .defence("defence string")
+                .defence(USER_DEFENCE)
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(SampleParty.builder().individual())
                 .paymentOption(PaymentOption.IMMEDIATELY)
@@ -111,7 +113,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentDetails(SamplePaymentDetails.validDefaults())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
-                .defence("defence string")
+                .defence(USER_DEFENCE)
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(SampleParty.builder().individual())
                 .paymentOption(PaymentOption.INSTALMENTS)
@@ -123,7 +125,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static class FullDefence extends SampleResponse<FullDefence> {
         private DefenceType defenceType = DefenceType.DISPUTE;
-        private String defence = "defence string";
+        private String defence = USER_DEFENCE;
         private PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder().build();
         private DefendantTimeline timeline = SampleDefendantTimeline.validDefaults();
         private DefendantEvidence evidence = SampleDefendantEvidence.validDefaults();

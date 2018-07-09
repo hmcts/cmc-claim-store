@@ -24,7 +24,6 @@ public class PaymentDetails {
     private final LocalDate date;
     private final String paymentMethod;
 
-
     @JsonCreator
     public PaymentDetails(BigDecimal amount, LocalDate date, String paymentMethod) {
         this.amount = amount;

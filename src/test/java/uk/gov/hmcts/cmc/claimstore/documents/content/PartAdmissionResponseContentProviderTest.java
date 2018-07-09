@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmis
 
 public class PartAdmissionResponseContentProviderTest {
 
-    private PartAdmissionResponseContentProvider provider =AdmissionValidator
+    private PartAdmissionResponseContentProvider provider =
         new PartAdmissionResponseContentProvider(
             new AdmissionContentProvider(
                 new StatementOfMeansContentProvider())
@@ -47,7 +48,7 @@ public class PartAdmissionResponseContentProviderTest {
 
         assertThat(content)
             .containsKey("responseDefence")
-            .containsValue("defence string");
+            .containsValue(SampleResponse.USER_DEFENCE);
 
     }
 

@@ -277,7 +277,7 @@
         </td>
       </tr>
 
-      {% if responseType equals "PART_ADMISSION" %}
+      {% if responseType == "PART_ADMISSION" %}
         {% if isAlreadyPaid equals "no"%}
           <tr>
             <td>How much money do they admit they owe?</td>
@@ -397,7 +397,7 @@
   </div>
 </div>
 
-{% if responseType equals "FULL_ADMISSION" or (responseType equals "PART_ADMISSION" and paymentOption is defined )%}
+{% if responseType == "FULL_ADMISSION" or (responseType == "PART_ADMISSION" and paymentOption is defined )%}
 <div class="section">
   <div class="section-heading">
     <strong>When the defendant will pay</strong>

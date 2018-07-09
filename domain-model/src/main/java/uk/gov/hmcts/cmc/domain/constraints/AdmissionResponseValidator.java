@@ -4,15 +4,18 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.constraints.AdmissionValidator.Fields.PAYMENT_DATE;
-import static uk.gov.hmcts.cmc.domain.constraints.AdmissionValidator.Fields.REPAYMENT_PLAN;
+import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.Fields.PAYMENT_DATE;
+import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.Fields.REPAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
-public class AdmissionValidator {
+public class AdmissionResponseValidator {
+
+    private AdmissionResponseValidator() {
+    }
 
     public static class Fields {
         public static final String PAYMENT_DATE = "paymentDate";

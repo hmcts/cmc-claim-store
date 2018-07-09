@@ -31,10 +31,7 @@ public class AdmissionContentProvider {
         RepaymentPlan repaymentPlan
     ) {
 
-        ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<>();
-
-        contentBuilder
-            .put("responseTypeSelected", responseType.getDescription())
+        ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
             .put("paymentOption", paymentOption.getDescription())
             .put("whenWillTheyPay", createWhenTheyPay(paymentOption, paymentDate));
 

@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.constraints.AdmissionValidator.hasValidPaymentPlanDetails;
+import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.hasValidPaymentPlanDetails;
 
 public class ValidFullAdmissionConstraintValidator
     implements ConstraintValidator<ValidAdmission, FullAdmissionResponse> {
