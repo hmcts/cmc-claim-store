@@ -50,6 +50,7 @@ public class PartAdmissionResponse extends Response {
     @Valid
     private final StatementOfMeans statementOfMeans;
 
+    @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder
     public PartAdmissionResponse(
         YesNoOption freeMediation,

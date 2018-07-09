@@ -49,7 +49,7 @@ public class DefenceResponseJsonMapper {
             case PART_ADMISSION:
                 return ResponseType.PART_ADMISSION.name();
             default:
-                throw new RuntimeException("invalid response type");
+                throw new IllegalArgumentException("invalid response type");
         }
     }
 
