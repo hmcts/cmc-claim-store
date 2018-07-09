@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
+import java.math.BigDecimal;
+
 import static java.time.LocalDate.now;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
@@ -62,7 +64,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public PartAdmissionResponse build() {
             return PartAdmissionResponse.builder()
                 .isAlreadyPaid(YesNoOption.YES)
-                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .paymentDetails(SamplePaymentDetails.builder().build())
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .defence("defence string")
@@ -83,7 +85,38 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
                 .paymentDate(now())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithPaymentOptionImmediately() {
+            return PartAdmissionResponse.builder()
+                .isAlreadyPaid(YesNoOption.NO)
+                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .defence("defence string")
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().individual())
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .paymentDate(now())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .repaymentPlan(null)
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithPaymentOptionInstallments() {
+            return PartAdmissionResponse.builder()
+                .isAlreadyPaid(YesNoOption.NO)
+                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .defence("defence string")
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().individual())
+                .paymentOption(PaymentOption.INSTALMENTS)
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .repaymentPlan(SampleRepaymentPlan.builder().withInstalmentAmount(BigDecimal.valueOf(200)).build())
                 .build();
         }
     }

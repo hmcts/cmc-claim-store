@@ -21,6 +21,10 @@ public class DefendantResponseContentProviderTest {
 
     private Claim claim = SampleClaim.getWithDefaultResponse();
 
+    private AdmissionContentProvider admissionContentProvider = new AdmissionContentProvider(
+        new StatementOfMeansContentProvider()
+    );
+
     private DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
         new PartyDetailsContentProvider(),
         new ClaimDataContentProvider(
@@ -30,10 +34,8 @@ public class DefendantResponseContentProviderTest {
         ),
         new NotificationsProperties(),
         new FullDefenceResponseContentProvider(),
-        new FullAdmissionResponseContentProvider(
-            new StatementOfMeansContentProvider()
-        ),
-        new PartAdmissionResponseContentProvider()
+        new FullAdmissionResponseContentProvider(admissionContentProvider),
+        new PartAdmissionResponseContentProvider(admissionContentProvider)
     );
 
     @Test(expected = NullPointerException.class)

@@ -21,6 +21,14 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 @Component
 public class PartAdmissionResponseContentProvider {
 
+    private final AdmissionContentProvider admissionContentProvider;
+
+    public PartAdmissionResponseContentProvider(
+        AdmissionContentProvider admissionContentProvider
+    ) {
+        this.admissionContentProvider = admissionContentProvider;
+    }
+
     public Map<String, Object> createContent(PartAdmissionResponse partAdmissionResponse) {
 
         Map<String, Object> content = new HashMap<>();
@@ -66,6 +74,20 @@ public class PartAdmissionResponseContentProvider {
         content.put("evidences", evidences);
         content.put("evidenceComment", evidenceComment);
 
+        partAdmissionResponse.getPaymentOption().ifPresent(
+            paymentOption -> content.putAll(admissionContentProvider.createPaymentPlanDetails(
+                paymentOption,
+                partAdmissionResponse.getResponseType(),
+                partAdmissionResponse.getPaymentDate().orElse(null),
+                partAdmissionResponse.getRepaymentPlan().orElse(null))
+            )
+        );
+
+        partAdmissionResponse.getStatementOfMeans().ifPresent(
+            statementOfMeans -> content.putAll(admissionContentProvider.createStatementOfMeansContent(statementOfMeans))
+        );
+
         return content;
     }
+
 }

@@ -5,7 +5,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.domain.models.response.AdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -86,20 +85,10 @@ public class DefendantResponseContentProvider {
             );
         } else if (defendantResponse instanceof PartAdmissionResponse) {
 
-            if (partAdmissionIsForPaymentInFuture((AdmissionResponse) defendantResponse)) {
-                content.putAll(
-                    fullAdmissionResponseContentProvider.createContent((AdmissionResponse) defendantResponse)
-                );
-            }
-
             content.putAll(
                 partAdmissionResponseContentProvider.createContent((PartAdmissionResponse) defendantResponse)
             );
         }
         return content;
-    }
-
-    private boolean partAdmissionIsForPaymentInFuture(AdmissionResponse defendantResponse) {
-        return defendantResponse.getPaymentOption() != null;
     }
 }

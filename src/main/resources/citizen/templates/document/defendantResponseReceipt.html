@@ -278,54 +278,54 @@
       </tr>
 
       {% if responseType equals "PART_ADMISSION" %}
-      {% if isAlreadyPaid equals "NO"%}
-      <tr>
-        <td>How much money do they admit they owe?</td>
-        <td>
-          <p>{{ paidAmount }}</p>
-        </td>
-      </tr>
+        {% if isAlreadyPaid equals "no"%}
+          <tr>
+            <td>How much money do they admit they owe?</td>
+            <td>
+              <p>{{ paidAmount }}</p>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td>How much money have you paid?</td>
+            <td>
+              <p>{{ paidAmount }}</p>
+            </td>
+          </tr>
+          {% if paymentDate is defined %}
+          <tr>
+            <td>When did you pay this amount?</td>
+            <td>
+              <p>{{ paymentDate }}</p>
+            </td>
+          </tr>
+          {% endif %}
+          {% if paymentMethod is defined and paymentMethod is not empty %}
+            <tr>
+              <td>How did you pay the amount claimed?</td>
+              <td>
+                <p>{{ paymentMethod | trim}}</p>
+              </td>
+            </tr>
+          {% endif %}
+        {% endif %}
+          <tr>
+            <td>Why are they disputing the full amount?</td>
+            <td>
+              <p>{{ responseDefence | trim}}</p>
+            </td>
+          </tr>
       {% else %}
-      <tr>
-        <td>How much money have you paid?</td>
-        <td>
-          <p>{{ paidAmount }}</p>
-        </td>
-      </tr>
-      {% if paymentDate is defined and paymentDate is not empty %}
-      <tr>
-        <td>When did you pay this amount?</td>
-        <td>
-          <p>{{ paymentDate }}</p>
-        </td>
-      </tr>
-      {% endif %}
-      {% if paymentMethod is defined and paymentMethod is not empty %}
-      <tr>
-        <td>How did you pay the amount claimed?</td>
-        <td>
-          <p>{{ paymentMethod | trim}}</p>
-        </td>
-      </tr>
-      {% endif %}
-      {% endif %}
-      <tr>
-        <td>Why are they disputing the full amount?</td>
-        <td>
-          <p>{{ responseDefence | trim}}</p>
-        </td>
-      </tr>
-      {% else %}
-      {% if responseDefence is defined and responseDefence is not empty %}
-      <tr>
-        <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td colspan="2" class="single-cell">
-          <p>{{ responseDefence | trim}}</p>
-        </td>
-      </tr>
-      {% endif %}
+        {% if responseDefence is defined and responseDefence is not empty %}
+        <tr>
+          <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
+        </tr>
+        <tr class="no-border">
+          <td colspan="2" class="single-cell">
+            <p>{{ responseDefence | trim}}</p>
+          </td>
+        </tr>
+        {% endif %}
       {% endif %}
 
       {% if events is defined and events is not empty %}
@@ -397,8 +397,7 @@
   </div>
 </div>
 
-{% if responseType equals "FULL_ADMISSION" or (responseType equals "PART_ADMISSION" and paymentOption is defined and
-paymentOption is not empty)%}
+{% if responseType equals "FULL_ADMISSION" or (responseType equals "PART_ADMISSION" and paymentOption is defined )%}
 <div class="section">
   <div class="section-heading">
     <strong>When the defendant will pay</strong>

@@ -10,9 +10,11 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmis
 
 public class FullAdmissionResponseContentProviderTest {
 
-    private FullAdmissionResponseContentProvider provider = new FullAdmissionResponseContentProvider(
-        new StatementOfMeansContentProvider()
-    );
+    private FullAdmissionResponseContentProvider provider =
+        new FullAdmissionResponseContentProvider(
+            new AdmissionContentProvider(
+                new StatementOfMeansContentProvider())
+        );
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {

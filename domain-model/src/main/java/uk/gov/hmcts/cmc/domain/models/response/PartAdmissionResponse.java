@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
+import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
@@ -20,9 +21,9 @@ import javax.validation.constraints.Size;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-public class PartAdmissionResponse extends AdmissionResponse {
+@ValidAdmission
+public class PartAdmissionResponse extends Response {
     @NotNull
-    @JsonUnwrapped
     private final YesNoOption isAlreadyPaid;
 
     @Valid
@@ -37,6 +38,17 @@ public class PartAdmissionResponse extends AdmissionResponse {
 
     @Valid
     private final DefendantEvidence evidence;
+
+    private final PaymentOption paymentOption;
+
+    @DateNotInThePast
+    private final LocalDate paymentDate;
+
+    @Valid
+    private final RepaymentPlan repaymentPlan;
+
+    @Valid
+    private final StatementOfMeans statementOfMeans;
 
     @Builder
     public PartAdmissionResponse(
@@ -54,8 +66,11 @@ public class PartAdmissionResponse extends AdmissionResponse {
         DefendantTimeline timeline,
         DefendantEvidence evidence
     ) {
-        super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth,
-            paymentOption, paymentDate, repaymentPlan, statementOfMeans);
+        super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
+        this.paymentOption = paymentOption;
+        this.paymentDate = paymentDate;
+        this.repaymentPlan = repaymentPlan;
+        this.statementOfMeans = statementOfMeans;
         this.isAlreadyPaid = isAlreadyPaid;
         this.paymentDetails = paymentDetails;
         this.defence = defence;
@@ -81,6 +96,22 @@ public class PartAdmissionResponse extends AdmissionResponse {
 
     public Optional<DefendantEvidence> getEvidence() {
         return Optional.ofNullable(evidence);
+    }
+
+    public Optional<PaymentOption> getPaymentOption() {
+        return Optional.ofNullable(paymentOption);
+    }
+
+    public Optional<LocalDate> getPaymentDate() {
+        return Optional.ofNullable(paymentDate);
+    }
+
+    public Optional<RepaymentPlan> getRepaymentPlan() {
+        return Optional.ofNullable(repaymentPlan);
+    }
+
+    public Optional<StatementOfMeans> getStatementOfMeans() {
+        return Optional.ofNullable(statementOfMeans);
     }
 
     @Override
