@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -9,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,16 +30,19 @@ public class PartAdmissionResponseContentProvider {
     }
 
     public Map<String, Object> createContent(PartAdmissionResponse partAdmissionResponse) {
+
+        Map<String, Object> content = new HashMap<>();
+
         List<TimelineEvent> events = null;
         List<EvidenceContent> evidences = null;
         String timelineComment = null;
         String evidenceComment = null;
 
-        ImmutableMap.Builder<String, Object> content = new ImmutableMap.Builder<String, Object>()
-            .put("responseDefence", partAdmissionResponse.getDefence())
-            .put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription())
-            .put("isAlreadyPaid", partAdmissionResponse.getIsAlreadyPaid())
-            .put("paidAmount", formatMoney(partAdmissionResponse.getPaymentDetails().getAmount()));
+        content.put("responseDefence", partAdmissionResponse.getDefence());
+        content.put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription());
+
+        content.put("isAlreadyPaid", partAdmissionResponse.getIsAlreadyPaid());
+        content.put("paidAmount", formatMoney(partAdmissionResponse.getPaymentDetails().getAmount()));
 
         partAdmissionResponse.getPaymentDetails().getDate()
             .ifPresent(date -> content.put("paymentDate", formatDate(date)));
@@ -66,10 +69,10 @@ public class PartAdmissionResponseContentProvider {
             evidenceComment = defendantEvidence.getComment().orElse(null);
         }
 
-        content.put("events", events)
-            .put("timelineComment", timelineComment)
-            .put("evidences", evidences)
-            .put("evidenceComment", evidenceComment);
+        content.put("events", events);
+        content.put("timelineComment", timelineComment);
+        content.put("evidences", evidences);
+        content.put("evidenceComment", evidenceComment);
 
         partAdmissionResponse.getPaymentOption().ifPresent(
             paymentOption -> content.putAll(admissionContentProvider.createPaymentPlanDetails(
@@ -84,7 +87,7 @@ public class PartAdmissionResponseContentProvider {
             statementOfMeans -> content.putAll(admissionContentProvider.createStatementOfMeansContent(statementOfMeans))
         );
 
-        return content.build();
+        return content;
     }
 
 }
