@@ -49,7 +49,6 @@ public class PartAdmissionResponseContentProvider {
         partAdmissionResponse.getPaymentDetails().getPaymentMethod()
             .ifPresent(method -> content.put("paymentMethod", method));
 
-
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();
         if (defenceTimeline.isPresent()) {
             DefendantTimeline defendantTimeline = defenceTimeline.get();
@@ -85,12 +84,10 @@ public class PartAdmissionResponseContentProvider {
                 )
         );
 
-
         partAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> content.putAll(admissionContentProvider.createStatementOfMeansContent(statementOfMeans))
         );
 
         return content;
     }
-
 }
