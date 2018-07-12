@@ -400,7 +400,11 @@
 {% if responseType == "FULL_ADMISSION" or (responseType == "PART_ADMISSION" and paymentOption is defined )%}
 <div class="section">
   <div class="section-heading">
-    <strong>When the defendant will pay</strong>
+    <strong>When the defendant will pay
+      {% if responseType == "PART_ADMISSION" %}
+        {{ paidAmount }}
+      {% endif %}
+    </strong>
   </div>
   <div class="section-body">
     <table>

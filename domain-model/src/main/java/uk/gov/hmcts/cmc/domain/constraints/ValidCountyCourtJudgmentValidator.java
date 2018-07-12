@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
@@ -24,7 +24,7 @@ public class ValidCountyCourtJudgmentValidator
         boolean repaymentPlanIsPopulated = ccj.getRepaymentPlan().isPresent();
 
         boolean isValidImmediately = type.equals(IMMEDIATELY) && !payByDateIsPopulated && !repaymentPlanIsPopulated;
-        boolean isValidFull = type.equals(FULL_BY_SPECIFIED_DATE) && payByDateIsPopulated && !repaymentPlanIsPopulated;
+        boolean isValidFull = type.equals(BY_SPECIFIED_DATE) && payByDateIsPopulated && !repaymentPlanIsPopulated;
         boolean isValidByInstalments = type.equals(INSTALMENTS) && !payByDateIsPopulated && repaymentPlanIsPopulated;
 
         return isValidImmediately || isValidFull || isValidByInstalments;

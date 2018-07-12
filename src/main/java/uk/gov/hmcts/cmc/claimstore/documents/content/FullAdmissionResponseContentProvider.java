@@ -26,9 +26,10 @@ public class FullAdmissionResponseContentProvider {
             .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
             .putAll(admissionContentProvider.createPaymentPlanDetails(
                 fullAdmissionResponse.getPaymentOption(),
-                fullAdmissionResponse.getResponseType(),
+                fullAdmissionResponse.getRepaymentPlan().orElse(null),
                 fullAdmissionResponse.getPaymentDate().orElse(null),
-                fullAdmissionResponse.getRepaymentPlan().orElse(null))
+                "The full amount"
+                )
             );
 
         fullAdmissionResponse.getStatementOfMeans().ifPresent(

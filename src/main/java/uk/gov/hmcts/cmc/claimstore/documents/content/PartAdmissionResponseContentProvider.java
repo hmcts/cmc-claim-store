@@ -75,13 +75,16 @@ public class PartAdmissionResponseContentProvider {
         content.put("evidenceComment", evidenceComment);
 
         partAdmissionResponse.getPaymentOption().ifPresent(
-            paymentOption -> content.putAll(admissionContentProvider.createPaymentPlanDetails(
-                paymentOption,
-                partAdmissionResponse.getResponseType(),
-                partAdmissionResponse.getPaymentDate().orElse(null),
-                partAdmissionResponse.getRepaymentPlan().orElse(null))
-            )
+            paymentOption ->
+                content.putAll(admissionContentProvider.createPaymentPlanDetails(
+                    paymentOption,
+                    partAdmissionResponse.getRepaymentPlan().orElse(null),
+                    partAdmissionResponse.getPaymentDate().orElse(null),
+                    formatMoney(partAdmissionResponse.getPaymentDetails().getAmount())
+                    )
+                )
         );
+
 
         partAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> content.putAll(admissionContentProvider.createStatementOfMeansContent(statementOfMeans))

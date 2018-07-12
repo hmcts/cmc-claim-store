@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 public enum PaymentOption {
     IMMEDIATELY("Immediately"),
-    FULL_BY_SPECIFIED_DATE("By a set date"),
+    BY_SPECIFIED_DATE("By a set date"),
     INSTALMENTS("By instalments");
 
     String description;
