@@ -87,7 +87,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
                 .paymentDate(now())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .repaymentPlan(null)
                 .build();
         }
 
