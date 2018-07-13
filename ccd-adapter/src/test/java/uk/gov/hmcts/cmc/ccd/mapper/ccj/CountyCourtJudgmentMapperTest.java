@@ -133,7 +133,7 @@ public class CountyCourtJudgmentMapperTest {
         //given
         final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .defendantDateOfBirth(now().minusYears(20))
-            .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
+            .paymentOption(CCDPaymentOption.FULL_BY_SPECIFIED_DATE)
             .payBySetDate(now())
             .paidAmount(BigDecimal.TEN)
             .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())

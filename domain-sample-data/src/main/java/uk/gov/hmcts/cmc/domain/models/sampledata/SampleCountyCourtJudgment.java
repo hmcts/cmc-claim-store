@@ -46,7 +46,7 @@ public class SampleCountyCourtJudgment {
     }
 
     public SampleCountyCourtJudgment withPayBySetDate(LocalDate payBySetDate) {
-        this.paymentOption = PaymentOption.BY_SPECIFIED_DATE;
+        this.paymentOption = PaymentOption.FULL_BY_SPECIFIED_DATE;
         this.payBySetDate = payBySetDate;
         this.repaymentPlan = null;
         return this;

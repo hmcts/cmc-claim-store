@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.content.RepaymentPlanContentProvider.create;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
@@ -48,7 +48,7 @@ public class RepaymentPlanContentProviderTest {
     @Test
     public void createBySetDatePaymentOption() {
         LocalDate setDate = now();
-        RepaymentPlanContent repaymentPlanContent = create(BY_SPECIFIED_DATE, null, setDate);
+        RepaymentPlanContent repaymentPlanContent = create(FULL_BY_SPECIFIED_DATE, null, setDate);
 
         assertThat(repaymentPlanContent.getRepaymentOption())
             .isEqualTo("By a set date");

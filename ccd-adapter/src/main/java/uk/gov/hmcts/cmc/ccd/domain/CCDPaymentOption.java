@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CCDPaymentOption {
     IMMEDIATELY("immediately"),
-    BY_SPECIFIED_DATE("on or before specified date"),
+    FULL_BY_SPECIFIED_DATE("on or before specified date"),
     INSTALMENTS("by instalments");
 
     String description;

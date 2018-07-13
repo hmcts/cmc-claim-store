@@ -8,7 +8,7 @@ import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.Fie
 import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.Fields.REPAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
@@ -31,7 +31,7 @@ public class AdmissionResponseValidator {
         switch (paymentOption) {
             case IMMEDIATELY:
                 return validateImmediately(hasPaymentDate, hasRepaymentPlan, context);
-            case BY_SPECIFIED_DATE:
+            case FULL_BY_SPECIFIED_DATE:
                 return validateBySetDate(hasPaymentDate, hasRepaymentPlan, context);
             case INSTALMENTS:
                 return validateInstalments(hasPaymentDate, hasRepaymentPlan, context);
@@ -67,7 +67,7 @@ public class AdmissionResponseValidator {
         ConstraintValidatorContext context
     ) {
         boolean valid = true;
-        String bySetDate = BY_SPECIFIED_DATE.getDescription();
+        String bySetDate = FULL_BY_SPECIFIED_DATE.getDescription();
 
         if (!hasPaymentDate) {
             setValidationErrors(context, PAYMENT_DATE, mayNotBeProvidedError("paymentOption", bySetDate));

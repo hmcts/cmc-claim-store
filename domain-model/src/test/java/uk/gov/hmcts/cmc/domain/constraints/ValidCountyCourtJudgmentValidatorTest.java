@@ -107,7 +107,7 @@ public class ValidCountyCourtJudgmentValidatorTest {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withPaymentOption(PaymentOption.BY_SPECIFIED_DATE).build();
+            .withPaymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE).build();
 
         assertThat(validator.isValid(ccj, context)).isFalse();
     }

@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatemen
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.FULL_BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyIndividual;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfTruth;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
@@ -76,7 +76,7 @@ public class FullAdmissionResponseMapperTest {
         //given
         CCDFullAdmissionResponse ccdFullAdmissionResponse = CCDFullAdmissionResponse.builder()
             .moreTimeNeededOption(CCDYesNoOption.YES)
-            .paymentOption(BY_SPECIFIED_DATE)
+            .paymentOption(FULL_BY_SPECIFIED_DATE)
             .paymentDate(LocalDate.now().plusDays(7))
             .defendant(getCCDPartyIndividual())
             .statementOfTruth(getCCDStatementOfTruth())
