@@ -49,7 +49,7 @@ public class AdmissionContentProvider {
     private String createWhenTheyPay(PaymentOption paymentOption, LocalDate paymentDate, String paymentAmount) {
         switch (paymentOption) {
             case IMMEDIATELY:
-            case FULL_BY_SPECIFIED_DATE:
+            case BY_SPECIFIED_DATE:
                 return paymentAmount
                     + ", no later than "
                     + formatDate(Optional.ofNullable(paymentDate)
