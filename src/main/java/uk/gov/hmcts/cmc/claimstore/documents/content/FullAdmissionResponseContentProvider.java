@@ -48,7 +48,7 @@ public class FullAdmissionResponseContentProvider {
     private String createWhenTheyPay(FullAdmissionResponse fullAdmissionResponse) {
         switch (fullAdmissionResponse.getPaymentOption()) {
             case IMMEDIATELY:
-            case FULL_BY_SPECIFIED_DATE:
+            case BY_SPECIFIED_DATE:
                 return "The full amount, no later than " + formatDate(fullAdmissionResponse.getPaymentDate()
                     .orElseThrow(IllegalStateException::new));
             default:

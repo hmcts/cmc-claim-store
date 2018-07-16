@@ -91,7 +91,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenTypeIsBySetDateAndPaymentDateIsValid() {
         FullAdmissionResponse fullAdmissionResponse = builder()
-            .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
             .paymentDate(LocalDate.now().plusDays(3))
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
@@ -102,7 +102,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsBySetDateAndEverythingElseIsNotPopulated() {
         FullAdmissionResponse fullAdmissionResponse = builder()
-            .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
             .build();
 
         assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
@@ -111,7 +111,7 @@ public class ValidFullAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsBySetDateAndRepaymentPlanIsPopulated() {
         FullAdmissionResponse fullAdmissionResponse = builder()
-            .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
             .paymentDate(LocalDate.now().plusDays(3))
             .statementOfMeans(StatementOfMeans.builder().build())
             .repaymentPlan(SampleRepaymentPlan.builder().build())

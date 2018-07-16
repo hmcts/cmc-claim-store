@@ -70,4 +70,18 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2018-8014</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   Unauthorized Access with Spring Security Method Security
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   ReDoS Attack with spring-messaging
+   ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1257</cve>
+    </suppress>
 </suppressions>
