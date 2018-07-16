@@ -53,6 +53,10 @@ public class FullAdmissionResponse extends Response {
     }
 
     public PaymentOption getPaymentOption() {
+        if (paymentOption == PaymentOption.FULL_BY_SPECIFIED_DATE) {
+            return PaymentOption.BY_SPECIFIED_DATE;
+        }
+
         return paymentOption;
     }
 

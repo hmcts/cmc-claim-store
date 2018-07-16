@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeNullError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
@@ -29,7 +29,7 @@ public class ValidFullAdmissionConstraintValidator
         switch (fullAdmissionResponse.getPaymentOption()) {
             case IMMEDIATELY:
                 return validateImmediately(fullAdmissionResponse, context);
-            case FULL_BY_SPECIFIED_DATE:
+            case BY_SPECIFIED_DATE:
                 return validateBySetDate(fullAdmissionResponse, context);
             case INSTALMENTS:
                 return validateInstalments(fullAdmissionResponse, context);
@@ -57,7 +57,7 @@ public class ValidFullAdmissionConstraintValidator
 
     private boolean validateBySetDate(FullAdmissionResponse value, ConstraintValidatorContext context) {
         boolean valid = true;
-        String bySetDate = FULL_BY_SPECIFIED_DATE.getDescription();
+        String bySetDate = BY_SPECIFIED_DATE.getDescription();
 
         if (!value.getPaymentDate().isPresent()) {
             setValidationErrors(context, Fields.PAYMENT_DATE, mayNotBeNullError("paymentOption", bySetDate));
