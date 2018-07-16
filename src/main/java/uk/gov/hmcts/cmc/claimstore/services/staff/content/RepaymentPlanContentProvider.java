@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.FULL_BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
@@ -33,9 +33,9 @@ public final class RepaymentPlanContentProvider {
                     formatMoney(repaymentPlan.getInstalmentAmount()),
                     formatDate(repaymentPlan.getFirstPaymentDate()),
                     repaymentPlan.getPaymentSchedule().getDescription());
-            case FULL_BY_SPECIFIED_DATE:
+            case BY_SPECIFIED_DATE:
                 requireNonNull(payBySetDate, "payBySetDate must not be null");
-                return new RepaymentPlanContent(FULL_BY_SPECIFIED_DATE.getDescription(), formatDate(payBySetDate));
+                return new RepaymentPlanContent(BY_SPECIFIED_DATE.getDescription(), formatDate(payBySetDate));
             default:
                 throw new IllegalArgumentException("Unknown repayment type: " + paymentOption);
         }

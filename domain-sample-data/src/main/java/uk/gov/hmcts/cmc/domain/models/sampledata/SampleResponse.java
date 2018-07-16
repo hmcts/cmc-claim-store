@@ -35,7 +35,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
+                .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
                 .paymentDate(now())
                 .defendant(SampleParty.builder().individual())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
