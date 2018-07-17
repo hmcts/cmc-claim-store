@@ -222,13 +222,11 @@
         <td>
           {{ defendant.correspondenceAddress.line1 }}
           <br/>
-          {% if defendant.correspondenceAddress.line2 is defined and defendant.correspondenceAddress.line2 is not empty
-          %}
+          {% if defendant.correspondenceAddress.line2 is defined and defendant.correspondenceAddress.line2 is not empty %}
           {{ defendant.correspondenceAddress.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.correspondenceAddress.line3 is defined and defendant.correspondenceAddress.line3 is not empty
-          %}
+          {% if defendant.correspondenceAddress.line3 is defined and defendant.correspondenceAddress.line3 is not empty %}
           {{ defendant.correspondenceAddress.line3 }}
           <br/>
           {% endif %}
