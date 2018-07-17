@@ -276,18 +276,18 @@
       </tr>
 
       {% if responseType == "PART_ADMISSION" %}
-        {% if isAlreadyPaid equals "no"%}
+        {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
           <tr>
             <td>How much money do they admit they owe?</td>
             <td>
-              <p>{{ paidAmount }}</p>
+              <p>{{ amount }}</p>
             </td>
           </tr>
         {% else %}
           <tr>
             <td>How much money have you paid?</td>
             <td>
-              <p>{{ paidAmount }}</p>
+              <p>{{ amount }}</p>
             </td>
           </tr>
           {% if paymentDate is defined %}
@@ -302,7 +302,7 @@
             <tr>
               <td>How did you pay the amount claimed?</td>
               <td>
-                <p>{{ paymentMethod | trim}}</p>
+                <p>{{ paymentMethod | trim }}</p>
               </td>
             </tr>
           {% endif %}
@@ -310,7 +310,7 @@
           <tr>
             <td>Why are they disputing the full amount?</td>
             <td>
-              <p>{{ responseDefence | trim}}</p>
+              <p>{{ responseDefence | trim }}</p>
             </td>
           </tr>
       {% else %}
@@ -395,12 +395,12 @@
   </div>
 </div>
 
-{% if responseType == "FULL_ADMISSION" or (responseType == "PART_ADMISSION" and paymentOption is defined )%}
+{% if responseType == "FULL_ADMISSION" or (responseType == "PART_ADMISSION" and paymentIntention is defined )%}
 <div class="section">
   <div class="section-heading">
     <strong>When the defendant will pay
       {% if responseType == "PART_ADMISSION" %}
-        {{ paidAmount }}
+        {{ amount }}
       {% endif %}
     </strong>
   </div>

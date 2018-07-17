@@ -45,11 +45,10 @@ public class DefenceResponseJsonMapper {
                 return extractFromSubclass(response, FullDefenceResponse.class,
                     fullDefenceResponse -> fullDefenceResponse.getDefenceType().name());
             case FULL_ADMISSION:
-                return ResponseType.FULL_ADMISSION.name();
             case PART_ADMISSION:
-                return ResponseType.PART_ADMISSION.name();
+                return response.getResponseType().name();
             default:
-                throw new IllegalArgumentException("invalid response type");
+                throw new IllegalArgumentException("Invalid response type: " + response.getResponseType());
         }
     }
 

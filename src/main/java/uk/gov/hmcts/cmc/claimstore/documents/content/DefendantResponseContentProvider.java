@@ -81,10 +81,10 @@ public class DefendantResponseContentProvider {
                 fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
             );
         } else if (defendantResponse instanceof FullAdmissionResponse) {
-            content.putAll(fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
+            content.putAll(
+                fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
             );
         } else if (defendantResponse instanceof PartAdmissionResponse) {
-
             content.putAll(
                 partAdmissionResponseContentProvider.createContent((PartAdmissionResponse) defendantResponse)
             );
