@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.hasValidPaymentPlanDetails;
-
 public class ValidFullAdmissionConstraintValidator
     implements ConstraintValidator<ValidAdmission, FullAdmissionResponse> {
 
@@ -20,6 +18,6 @@ public class ValidFullAdmissionConstraintValidator
         boolean hasPaymentDate = fullAdmissionResponse.getPaymentDate().isPresent();
         boolean hasRepaymentPlan = fullAdmissionResponse.getRepaymentPlan().isPresent();
         PaymentOption paymentOption = fullAdmissionResponse.getPaymentOption();
-        return hasValidPaymentPlanDetails(context, hasPaymentDate, hasRepaymentPlan, paymentOption);
+        return PaymentValidator.isValid(context, paymentOption, hasPaymentDate, hasRepaymentPlan);
     }
 }

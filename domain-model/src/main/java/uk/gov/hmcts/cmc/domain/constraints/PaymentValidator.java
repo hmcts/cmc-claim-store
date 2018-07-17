@@ -4,29 +4,37 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.Fields.PAYMENT_DATE;
-import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.Fields.REPAYMENT_PLAN;
+import static uk.gov.hmcts.cmc.domain.constraints.PaymentValidator.Fields.PAYMENT_DATE;
+import static uk.gov.hmcts.cmc.domain.constraints.PaymentValidator.Fields.PAYMENT_OPTION;
+import static uk.gov.hmcts.cmc.domain.constraints.PaymentValidator.Fields.REPAYMENT_PLAN;
+import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeNullError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
-public class AdmissionResponseValidator {
+public class PaymentValidator {
 
-    private AdmissionResponseValidator() {
+    private PaymentValidator() {
+        // NO-OP
     }
 
-    public static class Fields {
-        public static final String PAYMENT_DATE = "paymentDate";
-        public static final String REPAYMENT_PLAN = "repaymentPlan";
+    static class Fields {
+        static final String PAYMENT_OPTION = "paymentOption";
+        static final String PAYMENT_DATE = "paymentDate";
+        static final String REPAYMENT_PLAN = "repaymentPlan";
+
+        private Fields() {
+            // NO-OP
+        }
     }
 
-    public static boolean hasValidPaymentPlanDetails(
+    public static boolean isValid(
         ConstraintValidatorContext context,
+        PaymentOption paymentOption,
         boolean hasPaymentDate,
-        boolean hasRepaymentPlan,
-        PaymentOption paymentOption
+        boolean hasRepaymentPlan
     ) {
         switch (paymentOption) {
             case IMMEDIATELY:
@@ -46,15 +54,15 @@ public class AdmissionResponseValidator {
         ConstraintValidatorContext context
     ) {
         boolean valid = true;
-        String immediately = IMMEDIATELY.getDescription();
+        String paymentOption = IMMEDIATELY.getDescription();
 
         if (!hasPaymentDate) {
-            setValidationErrors(context, PAYMENT_DATE, mayNotBeProvidedError("paymentOption", immediately));
+            setValidationErrors(context, PAYMENT_DATE, mayNotBeNullError(PAYMENT_OPTION, paymentOption));
             valid = false;
         }
 
         if (hasRepaymentPlan) {
-            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeProvidedError("paymentOption", immediately));
+            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeProvidedError(PAYMENT_OPTION, paymentOption));
             valid = false;
         }
 
@@ -67,15 +75,15 @@ public class AdmissionResponseValidator {
         ConstraintValidatorContext context
     ) {
         boolean valid = true;
-        String bySetDate = BY_SPECIFIED_DATE.getDescription();
+        String paymentOption = BY_SPECIFIED_DATE.getDescription();
 
         if (!hasPaymentDate) {
-            setValidationErrors(context, PAYMENT_DATE, mayNotBeProvidedError("paymentOption", bySetDate));
+            setValidationErrors(context, PAYMENT_DATE, mayNotBeNullError(PAYMENT_OPTION, paymentOption));
             valid = false;
         }
 
         if (hasRepaymentPlan) {
-            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeProvidedError("paymentOption", bySetDate));
+            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeProvidedError(PAYMENT_OPTION, paymentOption));
             valid = false;
         }
 
@@ -88,15 +96,15 @@ public class AdmissionResponseValidator {
         ConstraintValidatorContext context
     ) {
         boolean valid = true;
-        String instalments = INSTALMENTS.getDescription();
+        String paymentOption = INSTALMENTS.getDescription();
 
         if (hasPaymentDate) {
-            setValidationErrors(context, PAYMENT_DATE, mayNotBeProvidedError("paymentOption", instalments));
+            setValidationErrors(context, PAYMENT_DATE, mayNotBeProvidedError(PAYMENT_OPTION, paymentOption));
             valid = false;
         }
 
         if (!hasRepaymentPlan) {
-            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeProvidedError("paymentOption", instalments));
+            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeProvidedError(PAYMENT_OPTION, paymentOption));
             valid = false;
         }
 

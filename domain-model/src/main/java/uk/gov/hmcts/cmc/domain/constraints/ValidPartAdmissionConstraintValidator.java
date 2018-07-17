@@ -5,8 +5,6 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.constraints.AdmissionResponseValidator.hasValidPaymentPlanDetails;
-
 public class ValidPartAdmissionConstraintValidator
     implements ConstraintValidator<ValidAdmission, PartAdmissionResponse> {
 
@@ -18,11 +16,11 @@ public class ValidPartAdmissionConstraintValidator
         }
 
         return partAdmissionResponse.getPaymentOption()
-            .map(paymentOption -> hasValidPaymentPlanDetails(
+            .map(paymentOption -> PaymentValidator.isValid(
                 context,
+                paymentOption,
                 partAdmissionResponse.getPaymentDate().isPresent(),
-                partAdmissionResponse.getRepaymentPlan().isPresent(),
-                paymentOption
+                partAdmissionResponse.getRepaymentPlan().isPresent()
                 )
             )
             .orElse(true);
