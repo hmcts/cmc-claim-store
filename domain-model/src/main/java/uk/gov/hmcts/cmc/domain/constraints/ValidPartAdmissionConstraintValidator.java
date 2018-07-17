@@ -10,17 +10,16 @@ public class ValidPartAdmissionConstraintValidator
 
     @Override
     public boolean isValid(PartAdmissionResponse partAdmissionResponse, ConstraintValidatorContext context) {
-
         if (partAdmissionResponse == null) {
             return true;
         }
 
-        return partAdmissionResponse.getPaymentOption()
-            .map(paymentOption -> PaymentValidator.isValid(
+        return partAdmissionResponse.getPaymentIntention()
+            .map(paymentDeclaration -> PaymentValidator.isValid(
                 context,
-                paymentOption,
-                partAdmissionResponse.getPaymentDate().isPresent(),
-                partAdmissionResponse.getRepaymentPlan().isPresent()
+                paymentDeclaration.getPaymentOption(),
+                paymentDeclaration.getPaymentDate().isPresent(),
+                paymentDeclaration.getRepaymentPlan().isPresent()
                 )
             )
             .orElse(true);

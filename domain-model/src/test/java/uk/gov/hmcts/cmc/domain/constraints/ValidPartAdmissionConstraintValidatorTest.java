@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
@@ -49,10 +50,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidWhenPaymentOptionIsEmpty() {
+    public void shouldBeValidWhenPaymentDeclarationIsEmpty() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(null)
-            .paymentDate(LocalDate.now())
+            .paymentIntention(null)
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
@@ -61,8 +61,10 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenTypeIsImmediatelyAndPaymentDateIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.IMMEDIATELY)
-            .paymentDate(LocalDate.now())
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .paymentDate(LocalDate.now())
+                .build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
@@ -71,8 +73,10 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsImmediatelyAndPaymentDateIsNotNull() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.IMMEDIATELY)
-            .paymentDate(null)
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .paymentDate(null)
+                .build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
@@ -81,8 +85,10 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsImmediatelyAndRepaymentPlanIsNotNull() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.IMMEDIATELY)
-            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
@@ -91,7 +97,10 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsImmediatelyAndStatementOfMeansIsNotNull() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.IMMEDIATELY)
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .paymentDate(LocalDate.now())
+                .build())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
@@ -101,8 +110,10 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenTypeIsBySetDateAndPaymentDateIsValid() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
-            .paymentDate(LocalDate.now().plusDays(3))
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+                .paymentDate(LocalDate.now().plusDays(3))
+                .build())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
@@ -112,7 +123,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsBySetDateAndEverythingElseIsNotPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+                .build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
@@ -121,10 +134,12 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsBySetDateAndRepaymentPlanIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
-            .paymentDate(LocalDate.now().plusDays(3))
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+                .paymentDate(LocalDate.now().plusDays(3))
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build())
             .statementOfMeans(StatementOfMeans.builder().build())
-            .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
@@ -133,8 +148,10 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenTypeIsInstalmentsAndRepaymentPlanIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.INSTALMENTS)
-            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.INSTALMENTS)
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
@@ -144,7 +161,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsInstalmentsAndEverythingElseIsNotPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.INSTALMENTS)
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.INSTALMENTS)
+                .build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
@@ -153,9 +172,11 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenTypeIsInstalmentsAndEverythingElseIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentOption(PaymentOption.INSTALMENTS)
-            .repaymentPlan(SampleRepaymentPlan.builder().build())
-            .paymentDate(LocalDate.now().plusDays(1))
+            .paymentIntention(PaymentIntention.builder()
+                .paymentOption(PaymentOption.INSTALMENTS)
+                .paymentDate(LocalDate.now().plusDays(1))
+                .repaymentPlan(SampleRepaymentPlan.builder().build())
+                .build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();

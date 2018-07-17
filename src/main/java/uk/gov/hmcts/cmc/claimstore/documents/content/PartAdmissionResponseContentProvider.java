@@ -41,13 +41,13 @@ public class PartAdmissionResponseContentProvider {
         content.put("responseDefence", partAdmissionResponse.getDefence());
         content.put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription());
 
-        content.put("isAlreadyPaid", partAdmissionResponse.getIsAlreadyPaid());
-        content.put("paidAmount", formatMoney(partAdmissionResponse.getPaymentDetails().getAmount()));
+        content.put("amount", formatMoney(partAdmissionResponse.getAmount()));
 
-        partAdmissionResponse.getPaymentDetails().getDate()
-            .ifPresent(date -> content.put("paymentDate", formatDate(date)));
-        partAdmissionResponse.getPaymentDetails().getPaymentMethod()
-            .ifPresent(method -> content.put("paymentMethod", method));
+        partAdmissionResponse.getPaymentDeclaration()
+            .ifPresent(paymentDeclaration -> {
+                content.put("paymentDate", formatDate(paymentDeclaration.getPaidDate()));
+                content.put("paymentMethod", paymentDeclaration.getExplanation());
+            });
 
         Optional<DefendantTimeline> defenceTimeline = partAdmissionResponse.getTimeline();
         if (defenceTimeline.isPresent()) {
@@ -73,13 +73,13 @@ public class PartAdmissionResponseContentProvider {
         content.put("evidences", evidences);
         content.put("evidenceComment", evidenceComment);
 
-        partAdmissionResponse.getPaymentOption().ifPresent(
-            paymentOption ->
+        partAdmissionResponse.getPaymentIntention().ifPresent(
+            paymentDeclaration ->
                 content.putAll(admissionContentProvider.createPaymentPlanDetails(
-                    paymentOption,
-                    partAdmissionResponse.getRepaymentPlan().orElse(null),
-                    partAdmissionResponse.getPaymentDate().orElse(null),
-                    formatMoney(partAdmissionResponse.getPaymentDetails().getAmount())
+                    paymentDeclaration.getPaymentOption(),
+                    paymentDeclaration.getRepaymentPlan().orElse(null),
+                    paymentDeclaration.getPaymentDate().orElse(null),
+                    formatMoney(partAdmissionResponse.getAmount())
                     )
                 )
         );

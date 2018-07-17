@@ -1,20 +1,20 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
+import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
-import java.time.LocalDate;
-import java.util.Objects;
+import java.math.BigDecimal;
 import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,14 +22,21 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @ValidAdmission
+@EqualsAndHashCode(callSuper = true)
 public class PartAdmissionResponse extends Response {
+
     @NotNull
-    private final YesNoOption isAlreadyPaid;
+    @Money
+    @DecimalMin(value = "0.01")
+    private final BigDecimal amount;
 
     @Valid
-    @NotNull
-    private final PaymentDetails paymentDetails;
+    private final PaymentDeclaration paymentDeclaration;
 
+    @Valid
+    private final PaymentIntention paymentIntention;
+
+    @NotNull
     @Size(min = 1, max = 99000)
     private String defence;
 
@@ -38,14 +45,6 @@ public class PartAdmissionResponse extends Response {
 
     @Valid
     private final DefendantEvidence evidence;
-
-    private final PaymentOption paymentOption;
-
-    @DateNotInThePast
-    private final LocalDate paymentDate;
-
-    @Valid
-    private final RepaymentPlan repaymentPlan;
 
     @Valid
     private final StatementOfMeans statementOfMeans;
@@ -57,34 +56,34 @@ public class PartAdmissionResponse extends Response {
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
-        PaymentOption paymentOption,
-        LocalDate paymentDate,
-        RepaymentPlan repaymentPlan,
-        StatementOfMeans statementOfMeans,
-        YesNoOption isAlreadyPaid,
-        PaymentDetails paymentDetails,
+        BigDecimal amount,
+        PaymentDeclaration paymentDeclaration,
+        PaymentIntention paymentIntention,
         String defence,
         DefendantTimeline timeline,
-        DefendantEvidence evidence
+        DefendantEvidence evidence,
+        StatementOfMeans statementOfMeans
     ) {
         super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
-        this.paymentOption = paymentOption;
-        this.paymentDate = paymentDate;
-        this.repaymentPlan = repaymentPlan;
-        this.statementOfMeans = statementOfMeans;
-        this.isAlreadyPaid = isAlreadyPaid;
-        this.paymentDetails = paymentDetails;
+        this.amount = amount;
+        this.paymentDeclaration = paymentDeclaration;
+        this.paymentIntention = paymentIntention;
         this.defence = defence;
         this.timeline = timeline;
         this.evidence = evidence;
+        this.statementOfMeans = statementOfMeans;
     }
 
-    public YesNoOption getIsAlreadyPaid() {
-        return isAlreadyPaid;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public PaymentDetails getPaymentDetails() {
-        return paymentDetails;
+    public Optional<PaymentDeclaration> getPaymentDeclaration() {
+        return Optional.ofNullable(paymentDeclaration);
+    }
+
+    public Optional<PaymentIntention> getPaymentIntention() {
+        return Optional.ofNullable(paymentIntention);
     }
 
     public String getDefence() {
@@ -99,45 +98,8 @@ public class PartAdmissionResponse extends Response {
         return Optional.ofNullable(evidence);
     }
 
-    public Optional<PaymentOption> getPaymentOption() {
-        return Optional.ofNullable(paymentOption);
-    }
-
-    public Optional<LocalDate> getPaymentDate() {
-        return Optional.ofNullable(paymentDate);
-    }
-
-    public Optional<RepaymentPlan> getRepaymentPlan() {
-        return Optional.ofNullable(repaymentPlan);
-    }
-
     public Optional<StatementOfMeans> getStatementOfMeans() {
         return Optional.ofNullable(statementOfMeans);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        if (!super.equals(other)) {
-            return false;
-        }
-        PartAdmissionResponse that = (PartAdmissionResponse) other;
-        return super.equals(other)
-            && isAlreadyPaid == that.isAlreadyPaid
-            && Objects.equals(paymentDetails, that.paymentDetails)
-            && Objects.equals(defence, that.defence)
-            && Objects.equals(timeline, that.timeline)
-            && Objects.equals(evidence, that.evidence);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), isAlreadyPaid, paymentDetails, defence, timeline, evidence);
     }
 
     @Override

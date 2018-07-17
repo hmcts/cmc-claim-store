@@ -28,7 +28,6 @@ public class PartAdmissionResponseContentProviderTest {
         PartAdmissionResponse partAdmissionResponse = builder().build();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
-        assertThat(content).containsKey("isAlreadyPaid");
         assertThat(content).containsKey("paymentDate");
         assertThat(content).containsKey("paymentMethod")
             .containsValue("Cash Payment");
@@ -38,7 +37,7 @@ public class PartAdmissionResponseContentProviderTest {
             .containsValue(ResponseType.PART_ADMISSION.getDescription());
 
         assertThat(content)
-            .containsKey("paidAmount")
+            .containsKey("amount")
             .containsValue("£120.00");
 
         assertThat(content).containsKey("events");
@@ -58,8 +57,8 @@ public class PartAdmissionResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
         assertThat(content)
-            .containsKeys("paymentOption");
-        assertThat(content).containsValues("Immediately");
+            .containsKeys("paymentOption")
+            .containsValues("Immediately");
     }
 
     @Test
@@ -68,8 +67,8 @@ public class PartAdmissionResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
         assertThat(content)
-            .containsKeys("paymentOption");
-        assertThat(content).containsValues("By instalments");
+            .containsKeys("paymentOption")
+            .containsValues("By instalments");
     }
 
     @Test
@@ -78,7 +77,7 @@ public class PartAdmissionResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
         assertThat(content)
-            .containsKeys("paymentOption");
-        assertThat(content).containsValues("By a set date");
+            .containsKeys("paymentOption")
+            .containsValues("By a set date");
     }
 }

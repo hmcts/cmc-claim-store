@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 import java.math.BigDecimal;
@@ -65,60 +67,52 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public PartAdmissionResponse build() {
             return PartAdmissionResponse.builder()
-                .isAlreadyPaid(YesNoOption.YES)
-                .paymentDetails(SamplePaymentDetails.builder().build())
+                .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentDeclaration(SamplePaymentDeclaration.validDefaults())
+                .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
-                .defence(USER_DEFENCE)
-                .moreTimeNeeded(YesNoOption.NO)
-                .defendant(SampleParty.builder().individual())
-                .build();
-        }
-
-        public PartAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
-            return PartAdmissionResponse.builder()
-                .isAlreadyPaid(YesNoOption.NO)
-                .paymentDetails(SamplePaymentDetails.validDefaults())
-                .timeline(SampleDefendantTimeline.validDefaults())
-                .evidence(SampleDefendantEvidence.validDefaults())
-                .defence(USER_DEFENCE)
-                .moreTimeNeeded(YesNoOption.NO)
-                .defendant(SampleParty.builder().individual())
-                .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
-                .paymentDate(now())
-                .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .repaymentPlan(null)
                 .build();
         }
 
         public PartAdmissionResponse buildWithPaymentOptionImmediately() {
             return PartAdmissionResponse.builder()
-                .isAlreadyPaid(YesNoOption.NO)
-                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.immediately())
+                .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
-                .defence(USER_DEFENCE)
-                .moreTimeNeeded(YesNoOption.NO)
-                .defendant(SampleParty.builder().individual())
-                .paymentOption(PaymentOption.IMMEDIATELY)
-                .paymentDate(now())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .repaymentPlan(null)
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.bySetDate())
+                .defence(USER_DEFENCE)
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();
         }
 
         public PartAdmissionResponse buildWithPaymentOptionInstallments() {
             return PartAdmissionResponse.builder()
-                .isAlreadyPaid(YesNoOption.NO)
-                .paymentDetails(SamplePaymentDetails.validDefaults())
+                .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
-                .defence(USER_DEFENCE)
-                .moreTimeNeeded(YesNoOption.NO)
-                .defendant(SampleParty.builder().individual())
-                .paymentOption(PaymentOption.INSTALMENTS)
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .repaymentPlan(SampleRepaymentPlan.builder().withInstalmentAmount(BigDecimal.valueOf(200)).build())
                 .build();
         }
     }
