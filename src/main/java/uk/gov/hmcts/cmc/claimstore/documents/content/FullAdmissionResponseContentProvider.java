@@ -11,12 +11,15 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class FullAdmissionResponseContentProvider {
 
-    private final AdmissionContentProvider admissionContentProvider;
+    private final PaymentIntentionContentProvider paymentIntentionContentProvider;
+    private final StatementOfMeansContentProvider statementOfMeansContentProvider;
 
     public FullAdmissionResponseContentProvider(
-        AdmissionContentProvider admissionContentProvider
+        PaymentIntentionContentProvider paymentIntentionContentProvider,
+        StatementOfMeansContentProvider statementOfMeansContentProvider
     ) {
-        this.admissionContentProvider = admissionContentProvider;
+        this.paymentIntentionContentProvider = paymentIntentionContentProvider;
+        this.statementOfMeansContentProvider = statementOfMeansContentProvider;
     }
 
     public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse) {
@@ -24,7 +27,7 @@ public class FullAdmissionResponseContentProvider {
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
             .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
-            .putAll(admissionContentProvider.createPaymentPlanDetails(
+            .putAll(paymentIntentionContentProvider.createContent(
                 fullAdmissionResponse.getPaymentOption(),
                 fullAdmissionResponse.getRepaymentPlan().orElse(null),
                 fullAdmissionResponse.getPaymentDate().orElse(null),
@@ -34,7 +37,7 @@ public class FullAdmissionResponseContentProvider {
 
         fullAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> contentBuilder.putAll(
-                admissionContentProvider.createStatementOfMeansContent(statementOfMeans)
+                statementOfMeansContentProvider.createContent(statementOfMeans)
             )
         );
 

@@ -14,8 +14,8 @@ public class PartAdmissionResponseContentProviderTest {
 
     private PartAdmissionResponseContentProvider provider =
         new PartAdmissionResponseContentProvider(
-            new AdmissionContentProvider(
-                new StatementOfMeansContentProvider())
+            new PaymentIntentionContentProvider(),
+            new StatementOfMeansContentProvider()
         );
 
     @Test(expected = NullPointerException.class)
@@ -30,7 +30,7 @@ public class PartAdmissionResponseContentProviderTest {
 
         assertThat(content).containsKey("paymentDate");
         assertThat(content).containsKey("paymentMethod")
-            .containsValue("Cash Payment");
+            .containsValue("Paid cash");
 
         assertThat(content)
             .containsKey("responseTypeSelected")

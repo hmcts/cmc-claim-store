@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -14,16 +13,9 @@ import static uk.gov.hmcts.cmc.claimstore.services.staff.content.RepaymentPlanCo
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Component
-public class AdmissionContentProvider {
-    private final StatementOfMeansContentProvider statementOfMeansContentProvider;
+public class PaymentIntentionContentProvider {
 
-    public AdmissionContentProvider(
-        StatementOfMeansContentProvider statementOfMeansContentProvider
-    ) {
-        this.statementOfMeansContentProvider = statementOfMeansContentProvider;
-    }
-
-    public Map<String, Object> createPaymentPlanDetails(
+    public Map<String, Object> createContent(
         PaymentOption paymentOption,
         RepaymentPlan repaymentPlan,
         LocalDate paymentDate,
@@ -40,11 +32,6 @@ public class AdmissionContentProvider {
 
         return contentBuilder.build();
     }
-
-    public Map<String, Object> createStatementOfMeansContent(StatementOfMeans statementOfMeans) {
-        return statementOfMeansContentProvider.createContent(statementOfMeans);
-    }
-
 
     private String createWhenTheyPay(PaymentOption paymentOption, LocalDate paymentDate, String paymentAmount) {
         switch (paymentOption) {

@@ -12,8 +12,8 @@ public class FullAdmissionResponseContentProviderTest {
 
     private FullAdmissionResponseContentProvider provider =
         new FullAdmissionResponseContentProvider(
-            new AdmissionContentProvider(
-                new StatementOfMeansContentProvider())
+            new PaymentIntentionContentProvider(),
+            new StatementOfMeansContentProvider()
         );
 
     @Test(expected = NullPointerException.class)

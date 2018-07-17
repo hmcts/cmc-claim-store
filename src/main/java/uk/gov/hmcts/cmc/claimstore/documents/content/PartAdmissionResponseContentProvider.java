@@ -21,12 +21,15 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 @Component
 public class PartAdmissionResponseContentProvider {
 
-    private final AdmissionContentProvider admissionContentProvider;
+    private final PaymentIntentionContentProvider paymentIntentionContentProvider;
+    private final StatementOfMeansContentProvider statementOfMeansContentProvider;
 
     public PartAdmissionResponseContentProvider(
-        AdmissionContentProvider admissionContentProvider
+        PaymentIntentionContentProvider paymentIntentionContentProvider,
+        StatementOfMeansContentProvider statementOfMeansContentProvider
     ) {
-        this.admissionContentProvider = admissionContentProvider;
+        this.paymentIntentionContentProvider = paymentIntentionContentProvider;
+        this.statementOfMeansContentProvider = statementOfMeansContentProvider;
     }
 
     public Map<String, Object> createContent(PartAdmissionResponse partAdmissionResponse) {
@@ -74,18 +77,18 @@ public class PartAdmissionResponseContentProvider {
         content.put("evidenceComment", evidenceComment);
 
         partAdmissionResponse.getPaymentIntention().ifPresent(
-            paymentDeclaration ->
-                content.putAll(admissionContentProvider.createPaymentPlanDetails(
-                    paymentDeclaration.getPaymentOption(),
-                    paymentDeclaration.getRepaymentPlan().orElse(null),
-                    paymentDeclaration.getPaymentDate().orElse(null),
+            paymentIntention ->
+                content.putAll(paymentIntentionContentProvider.createContent(
+                    paymentIntention.getPaymentOption(),
+                    paymentIntention.getRepaymentPlan().orElse(null),
+                    paymentIntention.getPaymentDate().orElse(null),
                     formatMoney(partAdmissionResponse.getAmount())
                     )
                 )
         );
 
         partAdmissionResponse.getStatementOfMeans().ifPresent(
-            statementOfMeans -> content.putAll(admissionContentProvider.createStatementOfMeansContent(statementOfMeans))
+            statementOfMeans -> content.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
         );
 
         return content;
