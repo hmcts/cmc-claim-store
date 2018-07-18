@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
@@ -22,7 +23,7 @@ public class PaymentIntention {
     @Valid
     private final RepaymentPlan repaymentPlan;
 
-    @Builder
+    @JsonCreator
     public PaymentIntention(PaymentOption paymentOption, LocalDate paymentDate, RepaymentPlan repaymentPlan) {
         this.paymentOption = paymentOption;
         this.paymentDate = paymentDate;
