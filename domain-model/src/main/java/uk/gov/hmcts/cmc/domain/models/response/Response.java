@@ -22,7 +22,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "responseType")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = FullDefenceResponse.class, name = "FULL_DEFENCE"),
-    @JsonSubTypes.Type(value = FullAdmissionResponse.class, name = "FULL_ADMISSION")
+    @JsonSubTypes.Type(value = FullAdmissionResponse.class, name = "FULL_ADMISSION"),
+    @JsonSubTypes.Type(value = PartAdmissionResponse.class, name = "PART_ADMISSION")
 })
 @EqualsAndHashCode
 public abstract class Response {

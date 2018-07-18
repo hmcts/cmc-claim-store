@@ -10,6 +10,7 @@
         font-family: "Open Sans";
       }
     }
+
     @page {
       size: 8.5in 11in;
       margin: 10%;
@@ -99,7 +100,7 @@
       border: none;
     }
 
-    div table tr td:first-child{
+    div table tr td:first-child {
       font-weight: bold;
     }
 
@@ -197,7 +198,8 @@
         <td class="keep-formatting">Address:
           {% if defendant.addressAmended %}
           (as amended)
-          {% endif %}</td>
+          {% endif %}
+        </td>
         <td>
           {{ defendant.address.line1 }}
           <br/>
@@ -272,15 +274,56 @@
           {{ responseTypeSelected }}
         </td>
       </tr>
-      {% if responseDefence is defined and responseDefence is not empty %}
-      <tr>
-        <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td colspan="2" class="single-cell">
-          <p>{{ responseDefence | trim}}</p>
-        </td>
-      </tr>
+
+      {% if responseType == "PART_ADMISSION" %}
+        {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
+          <tr>
+            <td>How much money do they admit they owe?</td>
+            <td>
+              <p>{{ amount }}</p>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td>How much money have you paid?</td>
+            <td>
+              <p>{{ amount }}</p>
+            </td>
+          </tr>
+          {% if paymentDate is defined %}
+          <tr>
+            <td>When did you pay this amount?</td>
+            <td>
+              <p>{{ paymentDate }}</p>
+            </td>
+          </tr>
+          {% endif %}
+          {% if paymentMethod is defined and paymentMethod is not empty %}
+            <tr>
+              <td>How did you pay the amount claimed?</td>
+              <td>
+                <p>{{ paymentMethod | trim }}</p>
+              </td>
+            </tr>
+          {% endif %}
+        {% endif %}
+          <tr>
+            <td>Why are they disputing the full amount?</td>
+            <td>
+              <p>{{ responseDefence | trim }}</p>
+            </td>
+          </tr>
+      {% else %}
+        {% if responseDefence is defined and responseDefence is not empty %}
+        <tr>
+          <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
+        </tr>
+        <tr class="no-border">
+          <td colspan="2" class="single-cell">
+            <p>{{ responseDefence | trim}}</p>
+          </td>
+        </tr>
+        {% endif %}
       {% endif %}
 
       {% if events is defined and events is not empty %}
@@ -290,10 +333,10 @@
       {% for event in events %}
       <tr class="subsection no-border">
         <td class="no-border single-cell">
-        {{ event.date | trim }}
+          {{ event.date | trim }}
         </td>
         <td class="no-border single-cell">
-        {{ event.description | trim }}
+          {{ event.description | trim }}
         </td>
       </tr>
       {% endfor %}
@@ -315,10 +358,10 @@
       {% for row in evidences %}
       <tr class="subsection no-border">
         <td class="no-border single-cell">
-        {{ row.type | trim }}
+          {{ row.type | trim }}
         </td>
         <td class="no-border single-cell">
-        {{ row.description | trim }}
+          {{ row.description | trim }}
         </td>
       </tr>
       {% endfor %}
@@ -352,53 +395,57 @@
   </div>
 </div>
 
-{% if responseType equals "FULL_ADMISSION" %}
+{% if responseType == "FULL_ADMISSION" or (responseType == "PART_ADMISSION" and paymentIntention is defined )%}
 <div class="section">
   <div class="section-heading">
-    <strong>When the defendant will pay</strong>
+    <strong>When the defendant will pay
+      {% if responseType == "PART_ADMISSION" %}
+        {{ amount }}
+      {% endif %}
+    </strong>
   </div>
-    <div class="section-body">
-      <table>
-        <tr>
-          <td><strong>When will they pay:</strong></td>
-          <td>
-            {{ whenWillTheyPay }}
-          </td>
-        </tr>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>When will they pay:</strong></td>
+        <td>
+          {{ whenWillTheyPay }}
+        </td>
+      </tr>
 
-        {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
-        <tr class="no-border">
-          <td><strong>Regular payments of:</strong></td>
-          <td>
-            {{ repaymentPlan.instalmentAmount }}
-          </td>
-        </tr>
-        <tr class="no-border">
-          <td><strong>Frequency of payments:</strong></td>
-          <td>
-            {{ repaymentPlan.paymentSchedule }}
-          </td>
-        </tr>
-        <tr class="no-border">
-          <td><strong>Make the first payment on:</strong></td>
-          <td>
-            {{ repaymentPlan.firstPaymentDate }}
-          </td>
-        </tr>
-        {% endif %}
-        {% if statementOfMeans is defined %}
-        <tr class="no-border">
-          <td><strong>Explain why you can’t pay the full amount now:</strong></td>
-          <td>
-            {{ statementOfMeans.reason }}
-          </td>
-        </tr>
-        {% endif %}
-      </table>
-    </div>
+      {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
+      <tr class="no-border">
+        <td><strong>Regular payments of:</strong></td>
+        <td>
+          {{ repaymentPlan.instalmentAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Frequency of payments:</strong></td>
+        <td>
+          {{ repaymentPlan.paymentSchedule }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Make the first payment on:</strong></td>
+        <td>
+          {{ repaymentPlan.firstPaymentDate }}
+        </td>
+      </tr>
+      {% endif %}
+      {% if statementOfMeans is defined %}
+      <tr class="no-border">
+        <td><strong>Explain why you can’t pay the full amount now:</strong></td>
+        <td>
+          {{ statementOfMeans.reason }}
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
 </div>
 
-{% if paymentOption == 'By instalments' or  paymentOption == 'By a set date' %}
+{% if paymentOption == 'By instalments' or paymentOption == 'By a set date' %}
 <div class="section">
   <div class="section-heading">
     <strong>The defendant’s financial details</strong>
@@ -417,30 +464,30 @@
       <tr class="no-border">
         <td><strong>Do any children live with them?</strong></td>
         <td>
-        {% if children is defined and children is not empty %}
+          {% if children is defined and children is not empty %}
           Yes
-        {% else %}
+          {% else %}
           No
-        {% endif %}
+          {% endif %}
         </td>
       </tr>
       {% for child in children | default([]) %}
-        <tr class="no-border">
-          <td>
-            {{ child.ageGroupType }}
-          </td>
-          <td>
-            {{ child.numberOfChildren }}
-          </td>
-        </tr>
-        {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
-        <tr>
-          <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
-          <td>
-            {{ child.numberOfChildrenLivingWithYou }}
-          </td>
-        </tr>
-        {% endif %}
+      <tr class="no-border">
+        <td>
+          {{ child.ageGroupType }}
+        </td>
+        <td>
+          {{ child.numberOfChildren }}
+        </td>
+      </tr>
+      {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
+      <tr>
+        <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
+        <td>
+          {{ child.numberOfChildrenLivingWithYou }}
+        </td>
+      </tr>
+      {% endif %}
       {% endfor %}
 
       {% if maintainedChildren is defined %}
@@ -460,11 +507,11 @@
       <tr class="no-border">
         <td><strong>Do they support anyone else financially?</strong></td>
         <td>
-        {% if otherDependants is defined %}
+          {% if otherDependants is defined %}
           Yes
-        {% else %}
+          {% else %}
           No
-        {% endif %}
+          {% endif %}
         </td>
       </tr>
       {% if otherDependants is defined %}
@@ -487,11 +534,11 @@
       <tr class="no-border">
         <td><strong>Are they currently working?</strong></td>
         <td>
-        {% if employment.selfEmployment is defined or employment.employers is not empty %}
+          {% if employment.selfEmployment is defined or employment.employers is not empty %}
           Yes
-        {% else %}
+          {% else %}
           No
-        {% endif %}
+          {% endif %}
         </td>
       </tr>
       <tr class="no-border">
@@ -537,11 +584,11 @@
       <tr class="no-border">
         <td><strong>Are they behind on tax payments?</strong></td>
         <td>
-        {% if onTaxPayments is defined %}
+          {% if onTaxPayments is defined %}
           Yes
-        {% else %}
+          {% else %}
           No
-        {% endif %}
+          {% endif %}
         </td>
       </tr>
       {% if onTaxPayments is defined %}
@@ -580,9 +627,9 @@
         <td><strong>Joint account:</strong></td>
         <td>
           {% if bankAccount.joint %}
-            Yes
+          Yes
           {% else %}
-            No
+          No
           {% endif %}
         </td>
       </tr>
@@ -626,11 +673,11 @@
       <tr class="no-border">
         <td><strong>Do they have any debts?</strong></td>
         <td>
-        {% if debts is defined and debts is not empty %}
+          {% if debts is defined and debts is not empty %}
           Yes
-        {% else %}
+          {% else %}
           No
-        {% endif %}
+          {% endif %}
         </td>
       </tr>
       {% for debt in debts | default([]) %}
@@ -696,7 +743,7 @@
   <div class="section-body">
     <table>
       <tr>
-        <td />
+        <td/>
         <td class="no-border no-padding-right">
           I believe that the facts stated in this defence are true.
         </td>
@@ -749,7 +796,9 @@
       <td>
         <p>If the defendant has asked for mediation then the claimant will be asked if they want to mediate.</p>
         <p>
-          If the defendant hasn’t asked for mediation then the case will be reviewed by a judge and might go to a hearing. The claimant and defendant will be contacted if a hearing date is scheduled and it will be explained what they need to do to prepare.
+          If the defendant hasn’t asked for mediation then the case will be reviewed by a judge and might go to a
+          hearing. The claimant and defendant will be contacted if a hearing date is scheduled and it will be explained
+          what they need to do to prepare.
         </p>
       </td>
     </tr>

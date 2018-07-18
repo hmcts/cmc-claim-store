@@ -86,7 +86,7 @@ public class RequestForJudgementJsonMapperTest {
             .build();
 
         String expected = new ResourceReader()
-            .read("/judgement/rpa_request_for_judgement_full_by_set_date.json").trim();
+            .read("/judgement/rpa_request_for_judgement_by_set_date.json").trim();
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
