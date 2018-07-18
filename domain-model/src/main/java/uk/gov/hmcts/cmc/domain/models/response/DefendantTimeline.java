@@ -1,18 +1,19 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class DefendantTimeline {
 
     @Valid
@@ -34,25 +35,6 @@ public class DefendantTimeline {
 
     public List<TimelineEvent> getEvents() {
         return this.events == null ? Collections.emptyList() : this.events;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        DefendantTimeline that = (DefendantTimeline) other;
-        return Objects.equals(events, that.events)
-            && Objects.equals(comment, that.comment);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(events, comment);
     }
 
     @Override

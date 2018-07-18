@@ -1,18 +1,19 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
+@EqualsAndHashCode
 public class Debt {
 
     @NotBlank
@@ -44,25 +45,6 @@ public class Debt {
 
     public BigDecimal getMonthlyPayments() {
         return monthlyPayments;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        Debt debt = (Debt) other;
-        return Objects.equals(description, debt.description)
-            && Objects.equals(totalOwed, debt.totalOwed)
-            && Objects.equals(monthlyPayments, debt.monthlyPayments);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(description, totalOwed, monthlyPayments);
     }
 
     @Override

@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode(callSuper = true)
 public class FullDefenceResponse extends Response {
 
     @NotNull
@@ -69,30 +70,6 @@ public class FullDefenceResponse extends Response {
 
     public Optional<DefendantEvidence> getEvidence() {
         return Optional.ofNullable(evidence);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        FullDefenceResponse other = (FullDefenceResponse) obj;
-
-        return super.equals(other)
-            && Objects.equals(defenceType, other.defenceType)
-            && Objects.equals(defence, other.defence)
-            && Objects.equals(paymentDeclaration, other.paymentDeclaration)
-            && Objects.equals(timeline, other.timeline)
-            && Objects.equals(evidence, other.evidence);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), defenceType, defence, paymentDeclaration, timeline, evidence);
     }
 
     @Override

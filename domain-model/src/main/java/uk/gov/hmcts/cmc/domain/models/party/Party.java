@@ -3,12 +3,12 @@ package uk.gov.hmcts.cmc.domain.models.party;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -29,6 +29,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = Organisation.class, name = "organisation")
     }
 )
+@EqualsAndHashCode
 public abstract class Party implements NamedParty {
 
     @NotBlank
@@ -81,30 +82,6 @@ public abstract class Party implements NamedParty {
 
     public Optional<Representative> getRepresentative() {
         return Optional.ofNullable(representative);
-    }
-
-    @SuppressWarnings("squid:S1067") // Number of conditional operators in boolean expression
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        Party other = (Party) obj;
-
-        return Objects.equals(name, other.name)
-            && Objects.equals(address, other.address)
-            && Objects.equals(correspondenceAddress, other.correspondenceAddress)
-            && Objects.equals(mobilePhone, other.mobilePhone)
-            && Objects.equals(representative, other.representative);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, address, correspondenceAddress, mobilePhone, representative);
     }
 
     @Override

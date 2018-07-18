@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.constraints.ValidIncome;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
+@EqualsAndHashCode
 @ValidIncome
 public class Income {
 
@@ -79,26 +80,6 @@ public class Income {
 
     public BigDecimal getAmountReceived() {
         return amountReceived;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        Income income = (Income) other;
-        return type == income.type
-            && Objects.equals(otherSource, income.otherSource)
-            && frequency == income.frequency
-            && Objects.equals(amountReceived, income.amountReceived);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, otherSource, frequency, amountReceived);
     }
 
     @Override
