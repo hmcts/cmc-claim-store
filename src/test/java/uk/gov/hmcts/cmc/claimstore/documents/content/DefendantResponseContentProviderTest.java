@@ -31,6 +31,11 @@ public class DefendantResponseContentProviderTest {
         new NotificationsProperties(),
         new FullDefenceResponseContentProvider(),
         new FullAdmissionResponseContentProvider(
+            new PaymentIntentionContentProvider(),
+            new StatementOfMeansContentProvider()
+        ),
+        new PartAdmissionResponseContentProvider(
+            new PaymentIntentionContentProvider(),
             new StatementOfMeansContentProvider()
         )
     );

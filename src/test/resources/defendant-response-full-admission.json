@@ -61,18 +61,7 @@
       "employers": [{
         "jobTitle": "My sweet job",
         "name": "CMC"
-      }],
-      "selfEmployment": {
-        "jobTitle": "Director",
-        "annualTurnover": 10,
-        "onTaxPayments": {
-          "amountYouOwe": 10,
-          "reason": "Genuine reason"
-        }
-      },
-      "unemployment": {
-        "retired": true
-      }
+      }]
     },
     "bankAccounts": [{
       "type": "SAVINGS_ACCOUNT",

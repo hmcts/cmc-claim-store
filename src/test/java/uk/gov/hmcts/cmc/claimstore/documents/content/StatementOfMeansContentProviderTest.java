@@ -31,7 +31,7 @@ public class StatementOfMeansContentProviderTest {
         Map<String, Object> content = provider.createContent(statementOfMeans);
 
         assertThat(content)
-            .containsKeys("selfEmployment", "bankAccounts", "children",
+            .containsKeys("bankAccounts", "children",
                 "residence", "maintainedChildren", "incomes", "otherDependants",
                 "courtOrders", "expenses", "debts", "dependant", "employment");
     }

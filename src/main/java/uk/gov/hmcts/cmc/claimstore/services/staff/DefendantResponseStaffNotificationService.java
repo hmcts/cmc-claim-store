@@ -25,6 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -54,8 +55,13 @@ public class DefendantResponseStaffNotificationService {
         Claim claim,
         String defendantEmail
     ) {
+        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
 
-        EmailContent emailContent = isFullAdmission(claim)
+        if (isPartAdmission(responseType)) {
+            return;
+        }
+
+        EmailContent emailContent = isFullAdmission(responseType)
             ? fullAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
             : fullDefenceStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail));
 
@@ -70,8 +76,11 @@ public class DefendantResponseStaffNotificationService {
         );
     }
 
-    private boolean isFullAdmission(Claim claim) {
-        ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
+    private boolean isPartAdmission(ResponseType responseType) {
+        return responseType == PART_ADMISSION;
+    }
+
+    private boolean isFullAdmission(ResponseType responseType) {
         return responseType == FULL_ADMISSION;
     }
 
