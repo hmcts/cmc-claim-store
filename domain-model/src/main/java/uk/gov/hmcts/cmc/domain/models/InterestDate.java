@@ -3,15 +3,16 @@ package uk.gov.hmcts.cmc.domain.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.constraints.ValidInterestDate;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 @ValidInterestDate
 public class InterestDate {
     public enum InterestDateType {
@@ -81,26 +82,6 @@ public class InterestDate {
     @JsonIgnore
     public boolean isValid() {
         return type != null || date != null || reason != null;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        InterestDate that = (InterestDate) other;
-        return Objects.equals(type, that.type)
-            && Objects.equals(date, that.date)
-            && Objects.equals(reason, that.reason)
-            && Objects.equals(endDateType, that.endDateType);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, date, reason);
     }
 
     @Override

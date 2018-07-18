@@ -2,14 +2,15 @@ package uk.gov.hmcts.cmc.domain.models.party;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode(callSuper = true)
 public class Individual extends Party {
 
     @JsonUnwrapped
@@ -30,26 +31,6 @@ public class Individual extends Party {
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        Individual other = (Individual) obj;
-
-        return super.equals(other)
-            && Objects.equals(dateOfBirth, other.dateOfBirth);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), dateOfBirth);
     }
 
 }

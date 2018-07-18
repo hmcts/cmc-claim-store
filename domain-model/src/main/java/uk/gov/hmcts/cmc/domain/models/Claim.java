@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -13,7 +14,6 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -25,6 +25,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     allowGetters = true
 )
 @Builder
+@EqualsAndHashCode
 public class Claim {
 
     private final Long id;
@@ -193,47 +194,6 @@ public class Claim {
 
     public Optional<BigDecimal> getTotalInterest() {
         return TotalAmountCalculator.calculateInterestForClaim(this);
-    }
-
-    @Override
-    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        Claim claim = (Claim) obj;
-        return moreTimeRequested == claim.moreTimeRequested
-            && Objects.equals(id, claim.id)
-            && Objects.equals(submitterId, claim.submitterId)
-            && Objects.equals(letterHolderId, claim.letterHolderId)
-            && Objects.equals(defendantId, claim.defendantId)
-            && Objects.equals(externalId, claim.externalId)
-            && Objects.equals(referenceNumber, claim.referenceNumber)
-            && Objects.equals(claimData, claim.claimData)
-            && Objects.equals(createdAt, claim.createdAt)
-            && Objects.equals(issuedOn, claim.issuedOn)
-            && Objects.equals(responseDeadline, claim.responseDeadline)
-            && Objects.equals(submitterEmail, claim.submitterEmail)
-            && Objects.equals(respondedAt, claim.respondedAt)
-            && Objects.equals(response, claim.response)
-            && Objects.equals(defendantEmail, claim.defendantEmail)
-            && Objects.equals(countyCourtJudgment, claim.countyCourtJudgment)
-            && Objects.equals(countyCourtJudgmentRequestedAt, claim.countyCourtJudgmentRequestedAt)
-            && Objects.equals(settlement, claim.settlement)
-            && Objects.equals(settlementReachedAt, claim.settlementReachedAt)
-            && Objects.equals(sealedClaimDocument, claim.sealedClaimDocument);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, submitterId, letterHolderId, defendantId, externalId, referenceNumber,
-            claimData, createdAt, issuedOn, responseDeadline, moreTimeRequested, submitterEmail,
-            respondedAt, response, defendantEmail, countyCourtJudgment, countyCourtJudgmentRequestedAt,
-            settlement, settlementReachedAt, sealedClaimDocument
-        );
     }
 
     @Override

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
@@ -9,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 @ValidCountyCourtJudgment
 public class CountyCourtJudgment {
 
@@ -81,30 +82,6 @@ public class CountyCourtJudgment {
 
     public Optional<StatementOfTruth> getStatementOfTruth() {
         return Optional.ofNullable(statementOfTruth);
-    }
-
-    @Override
-    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        CountyCourtJudgment that = (CountyCourtJudgment) other;
-        return Objects.equals(defendantDateOfBirth, that.defendantDateOfBirth)
-            && Objects.equals(paymentOption, that.paymentOption)
-            && Objects.equals(paidAmount, that.paidAmount)
-            && Objects.equals(repaymentPlan, that.repaymentPlan)
-            && Objects.equals(payBySetDate, that.payBySetDate)
-            && Objects.equals(statementOfTruth, that.statementOfTruth);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate,
-            statementOfTruth);
     }
 
     @Override
