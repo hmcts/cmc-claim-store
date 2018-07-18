@@ -1,13 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.party;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode(callSuper = true)
 public class Organisation extends Party implements HasContactPerson {
 
     private final String contactPerson;
@@ -33,25 +34,6 @@ public class Organisation extends Party implements HasContactPerson {
 
     public Optional<String> getCompaniesHouseNumber() {
         return Optional.ofNullable(companiesHouseNumber);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        Organisation other = (Organisation) obj;
-
-        return super.equals(other) && Objects.equals(contactPerson, other.contactPerson);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), contactPerson);
     }
 
 }

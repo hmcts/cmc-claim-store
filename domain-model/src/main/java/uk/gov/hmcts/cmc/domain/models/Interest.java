@@ -1,16 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.ValidInterest;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 @ValidInterest
 public class Interest {
     public enum InterestType {
@@ -75,28 +76,6 @@ public class Interest {
 
     public InterestDate getInterestDate() {
         return interestDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Interest interest = (Interest) o;
-        return Objects.equals(type, interest.type)
-                && Objects.equals(interestBreakdown, interest.interestBreakdown)
-                && Objects.equals(rate, interest.rate)
-                && Objects.equals(reason, interest.reason)
-                && Objects.equals(specificDailyAmount, interest.specificDailyAmount)
-                && Objects.equals(interestDate, interest.interestDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, interestBreakdown, rate, reason, specificDailyAmount, interestDate);
     }
 
     @Override

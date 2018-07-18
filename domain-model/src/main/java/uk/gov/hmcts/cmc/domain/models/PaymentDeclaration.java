@@ -1,16 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class PaymentDeclaration {
 
     @NotNull
@@ -32,26 +33,6 @@ public class PaymentDeclaration {
 
     public String getExplanation() {
         return explanation;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (this == other) {
-            return true;
-        }
-
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-
-        final PaymentDeclaration that = (PaymentDeclaration) other;
-        return Objects.equals(paidDate, that.paidDate)
-            && Objects.equals(explanation, that.explanation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(paidDate, explanation);
     }
 
     @Override
