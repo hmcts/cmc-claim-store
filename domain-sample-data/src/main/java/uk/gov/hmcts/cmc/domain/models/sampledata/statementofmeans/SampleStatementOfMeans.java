@@ -9,13 +9,10 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
 import java.math.BigDecimal;
 
@@ -44,12 +41,8 @@ public class SampleStatementOfMeans {
                 .build())
             .employment(Employment.builder()
                 .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
-                .unemployment(Unemployment.builder().retired(true).build())
-                .selfEmployment(SelfEmployment.builder()
-                    .jobTitle("Director")
-                    .annualTurnover(TEN)
-                    .onTaxPayments(OnTaxPayments.builder().amountYouOwe(TEN).reason("Genuine reason").build())
-                    .build())
+                .unemployment(null)
+                .selfEmployment(null)
                 .build()
             )
             .reason("My reason")

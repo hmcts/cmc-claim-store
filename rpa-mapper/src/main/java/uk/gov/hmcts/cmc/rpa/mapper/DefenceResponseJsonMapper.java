@@ -32,10 +32,23 @@ public class DefenceResponseJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("responseSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
-            .add("defenceResponse", extractFromSubclass(response, FullDefenceResponse.class, fullDefenceResponse -> fullDefenceResponse.getDefenceType().name()))
+            .add("defenceResponse", defenceResponse(response))
             .add("defendant", defendantMapper.map(response.getDefendant(), claim.getClaimData().getDefendant(), defendantsEmail))
             .add("mediation", isMediationSelected(response))
             .build();
+    }
+
+    private String defenceResponse(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                return extractFromSubclass(response, FullDefenceResponse.class,
+                    fullDefenceResponse -> fullDefenceResponse.getDefenceType().name());
+            case FULL_ADMISSION:
+            case PART_ADMISSION:
+                return response.getResponseType().name();
+            default:
+                throw new IllegalArgumentException("Invalid response type: " + response.getResponseType());
+        }
     }
 
     private boolean isMediationSelected(Response response) {
