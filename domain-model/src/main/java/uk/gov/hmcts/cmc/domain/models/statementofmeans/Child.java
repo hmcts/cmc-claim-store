@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
+@EqualsAndHashCode
 public class Child {
 
     public enum AgeGroupType {
@@ -59,25 +60,6 @@ public class Child {
 
     public Optional<Integer> getNumberOfChildrenLivingWithYou() {
         return Optional.ofNullable(numberOfChildrenLivingWithYou);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        Child child = (Child) other;
-        return ageGroupType == child.ageGroupType
-            && Objects.equals(numberOfChildren, child.numberOfChildren)
-            && Objects.equals(numberOfChildrenLivingWithYou, child.numberOfChildrenLivingWithYou);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(ageGroupType, numberOfChildren, numberOfChildrenLivingWithYou);
     }
 
     @Override

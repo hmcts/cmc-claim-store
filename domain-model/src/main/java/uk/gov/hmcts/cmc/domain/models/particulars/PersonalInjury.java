@@ -1,10 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.particulars;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
+@EqualsAndHashCode
 public class PersonalInjury {
 
     @NotNull
@@ -20,22 +24,8 @@ public class PersonalInjury {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        PersonalInjury that = (PersonalInjury) obj;
-
-        return Objects.equals(this.generalDamages, that.generalDamages);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(generalDamages);
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 
 }
