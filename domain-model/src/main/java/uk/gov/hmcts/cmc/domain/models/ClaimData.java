@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -18,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -29,6 +29,7 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClaimData {
     @Valid
@@ -224,57 +225,6 @@ public class ClaimData {
 
     public Optional<Evidence> getEvidence() {
         return Optional.ofNullable(evidence);
-    }
-
-    @Override
-    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        ClaimData that = (ClaimData) other;
-        return Objects.equals(claimants, that.claimants)
-            && Objects.equals(defendants, that.defendants)
-            && Objects.equals(payment, that.payment)
-            && Objects.equals(amount, that.amount)
-            && Objects.equals(feeAmountInPennies, that.feeAmountInPennies)
-            && Objects.equals(interest, that.interest)
-            && Objects.equals(personalInjury, that.personalInjury)
-            && Objects.equals(housingDisrepair, that.housingDisrepair)
-            && Objects.equals(reason, that.reason)
-            && Objects.equals(statementOfTruth, that.statementOfTruth)
-            && Objects.equals(feeAccountNumber, that.feeAccountNumber)
-            && Objects.equals(externalId, that.externalId)
-            && Objects.equals(externalReferenceNumber, that.externalReferenceNumber)
-            && Objects.equals(preferredCourt, that.preferredCourt)
-            && Objects.equals(feeCode, that.feeCode)
-            && Objects.equals(timeline, that.timeline)
-            && Objects.equals(evidence, that.evidence);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-            claimants,
-            defendants,
-            payment,
-            amount,
-            feeAmountInPennies,
-            interest,
-            personalInjury,
-            housingDisrepair,
-            reason,
-            statementOfTruth,
-            feeAccountNumber,
-            externalId,
-            externalReferenceNumber,
-            preferredCourt,
-            feeCode,
-            timeline,
-            evidence);
     }
 
     @Override

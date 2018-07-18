@@ -1,16 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models.amount;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class AmountRange implements Amount {
 
     @Money
@@ -33,24 +34,6 @@ public class AmountRange implements Amount {
 
     public BigDecimal getHigherValue() {
         return higherValue;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        AmountRange that = (AmountRange) obj;
-        return Objects.equals(lowerValue, that.lowerValue)
-            && Objects.equals(higherValue, that.higherValue);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(lowerValue, higherValue);
     }
 
     @Override

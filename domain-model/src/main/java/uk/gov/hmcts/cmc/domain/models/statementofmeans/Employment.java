@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.EachNotNull;
 import uk.gov.hmcts.cmc.domain.constraints.ValidEmployment;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 
@@ -14,6 +14,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
+@EqualsAndHashCode
 @ValidEmployment
 public class Employment {
 
@@ -47,25 +48,6 @@ public class Employment {
 
     public Optional<Unemployment> getUnemployment() {
         return Optional.ofNullable(unemployment);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        Employment that = (Employment) other;
-        return Objects.equals(employers, that.employers)
-            && Objects.equals(selfEmployment, that.selfEmployment)
-            && Objects.equals(unemployment, that.unemployment);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(employers, selfEmployment, unemployment);
     }
 
     @Override

@@ -1,15 +1,16 @@
 package uk.gov.hmcts.cmc.domain.models.legalrep;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
 import uk.gov.hmcts.cmc.domain.constraints.PhoneNumber;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class ContactDetails {
 
     @PhoneNumber
@@ -37,27 +38,6 @@ public class ContactDetails {
 
     public Optional<String> getDxAddress() {
         return Optional.ofNullable(dxAddress);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        ContactDetails that = (ContactDetails) obj;
-
-        return Objects.equals(this.phone, that.phone)
-            && Objects.equals(this.email, that.email)
-            && Objects.equals(this.dxAddress, that.dxAddress);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(phone, email, dxAddress);
     }
 
     @Override

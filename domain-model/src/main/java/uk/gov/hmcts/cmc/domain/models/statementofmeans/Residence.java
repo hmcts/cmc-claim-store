@@ -1,13 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.ValidResidence;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 @Builder
+@EqualsAndHashCode
 @ValidResidence
 public class Residence {
 
@@ -47,21 +48,4 @@ public class Residence {
         return Optional.ofNullable(otherDetail);
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        Residence residence = (Residence) other;
-        return type == residence.type
-            && Objects.equals(otherDetail, residence.otherDetail);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, otherDetail);
-    }
 }

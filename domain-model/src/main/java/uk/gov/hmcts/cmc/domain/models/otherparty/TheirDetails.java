@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -10,7 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -31,6 +31,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = OrganisationDetails.class, name = "organisation")
     }
 )
+@EqualsAndHashCode
 public abstract class TheirDetails implements NamedParty {
 
     @NotBlank
@@ -83,30 +84,6 @@ public abstract class TheirDetails implements NamedParty {
 
     public Optional<Address> getServiceAddress() {
         return Optional.ofNullable(serviceAddress);
-    }
-
-    @Override
-    @SuppressWarnings("squid:S1067") // Its generated code for equals sonar
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        TheirDetails that = (TheirDetails) obj;
-
-        return Objects.equals(this.name, that.name)
-            && Objects.equals(this.address, that.address)
-            && Objects.equals(this.email, that.email)
-            && Objects.equals(this.representative, that.representative)
-            && Objects.equals(this.serviceAddress, that.serviceAddress);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, address, email, representative, serviceAddress);
     }
 
     @Override

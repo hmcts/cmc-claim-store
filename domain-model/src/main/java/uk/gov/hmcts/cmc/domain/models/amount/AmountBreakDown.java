@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.amount;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.MinTotalAmount;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
@@ -15,6 +16,7 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class AmountBreakDown implements Amount {
 
     @Valid
@@ -38,23 +40,6 @@ public class AmountBreakDown implements Amount {
 
     public List<AmountRow> getRows() {
         return rows;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        AmountBreakDown that = (AmountBreakDown) other;
-        return Objects.equals(rows, that.rows);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rows);
     }
 
     @Override
