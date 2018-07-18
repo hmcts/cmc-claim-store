@@ -5,8 +5,6 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import static uk.gov.hmcts.cmc.domain.constraints.PaymentValidator.Fields.PAYMENT_DATE;
-import static uk.gov.hmcts.cmc.domain.constraints.PaymentValidator.Fields.PAYMENT_OPTION;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeNullError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.mayNotBeProvidedError;
 import static uk.gov.hmcts.cmc.domain.constraints.utils.ConstraintsUtils.setValidationErrors;
@@ -40,16 +38,6 @@ public class ValidPartAdmissionConstraintValidator
             setValidationErrors(context, Fields.PAYMENT_INTENTION, mayNotBeNullError(Fields.PAYMENT_DECLARATION));
             valid = false;
         }
-
-        valid = valid && response.getPaymentIntention()
-            .map(paymentIntention -> PaymentValidator.isValid(
-                context,
-                paymentIntention.getPaymentOption(),
-                paymentIntention.getPaymentDate().isPresent(),
-                paymentIntention.getRepaymentPlan().isPresent()
-                )
-            )
-            .orElse(true);
 
         return valid;
     }

@@ -104,7 +104,7 @@ public class PaymentValidator {
         }
 
         if (!hasRepaymentPlan) {
-            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeProvidedError(PAYMENT_OPTION, paymentOption));
+            setValidationErrors(context, REPAYMENT_PLAN, mayNotBeNullError(PAYMENT_OPTION, paymentOption));
             valid = false;
         }
 

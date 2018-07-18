@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
+import uk.gov.hmcts.cmc.domain.constraints.ValidPaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
 
 @Builder
 @EqualsAndHashCode
+@ValidPaymentIntention
 public class PaymentIntention {
 
     @NotNull
