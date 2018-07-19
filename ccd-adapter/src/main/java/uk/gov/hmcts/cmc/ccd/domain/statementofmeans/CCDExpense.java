@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Value
 public class CCDExpense {
     private Expense.ExpenseType type;
-    private String otherExpense;
+    private String otherName;
     private PaymentFrequency frequency;
     private BigDecimal amountPaid;
 }

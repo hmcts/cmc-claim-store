@@ -30,11 +30,11 @@ public class ExpenseTest {
     }
 
     @Test
-    public void shouldBeSuccessfulValidationForOtherExpense() {
+    public void shouldBeSuccessfulValidationForOtherName() {
         //given
         Expense expense = Expense.builder()
             .type(OTHER)
-            .otherExpense("My other expense")
+            .otherName("My other expense")
             .frequency(MONTH)
             .amountPaid(BigDecimal.valueOf(10))
             .build();
@@ -45,7 +45,7 @@ public class ExpenseTest {
     }
 
     @Test
-    public void shouldBeInvalidForOtherExpenseWhenNoDescriptionGiven() {
+    public void shouldBeInvalidForOtherNameWhenNoDescriptionGiven() {
         //given
         Expense expense = Expense.builder()
             .type(OTHER)
@@ -55,15 +55,15 @@ public class ExpenseTest {
         //when
         Set<String> response = validate(expense);
         //then
-        assertThat(response).hasSize(1).contains("otherExpense : may not be null when type is 'Other'");
+        assertThat(response).hasSize(1).contains("otherName : may not be null when type is 'Other'");
     }
 
     @Test
-    public void shouldBeInvalidForOtherExpensePopulatedWhenTypeIsNotOther() {
+    public void shouldBeInvalidForOtherNamePopulatedWhenTypeIsNotOther() {
         //given
         Expense expense = Expense.builder()
             .type(MORTGAGE)
-            .otherExpense("This shouldn't be populated")
+            .otherName("This shouldn't be populated")
             .frequency(MONTH)
             .amountPaid(BigDecimal.valueOf(10))
             .build();
@@ -71,7 +71,7 @@ public class ExpenseTest {
         Set<String> response = validate(expense);
         //then
         assertThat(response).hasSize(1)
-            .contains("otherExpense : may not be provided when type is 'Mortgage'");
+            .contains("otherName : may not be provided when type is 'Mortgage'");
     }
 
     @Test
