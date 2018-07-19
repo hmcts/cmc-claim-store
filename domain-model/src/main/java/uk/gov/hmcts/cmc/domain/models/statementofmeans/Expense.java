@@ -48,7 +48,7 @@ public class Expense {
     @NotNull
     private final ExpenseType type;
 
-    private final String otherExpense;
+    private final String otherName;
 
     @NotNull
     private final PaymentFrequency frequency;
@@ -60,12 +60,12 @@ public class Expense {
 
     public Expense(
         ExpenseType type,
-        String otherExpense,
+        String otherName,
         PaymentFrequency frequency,
         BigDecimal amountPaid
     ) {
         this.type = type;
-        this.otherExpense = otherExpense;
+        this.otherName = otherName;
         this.frequency = frequency;
         this.amountPaid = amountPaid;
     }
@@ -74,8 +74,8 @@ public class Expense {
         return type;
     }
 
-    public Optional<String> getOtherExpense() {
-        return Optional.ofNullable(otherExpense);
+    public Optional<String> getOtherName() {
+        return Optional.ofNullable(otherName);
     }
 
     public PaymentFrequency getFrequency() {
