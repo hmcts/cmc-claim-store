@@ -124,7 +124,7 @@ public class StatementOfMeansContentProvider {
 
         return new ImmutableMap.Builder<String, Object>()
             .put("type", expense.getType() == Expense.ExpenseType.OTHER
-                ? expense.getOtherExpense().orElseThrow(IllegalStateException::new)
+                ? expense.getOtherName().orElseThrow(IllegalStateException::new)
                 : expense.getType().getDescription())
             .put("amountPaid", formatMoney(expense.getAmountPaid()))
             .put("frequency", expense.getFrequency().getDescription())

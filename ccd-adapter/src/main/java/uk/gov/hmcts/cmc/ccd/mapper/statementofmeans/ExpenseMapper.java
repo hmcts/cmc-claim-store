@@ -14,7 +14,7 @@ public class ExpenseMapper implements Mapper<CCDExpense, Expense> {
             .type(expense.getType())
             .amountPaid(expense.getAmountPaid())
             .frequency(expense.getFrequency())
-            .otherExpense(expense.getOtherExpense().orElse(null))
+            .otherName(expense.getOtherName().orElse(null))
             .build();
     }
 
@@ -27,7 +27,7 @@ public class ExpenseMapper implements Mapper<CCDExpense, Expense> {
             .amountPaid(ccdExpense.getAmountPaid())
             .type(ccdExpense.getType())
             .frequency(ccdExpense.getFrequency())
-            .otherExpense(ccdExpense.getOtherExpense())
+            .otherName(ccdExpense.getOtherName())
             .build();
     }
 }
