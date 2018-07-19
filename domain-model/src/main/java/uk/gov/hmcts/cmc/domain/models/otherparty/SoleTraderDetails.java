@@ -1,13 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.otherparty;
 
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.Size;
 
+@EqualsAndHashCode(callSuper = true)
 public class SoleTraderDetails extends TheirDetails implements TitledParty {
 
     @Size(max = 35, message = "must be at most {max} characters")
@@ -37,27 +38,6 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
 
     public Optional<String> getBusinessName() {
         return Optional.ofNullable(businessName);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        SoleTraderDetails that = (SoleTraderDetails) obj;
-
-        return super.equals(that)
-            && Objects.equals(this.title, that.title)
-            && Objects.equals(this.businessName, that.businessName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), this.title, this.businessName);
     }
 
 }

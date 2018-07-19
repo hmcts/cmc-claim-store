@@ -1,16 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class Offer {
 
     static final int CONTENT_LENGTH_LIMIT = 99000;
@@ -34,25 +35,6 @@ public class Offer {
 
     public LocalDate getCompletionDate() {
         return completionDate;
-    }
-
-    @Override
-    public boolean equals(Object input) {
-        if (this == input) {
-            return true;
-        }
-        if (input == null || getClass() != input.getClass()) {
-            return false;
-        }
-
-        Offer other = (Offer) input;
-        return Objects.equals(content, other.content)
-            && Objects.equals(completionDate, other.completionDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(content, completionDate);
     }
 
     @Override

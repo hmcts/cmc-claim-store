@@ -1,16 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
+@EqualsAndHashCode
 public class BankAccount {
 
     public enum BankAccountType {
@@ -55,25 +56,6 @@ public class BankAccount {
 
     public BigDecimal getBalance() {
         return balance;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        BankAccount that = (BankAccount) other;
-        return joint == that.joint
-            && type == that.type
-            && Objects.equals(balance, that.balance);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, joint, balance);
     }
 
     @Override

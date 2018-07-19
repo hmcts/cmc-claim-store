@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
-import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class ClaimState {
 
     private final boolean isOnHold;
@@ -18,24 +18,6 @@ public class ClaimState {
 
     public boolean isOnHold() {
         return isOnHold;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        ClaimState status1 = (ClaimState) other;
-
-        return isOnHold == status1.isOnHold;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(isOnHold);
     }
 
     @Override

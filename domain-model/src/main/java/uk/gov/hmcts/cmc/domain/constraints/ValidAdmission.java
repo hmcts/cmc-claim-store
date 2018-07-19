@@ -10,10 +10,10 @@ import javax.validation.Payload;
 
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ValidFullAdmissionConstraintValidator.class})
+@Constraint(validatedBy = {ValidFullAdmissionConstraintValidator.class, ValidPartAdmissionConstraintValidator.class})
 @Documented
-public @interface ValidFullAdmission {
-    String message() default "Invalid full admission response";
+public @interface ValidAdmission {
+    String message() default "Invalid admission response";
 
     Class<?>[] groups() default {};
 

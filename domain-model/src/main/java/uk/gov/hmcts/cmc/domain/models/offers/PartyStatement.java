@@ -1,13 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@EqualsAndHashCode
 public class PartyStatement {
 
     private StatementType type;
@@ -36,28 +37,6 @@ public class PartyStatement {
 
     public Optional<Offer> getOffer() {
         return Optional.ofNullable(offer);
-    }
-
-    @Override
-    public boolean equals(Object input) {
-        if (this == input) {
-            return true;
-        }
-
-        if (input == null || getClass() != input.getClass()) {
-            return false;
-        }
-
-        PartyStatement that = (PartyStatement) input;
-
-        return type == that.type
-            && madeBy == that.madeBy
-            && Objects.equals(offer, that.offer);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, madeBy, offer);
     }
 
     @Override

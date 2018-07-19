@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -59,10 +58,21 @@ public class RespondToClaimTest extends BaseTest {
     }
 
     @Test
-    @Ignore("Full Admission is not implemented, please enable once done")
     public void shouldBeAbleToSuccessfullySubmitFullAdmission() {
         Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
         shouldBeAbleToSuccessfullySubmit(fullAdmissionResponse);
+    }
+
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitPartAdmissionWithAlreadyPaidAmount() {
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().build();
+        shouldBeAbleToSuccessfullySubmit(partAdmissionResponse);
+    }
+
+    @Test
+    public void shouldBeAbleToSuccessfullySubmitPartAdmissionWithPaymentInFuture() {
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
+        shouldBeAbleToSuccessfullySubmit(partAdmissionResponse);
     }
 
     private void shouldBeAbleToSuccessfullySubmit(Response response) {

@@ -1,9 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.particulars;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
+@EqualsAndHashCode
 public class HousingDisrepair {
 
     @NotNull
@@ -25,23 +30,7 @@ public class HousingDisrepair {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        HousingDisrepair that = (HousingDisrepair) obj;
-
-        return Objects.equals(this.costOfRepairsDamages, that.costOfRepairsDamages)
-            && Objects.equals(this.otherDamages, that.otherDamages);
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(costOfRepairsDamages, otherDamages);
-    }
-
 }
