@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.response;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
@@ -15,7 +14,6 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@ValidAdmission
 @EqualsAndHashCode(callSuper = true)
 public class FullAdmissionResponse extends Response {
 

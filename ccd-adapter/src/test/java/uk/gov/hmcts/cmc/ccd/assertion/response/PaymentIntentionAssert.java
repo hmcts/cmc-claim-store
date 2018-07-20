@@ -22,7 +22,6 @@ public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAsser
                 paymentIntention.getPaymentOption().name(), actual.getPaymentOption().name());
         }
 
-
         actual.getRepaymentPlan().ifPresent(
             repaymentPlan -> assertThat(repaymentPlan).isEqualTo(paymentIntention.getRepaymentPlan())
         );
