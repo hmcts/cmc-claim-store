@@ -18,6 +18,7 @@ public class ValidFullAdmissionConstraintValidator
         boolean hasPaymentDate = fullAdmissionResponse.getPaymentDate().isPresent();
         boolean hasRepaymentPlan = fullAdmissionResponse.getRepaymentPlan().isPresent();
         PaymentOption paymentOption = fullAdmissionResponse.getPaymentOption();
+
         return PaymentValidator.isValid(context, paymentOption, hasPaymentDate, hasRepaymentPlan);
     }
 }

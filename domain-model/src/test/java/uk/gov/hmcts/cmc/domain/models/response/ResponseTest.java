@@ -85,20 +85,4 @@ public class ResponseTest {
                 "defence : size must be between 1 and 99000"
             );
     }
-
-    @Test
-    public void shouldHaveFullAdmissionPaymentOptionAsPayBySetDateForFullPayBySetDate() {
-        Response response = FullAdmissionResponse.builder()
-            .moreTimeNeeded(YesNoOption.NO)
-            .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
-            .paymentDate(now())
-            .defendant(SampleParty.builder().individual())
-            .statementOfMeans(SampleStatementOfMeans.builder().build())
-            .repaymentPlan(SampleRepaymentPlan.builder().build())
-            .build();
-
-        //then
-        assertThat(((FullAdmissionResponse) response).getPaymentOption())
-            .isEqualTo(PaymentOption.BY_SPECIFIED_DATE);
-    }
 }
