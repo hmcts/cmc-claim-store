@@ -32,7 +32,7 @@ public class ValidPartAdmissionConstraintValidator
     }
 
     private static final String SOM_PROVIDED_ERROR = mayNotBeProvidedError(PAYMENT_OPTION, IMMEDIATELY.name());
-    private static final String SOM_NOT_PROVIDED_ERROR = mayNotBeNullError(PAYMENT_OPTION, IMMEDIATELY.name());
+    private static final String SOM_NOT_PROVIDED_ERROR = mayNotBeNullError(PAYMENT_OPTION, "not " + IMMEDIATELY.name());
 
     @Override
     public boolean isValid(PartAdmissionResponse response, ConstraintValidatorContext context) {

@@ -17,8 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import javax.validation.ConstraintValidatorContext;
 
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,7 +53,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenPaymentIntentionIsImmediatelyDefendantIsIndividualAndSoMIsNotPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentIntention(validImmediatelyBuilder().build()).build();
+            .defendant(SampleParty.builder().individual())
+            .paymentIntention(SamplePaymentIntention.immediately())
+            .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
     }
@@ -64,7 +64,8 @@ public class ValidPartAdmissionConstraintValidatorTest {
     public void shouldBeValidWhenPaymentIntentionIsImmediatelyDefendantIsSoleTraderAndSoMIsNotPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
             .defendant(SampleParty.builder().soleTrader())
-            .paymentIntention(validImmediatelyBuilder().build()).build();
+            .paymentIntention(SamplePaymentIntention.immediately())
+            .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
     }
@@ -72,8 +73,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenPaymentIntentionIsImmediatelyDefendantIsIndividualAndSoMIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentIntention(validImmediatelyBuilder().build())
-            .statementOfMeans(StatementOfMeans.builder().reason("my reason").build())
+            .defendant(SampleParty.builder().individual())
+            .paymentIntention(SamplePaymentIntention.immediately())
+            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
@@ -82,8 +84,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenPaymentIntentionIsImmediatelyDefendantIsSoleTraderAndSoMIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentIntention(validImmediatelyBuilder().build())
-            .statementOfMeans(StatementOfMeans.builder().reason("my reason").build())
+            .defendant(SampleParty.builder().soleTrader())
+            .paymentIntention(SamplePaymentIntention.immediately())
+            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
@@ -92,11 +95,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenPaymentIntentionIsSpecDateDefendantIsIndividualAndSoMIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentIntention(
-                PaymentIntention.builder()
-                    .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
-                    .paymentDate(LocalDate.now().plusDays(10)).build()
-            ).statementOfMeans(StatementOfMeans.builder().reason("my reason").build())
+            .defendant(SampleParty.builder().individual())
+            .paymentIntention(SamplePaymentIntention.bySetDate())
+            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
@@ -105,11 +106,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenPaymentIntentionIsInstalmentsDefendantIsIndividualAndSoMIsPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentIntention(
-                PaymentIntention.builder()
-                    .paymentOption(PaymentOption.INSTALMENTS)
-                    .repaymentPlan(SampleRepaymentPlan.builder().build()).build()
-            ).statementOfMeans(StatementOfMeans.builder().reason("my reason").build())
+            .defendant(SampleParty.builder().individual())
+            .paymentIntention(SamplePaymentIntention.instalments())
+            .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
@@ -118,11 +117,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenPaymentIntentionIsNotImmediatelyDefendantIsIndividualAndSoMIsNotPopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentIntention(
-                PaymentIntention.builder()
-                    .paymentOption(PaymentOption.INSTALMENTS)
-                    .repaymentPlan(SampleRepaymentPlan.builder().build()).build()
-            ).build();
+            .defendant(SampleParty.builder().individual())
+            .paymentIntention(SamplePaymentIntention.instalments())
+            .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
     }
@@ -163,16 +160,9 @@ public class ValidPartAdmissionConstraintValidatorTest {
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
     }
 
-    private static PaymentIntention.PaymentIntentionBuilder validImmediatelyBuilder() {
-        return PaymentIntention.builder()
-            .paymentOption(PaymentOption.IMMEDIATELY)
-            .paymentDate(LocalDate.now().plusDays(5));
-    }
-
     private static PartAdmissionResponse.PartAdmissionResponseBuilder builder() {
         return PartAdmissionResponse.builder()
             .freeMediation(YesNoOption.YES)
-            .moreTimeNeeded(YesNoOption.NO)
-            .defendant(SampleParty.builder().individual());
+            .moreTimeNeeded(YesNoOption.NO);
     }
 }
