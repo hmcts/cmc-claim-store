@@ -33,22 +33,7 @@ public class FullAdmissionResponseAssert extends AbstractAssert<FullAdmissionRes
 
         assertThat(actual.getDefendant()).isEqualTo(ccdFullAdmissionResponse.getDefendant());
 
-        if (!Objects.equals(actual.getPaymentOption().name(), ccdFullAdmissionResponse.getPaymentOption().name())) {
-            failWithMessage("Expected FullAdmissionResponse.paymentOption to be <%s> but was <%s>",
-                ccdFullAdmissionResponse.getPaymentOption().name(), actual.getPaymentOption().name());
-        }
-
-
-        actual.getRepaymentPlan().ifPresent(
-            repaymentPlan -> assertThat(repaymentPlan).isEqualTo(ccdFullAdmissionResponse.getRepaymentPlan())
-        );
-
-        actual.getPaymentDate().ifPresent(paymentDate -> {
-            if (!Objects.equals(paymentDate, ccdFullAdmissionResponse.getPaymentDate())) {
-                failWithMessage("Expected FullAdmissionResponse.paymentDate to be <%s> but was <%s>",
-                    ccdFullAdmissionResponse.getPaymentDate(), paymentDate);
-            }
-        });
+        assertThat(actual.getPaymentIntention()).isEqualTo(ccdFullAdmissionResponse.getPaymentIntention());
 
         actual.getStatementOfMeans().ifPresent(statementOfMeans ->
             assertThat(statementOfMeans).isEqualTo(ccdFullAdmissionResponse.getStatementOfMeans())
