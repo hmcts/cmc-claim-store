@@ -28,9 +28,9 @@ public class FullAdmissionResponseContentProvider {
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
             .put("responseTypeSelected", fullAdmissionResponse.getResponseType().getDescription())
             .putAll(paymentIntentionContentProvider.createContent(
-                fullAdmissionResponse.getPaymentOption(),
-                fullAdmissionResponse.getRepaymentPlan().orElse(null),
-                fullAdmissionResponse.getPaymentDate().orElse(null),
+                fullAdmissionResponse.getPaymentIntention().getPaymentOption(),
+                fullAdmissionResponse.getPaymentIntention().getRepaymentPlan().orElse(null),
+                fullAdmissionResponse.getPaymentIntention().getPaymentDate().orElse(null),
                 "The full amount"
                 )
             );

@@ -10,10 +10,11 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullAdmissionResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 import java.time.LocalDate;
@@ -22,8 +23,6 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyIndividual;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfTruth;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
-import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @SpringBootTest
@@ -39,9 +38,8 @@ public class FullAdmissionResponseMapperTest {
         //given
         FullAdmissionResponse fullAdmissionResponse = FullAdmissionResponse.builder()
             .moreTimeNeeded(NO)
-            .paymentOption(IMMEDIATELY)
-            .paymentDate(LocalDate.now().plusDays(7))
             .defendant(SampleParty.builder().individual())
+            .paymentIntention(SamplePaymentIntention.immediately())
             .statementOfTruth(StatementOfTruth.builder().signerName("Name").signerRole("A role").build())
             .build();
 
@@ -57,9 +55,8 @@ public class FullAdmissionResponseMapperTest {
         //given
         FullAdmissionResponse fullAdmissionResponse = FullAdmissionResponse.builder()
             .moreTimeNeeded(NO)
-            .paymentOption(INSTALMENTS)
             .defendant(SampleParty.builder().individual())
-            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .paymentIntention(SamplePaymentIntention.instalments())
             .statementOfMeans(SampleStatementOfMeans.builder().build())
             .statementOfTruth(StatementOfTruth.builder().signerName("Name").signerRole("A role").build())
             .build();
@@ -76,8 +73,10 @@ public class FullAdmissionResponseMapperTest {
         //given
         CCDFullAdmissionResponse ccdFullAdmissionResponse = CCDFullAdmissionResponse.builder()
             .moreTimeNeededOption(CCDYesNoOption.YES)
-            .paymentOption(BY_SPECIFIED_DATE)
-            .paymentDate(LocalDate.now().plusDays(7))
+            .paymentIntention(CCDPaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(LocalDate.now().plusDays(7))
+                .build())
             .defendant(getCCDPartyIndividual())
             .statementOfTruth(getCCDStatementOfTruth())
             .statementOfTruth(CCDStatementOfTruth.builder().signerName("Name").signerRole("A role").build())
