@@ -36,11 +36,13 @@
     },
     "dateOfBirth": "1968-01-02"
   },
-  "paymentOption": "INSTALMENTS",
-  "repaymentPlan": {
-    "instalmentAmount": 100,
-    "firstPaymentDate": "2100-10-10",
-    "paymentSchedule": "EACH_WEEK"
+  "paymentIntention": {
+    "paymentOption": "INSTALMENTS",
+    "repaymentPlan": {
+      "instalmentAmount": 100,
+      "firstPaymentDate": "2100-10-10",
+      "paymentSchedule": "EACH_WEEK"
+    }
   },
   "statementOfMeans": {
     "residence": {

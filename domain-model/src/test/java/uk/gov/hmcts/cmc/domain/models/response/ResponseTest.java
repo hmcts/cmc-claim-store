@@ -1,11 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 import java.util.Set;
 import javax.validation.ConstraintViolation;
@@ -13,7 +9,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import static java.time.LocalDate.now;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
@@ -84,21 +79,5 @@ public class ResponseTest {
             .contains(
                 "defence : size must be between 1 and 99000"
             );
-    }
-
-    @Test
-    public void shouldHaveFullAdmissionPaymentOptionAsPayBySetDateForFullPayBySetDate() {
-        Response response = FullAdmissionResponse.builder()
-            .moreTimeNeeded(YesNoOption.NO)
-            .paymentOption(PaymentOption.FULL_BY_SPECIFIED_DATE)
-            .paymentDate(now())
-            .defendant(SampleParty.builder().individual())
-            .statementOfMeans(SampleStatementOfMeans.builder().build())
-            .repaymentPlan(SampleRepaymentPlan.builder().build())
-            .build();
-
-        //then
-        assertThat(((FullAdmissionResponse) response).getPaymentOption())
-            .isEqualTo(PaymentOption.BY_SPECIFIED_DATE);
     }
 }

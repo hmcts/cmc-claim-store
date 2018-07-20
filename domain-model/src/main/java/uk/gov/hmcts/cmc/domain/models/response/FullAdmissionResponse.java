@@ -3,15 +3,11 @@ package uk.gov.hmcts.cmc.domain.models.response;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -24,13 +20,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class FullAdmissionResponse extends Response {
 
     @NotNull
-    private final PaymentOption paymentOption;
-
-    @DateNotInThePast
-    private final LocalDate paymentDate;
-
     @Valid
-    private final RepaymentPlan repaymentPlan;
+    private PaymentIntention paymentIntention;
 
     @Valid
     private final StatementOfMeans statementOfMeans;
@@ -41,32 +32,16 @@ public class FullAdmissionResponse extends Response {
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
-        PaymentOption paymentOption,
-        LocalDate paymentDate,
-        RepaymentPlan repaymentPlan,
+        PaymentIntention paymentIntention,
         StatementOfMeans statementOfMeans
     ) {
         super(FULL_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
-        this.paymentOption = paymentOption;
-        this.paymentDate = paymentDate;
-        this.repaymentPlan = repaymentPlan;
+        this.paymentIntention = paymentIntention;
         this.statementOfMeans = statementOfMeans;
     }
 
-    public PaymentOption getPaymentOption() {
-        if (paymentOption == PaymentOption.FULL_BY_SPECIFIED_DATE) {
-            return PaymentOption.BY_SPECIFIED_DATE;
-        }
-
-        return paymentOption;
-    }
-
-    public Optional<LocalDate> getPaymentDate() {
-        return Optional.ofNullable(paymentDate);
-    }
-
-    public Optional<RepaymentPlan> getRepaymentPlan() {
-        return Optional.ofNullable(repaymentPlan);
+    public PaymentIntention getPaymentIntention() {
+        return paymentIntention;
     }
 
     public Optional<StatementOfMeans> getStatementOfMeans() {

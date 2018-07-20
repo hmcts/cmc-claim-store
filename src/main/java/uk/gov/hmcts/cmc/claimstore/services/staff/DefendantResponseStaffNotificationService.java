@@ -103,8 +103,8 @@ public class DefendantResponseStaffNotificationService {
 
         if (response.getResponseType() == FULL_ADMISSION) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
-            map.put("paymentOption", fullAdmissionResponse.getPaymentOption());
-            map.put("paymentOptionDescription", fullAdmissionResponse
+            map.put("paymentOption", fullAdmissionResponse.getPaymentIntention().getPaymentOption());
+            map.put("paymentOptionDescription", fullAdmissionResponse.getPaymentIntention()
                 .getPaymentOption().getDescription().toLowerCase());
         }
 

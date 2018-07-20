@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -12,13 +11,10 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 import java.math.BigDecimal;
-
-import static java.time.LocalDate.now;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
@@ -32,30 +28,26 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .paymentOption(PaymentOption.INSTALMENTS)
                 .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .repaymentPlan(SampleRepaymentPlan.builder().build())
                 .build();
         }
 
         public FullAdmissionResponse buildWithPaymentOptionBySpecifiedDate() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
-                .paymentDate(now())
                 .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.bySetDate())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
-                .repaymentPlan(SampleRepaymentPlan.builder().build())
                 .build();
         }
 
         public FullAdmissionResponse buildWithPaymentOptionImmediately() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .paymentOption(PaymentOption.IMMEDIATELY)
-                .paymentDate(now())
                 .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.immediately())
                 .build();
         }
     }
