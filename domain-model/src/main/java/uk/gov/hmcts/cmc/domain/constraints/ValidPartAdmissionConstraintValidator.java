@@ -79,10 +79,8 @@ public class ValidPartAdmissionConstraintValidator
     }
 
     private static boolean isPaymentOptionImmediately(PartAdmissionResponse response) {
-        if (response.getPaymentIntention().isPresent()) {
-            return response.getPaymentIntention().get().getPaymentOption().equals(IMMEDIATELY);
-        }
-
-        return false;
+        return response.getPaymentIntention()
+            .map(item -> item.getPaymentOption().equals(IMMEDIATELY))
+            .orElse(false);
     }
 }
