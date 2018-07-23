@@ -2,15 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullAdmissionResponse;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.ccj.RepaymentPlanMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.statementofmeans.StatementOfMeansMapper;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -18,19 +15,19 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionResponse, FullAdmissionResponse> {
 
     private final PartyMapper partyMapper;
-    private final RepaymentPlanMapper repaymentPlanMapper;
+    private final PaymentIntentionMapper paymentIntentionMapper;
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
 
     @Autowired
     public FullAdmissionResponseMapper(
         PartyMapper partyMapper,
-        RepaymentPlanMapper repaymentPlanMapper,
+        PaymentIntentionMapper paymentIntentionMapper,
         StatementOfMeansMapper statementOfMeansMapper,
         StatementOfTruthMapper statementOfTruthMapper
     ) {
         this.partyMapper = partyMapper;
-        this.repaymentPlanMapper = repaymentPlanMapper;
+        this.paymentIntentionMapper = paymentIntentionMapper;
         this.statementOfMeansMapper = statementOfMeansMapper;
         this.statementOfTruthMapper = statementOfTruthMapper;
     }
@@ -42,12 +39,8 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
             .freeMediationOption(CCDYesNoOption.valueOf(
                 fullAdmissionResponse.getFreeMediation().orElse(YesNoOption.NO).name())
             )
-            .paymentDate(fullAdmissionResponse.getPaymentDate().orElse(null))
             .defendant(partyMapper.to(fullAdmissionResponse.getDefendant()))
-            .paymentOption(CCDPaymentOption.valueOf(fullAdmissionResponse.getPaymentOption().name()));
-
-        fullAdmissionResponse.getRepaymentPlan()
-            .ifPresent(repaymentPlan -> builder.repaymentPlan(repaymentPlanMapper.to(repaymentPlan)));
+            .paymentIntention(paymentIntentionMapper.to(fullAdmissionResponse.getPaymentIntention()));
 
         fullAdmissionResponse.getStatementOfMeans()
             .ifPresent(statementOfMeans -> builder.statementOfMeans(statementOfMeansMapper.to(statementOfMeans)));
@@ -66,9 +59,7 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
             YesNoOption.valueOf(ccdFullAdmissionResponse.getMoreTimeNeededOption().name()),
             partyMapper.from(ccdFullAdmissionResponse.getDefendant()),
             statementOfTruthMapper.from(ccdFullAdmissionResponse.getStatementOfTruth()),
-            PaymentOption.valueOf(ccdFullAdmissionResponse.getPaymentOption().name()),
-            ccdFullAdmissionResponse.getPaymentDate(),
-            repaymentPlanMapper.from(ccdFullAdmissionResponse.getRepaymentPlan()),
+            paymentIntentionMapper.from(ccdFullAdmissionResponse.getPaymentIntention()),
             statementOfMeansMapper.from(ccdFullAdmissionResponse.getStatementOfMeans())
         );
     }
