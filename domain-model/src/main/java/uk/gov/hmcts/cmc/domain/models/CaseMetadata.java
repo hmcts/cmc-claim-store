@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -12,6 +14,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CaseMetadata {
     private final Long id;
     private final String submitterId;
@@ -26,35 +29,6 @@ public class CaseMetadata {
     private final LocalDateTime countyCourtJudgmentRequestedAt;
     private final LocalDateTime settlementReachedAt;
     private final URI sealedClaimDocument;
-
-    private CaseMetadata(
-        Long id,
-        String submitterId,
-        String defendantId,
-        String externalId,
-        String referenceNumber,
-        LocalDateTime createdAt,
-        LocalDate issuedOn,
-        LocalDate responseDeadline,
-        LocalDateTime respondedAt, boolean moreTimeRequested,
-        LocalDateTime countyCourtJudgmentRequestedAt,
-        LocalDateTime settlementReachedAt,
-        URI sealedClaimDocument
-    ) {
-        this.id = id;
-        this.submitterId = submitterId;
-        this.defendantId = defendantId;
-        this.externalId = externalId;
-        this.referenceNumber = referenceNumber;
-        this.createdAt = createdAt;
-        this.issuedOn = issuedOn;
-        this.responseDeadline = responseDeadline;
-        this.respondedAt = respondedAt;
-        this.moreTimeRequested = moreTimeRequested;
-        this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
-        this.settlementReachedAt = settlementReachedAt;
-        this.sealedClaimDocument = sealedClaimDocument;
-    }
 
     public static CaseMetadata fromClaim(Claim claim) {
         return new CaseMetadata(
