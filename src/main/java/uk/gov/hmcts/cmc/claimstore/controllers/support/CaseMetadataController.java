@@ -77,7 +77,7 @@ public class CaseMetadataController {
     }
 
     @GetMapping("/{claimReference:" + CLAIM_REFERENCE_PATTERN + "}/metadata")
-    @ApiOperation("Fetch claim metedata for given claim reference")
+    @ApiOperation("Fetch claim metadata for given claim reference")
     public CaseMetadata getByClaimReference(@PathVariable("claimReference") String claimReference) {
         return claimService.getClaimByReferenceAnonymous(
             claimReference
