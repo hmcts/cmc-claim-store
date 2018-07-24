@@ -20,8 +20,10 @@ public class PaymentIntention {
 
     @NotNull
     private final PaymentOption paymentOption;
+
     @DateNotInThePast
     private final LocalDate paymentDate;
+
     @Valid
     private final RepaymentPlan repaymentPlan;
 

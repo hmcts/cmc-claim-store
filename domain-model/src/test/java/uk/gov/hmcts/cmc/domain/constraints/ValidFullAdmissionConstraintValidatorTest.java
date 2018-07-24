@@ -5,10 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
@@ -21,12 +20,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidPartAdmissionConstraintValidatorTest {
+public class ValidFullAdmissionConstraintValidatorTest {
 
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidPartAdmissionConstraintValidator validator = new ValidPartAdmissionConstraintValidator();
+    private ValidFullAdmissionConstraintValidator validator = new ValidFullAdmissionConstraintValidator();
 
     @Before
     public void setUp() {
@@ -49,116 +48,89 @@ public class ValidPartAdmissionConstraintValidatorTest {
 
     @Test
     public void shouldBeValidWhenPaymentIntentionIsImmediatelyDefendantIsIndividualAndSoMIsNotPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.immediately())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
     }
 
     @Test
     public void shouldBeValidWhenPaymentIntentionIsImmediatelyDefendantIsSoleTraderAndSoMIsNotPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .defendant(SampleParty.builder().soleTrader())
             .paymentIntention(SamplePaymentIntention.immediately())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
     }
 
     @Test
     public void shouldBeInvalidWhenPaymentIntentionIsImmediatelyDefendantIsIndividualAndSoMIsPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.immediately())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
     }
 
     @Test
     public void shouldBeInvalidWhenPaymentIntentionIsImmediatelyDefendantIsSoleTraderAndSoMIsPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .defendant(SampleParty.builder().soleTrader())
             .paymentIntention(SamplePaymentIntention.immediately())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
     }
 
     @Test
     public void shouldBeValidWhenPaymentIntentionIsSpecDateDefendantIsIndividualAndSoMIsPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.bySetDate())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
     }
 
     @Test
     public void shouldBeValidWhenPaymentIntentionIsInstalmentsDefendantIsIndividualAndSoMIsPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.instalments())
             .statementOfMeans(StatementOfMeans.builder().build())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
     }
 
     @Test
     public void shouldBeInvalidWhenPaymentIntentionIsNotImmediatelyDefendantIsIndividualAndSoMIsNotPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.instalments())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
-    }
-
-    @Test
-    public void shouldBeInvalidWhenBothPaymentDeclarationAndPaymentIntentionAreNotPopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
-            .build();
-
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
-    }
-
-    @Test
-    public void shouldBeInvalidWhenBothPaymentDeclarationAndPaymentIntentionArePopulated() {
-        PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentDeclaration(SamplePaymentDeclaration.validDefaults())
-            .paymentIntention(SamplePaymentIntention.immediately())
-            .build();
-
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isFalse();
-    }
-
-    @Test
-    public void shouldInvalidWhenOnlyPaymentDeclarationIsPopulatedAndItIsValid() {
-        PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentDeclaration(SamplePaymentDeclaration.validDefaults())
-            .build();
-
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isFalse();
     }
 
     @Test
     public void shouldInvalidWhenOnlyPaymentIntentionIsPopulatedAndItIsValid() {
-        PartAdmissionResponse partAdmissionResponse = builder()
+        FullAdmissionResponse fullAdmissionResponse = builder()
             .paymentIntention(SamplePaymentIntention.immediately())
             .build();
 
-        assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
+        assertThat(validator.isValid(fullAdmissionResponse, validatorContext)).isTrue();
     }
 
-    private static PartAdmissionResponse.PartAdmissionResponseBuilder builder() {
-        return PartAdmissionResponse.builder()
+    private static FullAdmissionResponse.FullAdmissionResponseBuilder builder() {
+        return FullAdmissionResponse.builder()
             .freeMediation(YesNoOption.YES)
             .moreTimeNeeded(YesNoOption.NO);
     }
