@@ -18,6 +18,9 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 public class ValidFullAdmissionConstraintValidator
     implements ConstraintValidator<ValidAdmission, FullAdmissionResponse> {
 
+    private static final String SOM_PROVIDED_ERROR = mayNotBeProvidedError(PAYMENT_OPTION, IMMEDIATELY.name());
+    private static final String SOM_NOT_PROVIDED_ERROR = mayNotBeNullError(PAYMENT_OPTION, "not " + IMMEDIATELY.name());
+
     static class Fields {
         static String PAYMENT_OPTION = "paymentOption";
         static String STATEMENT_OF_MEANS = "statementOfMeans";
@@ -26,9 +29,6 @@ public class ValidFullAdmissionConstraintValidator
             // NO-OP
         }
     }
-
-    private static final String SOM_PROVIDED_ERROR = mayNotBeProvidedError(PAYMENT_OPTION, IMMEDIATELY.name());
-    private static final String SOM_NOT_PROVIDED_ERROR = mayNotBeNullError(PAYMENT_OPTION, "not " + IMMEDIATELY.name());
 
     @Override
     public boolean isValid(FullAdmissionResponse response, ConstraintValidatorContext context) {
