@@ -30,9 +30,9 @@ public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
                 ccdExpense.getAmountPaid(), actual.getAmountPaid());
         }
 
-        if (!Objects.equals(actual.getOtherExpense().orElse(null), ccdExpense.getOtherExpense())) {
-            failWithMessage("Expected Expense.otherExpense to be <%s> but was <%s>",
-                ccdExpense.getOtherExpense(), actual.getOtherExpense());
+        if (!Objects.equals(actual.getOtherName().orElse(null), ccdExpense.getOtherName())) {
+            failWithMessage("Expected Expense.otherName to be <%s> but was <%s>",
+                ccdExpense.getOtherName(), actual.getOtherName());
         }
         return this;
     }

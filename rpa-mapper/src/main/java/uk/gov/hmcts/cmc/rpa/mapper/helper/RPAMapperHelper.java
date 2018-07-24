@@ -10,7 +10,7 @@ public class RPAMapperHelper {
     }
 
     public static String prependWithTradingAs(String value) {
-        return "Trading as " + value;
+        return "T/A " + value;
     }
 
     public static boolean isAddressAmended(Party ownParty, TheirDetails oppositeParty) {
