@@ -65,7 +65,7 @@ public class ValidPartAdmissionConstraintValidator
                 valid = false;
             }
 
-        } else if (!response.getPaymentDeclaration().isPresent() && !response.getPaymentIntention().isPresent()) {
+        } else if (!isDeclarationPopulated) {
             setValidationErrors(context, PAYMENT_DECLARATION, mayNotBeNullError(PAYMENT_INTENTION));
             setValidationErrors(context, PAYMENT_INTENTION, mayNotBeNullError(PAYMENT_DECLARATION));
             valid = false;
