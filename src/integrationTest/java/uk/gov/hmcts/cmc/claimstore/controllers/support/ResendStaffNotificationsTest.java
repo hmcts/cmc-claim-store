@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import org.junit.Before;
 import org.junit.Test;

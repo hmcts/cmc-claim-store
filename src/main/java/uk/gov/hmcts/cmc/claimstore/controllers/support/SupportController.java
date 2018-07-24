@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
