@@ -162,7 +162,7 @@ public class ClaimServiceTest {
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION);
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, );
 
         assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 

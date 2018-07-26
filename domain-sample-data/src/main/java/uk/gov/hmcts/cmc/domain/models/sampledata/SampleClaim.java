@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import com.sun.javafx.collections.ImmutableObservableList;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -9,6 +10,10 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,6 +55,7 @@ public final class SampleClaim {
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
     private URI sealedClaimDocument = null;
+    private List<String> features = Collections.singletonList("admissions");
 
     private SampleClaim() {
     }
@@ -102,7 +108,8 @@ public final class SampleClaim {
             null,
             null,
             null,
-            null
+            null,
+            new ArrayList<>()
         );
     }
 
@@ -158,7 +165,8 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocument
+            sealedClaimDocument,
+            features
         );
     }
 

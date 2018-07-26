@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClaimMapper implements ResultSetMapper<Claim> {
 
@@ -41,7 +43,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             MappingUtils.toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_requested_at")),
             toNullableSettlement(result.getString("settlement")),
             MappingUtils.toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
-            mapNullableUri(result.getString("sealed_claim_document_management_self_path"))
+            mapNullableUri(result.getString("sealed_claim_document_management_self_path")),
+            toNullableFeatures(result.getString("features"))
         );
     }
 
@@ -59,6 +62,11 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
 
     private CountyCourtJudgment toNullableCountyCourtJudgment(String input) {
         return toNullableEntity(input, CountyCourtJudgment.class);
+    }
+
+    private List<String> toNullableFeatures(String input) {
+        List<String> list = new ArrayList<>();
+        return toNullableEntity(input,  list.getClass());
     }
 
     private Settlement toNullableSettlement(String input) {

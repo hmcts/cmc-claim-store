@@ -40,7 +40,7 @@ public class ClaimControllerTest {
     public void shouldSaveClaimInRepository() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
-        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION))).thenReturn(CLAIM);
+        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION), )).thenReturn(CLAIM);
 
         //when
         Claim output = claimController.save(input, USER_ID, AUTHORISATION);
