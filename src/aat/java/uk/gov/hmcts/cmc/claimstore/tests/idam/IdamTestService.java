@@ -59,6 +59,12 @@ public class IdamTestService {
             || StringUtils.contains(idamUrl, "platform.hmcts.net");
     }
 
+    public User createSolicitor() {
+        String email = testData.nextUserEmail();
+        idamTestApi.createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
+        return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
+    }
+
     public User createCitizen() {
         String email = testData.nextUserEmail();
         idamTestApi.createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
@@ -156,6 +162,14 @@ public class IdamTestService {
         return new CreateUserRequest(
             username,
             new UserGroup("cmc-private-beta"),
+            password
+        );
+    }
+
+    private CreateUserRequest createSolicitorRequest(String username, String password) {
+        return new CreateUserRequest(
+            username,
+            new UserGroup("cmc-solicitor"),
             password
         );
     }
