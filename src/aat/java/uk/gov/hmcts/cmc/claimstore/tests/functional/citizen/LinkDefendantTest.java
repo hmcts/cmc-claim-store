@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.tests.functional;
+package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
 import org.junit.Before;
