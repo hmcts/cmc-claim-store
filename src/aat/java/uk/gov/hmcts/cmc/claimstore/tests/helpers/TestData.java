@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import static java.lang.String.format;
@@ -27,6 +29,13 @@ public class TestData {
                     .withRepresentative(null)
                     .individualDetails()
             );
+    }
+
+    public SampleClaimData submittedBySolicitorBuilder() {
+        return SampleClaimData.submittedByLegalRepresentativeBuilder()
+            .withClaimant(SampleParty.builder()
+                .withRepresentative(SampleRepresentative.builder().build())
+                .party());
     }
 
     public String nextUserEmail() {
