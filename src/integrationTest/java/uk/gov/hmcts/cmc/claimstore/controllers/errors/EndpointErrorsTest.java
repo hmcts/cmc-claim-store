@@ -164,14 +164,15 @@ public class EndpointErrorsTest extends MockSpringTest {
                 .build()
         );
 
-        given(claimRepository.saveRepresented(
-            anyString(), anyString(), any(LocalDate.class), any(LocalDate.class), anyString(), anyString())
-        ).willThrow(duplicateKeyError);
+        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
+            any(LocalDate.class), anyString(), anyString(), anyString()))
+            .willThrow(duplicateKeyError);
 
         webClient
             .perform(post("/claims/" + claimantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("Features", "admissions")
                 .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
             )
             .andExpect(status().isConflict());

@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -162,7 +163,7 @@ public class ClaimServiceTest {
             .thenReturn(Optional.of(claim));
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, );
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
 
         assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 

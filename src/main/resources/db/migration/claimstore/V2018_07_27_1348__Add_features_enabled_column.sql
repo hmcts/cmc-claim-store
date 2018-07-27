@@ -1,2 +1,2 @@
 ALTER TABLE claim
-  ADD COLUMN features JSON;
+  ADD COLUMN features JSONB;

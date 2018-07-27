@@ -55,6 +55,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             .perform(post("/claims/" + USER_ID)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("Features","admissions")
                 .content(jsonMapper.toJson(claimData))
             );
     }

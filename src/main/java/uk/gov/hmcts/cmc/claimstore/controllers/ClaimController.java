@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.FeatureEnabled;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
@@ -98,7 +97,7 @@ public class ClaimController {
         @Valid @NotNull @RequestBody ClaimData claimData,
         @PathVariable("submitterId") String submitterId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestHeader("features") List<String> features
+        @RequestHeader("Features") List<String> features
     ) {
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
     }
