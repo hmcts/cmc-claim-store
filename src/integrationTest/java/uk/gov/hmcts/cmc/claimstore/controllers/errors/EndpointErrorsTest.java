@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.errors;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.StatementContext;
@@ -172,7 +173,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .perform(post("/claims/" + claimantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .header("Features", "admissions")
+                .header("Features", ImmutableList.of("admissions"))
                 .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
             )
             .andExpect(status().isConflict());
