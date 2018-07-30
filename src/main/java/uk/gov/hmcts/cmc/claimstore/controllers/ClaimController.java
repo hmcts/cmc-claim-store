@@ -97,7 +97,7 @@ public class ClaimController {
         @Valid @NotNull @RequestBody ClaimData claimData,
         @PathVariable("submitterId") String submitterId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestHeader("Features") List<String> features
+        @RequestHeader(value = "Features", required = false) List<String> features
     ) {
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
     }
