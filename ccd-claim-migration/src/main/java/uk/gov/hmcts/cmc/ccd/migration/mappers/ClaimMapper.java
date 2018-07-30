@@ -44,7 +44,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableSettlement(result.getString("settlement")),
             MappingUtils.toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
             mapNullableUri(result.getString("sealed_claim_document_management_self_path")),
-            toNullableFeatures(result.getString("features"))
+            toList(result.getString("features"))
         );
     }
 
@@ -64,9 +64,9 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
         return toNullableEntity(input, CountyCourtJudgment.class);
     }
 
-    private List<String> toNullableFeatures(String input) {
+    private List<String> toList(String input) {
         List<String> list = new ArrayList<>();
-        return toNullableEntity(input,  list.getClass());
+        return toNullableEntity(input, list.getClass());
     }
 
     private Settlement toNullableSettlement(String input) {
