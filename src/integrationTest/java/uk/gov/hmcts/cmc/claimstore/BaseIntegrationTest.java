@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -55,6 +56,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             .perform(post("/claims/" + USER_ID)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("Features", ImmutableList.of("admissions"))
                 .content(jsonMapper.toJson(claimData))
             );
     }

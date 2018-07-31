@@ -1,11 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -72,6 +76,28 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
             .contains(claimData);
+    }
+
+
+    @Test
+    public void shouldReturnFeaturesStored() throws Exception {
+        ClaimData claimData = SampleClaimData.submittedByClaimant();
+
+        ImmutableList<String> features = ImmutableList.of("admissions", "offers");
+
+        MvcResult result = webClient
+            .perform(MockMvcRequestBuilders.post("/claims/" + USER_ID)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .header("Features", features)
+                .content(jsonMapper.toJson(claimData))
+            )
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getFeatures)
+            .contains(features);
     }
 
     @Test

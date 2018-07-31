@@ -70,6 +70,7 @@ public class CaseMapperTest {
             .referenceNumber("ref no")
             .externalId(UUID.randomUUID().toString())
             .claimData(getCCDLegalClaim())
+            .features("admissions")
             .build();
 
         //when
@@ -91,6 +92,7 @@ public class CaseMapperTest {
             .referenceNumber("ref no")
             .externalId(UUID.randomUUID().toString())
             .claimData(getCCDCitizenClaim())
+            .features("admissions")
             .build();
 
         //when

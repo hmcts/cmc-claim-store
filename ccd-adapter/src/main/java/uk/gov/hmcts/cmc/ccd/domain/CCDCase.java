@@ -33,4 +33,5 @@ public class CCDCase {
     private CCDSettlement settlement;
     private LocalDateTime settlementReachedAt;
     private CCDDocument sealedClaimDocument;
+    private String features;
 }

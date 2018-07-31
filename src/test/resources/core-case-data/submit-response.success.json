@@ -100,7 +100,8 @@
     "externalId": "bde7fc34-65fd-4ae0-8ed7-ea492207a6c4",
     "responseDeadline": "2020-02-06",
     "issuedOn": "2020-01-17",
-    "submitterEmail": "claimant@mail.com"
+    "submitterEmail": "claimant@mail.com",
+    "features":"admissions"
   },
   "security_classification": "PUBLIC"
 }

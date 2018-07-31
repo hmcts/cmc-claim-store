@@ -93,10 +93,13 @@ public class ClaimController {
 
     @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new claim")
-    public Claim save(@Valid @NotNull @RequestBody ClaimData claimData,
-                      @PathVariable("submitterId") String submitterId,
-                      @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.saveClaim(submitterId, claimData, authorisation);
+    public Claim save(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
+    ) {
+        return claimService.saveClaim(submitterId, claimData, authorisation, features);
     }
 
     @PutMapping("/defendant/link")

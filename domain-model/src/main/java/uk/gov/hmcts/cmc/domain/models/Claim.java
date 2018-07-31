@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -49,6 +50,7 @@ public class Claim {
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
     private final URI sealedClaimDocument;
+    private final List<String> features;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -72,7 +74,8 @@ public class Claim {
         LocalDateTime countyCourtJudgmentRequestedAt,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
-        URI sealedClaimDocument
+        URI sealedClaimDocument,
+        List<String> features
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -94,6 +97,7 @@ public class Claim {
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
         this.sealedClaimDocument = sealedClaimDocument;
+        this.features = features;
     }
 
     public Long getId() {
@@ -194,6 +198,10 @@ public class Claim {
 
     public Optional<BigDecimal> getTotalInterest() {
         return TotalAmountCalculator.calculateInterestForClaim(this);
+    }
+
+    public List<String> getFeatures() {
+        return features;
     }
 
     @Override
