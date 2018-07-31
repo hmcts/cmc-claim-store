@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
@@ -92,6 +94,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
             .claimData(claimMapper.to(claim.getClaimData()))
             .defendantEmail(claim.getDefendantEmail())
+            .features(claim.getFeatures().stream().collect(Collectors.joining(", ")))
             .build();
     }
 
@@ -133,7 +136,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()),
             settlement,
             fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()),
-            mapSealedClaimDocument(ccdCase.getSealedClaimDocument())
+            mapSealedClaimDocument(ccdCase.getSealedClaimDocument()),
+            ImmutableList.copyOf(ccdCase.getFeatures().split(","))
         );
     }
 

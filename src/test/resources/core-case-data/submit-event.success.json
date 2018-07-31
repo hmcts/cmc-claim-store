@@ -68,6 +68,7 @@
   "submitterId": "16",
   "submitterEmail": "sabah.irfan@HMCTS.NET",
   "referenceNumber": "000MC002",
+  "features": "admissions",
   "countyCourtJudgment": {
     "paidAmount": 100,
     "paymentOption": "INSTALMENTS",

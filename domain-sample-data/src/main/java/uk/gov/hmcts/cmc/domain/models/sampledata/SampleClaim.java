@@ -9,6 +9,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,6 +52,7 @@ public final class SampleClaim {
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
     private URI sealedClaimDocument = null;
+    private List<String> features = Collections.singletonList("admissions");
 
     private SampleClaim() {
     }
@@ -82,28 +85,20 @@ public final class SampleClaim {
     }
 
     public static Claim claim(ClaimData claimData, String referenceNumber) {
-        return new Claim(
-            CLAIM_ID,
-            USER_ID,
-            LETTER_HOLDER_ID,
-            DEFENDANT_ID,
-            EXTERNAL_ID,
-            referenceNumber,
-            Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()),
-            NOW_IN_LOCAL_ZONE,
-            ISSUE_DATE,
-            RESPONSE_DEADLINE,
-            NOT_REQUESTED_FOR_MORE_TIME,
-            SUBMITTER_EMAIL,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
+        return Claim.builder()
+            .id(CLAIM_ID)
+            .submitterId(USER_ID)
+            .letterHolderId(LETTER_HOLDER_ID)
+            .defendantId(DEFENDANT_ID)
+            .externalId(EXTERNAL_ID)
+            .referenceNumber(referenceNumber)
+            .claimData(Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()))
+            .createdAt(NOW_IN_LOCAL_ZONE)
+            .issuedOn(ISSUE_DATE)
+            .responseDeadline(RESPONSE_DEADLINE)
+            .moreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
+            .submitterEmail(SUBMITTER_EMAIL)
+            .build();
     }
 
     public static Claim getWithSubmissionInterestDate() {
@@ -158,7 +153,8 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocument
+            sealedClaimDocument,
+            features
         );
     }
 

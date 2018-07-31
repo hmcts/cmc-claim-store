@@ -161,12 +161,14 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public Claim saveClaim(String authorisation, Claim claim) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
+        String features = jsonMapper.toJson(claim.getFeatures());
         if (claim.getClaimData().isClaimantRepresented()) {
             claimRepository.saveRepresented(claimDataString, claim.getSubmitterId(), claim.getIssuedOn(),
-                claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail());
+                claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features);
         } else {
             claimRepository.saveSubmittedByClaimant(claimDataString, claim.getSubmitterId(), claim.getLetterHolderId(),
-                claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail());
+                claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
+                claim.getSubmitterEmail(), features);
         }
 
         return claimRepository
