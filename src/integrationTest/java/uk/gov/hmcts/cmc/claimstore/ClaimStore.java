@@ -64,7 +64,8 @@ public class ClaimStore {
             LocalDate.now(),
             responseDeadline,
             claimData.getExternalId().toString(),
-            SampleClaim.SUBMITTER_EMAIL
+            SampleClaim.SUBMITTER_EMAIL,
+            "[\"admissions\"]"
         );
 
         logger.debug("Saved claim has been given ID {}.", claimId);

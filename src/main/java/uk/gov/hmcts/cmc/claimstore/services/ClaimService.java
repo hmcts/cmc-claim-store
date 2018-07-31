@@ -130,7 +130,12 @@ public class ClaimService {
     }
 
     @Transactional(transactionManager = "transactionManager")
-    public Claim saveClaim(String submitterId, ClaimData claimData, String authorisation) {
+    public Claim saveClaim(
+        String submitterId,
+        ClaimData claimData,
+        String authorisation,
+        List<String> features
+    ) {
         String externalId = claimData.getExternalId().toString();
 
         Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
@@ -158,6 +163,7 @@ public class ClaimService {
             .submitterEmail(submitterEmail)
             .createdAt(nowInUTC())
             .letterHolderId(letterHolderId.orElse(null))
+            .features(features)
             .build();
 
         Claim issuedClaim = caseRepository.saveClaim(authorisation, claim);

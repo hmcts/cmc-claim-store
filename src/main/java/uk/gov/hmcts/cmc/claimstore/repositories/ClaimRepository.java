@@ -70,7 +70,8 @@ public interface ClaimRepository {
         + "response_deadline, "
         + "external_id, "
         + "submitter_email, "
-        + "reference_number"
+        + "reference_number, "
+        + "features"
         + ") "
         + "VALUES ("
         + ":submitterId, "
@@ -79,7 +80,8 @@ public interface ClaimRepository {
         + ":responseDeadline, "
         + ":externalId, "
         + ":submitterEmail, "
-        + "next_legal_rep_reference_number()"
+        + "next_legal_rep_reference_number(), "
+        + ":features::JSONB"
         + ")")
     Long saveRepresented(
         @Bind("claim") String claim,
@@ -87,7 +89,8 @@ public interface ClaimRepository {
         @Bind("issuedOn") LocalDate issuedOn,
         @Bind("responseDeadline") LocalDate responseDeadline,
         @Bind("externalId") String externalId,
-        @Bind("submitterEmail") String submitterEmail
+        @Bind("submitterEmail") String submitterEmail,
+        @Bind("features") String features
     );
 
     @GetGeneratedKeys
@@ -99,7 +102,8 @@ public interface ClaimRepository {
         + "response_deadline, "
         + "external_id, "
         + "submitter_email, "
-        + "reference_number"
+        + "reference_number, "
+        + "features"
         + ") "
         + "VALUES ("
         + ":submitterId, "
@@ -109,7 +113,8 @@ public interface ClaimRepository {
         + ":responseDeadline, "
         + ":externalId, "
         + ":submitterEmail, "
-        + "next_reference_number()"
+        + "next_reference_number(), "
+        + ":features::JSONB"
         + ")")
     Long saveSubmittedByClaimant(
         @Bind("claim") String claim,
@@ -118,7 +123,8 @@ public interface ClaimRepository {
         @Bind("issuedOn") LocalDate issuedOn,
         @Bind("responseDeadline") LocalDate responseDeadline,
         @Bind("externalId") String externalId,
-        @Bind("submitterEmail") String submitterEmail
+        @Bind("submitterEmail") String submitterEmail,
+        @Bind("features") String features
     );
 
     @SqlUpdate(

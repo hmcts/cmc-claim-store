@@ -10,9 +10,9 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
-import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,10 +40,11 @@ public class ClaimControllerTest {
     public void shouldSaveClaimInRepository() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
-        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION))).thenReturn(CLAIM);
+        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions"))))
+            .thenReturn(CLAIM);
 
         //when
-        Claim output = claimController.save(input, USER_ID, AUTHORISATION);
+        Claim output = claimController.save(input, USER_ID, AUTHORISATION, singletonList("admissions"));
 
         //then
         assertThat(output).isEqualTo(CLAIM);
@@ -53,7 +54,7 @@ public class ClaimControllerTest {
     public void shouldReturnClaimFromRepositoryForClaimantId() {
         //given
         when(claimService.getClaimBySubmitterId(eq(USER_ID), eq(AUTHORISATION)))
-            .thenReturn(Collections.singletonList(CLAIM));
+            .thenReturn(singletonList(CLAIM));
 
         //when
         List<Claim> output = claimController.getBySubmitterId(USER_ID, AUTHORISATION);
@@ -73,5 +74,4 @@ public class ClaimControllerTest {
         //then
         assertThat(output).isEqualTo(CLAIM);
     }
-
 }

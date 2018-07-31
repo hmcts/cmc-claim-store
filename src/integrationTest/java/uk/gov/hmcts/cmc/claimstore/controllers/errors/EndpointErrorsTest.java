@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.errors;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.StatementContext;
@@ -164,14 +165,15 @@ public class EndpointErrorsTest extends MockSpringTest {
                 .build()
         );
 
-        given(claimRepository.saveRepresented(
-            anyString(), anyString(), any(LocalDate.class), any(LocalDate.class), anyString(), anyString())
-        ).willThrow(duplicateKeyError);
+        given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
+            any(LocalDate.class), anyString(), anyString(), anyString()))
+            .willThrow(duplicateKeyError);
 
         webClient
             .perform(post("/claims/" + claimantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header("Features", ImmutableList.of("admissions"))
                 .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
             )
             .andExpect(status().isConflict());
