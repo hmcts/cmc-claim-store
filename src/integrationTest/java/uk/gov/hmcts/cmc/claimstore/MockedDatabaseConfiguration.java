@@ -65,11 +65,11 @@ class MockedDatabaseConfiguration {
     @MockBean
     private Scheduler scheduler;
 
-    @MockBean(name = "schedulerTransactionAwareDataSourceProxy")
+    @MockBean(name = "cmcTransactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
 
-    @MockBean(name = "schedulerTransactionManager")
-    private PlatformTransactionManager schedulerTransactionManager;
+    @MockBean(name = "cmcTransactionManager")
+    private PlatformTransactionManager cmcTransactionManager;
 
     @Bean
     protected PlatformTransactionManager transactionManager() {
