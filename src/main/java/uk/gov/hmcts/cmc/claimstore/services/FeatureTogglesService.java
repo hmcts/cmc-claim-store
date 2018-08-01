@@ -8,11 +8,11 @@ import uk.gov.hmcts.cmc.domain.models.AuthorizedRole;
 import uk.gov.hmcts.cmc.domain.models.UserRole;
 
 @Service
-public class UserAuthorizedRolesService {
+public class FeatureTogglesService {
     private final UserAuthorizedRolesRepository userAuthorizedRolesRepository;
     private final UserService userService;
 
-    public UserAuthorizedRolesService(
+    public FeatureTogglesService(
         UserAuthorizedRolesRepository userAuthorizedRolesRepository,
         UserService userService
     ) {
@@ -33,6 +33,7 @@ public class UserAuthorizedRolesService {
         User user = userService.getUser(authorisation);
         String userId = user.getUserDetails().getId().toString();
         userAuthorizedRolesRepository.saveAuthorizedUserRoles(userId, userRole.getRoleName());
+
         return userAuthorizedRolesRepository.getByUserId(userId)
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + userId)
             );
