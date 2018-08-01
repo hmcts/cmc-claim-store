@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.claimstore.config.db.OptionalContainerFactory;
+import uk.gov.hmcts.cmc.claimstore.repositories.UserAuthorizedRolesRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
@@ -71,5 +72,10 @@ public class DbConfiguration {
     @Bean
     public ReferenceNumberRepository referenceNumberRepository(DBI dbi) {
         return dbi.onDemand(ReferenceNumberRepository.class);
+    }
+
+    @Bean
+    public UserAuthorizedRolesRepository userAuthorizedRolesRepository(DBI dbi) {
+        return dbi.onDemand(UserAuthorizedRolesRepository.class);
     }
 }
