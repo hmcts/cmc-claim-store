@@ -1,16 +1,13 @@
 package uk.gov.hmcts.cmc.scheduler.config;
 
-import org.flywaydb.core.Flyway;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
@@ -19,7 +16,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import javax.sql.DataSource;
 
 @Configuration
 @ConfigurationProperties
@@ -36,43 +32,6 @@ public class QuartzConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties("spring.datasource.scheduler")
-    public DataSourceProperties schedulerDataSourceProperties() {
-        return new DataSourceProperties();
-    }
-
-    @Bean("schedulerDataSource")
-    @ConfigurationProperties("spring.datasource.scheduler")
-    public DataSource schedulerDataSource() {
-        return schedulerDataSourceProperties().initializeDataSourceBuilder().build();
-    }
-
-    @Bean("schedulerTransactionAwareDataSourceProxy")
-    public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(
-        @Qualifier("schedulerDataSource") DataSource dataSource
-    ) {
-        TransactionAwareDataSourceProxy dataSourceProxy = new TransactionAwareDataSourceProxy(dataSource);
-
-        migrateFlyway(dataSourceProxy);
-        return dataSourceProxy;
-    }
-
-    private void migrateFlyway(DataSource dataSource) {
-        final Flyway flyway = new Flyway();
-        flyway.setDataSource(dataSource);
-        flyway.setLocations("scheduler/db/migration");
-        flyway.migrate();
-    }
-
-    @Bean("schedulerTransactionManager")
-    public PlatformTransactionManager transactionManager(
-        @Qualifier("schedulerTransactionAwareDataSourceProxy")
-            TransactionAwareDataSourceProxy schedulerTransactionAwareDataSourceProxy
-    ) {
-        return new DataSourceTransactionManager(schedulerTransactionAwareDataSourceProxy);
-    }
-
-    @Bean
     public SpringBeanJobFactory springBeanJobFactory() {
         AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
         jobFactory.setApplicationContext(applicationContext);
@@ -81,9 +40,9 @@ public class QuartzConfiguration {
 
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(
-        @Qualifier("schedulerTransactionAwareDataSourceProxy")
+        @Qualifier("cmcTransactionAwareDataSourceProxy")
             TransactionAwareDataSourceProxy transactionAwareDataSourceProxy,
-        @Qualifier("schedulerTransactionManager") PlatformTransactionManager transactionManager
+        @Qualifier("cmcTransactionManager") PlatformTransactionManager transactionManager
     ) {
         Properties properties = new Properties();
         properties.putAll(quartzProperties);

@@ -53,8 +53,8 @@ class MockedDatabaseConfiguration {
     @MockBean(name = "claimStoreDataSource", answer = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
 
-    @MockBean(name = "schedulerDataSource", answer = Answers.RETURNS_MOCKS)
-    private DataSource schedulerDataSource;
+    @MockBean(name = "cmcDataSource", answer = Answers.RETURNS_MOCKS)
+    private DataSource cmcDataSource;
 
     @MockBean
     private SpringBeanJobFactory springBeanJobFactory;
