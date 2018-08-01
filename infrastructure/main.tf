@@ -126,12 +126,12 @@ module "claim-store-api" {
     CLAIM_STORE_DB_NAME = "${var.database-name}"
     CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
 
-    SCHEDULER_DB_HOST = "${module.database.host_name}"
-    SCHEDULER_DB_PORT = "${module.database.postgresql_listen_port}"
-    SCHEDULER_DB_NAME = "${module.database.postgresql_database}"
-    SCHEDULER_DB_USERNAME = "${module.database.user_name}"
-    SCHEDULER_DB_PASSWORD = "${module.database.postgresql_password}"
-    SCHEDULER_DB_CONNECTION_OPTIONS = "?ssl"
+    CMC_DB_HOST = "${module.database.host_name}"
+    CMC_DB_PORT = "${module.database.postgresql_listen_port}"
+    CMC_DB_NAME = "${module.database.postgresql_database}"
+    CMC_DB_USERNAME = "${module.database.user_name}"
+    CMC_DB_PASSWORD = "${module.database.postgresql_password}"
+    CMC_DB_CONNECTION_OPTIONS = "?ssl"
 
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
