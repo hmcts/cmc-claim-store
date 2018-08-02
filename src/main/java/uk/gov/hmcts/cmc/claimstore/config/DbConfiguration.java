@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.UserAuthorizedRolesRepository;
 
 import javax.sql.DataSource;
 
@@ -72,10 +71,5 @@ public class DbConfiguration {
     @Bean
     public ReferenceNumberRepository referenceNumberRepository(DBI dbi) {
         return dbi.onDemand(ReferenceNumberRepository.class);
-    }
-
-    @Bean
-    public UserAuthorizedRolesRepository userAuthorizedRolesRepository(DBI dbi) {
-        return dbi.onDemand(UserAuthorizedRolesRepository.class);
     }
 }

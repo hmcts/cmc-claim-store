@@ -3,17 +3,19 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.services.FeatureTogglesService;
-import uk.gov.hmcts.cmc.domain.models.AuthorizedRole;
-import uk.gov.hmcts.cmc.domain.models.UserRole;
+import uk.gov.hmcts.cmc.claimstore.services.UserRolesService;
+import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -22,26 +24,27 @@ import javax.validation.constraints.NotNull;
 @RequestMapping(
     path = "/users",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class FeatureTogglePermissionsController {
+public class UserRolesController {
 
-    private final FeatureTogglesService featureTogglesService;
+    private final UserRolesService userRolesService;
 
-    public FeatureTogglePermissionsController(FeatureTogglesService featureTogglesService) {
-        this.featureTogglesService = featureTogglesService;
+    public UserRolesController(UserRolesService userRolesService) {
+        this.userRolesService = userRolesService;
     }
 
     @GetMapping("/roles")
     @ApiOperation("Fetch user roles")
-    public String getBySubmitterId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return featureTogglesService.authorizedRole(authorisation);
+    public List<String> getByUserId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
+        return userRolesService.userRoles(authorisation);
     }
 
     @PostMapping(value = "/roles/assign", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation("Creates a new AuthorizedRole")
-    public AuthorizedRole save(
-        @Valid @NotNull @RequestBody UserRole userRole,
+    @ApiOperation("Creates a new User Role")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void save(
+        @Valid @NotNull @RequestBody UserRoleRequest userRoleRequest,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return featureTogglesService.saveRole(userRole, authorisation);
+        userRolesService.saveRole(userRoleRequest, authorisation);
     }
 }

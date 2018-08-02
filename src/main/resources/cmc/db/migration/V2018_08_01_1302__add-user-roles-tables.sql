@@ -1,5 +1,5 @@
 
-CREATE TABLE user_authorized_roles
+CREATE TABLE user_roles
   (
     USER_ID TEXT NOT NULL,
     ROLE  VARCHAR(200) NOT NULL,
