@@ -7,12 +7,15 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import javax.validation.constraints.NotEmpty;
+
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 @EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserRoleRequest {
+    @NotEmpty
     @JsonProperty("role_name")
     private final String roleName;
 

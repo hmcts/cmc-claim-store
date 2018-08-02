@@ -10,6 +10,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 @EqualsAndHashCode
 public class UserRole {
+
     private final String userId;
 
     private final String role;
