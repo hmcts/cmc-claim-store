@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -13,24 +12,22 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 @EqualsAndHashCode
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserRoleRequest {
     @NotEmpty
-    @JsonProperty("role_name")
-    private final String roleName;
+    @JsonProperty("role")
+    private final String role;
 
     @JsonCreator
-    public UserRoleRequest(String roleName) {
-        this.roleName = roleName;
+    public UserRoleRequest(String role) {
+        this.role = role;
     }
 
-    public String getRoleName() {
-        return roleName;
+    public String getRole() {
+        return role;
     }
 
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
 }

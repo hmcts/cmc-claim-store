@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 import uk.gov.hmcts.cmc.domain.models.UserRole;
-import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ public class UserRolesService {
         this.userService = userService;
     }
 
-    public List<String> userRoles(String authorisation) {
+    public List<String> retrieveUserRoles(String authorisation) {
         User user = userService.getUser(authorisation);
         String userId = user.getUserDetails().getId().toString();
 
@@ -32,9 +31,9 @@ public class UserRolesService {
             .collect(Collectors.toList());
     }
 
-    public void saveRole(UserRoleRequest userRoleRequest, String authorisation) {
+    public void saveRole(String userRolesName, String authorisation) {
         User user = userService.getUser(authorisation);
         String userId = user.getUserDetails().getId().toString();
-        userRolesRepository.saveUserRole(userId, userRoleRequest.getRoleName());
+        userRolesRepository.saveUserRole(userId, userRolesName);
     }
 }

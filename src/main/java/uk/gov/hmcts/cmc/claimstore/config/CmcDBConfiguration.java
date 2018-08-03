@@ -55,9 +55,10 @@ public class CmcDBConfiguration {
         return new DataSourceTransactionManager(cmcTransactionAwareDataSourceProxy);
     }
 
-
     @Bean("cmcDbi")
-    public DBI dbi(@Qualifier("cmcTransactionAwareDataSourceProxy") TransactionAwareDataSourceProxy cmcTransactionAwareDataSourceProxy) {
+    public DBI dbi(@Qualifier("cmcTransactionAwareDataSourceProxy")
+                       TransactionAwareDataSourceProxy cmcTransactionAwareDataSourceProxy
+    ) {
         DBI dbi = new DBI(cmcTransactionAwareDataSourceProxy);
         dbi.registerContainerFactory(new OptionalContainerFactory());
 
@@ -65,7 +66,7 @@ public class CmcDBConfiguration {
     }
 
     @Bean
-    public UserRolesRepository userAuthorizedRolesRepository(@Qualifier("cmcDbi") DBI dbi) {
+    public UserRolesRepository userRolesRepository(@Qualifier("cmcDbi") DBI dbi) {
         return dbi.onDemand(UserRolesRepository.class);
     }
 }

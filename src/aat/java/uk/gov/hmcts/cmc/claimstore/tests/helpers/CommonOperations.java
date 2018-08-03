@@ -69,7 +69,7 @@ public class CommonOperations {
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
             .body(jsonMapper.toJson(userRoleRequest))
             .when()
-            .post("/users/roles/assign");
+            .post("/user/roles");
     }
 
     public Response getUserRole(String userAuthentication) {
@@ -78,7 +78,7 @@ public class CommonOperations {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
             .when()
-            .get("/users/roles");
+            .get("/user/roles");
     }
 
     public void linkDefendant(String userAuthentication) {

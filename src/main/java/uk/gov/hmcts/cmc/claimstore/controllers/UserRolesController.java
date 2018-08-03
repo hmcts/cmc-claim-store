@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 @Api
 @RestController
 @RequestMapping(
-    path = "/users",
+    path = "/user/roles",
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class UserRolesController {
 
@@ -32,19 +32,19 @@ public class UserRolesController {
         this.userRolesService = userRolesService;
     }
 
-    @GetMapping("/roles")
+    @GetMapping
     @ApiOperation("Fetch user roles")
     public List<String> getByUserId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return userRolesService.userRoles(authorisation);
+        return userRolesService.retrieveUserRoles(authorisation);
     }
 
-    @PostMapping(value = "/roles/assign", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a new User Role")
     @ResponseStatus(value = HttpStatus.CREATED)
     public void save(
         @Valid @NotNull @RequestBody UserRoleRequest userRoleRequest,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        userRolesService.saveRole(userRoleRequest, authorisation);
+        userRolesService.saveRole(userRoleRequest.getRole(), authorisation);
     }
 }

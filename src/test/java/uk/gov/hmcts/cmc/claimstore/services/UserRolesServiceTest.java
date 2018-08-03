@@ -6,13 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.UserRole;
-import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,23 +51,17 @@ public class UserRolesServiceTest {
     }
 
     @Test
-    public void userRoleShouldCallRepositoryWhenValidRoleIsReturned() {
-
+    public void retrieveUserRolesShouldCallRepositoryWhenValidRoleIsReturned() {
         when(userRolesRepository.getByUserId(eq(USER_ID))).thenReturn(ImmutableList.of(authorizedUserRole));
-
-        List<String> actual = userRolesService.userRoles(AUTHORISATION);
-        String role = actual.stream().findAny().orElseThrow(() -> new NotFoundException("Role not found"));
-        assertThat(role).isEqualTo(CONSENT_GIVEN_ROLE);
+        List<String> roles = userRolesService.retrieveUserRoles(AUTHORISATION);
+        assertThat(roles).containsOnly(CONSENT_GIVEN_ROLE);
     }
 
     @Test
-    public void userRoleShouldReturnEmptyIfNotFound() {
-
+    public void retrieveUserRolesShouldReturnEmptyIfNotFound() {
         when(userRolesRepository.getByUserId(eq(USER_ID))).thenReturn(Collections.emptyList());
-
-        List<String> actual = userRolesService.userRoles(AUTHORISATION);
-
-        assertThat(actual).isEmpty();
+        List<String> roles = userRolesService.retrieveUserRoles(AUTHORISATION);
+        assertThat(roles).isEmpty();
     }
 
     @Test
@@ -77,8 +69,7 @@ public class UserRolesServiceTest {
         doNothing()
             .when(userRolesRepository).saveUserRole(eq(USER_ID), eq(authorizedUserRole.getRole()));
 
-        userRolesService
-            .saveRole(new UserRoleRequest(authorizedUserRole.getRole()), AUTHORISATION);
+        userRolesService.saveRole(authorizedUserRole.getRole(), AUTHORISATION);
 
         verify(userRolesRepository, once())
             .saveUserRole(eq(USER_ID), eq(authorizedUserRole.getRole()));
