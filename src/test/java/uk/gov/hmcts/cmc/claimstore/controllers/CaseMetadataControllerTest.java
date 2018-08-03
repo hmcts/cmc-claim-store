@@ -20,7 +20,6 @@ import java.util.Optional;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -94,10 +93,9 @@ public class CaseMetadataControllerTest {
             .thenReturn(Optional.empty());
 
         // when
-        CaseMetadata output = controller.getByClaimReference("reference");
+        controller.getByClaimReference("reference");
 
         // then exception should have been thrown
-        fail("Expected exception was not thrown; returned instead: " + output);
     }
 
     @Test
