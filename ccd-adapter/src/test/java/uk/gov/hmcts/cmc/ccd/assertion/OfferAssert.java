@@ -25,6 +25,11 @@ public class OfferAssert extends AbstractAssert<OfferAssert, Offer> {
                 ccdOffer.getCompletionDate(), actual.getCompletionDate());
         }
 
+        if (!Objects.equals(actual.isGenerated(), ccdOffer.isGenerated())) {
+            failWithMessage("Expected Offer.generated to be <%s> but was <%s>",
+                ccdOffer.isGenerated(), actual.isGenerated());
+        }
+
         return this;
     }
 }

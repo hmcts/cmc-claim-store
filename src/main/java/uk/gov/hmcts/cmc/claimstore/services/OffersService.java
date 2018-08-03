@@ -113,4 +113,14 @@ public class OffersService {
     private String userAction(String userAction, String userType) {
         return userAction + "_" + userType;
     }
+
+    public Claim signSettlementAgreement(String externalId, Settlement settlement, String authorisation) {
+        final Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        assertSettlementIsNotReached(claim);
+        final String userAction = userAction("OFFER_ACCEPTED_BY", claim.getClaimData().getClaimant().getName());
+        this.caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+        final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
+        this.eventProducer.createSignSettlementAgreementEvent(signedSettlementClaim, MadeBy.CLAIMANT);
+        return signedSettlementClaim;
+    }
 }

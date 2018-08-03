@@ -12,11 +12,12 @@ public class OfferMapper implements Mapper<CCDOffer, Offer> {
         return CCDOffer.builder()
             .content(offer.getContent())
             .completionDate(offer.getCompletionDate())
+            .generated(offer.isGenerated())
             .build();
     }
 
     @Override
     public Offer from(CCDOffer ccdOffer) {
-        return new Offer(ccdOffer.getContent(), ccdOffer.getCompletionDate());
+        return new Offer(ccdOffer.getContent(), ccdOffer.getCompletionDate(), ccdOffer.isGenerated());
     }
 }

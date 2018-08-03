@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
@@ -11,6 +12,7 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 @EqualsAndHashCode
 public class Offer {
 
@@ -24,9 +26,12 @@ public class Offer {
     @FutureDate
     private final LocalDate completionDate;
 
-    public Offer(String content, LocalDate completionDate) {
+    private final boolean generated;
+
+    public Offer(String content, LocalDate completionDate, boolean generated) {
         this.content = content;
         this.completionDate = completionDate;
+        this.generated = generated;
     }
 
     public String getContent() {
@@ -35,6 +40,10 @@ public class Offer {
 
     public LocalDate getCompletionDate() {
         return completionDate;
+    }
+
+    public boolean isGenerated() {
+        return generated;
     }
 
     @Override

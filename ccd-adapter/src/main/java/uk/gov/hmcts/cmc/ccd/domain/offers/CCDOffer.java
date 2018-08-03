@@ -10,4 +10,5 @@ import java.time.LocalDate;
 public class CCDOffer {
     private String content;
     private LocalDate completionDate;
+    private boolean generated;
 }
