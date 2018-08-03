@@ -12,8 +12,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FeatureTogglesTest extends BaseTest {
-    protected User user;
     private static final String CONSENT_GIVEN_ROLE = "cmc-new-features-consent-given";
+
+    private User user;
 
     @Before
     public void before() {

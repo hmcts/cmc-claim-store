@@ -51,7 +51,7 @@ public class UserRolesServiceTest {
     }
 
     @Test
-    public void retrieveUserRolesShouldCallRepositoryWhenValidRoleIsReturned() {
+    public void retrieveUserRolesShouldReturnRoleFoundInRepository() {
         when(userRolesRepository.getByUserId(eq(USER_ID))).thenReturn(ImmutableList.of(authorizedUserRole));
         List<String> roles = userRolesService.retrieveUserRoles(AUTHORISATION);
         assertThat(roles).containsOnly(CONSENT_GIVEN_ROLE);
