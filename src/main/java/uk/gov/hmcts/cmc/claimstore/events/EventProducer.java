@@ -64,7 +64,7 @@ public class EventProducer {
         publisher.publishEvent(new AgreementCountersignedEvent(claim, party));
     }
 
-    public void createSignSettlementAgreementEvent(Claim claim, MadeBy party) {
-        publisher.publishEvent(new SignSettlementAgreementEvent(claim, party));
+    public void createSignSettlementAgreementEvent(Claim claim) {
+        publisher.publishEvent(new SignSettlementAgreementEvent(claim));
     }
 }

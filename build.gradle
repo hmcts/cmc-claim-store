@@ -9,6 +9,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.17.0'
   id 'org.sonarqube' version '2.6.2'
   id 'jacoco'
+  id 'net.ltgt.apt' version '0.14'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -177,6 +178,9 @@ dependencies {
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.1'
+
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')

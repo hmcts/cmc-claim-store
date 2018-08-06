@@ -1,12 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.events.offer;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
-public class SignSettlementAgreementEvent extends OfferRespondedEvent {
+@EqualsAndHashCode
+@Getter
+public class SignSettlementAgreementEvent {
 
-    public SignSettlementAgreementEvent(Claim claim, MadeBy party) {
+    private final Claim claim;
+
+    public SignSettlementAgreementEvent(Claim claim) {
         this.claim = claim;
-        this.party = party;
     }
 }

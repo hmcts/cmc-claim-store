@@ -121,7 +121,7 @@ public class OffersService {
         final String userAction = userAction("OFFER_ACCEPTED_BY", claim.getClaimData().getClaimant().getName());
         this.caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
-        this.eventProducer.createSignSettlementAgreementEvent(signedSettlementClaim, MadeBy.CLAIMANT);
+        this.eventProducer.createSignSettlementAgreementEvent(signedSettlementClaim);
         appInsights.trackEvent(RESPONSE_ACCEPTED_SIGN_SETTLEMENT, signedSettlementClaim.getReferenceNumber());
         return signedSettlementClaim;
     }

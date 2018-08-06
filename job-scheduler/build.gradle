@@ -1,6 +1,4 @@
-plugins {
-  id 'net.ltgt.apt' version '0.14'
-}
+apply plugin: 'net.ltgt.apt'
 
 def versions = [
   logback          : '1.2.3',

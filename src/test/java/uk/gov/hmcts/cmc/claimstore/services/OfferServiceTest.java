@@ -159,7 +159,7 @@ public class OfferServiceTest {
         verify(caseRepository)
             .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), anyString());
 
-        verify(eventProducer).createSignSettlementAgreementEvent(eq(claim), eq(MadeBy.CLAIMANT));
+        verify(eventProducer).createSignSettlementAgreementEvent(eq(claim));
 
     }
 
