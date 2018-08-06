@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,9 @@ public class ResponseDeadlineController {
     }
 
     @GetMapping("/{issueDate}")
-    public LocalDate postponedDeadline(@PathVariable LocalDate issueDate) {
+    public LocalDate postponedDeadline(
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @PathVariable LocalDate issueDate
+    ) {
         return calculator.calculatePostponedResponseDeadline(issueDate);
     }
 }
