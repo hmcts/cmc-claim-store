@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -135,7 +134,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             settlement,
             fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()),
             mapSealedClaimDocument(ccdCase.getSealedClaimDocument()),
-            ImmutableList.copyOf(ccdCase.getFeatures().split(","))
+            null
         );
     }
 
