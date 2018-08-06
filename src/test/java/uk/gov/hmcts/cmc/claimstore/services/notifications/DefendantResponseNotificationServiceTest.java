@@ -7,6 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +34,8 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(properties.getTemplates()).thenReturn(templates);
         when(emailTemplates.getDefendantResponseIssuedToIndividual()).thenReturn(DEFENDANT_RESPONSE_TEMPLATE);
+        when(emailTemplates.getDefendantResponseWithNoMediationIssued())
+            .thenReturn(DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE);
     }
 
     @Test(expected = NotificationException.class)
@@ -56,7 +59,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         service.notifyDefendant(claim, USER_EMAIL, reference);
 
         verify(notificationClient).sendEmail(
-            anyString(), eq(USER_EMAIL), anyMap(), anyString());
+            eq(DEFENDANT_RESPONSE_TEMPLATE), eq(USER_EMAIL), anyMap(), anyString());
     }
 
     @Test
@@ -64,7 +67,15 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         service.notifyDefendant(claim, USER_EMAIL, reference);
 
         verify(notificationClient)
-            .sendEmail(anyString(), eq(USER_EMAIL), anyMap(), eq(reference));
+            .sendEmail(eq(DEFENDANT_RESPONSE_TEMPLATE), eq(USER_EMAIL), anyMap(), eq(reference));
+    }
+
+    @Test
+    public void notifyDefendantShouldUseDefendantResponseIssuedToIndividualEmailTemplate() throws Exception {
+        service.notifyDefendant(SampleClaim.getClaimWithFullDefenceNoMediation(), USER_EMAIL, reference);
+
+        verify(notificationClient)
+            .sendEmail(eq(DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE), eq(USER_EMAIL), anyMap(), eq(reference));
     }
 
     @Test

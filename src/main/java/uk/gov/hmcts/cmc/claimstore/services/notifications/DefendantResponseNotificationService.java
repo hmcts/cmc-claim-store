@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
@@ -30,7 +31,6 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
-
 
 @Service
 public class DefendantResponseNotificationService {
@@ -64,11 +64,19 @@ public class DefendantResponseNotificationService {
     public void notifyDefendant(Claim claim, String defendantEmail, String reference) {
         Map<String, String> parameters = aggregateParams(claim);
 
-        String template = getDefendantResponseIssuedEmailTemplate(claim.getClaimData().getClaimant());
+        String template = getDefendantResponseIssuedEmailTemplate(claim);
         notify(defendantEmail, template, parameters, reference);
     }
 
-    private String getDefendantResponseIssuedEmailTemplate(Party party) {
+    private String getDefendantResponseIssuedEmailTemplate(Claim claim) {
+        Party party = claim.getClaimData().getClaimant();
+        Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Response expected"));
+
+        if (response.getResponseType().equals(ResponseType.FULL_DEFENCE)
+            && response.getFreeMediation().orElse(YesNoOption.YES).equals(YesNoOption.NO)) {
+            return getEmailTemplates().getDefendantResponseWithNoMediationIssued();
+        }
+
         if (party instanceof Individual || party instanceof SoleTrader) {
             return getEmailTemplates().getDefendantResponseIssuedToIndividual();
         } else if (party instanceof Company || party instanceof Organisation) {
@@ -95,6 +103,9 @@ public class DefendantResponseNotificationService {
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
         } else {
+            if (response.getResponseType().equals(ResponseType.FULL_DEFENCE)) {
+                return getEmailTemplates().getClaimantResponseWithNoMediationIssued();
+            }
             return getEmailTemplates().getClaimantResponseIssued();
         }
     }
@@ -106,7 +117,6 @@ public class DefendantResponseNotificationService {
         Map<String, String> parameters,
         String reference
     ) {
-
         try {
             notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {

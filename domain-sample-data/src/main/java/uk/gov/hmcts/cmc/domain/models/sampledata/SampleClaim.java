@@ -4,7 +4,9 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -64,6 +66,26 @@ public final class SampleClaim {
                 SampleCountyCourtJudgment.builder()
                     .withPaymentOptionImmediately()
                     .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YesNoOption.YES)
+                .build()
+            ).build();
+    }
+
+    public static Claim getClaimWithFullDefenceNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .withPaymentOptionImmediately()
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YesNoOption.NO)
+                .build()
             ).build();
     }
 
