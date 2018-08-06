@@ -15,15 +15,15 @@ variable "location" {
 variable "env" {}
 
 variable "idam_api_url" {
-  default = "http://idam-api-idam-saat.service.core-compute-saat.internal"
+  default = "http://betaDevBccidamAppLB.reform.hmcts.net"
 }
 
 variable "frontend_url" {
-  default = "https://cmc-citizen-frontend-saat-staging.service.core-compute-saat.internal"
+  default = "https://cmc-citizen-frontend-saat.service.core-compute-saat.internal"
 }
 
 variable "respond_to_claim_url" {
-  default = "https://cmc-citizen-frontend-saat-staging.service.core-compute-saat.internal/first-contact/start"
+  default = "https://cmc-citizen-frontend-saat.service.core-compute-saat.internal/first-contact/start"
 }
 
 variable "database-name" {
