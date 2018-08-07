@@ -294,7 +294,11 @@ public class SettlementOfferTest extends BaseTest {
             MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
 
-        Claim claimSigned = commonOperations.signSettlementAgreement(claim.getExternalId(), claimant.getAuthorisation(), settlement)
+        Claim claimSigned = commonOperations.signSettlementAgreement(
+            claim.getExternalId(),
+            claimant.getAuthorisation(),
+            settlement
+        )
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .and()
