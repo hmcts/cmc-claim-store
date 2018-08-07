@@ -311,6 +311,7 @@ sonarqube {
       "**/*Exception.java," +
       "**/PathPatterns.java," +
       "**/ClaimRepository.java," +
+      "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**"
   }
 }
