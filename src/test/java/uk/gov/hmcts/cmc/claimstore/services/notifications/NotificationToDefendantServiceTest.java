@@ -5,10 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -20,15 +19,23 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationToDefendantServiceTest extends BaseNotificationServiceTest {
 
-    private static final String REFERENCE = "reference";
-    private static final String TEMPLATE_ID = "templateId";
-    private static final Map<String, String> PARAMETERS = new HashMap<>();
+    private static final String REFERENCE = "to-defendant-claimant’s-response-submitted-notification-000CM001";
+    private static final String CLAIMANT_RESPONSE_TEMPLATE = "templateId";
+    private static final String DEFENDANT_EMAIL = "defendant@email.com";
 
     private NotificationToDefendantService service;
+    private Claim claim;
 
     @Before
     public void beforeEachTest() {
         service = new NotificationToDefendantService(notificationClient, properties);
+        claim = SampleClaim.builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+        when(templates.getEmail()).thenReturn(emailTemplates);
+        when(properties.getTemplates()).thenReturn(templates);
+        when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
     }
 
     @Test(expected = NotificationException.class)
@@ -36,13 +43,18 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
-        service.sendNotificationEmail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        service.notifyDefendant(claim);
     }
 
     @Test
     public void shouldSendEmailUsingPredefinedTemplate() throws Exception {
-        service.sendNotificationEmail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        service.notifyDefendant(claim);
 
-        verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(USER_EMAIL), eq(PARAMETERS), eq(REFERENCE));
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_RESPONSE_TEMPLATE),
+            eq(DEFENDANT_EMAIL),
+            anyMap(),
+            eq(REFERENCE)
+        );
     }
 }
