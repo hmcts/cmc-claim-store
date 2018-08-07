@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -60,6 +61,25 @@ public class CommonOperations {
             .body(jsonMapper.toJson(claimData))
             .when()
             .post("/claims/" + userId);
+    }
+
+    public Response saveUserRoles(UserRoleRequest userRoleRequest, String userAuthentication) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .body(jsonMapper.toJson(userRoleRequest))
+            .when()
+            .post("/user/roles");
+    }
+
+    public Response getUserRole(String userAuthentication) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .when()
+            .get("/user/roles");
     }
 
     public void linkDefendant(String userAuthentication) {
