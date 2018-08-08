@@ -179,7 +179,6 @@ public class OfferServiceTest {
             Offer.builder()
                 .content("Defendant's admission content")
                 .completionDate(LocalDate.now().plusDays(60))
-                .generated(true)
                 .build(),
             MadeBy.DEFENDANT);
 

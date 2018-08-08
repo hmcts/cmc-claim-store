@@ -18,7 +18,7 @@ public class SampleOffer {
     }
 
     public Offer build() {
-        return new Offer(content, completionDate, false);
+        return new Offer(content, completionDate, null);
     }
 
     public SampleOffer withContent(String content) {
