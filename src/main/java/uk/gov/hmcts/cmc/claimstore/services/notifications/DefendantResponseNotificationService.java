@@ -155,7 +155,7 @@ public class DefendantResponseNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         if (isFullDefenceAndNoMediation(Objects.requireNonNull(claim.getResponse().orElse(null)))) {
-            parameters.put(DQS_DEADLINE, Formatting.formatDate(claim.getDirectionsQuestionnaireDeadline()));
+            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
         }
 
         return parameters.build();

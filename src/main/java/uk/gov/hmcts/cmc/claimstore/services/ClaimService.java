@@ -49,6 +49,7 @@ public class ClaimService {
     private final ClaimRepository claimRepository;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
@@ -64,6 +65,7 @@ public class ClaimService {
         UserService userService,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
         AppInsights appInsights,
@@ -78,6 +80,7 @@ public class ClaimService {
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.appInsights = appInsights;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
     }
 
     public Claim getClaimById(long claimId) {
@@ -285,7 +288,9 @@ public class ClaimService {
     ) {
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
         if (isFullDefenceWithNoMediation(response)) {
-            caseRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), LocalDate.now(), authorization);
+            LocalDate deadline = directionsQuestionnaireDeadlineCalculator
+                .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
+            caseRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), deadline, authorization);
         }
     }
 
