@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class MappingUtils {
@@ -21,5 +22,9 @@ public class MappingUtils {
 
     public static LocalDateTime toNullableLocalDateTimeFromUTC(Timestamp input) {
         return input != null ? toLocalDateTimeFromUTC(input) : null;
+    }
+
+    public static LocalDate toNullableLocalDateFromUTC(Timestamp input) {
+        return input != null ? toLocalDateTimeFromUTC(input).toLocalDate() : null;
     }
 }

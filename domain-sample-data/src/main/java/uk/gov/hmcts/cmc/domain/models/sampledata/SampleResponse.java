@@ -148,7 +148,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
                 freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,
-                defenceType, defence, paymentDeclaration, timeline, evidence, null
+                defenceType, defence, paymentDeclaration, timeline, evidence
             );
         }
     }

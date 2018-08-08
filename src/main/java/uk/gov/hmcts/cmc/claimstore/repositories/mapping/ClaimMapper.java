@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
+import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLocalDateFromUTC;
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toNullableLocalDateTimeFromUTC;
 
 public class ClaimMapper implements ResultSetMapper<Claim> {
@@ -45,7 +46,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableSettlement(result.getString("settlement")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
             mapNullableUri(result.getString("sealed_claim_document_management_self_path")),
-            toList(result.getString("features"))
+            toList(result.getString("features")),
+            toNullableLocalDateFromUTC(result.getTimestamp("directions_questionnaire_deadline"))
         );
     }
 

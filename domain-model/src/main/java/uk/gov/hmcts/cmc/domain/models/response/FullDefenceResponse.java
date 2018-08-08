@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
@@ -8,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -16,12 +14,6 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
-
-// Create these fields in JSON when serialize Java object, ignore them when deserialize.
-@JsonIgnoreProperties(
-    value = {"directionsQuestionnaireSubmissionDeadline"},
-    allowGetters = true
-)
 
 @EqualsAndHashCode(callSuper = true)
 public class FullDefenceResponse extends Response {
@@ -41,8 +33,6 @@ public class FullDefenceResponse extends Response {
     @Valid
     private final DefendantEvidence evidence;
 
-    private final LocalDate directionsQuestionnaireSubmissionDeadline;
-
     public FullDefenceResponse(
         YesNoOption freeMediation,
         YesNoOption moreTimeNeeded,
@@ -52,8 +42,7 @@ public class FullDefenceResponse extends Response {
         String defence,
         PaymentDeclaration paymentDeclaration,
         DefendantTimeline timeline,
-        DefendantEvidence evidence,
-        LocalDate directionsQuestionnaireSubmissionDeadline
+        DefendantEvidence evidence
     ) {
         super(FULL_DEFENCE, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.defenceType = defenceType;
@@ -61,7 +50,6 @@ public class FullDefenceResponse extends Response {
         this.paymentDeclaration = paymentDeclaration;
         this.timeline = timeline;
         this.evidence = evidence;
-        this.directionsQuestionnaireSubmissionDeadline = directionsQuestionnaireSubmissionDeadline;
     }
 
     public DefenceType getDefenceType() {
@@ -82,10 +70,6 @@ public class FullDefenceResponse extends Response {
 
     public Optional<DefendantEvidence> getEvidence() {
         return Optional.ofNullable(evidence);
-    }
-
-    public Optional<LocalDate> getDirectionsQuestionnaireSubmissionDeadline() {
-        return Optional.ofNullable(directionsQuestionnaireSubmissionDeadline);
     }
 
     @Override

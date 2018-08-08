@@ -55,6 +55,7 @@ public final class SampleClaim {
     private LocalDateTime settlementReachedAt = null;
     private URI sealedClaimDocument = null;
     private List<String> features = Collections.singletonList("admissions");
+    private LocalDate directionsQuestionnaireDeadline;
 
     private SampleClaim() {
     }
@@ -86,7 +87,9 @@ public final class SampleClaim {
                 .withDefenceType(DefenceType.DISPUTE)
                 .withMediation(YesNoOption.NO)
                 .build()
-            ).build();
+            )
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
     }
 
     public static Claim getWithDefaultResponse() {
@@ -176,7 +179,8 @@ public final class SampleClaim {
             settlement,
             settlementReachedAt,
             sealedClaimDocument,
-            features
+            features,
+            directionsQuestionnaireDeadline
         );
     }
 
@@ -277,6 +281,11 @@ public final class SampleClaim {
 
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
         this.sealedClaimDocument = sealedClaimDocument;
+        return this;
+    }
+
+    public SampleClaim withDirectionsQuestionnaireDeadline(LocalDate dqDeadline) {
+        this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
 }

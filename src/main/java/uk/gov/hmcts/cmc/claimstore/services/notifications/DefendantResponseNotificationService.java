@@ -29,11 +29,13 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Service
 public class DefendantResponseNotificationService {
+    public static final String DQS_DEADLINE = "DQsdeadline";
     private final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
 
     private static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
@@ -72,8 +74,7 @@ public class DefendantResponseNotificationService {
         Party party = claim.getClaimData().getClaimant();
         Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Response expected"));
 
-        if (response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().orElse(YesNoOption.YES).equals(YesNoOption.NO)) {
+        if (isFullDefenceAndNoMediation(response)) {
             return getEmailTemplates().getDefendantResponseWithNoMediationIssued();
         }
 
@@ -84,6 +85,11 @@ public class DefendantResponseNotificationService {
         } else {
             throw new NotificationException(("Unknown claimant type " + party));
         }
+    }
+
+    private boolean isFullDefenceAndNoMediation(Response response) {
+        return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
+            && response.getFreeMediation().orElse(YesNoOption.YES).equals(YesNoOption.NO);
     }
 
     public void notifyClaimant(
@@ -99,11 +105,11 @@ public class DefendantResponseNotificationService {
     }
 
     private String getClaimantEmailTemplate(Response response) {
-        YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.NO);
+        YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
         } else {
-            if (response.getResponseType().equals(ResponseType.FULL_DEFENCE)) {
+            if (isFullDefenceAndNoMediation(response)) {
                 return getEmailTemplates().getClaimantResponseWithNoMediationIssued();
             }
             return getEmailTemplates().getClaimantResponseIssued();
@@ -148,6 +154,9 @@ public class DefendantResponseNotificationService {
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+        if (isFullDefenceAndNoMediation(Objects.requireNonNull(claim.getResponse().orElse(null)))) {
+            parameters.put(DQS_DEADLINE, Formatting.formatDate(claim.getDirectionsQuestionnaireDeadline()));
+        }
 
         return parameters.build();
     }
@@ -172,6 +181,10 @@ public class DefendantResponseNotificationService {
         );
         parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
+
+        if (isFullDefenceAndNoMediation(response)) {
+            parameters.put(DQS_DEADLINE, Formatting.formatDate(claim.getDirectionsQuestionnaireDeadline()));
+        }
 
         return parameters.build();
     }

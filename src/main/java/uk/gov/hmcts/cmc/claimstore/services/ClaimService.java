@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -284,22 +283,14 @@ public class ClaimService {
         Response response,
         String authorization
     ) {
-        if (response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().orElse(YesNoOption.YES).equals(YesNoOption.NO)) {
-            response = new FullDefenceResponse(
-                response.getFreeMediation().orElse(YesNoOption.NO),
-                response.getMoreTimeNeeded(),
-                response.getDefendant(),
-                response.getStatementOfTruth().orElse(null),
-                ((FullDefenceResponse)response).getDefenceType(),
-                ((FullDefenceResponse)response).getDefence().orElse(""),
-                ((FullDefenceResponse) response).getPaymentDeclaration().orElse(null),
-                ((FullDefenceResponse) response).getTimeline().orElse(null),
-                ((FullDefenceResponse) response).getEvidence().orElse(null),
-                LocalDate.now().plusDays(19)
-            );
-        }
-
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
+        if (isFullDefenceWithNoMediation(response)) {
+            caseRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), LocalDate.now(), authorization);
+        }
+    }
+
+    private static boolean isFullDefenceWithNoMediation(Response response) {
+        return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
+            && response.getFreeMediation().orElse(YesNoOption.YES).equals(YesNoOption.NO);
     }
 }

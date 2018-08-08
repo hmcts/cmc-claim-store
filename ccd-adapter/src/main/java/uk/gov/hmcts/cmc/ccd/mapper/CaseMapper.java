@@ -134,6 +134,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             settlement,
             fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()),
             mapSealedClaimDocument(ccdCase.getSealedClaimDocument()),
+            null,
             null
         );
     }

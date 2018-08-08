@@ -94,8 +94,7 @@ public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse,
             response.getDefence(),
             paymentDeclarationMapper.from(response.getPaymentDeclaration()),
             timelineMapper.from(response.getTimeline()),
-            evidenceMapper.from(response.getEvidence()),
-            null
+            evidenceMapper.from(response.getEvidence())
         );
     }
 }
