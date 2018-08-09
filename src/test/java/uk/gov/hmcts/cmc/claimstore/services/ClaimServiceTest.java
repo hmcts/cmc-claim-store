@@ -33,7 +33,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -232,9 +231,9 @@ public class ClaimServiceTest {
             claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
         );
 
-        verify(directionsQuestionnaireDeadlineCalculator, times(1))
+        verify(directionsQuestionnaireDeadlineCalculator)
             .calculateDirectionsQuestionnaireDeadlineCalculator(any());
-        verify(caseRepository, times(1))
+        verify(caseRepository)
             .updateDirectionsQuestionnaireDeadline(eq(EXTERNAL_ID), any(), eq(AUTHORISATION));
     }
 
