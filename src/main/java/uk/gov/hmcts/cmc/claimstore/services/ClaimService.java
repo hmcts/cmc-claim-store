@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
@@ -296,6 +297,6 @@ public class ClaimService {
 
     private static boolean isFullDefenceWithNoMediation(Response response) {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().orElse(YesNoOption.YES).equals(YesNoOption.NO);
+            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
     }
 }

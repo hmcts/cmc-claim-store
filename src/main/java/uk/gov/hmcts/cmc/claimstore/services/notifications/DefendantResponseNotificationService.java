@@ -30,6 +30,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
@@ -89,7 +90,7 @@ public class DefendantResponseNotificationService {
 
     private boolean isFullDefenceAndNoMediation(Response response) {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().orElse(YesNoOption.YES).equals(YesNoOption.NO);
+            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
     }
 
     public void notifyClaimant(
