@@ -17,11 +17,13 @@ import java.util.Optional;
 @SuppressWarnings("squid:S1214") // Pointless to create class for string statement
 public interface ClaimRepository {
 
-    @SuppressWarnings("squid:S1214") // Pointless to create class for this
-        String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
+    // Pointless to create class for this
+    @SuppressWarnings("squid:S1214")
+    String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 
-    @SuppressWarnings("squid:S1214") // Pointless to create class for this
-        String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
+    // Pointless to create class for this
+    @SuppressWarnings("squid:S1214")
+    String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
     List<Claim> findAll();
