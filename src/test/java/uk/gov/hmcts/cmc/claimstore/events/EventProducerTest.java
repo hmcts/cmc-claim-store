@@ -147,7 +147,6 @@ public class EventProducerTest {
 
     @Test
     public void shouldCreateSignSettlementAgreementEvent() throws Exception {
-
         // given
         SignSettlementAgreementEvent event = new SignSettlementAgreementEvent(CLAIM);
 

@@ -4,8 +4,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-@EqualsAndHashCode
 @Getter
+@EqualsAndHashCode
 public class SignSettlementAgreementEvent {
 
     private final Claim claim;

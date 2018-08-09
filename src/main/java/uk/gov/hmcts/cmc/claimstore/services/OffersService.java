@@ -18,7 +18,7 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_MADE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJECTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_ACCEPTED_SIGN_SETTLEMENT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_GENERATED_OFFER_MADE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_REACHED;
 
 @Service
@@ -120,9 +120,11 @@ public class OffersService {
         assertSettlementIsNotReached(claim);
         final String userAction = userAction("OFFER_ACCEPTED_BY", claim.getClaimData().getClaimant().getName());
         this.caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+
         final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createSignSettlementAgreementEvent(signedSettlementClaim);
-        appInsights.trackEvent(RESPONSE_ACCEPTED_SIGN_SETTLEMENT, signedSettlementClaim.getReferenceNumber());
+        appInsights.trackEvent(CLAIMANT_RESPONSE_GENERATED_OFFER_MADE, signedSettlementClaim.getReferenceNumber());
+
         return signedSettlementClaim;
     }
 }
