@@ -63,6 +63,16 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getByClaimantEmail(String email, String authorisation) {
+        return ccdCaseApi.getBySubmitterEmail(email, authorisation);
+    }
+
+    @Override
+    public List<Claim> getByDefendantEmail(String email, String authorisation) {
+        return ccdCaseApi.getByDefendantEmail(email, authorisation);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.support;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.CaseMetadata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
@@ -24,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(
@@ -139,6 +142,59 @@ public class GetMetadataTest extends BaseGetTest {
     public void shouldReturn404HttpStatusWhenReferenceNumberOrExternalIdFormatIsInvalid() throws Exception {
         makeRequest("/claims/abcdefgh/metadata")
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturn200HttpStatusAndClaimMetadataWhenClaimsExistWithSubmitterEmail() throws Exception {
+        String submitterId = "1";
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), submitterId, LocalDate.now());
+
+        MvcResult result = webClient.perform(post("/claims/filters/claimants/email")
+            .param("email", claim.getSubmitterEmail())
+            .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeMetadataListFrom(result))
+            .extracting(CaseMetadata::getSubmitterId).containsOnly(submitterId);
+    }
+
+    @Test
+    public void shouldReturn200HttpStatusAndClaimMetadataWhenClaimsExistWithDefendantEmail() throws Exception {
+        claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
+
+        MvcResult result = webClient.perform(post("/claims/filters/defendants/email")
+            .param("email", SampleTheirDetails.DEFENDANT_EMAIL)
+            .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeMetadataListFrom(result))
+            .extracting(CaseMetadata::getDefendantId).containsOnly(DEFENDANT_ID);
+    }
+
+    @Test
+    public void shouldReturn200HttpStatusAndNoDataWhenNoClaimsExistWithSubmitterEmail() throws Exception {
+        MvcResult result = webClient.perform(post("/claims/filters/claimants/email")
+            .param("email", "unknown@nowhere.net")
+            .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeMetadataListFrom(result))
+            .isEmpty();
+    }
+
+    @Test
+    public void shouldReturn200HttpStatusAndNoDataWhenNoClaimsExistWithDefendantEmail() throws Exception {
+        MvcResult result = webClient.perform(post("/claims/filters/defendants/email")
+            .param("email", "unknown@nowhere.net")
+            .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeMetadataListFrom(result))
+            .isEmpty();
     }
 
     private List<CaseMetadata> deserializeMetadataListFrom(MvcResult result) throws UnsupportedEncodingException {
