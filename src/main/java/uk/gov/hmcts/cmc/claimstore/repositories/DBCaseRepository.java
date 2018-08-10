@@ -86,8 +86,7 @@ public class DBCaseRepository implements CaseRepository {
                 Integer noOfRows = claimRepository.linkDefendant(letterHolderId, defendantId, defendantEmail);
                 if (noOfRows != 0) {
                     claimRepository.getByLetterHolderId(letterHolderId)
-                        .ifPresent(claim -> jobSchedulerService
-                            .scheduleEmailNotificationsForDefendantResponse(claim));
+                        .ifPresent(jobSchedulerService::scheduleEmailNotificationsForDefendantResponse);
                 }
             });
     }
@@ -118,6 +117,16 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public List<Claim> getByDefendantId(String id, String authorisation) {
         return claimRepository.getByDefendantId(id);
+    }
+
+    @Override
+    public List<Claim> getByClaimantEmail(String email, String authorisation) {
+        return claimRepository.getBySubmitterEmail(email);
+    }
+
+    @Override
+    public List<Claim> getByDefendantEmail(String email, String authorisation) {
+        return claimRepository.getByDefendantEmail(email);
     }
 
     @Override

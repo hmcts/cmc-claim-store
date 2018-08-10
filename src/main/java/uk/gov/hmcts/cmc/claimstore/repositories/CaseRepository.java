@@ -28,6 +28,10 @@ public interface CaseRepository {
 
     List<Claim> getByDefendantId(String id, String authorisation);
 
+    List<Claim> getByClaimantEmail(String email, String authorisation);
+
+    List<Claim> getByDefendantEmail(String email, String authorisation);
+
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
