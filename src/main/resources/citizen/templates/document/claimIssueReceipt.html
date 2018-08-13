@@ -41,7 +41,7 @@
     }
 
     .keep-white-space {
-      white-space: pre-line
+      white-space: pre-line;
     }
 
     .spacing-after {
@@ -108,6 +108,10 @@
     }
 
     @media print {
+      td {
+        word-wrap: break-word;
+      }
+
       .new-page {
         page-break-before: always;
       }
