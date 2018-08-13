@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -53,6 +54,8 @@ public final class SampleClaim {
     private LocalDateTime settlementReachedAt = null;
     private URI sealedClaimDocument = null;
     private List<String> features = Collections.singletonList("admissions");
+    private LocalDateTime claimantRespondedAt;
+    private ClaimantResponse claimantResponse;
 
     private SampleClaim() {
     }
@@ -154,7 +157,9 @@ public final class SampleClaim {
             settlement,
             settlementReachedAt,
             sealedClaimDocument,
-            features
+            features,
+            claimantRespondedAt,
+            claimantResponse
         );
     }
 
@@ -255,6 +260,16 @@ public final class SampleClaim {
 
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
         this.sealedClaimDocument = sealedClaimDocument;
+        return this;
+    }
+
+    public SampleClaim withClaimantResponse(ClaimantResponse claimantResponse) {
+        this.claimantResponse = claimantResponse;
+        return this;
+    }
+
+    public SampleClaim withClaimantRespondedAt(LocalDateTime localDateTime) {
+        this.claimantRespondedAt = localDateTime;
         return this;
     }
 }
