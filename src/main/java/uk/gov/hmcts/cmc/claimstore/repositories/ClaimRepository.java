@@ -40,6 +40,12 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :defendantId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getByDefendantId(@Bind("defendantId") String defendantId);
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_email = :submitterEmail")
+    List<Claim> getBySubmitterEmail(@Bind("submitterEmail") String submitterEmail);
+
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_email = :defendantEmail")
+    List<Claim> getByDefendantEmail(@Bind("defendantEmail") String defendantEmail);
+
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
     Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
