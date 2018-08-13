@@ -35,4 +35,13 @@ public class CountyCourtJudgmentPdfService {
             contentProvider.createContent(claim)
         );
     }
+
+    public byte[] createClaimantPdf(Claim claim) {
+        requireNonNull(claim);
+
+        return pdfServiceClient.generateFromHtml(
+            documentTemplates.getClaimantResponseCountyCourtJudgementDetails(),
+            contentProvider.createContent(claim)
+        );
+    }
 }

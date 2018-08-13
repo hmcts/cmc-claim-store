@@ -83,6 +83,24 @@ public class DocumentsController {
             .body(new ByteArrayResource(pdfDocument));
     }
 
+    @ApiOperation("Returns a County Court Judgement from a claimant response to payment for a given claim external id")
+    @GetMapping(
+        value = "/ccj/claimant-response/{externalId}",
+        produces = MediaType.APPLICATION_PDF_VALUE
+    )
+    public ResponseEntity<ByteArrayResource> claimantResponseCountyCourtJudgement(
+        @ApiParam("Claim external id")
+        @PathVariable("externalId") @NotBlank String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        byte[] pdfDocument = documentsService.generateClaimantResponseCountyCourtJudgement(externalId, authorisation);
+
+        return ResponseEntity
+            .ok()
+            .contentLength(pdfDocument.length)
+            .body(new ByteArrayResource(pdfDocument));
+    }
+
     @ApiOperation("Returns a settlement agreement for a given claim external id")
     @GetMapping(
         value = "/settlementAgreement/{externalId}",

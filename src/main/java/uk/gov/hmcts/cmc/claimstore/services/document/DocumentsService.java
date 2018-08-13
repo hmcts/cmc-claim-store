@@ -7,6 +7,8 @@ public interface DocumentsService {
 
     byte[] generateDefendantResponseReceipt(String externalId, String authorisation);
 
+    byte[] generateClaimantResponseCountyCourtJudgement(String externalId, String authorisation);
+
     byte[] generateCountyCourtJudgement(String externalId, String authorisation);
 
     byte[] generateSettlementAgreement(String externalId, String authorisation);
