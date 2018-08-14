@@ -1,8 +1,9 @@
 plugins {
-  id 'net.ltgt.apt' version '0.14'
   id 'java'
   id 'jacoco'
 }
+
+apply plugin: 'net.ltgt.apt'
 
 sourceCompatibility = 1.8
 
