@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.OffersService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.converters.MadeByEnumConverter;
 
 import javax.validation.Valid;
@@ -101,5 +102,17 @@ public class OffersController {
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return offersService.countersign(claim, party, authorisation);
+    }
+
+    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/settlement",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Sign settlement agreement")
+    public Claim signSettlementAgreement(
+        @PathVariable("externalId") String externalId,
+        @RequestBody @Valid Settlement settlement,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return offersService.signSettlementAgreement(externalId, settlement, authorisation);
     }
 }

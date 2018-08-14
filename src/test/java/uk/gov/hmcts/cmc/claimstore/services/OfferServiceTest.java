@@ -17,9 +17,11 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -142,6 +144,47 @@ public class OfferServiceTest {
                 eq(CaseEvent.SETTLED_PRE_JUDGMENT.name()));
 
         verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
+    }
+
+    @Test
+    public void shouldSuccessfullySignSettlementAgreement() {
+        // given
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()),
+            eq(AUTHORISATION))).thenReturn(claim);
+
+        //when
+        offersService.signSettlementAgreement(claim.getExternalId(), buildSettlement(), AUTHORISATION);
+
+        //then
+        verify(caseRepository)
+            .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), anyString());
+
+        verify(eventProducer).createSignSettlementAgreementEvent(eq(claim));
+
+    }
+
+    @Test(expected = ConflictException.class)
+    public void signSettlementAgreementShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
+        // given
+        when(claimService.getClaimByExternalId(eq(settledClaim.getExternalId()),
+            eq(AUTHORISATION))).thenReturn(settledClaim);
+
+        //when
+        offersService.signSettlementAgreement(settledClaim.getExternalId(), buildSettlement(), AUTHORISATION);
+    }
+
+    private static Settlement buildSettlement() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(
+            Offer.builder()
+                .content("Defendant's admission content")
+                .completionDate(LocalDate.now().plusDays(60))
+                .build(),
+            MadeBy.DEFENDANT);
+
+        settlement.accept(MadeBy.CLAIMANT);
+
+        return settlement;
     }
 
     private static Claim buildClaimWithOffer() {
