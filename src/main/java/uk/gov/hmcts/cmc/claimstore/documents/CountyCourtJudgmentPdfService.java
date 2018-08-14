@@ -29,19 +29,15 @@ public class CountyCourtJudgmentPdfService {
 
     public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
-
-        return pdfServiceClient.generateFromHtml(
-            documentTemplates.getCountyCourtJudgmentDetails(),
-            contentProvider.createContent(claim)
-        );
+        return generatePdf(claim, documentTemplates.getCountyCourtJudgmentDetails());
     }
 
-    public byte[] createClaimantPdf(Claim claim) {
+    public byte[] createClaimantResponsePdf(Claim claim) {
         requireNonNull(claim);
+        return generatePdf(claim, documentTemplates.getClaimantResponseCountyCourtJudgementDetails());
+    }
 
-        return pdfServiceClient.generateFromHtml(
-            documentTemplates.getClaimantResponseCountyCourtJudgementDetails(),
-            contentProvider.createContent(claim)
-        );
+    private byte[] generatePdf(Claim claim, byte[] template) {
+        return pdfServiceClient.generateFromHtml(template, contentProvider.createContent(claim));
     }
 }

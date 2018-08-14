@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
@@ -25,6 +26,14 @@ public class ContentProvider {
 
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
+        Map<String, Object> map = new HashedMap();
+        map.put("ccj", new CCJContent(
+            claimContentProvider.createContent(claim),
+            claim.getCountyCourtJudgment(),
+            claim.getCountyCourtJudgmentRequestedAt(),
+            amountContentProvider.create(claim)
+        ));
+        map.put("DateOfOrder", "XXXX");
         return Collections.singletonMap("ccj", new CCJContent(
             claimContentProvider.createContent(claim),
             claim.getCountyCourtJudgment(),
