@@ -46,6 +46,9 @@ public class EmailTemplates {
     private String claimantCCJRequested;
 
     @NotEmpty
+    private String defendantCCJIssued;
+
+    @NotEmpty
     private String defendantOfferMade;
 
     @NotEmpty
@@ -238,5 +241,13 @@ public class EmailTemplates {
 
     public void setResponseByClaimantEmailToDefendant(String responseByClaimantEmailToDefendant) {
         this.responseByClaimantEmailToDefendant = responseByClaimantEmailToDefendant;
+    }
+
+    public String getDefendantCCJIssued() {
+        return defendantCCJIssued;
+    }
+
+    public void setDefendantCCJIssued(String defendantCCJIssued) {
+        this.defendantCCJIssued = defendantCCJIssued;
     }
 }

@@ -14,13 +14,15 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
@@ -103,9 +105,18 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
+    public void saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
+    ) {
         final String externalId = claim.getExternalId();
-        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
+        LocalDateTime ccjIssuedDate = issue ? nowInUTC() : null;
+
+        claimRepository.saveCountyCourtJudgment(externalId,
+            jsonMapper.toJson(countyCourtJudgment), nowInUTC(), ccjIssuedDate
+        );
     }
 
     @Override
@@ -155,7 +166,7 @@ public class DBCaseRepository implements CaseRepository {
         offersRepository.reachSettlement(
             claim.getExternalId(),
             jsonMapper.toJson(settlement),
-            LocalDateTimeFactory.nowInUTC()
+            nowInUTC()
         );
     }
 

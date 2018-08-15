@@ -34,20 +34,20 @@ public class CountyCourtJudgmentService {
         String submitterId,
         CountyCourtJudgment countyCourtJudgment,
         String externalId,
-        String authorisation
-    ) {
+        String authorisation,
+        boolean issue) {
 
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
 
-        claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
 
         Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
-        eventProducer.createCountyCourtJudgmentRequestedEvent(claimWithCCJ, authorisation);
+        eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation, issue);
 
         return claimWithCCJ;
     }

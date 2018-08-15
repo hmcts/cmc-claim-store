@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmission;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
@@ -43,7 +45,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             .withPaymentOptionImmediately()
             .build();
 
-        Claim updatedCase = requestCCJ(createdCase.getExternalId(), ccj)
+        Claim updatedCase = requestCCJ(createdCase.getExternalId(), ccj, false)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
@@ -51,6 +53,48 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
         assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
         assertThat(updatedCase.getCountyCourtJudgmentRequestedAt())
+            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
+    }
+
+    @Test
+    public void shouldBeAbleToSuccessfullyIssuedCCJ() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
+
+        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        commonOperations.linkDefendant(
+            defendant.getAuthorisation()
+        );
+
+        uk.gov.hmcts.cmc.domain.models.response.Response fullAdmissionResponse = FullAdmission.builder().build();
+
+
+        Claim updatedCase = commonOperations.submitResponse(fullAdmissionResponse, createdCase.getExternalId(), defendant)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract().body().as(Claim.class);
+
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
+            .withPaymentOptionImmediately()
+            .build();
+
+         updatedCase = requestCCJ(updatedCase.getExternalId(), ccj, true)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract().body().as(Claim.class);
+
+        assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
+        assertThat(updatedCase.getCountyCourtJudgmentRequestedAt())
+            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
+
+        assertThat(updatedCase.getCountyCourtJudgmentIssuedAt().isPresent()).isTrue();
+
+        assertThat(updatedCase.getCountyCourtJudgmentIssuedAt().get())
             .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
     }
 
@@ -68,7 +112,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             .withPaymentOption(null)
             .build();
 
-        requestCCJ(createdCase.getExternalId(), invalidCCJ)
+        requestCCJ(createdCase.getExternalId(), invalidCCJ, false)
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
@@ -85,19 +129,22 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             .withPaymentOptionImmediately()
             .build();
 
-        requestCCJ(createdCase.getExternalId(), ccj)
+        requestCCJ(createdCase.getExternalId(), ccj, false)
             .then()
             .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
-    private Response requestCCJ(String externalId, CountyCourtJudgment ccj) {
+    private Response requestCCJ(String externalId, CountyCourtJudgment ccj, boolean issue) {
+        String path = "/claims/" + externalId + "/county-court-judgment";
+        String offerPath = issue ? path.concat("?issue=true") : path;
+
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .body(jsonMapper.toJson(ccj))
             .when()
-            .post("/claims/" + externalId + "/county-court-judgment");
+            .post(offerPath);
     }
 
     private void updateResponseDeadlineToEnableCCJ(String claimReferenceNumber) {

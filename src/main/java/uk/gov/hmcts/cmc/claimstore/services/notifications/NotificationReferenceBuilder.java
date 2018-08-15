@@ -78,14 +78,16 @@ public class NotificationReferenceBuilder {
 
     public static class CCJRequested {
 
-        public static final String TEMPLATE = "%s-ccj-requested-notification-%s";
-
         private CCJRequested() {
             // do not instantiate
         }
 
         public static String referenceForClaimant(String claimReferenceNumber) {
-            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+            return reference("%s-ccj-requested-notification-%s", CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference("%s-ccj-issued-notification-%s", CLAIMANT, claimReferenceNumber);
         }
     }
 

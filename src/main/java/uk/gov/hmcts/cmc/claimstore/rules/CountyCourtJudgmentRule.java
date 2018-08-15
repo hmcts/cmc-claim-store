@@ -20,9 +20,9 @@ public class CountyCourtJudgmentRule {
         this.claimDeadlineService = claimDeadlineService;
     }
 
-    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim) {
+    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim, boolean issue) {
         Objects.requireNonNull(claim, "claim object can not be null");
-        if (isResponseAlreadySubmitted(claim)) {
+        if (!issue && isResponseAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("Response for the claim " + claim.getExternalId() + " was submitted");
         }
 
@@ -31,7 +31,7 @@ public class CountyCourtJudgmentRule {
                 + claim.getExternalId() + " was submitted");
         }
 
-        if (!claimDeadlineService.isPastDeadline(nowInLocalZone(), claim.getResponseDeadline())) {
+        if (!issue && !claimDeadlineService.isPastDeadline(nowInLocalZone(), claim.getResponseDeadline())) {
             throw new ForbiddenActionException(
                 "County Court Judgment for claim " + claim.getExternalId() + " cannot be requested yet"
             );

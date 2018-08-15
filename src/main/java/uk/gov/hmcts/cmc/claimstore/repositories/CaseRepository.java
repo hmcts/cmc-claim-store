@@ -20,7 +20,8 @@ public interface CaseRepository {
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
-    void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);
+    void saveCountyCourtJudgment(String authorisation, Claim claim,
+                                 CountyCourtJudgment countyCourtJudgment, boolean issue);
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 

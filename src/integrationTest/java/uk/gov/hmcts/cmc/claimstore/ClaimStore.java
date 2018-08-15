@@ -91,7 +91,9 @@ public class ClaimStore {
 
         this.claimRepository.saveCountyCourtJudgment(
             externalId,
-            jsonMapper.toJson(ccj)
+            jsonMapper.toJson(ccj),
+            LocalDateTimeFactory.nowInUTC(),
+            null
         );
 
         logger.debug("Saved county court judgement");

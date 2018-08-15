@@ -23,14 +23,14 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 
 @Service
-public class CCJRequestedNotificationService {
-    private final Logger logger = LoggerFactory.getLogger(CCJRequestedNotificationService.class);
+public class CCJNotificationService {
+    private final Logger logger = LoggerFactory.getLogger(CCJNotificationService.class);
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public CCJRequestedNotificationService(
+    public CCJNotificationService(
         NotificationClient notificationClient,
         NotificationsProperties notificationsProperties
     ) {
@@ -38,13 +38,23 @@ public class CCJRequestedNotificationService {
         this.notificationsProperties = notificationsProperties;
     }
 
-    public void notifyClaimant(Claim claim) {
+    public void notifyClaimantForCCJRequest(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         sendNotificationEmail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantCCJRequested(),
             parameters,
             NotificationReferenceBuilder.CCJRequested.referenceForClaimant(claim.getReferenceNumber())
+        );
+    }
+
+    public void notifyDefendantForCCJIssue(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        sendNotificationEmail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getDefendantCCJIssued(),
+            parameters,
+            NotificationReferenceBuilder.CCJRequested.referenceForDefendant(claim.getReferenceNumber())
         );
     }
 
@@ -65,9 +75,9 @@ public class CCJRequestedNotificationService {
     @Recover
     public void logNotificationFailure(
         NotificationException exception,
-        Claim claim,
         String targetEmail,
         String emailTemplate,
+        Map<String, String> parameters,
         String reference
     ) {
         String errorMessage = String.format(
