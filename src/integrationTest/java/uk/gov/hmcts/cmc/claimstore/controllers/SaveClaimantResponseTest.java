@@ -94,7 +94,11 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
     }
 
-    private ResultActions makeRequest(String externalId, String claimantId, ClaimantResponse response) throws Exception {
+    private ResultActions makeRequest(
+        String externalId,
+        String claimantId,
+        ClaimantResponse response
+    ) throws Exception {
         return webClient
             .perform(post("/responses/" + externalId + "/claimant/" + claimantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
