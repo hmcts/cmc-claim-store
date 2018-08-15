@@ -34,6 +34,7 @@ public class CountyCourtJudgmentRuleTest {
     private ClaimDeadlineService claimDeadlineService = new ClaimDeadlineService();
 
     private CountyCourtJudgmentRule countyCourtJudgmentRule;
+    private boolean issue = false;
 
     @Before
     public void beforeEachTest() {

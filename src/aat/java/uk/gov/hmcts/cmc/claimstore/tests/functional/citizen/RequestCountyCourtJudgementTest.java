@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmission;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -82,7 +81,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             .withPaymentOptionImmediately()
             .build();
 
-         updatedCase = requestCCJ(updatedCase.getExternalId(), ccj, true)
+        updatedCase = requestCCJ(updatedCase.getExternalId(), ccj, true)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
