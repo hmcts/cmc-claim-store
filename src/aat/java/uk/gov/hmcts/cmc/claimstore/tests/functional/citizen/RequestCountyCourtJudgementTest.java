@@ -135,7 +135,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
 
     private Response requestCCJ(String externalId, CountyCourtJudgment ccj, boolean issue) {
         String path = "/claims/" + externalId + "/county-court-judgment";
-        String offerPath = issue ? path.concat("?issue=true") : path;
+        String issuePath = issue ? path.concat("?issue=true") : path;
 
         return RestAssured
             .given()
@@ -143,7 +143,7 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
             .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .body(jsonMapper.toJson(ccj))
             .when()
-            .post(offerPath);
+            .post(issuePath);
     }
 
     private void updateResponseDeadlineToEnableCCJ(String claimReferenceNumber) {
