@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -99,6 +100,11 @@ public class CCDCaseRepository implements CaseRepository {
         Response response,
         String authorization) {
         coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
+    }
+
+    @Override
+    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
+        throw new NotImplementedException("Save claimant response not implemented on CCD");
     }
 
     @Override

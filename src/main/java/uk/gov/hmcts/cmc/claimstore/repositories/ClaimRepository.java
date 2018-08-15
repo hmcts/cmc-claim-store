@@ -173,6 +173,17 @@ public interface ClaimRepository {
         @Bind("response") String response
     );
 
+    @SqlUpdate(
+        "UPDATE CLAIM SET "
+            + "claimant_response = :response::JSONB, "
+            + "claimant_responded_at = now() AT TIME ZONE 'utc' "
+            + "WHERE id = :id"
+    )
+    void saveClaimantResponse(
+        @Bind("id") long id,
+        @Bind("response") String response
+    );
+
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
         + " county_court_judgment_requested_at = :ccjRequestedAt,"

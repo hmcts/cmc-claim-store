@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -123,6 +124,11 @@ public class DBCaseRepository implements CaseRepository {
     public void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization) {
         String defendantResponse = jsonMapper.toJson(response);
         claimRepository.saveDefendantResponse(claim.getExternalId(), defendantEmail, defendantResponse);
+    }
+
+    @Override
+    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
+        claimRepository.saveClaimantResponse(claimId, jsonMapper.toJson(response));
     }
 
     @Override

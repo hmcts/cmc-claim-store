@@ -71,17 +71,16 @@ public class RequestCountyCourtJudgementTest extends BaseTest {
         uk.gov.hmcts.cmc.domain.models.response.Response fullAdmissionResponse = FullAdmission.builder().build();
 
 
-        Claim updatedCase = commonOperations.submitResponse(fullAdmissionResponse, createdCase.getExternalId(), defendant)
+        String externalId = createdCase.getExternalId();
+        commonOperations.submitResponse(fullAdmissionResponse, externalId, defendant)
             .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
+            .statusCode(HttpStatus.OK.value());
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .withPaymentOptionImmediately()
             .build();
 
-        updatedCase = requestCCJ(updatedCase.getExternalId(), ccj, true)
+        Claim updatedCase = requestCCJ(externalId, ccj, true)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
