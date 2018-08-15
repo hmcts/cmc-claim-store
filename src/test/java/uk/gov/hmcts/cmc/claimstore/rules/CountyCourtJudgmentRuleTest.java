@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,5 +82,18 @@ public class CountyCourtJudgmentRuleTest {
                     .build()
             ).build();
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void shouldThrowExceptionWhenCountyCourtJudgmentWasForAdmissionResponse() {
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.validDefaults())
+            .withCountyCourtJudgmentRequestedAt(now())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .withPaymentOptionImmediately()
+                    .build()
+            ).build();
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, true);
     }
 }

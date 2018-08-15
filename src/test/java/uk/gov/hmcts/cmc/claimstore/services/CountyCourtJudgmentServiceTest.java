@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -39,6 +40,8 @@ public class CountyCourtJudgmentServiceTest {
 
     @Mock
     private EventProducer eventProducer;
+    @Mock
+    private AppInsights appInsights;
 
     @Before
     public void setup() {
@@ -47,8 +50,8 @@ public class CountyCourtJudgmentServiceTest {
             claimService,
             new AuthorisationService(),
             eventProducer,
-            new CountyCourtJudgmentRule(new ClaimDeadlineService())
-        );
+            new CountyCourtJudgmentRule(new ClaimDeadlineService()),
+            appInsights);
     }
 
     @Test

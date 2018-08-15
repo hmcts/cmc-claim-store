@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -84,7 +85,11 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment,
         boolean issue
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        if (issue) {
+            throw new NotImplementedException("Save county court judgement issued not implemented on CCD");
+        } else {
+            coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        }
     }
 
     @Override
