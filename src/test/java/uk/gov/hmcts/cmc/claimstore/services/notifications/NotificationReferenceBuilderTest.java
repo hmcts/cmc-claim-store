@@ -65,4 +65,18 @@ public class NotificationReferenceBuilderTest {
         assertThat(NotificationReferenceBuilder.OfferRejected.referenceForDefendant("abc"))
             .isEqualTo("to-defendant-offer-rejected-by-claimant-notification-abc");
     }
+
+    @Test
+    public void shouldGenerateValidReferenceForDefendantSignSettlementAgreementNotification() {
+        assertThat(
+            NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant("abc")
+        ).isEqualTo("to-defendant-claimant’s-response-submitted-notification-abc");
+    }
+
+    @Test
+    public void shouldGenerateValidReferenceForClaimantSignSettlementAgreementNotification() {
+        assertThat(
+            NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForClaimant("abc")
+        ).isEqualTo("to-claimant-claimant’s-response-submitted-notification-abc");
+    }
 }

@@ -101,6 +101,7 @@ notifications:
       offerCounterSignedEmailToOriginator: "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1"
       offerCounterSignedEmailToOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
       claimantResponseWithMediationIssued: "287bb764-075f-4c7a-8049-ec9f7cd83812"
+      responseByClaimantEmailToDefendant: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
 
 staff-notifications:
   sender:
