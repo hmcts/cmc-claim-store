@@ -66,13 +66,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] generateClaimantResponseCountyCourtJudgement(String externalId, String authorisation) {
-        return countyCourtJudgmentPdfService.createClaimantResponsePdf(getClaimByExternalId(externalId, authorisation));
-    }
-
-    @Override
-    public byte[] generateCountyCourtJudgement(String externalId, String authorisation) {
-        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
+    public byte[] generateCountyCourtJudgement(String externalId, String authorisation, boolean issue) {
+        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId, authorisation), issue);
     }
 
     @Override

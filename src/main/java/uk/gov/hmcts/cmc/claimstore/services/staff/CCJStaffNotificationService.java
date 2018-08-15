@@ -73,7 +73,7 @@ public class CCJStaffNotificationService {
     }
 
     private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
-        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
+        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim, false);
 
         return pdf(
             generatedPdf,

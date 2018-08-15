@@ -8,11 +8,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 
 import javax.validation.constraints.NotBlank;
@@ -73,27 +69,10 @@ public class DocumentsController {
     public ResponseEntity<ByteArrayResource> countyCourtJudgement(
         @ApiParam("Claim external id")
         @PathVariable("externalId") @NotBlank String externalId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestParam(name = "issue", required = false) boolean issue
     ) {
-        byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId, authorisation);
-
-        return ResponseEntity
-            .ok()
-            .contentLength(pdfDocument.length)
-            .body(new ByteArrayResource(pdfDocument));
-    }
-
-    @ApiOperation("Returns a County Court Judgement from a claimant response to payment for a given claim external id")
-    @GetMapping(
-        value = "/ccj/claimant-response/{externalId}",
-        produces = MediaType.APPLICATION_PDF_VALUE
-    )
-    public ResponseEntity<ByteArrayResource> claimantResponseCountyCourtJudgement(
-        @ApiParam("Claim external id")
-        @PathVariable("externalId") @NotBlank String externalId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
-    ) {
-        byte[] pdfDocument = documentsService.generateClaimantResponseCountyCourtJudgement(externalId, authorisation);
+        byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId, authorisation, issue);
 
         return ResponseEntity
             .ok()

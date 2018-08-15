@@ -37,19 +37,18 @@ public class CountyCourtJudgmentPdfServiceTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        countyCourtJudgmentPdfService.createPdf(null);
+        countyCourtJudgmentPdfService.createPdf(null, true);
     }
 
     @Test
     public void shouldUseCorrectTemplateForStaffPdf() {
-        countyCourtJudgmentPdfService.createClaimantResponsePdf(SampleClaim.getDefault());
-        verify(documentTemplates).getClaimantResponseCountyCourtJudgementDetails();
+        countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault(), false);
+        verify(documentTemplates).getCountyCourtJudgmentDetails();
     }
 
     @Test
     public void shouldUseCorrectTemplateForClaimantResponse() {
-        countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault());
+        countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault(), true);
         verify(documentTemplates).getClaimantResponseCountyCourtJudgementDetails();
     }
-
 }

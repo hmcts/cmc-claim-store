@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +24,9 @@ public class CCJContent {
     private final RepaymentPlanContent repaymentPlan;
     private final String signerName;
     private final String signerRole;
+    //TODO: remove hard coding of today's date upon merge
+    private final String dateOfOrder = Formatting.formatDate(LocalDate.now());
+
 
     public CCJContent(Map<String, Object> claim,
                       CountyCourtJudgment countyCourtJudgment,
@@ -47,6 +51,8 @@ public class CCJContent {
         Optional<StatementOfTruth> optionalStatementOfTruth = countyCourtJudgment.getStatementOfTruth();
         this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
+        //TODO: to be populate upon merge with ROC-4206
+        //this.dateOfOrder = Formatting.formatDate(claim.countyCourtJudgmentIssuedAt)
     }
 
     public Map<String, Object> getClaim() {
