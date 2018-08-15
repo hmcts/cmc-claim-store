@@ -39,6 +39,6 @@ public class ClaimantResponseRule {
     }
 
     private boolean isClaimantResponseAlreadySubmitted(Claim claim) {
-        return claim.getClaimantRespondedAt() != null;
+        return claim.getClaimantRespondedAt().isPresent();
     }
 }

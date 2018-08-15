@@ -66,7 +66,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
 
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotNull();
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
 
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
@@ -83,7 +83,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
 
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotNull();
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
 
         ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);

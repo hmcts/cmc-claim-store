@@ -211,8 +211,8 @@ public class Claim {
         return Optional.ofNullable(claimantResponse);
     }
 
-    public LocalDateTime getClaimantRespondedAt() {
-        return claimantRespondedAt;
+    public Optional<LocalDateTime> getClaimantRespondedAt() {
+        return Optional.ofNullable(claimantRespondedAt);
     }
 
     public List<String> getFeatures() {

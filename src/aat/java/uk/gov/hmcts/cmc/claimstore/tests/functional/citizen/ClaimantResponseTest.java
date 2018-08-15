@@ -47,7 +47,7 @@ public class ClaimantResponseTest extends BaseTest {
         Claim claimWithClaimantResponse = commonOperations
             .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
 
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotNull();
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
@@ -66,7 +66,7 @@ public class ClaimantResponseTest extends BaseTest {
         Claim claimWithClaimantResponse = commonOperations
             .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
 
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotNull();
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
 
         ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
