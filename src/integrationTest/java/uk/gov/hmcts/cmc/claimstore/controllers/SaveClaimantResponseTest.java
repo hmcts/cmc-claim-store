@@ -39,7 +39,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
     private Claim claim;
 
     @Before
-    public void setup() {
+    public void setUp() {
         claim = claimStore.saveClaim(SampleClaimData.builder()
             .withExternalId(UUID.randomUUID()).build(), SUBMITTER_ID, LocalDate.now());
 
