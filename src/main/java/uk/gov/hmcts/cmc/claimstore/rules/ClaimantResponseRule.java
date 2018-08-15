@@ -26,7 +26,7 @@ public class ClaimantResponseRule {
         }
 
         if (isClaimantResponseAlreadySubmitted(claim)) {
-            throw new ClaimantResponseAlreadySubmittedException(claim.getId());
+            throw new ClaimantResponseAlreadySubmittedException(claim.getExternalId());
         }
     }
 
