@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.migration.mappers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.MigrationModelMappingException;
@@ -23,6 +24,16 @@ public class JsonMapper {
         } catch (IOException e) {
             throw new MigrationModelMappingException(
                 String.format(DESERIALIZATION_ERROR_MESSAGE, clazz.getSimpleName()), e
+            );
+        }
+    }
+
+    public <T> T fromJson(String value, TypeReference<T> typeReference) {
+        try {
+            return objectMapper.readValue(value, typeReference);
+        } catch (IOException e) {
+            throw new MigrationModelMappingException(
+                String.format(DESERIALIZATION_ERROR_MESSAGE, typeReference.getType().getTypeName()), e
             );
         }
     }
