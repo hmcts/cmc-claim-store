@@ -445,6 +445,46 @@ public class TotalAmountCalculatorTest {
             .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
     }
 
+    @Test
+    public void amountWithInterestUntilSubmitDateShouldHaveNoInterestIfSubmitAndInterestDateAreEqual() {
+        Claim claimStandardInterest = SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withAmount(validDefaults())
+                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                    .withInterest(
+                        standardInterestBuilder()
+                            .withInterestDate(SampleInterestDate.submission())
+                            .build())
+                    .build()
+            )
+            .withIssuedOn(LocalDate.now().minusDays(1))
+            .build();
+
+        assertThat(TotalAmountCalculator.amountWithInterestUntilSubmitDate(claimStandardInterest))
+            .isEqualTo(Optional.of(format(new BigDecimal("40.00"))));
+    }
+
+    @Test
+    public void amountWithInterestUntilSubmitDateShouldHaveInterestIfInterestDateIsBeforeSubmit() {
+        Claim claimStandardInterest = SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withAmount(validDefaults())
+                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                    .withInterest(
+                        standardInterestBuilder()
+                            .withInterestDate(SampleInterestDate.builder().withDate(LocalDate.now().minusDays(2)).build())
+                            .build())
+                    .build()
+            )
+            .withIssuedOn(LocalDate.now().minusDays(1))
+            .build();
+
+        assertThat(TotalAmountCalculator.amountWithInterestUntilSubmitDate(claimStandardInterest))
+            .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
+    }
+
     private static Claim claimWithAmountRange() {
         return SampleClaim.builder()
             .withClaimData(
