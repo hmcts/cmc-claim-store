@@ -52,7 +52,7 @@ public class CCJNotificationService {
         Map<String, String> parameters = aggregateParams(claim);
         sendNotificationEmail(
             claim.getDefendantEmail(),
-            notificationsProperties.getTemplates().getEmail().getDefendantCCJIssued(),
+            notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant(),
             parameters,
             NotificationReferenceBuilder.CCJRequested.referenceForDefendant(claim.getReferenceNumber())
         );

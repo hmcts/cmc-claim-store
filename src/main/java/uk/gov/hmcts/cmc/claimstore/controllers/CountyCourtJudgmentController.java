@@ -45,9 +45,9 @@ public class CountyCourtJudgmentController {
         @PathVariable("externalId") String externalId,
         @NotNull @RequestBody @Valid CountyCourtJudgment countyCourtJudgment,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestParam(name = "issue", required = false) boolean anIssue
+        @RequestParam(name = "issue", required = false) boolean issue
     ) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation, anIssue);
+        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation, issue);
     }
 }

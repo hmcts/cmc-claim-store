@@ -97,9 +97,8 @@ public class SupportController {
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
-        boolean notAnIssue = false;
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
-            new CountyCourtJudgmentEvent(claim, authorisation, notAnIssue)
+            new CountyCourtJudgmentEvent(claim, authorisation, false)
         );
     }
 

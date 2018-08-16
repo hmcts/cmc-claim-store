@@ -11,13 +11,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
-import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -131,7 +129,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         makeRequest(claim.getExternalId(), countyCourtJudgment, true)
             .andExpect(status().isOk());
 
-        verify(notificationClient, times(2))
+        verify(notificationClient, times(1))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
