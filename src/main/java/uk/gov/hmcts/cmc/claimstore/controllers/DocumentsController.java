@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 
@@ -74,8 +73,7 @@ public class DocumentsController {
     public ResponseEntity<ByteArrayResource> countyCourtJudgement(
         @ApiParam("Claim external id")
         @PathVariable("externalId") @NotBlank String externalId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestParam(name = "issue", required = false) boolean issue
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId, authorisation);
 

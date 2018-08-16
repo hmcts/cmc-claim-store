@@ -67,7 +67,6 @@
       border-top: none;
     }
 
-
     .row-spacing {
       margin-bottom: 10px;
 
@@ -165,18 +164,18 @@
       <tr>
         <td style="border-top: none">
           {% if claimant.partyType == 'on behalf of a company' %}
-          {% set claimantNameLabel = 'Company name' %}
+            {% set claimantNameLabel = 'Company name' %}
           {% elseif claimant.partyType == 'on behalf of an organisation' %}
-          {% set claimantNameLabel = 'Organisation name' %}
+            {% set claimantNameLabel = 'Organisation name' %}
           {% else %}
-          {% set claimantNameLabel = 'Claimant Name' %}
+            {% set claimantNameLabel = 'Claimant Name' %}
           {% endif %}
           <strong>{{ claimantNameLabel }}:</strong>
         </td>
         <td style="border-top: none">
           {{ claimant.fullName }}
           {% if claimant.businessName is defined and claimant.businessName is not empty %}
-          Trading as {{ claimant.businessName }}
+            Trading as {{ claimant.businessName }}
           {% endif %}
         </td>
       </tr>
@@ -191,18 +190,18 @@
       <tr>
         <td>
           {% if defendant.partyType == 'on behalf of a company' %}
-          {% set defendantNameLabel = 'Company name' %}
+            {% set defendantNameLabel = 'Company name' %}
           {% elseif defendant.partyType == 'on behalf of an organisation' %}
-          {% set defendantNameLabel = 'Organisation name' %}
+           {% set defendantNameLabel = 'Organisation name' %}
           {% else %}
-          {% set defendantNameLabel = 'Defendant Name' %}
+            {% set defendantNameLabel = 'Defendant Name' %}
           {% endif %}
           <strong>{{ defendantNameLabel }}:</strong>
         </td>
         <td>
           {{ defendant.fullName }}
           {% if defendant.businessName is defined and defendant.businessName is not empty %}
-          Trading As {{ defendant.businessName }}
+            Trading As {{ defendant.businessName }}
           {% endif %}
         </td>
       </tr>

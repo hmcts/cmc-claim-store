@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,6 +42,8 @@ public class CountyCourtJudgmentServiceTest {
 
     @Mock
     private EventProducer eventProducer;
+    @Mock
+    private AppInsights appInsights;
 
     @Before
     public void setup() {
@@ -47,22 +52,39 @@ public class CountyCourtJudgmentServiceTest {
             claimService,
             new AuthorisationService(),
             eventProducer,
-            new CountyCourtJudgmentRule(new ClaimDeadlineService())
-        );
+            new CountyCourtJudgmentRule(new ClaimDeadlineService()),
+            appInsights);
     }
 
     @Test
-    public void saveShouldFinishSuccessfullyForHappyPath() {
+    public void saveShouldFinishCCJRequestSuccessfullyForHappyPath() {
 
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2)).build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentRequestedEvent(any(Claim.class), any());
-        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(false));
+        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(false));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void saveShouldFinishCCJIssueSuccessfullyForHappyPath() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().build())
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, true);
+
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(true));
+        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(true));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_ISSUED), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = NotFoundException.class)
@@ -71,7 +93,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenThrow(new NotFoundException("Claim not found by id"));
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -83,39 +105,36 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(differentUser, DATA, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.save(differentUser, DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void saveThrowsForbiddenActionExceptionWhenClaimWasResponded() {
-
         Claim respondedClaim = SampleClaim.builder().withRespondedAt(LocalDateTime.now().minusDays(2)).build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void saveThrowsForbiddenActionExceptionWhenUserCannotRequestCountyCourtJudgmentYet() {
-
         Claim respondedClaim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(12));
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void saveThrowsForbiddenActionExceptionWhenCountyCourtJudgmentWasAlreadySubmitted() {
-
         Claim respondedClaim = SampleClaim.getDefault();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 }

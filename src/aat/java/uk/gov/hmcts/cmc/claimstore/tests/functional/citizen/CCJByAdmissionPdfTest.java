@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClaimPdfTest extends BaseClaimPdfTest {
+public class CCJByAdmissionPdfTest extends BaseClaimPdfTest {
 
     @Before
     public void before() {
@@ -22,8 +22,8 @@ public class ClaimPdfTest extends BaseClaimPdfTest {
     }
 
     @Test
-    public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
-        shouldBeAbleToFindTestCCJDataInPdf("claimIssueReceipt");
+    public void shouldBeAbleToFindAppropriateDataInCCJByAdmissionPdf() throws IOException {
+        shouldBeAbleToFindTestCCJDataInPdf("ccj");
     }
 
     @Override
@@ -34,16 +34,10 @@ public class ClaimPdfTest extends BaseClaimPdfTest {
     @Override
     protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
-        assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
-        assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());
-        assertThat(pdfAsText).contains("Address: "
-            + getFullAddressString(createdCase.getClaimData().getClaimant().getAddress()));
-        assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getDefendant().getName());
-        assertThat(pdfAsText).contains("Address: "
-            + getFullAddressString(createdCase.getClaimData().getDefendant().getAddress()));
-        assertThat(pdfAsText).contains("Claim amount: "
-            + Formatting.formatMoney(((AmountBreakDown) createdCase.getClaimData().getAmount()).getTotalAmount()));
-        assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
+        assertThat(pdfAsText).contains("Date of order: " + Formatting.formatDate(createdCase.
+                                        getCountyCourtJudgementIssuedAt()));
+        assertThat(pdfAsText).contains("Claimant Name: " + createdCase.getClaimData().getClaimant().getName());
+        assertThat(pdfAsText).contains("Defendant name: " + createdCase.getClaimData().getDefendant().getName());
     }
 
     private static String getFullAddressString(Address address) {

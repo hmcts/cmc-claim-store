@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 public abstract class BaseClaimPdfTest extends BaseTest {
     protected User user;
 
-    protected abstract void assertionsOnClaimPdf(Claim createdCase, String pdfAsText);
+    protected abstract void assertionsOnPdf(Claim createdCase, String pdfAsText);
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
 
@@ -33,10 +33,27 @@ public abstract class BaseClaimPdfTest extends BaseTest {
     protected void shouldBeAbleToFindTestClaimDataInPdf(String pdfName) throws IOException {
         Claim createdCase = createCase();
         String pdfAsText = textContentOf(retrievePdf(pdfName, createdCase.getExternalId()));
-        assertionsOnClaimPdf(createdCase, pdfAsText);
+        assertionsOnPdf(createdCase, pdfAsText);
+    }
+
+    protected void shouldBeAbleToFindTestCCJDataInPdf(String pdfName) throws IOException {
+        Claim createdCase = createCase();
+        String pdfAsText = textContentOf(retrieveCCJPdf(pdfName, createdCase.getExternalId()));
+        assertionsOnPdf(createdCase, pdfAsText);
     }
 
     private Claim createCase() {
+        ClaimData claimData = getSampleClaimDataBuilder().get().build();
+        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
+
+        return submitClaim(claimData)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract().body().as(Claim.class);
+    }
+
+    private Claim createCaseWithCCJByAdmission() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
         commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
 
@@ -58,6 +75,14 @@ public abstract class BaseClaimPdfTest extends BaseTest {
     }
 
     private InputStream retrievePdf(String pdfName, String externalId) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .get("/documents/" + pdfName + "/" + externalId)
+            .asInputStream();
+    }
+
+    private InputStream retrieveCCJPdf(String pdfName, String externalId) {
         return RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.mapping.ClaimMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -185,11 +186,14 @@ public interface ClaimRepository {
 
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
-        + " county_court_judgment_requested_at = now() at time zone 'utc'"
+        + " county_court_judgment_requested_at = :ccjRequestedAt,"
+        + " county_court_judgment_issued_at = :ccjIssuedAt"
         + " WHERE external_id = :externalId")
     void saveCountyCourtJudgment(
         @Bind("externalId") String externalId,
-        @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
+        @Bind("countyCourtJudgmentData") String countyCourtJudgmentData,
+        @Bind("ccjRequestedAt") LocalDateTime ccjRequestedAt,
+        @Bind("ccjIssuedAt") LocalDateTime ccjIssuedAt
     );
 
     @SqlUpdate(

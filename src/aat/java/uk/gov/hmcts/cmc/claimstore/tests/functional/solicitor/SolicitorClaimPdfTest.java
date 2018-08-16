@@ -22,7 +22,7 @@ public class SolicitorClaimPdfTest extends BaseClaimPdfTest {
     }
 
     @Override
-    protected void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
+    protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         ClaimData claimData = createdCase.getClaimData();
         Party claimant = claimData.getClaimant();
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
