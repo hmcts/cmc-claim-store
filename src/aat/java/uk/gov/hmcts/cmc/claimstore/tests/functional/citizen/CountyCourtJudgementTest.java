@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
-public class RequestCountyCourtJudgementTest extends BaseTest {
+public class CountyCourtJudgementTest extends BaseTest {
 
     private User claimant;
 

@@ -36,7 +36,7 @@ public class CountyCourtJudgmentRule {
             }
         } else {
             Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-            if (isNotAnAdmissionResponse(response)) {
+            if (!isAnAdmissionResponse(response)) {
                 throw new ForbiddenActionException("County Court Judgment for claim "
                     + claim.getExternalId()
                     + " cannot be issued for "
@@ -51,9 +51,9 @@ public class CountyCourtJudgmentRule {
         }
     }
 
-    private boolean isNotAnAdmissionResponse(Response response) {
-        return !response.getResponseType().equals(ResponseType.PART_ADMISSION) ||
-            !response.getResponseType().equals(ResponseType.FULL_ADMISSION);
+    private boolean isAnAdmissionResponse(Response response) {
+        return response.getResponseType().equals(ResponseType.PART_ADMISSION) ||
+            response.getResponseType().equals(ResponseType.FULL_ADMISSION);
     }
 
     private boolean isResponseAlreadySubmitted(Claim claim) {

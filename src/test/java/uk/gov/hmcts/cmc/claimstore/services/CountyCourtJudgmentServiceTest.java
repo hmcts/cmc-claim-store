@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,7 +56,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test
-    public void saveShouldFinishSuccessfullyForHappyPath() {
+    public void saveShouldFinishCCJRequestSuccessfullyForHappyPath() {
 
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2)).build();
@@ -67,6 +68,21 @@ public class CountyCourtJudgmentServiceTest {
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(notAnIssue));
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(notAnIssue));
+    }
+
+    @Test
+    public void saveShouldFinishCCJIssueSuccessfullyForHappyPath() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().build())
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, true);
+
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(true));
+        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(true));
     }
 
     @Test(expected = NotFoundException.class)
