@@ -80,8 +80,17 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+    public void saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
+    ) {
+        if (issue) {
+            throw new NotImplementedException("Save county court judgement issued not implemented on CCD");
+        } else {
+            coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        }
     }
 
     @Override

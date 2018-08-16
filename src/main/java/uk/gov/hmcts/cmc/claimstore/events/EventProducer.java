@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
@@ -44,8 +44,8 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentRequestedEvent(Claim claim, String authorisation) {
-        publisher.publishEvent(new CountyCourtJudgmentRequestedEvent(claim, authorisation));
+    public void createCountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
+        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation, issue));
     }
 
     public void createOfferMadeEvent(Claim claim) {
