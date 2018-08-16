@@ -27,10 +27,13 @@ public class CountyCourtJudgmentPdfService {
         this.contentProvider = contentProvider;
     }
 
-    public byte[] createPdf(Claim claim, boolean issue) {
+    public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
-        byte[] template = issue ? documentTemplates.getClaimantResponseCountyCourtJudgementDetails()
-            : documentTemplates.getCountyCourtJudgmentDetails();
+
+        byte[] template = claim.getCountyCourtJudgementIssuedAt() != null  ?
+                            documentTemplates.getCountCourtJudgementByAdmission() :
+                            documentTemplates.getCountyCourtJudgmentDetails();
+
         return pdfServiceClient.generateFromHtml(template, contentProvider.createContent(claim));
     }
 }

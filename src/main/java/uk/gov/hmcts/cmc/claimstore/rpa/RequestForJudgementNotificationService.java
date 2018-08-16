@@ -67,7 +67,7 @@ public class RequestForJudgementNotificationService {
     }
 
     private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
-        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim, false);
+        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
 
         return pdf(
             generatedPdf,

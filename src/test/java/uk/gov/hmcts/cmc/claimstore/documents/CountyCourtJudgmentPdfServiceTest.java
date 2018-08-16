@@ -49,6 +49,6 @@ public class CountyCourtJudgmentPdfServiceTest {
     @Test
     public void shouldUseCorrectTemplateForClaimantResponse() {
         countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault(), true);
-        verify(documentTemplates).getClaimantResponseCountyCourtJudgementDetails();
+        verify(documentTemplates).getCountCourtJudgementByAdmission();
     }
 }

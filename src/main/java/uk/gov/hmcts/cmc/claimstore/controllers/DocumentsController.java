@@ -77,7 +77,7 @@ public class DocumentsController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestParam(name = "issue", required = false) boolean issue
     ) {
-        byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId, authorisation, issue);
+        byte[] pdfDocument = documentsService.generateCountyCourtJudgement(externalId, authorisation);
 
         return ResponseEntity
             .ok()

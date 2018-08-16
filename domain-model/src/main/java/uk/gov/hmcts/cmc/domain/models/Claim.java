@@ -54,6 +54,8 @@ public class Claim {
     private final List<String> features;
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponse claimantResponse;
+    //TODO: hardcoding to be removed once merged with other story
+    private final LocalDateTime countyCourtJudgementIssuedAt = LocalDateTime.now();
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -218,6 +220,8 @@ public class Claim {
     public List<String> getFeatures() {
         return features;
     }
+
+    public LocalDateTime getCountyCourtJudgementIssuedAt() { return countyCourtJudgementIssuedAt; }
 
     @Override
     public String toString() {

@@ -25,7 +25,7 @@ public class CCJContent {
     private final String signerName;
     private final String signerRole;
     //TODO: remove hard coding of today's date upon merge
-    private final String dateOfOrder = Formatting.formatDate(LocalDate.now());
+    private final String dateOfOrder = formatDate(LocalDate.now());
 
 
     public CCJContent(Map<String, Object> claim,
@@ -52,7 +52,7 @@ public class CCJContent {
         this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
         //TODO: to be populate upon merge with ROC-4206
-        //this.dateOfOrder = Formatting.formatDate(claim.countyCourtJudgmentIssuedAt)
+        //this.dateOfOrder = formatDate(claim.countyCourtJudgmentIssuedAt)
     }
 
     public Map<String, Object> getClaim() {
@@ -86,4 +86,6 @@ public class CCJContent {
     public String getSignerRole() {
         return signerRole;
     }
+
+    public String getDateOfOrder() { return dateOfOrder; }
 }
