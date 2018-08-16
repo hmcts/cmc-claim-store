@@ -5,15 +5,9 @@ import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 
 import java.time.Clock;
-import java.time.LocalDate;
-import java.time.Period;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -76,31 +70,6 @@ public class ClaimDataContentProviderTest {
         ClaimContent claimContent = provider.createContent(claim);
 
         assertThat(claimContent.getInterest()).isNotNull();
-    }
-
-    @Test
-    public void shouldProvideCorrectClaimTotalWithInterest() {
-        LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
-        Interest interest = SampleInterest.builder()
-            .withInterestDate(
-                new InterestDate(InterestDate.InterestDateType.SUBMISSION,
-                    LocalDate.now().minus(Period.ofDays(1)),
-                    "reason",
-                    InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT))
-            .withType(Interest.InterestType.DIFFERENT)
-            .build();
-
-        Claim oneDayInterestClaim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.builder()
-                .withInterest(interest)
-                .build())
-            .withIssuedOn(yesterday)
-            .withCreatedAt(yesterday.atStartOfDay())
-            .build();
-
-        ClaimContent claimContent = provider.createContent(oneDayInterestClaim);
-
-        assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.01");
     }
 
     @Test

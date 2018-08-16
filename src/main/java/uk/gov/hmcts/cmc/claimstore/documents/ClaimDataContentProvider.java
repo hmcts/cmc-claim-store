@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,18 +50,13 @@ public class ClaimDataContentProvider {
 
         InterestContent interestContent = null;
 
-        LocalDate interestEndDate = claim.getIssuedOn();
-        if (!claim.getClaimData().getInterest().getInterestDate().isEndDateOnSubmission()) {
-            interestEndDate = LocalDate.now();
-        }
-
         if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
                 amountBreakDown.getTotalAmount(),
                 claim.getIssuedOn(),
-                interestEndDate
+                claim.getIssuedOn()
             );
 
             totalAmountComponents.add(interestContent.getAmountRealValue());
