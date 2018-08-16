@@ -278,8 +278,13 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
-        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+    public void saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
+    ) {
+        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
         appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
     }
 
