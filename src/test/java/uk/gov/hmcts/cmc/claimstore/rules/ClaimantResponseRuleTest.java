@@ -1,0 +1,52 @@
+package uk.gov.hmcts.cmc.claimstore.rules;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+
+import java.time.LocalDate;
+
+import static java.time.LocalDateTime.now;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
+
+@RunWith(MockitoJUnitRunner.class)
+public class ClaimantResponseRuleTest {
+
+    private ClaimantResponseRule claimantResponseRule = new ClaimantResponseRule();
+
+    @Test
+    public void shouldNotThrowExceptionWhenClaimantResponseCanBeRequested() {
+        Claim claim = SampleClaim.builder().withRespondedAt(now().minusDays(2)).build();
+        assertThatCode(() ->
+            claimantResponseRule.assertCanBeRequested(claim, USER_ID)
+        ).doesNotThrowAnyException();
+    }
+
+    @Test(expected = ClaimantLinkException.class)
+    public void shouldThrowExceptionWheClaimantIsNotLinkedToTheCase() {
+        Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(1));
+        claimantResponseRule.assertCanBeRequested(claim, "2");
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void shouldThrowExceptionWhenClaimWasNotRespondedTo() {
+        Claim claim = SampleClaim.builder().build();
+        claimantResponseRule.assertCanBeRequested(claim, USER_ID);
+    }
+
+    @Test(expected = ClaimantResponseAlreadySubmittedException.class)
+    public void shouldThrowExceptionWhenClaimantResponseWasAlreadySubmitted() {
+        Claim claim = SampleClaim.builder().withRespondedAt(now().minusDays(2))
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+            .withClaimantRespondedAt(now())
+            .build();
+        claimantResponseRule.assertCanBeRequested(claim, USER_ID);
+    }
+}

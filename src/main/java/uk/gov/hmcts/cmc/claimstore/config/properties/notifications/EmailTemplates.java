@@ -69,6 +69,9 @@ public class EmailTemplates {
     @NotEmpty
     private String offerCounterSignedEmailToOtherParty;
 
+    @NotEmpty
+    private String responseByClaimantEmailToDefendant;
+
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -227,5 +230,13 @@ public class EmailTemplates {
 
     public void setClaimantResponseWithMediationIssued(String claimantResponseWithMediationIssued) {
         this.claimantResponseWithMediationIssued = claimantResponseWithMediationIssued;
+    }
+
+    public String getResponseByClaimantEmailToDefendant() {
+        return responseByClaimantEmailToDefendant;
+    }
+
+    public void setResponseByClaimantEmailToDefendant(String responseByClaimantEmailToDefendant) {
+        this.responseByClaimantEmailToDefendant = responseByClaimantEmailToDefendant;
     }
 }

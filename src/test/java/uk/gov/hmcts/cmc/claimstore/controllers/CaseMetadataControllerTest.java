@@ -140,5 +140,6 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getCountyCourtJudgmentRequestedAt(), metadata.getCountyCourtJudgmentRequestedAt());
         assertEquals(dto.getSettlementReachedAt(), metadata.getSettlementReachedAt());
         assertEquals(dto.getSealedClaimDocument(), Optional.ofNullable(metadata.getSealedClaimDocument()));
+        assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
     }
 }

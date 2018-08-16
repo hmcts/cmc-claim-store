@@ -1,16 +1,21 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.time.LocalDate;
+import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 @EqualsAndHashCode
 public class Offer {
 
@@ -24,9 +29,13 @@ public class Offer {
     @FutureDate
     private final LocalDate completionDate;
 
-    public Offer(String content, LocalDate completionDate) {
+    @Valid
+    private final PaymentIntention paymentIntention;
+
+    public Offer(String content, LocalDate completionDate, PaymentIntention paymentIntention) {
         this.content = content;
         this.completionDate = completionDate;
+        this.paymentIntention = paymentIntention;
     }
 
     public String getContent() {
@@ -35,6 +44,10 @@ public class Offer {
 
     public LocalDate getCompletionDate() {
         return completionDate;
+    }
+
+    public Optional<PaymentIntention> getPaymentIntention() {
+        return Optional.ofNullable(paymentIntention);
     }
 
     @Override
