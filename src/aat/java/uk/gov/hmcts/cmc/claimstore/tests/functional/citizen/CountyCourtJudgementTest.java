@@ -56,7 +56,7 @@ public class CountyCourtJudgementTest extends BaseTest {
     }
 
     @Test
-    public void shouldBeAbleToSuccessfullyIssuedCCJ() {
+    public void shouldBeAbleToSuccessfullyIssueCCJ() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
