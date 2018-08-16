@@ -40,8 +40,8 @@ public class CountyCourtJudgmentService {
         CountyCourtJudgment countyCourtJudgment,
         String externalId,
         String authorisation,
-        boolean issue) {
-
+        boolean issue
+    ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsSubmitterOnClaim(claim, submitterId);

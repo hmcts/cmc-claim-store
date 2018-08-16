@@ -70,7 +70,6 @@ public class CountyCourtJudgementTest extends BaseTest {
 
         uk.gov.hmcts.cmc.domain.models.response.Response fullAdmissionResponse = FullAdmission.builder().build();
 
-
         String externalId = createdCase.getExternalId();
         commonOperations.submitResponse(fullAdmissionResponse, externalId, defendant)
             .then()

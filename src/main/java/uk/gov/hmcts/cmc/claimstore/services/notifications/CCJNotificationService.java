@@ -54,7 +54,7 @@ public class CCJNotificationService {
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant(),
             parameters,
-            NotificationReferenceBuilder.CCJRequested.referenceForDefendant(claim.getReferenceNumber())
+            NotificationReferenceBuilder.CCJIssued.referenceForDefendant(claim.getReferenceNumber())
         );
     }
 
