@@ -17,16 +17,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CCJRequestedNotificationServiceTest extends BaseNotificationServiceTest {
+public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
 
     @Mock
     private NotificationClient notificationClient;
 
-    private CCJRequestedNotificationService ccjRequestedNotificationService;
+    private CCJNotificationService ccjNotificationService;
 
     @Before
     public void setup() {
-        ccjRequestedNotificationService = new CCJRequestedNotificationService(
+        ccjNotificationService = new CCJNotificationService(
             notificationClient,
             properties
         );
@@ -42,7 +42,7 @@ public class CCJRequestedNotificationServiceTest extends BaseNotificationService
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
-        ccjRequestedNotificationService.notifyClaimant(claim);
+        ccjNotificationService.notifyClaimantForCCJRequest(claim);
 
         verify(notificationClient)
             .sendEmail(

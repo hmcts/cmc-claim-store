@@ -136,6 +136,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             mapSealedClaimDocument(ccdCase.getSealedClaimDocument()),
             null,
             null,
+            null,
             null
         );
     }

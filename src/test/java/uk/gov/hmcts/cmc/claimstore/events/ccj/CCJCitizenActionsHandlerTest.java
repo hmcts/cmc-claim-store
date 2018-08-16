@@ -6,32 +6,32 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.CCJNotificationService;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CCJStaffNotificationHandlerTest {
+public class CCJCitizenActionsHandlerTest {
 
     private static final CountyCourtJudgmentEvent EVENT = new CountyCourtJudgmentEvent(
-        SampleClaimIssuedEvent.CLAIM, "Bearer token here", false);
-    private CCJStaffNotificationHandler handler;
+        SampleClaimIssuedEvent.CLAIM, "Bearer token here", false
+    );
+    private CCJCitizenActionsHandler handler;
 
     @Mock
-    CCJStaffNotificationService ccjStaffNotificationService;
+    CCJNotificationService ccjNotificationService;
 
     @Before
     public void setup() {
-        handler = new CCJStaffNotificationHandler(ccjStaffNotificationService);
+        handler = new CCJCitizenActionsHandler(ccjNotificationService);
     }
 
     @Test
-    public void notifyStaffCCJRequestSubmitted() {
-        handler.onDefaultJudgmentRequestSubmitted(EVENT);
+    public void notifyClaimantSuccessfully() {
+        handler.sendNotification(EVENT);
 
-        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
-
+        verify(ccjNotificationService, once()).notifyClaimantForCCJRequest(eq(EVENT.getClaim()));
     }
 }
