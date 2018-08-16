@@ -56,6 +56,7 @@ public final class SampleClaim {
     private List<String> features = Collections.singletonList("admissions");
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
+    private LocalDateTime countyCourtJudgmentIssuedAt = null;
 
     private SampleClaim() {
     }
@@ -159,7 +160,8 @@ public final class SampleClaim {
             sealedClaimDocument,
             features,
             claimantRespondedAt,
-            claimantResponse
+            claimantResponse,
+            countyCourtJudgmentIssuedAt
         );
     }
 
@@ -225,6 +227,11 @@ public final class SampleClaim {
 
     public SampleClaim withCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
+        return this;
+    }
+
+    public SampleClaim withCountyCourtJudgmentIssuedAt(LocalDateTime countyCourtJudgmentIssuedAt) {
+        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         return this;
     }
 

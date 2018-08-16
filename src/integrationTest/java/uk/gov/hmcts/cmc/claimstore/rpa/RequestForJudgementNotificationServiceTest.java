@@ -7,7 +7,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -44,7 +44,7 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
     private Claim claim;
 
-    private CountyCourtJudgmentRequestedEvent event;
+    private CountyCourtJudgmentEvent event;
 
     @Before
     public void setUp() {
@@ -55,7 +55,7 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
             .withCountyCourtJudgment(countyCourtJudgment)
             .build();
 
-        event = new CountyCourtJudgmentRequestedEvent(claim, "AUTH_CODE");
+        event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE", false);
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
 
