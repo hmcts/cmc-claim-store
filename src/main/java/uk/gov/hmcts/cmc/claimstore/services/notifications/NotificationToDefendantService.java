@@ -16,6 +16,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
@@ -42,7 +43,7 @@ public class NotificationToDefendantService {
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant(),
             parameters,
-            NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant(claim.getReferenceNumber())
+            referenceForDefendant(claim.getReferenceNumber())
         );
     }
 
