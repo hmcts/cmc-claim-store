@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -18,17 +19,20 @@ public class ClaimantResponseService {
     private final AppInsights appInsights;
     private final CaseRepository caseRepository;
     private final ClaimantResponseRule claimantResponseRule;
+    private final EventProducer eventProducer;
 
     public ClaimantResponseService(
         ClaimService claimService,
         AppInsights appInsights,
         CaseRepository caseRepository,
-        ClaimantResponseRule claimantResponseRule
+        ClaimantResponseRule claimantResponseRule,
+        EventProducer eventProducer
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
         this.caseRepository = caseRepository;
         this.claimantResponseRule = claimantResponseRule;
+        this.eventProducer = eventProducer;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -42,6 +46,7 @@ public class ClaimantResponseService {
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
         caseRepository.saveClaimantResponse(claim.getId(), response, authorization);
+        eventProducer.createClaimantResponseEvent(claim);
 
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
