@@ -25,9 +25,9 @@ public class IncomeAssert extends AbstractAssert<IncomeAssert, Income> {
                 ccdIncome.getFrequency().name(), actual.getFrequency().name());
         }
 
-        if (!Objects.equals(actual.getAmountReceived(), ccdIncome.getAmountReceived())) {
-            failWithMessage("Expected Income.amountReceived to be <%s> but was <%s>",
-                ccdIncome.getAmountReceived(), actual.getAmountReceived());
+        if (!Objects.equals(actual.getAmount(), ccdIncome.getAmountReceived())) {
+            failWithMessage("Expected Income.amount to be <%s> but was <%s>",
+                ccdIncome.getAmountReceived(), actual.getAmount());
         }
 
         if (!Objects.equals(actual.getOtherSource().orElse(null), ccdIncome.getOtherSource())) {
