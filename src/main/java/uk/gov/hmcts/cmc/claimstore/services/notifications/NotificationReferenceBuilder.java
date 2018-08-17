@@ -165,4 +165,17 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
         }
     }
+
+    public static class ClaimantResponse {
+
+        public static final String TEMPLATE = "to-%s-claimant-response-%s";
+
+        private ClaimantResponse() {
+            // do not instantiate
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+        }
+    }
 }
