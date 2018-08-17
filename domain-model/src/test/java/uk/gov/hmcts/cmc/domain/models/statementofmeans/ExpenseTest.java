@@ -16,7 +16,7 @@ public class ExpenseTest {
         return Expense.builder()
                 .type(MORTGAGE)
                 .frequency(MONTH)
-                .amountPaid(BigDecimal.valueOf(10));
+                .amount(BigDecimal.valueOf(10));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ExpenseTest {
             .type(OTHER)
             .otherName("My other expense")
             .frequency(MONTH)
-            .amountPaid(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> response = validate(expense);
@@ -50,7 +50,7 @@ public class ExpenseTest {
         Expense expense = Expense.builder()
             .type(OTHER)
             .frequency(MONTH)
-            .amountPaid(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> response = validate(expense);
@@ -65,7 +65,7 @@ public class ExpenseTest {
             .type(MORTGAGE)
             .otherName("This shouldn't be populated")
             .frequency(MONTH)
-            .amountPaid(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> response = validate(expense);
@@ -90,7 +90,7 @@ public class ExpenseTest {
         //given
         Expense expense = Expense.builder()
                 .frequency(MONTH)
-                .amountPaid(BigDecimal.valueOf(10))
+                .amount(BigDecimal.valueOf(10))
                 .build();
         //when
         Set<String> errors = validate(expense);
@@ -105,7 +105,7 @@ public class ExpenseTest {
         //given
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
-                .amountPaid(BigDecimal.valueOf(10))
+                .amount(BigDecimal.valueOf(10))
                 .build();
         //when
         Set<String> errors = validate(expense);
@@ -127,7 +127,7 @@ public class ExpenseTest {
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("amountPaid : may not be null");
+                .contains("amount : may not be null");
     }
 
     @Test
@@ -136,14 +136,14 @@ public class ExpenseTest {
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
                 .frequency(MONTH)
-                .amountPaid(BigDecimal.valueOf(0.123f))
+                .amount(BigDecimal.valueOf(0.123f))
                 .build();
         //when
         Set<String> errors = validate(expense);
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("amountPaid : can not be more than 2 fractions");
+                .contains("amount : can not be more than 2 fractions");
     }
 
     @Test
@@ -152,13 +152,13 @@ public class ExpenseTest {
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
                 .frequency(MONTH)
-                .amountPaid(BigDecimal.valueOf(0))
+                .amount(BigDecimal.valueOf(0))
                 .build();
         //when
         Set<String> errors = validate(expense);
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("amountPaid : must be greater than or equal to 0.01");
+                .contains("amount : must be greater than or equal to 0.01");
     }
 }

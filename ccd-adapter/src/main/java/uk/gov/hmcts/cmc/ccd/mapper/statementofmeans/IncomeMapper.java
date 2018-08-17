@@ -12,7 +12,7 @@ public class IncomeMapper implements Mapper<CCDIncome, Income> {
     public CCDIncome to(Income income) {
         return CCDIncome.builder()
             .type(income.getType())
-            .amountReceived(income.getAmountReceived())
+            .amountReceived(income.getAmount())
             .frequency(income.getFrequency())
             .otherSource(income.getOtherSource().orElse(null))
             .build();
@@ -25,7 +25,7 @@ public class IncomeMapper implements Mapper<CCDIncome, Income> {
         }
 
         return Income.builder()
-            .amountReceived(ccdIncome.getAmountReceived())
+            .amount(ccdIncome.getAmountReceived())
             .frequency(ccdIncome.getFrequency())
             .type(ccdIncome.getType())
             .otherSource(ccdIncome.getOtherSource())
