@@ -32,9 +32,9 @@ public class CountyCourtJudgmentPdfService {
     public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
         LocalDateTime ccjIssuedAt = claim.getCountyCourtJudgmentIssuedAt().orElse(null);
-        byte[] template = ccjIssuedAt != null ?
-            documentTemplates.getCountCourtJudgementByAdmission() :
-            documentTemplates.getCountyCourtJudgmentByRequest();
+        byte[] template = ccjIssuedAt != null
+            ? documentTemplates.getCountCourtJudgementByAdmission()
+            : documentTemplates.getCountyCourtJudgmentByRequest();
 
         return pdfServiceClient.generateFromHtml(template, contentProvider.createContent(claim));
     }
