@@ -86,7 +86,7 @@ public abstract class BaseClaimPdfTest extends BaseTest {
         return RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .get("/documents/" + pdfName + "/" + externalId)
+            .get("/documents/ccj" + pdfName + "/" + externalId)
             .asInputStream();
     }
 
