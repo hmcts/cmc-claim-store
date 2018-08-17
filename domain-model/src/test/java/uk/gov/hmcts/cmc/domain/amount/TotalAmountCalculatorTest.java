@@ -474,7 +474,8 @@ public class TotalAmountCalculatorTest {
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
                     .withInterest(
                         standardInterestBuilder()
-                            .withInterestDate(SampleInterestDate.builder().withDate(LocalDate.now().minusDays(2)).build())
+                            .withInterestDate(SampleInterestDate.builder().
+                                withDate(LocalDate.now().minusDays(2)).build())
                             .build())
                     .build()
             )
