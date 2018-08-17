@@ -461,7 +461,7 @@ public class TotalAmountCalculatorTest {
             .withIssuedOn(LocalDate.now().minusDays(1))
             .build();
 
-        assertThat(TotalAmountCalculator.amountWithInterestUntilSubmitDate(claimStandardInterest))
+        assertThat(TotalAmountCalculator.amountWithInterestUntilIssueDate(claimStandardInterest))
             .isEqualTo(Optional.of(format(new BigDecimal("40.00"))));
     }
 
@@ -481,7 +481,7 @@ public class TotalAmountCalculatorTest {
             .withIssuedOn(LocalDate.now().minusDays(1))
             .build();
 
-        assertThat(TotalAmountCalculator.amountWithInterestUntilSubmitDate(claimStandardInterest))
+        assertThat(TotalAmountCalculator.amountWithInterestUntilIssueDate(claimStandardInterest))
             .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
     }
 

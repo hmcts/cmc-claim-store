@@ -22,7 +22,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
-    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue", "amountWithInterestUntilSubmitDate", "totalInterest",  "serviceDate", "amountWithInterest"},
+    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
+        "amountWithInterestUntilIssueDate", "totalInterest",  "serviceDate", "amountWithInterest"},
     allowGetters = true
 )
 @Builder
@@ -194,8 +195,8 @@ public class Claim {
         return TotalAmountCalculator.amountWithInterest(this);
     }
 
-    public Optional<BigDecimal> getAmountWithInterestUntilSubmitDate() {
-        return TotalAmountCalculator.amountWithInterestUntilSubmitDate(this);
+    public Optional<BigDecimal> getAmountWithInterestUntilIssueDate() {
+        return TotalAmountCalculator.amountWithInterestUntilIssueDate(this);
     }
 
     public Optional<BigDecimal> getTotalAmountTillToday() {

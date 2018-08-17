@@ -32,7 +32,7 @@ public class TotalAmountCalculator {
         return Optional.ofNullable(calculateTotalAmount(claim, LocalDate.now(), false));
     }
 
-    public static Optional<BigDecimal> amountWithInterestUntilSubmitDate(Claim claim) {
+    public static Optional<BigDecimal> amountWithInterestUntilIssueDate(Claim claim) {
         return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), false));
     }
 
