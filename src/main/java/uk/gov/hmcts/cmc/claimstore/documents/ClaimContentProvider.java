@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import java.util.Map;
@@ -59,10 +60,8 @@ public class ClaimContentProvider {
 
         map.put("claim", claimDataContentProvider.createContent(claim));
         map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-        String ccjIssuedAt = claim.getCountyCourtJudgmentIssuedAt().isPresent() ?
-                            formatDate(claim.getCountyCourtJudgmentIssuedAt().get()) :
-                            null;
-        map.put("ccjIssuedAt", ccjIssuedAt);
+        LocalDateTime ccjIssuedAt = claim.getCountyCourtJudgmentIssuedAt().orElse(null);
+        map.put("ccjIssuedAt", ccjIssuedAt != null ? formatDate(ccjIssuedAt) : null);
 
         return map;
     }
