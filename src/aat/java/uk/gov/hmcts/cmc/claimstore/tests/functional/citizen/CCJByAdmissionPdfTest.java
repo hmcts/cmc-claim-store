@@ -4,9 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseClaimPdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.io.IOException;
@@ -34,18 +32,10 @@ public class CCJByAdmissionPdfTest extends BaseClaimPdfTest {
     @Override
     protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
-        assertThat(pdfAsText).contains("Date of order: " + Formatting.formatDate(createdCase.
-                                        getCountyCourtJudgementIssuedAt()));
+        assertThat(pdfAsText).contains("Date of order: " + Formatting.formatDate(createdCase
+                                        .getCountyCourtJudgmentIssuedAt()
+                                        .orElseThrow(IllegalArgumentException::new)));
         assertThat(pdfAsText).contains("Claimant Name: " + createdCase.getClaimData().getClaimant().getName());
         assertThat(pdfAsText).contains("Defendant name: " + createdCase.getClaimData().getDefendant().getName());
     }
-
-    private static String getFullAddressString(Address address) {
-        return address.getLine1() + " \n"
-            + address.getLine2() + " \n"
-            + address.getLine3() + " \n"
-            + address.getCity() + " \n"
-            + address.getPostcode();
-    }
-
 }

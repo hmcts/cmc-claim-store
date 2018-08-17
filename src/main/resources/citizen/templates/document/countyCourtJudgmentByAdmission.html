@@ -143,7 +143,7 @@
     </tr>
     <tr>
       <td></td>
-      <td><p><strong>Date of order:</strong> {{ ccj.dateOfOrder }}</p></td>
+      <td><p><strong>Date of order:</strong> {{ ccj.claim.ccjIssuedAt }}</p></td>
     </tr>
     <tr>
       <td></td>
@@ -157,6 +157,8 @@
 
 {% set claimant = ccj.claim.claimant %}
 {% set defendant = ccj.claim.defendant %}
+{% set repaymentPlan = ccj.repaymentPlan %}
+{% set repaymentOption = ccj.repaymentPlan.repaymentOption %}
 
 <div class="section">
   <div class="section-body">
@@ -213,13 +215,38 @@
         </td>
       </tr>
       {% endif %}
+      <tr>
+        <td>
+          It is ordered that you must pay the claimant {{ ccj.amount.totalAmount }}
+          for debt and interest to date of judgment.
+        </td>
+      </tr>
+      {% if repaymentOption == 'Immediately' %}
+      <tr>
+        <td>
+          You must pay the claimant the total of {{ ccj.amount.totalAmount }} forthwith.
+        </td>
+      </tr>
+      <% elseif repaymentOption == 'By a set date' %>
+        <tr>
+          <td>
+            You must pay the claimant the total of {{ ccj.amount.totalAmount }} by {{ repaymentPlan.paySetByDate }}.
+          </td>
+        </tr>
+      <% else %>
+      <tr>
+        <td>
+          You must pay by instalments of {{ repaymentPlan.instalmentAmount }} {{ replaymentPlan.paymentSchedule }}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          The first payment must reach the claimant by {{ replaymentPlan.firstPaymentDate }} and on or before this
+          date {{ replaymentPlan.paymentSchedule }} until the debt has been paid.
+        </td>
+      </tr>
+      <% endif %>
     </table>
-    <br/>
-    <td>
-      It is ordered that you must pay the claimant {{ ccj.amount.feeAmount }}
-      for debt and interest to date of judgment.
-    </td>
-    <br/>
   </div>
 </div>
 </body>

@@ -31,7 +31,7 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/legalSealedClaim.html");
     }
 
-    public byte[] getCountyCourtJudgmentDetails() {
+    public byte[] getCountyCourtJudgmentByRequest() {
         return readBytes("/staff/templates/document/countyCourtJudgmentDetails.html");
     }
 

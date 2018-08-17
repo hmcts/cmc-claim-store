@@ -8,7 +8,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.verify;
 
@@ -42,12 +46,19 @@ public class CountyCourtJudgmentPdfServiceTest {
     @Test
     public void shouldUseCorrectTemplateForStaffPdf() {
         countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault());
-        verify(documentTemplates).getCountyCourtJudgmentDetails();
+        verify(documentTemplates).getCountyCourtJudgmentByRequest();
     }
 
     @Test
-    public void shouldUseCorrectTemplateForClaimantResponse() {
-        countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault());
+    public void shouldUseCorrectTemplateForCCJByAdmission() {
+        countyCourtJudgmentPdfService.createPdf(SampleClaim.builder()
+            .withCountyCourtJudgmentIssuedAt(LocalDateTime.now())
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .withPaymentOptionImmediately()
+                    .build()
+            ).build());
         verify(documentTemplates).getCountCourtJudgementByAdmission();
     }
 }

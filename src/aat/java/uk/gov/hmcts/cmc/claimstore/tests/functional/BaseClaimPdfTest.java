@@ -37,7 +37,7 @@ public abstract class BaseClaimPdfTest extends BaseTest {
     }
 
     protected void shouldBeAbleToFindTestCCJDataInPdf(String pdfName) throws IOException {
-        Claim createdCase = createCase();
+        Claim createdCase = createCaseWithCCJByAdmission();
         String pdfAsText = textContentOf(retrieveCCJPdf(pdfName, createdCase.getExternalId()));
         assertionsOnPdf(createdCase, pdfAsText);
     }

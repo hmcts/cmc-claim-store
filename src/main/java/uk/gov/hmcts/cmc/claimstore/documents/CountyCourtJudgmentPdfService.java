@@ -7,6 +7,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Co
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import java.time.LocalDateTime;
+
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -29,10 +31,10 @@ public class CountyCourtJudgmentPdfService {
 
     public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
-
-        byte[] template = claim.getCountyCourtJudgementIssuedAt() != null  ?
-                            documentTemplates.getCountCourtJudgementByAdmission() :
-                            documentTemplates.getCountyCourtJudgmentDetails();
+        LocalDateTime ccjIssuedAt = claim.getCountyCourtJudgmentIssuedAt().orElse(null);
+        byte[] template = ccjIssuedAt != null ?
+            documentTemplates.getCountCourtJudgementByAdmission() :
+            documentTemplates.getCountyCourtJudgmentByRequest();
 
         return pdfServiceClient.generateFromHtml(template, contentProvider.createContent(claim));
     }
