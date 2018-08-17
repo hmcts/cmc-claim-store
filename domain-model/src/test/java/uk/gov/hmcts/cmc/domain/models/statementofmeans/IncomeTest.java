@@ -16,7 +16,7 @@ public class IncomeTest {
         return Income.builder()
             .type(JOB)
             .frequency(MONTH)
-            .amountReceived(BigDecimal.valueOf(10));
+            .amount(BigDecimal.valueOf(10));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class IncomeTest {
             .type(OTHER)
             .otherSource("Other source of income")
             .frequency(MONTH)
-            .amountReceived(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> response = validate(income);
@@ -50,7 +50,7 @@ public class IncomeTest {
         Income income = Income.builder()
             .type(OTHER)
             .frequency(MONTH)
-            .amountReceived(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> response = validate(income);
@@ -65,7 +65,7 @@ public class IncomeTest {
             .type(JOB)
             .otherSource("This shouldn't be populated")
             .frequency(MONTH)
-            .amountReceived(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> response = validate(income);
@@ -90,7 +90,7 @@ public class IncomeTest {
         //given
         Income income = Income.builder()
             .frequency(MONTH)
-            .amountReceived(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> errors = validate(income);
@@ -105,7 +105,7 @@ public class IncomeTest {
         //given
         Income income = Income.builder()
             .type(JOB)
-            .amountReceived(BigDecimal.valueOf(10))
+            .amount(BigDecimal.valueOf(10))
             .build();
         //when
         Set<String> errors = validate(income);
@@ -127,7 +127,7 @@ public class IncomeTest {
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("amountReceived : may not be null");
+            .contains("amount : may not be null");
     }
 
     @Test
@@ -136,14 +136,14 @@ public class IncomeTest {
         Income income = Income.builder()
             .type(JOB)
             .frequency(MONTH)
-            .amountReceived(BigDecimal.valueOf(0.123f))
+            .amount(BigDecimal.valueOf(0.123f))
             .build();
         //when
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("amountReceived : can not be more than 2 fractions");
+            .contains("amount : can not be more than 2 fractions");
     }
 
     @Test
@@ -152,13 +152,13 @@ public class IncomeTest {
         Income income = Income.builder()
             .type(JOB)
             .frequency(MONTH)
-            .amountReceived(BigDecimal.valueOf(0))
+            .amount(BigDecimal.valueOf(0))
             .build();
         //when
         Set<String> errors = validate(income);
         //then
         assertThat(errors)
             .hasSize(1)
-            .contains("amountReceived : must be greater than or equal to 0.01");
+            .contains("amount : must be greater than or equal to 0.01");
     }
 }
