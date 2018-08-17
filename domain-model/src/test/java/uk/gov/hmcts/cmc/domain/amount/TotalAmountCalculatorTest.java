@@ -446,7 +446,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void amountWithInterestUntilSubmitDateShouldHaveNoInterestIfSubmitAndInterestDateAreEqual() {
+    public void amountWithInterestUntilIssueDateShouldHaveNoInterestIfIssueAndInterestDateAreEqual() {
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
@@ -466,7 +466,7 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
-    public void amountWithInterestUntilIssueDateShouldHaveInterestIfInterestDateIsBeforeSubmit() {
+    public void amountWithInterestUntilIssueDateShouldHaveInterestIfInterestDateIsBeforeIssue() {
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
