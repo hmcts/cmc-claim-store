@@ -67,7 +67,7 @@
       border-top: none;
     }
 
-    .row-spacing {
+      .row-spacing {
       margin-bottom: 10px;
 
     }
@@ -215,38 +215,27 @@
         </td>
       </tr>
       {% endif %}
-      <tr>
-        <td colspan="2">
-          It is ordered that you must pay the claimant {{ ccj.amount.totalAmount }}
-          for debt and interest to date of judgment.
-        </td>
-      </tr>
-      {% if repaymentOption == 'Immediately' %}
-      <tr>
-        <td colspan="2">
-          You must pay the claimant the total of {{ ccj.amount.totalAmount }} forthwith.
-        </td>
-      </tr>
-      {% elseif repaymentOption == 'By a set date' %}
-        <tr>
-          <td colspan="2">
-            You must pay the claimant the total of {{ ccj.amount.totalAmount }} by {{ repaymentPlan.paySetByDate }}.
-          </td>
-        </tr>
-      {% else %}
-      <tr>
-        <td>
-          You must pay by instalments of {{ repaymentPlan.instalmentAmount }} {{ replaymentPlan.paymentSchedule }}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          The first payment must reach the claimant by {{ replaymentPlan.firstPaymentDate }} and on or before this
-          date {{ replaymentPlan.paymentSchedule }} until the debt has been paid.
-        </td>
-      </tr>
-      {% endif %}
     </table>
+    <p>
+      It is ordered that you must pay the claimant {{ ccj.amount.totalAmount }} for debt and interest to date of judgment.
+    </p>
+    {% if repaymentOption == 'Immediately' %}
+    <p>
+      You must pay the claimant the total of {{ ccj.amount.totalAmount }} forthwith.
+    </p>
+    {% elseif repaymentOption == 'By a set date' %}
+    <p>
+       You must pay the claimant the total of {{ ccj.amount.totalAmount }} by {{ repaymentPlan.paySetByDate }}.
+    </p>
+    {% else %}
+    <p>
+       You must pay by instalments of {{ repaymentPlan.instalmentAmount }} {{ replaymentPlan.paymentSchedule }}
+    </p>
+    <p>
+       The first payment must reach the claimant by {{ replaymentPlan.firstPaymentDate }} and on or before this
+       date {{ replaymentPlan.paymentSchedule }} until the debt has been paid.
+    </p>
+    {% endif %}
   </div>
 </div>
 </body>
