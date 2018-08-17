@@ -87,13 +87,13 @@ spec:
           - name: RESPOND_TO_CLAIM_URL
             value: 'https://moneyclaims.aat.platform.hmcts.net/first-contact/start'
           - name: PDF_SERVICE_URL
-            value:
+            value: 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
           - name: DOCUMENT_MANAGEMENT_URL
-            value:
+            value: false
           - name: CORE_CASE_DATA_API_URL
-            value:
+            value: false
           - name: SEND_LETTER_URL
-            value:
+            value: 'http://rpe-send-letter-service-aat.service.core-compute-aat.internal'
           - name: SPRING_MAIL_HOST
             value: mta.reform.hmcts.net
           - name: SPRING_MAIL_PORT
@@ -107,17 +107,17 @@ spec:
           - name: STAFF_NOTIFICATIONS_SENDER
             value: 'noreply@reform.hmcts.net'
           - name: STAFF_NOTIFICATIONS_RECIPIENT
-            value:
+            value: ${STAFF_EMAIL}
           - name: RPA_NOTIFICATIONS_SENDER
             value: 'noreply@reform.hmcts.net'
           - name: RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT
-            value:
+            value: ${STAFF_EMAIL}
           - name: RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT
-            value:
+            value: ${STAFF_EMAIL}
           - name: RPA_NOTIFICATIONS_RESPONSERECIPIENT
-            value:
+            value: ${STAFF_EMAIL}
           - name: RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT
-            value:
+            value: ${STAFF_EMAIL}
           - name: CLAIM_STORE_TEST_SUPPORT_ENABLED
             value: true
           - name: FEATURE_TOGGLES_EMAILTOSTAFF
@@ -154,6 +154,6 @@ spec:
   ports:
   - port: 80
     # Make sure targetPort is the same as 'containerPort' above...
-    targetPort: 4550
+    targetPort: 4400
   selector:
     app: ${SERVICE_NAME}
