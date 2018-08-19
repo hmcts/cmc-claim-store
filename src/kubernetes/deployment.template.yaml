@@ -43,9 +43,9 @@ spec:
             - name: CLAIM_STORE_DB_HOST
               value: preprod-data-lb.moneyclaim.reform.hmcts.net
             - name: CLAIM_STORE_DB_PORT
-              value: 5432
+              value: '5432'
             - name: CLAIM_STORE_DB_USERNAME
-              value: claimstore
+              value: 'claimstore'
             - name: CLAIM_STORE_DB_PASSWORD
               value: ${CLAIM_STORE_DB_PASSWORD}
             - name: CLAIM_STORE_DB_NAME
@@ -55,7 +55,7 @@ spec:
             - name: CMC_DB_HOST
               value: cmc-aat.postgres.database.azure.com
             - name: CMC_DB_PORT
-              value: 5432
+              value: '5432'
             - name: CMC_DB_NAME
               value: cmc
             - name: CMC_DB_USERNAME
@@ -89,19 +89,19 @@ spec:
             - name: PDF_SERVICE_URL
               value: 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
             - name: DOCUMENT_MANAGEMENT_URL
-              value: false
+              value: 'false'
             - name: CORE_CASE_DATA_API_URL
-              value: false
+              value: 'false'
             - name: SEND_LETTER_URL
               value: 'http://rpe-send-letter-service-aat.service.core-compute-aat.internal'
             - name: SPRING_MAIL_HOST
               value: mta.reform.hmcts.net
             - name: SPRING_MAIL_PORT
-              value: 25
+              value: '25'
             - name: SPRING_MAIL_TEST_CONNECTION
-              value: false
+              value: 'false'
             - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE
-              value: true
+              value: 'true'
             - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST
               value: mta.reform.hmcts.net
             - name: STAFF_NOTIFICATIONS_SENDER
@@ -119,9 +119,9 @@ spec:
             - name: RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT
               value: ${STAFF_EMAIL}
             - name: CLAIM_STORE_TEST_SUPPORT_ENABLED
-              value: true
+              value: 'true'
             - name: FEATURE_TOGGLES_EMAILTOSTAFF
-              value: true
+              value: 'true'
             - name: ROOT_APPENDER
               value: CMC
 
