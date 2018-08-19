@@ -124,6 +124,8 @@ spec:
               value: 'true'
             - name: ROOT_APPENDER
               value: 'CMC'
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              value: 'TODO'
 
           # These may be adjusted, but be mindful please
           resources:
