@@ -35,31 +35,31 @@ spec:
           #   - Your project's Jenkinsfile
           env:
             - name: REFORM_TEAM
-              value: cmc
+              value: 'cmc'
             - name: REFORM_SERVICE_NAME
-              value: claim-store
+              value: 'claim-store'
             - name: REFORM_ENVIRONMENT
-              value: preview
+              value: 'preview'
             - name: CLAIM_STORE_DB_HOST
-              value: preprod-data-lb.moneyclaim.reform.hmcts.net
+              value: 'preprod-data-lb.moneyclaim.reform.hmcts.net'
             - name: CLAIM_STORE_DB_PORT
               value: '5432'
             - name: CLAIM_STORE_DB_USERNAME
               value: 'claimstore'
             - name: CLAIM_STORE_DB_PASSWORD
-              value: ${CLAIM_STORE_DB_PASSWORD}
+              value: "${CLAIM_STORE_DB_PASSWORD}"
             - name: CLAIM_STORE_DB_NAME
-              value: claimstore
+              value: 'claimstore'
             - name: CLAIM_STORE_DB_CONNECTION_OPTIONS
               value: '?ssl'
             - name: CMC_DB_HOST
-              value: cmc-aat.postgres.database.azure.com
+              value: 'cmc-aat.postgres.database.azure.com'
             - name: CMC_DB_PORT
               value: '5432'
             - name: CMC_DB_NAME
-              value: cmc
+              value: 'cmc'
             - name: CMC_DB_USERNAME
-              value: cmc@cmc-aat
+              value: 'cmc@cmc-aat'
             - name: CMC_DB_PASSWORD
               value: "${CMC_DB_PASSWORD}"
             - name: CMC_DB_CONNECTION_OPTIONS
@@ -69,19 +69,19 @@ spec:
             - name: IDAM_S2S_AUTH_URL
               value: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
             - name: IDAM_S2S_AUTH_TOTP_SECRET
-              value: ${CLAIM_STORE_S2S_SECRET}
+              value: "${CLAIM_STORE_S2S_SECRET}"
             - name: IDAM_CASEWORKER_ANONYMOUS_USERNAME
-              value: ${ANONYMOUS_CASEWORKER_USERNAME}
+              value: "${ANONYMOUS_CASEWORKER_USERNAME}"
             - name: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
-              value: ${ANONYMOUS_CASEWORKER_PASSWORD}
+              value: "${ANONYMOUS_CASEWORKER_PASSWORD}"
             - name: IDAM_CASEWORKER_SYSTEM_USERNAME
-              value: ${SYSTEM_UPDATE_USERNAME}
+              value: "${SYSTEM_UPDATE_USERNAME}"
             - name: IDAM_CASEWORKER_SYSTEM_PASSWORD
-              value: ${SYSTEM_UPDATE_PASSWORD}
+              value: "${SYSTEM_UPDATE_PASSWORD}"
             - name: OAUTH2_CLIENT_SECRET
-              value: ${OAUTH2_CLIENT_SECRET}
+              value: "${OAUTH2_CLIENT_SECRET}"
             - name: GOV_NOTIFY_API_KEY
-              value: ${NOTIFY_API_KEY}
+              value: "${NOTIFY_API_KEY}"
             - name: FRONTEND_BASE_URL
               value: 'https://moneyclaims.aat.platform.hmcts.net'
             - name: RESPOND_TO_CLAIM_URL
@@ -95,7 +95,7 @@ spec:
             - name: SEND_LETTER_URL
               value: 'http://rpe-send-letter-service-aat.service.core-compute-aat.internal'
             - name: SPRING_MAIL_HOST
-              value: mta.reform.hmcts.net
+              value: 'mta.reform.hmcts.net'
             - name: SPRING_MAIL_PORT
               value: '25'
             - name: SPRING_MAIL_TEST_CONNECTION
@@ -103,27 +103,27 @@ spec:
             - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE
               value: 'true'
             - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST
-              value: mta.reform.hmcts.net
+              value: 'mta.reform.hmcts.net'
             - name: STAFF_NOTIFICATIONS_SENDER
               value: 'noreply@reform.hmcts.net'
             - name: STAFF_NOTIFICATIONS_RECIPIENT
-              value: ${STAFF_EMAIL}
+              value: "${STAFF_EMAIL}"
             - name: RPA_NOTIFICATIONS_SENDER
               value: 'noreply@reform.hmcts.net'
             - name: RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT
-              value: ${STAFF_EMAIL}
+              value: "${STAFF_EMAIL}"
             - name: RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT
-              value: ${STAFF_EMAIL}
+              value: "${STAFF_EMAIL}"
             - name: RPA_NOTIFICATIONS_RESPONSERECIPIENT
-              value: ${STAFF_EMAIL}
+              value: "${STAFF_EMAIL}"
             - name: RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT
-              value: ${STAFF_EMAIL}
+              value: "${STAFF_EMAIL}"
             - name: CLAIM_STORE_TEST_SUPPORT_ENABLED
               value: 'true'
             - name: FEATURE_TOGGLES_EMAILTOSTAFF
               value: 'true'
             - name: ROOT_APPENDER
-              value: CMC
+              value: 'CMC'
 
           # These may be adjusted, but be mindful please
           resources:
