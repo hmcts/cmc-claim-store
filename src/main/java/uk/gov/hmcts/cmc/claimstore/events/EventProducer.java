@@ -2,8 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
@@ -44,8 +45,8 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentRequestedEvent(Claim claim, String authorisation) {
-        publisher.publishEvent(new CountyCourtJudgmentRequestedEvent(claim, authorisation));
+    public void createCountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
+        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation, issue));
     }
 
     public void createOfferMadeEvent(Claim claim) {
@@ -66,5 +67,9 @@ public class EventProducer {
 
     public void createSignSettlementAgreementEvent(Claim claim) {
         publisher.publishEvent(new SignSettlementAgreementEvent(claim));
+    }
+
+    public void createClaimantResponseEvent(Claim claim) {
+        publisher.publishEvent(new ClaimantResponseEvent(claim));
     }
 }

@@ -48,7 +48,9 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             mapNullableUri(result.getString("sealed_claim_document_management_self_path")),
             toList(result.getString("features")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("claimant_responded_at")),
-            toNullableEntity(result.getString("claimant_response"), ClaimantResponse.class));
+            toNullableEntity(result.getString("claimant_response"), ClaimantResponse.class),
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_issued_at"))
+        );
     }
 
     private URI mapNullableUri(String uri) {

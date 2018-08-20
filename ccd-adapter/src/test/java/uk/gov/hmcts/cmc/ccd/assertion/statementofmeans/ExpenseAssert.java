@@ -25,9 +25,9 @@ public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
                 ccdExpense.getFrequency().name(), actual.getFrequency().name());
         }
 
-        if (!Objects.equals(actual.getAmountPaid(), ccdExpense.getAmountPaid())) {
-            failWithMessage("Expected Expense.amountPaid to be <%s> but was <%s>",
-                ccdExpense.getAmountPaid(), actual.getAmountPaid());
+        if (!Objects.equals(actual.getAmount(), ccdExpense.getAmountPaid())) {
+            failWithMessage("Expected Expense.amount to be <%s> but was <%s>",
+                ccdExpense.getAmountPaid(), actual.getAmount());
         }
 
         if (!Objects.equals(actual.getOtherName().orElse(null), ccdExpense.getOtherName())) {

@@ -78,12 +78,12 @@
     "incomes": [{
       "type": "JOB",
       "frequency": "MONTH",
-      "amountReceived": 10
+      "amount": 10
     }],
     "expenses": [{
       "type": "COUNCIL_TAX",
       "frequency": "MONTH",
-      "amountPaid": 10
+      "amount": 10
     }],
     "courtOrders": [{
       "claimNumber": "Reference",
