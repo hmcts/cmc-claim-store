@@ -36,35 +36,18 @@ public abstract class BaseClaimPdfTest extends BaseTest {
         assertionsOnPdf(createdCase, pdfAsText);
     }
 
-    protected void shouldBeAbleToFindTestCCJDataInPdf(String pdfName) throws IOException {
-        Claim createdCase = createCaseWithCCJByAdmission();
-        String pdfAsText = textContentOf(retrieveCCJPdf(pdfName, createdCase.getExternalId()));
-        assertionsOnPdf(createdCase, pdfAsText);
-    }
-
-    private Claim createCase() {
+    protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
         commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
 
-        return submitClaim(claimData)
+        return submitClaimWithClaimData(claimData)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
     }
 
-    private Claim createCaseWithCCJByAdmission() {
-        ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
-
-        return submitClaim(claimData)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-    }
-
-    private Response submitClaim(ClaimData claimData) {
+    private Response submitClaimWithClaimData(ClaimData claimData) {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -82,15 +65,15 @@ public abstract class BaseClaimPdfTest extends BaseTest {
             .asInputStream();
     }
 
-    private InputStream retrieveCCJPdf(String pdfName, String externalId) {
+    protected InputStream retrieveCCJPdf(String externalId) {
         return RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .get("/documents/ccj" + pdfName + "/" + externalId)
+            .get("/documents/ccj/" + externalId)
             .asInputStream();
     }
 
-    private static String textContentOf(InputStream inputStream) throws IOException {
+    protected static String textContentOf(InputStream inputStream) throws IOException {
         PDDocument document = PDDocument.load(inputStream);
         try {
             return new PDFTextStripper().getText(document);

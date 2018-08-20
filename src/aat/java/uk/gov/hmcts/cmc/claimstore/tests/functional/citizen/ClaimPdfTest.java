@@ -23,7 +23,7 @@ public class ClaimPdfTest extends BaseClaimPdfTest {
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
-        shouldBeAbleToFindTestCCJDataInPdf("claimIssueReceipt");
+        shouldBeAbleToFindTestClaimDataInPdf("claimIssueReceipt");
     }
 
     @Override

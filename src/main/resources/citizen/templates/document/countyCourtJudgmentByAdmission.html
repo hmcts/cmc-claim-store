@@ -217,11 +217,11 @@
       {% endif %}
     </table>
     <p>
-      It is ordered that you must pay the claimant {{ ccj.amount.totalAmount }} for debt and interest to date of judgment.
+      It is ordered that you must pay the claimant {{ ccj.amount.remainingAmount }} for debt and interest to date of judgment.
     </p>
     {% if repaymentOption == 'Immediately' %}
     <p>
-      You must pay the claimant the total of {{ ccj.amount.totalAmount }} forthwith.
+      You must pay the claimant the total of {{ ccj.amount.remainingAmount }} forthwith.
     </p>
     {% elseif repaymentOption == 'By a set date' %}
     <p>
