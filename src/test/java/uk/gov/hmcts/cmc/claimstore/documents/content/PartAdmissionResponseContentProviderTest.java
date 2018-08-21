@@ -80,4 +80,12 @@ public class PartAdmissionResponseContentProviderTest {
             .containsKeys("paymentOption")
             .containsValues("By a set date");
     }
+
+    @Test
+    public void shouldProvideCorrectFormNumber() {
+        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstallments();
+        Map<String, Object> content = provider.createContent(partAdmissionResponse);
+        assertThat(content).containsKey("formNumber");
+        assertThat(content).containsValue("OCON9A");
+    }
 }
