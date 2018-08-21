@@ -29,10 +29,12 @@ public final class RepaymentPlanContentProvider {
                 return new RepaymentPlanContent(IMMEDIATELY.getDescription());
             case INSTALMENTS:
                 requireNonNull(repaymentPlan, "repaymentPlan must not be null");
-                return new RepaymentPlanContent(INSTALMENTS.getDescription(),
+                return new RepaymentPlanContent(
+                    INSTALMENTS.getDescription(),
                     formatMoney(repaymentPlan.getInstalmentAmount()),
                     formatDate(repaymentPlan.getFirstPaymentDate()),
-                    repaymentPlan.getPaymentSchedule().getDescription());
+                    repaymentPlan.getPaymentSchedule().getDescription()
+                );
             case BY_SPECIFIED_DATE:
                 requireNonNull(payBySetDate, "payBySetDate must not be null");
                 return new RepaymentPlanContent(BY_SPECIFIED_DATE.getDescription(), formatDate(payBySetDate));
