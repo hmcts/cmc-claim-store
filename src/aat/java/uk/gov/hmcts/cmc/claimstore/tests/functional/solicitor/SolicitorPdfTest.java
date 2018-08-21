@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
 import org.junit.Before;
-import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseClaimPdfTest;
+import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SolicitorClaimPdfTest extends BaseClaimPdfTest {
+public class SolicitorPdfTest extends BasePdfTest {
 
     @Before
     public void before() {
@@ -22,7 +22,7 @@ public class SolicitorClaimPdfTest extends BaseClaimPdfTest {
     }
 
     @Override
-    protected void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
+    protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         ClaimData claimData = createdCase.getClaimData();
         Party claimant = claimData.getClaimant();
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
