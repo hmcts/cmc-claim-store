@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -28,6 +27,7 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
@@ -132,7 +132,7 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
     protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Judgment by admission");
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
-        assertThat(pdfAsText).contains("Date of order: " + Formatting.formatDate(createdCase
+        assertThat(pdfAsText).contains("Date of order: " + formatDate(createdCase
             .getCountyCourtJudgmentIssuedAt()
             .orElseThrow(IllegalArgumentException::new)));
         assertThat(pdfAsText).contains("Claimant name: " + createdCase.getClaimData().getClaimant().getName());
@@ -160,7 +160,7 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
             case INSTALMENTS:
                 RepaymentPlan repaymentPlan = countyCourtJudgment.getRepaymentPlan()
                     .orElseThrow(IllegalStateException::new);
-                String instalmentAmount = Formatting.formatMoney(repaymentPlan.getInstalmentAmount());
+                String instalmentAmount = formatMoney(repaymentPlan.getInstalmentAmount());
                 assertThat(pdfAsText).contains(String.format("You must pay by instalments of %s every week",
                     instalmentAmount));
                 String firstPaymentDate = formatDate(repaymentPlan.getFirstPaymentDate());
