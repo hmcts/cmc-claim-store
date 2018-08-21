@@ -44,13 +44,13 @@ public class CountyCourtJudgmentPdfServiceTest {
     }
 
     @Test
-    public void shouldUseCorrectTemplateForStaffPdf() {
+    public void shouldUseCorrectTemplateForCCJRequest() {
         countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault());
         verify(documentTemplates).getCountyCourtJudgmentByRequest();
     }
 
     @Test
-    public void shouldUseCorrectTemplateForCCJByAdmission() {
+    public void shouldUseCorrectTemplateForCCJIssue() {
         countyCourtJudgmentPdfService.createPdf(SampleClaim.builder()
             .withCountyCourtJudgmentIssuedAt(LocalDateTime.now())
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -59,6 +59,6 @@ public class CountyCourtJudgmentPdfServiceTest {
                     .withPaymentOptionImmediately()
                     .build()
             ).build());
-        verify(documentTemplates).getCountCourtJudgementByAdmission();
+        verify(documentTemplates).getCountyCourtJudgementIssued();
     }
 }

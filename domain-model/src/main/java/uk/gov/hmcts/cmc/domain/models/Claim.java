@@ -54,7 +54,7 @@ public class Claim {
     private final List<String> features;
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponse claimantResponse;
-    private final LocalDateTime countyCourtJudgementIssuedAt;
+    private final LocalDateTime countyCourtJudgmentIssuedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -82,7 +82,7 @@ public class Claim {
         List<String> features,
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
-        LocalDateTime countyCourtJudgementIssuedAt
+        LocalDateTime countyCourtJudgmentIssuedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -107,7 +107,7 @@ public class Claim {
         this.features = features;
         this.claimantRespondedAt = claimantRespondedAt;
         this.claimantResponse = claimantResponse;
-        this.countyCourtJudgementIssuedAt = countyCourtJudgementIssuedAt;
+        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
     }
 
     public Long getId() {
@@ -223,7 +223,7 @@ public class Claim {
     }
 
     public Optional<LocalDateTime> getCountyCourtJudgmentIssuedAt() {
-        return Optional.ofNullable(countyCourtJudgementIssuedAt);
+        return Optional.ofNullable(countyCourtJudgmentIssuedAt);
     }
 
     @Override

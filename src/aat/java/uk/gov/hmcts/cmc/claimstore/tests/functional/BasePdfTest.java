@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Test;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 import org.springframework.http.HttpHeaders;
@@ -18,17 +17,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-public abstract class BaseClaimPdfTest extends BaseTest {
+public abstract class BasePdfTest extends BaseTest {
     protected User user;
 
     protected abstract void assertionsOnPdf(Claim createdCase, String pdfAsText);
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
-
-    @Test
-    public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim");
-    }
 
     protected void shouldBeAbleToFindTestClaimDataInPdf(String pdfName) throws IOException {
         Claim createdCase = createCase();
@@ -40,14 +34,14 @@ public abstract class BaseClaimPdfTest extends BaseTest {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
         commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
 
-        return submitClaimWithClaimData(claimData)
+        return submitClaim(claimData)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
     }
 
-    private Response submitClaimWithClaimData(ClaimData claimData) {
+    private Response submitClaim(ClaimData claimData) {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

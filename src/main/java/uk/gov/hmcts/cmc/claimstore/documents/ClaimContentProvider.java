@@ -60,8 +60,7 @@ public class ClaimContentProvider {
 
         map.put("claim", claimDataContentProvider.createContent(claim));
         map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-        LocalDateTime ccjIssuedAt = claim.getCountyCourtJudgmentIssuedAt().orElse(null);
-        map.put("ccjIssuedAt", ccjIssuedAt != null ? formatDate(ccjIssuedAt) : null);
+        claim.getCountyCourtJudgmentIssuedAt().ifPresent(issuedAt -> map.put("issuedAt", formatDate(issuedAt)));
 
         return map;
     }

@@ -143,7 +143,7 @@
     </tr>
     <tr>
       <td></td>
-      <td><p><strong>Date of order:</strong> {{ ccj.claim.ccjIssuedAt }}</p></td>
+      <td><p><strong>Date of order:</strong> {{ ccj.claim.issuedAt }}</p></td>
     </tr>
     <tr>
       <td></td>
@@ -170,7 +170,7 @@
           {% elseif claimant.partyType == 'on behalf of an organisation' %}
             {% set claimantNameLabel = 'Organisation name' %}
           {% else %}
-            {% set claimantNameLabel = 'Claimant Name' %}
+            {% set claimantNameLabel = 'Claimant name' %}
           {% endif %}
           <strong>{{ claimantNameLabel }}:</strong>
         </td>
@@ -196,7 +196,7 @@
           {% elseif defendant.partyType == 'on behalf of an organisation' %}
            {% set defendantNameLabel = 'Organisation name' %}
           {% else %}
-            {% set defendantNameLabel = 'Defendant Name' %}
+            {% set defendantNameLabel = 'Defendant name' %}
           {% endif %}
           <strong>{{ defendantNameLabel }}:</strong>
         </td>
@@ -225,15 +225,14 @@
     </p>
     {% elseif repaymentOption == 'By a set date' %}
     <p>
-       You must pay the claimant the total of {{ ccj.amount.totalAmount }} by {{ repaymentPlan.paySetByDate }}.
+       You must pay the claimant the total of {{ ccj.amount.remainingAmount }} by {{ repaymentPlan.paySetByDate }}.
     </p>
     {% else %}
     <p>
-       You must pay by instalments of {{ repaymentPlan.instalmentAmount }} {{ repaymentPlan.paymentSchedule }}
+       You must pay by instalments of {{ repaymentPlan.instalmentAmount }} {{ repaymentPlan.paymentSchedule | lower }}
     </p>
     <p>
-       The first payment must reach the claimant by {{ repaymentPlan.firstPaymentDate }} and on or before this
-       date {{ repaymentPlan.paymentSchedule }} until the debt has been paid.
+       The first payment must reach the claimant by {{ repaymentPlan.firstPaymentDate }} and on or before this date {{ repaymentPlan.paymentSchedule | lower }} until the debt has been paid.
     </p>
     {% endif %}
   </div>
