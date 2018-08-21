@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.ccj;
 
 public enum PaymentSchedule {
-    EACH_WEEK("Each week"),
+    EACH_WEEK("Every week"),
     EVERY_TWO_WEEKS("Every two weeks"),
     EVERY_MONTH("Every month");
 

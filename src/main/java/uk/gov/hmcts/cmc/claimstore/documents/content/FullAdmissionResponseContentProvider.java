@@ -11,6 +11,8 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class FullAdmissionResponseContentProvider {
 
+    public static final String ADMISSIONS_FORM_NO = "OCON9A";
+
     private final PaymentIntentionContentProvider paymentIntentionContentProvider;
     private final StatementOfMeansContentProvider statementOfMeansContentProvider;
 
@@ -40,7 +42,7 @@ public class FullAdmissionResponseContentProvider {
                 statementOfMeansContentProvider.createContent(statementOfMeans)
             )
         );
-
+        contentBuilder.put("formNumber", ADMISSIONS_FORM_NO);
         return contentBuilder.build();
     }
 }
