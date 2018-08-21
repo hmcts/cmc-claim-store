@@ -18,14 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SolicitorPdfTest extends BasePdfTest {
 
-    @Test
-    public void shouldBeAbleToFindTestClaimDataInSolicitorSealedClaimPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim");
-    }
-
     @Before
     public void before() {
         user = idamTestService.createSolicitor();
+    }
+
+    @Test
+    public void shouldBeAbleToFindTestClaimDataInSolicitorSealedClaimPdf() throws IOException {
+        shouldBeAbleToFindTestClaimDataInPdf("legalSealedClaim");
     }
 
     @Override
