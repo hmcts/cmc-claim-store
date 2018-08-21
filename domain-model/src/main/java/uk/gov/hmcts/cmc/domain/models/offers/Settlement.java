@@ -62,6 +62,12 @@ public class Settlement {
 
     }
 
+    @JsonIgnore
+    public boolean isSettlementThroughAdmissions() {
+        return getLastOfferStatement().getOffer().orElseThrow(IllegalStateException::new)
+            .getPaymentIntention().isPresent();
+    }
+
     public List<PartyStatement> getPartyStatements() {
         return Collections.unmodifiableList(partyStatements);
     }
