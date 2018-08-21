@@ -15,7 +15,7 @@ public class DocumentTemplates {
         return readBytes("/citizen/templates/document/claimIssueReceipt.html");
     }
 
-    public byte[] getCountyCourtJudgementIssued() {
+    public byte[] getCountyCourtJudgmentIssued() {
         return readBytes("/citizen/templates/document/countyCourtJudgmentIssued.html");
     }
 

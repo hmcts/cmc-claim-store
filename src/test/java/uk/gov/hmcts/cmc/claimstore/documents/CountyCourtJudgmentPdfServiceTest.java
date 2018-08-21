@@ -33,9 +33,10 @@ public class CountyCourtJudgmentPdfServiceTest {
     @Before
     public void beforeTest() {
         countyCourtJudgmentPdfService = new CountyCourtJudgmentPdfService(
-                                        documentTemplates,
-                                        pdfServiceClient,
-                                        contentProvider);
+            documentTemplates,
+            pdfServiceClient,
+            contentProvider
+        );
     }
 
     @Test(expected = NullPointerException.class)
@@ -59,6 +60,6 @@ public class CountyCourtJudgmentPdfServiceTest {
                     .withPaymentOptionImmediately()
                     .build()
             ).build());
-        verify(documentTemplates).getCountyCourtJudgementIssued();
+        verify(documentTemplates).getCountyCourtJudgmentIssued();
     }
 }

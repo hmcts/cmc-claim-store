@@ -24,7 +24,6 @@ public class CCJContent {
     private final String signerName;
     private final String signerRole;
 
-
     public CCJContent(Map<String, Object> claim,
                       CountyCourtJudgment countyCourtJudgment,
                       LocalDateTime countyCourtJudgmentRequestedAt,
