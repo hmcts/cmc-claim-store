@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
@@ -15,15 +16,18 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.sampledata.*;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
@@ -147,20 +151,26 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
             case BY_SPECIFIED_DATE:
                 LocalDate bySetDate = countyCourtJudgment.getPayBySetDate().orElseThrow(IllegalArgumentException::new);
                 assertThat(pdfAsText).contains(
-                    String.format("You must pay the claimant the total of %s by %s", amountToBePaid, formatDate(bySetDate)));
+                    String.format("You must pay the claimant the total of %s by %s",
+                        amountToBePaid,
+                        formatDate(bySetDate)
+                    )
+                );
                 break;
             case INSTALMENTS:
                 RepaymentPlan repaymentPlan = countyCourtJudgment.getRepaymentPlan()
                     .orElseThrow(IllegalStateException::new);
                 String instalmentAmount = Formatting.formatMoney(repaymentPlan.getInstalmentAmount());
-                assertThat(pdfAsText)
-                    .contains(String.format("You must pay by instalments of %s every week", instalmentAmount));
+                assertThat(pdfAsText).contains(String.format("You must pay by instalments of %s every week",
+                    instalmentAmount));
                 String firstPaymentDate = formatDate(repaymentPlan.getFirstPaymentDate());
                 String paymentScheduleLine1 = "The first payment must reach the claimant by %s and on or before this";
                 assertThat(pdfAsText).contains(String.format(paymentScheduleLine1, firstPaymentDate));
                 String paymentScheduleLine2 = "date every week until the debt has been paid.";
                 assertThat(pdfAsText).contains(paymentScheduleLine2);
-                 break;
+                break;
+            default:
+                throw new NotFoundException(countyCourtJudgment.getPaymentOption() + "not found");
         }
 
     }
