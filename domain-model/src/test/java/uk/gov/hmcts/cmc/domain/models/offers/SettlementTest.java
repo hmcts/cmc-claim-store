@@ -6,10 +6,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.util.List;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -192,5 +194,26 @@ public class SettlementTest {
         settlement.getLastOfferStatement();
     }
 
+    @Test
+    public void isSettlementThroughAdmissionsShouldShouldReturnTrueForAdmissionsRoute() {
+        Offer admissionOffer = Offer.builder()
+            .content("Defendant full admission offer")
+            .completionDate(now().plusDays(14))
+            .paymentIntention(PaymentIntention.builder().build())
+            .build();
+
+        settlement.makeOffer(admissionOffer, MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        assertThat(settlement.isSettlementThroughAdmissions()).isTrue();
+    }
+
+    @Test
+    public void isSettlementThroughAdmissionsShouldShouldReturnFalseForOffersRoute() {
+        settlement.makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        assertThat(settlement.isSettlementThroughAdmissions()).isFalse();
+    }
 
 }
