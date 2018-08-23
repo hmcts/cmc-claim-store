@@ -50,6 +50,7 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
             ccdCountyCourtJudgment.getPaidAmount(),
             repaymentPlanMapper.from(ccdCountyCourtJudgment.getRepaymentPlan()),
             ccdCountyCourtJudgment.getPayBySetDate(),
+            ccdCountyCourtJudgment.isSettledLessThanClaimAmount(),
             statementOfTruthMapper.from(ccdCountyCourtJudgment.getStatementOfTruth())
         );
     }

@@ -36,17 +36,20 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     private Claim claim;
 
+    private User defendant = null;
+
     @Before
     public void before() {
         user = idamTestService.createCitizen();
         claim = createCase();
         User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
         linkDefendant(defendant.getAuthorisation());
-        submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
+        defendant = idamTestService.createDefendant(claim.getLetterHolderId());
     }
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentImmediatelyPdf() throws IOException {
+        submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withPaymentOptionImmediately()
@@ -59,9 +62,24 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentByInstalmentsPdf() throws IOException {
+        submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withRepaymentPlan(SampleRepaymentPlan.builder().build())
+            .build();
+
+        claim = submitCCJByAdmission(countyCourtJudgment);
+        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        assertionsOnPdf(claim, pdfAsText);
+    }
+
+    @Test
+    public void shouldBeAbleToFindDataInCCJIssuedSettledForLessAndRepaymentByInstalmentsPdf() throws IOException {
+        submitDefendantPartAdmissionResponse(claim.getExternalId(), defendant.getUserDetails().getId());
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
+            .withSettledForLessClaimAmount(true)
             .build();
 
         claim = submitCCJByAdmission(countyCourtJudgment);
@@ -96,6 +114,20 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     private void submitDefendantResponse(String externalId, String defendantId) {
         Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
+        RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .body(jsonMapper.toJson(fullAdmissionResponse))
+            .when()
+            .post("/responses/claim/" + externalId + "/defendant/" + defendantId)
+            .then()
+            .statusCode(HttpStatus.OK.value());
+
+    }
+
+    private void submitDefendantPartAdmissionResponse(String externalId, String defendantId) {
+        Response fullAdmissionResponse = SampleResponse.PartAdmission.builder().build();
         RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
