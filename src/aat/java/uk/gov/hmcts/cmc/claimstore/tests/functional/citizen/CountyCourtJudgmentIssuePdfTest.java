@@ -36,19 +36,17 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     private Claim claim;
 
-    private User defendant = null;
 
     @Before
     public void before() {
         user = idamTestService.createCitizen();
         claim = createCase();
-        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
-        linkDefendant(defendant.getAuthorisation());
-        defendant = idamTestService.createDefendant(claim.getLetterHolderId());
     }
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentImmediatelyPdf() throws IOException {
+        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
+        linkDefendant(defendant.getAuthorisation());
         submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
@@ -62,6 +60,8 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentByInstalmentsPdf() throws IOException {
+        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
+        linkDefendant(defendant.getAuthorisation());
         submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
@@ -75,6 +75,8 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedSettledForLessAndRepaymentByInstalmentsPdf() throws IOException {
+        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
+        linkDefendant(defendant.getAuthorisation());
         submitDefendantPartAdmissionResponse(claim.getExternalId(), defendant.getUserDetails().getId());
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
@@ -89,6 +91,9 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentBySetDatePdf() throws IOException {
+        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
+        linkDefendant(defendant.getAuthorisation());
+        submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withPayBySetDate(LocalDate.now().plusDays(20))
