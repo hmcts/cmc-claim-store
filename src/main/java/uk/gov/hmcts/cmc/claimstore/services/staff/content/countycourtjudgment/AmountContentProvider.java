@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -28,11 +27,10 @@ public class AmountContentProvider {
     public AmountContent create(Claim claim) {
         CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
         BigDecimal claimAmount;
-        Response response = claim.getResponse().orElse(null);
-        if (response != null
-            && response instanceof PartAdmissionResponse
+        if (claim.getResponse().isPresent()
+            && claim.getResponse().get() instanceof PartAdmissionResponse
             && countyCourtJudgment.isSettledLessThanClaimAmount()) {
-            claimAmount = ((PartAdmissionResponse) response).getAmount();
+            claimAmount = ((PartAdmissionResponse) claim.getResponse().get()).getAmount();
         } else {
             claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
         }
