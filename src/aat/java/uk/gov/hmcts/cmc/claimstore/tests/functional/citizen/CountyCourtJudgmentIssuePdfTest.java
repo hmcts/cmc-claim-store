@@ -1,12 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
@@ -35,19 +32,21 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
     private AmountContentProvider amountContentProvider;
 
     private Claim claim;
-
+    private User defendant;
 
     @Before
     public void before() {
         user = idamTestService.createCitizen();
         claim = createCase();
+        defendant = idamTestService.createDefendant(claim.getLetterHolderId());
+        commonOperations.linkDefendant(defendant.getAuthorisation());
     }
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentImmediatelyPdf() throws IOException {
-        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
-        linkDefendant(defendant.getAuthorisation());
-        submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
+        Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
+        submitDefendantResponse(fullAdmissionResponse, claim.getExternalId());
+
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withPaymentOptionImmediately()
@@ -60,9 +59,9 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentByInstalmentsPdf() throws IOException {
-        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
-        linkDefendant(defendant.getAuthorisation());
-        submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
+        Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
+        submitDefendantResponse(fullAdmissionResponse, claim.getExternalId());
+
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withRepaymentPlan(SampleRepaymentPlan.builder().build())
@@ -75,9 +74,9 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedSettledForLessAndRepaymentByInstalmentsPdf() throws IOException {
-        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
-        linkDefendant(defendant.getAuthorisation());
-        submitDefendantPartAdmissionResponse(claim.getExternalId(), defendant.getUserDetails().getId());
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().build();
+        submitDefendantResponse(partAdmissionResponse, claim.getExternalId());
+
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withRepaymentPlan(SampleRepaymentPlan.builder().build())
@@ -91,9 +90,9 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentBySetDatePdf() throws IOException {
-        User defendant = idamTestService.createDefendant(claim.getLetterHolderId());
-        linkDefendant(defendant.getAuthorisation());
-        submitDefendantResponse(claim.getExternalId(), defendant.getUserDetails().getId());
+        Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
+        submitDefendantResponse(fullAdmissionResponse, claim.getExternalId());
+
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withPayBySetDate(LocalDate.now().plusDays(20))
@@ -104,56 +103,21 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
         assertionsOnPdf(claim, pdfAsText);
     }
 
-
-    private void linkDefendant(String authorisation) {
-        RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, authorisation)
-            .when()
-            .put("claims/defendant/link")
-            .then()
-            .statusCode(HttpStatus.OK.value());
-
-    }
-
-    private void submitDefendantResponse(String externalId, String defendantId) {
-        Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
-        RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .body(jsonMapper.toJson(fullAdmissionResponse))
-            .when()
-            .post("/responses/claim/" + externalId + "/defendant/" + defendantId)
-            .then()
-            .statusCode(HttpStatus.OK.value());
-
-    }
-
-    private void submitDefendantPartAdmissionResponse(String externalId, String defendantId) {
-        Response fullAdmissionResponse = SampleResponse.PartAdmission.builder().build();
-        RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .body(jsonMapper.toJson(fullAdmissionResponse))
-            .when()
-            .post("/responses/claim/" + externalId + "/defendant/" + defendantId)
+    private void submitDefendantResponse(Response response, String externalId) {
+        commonOperations.submitResponse(response, externalId, defendant)
             .then()
             .statusCode(HttpStatus.OK.value());
 
     }
 
     private Claim submitCCJByAdmission(CountyCourtJudgment countyCourtJudgment) {
-        Claim claimReturnedAfterCCJIssued = RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .queryParam("issue", true)
-            .body(jsonMapper.toJson(countyCourtJudgment))
-            .when()
-            .post("/claims/" + claim.getExternalId() + "/county-court-judgment").as(Claim.class);
+        Claim claimReturnedAfterCCJIssued = commonOperations
+            .requestCCJ(claim.getExternalId(), countyCourtJudgment, true, user)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract()
+            .body().as(Claim.class);
 
         assertTrue(claimReturnedAfterCCJIssued.getCountyCourtJudgmentIssuedAt().isPresent());
 
