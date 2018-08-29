@@ -16,7 +16,6 @@ public class SampleCountyCourtJudgment {
     private RepaymentPlan repaymentPlan;
     private LocalDate payBySetDate;
     private StatementOfTruth statementOfTruth;
-    private boolean settledLessThanClaimAmount = false;
 
     public static SampleCountyCourtJudgment builder() {
         return new SampleCountyCourtJudgment();
@@ -58,11 +57,6 @@ public class SampleCountyCourtJudgment {
         return this;
     }
 
-    public SampleCountyCourtJudgment withSettledForLessClaimAmount(boolean settledForLessThanClaimAmount) {
-        this.settledLessThanClaimAmount = settledForLessThanClaimAmount;
-        return this;
-    }
-
     public SampleCountyCourtJudgment withStatementOfTruth(StatementOfTruth statementOfTruth) {
         this.statementOfTruth = statementOfTruth;
         return this;
@@ -70,8 +64,7 @@ public class SampleCountyCourtJudgment {
 
     public CountyCourtJudgment build() {
         return new CountyCourtJudgment(
-            defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate,
-            settledLessThanClaimAmount, statementOfTruth
+            defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
         );
     }
 }

@@ -18,6 +18,5 @@ public class CCDCountyCourtJudgment {
     private CCDPaymentOption paymentOption;
     private CCDRepaymentPlan repaymentPlan;
     private LocalDate payBySetDate;
-    private boolean settledLessThanClaimAmount;
     private CCDStatementOfTruth statementOfTruth;
 }

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -25,14 +24,12 @@ public class AmountContentProvider {
     }
 
     public AmountContent create(Claim claim) {
-        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
 
-        BigDecimal settledClaimAmount = claimAmount;
+        BigDecimal admittedAmount = null;
         if (claim.getResponse().isPresent()
-            && claim.getResponse().get() instanceof PartAdmissionResponse
-            && countyCourtJudgment.isSettledLessThanClaimAmount()) {
-            settledClaimAmount = ((PartAdmissionResponse) claim.getResponse().get()).getAmount();
+            && claim.getResponse().get() instanceof PartAdmissionResponse) {
+            admittedAmount = ((PartAdmissionResponse) claim.getResponse().get()).getAmount();
         }
 
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
@@ -58,7 +55,7 @@ public class AmountContentProvider {
             interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
-            formatMoney(settledClaimAmount
+            formatMoney(admittedAmount != null ? admittedAmount : claimAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
                 .subtract(paidAmount))

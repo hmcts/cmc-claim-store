@@ -80,7 +80,6 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withSettledForLessClaimAmount(true)
             .build();
 
         claim = submitCCJByAdmission(countyCourtJudgment);

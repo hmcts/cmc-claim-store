@@ -37,8 +37,6 @@ public class CountyCourtJudgment {
     @DateNotInThePast
     private final LocalDate payBySetDate;
 
-    private final boolean settledLessThanClaimAmount;
-
     @Valid
     private final StatementOfTruth statementOfTruth;
 
@@ -48,7 +46,6 @@ public class CountyCourtJudgment {
         BigDecimal paidAmount,
         RepaymentPlan repaymentPlan,
         LocalDate payBySetDate,
-        boolean settledLessThanClaimAmount,
         StatementOfTruth statementOfTruth
     ) {
         this.defendantDateOfBirth = defendantDateOfBirth;
@@ -57,7 +54,6 @@ public class CountyCourtJudgment {
         this.repaymentPlan = repaymentPlan;
         this.payBySetDate = payBySetDate;
         this.statementOfTruth = statementOfTruth;
-        this.settledLessThanClaimAmount = settledLessThanClaimAmount;
     }
 
     public Optional<LocalDate> getDefendantDateOfBirth() {
@@ -82,10 +78,6 @@ public class CountyCourtJudgment {
 
     public Optional<StatementOfTruth> getStatementOfTruth() {
         return Optional.ofNullable(statementOfTruth);
-    }
-
-    public boolean isSettledLessThanClaimAmount() {
-        return settledLessThanClaimAmount;
     }
 
     @Override
