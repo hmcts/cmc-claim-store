@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static java.math.BigDecimal.ZERO;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
