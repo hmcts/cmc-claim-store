@@ -26,13 +26,13 @@ public class AmountContentProvider {
 
     public AmountContent create(Claim claim) {
         CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
-        BigDecimal claimAmount;
+        BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+
+        BigDecimal settledClaimAmount = claimAmount;
         if (claim.getResponse().isPresent()
             && claim.getResponse().get() instanceof PartAdmissionResponse
             && countyCourtJudgment.isSettledLessThanClaimAmount()) {
-            claimAmount = ((PartAdmissionResponse) claim.getResponse().get()).getAmount();
-        } else {
-            claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+            settledClaimAmount = ((PartAdmissionResponse) claim.getResponse().get()).getAmount();
         }
 
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
@@ -58,7 +58,7 @@ public class AmountContentProvider {
             interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
-            formatMoney(claimAmount
+            formatMoney(settledClaimAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
                 .subtract(paidAmount))
