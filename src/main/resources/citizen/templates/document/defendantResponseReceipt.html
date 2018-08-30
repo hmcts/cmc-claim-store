@@ -179,14 +179,14 @@
   <div class="section-body">
     <table>
       <tr>
-        <td>Name:</td>
+        <td>Name</td>
         <td>
           {{ defendant.fullName }}
         </td>
       </tr>
       {% if defendant.contactPerson is defined %}
       <tr>
-        <td>Contact person:</td>
+        <td>Contact person</td>
         <td>
           {{ defendant.contactPerson }}
         </td>
@@ -194,14 +194,14 @@
       {% endif %}
       {% if defendant.businessName is defined %}
       <tr>
-        <td>Business name:</td>
+        <td>Business name</td>
         <td>
           Trading as {{ defendant.businessName }}
         </td>
       </tr>
       {% endif %}
       <tr>
-        <td class="keep-formatting">Address:
+        <td class="keep-formatting">Address
           {% if defendant.addressAmended %}
           (as amended)
           {% endif %}
@@ -224,7 +224,7 @@
       </tr>
       {% if defendant.correspondenceAddress is defined and defendant.correspondenceAddress is not empty %}
       <tr class="no-border">
-        <td>Correspondence address:</td>
+        <td>Correspondence address</td>
         <td>
           {{ defendant.correspondenceAddress.line1 }}
           <br/>
@@ -244,7 +244,7 @@
       {% endif %}
       {% if defendant.dateOfBirth is defined and defendant.dateOfBirth is not empty %}
       <tr>
-        <td>Date of birth:</td>
+        <td>Date of birth</td>
         <td>
           {{ defendant.dateOfBirth }}
         </td>
@@ -252,14 +252,14 @@
       {% endif %}
       {% if defendant.mobilePhone is defined and defendant.mobilePhone is not empty %}
       <tr>
-        <td>Telephone:</td>
+        <td>Telephone</td>
         <td>
           {{ defendant.mobilePhone }}
         </td>
       </tr>
       {% endif %}
       <tr>
-        <td>Email:</td>
+        <td>Email</td>
         <td>
           {{ defendant.email }}
         </td>
@@ -275,7 +275,7 @@
   <div class="section-body">
     <table>
       <tr>
-        <td>Defendant’s response:</td>
+        <td>Defendant’s response</td>
         <td>
           {{ responseTypeSelected }}
         </td>
@@ -421,19 +421,19 @@
 
       {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
       <tr class="no-border">
-        <td><strong>Regular payments of:</strong></td>
+        <td><strong>Regular payments of</strong></td>
         <td>
           {{ repaymentPlan.instalmentAmount }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Frequency of payments:</strong></td>
+        <td><strong>Frequency of payments</strong></td>
         <td>
           {{ repaymentPlan.paymentSchedule }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Make the first payment on:</strong></td>
+        <td><strong>Make the first payment on</strong></td>
         <td>
           {{ repaymentPlan.firstPaymentDate }}
         </td>
@@ -465,7 +465,7 @@
         </td>
       </tr>
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Children:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Children</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Children living with them</strong></td>
@@ -498,17 +498,17 @@
 
       {% if maintainedChildren is defined %}
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Maintenance:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Maintenance</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Number of children:</strong></td>
+        <td><strong>Number of children</strong></td>
         <td>
           {{ maintainedChildren }}
         </td>
       </tr>
       {% endif %}
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Financial support:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Financial support</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Financial support for anyone else</strong></td>
@@ -522,20 +522,20 @@
       </tr>
       {% if otherDependants is defined %}
       <tr class="no-border">
-        <td><strong>Number of people:</strong></td>
+        <td><strong>Number of people</strong></td>
         <td>
           {{ otherDependants.numberOfPeople }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Give details:</strong></td>
+        <td><strong>Give details</strong></td>
         <td>
           {{ otherDependants.details }}
         </td>
       </tr>
       {% endif %}
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Employment details:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Employment details</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Currently working</strong></td>
@@ -548,7 +548,7 @@
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Type of job:</strong></td>
+        <td><strong>Type of job</strong></td>
         <td>
           {{ jobType }}
         </td>
@@ -558,13 +558,13 @@
         <td colspan="2" class="keep-white-space"><strong>Employer</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Employer name:</strong></td>
+        <td><strong>Employer name</strong></td>
         <td>
           {{ employer.name }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Job title:</strong></td>
+        <td><strong>Job title</strong></td>
         <td>
           {{ employer.jobTitle }}
         </td>
@@ -573,16 +573,16 @@
 
       {% if selfEmployment is defined %}
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Self-employment details:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Self-employment details</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Job title:</strong></td>
+        <td><strong>Job title</strong></td>
         <td>
           {{ selfEmployment.jobTitle }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Annual turnover:</strong></td>
+        <td><strong>Annual turnover</strong></td>
         <td>
           {{ selfEmployment.annualTurnover }}
         </td>
@@ -605,7 +605,7 @@
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Reason:</strong></td>
+        <td><strong>Reason</strong></td>
         <td>
           {{ onTaxPayments.reason }}
         </td>
@@ -614,23 +614,23 @@
       {% endif %}
 
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts</strong></td>
       </tr>
       {% for bankAccount in bankAccounts %}
       <tr class="no-border">
-        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Type of account:</strong></td>
+        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Type of account</strong></td>
         <td>
           {{ bankAccount.type }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Balance:</strong></td>
+        <td><strong>Balance</strong></td>
         <td>
           {{ bankAccount.balance }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Joint account:</strong></td>
+        <td><strong>Joint account</strong></td>
         <td>
           {% if bankAccount.joint %}
           Yes
@@ -643,7 +643,7 @@
 
       {% if incomes is defined and incomes is not empty %}
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Monthly income:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Monthly income</strong></td>
       </tr>
       {% for income in incomes %}
       <tr class="no-border">
@@ -659,7 +659,7 @@
 
       {% if expenses is defined and expenses is not empty %}
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Monthly expenses:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Monthly expenses</strong></td>
       </tr>
       {% for expense in expenses %}
       <tr class="no-border">
@@ -674,7 +674,7 @@
       {% endif %}
 
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Debts:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Debts</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Defendant has debts</strong></td>
@@ -688,19 +688,19 @@
       </tr>
       {% for debt in debts | default([]) %}
       <tr class="no-border">
-        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Debt:</strong></td>
+        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Debt</strong></td>
         <td>
           {{ debt.description }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Total owed:</strong></td>
+        <td><strong>Total owed</strong></td>
         <td>
           {{ debt.totalOwed }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Monthly payments:</strong></td>
+        <td><strong>Monthly payments</strong></td>
         <td>
           {{ debt.monthlyPayments }}
         </td>
@@ -708,7 +708,7 @@
       {% endfor %}
 
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Court orders:</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Court orders</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Court ordered defendant to pay someone else</strong></td>
@@ -724,13 +724,13 @@
       </tr>
       {% for courtOrder in courtOrders | default([]) %}
       <tr class="no-border">
-        <td><strong>Details about court orders:</strong></td>
+        <td><strong>Details about court orders</strong></td>
         <td>
           {{ courtOrder.monthlyInstalmentAmount }}
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Amount they owe:</strong></td>
+        <td><strong>Amount they owe</strong></td>
         <td>
           {{ courtOrder.amountOwed }}
         </td>
