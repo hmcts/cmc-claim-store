@@ -64,7 +64,7 @@ public class SampleCountyCourtJudgment {
 
     public CountyCourtJudgment build() {
         return new CountyCourtJudgment(
-                defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
+            defendantDateOfBirth, paymentOption, paidAmount, repaymentPlan, payBySetDate, statementOfTruth
         );
     }
 }

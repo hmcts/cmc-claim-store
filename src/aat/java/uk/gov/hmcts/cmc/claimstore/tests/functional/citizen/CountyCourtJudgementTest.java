@@ -1,12 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -44,7 +42,7 @@ public class CountyCourtJudgementTest extends BaseTest {
             .withPaymentOptionImmediately()
             .build();
 
-        Claim updatedCase = requestCCJ(createdCase.getExternalId(), ccj, false)
+        Claim updatedCase = commonOperations.requestCCJ(createdCase.getExternalId(), ccj, false, claimant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
@@ -79,7 +77,7 @@ public class CountyCourtJudgementTest extends BaseTest {
             .withPaymentOptionImmediately()
             .build();
 
-        Claim updatedCase = requestCCJ(externalId, ccj, true)
+        Claim updatedCase = commonOperations.requestCCJ(externalId, ccj, true, claimant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
@@ -109,7 +107,7 @@ public class CountyCourtJudgementTest extends BaseTest {
             .withPaymentOption(null)
             .build();
 
-        requestCCJ(createdCase.getExternalId(), invalidCCJ, false)
+        commonOperations.requestCCJ(createdCase.getExternalId(), invalidCCJ, false, claimant)
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
@@ -126,22 +124,9 @@ public class CountyCourtJudgementTest extends BaseTest {
             .withPaymentOptionImmediately()
             .build();
 
-        requestCCJ(createdCase.getExternalId(), ccj, false)
+        commonOperations.requestCCJ(createdCase.getExternalId(), ccj, false, claimant)
             .then()
             .statusCode(HttpStatus.FORBIDDEN.value());
-    }
-
-    private Response requestCCJ(String externalId, CountyCourtJudgment ccj, boolean issue) {
-        String path = "/claims/" + externalId + "/county-court-judgment";
-        String issuePath = issue ? path.concat("?issue=true") : path;
-
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
-            .body(jsonMapper.toJson(ccj))
-            .when()
-            .post(issuePath);
     }
 
     private void updateResponseDeadlineToEnableCCJ(String claimReferenceNumber) {
