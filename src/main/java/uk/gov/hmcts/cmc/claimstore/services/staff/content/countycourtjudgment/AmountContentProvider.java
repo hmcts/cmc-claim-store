@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvide
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -24,6 +26,14 @@ public class AmountContentProvider {
 
     public AmountContent create(Claim claim) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+
+        BigDecimal admittedAmount = null;
+        Response response = claim.getResponse().orElse(null);
+
+        if (response instanceof PartAdmissionResponse) {
+            admittedAmount = ((PartAdmissionResponse) response).getAmount();
+        }
+
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
         InterestContent interestContent = null;
         BigDecimal interestRealValue = ZERO;
@@ -47,7 +57,7 @@ public class AmountContentProvider {
             interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
-            formatMoney(claimAmount
+            formatMoney(admittedAmount != null ? admittedAmount : claimAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
                 .subtract(paidAmount))
