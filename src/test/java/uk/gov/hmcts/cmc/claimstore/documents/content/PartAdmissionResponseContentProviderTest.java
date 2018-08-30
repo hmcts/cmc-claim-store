@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -34,7 +35,7 @@ public class PartAdmissionResponseContentProviderTest {
 
         assertThat(content)
             .containsKey("responseTypeSelected")
-            .containsValue(ResponseType.PART_ADMISSION.getDescription());
+            .containsValue(DefenceType.ALREADY_PAID.getDescription());
 
         assertThat(content)
             .containsKey("amount")
@@ -57,6 +58,9 @@ public class PartAdmissionResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
         assertThat(content)
+            .containsKey("responseTypeSelected")
+            .containsValue(ResponseType.PART_ADMISSION.getDescription());
+        assertThat(content)
             .containsKeys("paymentOption")
             .containsValues("Immediately");
     }
@@ -66,6 +70,9 @@ public class PartAdmissionResponseContentProviderTest {
         PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstallments();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
+        assertThat(content)
+            .containsKey("responseTypeSelected")
+            .containsValue(ResponseType.PART_ADMISSION.getDescription());
         assertThat(content)
             .containsKeys("paymentOption")
             .containsValues("By instalments");

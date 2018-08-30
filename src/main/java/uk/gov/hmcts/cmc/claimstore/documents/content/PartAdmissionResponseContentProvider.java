@@ -2,8 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
+import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 
@@ -43,7 +45,7 @@ public class PartAdmissionResponseContentProvider {
         String evidenceComment = null;
 
         content.put("responseDefence", partAdmissionResponse.getDefence());
-        content.put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription());
+        content.put("responseTypeSelected", deriveResponseTypeSelected(partAdmissionResponse));
 
         content.put("amount", formatMoney(partAdmissionResponse.getAmount()));
 
@@ -95,5 +97,15 @@ public class PartAdmissionResponseContentProvider {
         content.put("formNumber", ADMISSIONS_FORM_NO);
 
         return content;
+    }
+
+    private String deriveResponseTypeSelected(PartAdmissionResponse response) {
+        String responseTypeSelected;
+        if (response.getPaymentDeclaration().map(PaymentDeclaration::getPaidDate).isPresent()) {
+            responseTypeSelected = DefenceType.ALREADY_PAID.getDescription();
+        } else {
+            responseTypeSelected = response.getResponseType().getDescription();
+        }
+        return responseTypeSelected;
     }
 }

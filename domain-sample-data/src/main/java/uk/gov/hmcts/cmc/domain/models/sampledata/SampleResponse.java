@@ -57,6 +57,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return new PartAdmission();
         }
 
+        @Override
         public PartAdmissionResponse build() {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
@@ -75,6 +76,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.immediately())
+//                .paymentDeclaration(null)
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
@@ -88,6 +90,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.bySetDate())
+                .paymentDeclaration(null)
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
