@@ -7,6 +7,7 @@
       size: 8.5in 11in;
       margin: 10%;
       @top-right {
+        /*noinspection CssNoGenericFontName*/
         font-family: "Open Sans";
       }
     }
@@ -18,6 +19,7 @@
       @top-right {
         content: "Claim number: {{ claim.referenceNumber }}";
         font-size: 12px;
+        /*noinspection CssNoGenericFontName*/
         font-family: "Open Sans";
       }
 
@@ -58,6 +60,7 @@
     .section .section-heading {
       margin-bottom: 10px;
       font-size: large;
+      page-break-after: avoid;
     }
 
     .section .section-heading strong:before {
@@ -132,7 +135,7 @@
     }
 
     .no-padding-right {
-      padding-right: 0px;
+      padding-right: 0;
     }
 
     .keep-formatting {
@@ -281,21 +284,21 @@
       {% if responseType == "PART_ADMISSION" %}
         {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
           <tr>
-            <td>How much money do they admit they owe?</td>
+            <td>Amount they admit they owe</td>
             <td>
               <p>{{ amount }}</p>
             </td>
           </tr>
         {% else %}
           <tr>
-            <td>How much money have you paid?</td>
+            <td>Amount they have paid</td>
             <td>
               <p>{{ amount }}</p>
             </td>
           </tr>
           {% if paymentDate is defined %}
           <tr>
-            <td>When did you pay this amount?</td>
+            <td>When they paid this amount</td>
             <td>
               <p>{{ paymentDate }}</p>
             </td>
@@ -303,7 +306,7 @@
           {% endif %}
           {% if paymentMethod is defined and paymentMethod is not empty %}
             <tr>
-              <td>How did you pay the amount claimed?</td>
+              <td>How they paid the amount</td>
               <td>
                 <p>{{ paymentMethod | trim }}</p>
               </td>
@@ -311,7 +314,7 @@
           {% endif %}
         {% endif %}
           <tr>
-            <td>Why are they disputing the full amount?</td>
+            <td>Why they dispute the claim</td>
             <td>
               <p>{{ responseDefence | trim }}</p>
             </td>
@@ -319,7 +322,7 @@
       {% else %}
         {% if responseDefence is defined and responseDefence is not empty %}
         <tr>
-          <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
+          <td class="no-border" colspan="2"><strong>Why they dispute the claim</strong></td>
         </tr>
         <tr class="no-border">
           <td colspan="2" class="single-cell">
@@ -331,7 +334,7 @@
 
       {% if events is defined and events is not empty %}
       <tr>
-        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
+        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened</strong></td>
       </tr>
       {% for event in events %}
       <tr class="subsection no-border">
@@ -356,7 +359,7 @@
 
       {% if evidences is defined and evidences is not empty %}
       <tr>
-        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
+        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence</strong></td>
       </tr>
       {% for row in evidences %}
       <tr class="subsection no-border">
@@ -381,13 +384,13 @@
 
       {% if paymentDeclaration is defined %}
       <tr>
-        <td>When they paid this amount:</td>
+        <td>When they paid this amount</td>
         <td>
           {{ paymentDeclaration.paidDate }}
         </td>
       </tr>
       <tr>
-        <td>How they pay the amount claimed:</td>
+        <td>How they paid the amount</td>
         <td>
           {{ paymentDeclaration.explanation }}
         </td>
@@ -410,7 +413,7 @@
   <div class="section-body">
     <table>
       <tr>
-        <td><strong>When will they pay:</strong></td>
+        <td><strong>When they will pay</strong></td>
         <td>
           {{ whenWillTheyPay }}
         </td>
@@ -438,7 +441,7 @@
       {% endif %}
       {% if statementOfMeans is defined %}
       <tr class="no-border">
-        <td><strong>Explain why you can’t pay the full amount now:</strong></td>
+        <td><strong>Reason they can’t pay the full amount immediately</strong></td>
         <td>
           {{ statementOfMeans.reason }}
         </td>
@@ -456,7 +459,7 @@
   <div class="section-body">
     <table>
       <tr class="no-border">
-        <td><strong>Where are they living?</strong></td>
+        <td><strong>Where they live</strong></td>
         <td>
           {{ residenceTypeDescription }}
         </td>
@@ -465,7 +468,7 @@
         <td colspan="2" class="keep-white-space"><strong>Children:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Do any children live with them?</strong></td>
+        <td><strong>Children living with them</strong></td>
         <td>
           {% if children is defined and children is not empty %}
           Yes
@@ -508,7 +511,7 @@
         <td colspan="2" class="keep-white-space"><strong>Financial support:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Do they support anyone else financially?</strong></td>
+        <td><strong>Financial support for anyone else</strong></td>
         <td>
           {% if otherDependants is defined %}
           Yes
@@ -535,7 +538,7 @@
         <td colspan="2" class="keep-white-space"><strong>Employment details:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Are they currently working?</strong></td>
+        <td><strong>Currently working</strong></td>
         <td>
           {% if employment.selfEmployment is defined or employment.employers is not empty %}
           Yes
@@ -552,7 +555,7 @@
       </tr>
       {% for employer in employment.employers %}
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Who employs them?</strong></td>
+        <td colspan="2" class="keep-white-space"><strong>Employer</strong></td>
       </tr>
       <tr class="no-border">
         <td><strong>Employer name:</strong></td>
@@ -585,7 +588,7 @@
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Are they behind on tax payments?</strong></td>
+        <td><strong>Behind on tax payments</strong></td>
         <td>
           {% if onTaxPayments is defined %}
           Yes
@@ -596,7 +599,7 @@
       </tr>
       {% if onTaxPayments is defined %}
       <tr class="no-border">
-        <td><strong>Amount they owe?</strong></td>
+        <td><strong>Amount of tax they owe</strong></td>
         <td>
           {{ onTaxPayments.amountYouOwe }}
         </td>
@@ -746,34 +749,34 @@
   <div class="section-body">
     <table>
       <tr>
-        <td/>
+        <td></td>
         <td class="no-border no-padding-right">
           I believe the facts stated in this response are true.
         </td>
       </tr>
       {% if signerName is not defined or signerName is empty %}
       <tr class="no-border">
-        <td/>
+        <td></td>
         <td class="no-border">{{ defendant.fullName }}</td>
       </tr>
       {% endif %}
 
       {% if signerName is defined and signerName is not empty %}
       <tr class="no-border">
-        <td class="no-border"/>
+        <td class="no-border"></td>
         <td class="no-border"><strong>Company: </strong> {{ defendant.businessName }}</td>
       </tr>
       <tr class="no-border">
-        <td class="no-border"/>
+        <td class="no-border"></td>
         <td class="no-border"><strong>Name: </strong> {{ signerName }}</td>
       </tr>
       <tr class="no-border">
-        <td class="no-border"/>
+        <td class="no-border"></td>
         <td class="no-border"><strong>Role: </strong>{{ signerRole }}</td>
       </tr>
       {% endif %}
       <tr class="no-border">
-        <td class="no-border"/>
+        <td class="no-border"></td>
         <td class="no-border">{{ defenceSubmittedDate }}</td>
       </tr>
     </table>
