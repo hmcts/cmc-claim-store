@@ -350,7 +350,7 @@
 
       {% if timelineComment is defined and timelineComment is not empty %}
       <tr class="no-border">
-        <td><strong>Comments about claimant’s timeline:</strong></td>
+        <td><strong>Comments about claimant’s timeline</strong></td>
         <td>
           {{ timelineComment }}
         </td>
@@ -375,7 +375,7 @@
 
       {% if evidenceComment is defined and evidenceComment is not empty %}
       <tr class="no-border">
-        <td><strong>Comments about claimant’s evidence:</strong></td>
+        <td><strong>Comments about claimant’s evidence</strong></td>
         <td>
           {{ evidenceComment }}
         </td>
@@ -451,7 +451,7 @@
   </div>
 </div>
 
-{% if paymentOption == ’By instalments’ or paymentOption == ’By a set date’ %}
+{% if paymentOption == 'By instalments' or paymentOption == 'By a set date' %}
 <div class="section">
   <div class="section-heading">
     <strong>The defendant’s financial details</strong>
@@ -486,9 +486,9 @@
           {{ child.numberOfChildren }}
         </td>
       </tr>
-      {% if child.ageGroupType equals ’BETWEEN_16_AND_19’ %}
+      {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
       <tr>
-        <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
+        <td><strong>Children aged 16 to 19 in full-time education or training</strong></td>
         <td>
           {{ child.numberOfChildrenLivingWithYou }}
         </td>
@@ -677,7 +677,7 @@
         <td colspan="2" class="keep-white-space"><strong>Debts:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Do they have any debts?</strong></td>
+        <td><strong>Defendant has debts</strong></td>
         <td>
           {% if debts is defined and debts is not empty %}
           Yes
@@ -711,7 +711,7 @@
         <td colspan="2" class="keep-white-space"><strong>Court orders:</strong></td>
       </tr>
       <tr class="no-border">
-        <td><strong>Has a court ordered them to pay anyone else?</strong></td>
+        <td><strong>Court ordered defendant to pay someone else</strong></td>
         {% if courtOrders is defined and courtOrders is not empty %}
         <td>
           Yes
@@ -740,6 +740,24 @@
   </div>
 </div>
 {% endif %}
+{% endif %}
+
+{% if mediation is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Mediation</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Willing to try mediation</strong></td>
+        <td>
+          {% if mediation %}Yes{% else %}No{% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
 {% endif %}
 
 <div class="section">
