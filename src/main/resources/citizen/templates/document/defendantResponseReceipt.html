@@ -270,12 +270,12 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Defendant's response to the claim</strong>
+    <strong>Defendant’s response to the claim</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Defendant's response:</td>
+        <td>Defendant’s response:</td>
         <td>
           {{ responseTypeSelected }}
         </td>
@@ -451,7 +451,7 @@
   </div>
 </div>
 
-{% if paymentOption == 'By instalments' or paymentOption == 'By a set date' %}
+{% if paymentOption == ’By instalments’ or paymentOption == ’By a set date’ %}
 <div class="section">
   <div class="section-heading">
     <strong>The defendant’s financial details</strong>
@@ -486,7 +486,7 @@
           {{ child.numberOfChildren }}
         </td>
       </tr>
-      {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
+      {% if child.ageGroupType equals ’BETWEEN_16_AND_19’ %}
       <tr>
         <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
         <td>
