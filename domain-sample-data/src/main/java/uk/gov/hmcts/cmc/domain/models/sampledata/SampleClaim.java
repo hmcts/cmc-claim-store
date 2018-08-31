@@ -279,5 +279,10 @@ public final class SampleClaim {
         this.claimantRespondedAt = localDateTime;
         return this;
     }
+
+    public SampleClaim withFeatures(List<String> features) {
+        this.features = features;
+        return this;
+    }
 }
 
