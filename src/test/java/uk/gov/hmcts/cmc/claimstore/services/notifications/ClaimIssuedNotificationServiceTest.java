@@ -119,7 +119,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
         verify(notificationClient).sendEmail(anyString(), anyString(), templateParameters.capture(), anyString());
 
-        assertThat(templateParameters.getValue()).containsEntry(NotificationTemplateParameters.NEW_FEAUTRES, "true");
+        assertThat(templateParameters.getValue()).containsEntry(NotificationTemplateParameters.NEW_FEATURES, "true");
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
         verify(notificationClient).sendEmail(anyString(), anyString(), templateParameters.capture(), anyString());
 
-        assertThat(templateParameters.getValue()).containsEntry(NotificationTemplateParameters.NEW_FEAUTRES, "false");
+        assertThat(templateParameters.getValue()).containsEntry(NotificationTemplateParameters.NEW_FEATURES, "false");
     }
 
 }

@@ -14,7 +14,7 @@ public final class NotificationTemplateParameters {
     public static final String FEES_PAID = "feesPaid";
     public static final String PIN = "pin";
     public static final String COUNTER_SIGNING_PARTY = "counterSigningParty";
-    public static final String NEW_FEAUTRES = "newFeatures";
+    public static final String NEW_FEATURES = "newFeatures";
 
     private NotificationTemplateParameters() {
         // Utility class
