@@ -84,4 +84,16 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1257</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+    Doesn't look exploitable, will wait for spring boot to provide updated version in dependency management
+   ]]></notes>
+        <cve>CVE-2018-11039</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   JSONP is not enabled in our application
+   ]]></notes>
+        <cve>CVE-2018-11040</cve>
+    </suppress>
 </suppressions>
