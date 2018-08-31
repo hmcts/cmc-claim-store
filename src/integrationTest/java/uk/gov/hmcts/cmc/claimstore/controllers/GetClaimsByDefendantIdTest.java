@@ -36,7 +36,7 @@ public class GetClaimsByDefendantIdTest extends BaseGetTest {
 
         assertThat(deserializeListFrom(result))
             .hasSize(1).first()
-            .extracting(Claim::getDefendantId).containsExactly(defendantId);
+            .extracting(Claim::getDefendantId).isEqualTo(defendantId);
     }
 
     @Test
