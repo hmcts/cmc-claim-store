@@ -27,18 +27,18 @@ public class AmountContentProvider {
     public AmountContent create(Claim claim) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
 
-        BigDecimal admittedAmount = null;
         Response response = claim.getResponse().orElse(null);
 
-        if (response instanceof PartAdmissionResponse) {
-            admittedAmount = ((PartAdmissionResponse) response).getAmount();
-        }
+        boolean isPartAdmissionResponse = response instanceof PartAdmissionResponse;
+        BigDecimal admittedAmount = isPartAdmissionResponse
+            ? ((PartAdmissionResponse) response).getAmount()
+            : claimAmount;
 
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
         InterestContent interestContent = null;
         BigDecimal interestRealValue = ZERO;
 
-        if (claim.getClaimData().getInterest().getType() != NO_INTEREST) {
+        if (claim.getClaimData().getInterest().getType() != NO_INTEREST && !isPartAdmissionResponse) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
@@ -57,7 +57,7 @@ public class AmountContentProvider {
             interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
-            formatMoney(admittedAmount != null ? admittedAmount : claimAmount
+            formatMoney(admittedAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
                 .subtract(paidAmount))
