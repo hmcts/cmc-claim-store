@@ -476,11 +476,7 @@
       <tr class="no-border">
         <td><strong>Children living with them</strong></td>
         <td>
-          {% if children is defined and children is not empty %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
+          {{ children is defined and children is not empty ? "Yes" : "No" }}
         </td>
       </tr>
       {% for child in children | default([]) %}
@@ -519,11 +515,7 @@
       <tr class="no-border">
         <td><strong>Financial support for anyone else</strong></td>
         <td>
-          {% if otherDependants is defined %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
+          {{ otherDependants is defined ? "Yes" : "No" }}
         </td>
       </tr>
       {% if otherDependants is defined %}
@@ -546,11 +538,7 @@
       <tr class="no-border">
         <td><strong>Currently working</strong></td>
         <td>
-          {% if employment.selfEmployment is defined or employment.employers is not empty %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
+          {{ employment.selfEmployment is defined or employment.employers is not empty ? "Yes" : "No" }}
         </td>
       </tr>
       <tr class="no-border">
@@ -596,11 +584,7 @@
       <tr class="no-border">
         <td><strong>Behind on tax payments</strong></td>
         <td>
-          {% if onTaxPayments is defined %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
+          {{ onTaxPayments is defined ? "Yes" : "No" }}
         </td>
       </tr>
       {% if onTaxPayments is defined %}
@@ -624,7 +608,7 @@
       </tr>
       {% for bankAccount in bankAccounts %}
       <tr class="no-border">
-        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Type of account</strong></td>
+        <td><strong>{% if loop.length > 1 %}{{ loop.index + 1 }}. {% endif %}Type of account</strong></td>
         <td>
           {{ bankAccount.type }}
         </td>
@@ -638,11 +622,7 @@
       <tr class="no-border">
         <td><strong>Joint account</strong></td>
         <td>
-          {% if bankAccount.joint %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
+          {{ bankAccount.joint ? "Yes" : "No" }}
         </td>
       </tr>
       {% endfor %}
@@ -685,16 +665,12 @@
       <tr class="no-border">
         <td><strong>Defendant has debts</strong></td>
         <td>
-          {% if debts is defined and debts is not empty %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
+          {{ debts is defined and debts is not empty ? "Yes" : "No" }}
         </td>
       </tr>
       {% for debt in debts | default([]) %}
       <tr class="no-border">
-        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Debt</strong></td>
+        <td><strong>{% if loop.length > 1 %}{{ loop.index + 1 }}. {% endif %}Debt</strong></td>
         <td>
           {{ debt.description }}
         </td>
@@ -718,15 +694,9 @@
       </tr>
       <tr class="no-border">
         <td><strong>Court ordered defendant to pay someone else</strong></td>
-        {% if courtOrders is defined and courtOrders is not empty %}
         <td>
-          Yes
+          {{ courtOrders is defined and courtOrders is not empty ? "Yes" : "No" }}
         </td>
-        {% else %}
-        <td>
-          No
-        </td>
-        {% endif %}
       </tr>
       {% for courtOrder in courtOrders | default([]) %}
       <tr class="no-border">
@@ -758,7 +728,7 @@
       <tr>
         <td><strong>Willing to try mediation</strong></td>
         <td>
-          {% if mediation %}Yes{% else %}No{% endif %}
+          {{ mediation ? "Yes" : "No" }}
         </td>
       </tr>
     </table>
