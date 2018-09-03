@@ -50,4 +50,12 @@ public class FullAdmissionResponseContentProviderTest {
             .containsKeys("paymentOption");
         assertThat(content).containsValues("By a set date");
     }
+
+    @Test
+    public void shouldProvideCorrectFormNumber() {
+        FullAdmissionResponse fullAdmissionResponse = builder().buildWithPaymentOptionBySpecifiedDate();
+        Map<String, Object> content = provider.createContent(fullAdmissionResponse);
+        assertThat(content).containsKey("formNumber");
+        assertThat(content).containsValue("OCON9A");
+    }
 }

@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Test;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 import org.springframework.http.HttpHeaders;
@@ -18,25 +17,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-public abstract class BaseClaimPdfTest extends BaseTest {
+public abstract class BasePdfTest extends BaseTest {
     protected User user;
 
-    protected abstract void assertionsOnClaimPdf(Claim createdCase, String pdfAsText);
+    protected abstract void assertionsOnPdf(Claim createdCase, String pdfAsText);
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
-
-    @Test
-    public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim");
-    }
 
     protected void shouldBeAbleToFindTestClaimDataInPdf(String pdfName) throws IOException {
         Claim createdCase = createCase();
         String pdfAsText = textContentOf(retrievePdf(pdfName, createdCase.getExternalId()));
-        assertionsOnClaimPdf(createdCase, pdfAsText);
+        assertionsOnPdf(createdCase, pdfAsText);
     }
 
-    private Claim createCase() {
+    protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
         commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
 
@@ -65,7 +59,15 @@ public abstract class BaseClaimPdfTest extends BaseTest {
             .asInputStream();
     }
 
-    private static String textContentOf(InputStream inputStream) throws IOException {
+    protected InputStream retrieveCCJPdf(String externalId) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .get("/documents/ccj/" + externalId)
+            .asInputStream();
+    }
+
+    protected static String textContentOf(InputStream inputStream) throws IOException {
         PDDocument document = PDDocument.load(inputStream);
         try {
             return new PDFTextStripper().getText(document);
