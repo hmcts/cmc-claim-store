@@ -286,21 +286,21 @@
           <tr>
             <td>Amount they admit they owe</td>
             <td>
-              <p>{{ amount }}</p>
+              {{ amount }}
             </td>
           </tr>
         {% else %}
           <tr>
             <td>Amount they have paid</td>
             <td>
-              <p>{{ amount }}</p>
+              {{ amount }}
             </td>
           </tr>
           {% if paymentDate is defined %}
           <tr>
             <td>When they paid this amount</td>
             <td>
-              <p>{{ paymentDate }}</p>
+              {{ paymentDate }}
             </td>
           </tr>
           {% endif %}
@@ -308,7 +308,7 @@
             <tr>
               <td>How they paid the amount</td>
               <td>
-                <p>{{ paymentMethod | trim }}</p>
+                {{ paymentMethod | trim }}
               </td>
             </tr>
           {% endif %}
@@ -316,7 +316,7 @@
           <tr>
             <td>Why they dispute the claim</td>
             <td>
-              <p>{{ responseDefence | trim }}</p>
+              {{ responseDefence | trim }}
             </td>
           </tr>
       {% else %}
@@ -326,7 +326,7 @@
         </tr>
         <tr class="no-border">
           <td colspan="2" class="single-cell">
-            <p>{{ responseDefence | trim}}</p>
+            {{ responseDefence | trim}}
           </td>
         </tr>
         {% endif %}
@@ -383,6 +383,12 @@
       {% endif %}
 
       {% if paymentDeclaration is defined %}
+      <tr>
+        <td>Amount they have paid</td>
+        <td>
+          {{ amount }}
+        </td>
+      </tr>
       <tr>
         <td>When they paid this amount</td>
         <td>

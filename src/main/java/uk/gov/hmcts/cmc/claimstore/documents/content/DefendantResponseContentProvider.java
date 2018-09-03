@@ -18,6 +18,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
 public class DefendantResponseContentProvider {
@@ -77,6 +78,9 @@ public class DefendantResponseContentProvider {
         content.put("responseType", defendantResponse.getResponseType());
 
         if (defendantResponse instanceof FullDefenceResponse) {
+            claim.getTotalAmountTillToday().ifPresent(
+                amount -> content.put("amount", formatMoney(amount))
+            );
             content.putAll(
                 fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
             );
