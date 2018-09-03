@@ -59,16 +59,42 @@ public class NotificationReferenceBuilder {
         }
     }
 
-    public static class CCJRequested {
+    public static class ClaimantResponseSubmitted {
 
-        public static final String TEMPLATE = "%s-ccj-requested-notification-%s";
+        public static final String TEMPLATE = "to-%s-claimant’s-response-submitted-notification-%s";
+
+        private ClaimantResponseSubmitted() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference(TEMPLATE, DEFENDANT, claimReferenceNumber);
+        }
+    }
+
+    public static class CCJRequested {
 
         private CCJRequested() {
             // do not instantiate
         }
 
         public static String referenceForClaimant(String claimReferenceNumber) {
-            return reference(TEMPLATE, CLAIMANT, claimReferenceNumber);
+            return reference("%s-ccj-requested-notification-%s", CLAIMANT, claimReferenceNumber);
+        }
+    }
+
+    public static class CCJIssued {
+
+        private CCJIssued() {
+            // do not instantiate
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference("%s-ccj-issued-notification-%s", CLAIMANT, claimReferenceNumber);
         }
     }
 

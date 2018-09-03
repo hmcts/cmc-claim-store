@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
@@ -223,6 +224,26 @@ public class ClaimServiceTest {
             .thenReturn(Optional.of(claim));
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
+    }
+
+    @Test
+    public void getClaimByClaimantEmailShouldCallCaseRepository() {
+        when(caseRepository.getByClaimantEmail(eq(claim.getSubmitterEmail()), anyString()))
+            .thenReturn(singletonList(claim));
+
+        List<Claim> claims = claimService.getClaimByClaimantEmail(claim.getSubmitterEmail(), AUTHORISATION);
+
+        assertThat(claims).containsExactly(claim);
+    }
+
+    @Test
+    public void getClaimByDefendantEmailShouldCallCaseRepository() {
+        when(caseRepository.getByDefendantEmail(eq(claim.getDefendantEmail()), anyString()))
+            .thenReturn(singletonList(claim));
+
+        List<Claim> claims = claimService.getClaimByDefendantEmail(claim.getDefendantEmail(), AUTHORISATION);
+
+        assertThat(claims).containsExactly(claim);
     }
 
     @Test

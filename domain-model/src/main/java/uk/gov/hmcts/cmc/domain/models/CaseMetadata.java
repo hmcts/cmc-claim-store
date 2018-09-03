@@ -29,6 +29,7 @@ public class CaseMetadata {
     private final LocalDateTime countyCourtJudgmentRequestedAt;
     private final LocalDateTime settlementReachedAt;
     private final URI sealedClaimDocument;
+    private final String paymentReference;
 
     public static CaseMetadata fromClaim(Claim claim) {
         return new CaseMetadata(
@@ -44,7 +45,8 @@ public class CaseMetadata {
             claim.isMoreTimeRequested(),
             claim.getCountyCourtJudgmentRequestedAt(),
             claim.getSettlementReachedAt(),
-            claim.getSealedClaimDocument().orElse(null)
+            claim.getSealedClaimDocument().orElse(null),
+            claim.getClaimData().getPayment().getReference()
         );
     }
 

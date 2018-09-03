@@ -17,7 +17,7 @@ public class RequestForJudgementJsonMapper {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("ccjRequestedOn", DateFormatter.format(claim.getCountyCourtJudgmentRequestedAt()))
-            .add("amountWithInterest", claim.getTotalAmountTillToday().orElse(null))
+            .add("amountWithInterest", claim.getAmountWithInterest().orElse(null))
             .add("courtFee", claim.getClaimData().getFeesPaidInPound())
             .add("alreadyPaid", countyCourtJudgment.getPaidAmount().orElse(null))
             .add("paymentType", countyCourtJudgment.getPaymentOption().name())

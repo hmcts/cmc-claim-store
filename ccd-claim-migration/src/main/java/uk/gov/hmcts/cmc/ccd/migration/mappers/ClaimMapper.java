@@ -1,18 +1,19 @@
 package uk.gov.hmcts.cmc.ccd.migration.mappers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import uk.gov.hmcts.cmc.ccd.migration.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.ccd.migration.mappers.MappingUtils.toLocalDateTimeFromUTC;
@@ -49,8 +50,11 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateTimeFromUTC(result.getTimestamp("settlement_reached_at")),
             mapNullableUri(result.getString("sealed_claim_document_management_self_path")),
             toList(result.getString("features")),
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("claimant_responded_at")),
+            toNullableEntity(result.getString("claimant_response"), ClaimantResponse.class),
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_issued_at")),
             toNullableLocalDateFromUTC(result.getTimestamp("directions_questionnaire_deadline"))
-        );
+            );
     }
 
     private URI mapNullableUri(String uri) {
@@ -70,8 +74,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     }
 
     private List<String> toList(String input) {
-        List<String> list = new ArrayList<>();
-        return toNullableEntity(input, list.getClass());
+        return toNullableEntity(input, new TypeReference<List<String>>() {
+        });
     }
 
     private Settlement toNullableSettlement(String input) {
@@ -79,6 +83,14 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     }
 
     private <T> T toNullableEntity(String input, Class<T> entityClass) {
+        if (input == null) {
+            return null;
+        } else {
+            return jsonMapper.fromJson(input, entityClass);
+        }
+    }
+
+    private <T> T toNullableEntity(String input, TypeReference<T> entityClass) {
         if (input == null) {
             return null;
         } else {

@@ -131,6 +131,14 @@ public class ClaimService {
         return caseRepository.getByDefendantId(id, authorisation);
     }
 
+    public List<Claim> getClaimByClaimantEmail(String email, String authorisation) {
+        return caseRepository.getByClaimantEmail(email, authorisation);
+    }
+
+    public List<Claim> getClaimByDefendantEmail(String email, String authorisation) {
+        return caseRepository.getByDefendantEmail(email, authorisation);
+    }
+
     public CaseReference savePrePayment(String externalId, String authorisation) {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
@@ -276,8 +284,13 @@ public class ClaimService {
         claimRepository.linkLetterHolder(claimId, userId);
     }
 
-    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
-        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+    public void saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
+    ) {
+        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
         appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
     }
 

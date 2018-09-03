@@ -53,17 +53,17 @@ public class Income {
     @NotNull
     @Money
     @DecimalMin(value = "0.01")
-    private final BigDecimal amountReceived;
+    private final BigDecimal amount;
 
     public Income(IncomeType type,
                   String otherSource,
                   PaymentFrequency frequency,
-                  BigDecimal amountReceived
+                  BigDecimal amount
     ) {
         this.type = type;
         this.otherSource = otherSource;
         this.frequency = frequency;
-        this.amountReceived = amountReceived;
+        this.amount = amount;
     }
 
     public IncomeType getType() {
@@ -78,8 +78,8 @@ public class Income {
         return frequency;
     }
 
-    public BigDecimal getAmountReceived() {
-        return amountReceived;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
     @Override

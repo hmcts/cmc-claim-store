@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
@@ -98,7 +98,7 @@ public class SupportController {
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
-            new CountyCourtJudgmentRequestedEvent(claim, authorisation)
+            new CountyCourtJudgmentEvent(claim, authorisation, false)
         );
     }
 

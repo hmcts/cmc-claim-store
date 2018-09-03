@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -51,6 +52,9 @@ public class Claim {
     private final LocalDateTime settlementReachedAt;
     private final URI sealedClaimDocument;
     private final List<String> features;
+    private final LocalDateTime claimantRespondedAt;
+    private final ClaimantResponse claimantResponse;
+    private final LocalDateTime countyCourtJudgmentIssuedAt;
     private final LocalDate directionsQuestionnaireDeadline;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
@@ -77,6 +81,9 @@ public class Claim {
         LocalDateTime settlementReachedAt,
         URI sealedClaimDocument,
         List<String> features,
+        LocalDateTime claimantRespondedAt,
+        ClaimantResponse claimantResponse,
+        LocalDateTime countyCourtJudgmentIssuedAt,
         LocalDate directionsQuestionnaireDeadline
     ) {
         this.id = id;
@@ -100,6 +107,9 @@ public class Claim {
         this.settlementReachedAt = settlementReachedAt;
         this.sealedClaimDocument = sealedClaimDocument;
         this.features = features;
+        this.claimantRespondedAt = claimantRespondedAt;
+        this.claimantResponse = claimantResponse;
+        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
     }
 
@@ -203,8 +213,20 @@ public class Claim {
         return TotalAmountCalculator.calculateInterestForClaim(this);
     }
 
+    public Optional<ClaimantResponse> getClaimantResponse() {
+        return Optional.ofNullable(claimantResponse);
+    }
+
+    public Optional<LocalDateTime> getClaimantRespondedAt() {
+        return Optional.ofNullable(claimantRespondedAt);
+    }
+
     public List<String> getFeatures() {
         return features;
+    }
+
+    public Optional<LocalDateTime> getCountyCourtJudgmentIssuedAt() {
+        return Optional.ofNullable(countyCourtJudgmentIssuedAt);
     }
 
     public LocalDate getDirectionsQuestionnaireDeadline() {

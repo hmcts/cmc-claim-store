@@ -24,6 +24,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 @Component
 public class FullDefenceResponseContentProvider {
 
+    private static final String DEFENCE_FORM_NO = "OCON9B";
+
     public Map<String, Object> createContent(FullDefenceResponse fullDefenceResponse) {
         requireNonNull(fullDefenceResponse);
         Map<String, Object> content = new HashMap<>();
@@ -66,7 +68,7 @@ public class FullDefenceResponseContentProvider {
         content.put("timelineComment", timelineComment);
         content.put("evidences", evidences);
         content.put("evidenceComment", evidenceComment);
-
+        content.put("formNumber", DEFENCE_FORM_NO);
         return content;
     }
 

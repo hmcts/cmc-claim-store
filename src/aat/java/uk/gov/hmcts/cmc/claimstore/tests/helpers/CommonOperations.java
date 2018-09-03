@@ -10,9 +10,12 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.util.UUID;
 
@@ -34,8 +37,8 @@ public class CommonOperations {
     public Claim submitClaim(String userAuthentication, String userId) {
         UUID externalId = UUID.randomUUID();
         return submitClaim(userAuthentication, userId, testData.submittedByClaimantBuilder()
-                                                               .withExternalId(externalId)
-                                                               .build());
+            .withExternalId(externalId)
+            .build());
     }
 
     public Claim submitClaim(String userAuthentication, String userId, ClaimData claimData) {
@@ -97,10 +100,10 @@ public class CommonOperations {
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
             .when()
             .get(String.format("claims/%s", externalId))
-        .then()
-        .extract()
-        .body()
-        .as(Claim.class);
+            .then()
+            .extract()
+            .body()
+            .as(Claim.class);
     }
 
     public Response submitResponse(
@@ -169,5 +172,46 @@ public class CommonOperations {
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
             .when()
             .post("/claims/" + claimExternalId + "/offers/" + madeBy.name() + "/countersign");
+    }
+
+    public Response signSettlementAgreement(
+        String claimExternalId,
+        String userAuthentication,
+        Settlement settlement
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .body(jsonMapper.toJson(settlement))
+            .when()
+            .post("/claims/" + claimExternalId + "/settlement");
+    }
+
+    public Response submitClaimantResponse(
+        ClaimantResponse response,
+        String claimExternalId,
+        User claimant
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
+            .body(jsonMapper.toJson(response))
+            .when()
+            .post("/responses/" + claimExternalId + "/claimant/" + claimant.getUserDetails().getId());
+    }
+
+    public Response requestCCJ(String externalId, CountyCourtJudgment ccj, boolean issue, User user) {
+        String path = "/claims/" + externalId + "/county-court-judgment";
+        String issuePath = issue ? path.concat("?issue=true") : path;
+
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .body(jsonMapper.toJson(ccj))
+            .when()
+            .post(issuePath);
     }
 }

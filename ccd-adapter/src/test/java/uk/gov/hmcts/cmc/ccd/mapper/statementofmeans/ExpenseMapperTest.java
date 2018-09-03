@@ -31,7 +31,7 @@ public class ExpenseMapperTest {
         Expense expense = Expense.builder()
             .type(MORTGAGE)
             .frequency(MONTH)
-            .amountPaid(BigDecimal.TEN)
+            .amount(BigDecimal.TEN)
             .build();
 
         //when

@@ -5,10 +5,11 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
-import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
+import uk.gov.hmcts.cmc.claimstore.events.offer.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
@@ -109,10 +110,10 @@ public class EventProducerTest {
     public void shouldCreateCountyCourtJudgmentSubmittedEvent() throws Exception {
 
         // given
-        CountyCourtJudgmentRequestedEvent expectedEvent = new CountyCourtJudgmentRequestedEvent(CLAIM, AUTHORISATION);
-
+        boolean issue = false;
+        CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM, AUTHORISATION, issue);
         // when
-        eventProducer.createCountyCourtJudgmentRequestedEvent(CLAIM, AUTHORISATION);
+        eventProducer.createCountyCourtJudgmentEvent(CLAIM, AUTHORISATION, issue);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
@@ -142,5 +143,17 @@ public class EventProducerTest {
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
+    }
+
+    @Test
+    public void shouldCreateSignSettlementAgreementEvent() throws Exception {
+        // given
+        SignSettlementAgreementEvent event = new SignSettlementAgreementEvent(CLAIM);
+
+        // when
+        eventProducer.createSignSettlementAgreementEvent(CLAIM);
+
+        //then
+        verify(publisher).publishEvent(eq(event));
     }
 }

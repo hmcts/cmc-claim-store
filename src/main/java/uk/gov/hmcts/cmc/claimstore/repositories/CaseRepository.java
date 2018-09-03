@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -20,15 +21,26 @@ public interface CaseRepository {
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
-    void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment);
+    void saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
+    );
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
+
+    void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization);
 
     void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
 
     void linkDefendant(String authorisation);
 
     List<Claim> getByDefendantId(String id, String authorisation);
+
+    List<Claim> getByClaimantEmail(String email, String authorisation);
+
+    List<Claim> getByDefendantEmail(String email, String authorisation);
 
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 

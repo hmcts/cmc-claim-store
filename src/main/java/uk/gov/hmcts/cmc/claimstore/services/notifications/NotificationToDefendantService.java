@@ -8,7 +8,6 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.service.notify.NotificationClient;
@@ -17,20 +16,20 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 
 @Service
-public class CCJRequestedNotificationService {
-    private final Logger logger = LoggerFactory.getLogger(CCJRequestedNotificationService.class);
+public class NotificationToDefendantService {
+    private final Logger logger = LoggerFactory.getLogger(NotificationToDefendantService.class);
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
-    public CCJRequestedNotificationService(
+    public NotificationToDefendantService(
         NotificationClient notificationClient,
         NotificationsProperties notificationsProperties
     ) {
@@ -38,13 +37,13 @@ public class CCJRequestedNotificationService {
         this.notificationsProperties = notificationsProperties;
     }
 
-    public void notifyClaimant(Claim claim) {
+    public void notifyDefendant(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         sendNotificationEmail(
-            claim.getSubmitterEmail(),
-            notificationsProperties.getTemplates().getEmail().getClaimantCCJRequested(),
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant(),
             parameters,
-            NotificationReferenceBuilder.CCJRequested.referenceForClaimant(claim.getReferenceNumber())
+            referenceForDefendant(claim.getReferenceNumber())
         );
     }
 
@@ -65,9 +64,9 @@ public class CCJRequestedNotificationService {
     @Recover
     public void logNotificationFailure(
         NotificationException exception,
-        Claim claim,
         String targetEmail,
         String emailTemplate,
+        Map<String, String> parameters,
         String reference
     ) {
         String errorMessage = String.format(
@@ -81,11 +80,9 @@ public class CCJRequestedNotificationService {
     private Map<String, String> aggregateParams(Claim claim) {
 
         HashMap<String, String> parameters = new HashMap<>();
-        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put("ccjRequestedDate", Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt()));
 
         return parameters;
     }

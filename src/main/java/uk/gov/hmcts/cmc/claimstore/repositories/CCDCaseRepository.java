@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -64,13 +65,32 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getByClaimantEmail(String email, String authorisation) {
+        return ccdCaseApi.getBySubmitterEmail(email, authorisation);
+    }
+
+    @Override
+    public List<Claim> getByDefendantEmail(String email, String authorisation) {
+        return ccdCaseApi.getByDefendantEmail(email, authorisation);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }
 
     @Override
-    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+    public void saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
+    ) {
+        if (issue) {
+            throw new NotImplementedException("Save county court judgement issued not implemented on CCD");
+        } else {
+            coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        }
     }
 
     @Override
@@ -80,6 +100,11 @@ public class CCDCaseRepository implements CaseRepository {
         Response response,
         String authorization) {
         coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
+    }
+
+    @Override
+    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
+        throw new NotImplementedException("Save claimant response not implemented on CCD");
     }
 
     @Override

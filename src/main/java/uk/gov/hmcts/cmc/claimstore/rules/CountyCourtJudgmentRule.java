@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
@@ -20,22 +22,39 @@ public class CountyCourtJudgmentRule {
         this.claimDeadlineService = claimDeadlineService;
     }
 
-    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim) {
+    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim, boolean issue) {
         Objects.requireNonNull(claim, "claim object can not be null");
-        if (isResponseAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("Response for the claim " + claim.getExternalId() + " was submitted");
+        String externalId = claim.getExternalId();
+        if (!issue) {
+            if (isResponseAlreadySubmitted(claim)) {
+                throw new ForbiddenActionException("Response for the claim " + externalId + " was submitted");
+            }
+
+            if (!claimDeadlineService.isPastDeadline(nowInLocalZone(), claim.getResponseDeadline())) {
+                throw new ForbiddenActionException(
+                    "County Court Judgment for claim " + externalId + " cannot be requested yet"
+                );
+            }
+        } else {
+            Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+            if (!isAnAdmissionResponse(response)) {
+                throw new ForbiddenActionException("County Court Judgment for claim "
+                    + externalId
+                    + " cannot be issued for "
+                    + response.getResponseType().name()
+                );
+            }
         }
 
         if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
             throw new ForbiddenActionException("County Court Judgment for the claim "
-                + claim.getExternalId() + " was submitted");
+                + externalId + " was submitted");
         }
+    }
 
-        if (!claimDeadlineService.isPastDeadline(nowInLocalZone(), claim.getResponseDeadline())) {
-            throw new ForbiddenActionException(
-                "County Court Judgment for claim " + claim.getExternalId() + " cannot be requested yet"
-            );
-        }
+    private boolean isAnAdmissionResponse(Response response) {
+        return response.getResponseType().equals(ResponseType.PART_ADMISSION)
+            || response.getResponseType().equals(ResponseType.FULL_ADMISSION);
     }
 
     private boolean isResponseAlreadySubmitted(Claim claim) {

@@ -11,16 +11,19 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
@@ -86,8 +89,7 @@ public class DBCaseRepository implements CaseRepository {
                 Integer noOfRows = claimRepository.linkDefendant(letterHolderId, defendantId, defendantEmail);
                 if (noOfRows != 0) {
                     claimRepository.getByLetterHolderId(letterHolderId)
-                        .ifPresent(claim -> jobSchedulerService
-                            .scheduleEmailNotificationsForDefendantResponse(claim));
+                        .ifPresent(jobSchedulerService::scheduleEmailNotificationsForDefendantResponse);
                 }
             });
     }
@@ -104,15 +106,29 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveCountyCourtJudgment(String authorisation, Claim claim, CountyCourtJudgment countyCourtJudgment) {
+    public void saveCountyCourtJudgment(
+        String authorisation,
+        Claim claim,
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
+    ) {
         final String externalId = claim.getExternalId();
-        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment));
+        LocalDateTime ccjIssuedDate = issue ? nowInUTC() : null;
+
+        claimRepository.saveCountyCourtJudgment(externalId,
+            jsonMapper.toJson(countyCourtJudgment), nowInUTC(), ccjIssuedDate
+        );
     }
 
     @Override
     public void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization) {
         String defendantResponse = jsonMapper.toJson(response);
         claimRepository.saveDefendantResponse(claim.getExternalId(), defendantEmail, defendantResponse);
+    }
+
+    @Override
+    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
+        claimRepository.saveClaimantResponse(claimId, jsonMapper.toJson(response));
     }
 
     @Override
@@ -123,6 +139,16 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public List<Claim> getByDefendantId(String id, String authorisation) {
         return claimRepository.getByDefendantId(id);
+    }
+
+    @Override
+    public List<Claim> getByClaimantEmail(String email, String authorisation) {
+        return claimRepository.getBySubmitterEmail(email);
+    }
+
+    @Override
+    public List<Claim> getByDefendantEmail(String email, String authorisation) {
+        return claimRepository.getByDefendantEmail(email);
     }
 
     @Override
@@ -151,7 +177,7 @@ public class DBCaseRepository implements CaseRepository {
         offersRepository.reachSettlement(
             claim.getExternalId(),
             jsonMapper.toJson(settlement),
-            LocalDateTimeFactory.nowInUTC()
+            nowInUTC()
         );
     }
 

@@ -206,7 +206,7 @@ public class StatementOfMeansTest {
         assertThat(errors)
                 .hasSize(3)
                 .contains("incomes[0].type : may not be null")
-                .contains("incomes[0].amountReceived : may not be null")
+                .contains("incomes[0].amount : may not be null")
                 .contains("incomes[0].frequency : may not be null");
     }
 
@@ -238,7 +238,7 @@ public class StatementOfMeansTest {
         //then
         assertThat(errors)
                 .hasSize(3)
-                .contains("expenses[0].amountPaid : may not be null")
+                .contains("expenses[0].amount : may not be null")
                 .contains("expenses[0].type : may not be null")
                 .contains("expenses[0].frequency : may not be null");
     }

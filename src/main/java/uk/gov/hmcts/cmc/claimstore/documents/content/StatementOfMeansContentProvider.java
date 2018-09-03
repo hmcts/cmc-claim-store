@@ -114,7 +114,7 @@ public class StatementOfMeansContentProvider {
             .put("type", income.getType() == Income.IncomeType.OTHER
                 ? income.getOtherSource().orElseThrow(IllegalStateException::new)
                 : income.getType().getDescription())
-            .put("amountReceived", formatMoney(income.getAmountReceived()))
+            .put("amount", formatMoney(income.getAmount()))
             .put("frequency", income.getFrequency().getDescription())
             .build();
     }
@@ -126,7 +126,7 @@ public class StatementOfMeansContentProvider {
             .put("type", expense.getType() == Expense.ExpenseType.OTHER
                 ? expense.getOtherName().orElseThrow(IllegalStateException::new)
                 : expense.getType().getDescription())
-            .put("amountPaid", formatMoney(expense.getAmountPaid()))
+            .put("amount", formatMoney(expense.getAmount()))
             .put("frequency", expense.getFrequency().getDescription())
             .build();
     }

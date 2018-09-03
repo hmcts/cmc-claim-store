@@ -31,7 +31,7 @@ public class IncomeMapperTest {
         Income income = Income.builder()
             .type(JOB)
             .frequency(MONTH)
-            .amountReceived(BigDecimal.TEN)
+            .amount(BigDecimal.TEN)
             .build();
 
         //when

@@ -1,7 +1,8 @@
 plugins {
-  id 'net.ltgt.apt' version '0.14'
   id 'jacoco'
 }
+
+apply plugin: 'net.ltgt.apt'
 
 def springBootVersion = '2.0.1.RELEASE'
 

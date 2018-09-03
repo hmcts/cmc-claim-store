@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -44,7 +44,7 @@ public class RequestForJudgementNotificationService {
     }
 
     @EventListener
-    public void notifyRobotics(CountyCourtJudgmentRequestedEvent event) {
+    public void notifyRobotics(CountyCourtJudgmentEvent event) {
         requireNonNull(event);
 
         EmailData emailData = prepareEmailData(event.getClaim());

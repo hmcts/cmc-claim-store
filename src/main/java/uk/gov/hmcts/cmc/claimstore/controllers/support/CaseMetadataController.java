@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -84,5 +86,27 @@ public class CaseMetadataController {
         )
             .map(CaseMetadata::fromClaim)
             .orElseThrow(() -> new NotFoundException("Claim not found by claim reference " + claimReference));
+    }
+
+    @PostMapping("/filters/claimants/email")
+    public List<CaseMetadata> getByClaimantEmailFilter(@RequestParam("email") String email) {
+        return claimService.getClaimByClaimantEmail(
+            email,
+            userService.authenticateAnonymousCaseWorker().getAuthorisation()
+        )
+            .stream()
+            .map(CaseMetadata::fromClaim)
+            .collect(Collectors.toList());
+    }
+
+    @PostMapping("/filters/defendants/email")
+    public List<CaseMetadata> getByDefendantEmailFilter(@RequestParam("email") String email) {
+        return claimService.getClaimByDefendantEmail(
+            email,
+            userService.authenticateAnonymousCaseWorker().getAuthorisation()
+        )
+            .stream()
+            .map(CaseMetadata::fromClaim)
+            .collect(Collectors.toList());
     }
 }

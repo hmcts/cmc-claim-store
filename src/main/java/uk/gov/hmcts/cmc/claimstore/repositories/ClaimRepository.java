@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.mapping.ClaimMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +18,11 @@ import java.util.Optional;
 @SuppressWarnings("squid:S1214") // Pointless to create class for string statement
 public interface ClaimRepository {
 
-    // Pointless to create class for this
-    @SuppressWarnings("squid:S1214")
-    String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
+    @SuppressWarnings("squid:S1214") // Pointless to create class for this
+        String SELECT_FROM_STATEMENT = "SELECT * FROM claim";
 
-    // Pointless to create class for this
-    @SuppressWarnings("squid:S1214")
-    String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
+    @SuppressWarnings("squid:S1214") // Pointless to create class for this
+        String ORDER_BY_ID_DESCENDING = " ORDER BY claim.id DESC";
 
     @SqlQuery(SELECT_FROM_STATEMENT + ORDER_BY_ID_DESCENDING)
     List<Claim> findAll();
@@ -41,6 +40,12 @@ public interface ClaimRepository {
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :defendantId" + ORDER_BY_ID_DESCENDING)
     List<Claim> getByDefendantId(@Bind("defendantId") String defendantId);
+
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_email = :submitterEmail")
+    List<Claim> getBySubmitterEmail(@Bind("submitterEmail") String submitterEmail);
+
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_email = :defendantEmail")
+    List<Claim> getByDefendantEmail(@Bind("defendantEmail") String defendantEmail);
 
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.reference_number = :claimReferenceNumber")
@@ -168,6 +173,17 @@ public interface ClaimRepository {
         @Bind("response") String response
     );
 
+    @SqlUpdate(
+        "UPDATE CLAIM SET "
+            + "claimant_response = :response::JSONB, "
+            + "claimant_responded_at = now() AT TIME ZONE 'utc' "
+            + "WHERE id = :id"
+    )
+    void saveClaimantResponse(
+        @Bind("id") long id,
+        @Bind("response") String response
+    );
+
     @SqlUpdate("UPDATE claim SET "
         + " directions_questionnaire_deadline = :dqDeadline"
         + " WHERE external_id = :externalId")
@@ -178,11 +194,14 @@ public interface ClaimRepository {
 
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
-        + " county_court_judgment_requested_at = now() at time zone 'utc'"
+        + " county_court_judgment_requested_at = :ccjRequestedAt,"
+        + " county_court_judgment_issued_at = :ccjIssuedAt"
         + " WHERE external_id = :externalId")
     void saveCountyCourtJudgment(
         @Bind("externalId") String externalId,
-        @Bind("countyCourtJudgmentData") String countyCourtJudgmentData
+        @Bind("countyCourtJudgmentData") String countyCourtJudgmentData,
+        @Bind("ccjRequestedAt") LocalDateTime ccjRequestedAt,
+        @Bind("ccjIssuedAt") LocalDateTime ccjIssuedAt
     );
 
     @SqlUpdate(

@@ -22,7 +22,7 @@
       }
 
       @bottom-left {
-        content: "OCON9B";
+        content: "{{ formNumber }}";
         /*noinspection CssNoGenericFontName*/
         font-family: "Open Sans";
         font-size: 10px;
@@ -149,7 +149,10 @@
       <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant’s response</h2></td>
     </tr>
     <tr>
-      <td colspan="2" class="spacing-bottom"><p>In the County Court Business Centre Online Court</p></td>
+      <td colspan="2"><p>In the County Court Business Centre</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
     </tr>
     <tr>
       <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
@@ -158,7 +161,7 @@
       <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
     </tr>
     <tr>
-      <td colspan="2" class="spacing-bottom"><p><strong>Defence submitted on: </strong> {{ defenceSubmittedOn }}</p>
+      <td colspan="2" class="spacing-bottom"><p><strong>Response submitted on: </strong> {{ defenceSubmittedOn }}</p>
       </td>
     </tr>
   </table>
@@ -645,7 +648,7 @@
           {{ income.type }}
         </td>
         <td>
-          {{ income.amountReceived }}
+          {{ income.amount }}
         </td>
       </tr>
       {% endfor %}
@@ -661,7 +664,7 @@
           {{ expense.type }}
         </td>
         <td>
-          {{ expense.amountPaid }}
+          {{ expense.amount }}
         </td>
       </tr>
       {% endfor %}
@@ -745,7 +748,7 @@
       <tr>
         <td/>
         <td class="no-border no-padding-right">
-          I believe that the facts stated in this defence are true.
+          I believe the facts stated in this response are true.
         </td>
       </tr>
       {% if signerName is not defined or signerName is empty %}

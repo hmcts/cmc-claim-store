@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -72,13 +73,18 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(value = ForbiddenActionException.class)
     public ResponseEntity<Object> forbidden(Exception exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN);
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(new ExceptionForClient(HttpStatus.FORBIDDEN.value(), exception.getMessage()));
     }
 
-    @ExceptionHandler(value = DefendantLinkingException.class)
-    public ResponseEntity<Object> defendantNotLinkedWithClaim(Exception exception) {
+    @ExceptionHandler(value = {
+        DefendantLinkingException.class, ClaimantLinkException.class
+    })
+    public ResponseEntity<Object> partyNotLinkedWithClaim(Exception exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN.value())
+            .body(new ExceptionForClient(HttpStatus.FORBIDDEN.value(), exception.getMessage()));
     }
 
     @ExceptionHandler(value = NotFoundException.class)
@@ -90,7 +96,8 @@ public class ResourceExceptionHandler {
     @ExceptionHandler(value = ConflictException.class)
     public ResponseEntity<Object> conflict(Exception exception) {
         logger.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT.value())
+            .body(new ExceptionForClient(HttpStatus.CONFLICT.value(), exception.getMessage()));
     }
 
     @ExceptionHandler(value = OnHoldClaimAccessAttemptException.class)

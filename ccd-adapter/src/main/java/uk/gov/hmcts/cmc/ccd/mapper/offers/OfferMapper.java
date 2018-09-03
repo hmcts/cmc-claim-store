@@ -17,6 +17,6 @@ public class OfferMapper implements Mapper<CCDOffer, Offer> {
 
     @Override
     public Offer from(CCDOffer ccdOffer) {
-        return new Offer(ccdOffer.getContent(), ccdOffer.getCompletionDate());
+        return new Offer(ccdOffer.getContent(), ccdOffer.getCompletionDate(), null);
     }
 }

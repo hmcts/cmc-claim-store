@@ -10,10 +10,14 @@ public enum AppInsightsEvent {
     OFFER_REJECTED("Offer rejected"),
     SETTLEMENT_REACHED("Settlement reached"),
     CCJ_REQUESTED("CCJ requested"),
+    CCJ_ISSUED("CCJ issued"),
     RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
     RESPONSE_MORE_TIME_REQUESTED_PAPER("Response - more time requested paper"),
+    CLAIMANT_RESPONSE_GENERATED_OFFER_MADE("Claimant response - Generated offer made"),
     BULK_PRINT_FAILED("Bulk print failed"),
-    SCHEDULER_JOB_FAILED("Scheduler job failed");
+    SCHEDULER_JOB_FAILED("Scheduler job failed"),
+    CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
+    CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted");
 
     private String displayName;
 
