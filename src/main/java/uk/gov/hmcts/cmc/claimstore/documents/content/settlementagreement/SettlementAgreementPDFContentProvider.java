@@ -17,8 +17,8 @@ public class SettlementAgreementPDFContentProvider {
 
     private final PartyDetailsContentProvider partyDetailsContentProvider;
 
-    public static String SETTLEMENT_FORM_NAME_OFFERS_ROUTE = "OCON Settlement Agreement";
-    public static String SETTLEMENT_FORM_NAME_ADMISSIONS_ROUTE = "OCON Settlement Agreement A";
+    private static final String SETTLEMENT_FORM_NAME_OFFERS_ROUTE = "OCON Settlement Agreement";
+    private static final String SETTLEMENT_FORM_NAME_ADMISSIONS_ROUTE = "OCON Settlement Agreement A";
 
     public SettlementAgreementPDFContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider
