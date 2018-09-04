@@ -25,7 +25,7 @@ public class GetClaimByReferenceNumberTest extends BaseGetTest {
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getReferenceNumber).containsExactly(claim.getReferenceNumber());
+            .extracting(Claim::getReferenceNumber).isEqualTo(claim.getReferenceNumber());
     }
 
     @Test
