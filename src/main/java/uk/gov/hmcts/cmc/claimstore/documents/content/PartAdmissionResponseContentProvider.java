@@ -105,12 +105,8 @@ public class PartAdmissionResponseContentProvider {
     }
 
     private String deriveResponseTypeSelected(PartAdmissionResponse response) {
-        String responseTypeSelected;
-        if (response.getPaymentDeclaration().map(PaymentDeclaration::getPaidDate).isPresent()) {
-            responseTypeSelected = DefenceType.ALREADY_PAID.getDescription();
-        } else {
-            responseTypeSelected = response.getResponseType().getDescription();
-        }
-        return responseTypeSelected;
+        return response.getPaymentDeclaration().map(PaymentDeclaration::getPaidDate).isPresent()
+            ? DefenceType.ALREADY_PAID.getDescription()
+            : response.getResponseType().getDescription();
     }
 }
