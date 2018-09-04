@@ -29,7 +29,7 @@ public class GetClaimByExternalIdTest extends BaseGetTest {
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getExternalId).containsExactly(externalId.toString());
+            .extracting(Claim::getExternalId).isEqualTo(externalId.toString());
     }
 
     @Test

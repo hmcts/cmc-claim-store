@@ -30,7 +30,7 @@ public class GetClaimsByClaimantIdTest extends BaseGetTest {
 
         assertThat(deserializeListFrom(result))
             .hasSize(1).first()
-            .extracting(Claim::getSubmitterId).containsExactly(submitterId);
+            .extracting(Claim::getSubmitterId).isEqualTo(submitterId);
     }
 
     @Test

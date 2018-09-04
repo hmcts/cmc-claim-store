@@ -56,7 +56,7 @@ public class GetMetadataTest extends BaseGetTest {
 
         assertThat(deserializeMetadataListFrom(result))
             .first()
-            .extracting(CaseMetadata::getSubmitterId).containsExactly(submitterId);
+            .extracting(CaseMetadata::getSubmitterId).isEqualTo(submitterId);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class GetMetadataTest extends BaseGetTest {
 
         assertThat(deserializeMetadataListFrom(result))
             .hasSize(1).first()
-            .extracting(CaseMetadata::getSubmitterId).containsExactly(submitterId);
+            .extracting(CaseMetadata::getSubmitterId).isEqualTo(submitterId);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class GetMetadataTest extends BaseGetTest {
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, CaseMetadata.class))
-            .extracting(CaseMetadata::getSubmitterId).containsExactly(submitterId);
+            .extracting(CaseMetadata::getSubmitterId).isEqualTo(submitterId);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class GetMetadataTest extends BaseGetTest {
             .andReturn();
 
         assertThat(deserializeObjectFrom(result, CaseMetadata.class))
-            .extracting(CaseMetadata::getSubmitterId).containsExactly(submitterId);
+            .extracting(CaseMetadata::getSubmitterId).isEqualTo(submitterId);
     }
 
     @Test
