@@ -4,23 +4,17 @@ plugins {
 
 apply plugin: 'net.ltgt.apt'
 
-def springBootVersion = '2.0.1.RELEASE'
-
-def versions = [
-  springBoot: springBootVersion
-]
-
 dependencies {
   compile project(':domain-model')
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: versions.springBoot
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
   compile group: 'com.google.guava', name: 'guava', version: '20.0'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'junit', name: 'junit', version: '4.12'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
   testCompile project(':domain-sample-data')
 }
 

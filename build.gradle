@@ -2,13 +2,13 @@ import java.util.stream.Collectors
 
 plugins {
   id 'checkstyle'
-  id 'io.spring.dependency-management' version '1.0.5.RELEASE'
-  id 'org.springframework.boot' version '2.0.1.RELEASE'
-  id 'org.owasp.dependencycheck' version '3.1.2'
-  id 'com.github.ben-manes.versions' version '0.17.0'
+  id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+  id 'org.springframework.boot' version '2.0.4.RELEASE'
+  id 'org.owasp.dependencycheck' version '3.3.1'
+  id 'com.github.ben-manes.versions' version '0.20.0'
   id 'org.sonarqube' version '2.6.2'
   id 'jacoco'
-  id 'net.ltgt.apt' version '0.14'
+  id 'net.ltgt.apt' version '0.18'
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = '2.0.1.RELEASE'
-def springCloudVersion = 'Finchley.M9'
+def springCloudVersion = 'Finchley.RELEASE'
 
 allprojects {
   apply plugin: 'java'
@@ -115,8 +115,8 @@ allprojects {
 def versions = [
   logback          : '1.2.3',
   springBoot       : springBootVersion,
-  springfoxSwagger : '2.8.0',
-  reformJavaLogging: '3.0.0'
+  springfoxSwagger : '2.9.2',
+  reformJavaLogging: '3.0.2'
 ]
 
 configurations {
@@ -141,7 +141,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '4.2.0'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.1.4'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -153,20 +153,20 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.8.0-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.11.0-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '1.1.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '6.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.1'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.1.1'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.0.0'
 
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8'
 
   compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
@@ -174,20 +174,20 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '9.5.1'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.0.1'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
-  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.1'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.4.3'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.15.0'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.8.3'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
 
 }
