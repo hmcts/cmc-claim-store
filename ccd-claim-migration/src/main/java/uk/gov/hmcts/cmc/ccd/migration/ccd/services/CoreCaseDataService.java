@@ -109,7 +109,7 @@ public class CoreCaseDataService {
         return ccdId;
     }
 
-    private Optional<Long> search(User user, Map<String, Object> searchString) {
+    private Optional<Long> search(User user, Map<String, String> searchString) {
 
         List<CaseDetails> result;
         result = this.coreCaseDataApi.searchForCaseworker(
