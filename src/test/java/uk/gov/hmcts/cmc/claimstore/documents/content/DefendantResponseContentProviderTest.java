@@ -90,6 +90,13 @@ public class DefendantResponseContentProviderTest {
     }
 
     @Test
+    public void shouldProvideCorrectFormNumber() {
+        Map<String, Object> content = provider.createContent(claim);
+        assertThat(content).containsKey("formNumber");
+        assertThat(content).containsValue("OCON9B");
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void shouldProvidePaymentDeclaration() {
         Map<String, Object> content = provider.createContent(claim);

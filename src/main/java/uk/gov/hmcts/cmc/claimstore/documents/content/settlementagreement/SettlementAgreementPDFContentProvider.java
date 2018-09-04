@@ -17,6 +17,9 @@ public class SettlementAgreementPDFContentProvider {
 
     private final PartyDetailsContentProvider partyDetailsContentProvider;
 
+    private static final String SETTLEMENT_FORM_NAME_OFFERS_ROUTE = "OCON Settlement Agreement";
+    private static final String SETTLEMENT_FORM_NAME_ADMISSIONS_ROUTE = "OCON Settlement Agreement A";
+
     public SettlementAgreementPDFContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider
     ) {
@@ -41,6 +44,12 @@ public class SettlementAgreementPDFContentProvider {
             claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant(),
             claim.getDefendantEmail()
         ));
+
+        if (claim.getSettlement().orElseThrow(IllegalArgumentException::new).isSettlementThroughAdmissions()) {
+            content.put("formName", SETTLEMENT_FORM_NAME_ADMISSIONS_ROUTE);
+        } else {
+            content.put("formName", SETTLEMENT_FORM_NAME_OFFERS_ROUTE);
+        }
         return content;
     }
 }

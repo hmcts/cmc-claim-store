@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.claimstore.documents.content.FullAdmissionResponseContentProvider.ADMISSIONS_FORM_NO;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
@@ -90,6 +91,8 @@ public class PartAdmissionResponseContentProvider {
         partAdmissionResponse.getStatementOfMeans().ifPresent(
             statementOfMeans -> content.putAll(statementOfMeansContentProvider.createContent(statementOfMeans))
         );
+
+        content.put("formNumber", ADMISSIONS_FORM_NO);
 
         return content;
     }
