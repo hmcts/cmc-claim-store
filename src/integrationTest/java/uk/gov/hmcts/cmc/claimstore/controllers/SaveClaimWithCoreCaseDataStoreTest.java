@@ -74,7 +74,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .isEqualTo(claimData);
 
         verify(coreCaseDataApi)
             .startForCaseworker(
@@ -141,7 +141,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .isEqualTo(claimData);
 
         verify(coreCaseDataApi)
             .startForCitizen(
@@ -198,7 +198,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .isEqualTo(claimData);
     }
 
     @Test
@@ -244,7 +244,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .isEqualTo(claimData);
     }
 
     @Test
@@ -269,6 +269,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .isEqualTo(claimData);
     }
 }
