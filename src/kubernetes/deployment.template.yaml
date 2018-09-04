@@ -55,7 +55,7 @@ spec:
             - name: CMC_DB_PASSWORD
               value: "${CMC_DB_PASSWORD}"
             - name: CMC_DB_CONNECTION_OPTIONS
-              value: '?ssl'
+              value: '?ssl&sslmode=require'
             - name: IDAM_S2S_AUTH_TOTP_SECRET
               value: "${CLAIM_STORE_S2S_SECRET}"
             - name: IDAM_CASEWORKER_ANONYMOUS_USERNAME
