@@ -10,7 +10,6 @@ data:
   SPRING_MAIL_HOST : "mta.reform.hmcts.net"
   REFORM_ENVIRONMENT : "preview"
   CORE_CASE_DATA_API_URL : "false"
-  SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE : "true"
   APPLICATION_INSIGHTS_IKEY : "4d7922fc-7d37-4278-b542-6ac8fe0408e2"
   CMC_DB_HOST : "cmc-aat.postgres.database.azure.com"
   SEND_LETTER_URL : "http://rpe-send-letter-service-aat.service.core-compute-aat.internal"
