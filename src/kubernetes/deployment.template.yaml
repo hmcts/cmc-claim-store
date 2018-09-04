@@ -47,7 +47,7 @@ spec:
             - name: CLAIM_STORE_DB_NAME
               value: 'claimstore'
             - name: CLAIM_STORE_DB_CONNECTION_OPTIONS
-              value: '?ssl'
+              value: '?ssl&sslmode=require'
             - name: CMC_DB_PORT
               value: '5432'
             - name: CMC_DB_NAME
