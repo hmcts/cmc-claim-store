@@ -38,10 +38,6 @@ spec:
               value: 'cmc'
             - name: REFORM_SERVICE_NAME
               value: 'claim-store'
-            - name: REFORM_ENVIRONMENT
-              value: 'preview'
-            - name: CLAIM_STORE_DB_HOST
-              value: 'preprod-data-lb.moneyclaim.reform.hmcts.net'
             - name: CLAIM_STORE_DB_PORT
               value: '5432'
             - name: CLAIM_STORE_DB_USERNAME
@@ -52,22 +48,14 @@ spec:
               value: 'claimstore'
             - name: CLAIM_STORE_DB_CONNECTION_OPTIONS
               value: '?ssl'
-            - name: CMC_DB_HOST
-              value: 'cmc-aat.postgres.database.azure.com'
             - name: CMC_DB_PORT
               value: '5432'
             - name: CMC_DB_NAME
               value: 'cmc'
-            - name: CMC_DB_USERNAME
-              value: 'cmc@cmc-aat'
             - name: CMC_DB_PASSWORD
               value: "${CMC_DB_PASSWORD}"
             - name: CMC_DB_CONNECTION_OPTIONS
               value: '?ssl'
-            - name: IDAM_API_URL
-              value: 'https://preprod-idamapi.reform.hmcts.net:3511'
-            - name: IDAM_S2S_AUTH_URL
-              value: 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
             - name: IDAM_S2S_AUTH_TOTP_SECRET
               value: "${CLAIM_STORE_S2S_SECRET}"
             - name: IDAM_CASEWORKER_ANONYMOUS_USERNAME
@@ -82,18 +70,6 @@ spec:
               value: "${OAUTH2_CLIENT_SECRET}"
             - name: GOV_NOTIFY_API_KEY
               value: "${NOTIFY_API_KEY}"
-            - name: FRONTEND_BASE_URL
-              value: 'https://moneyclaims.aat.platform.hmcts.net'
-            - name: RESPOND_TO_CLAIM_URL
-              value: 'https://moneyclaims.aat.platform.hmcts.net/first-contact/start'
-            - name: PDF_SERVICE_URL
-              value: 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
-            - name: DOCUMENT_MANAGEMENT_URL
-              value: 'false'
-            - name: CORE_CASE_DATA_API_URL
-              value: 'false'
-            - name: SEND_LETTER_URL
-              value: 'http://rpe-send-letter-service-aat.service.core-compute-aat.internal'
             - name: SPRING_MAIL_HOST
               value: 'mta.reform.hmcts.net'
             - name: SPRING_MAIL_PORT
@@ -124,8 +100,9 @@ spec:
               value: 'true'
             - name: ROOT_APPENDER
               value: 'CMC'
-            - name: APPINSIGHTS_INSTRUMENTATIONKEY
-              value: 'TODO'
+          envFrom:
+            - configMapRef:
+                name: ${SERVICE_NAME}-config
 
           # These may be adjusted, but be mindful please
           resources:

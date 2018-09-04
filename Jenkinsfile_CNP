@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@cnp-726-enableTests")
 
 def product = "cmc"
 def component = "claim-store"
