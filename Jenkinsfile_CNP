@@ -36,7 +36,7 @@ withPipeline("java", product, component) {
         notifyBuildEvent channel: notificationsChannel, color: 'warning', message: 'Failed to update demo branch'
       }
     }
-  //}
+  }
 
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
