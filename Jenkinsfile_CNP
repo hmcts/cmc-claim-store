@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@quick-docker")
 
 def product = "cmc"
 def component = "claim-store"
