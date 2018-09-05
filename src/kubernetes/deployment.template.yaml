@@ -107,7 +107,7 @@ spec:
           # These may be adjusted, but be mindful please
           resources:
             requests:
-              memory: "1024i"
+              memory: "1024Mi"
               cpu: "1000m"
             limits:
               memory: "2048Mi"
