@@ -19,8 +19,7 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('system-update-username', 'SYSTEM_UPDATE_USERNAME'),
   secret('system-update-password', 'SYSTEM_UPDATE_PASSWORD'),
   secret('notify-api-key', 'NOTIFY_API_KEY'),
-  secret('staff-email', 'STAFF_EMAIL'),
-  secret('frontend-base-url', 'FRONTEND_BASE_URL')
+  secret('staff-email', 'STAFF_EMAIL')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -31,6 +30,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     envVariable: envVar
   ]
 }
+
+// Vars needed for AKS testing
+env.FRONTEND_BASE_URL = 'https://moneyclaims.aat.platform.hmcts.net'
+env.IDAM_API_URL = 'https://preprod-idamapi.reform.hmcts.net:3511'
+env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 
 String notificationsChannel = '#cmc-tech-notification'
 
