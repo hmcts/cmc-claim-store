@@ -19,7 +19,8 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('system-update-username', 'SYSTEM_UPDATE_USERNAME'),
   secret('system-update-password', 'SYSTEM_UPDATE_PASSWORD'),
   secret('notify-api-key', 'NOTIFY_API_KEY'),
-  secret('staff-email', 'STAFF_EMAIL')
+  secret('staff-email', 'STAFF_EMAIL'),
+  secret('frontend-base-url', 'FRONTEND_BASE_URL')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
