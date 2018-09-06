@@ -14,6 +14,9 @@ locals {
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
+
+  sku_size = "${var.env == "prod" || var.env == "sprod" || var.env == "aat" ? "I2" : "I1"}"
+  asp_name = "${var.env == "prod" ? "cmc-claim-store-prod" : "${var.product}-${var.env}"}"
 }
 
 data "azurerm_key_vault" "cmc_key_vault" {
@@ -111,6 +114,9 @@ module "claim-store-api" {
   subscription = "${var.subscription}"
   capacity = "${var.capacity}"
   common_tags = "${var.common_tags}"
+  asp_name = "${local.asp_name}"
+  asp_rg = "${local.asp_name}"
+  instance_size = "${local.sku_size}"
 
   app_settings = {
     //    logging vars
