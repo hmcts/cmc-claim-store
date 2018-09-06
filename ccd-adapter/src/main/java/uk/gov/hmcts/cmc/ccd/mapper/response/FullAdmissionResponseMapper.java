@@ -35,12 +35,15 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
     @Override
     public CCDFullAdmissionResponse to(FullAdmissionResponse fullAdmissionResponse) {
         CCDFullAdmissionResponse.CCDFullAdmissionResponseBuilder builder = CCDFullAdmissionResponse.builder()
-            .moreTimeNeededOption(CCDYesNoOption.valueOf(fullAdmissionResponse.getMoreTimeNeeded().name()))
             .freeMediationOption(CCDYesNoOption.valueOf(
                 fullAdmissionResponse.getFreeMediation().orElse(YesNoOption.NO).name())
             )
             .defendant(partyMapper.to(fullAdmissionResponse.getDefendant()))
             .paymentIntention(paymentIntentionMapper.to(fullAdmissionResponse.getPaymentIntention()));
+
+        if (fullAdmissionResponse.getMoreTimeNeeded() != null) {
+            builder.moreTimeNeededOption(CCDYesNoOption.valueOf(fullAdmissionResponse.getMoreTimeNeeded().name()));
+        }
 
         fullAdmissionResponse.getStatementOfMeans()
             .ifPresent(statementOfMeans -> builder.statementOfMeans(statementOfMeansMapper.to(statementOfMeans)));
@@ -54,9 +57,10 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
     @Override
     public FullAdmissionResponse from(CCDFullAdmissionResponse ccdFullAdmissionResponse) {
         CCDYesNoOption ccdFreeMediation = ccdFullAdmissionResponse.getFreeMediationOption();
+        CCDYesNoOption moreTimeNeeded = ccdFullAdmissionResponse.getMoreTimeNeededOption();
         return new FullAdmissionResponse(
             ccdFreeMediation != null ? YesNoOption.valueOf(ccdFreeMediation.name()) : null,
-            YesNoOption.valueOf(ccdFullAdmissionResponse.getMoreTimeNeededOption().name()),
+            moreTimeNeeded != null ? YesNoOption.valueOf(moreTimeNeeded.name()) : null,
             partyMapper.from(ccdFullAdmissionResponse.getDefendant()),
             statementOfTruthMapper.from(ccdFullAdmissionResponse.getStatementOfTruth()),
             paymentIntentionMapper.from(ccdFullAdmissionResponse.getPaymentIntention()),

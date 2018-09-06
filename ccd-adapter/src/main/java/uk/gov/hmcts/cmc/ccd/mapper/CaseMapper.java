@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
@@ -14,6 +15,9 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
@@ -92,6 +96,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
             .claimData(claimMapper.to(claim.getClaimData()))
             .defendantEmail(claim.getDefendantEmail())
+            .features(String.join(",", claim.getFeatures()))
             .build();
     }
 
@@ -112,6 +117,12 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         if (ccdCase.getSettlement() != null) {
             settlement = settlementMapper.from(ccdCase.getSettlement());
         }
+
+        List<String> features = null;
+        if (ccdCase.getFeatures() != null) {
+            features = Arrays.asList(ccdCase.getFeatures().split(","));
+        }
+
 
         return new Claim(
             ccdCase.getId(),
@@ -134,7 +145,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             settlement,
             fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()),
             mapSealedClaimDocument(ccdCase.getSealedClaimDocument()),
-            null,
+            features,
             null,
             null,
             null
