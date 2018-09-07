@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.math.BigDecimal;
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -27,20 +25,8 @@ public abstract class ClaimantResponse {
     @Min(value = 0)
     private final BigDecimal amountPaid;
 
-    @Valid
-    private final CourtDetermination courtDetermination;
-
-    @Valid
-    private final PaymentIntention claimantPaymentIntention;
-
-    public ClaimantResponse(
-        BigDecimal amountPaid,
-        CourtDetermination courtDetermination,
-        PaymentIntention claimantPaymentIntention
-    ) {
+    public ClaimantResponse(BigDecimal amountPaid) {
         this.amountPaid = amountPaid;
-        this.courtDetermination = courtDetermination;
-        this.claimantPaymentIntention = claimantPaymentIntention;
     }
 
     @Override
