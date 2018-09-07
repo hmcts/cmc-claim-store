@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.math.BigDecimal;
 import javax.validation.constraints.Size;
@@ -24,8 +25,12 @@ public class ResponseRejection extends ClaimantResponse {
 
     @Builder
     @JsonCreator
-    public ResponseRejection(BigDecimal amountPaid, boolean freeMediation, String reason) {
-        super(amountPaid);
+    public ResponseRejection(BigDecimal amountPaid,
+                             boolean freeMediation,
+                             String reason,
+                             CourtDetermination courtDetermination,
+                             PaymentIntention claimantPaymentIntention) {
+        super(amountPaid, courtDetermination, claimantPaymentIntention);
         this.freeMediation = freeMediation;
         this.reason = reason;
     }
