@@ -185,6 +185,6 @@ module "claim-store-api" {
 
     ROOT_APPENDER = "CMC"
     
-    DUMMY_VALUE = "force change please
+    DUMMY_VALUE = "force change please"
   }
 }
