@@ -184,7 +184,5 @@ module "claim-store-api" {
     FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
 
     ROOT_APPENDER = "CMC"
-    
-    DUMMY_VALUE = "force change please"
   }
 }
