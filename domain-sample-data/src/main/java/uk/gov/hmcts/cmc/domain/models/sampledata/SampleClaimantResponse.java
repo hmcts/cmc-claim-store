@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 import java.math.BigDecimal;
 
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REJECT_PLAN_GO_TO_JUDGE;
+
 public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>> {
 
     public static ClaimantResponse validDefaultAcceptation() {
@@ -33,6 +35,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         public ClaimantResponse build() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
+                .formaliseOption(REJECT_PLAN_GO_TO_JUDGE)
                 .build();
         }
     }
