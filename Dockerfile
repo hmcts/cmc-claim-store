@@ -1,4 +1,4 @@
-FROM hmcts/cnp-java-base:openjdk-jre-8-alpine-1.3
+FROM hmcts/cnp-java-base:openjdk-jre-8-alpine-1.4
 
 # Mandatory!
 ENV APP claim-store.jar
