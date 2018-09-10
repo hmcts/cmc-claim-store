@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
@@ -30,6 +31,7 @@ public class RepaymentPlan {
     @NotNull
     private final PaymentSchedule paymentSchedule;
 
+    @Builder
     public RepaymentPlan(
         BigDecimal instalmentAmount,
         LocalDate firstPaymentDate,

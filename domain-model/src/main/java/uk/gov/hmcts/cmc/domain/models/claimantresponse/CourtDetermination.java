@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -20,6 +21,7 @@ public class CourtDetermination {
     
     private final String rejectionReason;
 
+    @Builder
     public CourtDetermination(PaymentIntention courtCalculatedPaymentIntention, String rejectionReason) {
         this.courtCalculatedPaymentIntention = courtCalculatedPaymentIntention;
         this.rejectionReason = rejectionReason;
