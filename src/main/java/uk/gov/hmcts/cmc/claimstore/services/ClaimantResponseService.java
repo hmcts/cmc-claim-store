@@ -45,7 +45,7 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        caseRepository.saveClaimantResponse(claim.getId(), response, authorization);
+        caseRepository.saveClaimantResponse(claim, response, authorization);
         eventProducer.createClaimantResponseEvent(claim);
 
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());

@@ -30,7 +30,7 @@ public interface CaseRepository {
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
-    void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization);
+    void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
     void linkDefendant(String authorisation);
 
