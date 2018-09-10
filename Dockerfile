@@ -1,11 +1,12 @@
-FROM openjdk:8-jre-alpine
+FROM hmcts/cnp-java-base:openjdk-jre-8-alpine-1.4
 
-COPY claim-store.jar /opt/app/
+# Mandatory!
+ENV APP claim-store.jar
+ENV APPLICATION_TOTAL_MEMORY 1024M
+ENV APPLICATION_SIZE_ON_DISK_IN_MB 66
 
-WORKDIR /opt/app
+COPY build/libs/$APP /opt/app/
 
 HEALTHCHECK --interval=10s --timeout=10s --retries=10 CMD http_proxy="" wget -q --spider http://localhost:4400/health || exit 1
 
 EXPOSE 4400
-
-ENTRYPOINT exec java ${JAVA_OPTS} -jar "/opt/app/claim-store.jar"
