@@ -1,7 +1,6 @@
 import java.util.stream.Collectors
 
 plugins {
-  id 'application'
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.6.RELEASE'
   id 'org.springframework.boot' version '2.0.4.RELEASE'
@@ -29,7 +28,7 @@ def springBootVersion = '2.0.1.RELEASE'
 def springCloudVersion = 'Finchley.RELEASE'
 
 allprojects {
-  apply plugin: 'application'
+  apply plugin: 'java'
   apply plugin: 'checkstyle'
   apply plugin: 'io.spring.dependency-management'
   apply plugin: 'org.owasp.dependencycheck'
@@ -67,10 +66,9 @@ allprojects {
     options.compilerArgs << '-Xlint:deprecation'
   }
 
-  mainClassName = 'uk.gov.hmcts.cmc.claimstore.ClaimStoreApplication'
-
   repositories {
     mavenLocal()
+    mavenCentral()
     maven {
       url "https://dl.bintray.com/hmcts/hmcts-maven"
     }
@@ -335,7 +333,7 @@ wrapper {
   distributionType = Wrapper.DistributionType.ALL
 }
 
-run {
+bootRun {
   def debug = System.getProperty("debug")
   if (debug == 'true') {
     jvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
