@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -17,6 +19,7 @@ public class CountyCourtJudgmentService {
     private final AuthorisationService authorisationService;
     private final EventProducer eventProducer;
     private final CountyCourtJudgmentRule countyCourtJudgmentRule;
+    private final ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
     private final AppInsights appInsights;
 
     @Autowired
@@ -25,12 +28,14 @@ public class CountyCourtJudgmentService {
         AuthorisationService authorisationService,
         EventProducer eventProducer,
         CountyCourtJudgmentRule countyCourtJudgmentRule,
+        ClaimantRepaymentPlanRule claimantRepaymentPlanRule,
         AppInsights appInsights
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
         this.eventProducer = eventProducer;
         this.countyCourtJudgmentRule = countyCourtJudgmentRule;
+        this.claimantRepaymentPlanRule = claimantRepaymentPlanRule;
         this.appInsights = appInsights;
     }
 
@@ -47,6 +52,17 @@ public class CountyCourtJudgmentService {
         authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+
+        if (countyCourtJudgment.getPaymentOption() == PaymentOption.INSTALMENTS) {
+            claimantRepaymentPlanRule.assertByInstallmentsRepaymentPlanIsValid(claim,
+                countyCourtJudgment.getRepaymentPlan().orElse(null));
+
+        } else if (countyCourtJudgment.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE) {
+            claimantRepaymentPlanRule.assertByDateRepaymentPlanIsValid(claim,
+                countyCourtJudgment.getPayBySetDate().orElse(null));
+        }
+
+
 
         claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
 
