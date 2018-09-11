@@ -16,6 +16,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static uk.gov.hmcts.cmc.ccd.migration.mappers.MappingUtils.toLocalDateTimeFromUTC;
+import static uk.gov.hmcts.cmc.ccd.migration.mappers.MappingUtils.toNullableLocalDateFromUTC;
 import static uk.gov.hmcts.cmc.ccd.migration.mappers.MappingUtils.toNullableLocalDateTimeFromUTC;
 
 public class ClaimMapper implements ResultSetMapper<Claim> {
@@ -34,7 +36,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getString("external_id"),
             result.getString("reference_number"),
             toClaimData(result.getString("claim")),
-            MappingUtils.toLocalDateTimeFromUTC(result.getTimestamp("created_at")),
+            toLocalDateTimeFromUTC(result.getTimestamp("created_at")),
             result.getTimestamp("issued_on").toLocalDateTime().toLocalDate(),
             result.getTimestamp("response_deadline").toLocalDateTime().toLocalDate(),
             result.getBoolean("more_time_requested"),
@@ -50,8 +52,9 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toList(result.getString("features")),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("claimant_responded_at")),
             toNullableEntity(result.getString("claimant_response"), ClaimantResponse.class),
-            toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_issued_at"))
-        );
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_issued_at")),
+            toNullableLocalDateFromUTC(result.getTimestamp("directions_questionnaire_deadline"))
+            );
     }
 
     private URI mapNullableUri(String uri) {
