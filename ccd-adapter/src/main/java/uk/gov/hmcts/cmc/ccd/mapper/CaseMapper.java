@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
@@ -17,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
@@ -56,6 +54,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
             builder.countyCourtJudgmentRequestedAt(claim.getCountyCourtJudgmentRequestedAt());
         }
+
+        claim.getCountyCourtJudgmentIssuedAt().ifPresent(builder::countyCourtJudgmentRequestedAt);
 
         if (claim.getRespondedAt() != null) {
             builder.respondedAt(claim.getRespondedAt());
@@ -148,7 +148,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             features,
             null,
             null,
-            null
+            fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt())
+
         );
     }
 
