@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
-import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
@@ -184,11 +183,11 @@ public class DefendantResponseNotificationService {
         parameters.put(
             FREE_MEDIATION_NOT_REQUESTED, isFreeMediationApplicable && !isFreeMediationRequested ? "yes" : ""
         );
-        parameters.put(ISSUED_ON, Formatting.formatDate(claim.getIssuedOn()));
-        parameters.put(RESPONSE_DEADLINE, Formatting.formatDate(claim.getResponseDeadline()));
+        parameters.put(ISSUED_ON, formatDate(claim.getIssuedOn()));
+        parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
 
         if (isFullDefenceAndNoMediation(response)) {
-            parameters.put(DQS_DEADLINE, Formatting.formatDate(claim.getDirectionsQuestionnaireDeadline()));
+            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
         }
 
         return parameters.build();
