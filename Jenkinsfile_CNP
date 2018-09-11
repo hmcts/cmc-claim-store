@@ -10,7 +10,16 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
   secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
   secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
-  secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET')
+  secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
+  secret('claim-store-db-password', 'CLAIM_STORE_DB_PASSWORD'),
+  secret('cmc-db-password', 'CMC_DB_PASSWORD'),
+  secret('claim-store-s2s-secret', 'CLAIM_STORE_S2S_SECRET'),
+  secret('anonymous-caseworker-username', 'ANONYMOUS_CASEWORKER_USERNAME'),
+  secret('anonymous-caseworker-password', 'ANONYMOUS_CASEWORKER_PASSWORD'),
+  secret('system-update-username', 'SYSTEM_UPDATE_USERNAME'),
+  secret('system-update-password', 'SYSTEM_UPDATE_PASSWORD'),
+  secret('notify-api-key', 'NOTIFY_API_KEY'),
+  secret('staff-email', 'STAFF_EMAIL')
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -22,21 +31,26 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
   ]
 }
 
+// Vars needed for AKS testing
+env.FRONTEND_BASE_URL = 'https://moneyclaims.aat.platform.hmcts.net'
+env.IDAM_API_URL = 'https://preprod-idamapi.reform.hmcts.net:3511'
+env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+
 String notificationsChannel = '#cmc-tech-notification'
 
 withPipeline("java", product, component) {
-  //afterCheckout {
-   // onMaster {
-      //try {
-      // sh """
-       //   git fetch origin demo:demo
-       //   git push --force origin HEAD:demo
-      //  """
-    //  } catch (err) {
-    //    notifyBuildEvent channel: notificationsChannel, color: 'warning', message: 'Failed to update demo branch'
-    //  }
-    //}
-  //}
+  afterCheckout {
+    onMaster {
+      try {
+       sh """
+          git fetch origin demo:demo
+          git push --force origin HEAD:demo
+        """
+      } catch (err) {
+        notifyBuildEvent channel: notificationsChannel, color: 'warning', message: 'Failed to update demo branch'
+      }
+    }
+  }
 
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
@@ -44,4 +58,7 @@ withPipeline("java", product, component) {
 
   loadVaultSecrets(secrets)
   enableSlackNotifications(notificationsChannel)
+  enableDockerBuild()
+  enableDeployToAKS()
+  setVaultName('cmc')
 }
