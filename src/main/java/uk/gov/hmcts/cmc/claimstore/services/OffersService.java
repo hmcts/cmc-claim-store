@@ -9,11 +9,9 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.util.function.Supplier;
 
@@ -124,18 +122,13 @@ public class OffersService {
     public Claim signSettlementAgreement(String externalId, Settlement settlement, String authorisation) {
         final Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertSettlementIsNotReached(claim);
-        PaymentIntention intention = settlement.getLastOfferStatement().getOffer().get().getPaymentIntention().get();
 
-
-        if (intention.getPaymentOption() == PaymentOption.INSTALMENTS) {
-            claimantRepaymentPlanRule.assertByInstallmentsRepaymentPlanIsValid(claim,
-                intention.getRepaymentPlan().orElse(null));
-
-        } else if (intention.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE) {
-            claimantRepaymentPlanRule.assertByDateRepaymentPlanIsValid(claim,
-                intention.getPaymentDate().orElse(null));
-        }
-
+        settlement.getLastOfferStatement().getOffer().ifPresent(offer ->
+            offer.getPaymentIntention().ifPresent(
+                paymentIntention ->
+                    claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
+                        paymentIntention.getRepaymentPlan().orElse(null)))
+        );
 
         final String userAction = userAction("OFFER_ACCEPTED_BY", claim.getClaimData().getClaimant().getName());
         this.caseRepository.updateSettlement(claim, settlement, authorisation, userAction);

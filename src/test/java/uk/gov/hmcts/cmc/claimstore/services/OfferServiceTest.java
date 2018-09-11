@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -46,6 +47,8 @@ public class OfferServiceTest {
 
     private OffersService offersService;
 
+    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
+
     @Mock
     private ClaimService claimService;
 
@@ -60,7 +63,8 @@ public class OfferServiceTest {
 
     @Before
     public void setup() {
-        offersService = new OffersService(claimService, caseRepository, eventProducer, appInsights);
+        offersService = new OffersService(claimService, caseRepository, eventProducer,
+            claimantRepaymentPlanRule, appInsights);
     }
 
     @Test

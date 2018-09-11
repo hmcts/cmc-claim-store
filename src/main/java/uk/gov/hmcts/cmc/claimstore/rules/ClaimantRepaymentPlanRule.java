@@ -15,24 +15,7 @@ import java.time.LocalDate;
 @Service
 public class ClaimantRepaymentPlanRule {
 
-    public void assertByDateRepaymentPlanIsValid(Claim claim, LocalDate proposedDate) {
-        Response response = claim.getResponse().orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-            ClaimantInvalidRepaymentPlanException.EXPECTED_DEFENDANT_RESPONSE));
-
-        switch (getPaymentOptionForResponse(response)) {
-            case INSTALMENTS:
-                assertSetDateIsValidAgainstInstallments(proposedDate, getRepaymentPlanForResponse(response));
-                break;
-            case BY_SPECIFIED_DATE:
-                assertSetDateIsValidAgainstSetDate(proposedDate, getSetDateForResponse(response));
-                break;
-            default:
-                throw new ClaimantInvalidRepaymentPlanException(
-                    ClaimantInvalidRepaymentPlanException.INVALID_DEFENDANT_REPAYMENT_TYPE);
-        }
-    }
-
-    public void assertByInstallmentsRepaymentPlanIsValid(Claim claim, RepaymentPlan proposedPlan) {
+    public void assertClaimantRepaymentPlanIsValid(Claim claim, RepaymentPlan proposedPlan) {
         Response response = claim.getResponse().orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
             ClaimantInvalidRepaymentPlanException.EXPECTED_DEFENDANT_RESPONSE));
 
@@ -49,20 +32,6 @@ public class ClaimantRepaymentPlanRule {
         }
     }
 
-
-    private void assertSetDateIsValidAgainstInstallments(LocalDate claimantDate, RepaymentPlan defendantPlan) {
-        // TODO: Need PO response for this one
-    }
-
-    private void assertSetDateIsValidAgainstSetDate(LocalDate claimantDate, LocalDate defendantDate) {
-        LocalDate oneMonthForNow = CalculateMonthIncrement.calculateMonthlyIncrement(LocalDate.now());
-        LocalDate thresholdDate = defendantDate.isBefore(oneMonthForNow) ? defendantDate : oneMonthForNow;
-
-        if (claimantDate.isBefore(thresholdDate)) {
-            throw new ClaimantInvalidRepaymentPlanException(
-                "Claimant first installment date must be before " + thresholdDate);
-        }
-    }
 
     private void assertInstallmentsIsValidAgainstInstallments(RepaymentPlan claimantPlan, RepaymentPlan defendantPlan) {
         LocalDate defendantStartDate = defendantPlan.getFirstPaymentDate();
@@ -118,28 +87,6 @@ public class ClaimantRepaymentPlanRule {
                 throw new ClaimantInvalidRepaymentPlanException(
                     ClaimantInvalidRepaymentPlanException.INVALID_RESPONSE_TYPE);
 
-        }
-    }
-
-    private LocalDate getSetDateForResponse(Response response) {
-        switch (response.getResponseType()) {
-            case PART_ADMISSION:
-                return ((PartAdmissionResponse) response)
-                    .getPaymentIntention()
-                    .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        ClaimantInvalidRepaymentPlanException.EXPECTED_PAYMENT_INTENTION))
-                    .getPaymentDate()
-                    .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        ClaimantInvalidRepaymentPlanException.EXPECTED_PAYMENT_DATE));
-            case FULL_ADMISSION:
-                return ((FullAdmissionResponse) response)
-                    .getPaymentIntention()
-                    .getPaymentDate()
-                    .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        ClaimantInvalidRepaymentPlanException.EXPECTED_PAYMENT_DATE));
-            default:
-                throw new ClaimantInvalidRepaymentPlanException(
-                    ClaimantInvalidRepaymentPlanException.INVALID_RESPONSE_TYPE);
         }
     }
 }

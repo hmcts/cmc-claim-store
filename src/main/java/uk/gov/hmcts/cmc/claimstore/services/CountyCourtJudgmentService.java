@@ -54,15 +54,10 @@ public class CountyCourtJudgmentService {
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
 
         if (countyCourtJudgment.getPaymentOption() == PaymentOption.INSTALMENTS) {
-            claimantRepaymentPlanRule.assertByInstallmentsRepaymentPlanIsValid(claim,
+            claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
                 countyCourtJudgment.getRepaymentPlan().orElse(null));
 
-        } else if (countyCourtJudgment.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE) {
-            claimantRepaymentPlanRule.assertByDateRepaymentPlanIsValid(claim,
-                countyCourtJudgment.getPayBySetDate().orElse(null));
         }
-
-
 
         claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
 
