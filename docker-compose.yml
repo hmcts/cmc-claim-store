@@ -4,8 +4,7 @@ version: '2.1'
 services:
   claim-store-api:
     build:
-      context: build/libs
-      dockerfile: ../../Dockerfile
+      context: .
       args:
         - http_proxy
         - https_proxy
