@@ -148,8 +148,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             features,
             null,
             null,
-            fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt())
-
+            fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt()),
+            null
         );
     }
 

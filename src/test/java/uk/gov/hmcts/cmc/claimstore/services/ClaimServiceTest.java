@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,9 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
@@ -75,6 +79,8 @@ public class ClaimServiceTest {
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
+    private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+    @Mock
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
@@ -91,6 +97,7 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
+            directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
@@ -237,6 +244,30 @@ public class ClaimServiceTest {
         List<Claim> claims = claimService.getClaimByDefendantEmail(claim.getDefendantEmail(), AUTHORISATION);
 
         assertThat(claims).containsExactly(claim);
+    }
+
+    @Test
+    public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndNoMediation() {
+        claimService.saveDefendantResponse(
+            claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
+        );
+
+        verify(directionsQuestionnaireDeadlineCalculator)
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
+        verify(caseRepository)
+            .updateDirectionsQuestionnaireDeadline(eq(EXTERNAL_ID), any(), eq(AUTHORISATION));
+    }
+
+    @Test
+    public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndMediation() {
+        claimService.saveDefendantResponse(
+            claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(YES).build(), AUTHORISATION
+        );
+
+        verify(directionsQuestionnaireDeadlineCalculator, never())
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
+        verify(caseRepository, never())
+            .updateDirectionsQuestionnaireDeadline(eq(EXTERNAL_ID), any(), eq(AUTHORISATION));
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {

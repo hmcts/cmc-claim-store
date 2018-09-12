@@ -174,7 +174,9 @@ public class CoreCaseDataService {
         if (issue) {
             ccdCase.setCountyCourtJudgmentIssuedAt(nowInUTC());
             return update(authorisation, ccdCase, CCJ_ISSUED);
-        } else return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+        } else {
+            return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+        }
     }
 
     public CaseDetails linkSealedClaimDocument(

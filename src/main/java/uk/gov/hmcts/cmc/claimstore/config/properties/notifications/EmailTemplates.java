@@ -31,7 +31,29 @@ public class EmailTemplates {
     private String claimantResponseWithMediationIssued;
 
     @NotEmpty
+    private String claimantResponseWithNoMediationIssued;
+
+    @NotEmpty
+    private String defendantResponseWithNoMediationIssued;
+
+    @NotEmpty
     private String staffMoreTimeRequested;
+
+    public String getDefendantResponseWithNoMediationIssued() {
+        return defendantResponseWithNoMediationIssued;
+    }
+
+    public void setDefendantResponseWithNoMediationIssued(String defendantResponseWithNoMediationIssued) {
+        this.defendantResponseWithNoMediationIssued = defendantResponseWithNoMediationIssued;
+    }
+
+    public String getClaimantResponseWithNoMediationIssued() {
+        return claimantResponseWithNoMediationIssued;
+    }
+
+    public void setClaimantResponseWithNoMediationIssued(String claimantResponseWithNoMediationIssued) {
+        this.claimantResponseWithNoMediationIssued = claimantResponseWithNoMediationIssued;
+    }
 
     @NotEmpty
     private String defendantMoreTimeRequested;

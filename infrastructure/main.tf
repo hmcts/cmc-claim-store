@@ -14,6 +14,9 @@ locals {
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
+
+  sku_size = "${var.env == "prod" || var.env == "sprod" || var.env == "aat" ? "I2" : "I1"}"
+  asp_name = "${var.env == "prod" ? "cmc-claim-store-prod" : "${var.product}-${var.env}"}"
 }
 
 data "azurerm_key_vault" "cmc_key_vault" {
@@ -111,6 +114,9 @@ module "claim-store-api" {
   subscription = "${var.subscription}"
   capacity = "${var.capacity}"
   common_tags = "${var.common_tags}"
+  asp_name = "${local.asp_name}"
+  asp_rg = "${local.asp_name}"
+  instance_size = "${local.sku_size}"
 
   app_settings = {
     //    logging vars
@@ -124,14 +130,14 @@ module "claim-store-api" {
     CLAIM_STORE_DB_USERNAME = "claimstore"
     CLAIM_STORE_DB_PASSWORD = "${data.azurerm_key_vault_secret.db_password.value}"
     CLAIM_STORE_DB_NAME = "${var.database-name}"
-    CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl"
+    CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl=true&sslmode=require"
 
     CMC_DB_HOST = "${module.database.host_name}"
     CMC_DB_PORT = "${module.database.postgresql_listen_port}"
     CMC_DB_NAME = "${module.database.postgresql_database}"
     CMC_DB_USERNAME = "${module.database.user_name}"
     CMC_DB_PASSWORD = "${module.database.postgresql_password}"
-    CMC_DB_CONNECTION_OPTIONS = "?ssl"
+    CMC_DB_CONNECTION_OPTIONS = "?ssl=true&sslmode=require"
 
     // idam
     IDAM_API_URL = "${var.idam_api_url}"
