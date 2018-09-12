@@ -44,7 +44,9 @@ dependencies {
 
   pitest {
     targetClasses = ['**uk.gov.hmcts.cmc.email.*']
+    excludedClasses = []
     threads = 5
+    enableDefaultIncrementalAnalysis = true
     outputFormats = ['XML', 'HTML']
     timestampedReports = true
     mutationThreshold = 40
