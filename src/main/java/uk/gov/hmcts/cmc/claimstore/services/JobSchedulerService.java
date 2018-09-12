@@ -18,50 +18,55 @@ public class JobSchedulerService {
     private final JobService jobService;
     private final int firstReminderDay;
     private final int lastReminderDay;
+    private final boolean enabled;
 
     public JobSchedulerService(
         JobService jobService,
         @Value("${dateCalculations.firstResponseReminderDay}") int firstReminderDay,
-        @Value("${dateCalculations.lastResponseReminderDay}") int lastReminderDay
+        @Value("${dateCalculations.lastResponseReminderDay}") int lastReminderDay,
+        @Value("${feature_toggles.defenceReminders}") boolean enabled
     ) {
         this.jobService = jobService;
         this.firstReminderDay = firstReminderDay;
         this.lastReminderDay = lastReminderDay;
+        this.enabled = enabled;
     }
 
     public void scheduleEmailNotificationsForDefendantResponse(Claim claim) {
-        LocalDate responseDeadline = claim.getResponseDeadline();
+        if (enabled) {
+            LocalDate responseDeadline = claim.getResponseDeadline();
 
-        Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
+            Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
 
-        jobService.scheduleJob(
-            createReminderJobData(claim, notificationData, firstReminderDay),
-            responseDeadline.minusDays(firstReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
-        );
+            jobService.scheduleJob(
+                createReminderJobData(claim, notificationData, firstReminderDay),
+                responseDeadline.minusDays(firstReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
+            );
 
-        jobService.scheduleJob(
-            createReminderJobData(claim, notificationData, lastReminderDay),
-            responseDeadline.minusDays(lastReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
-        );
-
+            jobService.scheduleJob(
+                createReminderJobData(claim, notificationData, lastReminderDay),
+                responseDeadline.minusDays(lastReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
+            );
+        }
     }
 
     public void rescheduleEmailNotificationsForDefendantResponse(
         Claim claim,
         LocalDate responseDeadline
     ) {
-        Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
+        if (enabled) {
+            Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
 
-        jobService.rescheduleJob(
-            createReminderJobData(claim, notificationData, firstReminderDay),
-            responseDeadline.minusDays(firstReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
-        );
+            jobService.rescheduleJob(
+                createReminderJobData(claim, notificationData, firstReminderDay),
+                responseDeadline.minusDays(firstReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
+            );
 
-        jobService.rescheduleJob(
-            createReminderJobData(claim, notificationData, lastReminderDay),
-            responseDeadline.minusDays(lastReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
-        );
-
+            jobService.rescheduleJob(
+                createReminderJobData(claim, notificationData, lastReminderDay),
+                responseDeadline.minusDays(lastReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
+            );
+        }
     }
 
     private JobData createReminderJobData(Claim claim, Map<String, Object> data, int numberOfDaysBeforeDeadline) {
