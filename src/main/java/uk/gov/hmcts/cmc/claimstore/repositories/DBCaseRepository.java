@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -40,7 +41,7 @@ public class DBCaseRepository implements CaseRepository {
         OffersRepository offersRepository,
         JsonMapper jsonMapper,
         UserService userService,
-        JobSchedulerService jobSchedulerService
+        @Nullable JobSchedulerService jobSchedulerService
     ) {
         this.claimRepository = claimRepository;
         this.offersRepository = offersRepository;
@@ -87,7 +88,7 @@ public class DBCaseRepository implements CaseRepository {
             .map(this::extractLetterHolderId)
             .forEach(letterHolderId -> {
                 Integer noOfRows = claimRepository.linkDefendant(letterHolderId, defendantId, defendantEmail);
-                if (noOfRows != 0) {
+                if (noOfRows != 0 && jobSchedulerService != null) {
                     claimRepository.getByLetterHolderId(letterHolderId)
                         .ifPresent(jobSchedulerService::scheduleEmailNotificationsForDefendantResponse);
                 }
@@ -159,7 +160,9 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
         claimRepository.requestMoreTime(claim.getExternalId(), newResponseDeadline);
-        jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
+        if (jobSchedulerService != null) {
+            jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
+        }
     }
 
     @Override

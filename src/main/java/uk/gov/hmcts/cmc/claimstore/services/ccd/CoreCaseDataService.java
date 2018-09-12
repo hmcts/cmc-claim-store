@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -78,7 +79,7 @@ public class CoreCaseDataService {
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         CaseAccessApi caseAccessApi,
-        JobSchedulerService jobSchedulerService
+        @Nullable JobSchedulerService jobSchedulerService
     ) {
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
@@ -157,7 +158,9 @@ public class CoreCaseDataService {
         ccdCase.setMoreTimeRequested(YES);
 
         CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
-        jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
+        if (jobSchedulerService != null) {
+            jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
+        }
         return extractClaim(updates);
     }
 
