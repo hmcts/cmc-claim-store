@@ -185,6 +185,14 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate("UPDATE claim SET "
+        + " directions_questionnaire_deadline = :dqDeadline"
+        + " WHERE external_id = :externalId")
+    void updateDirectionsQuestionnaireDeadline(
+        @Bind("externalId") String externalId,
+        @Bind("dqDeadline") LocalDate dqDeadline
+    );
+
+    @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
         + " county_court_judgment_requested_at = :ccjRequestedAt,"
         + " county_court_judgment_issued_at = :ccjIssuedAt"

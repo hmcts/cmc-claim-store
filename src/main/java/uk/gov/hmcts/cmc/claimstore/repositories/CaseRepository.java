@@ -32,6 +32,8 @@ public interface CaseRepository {
 
     void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
+    void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
+
     void linkDefendant(String authorisation);
 
     List<Claim> getByDefendantId(String id, String authorisation);

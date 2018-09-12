@@ -108,6 +108,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
+        throw new NotImplementedException("We do not implement CCD yet");
+    }
+
+    @Override
     public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
         coreCaseDataService.requestMoreTimeForResponse(authorisation, claim, newResponseDeadline);
     }
