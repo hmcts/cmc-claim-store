@@ -37,6 +37,7 @@ public class PartAdmissionResponseMapperTest {
     public void shouldMapPartAdmissionResponseImmediatePaymentToCCD() {
         //given
         PartAdmissionResponse partAdmissionResponse = PartAdmissionResponse.builder()
+            .freeMediation(NO)
             .moreTimeNeeded(NO)
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.immediately())
@@ -55,6 +56,7 @@ public class PartAdmissionResponseMapperTest {
         //given
         PartAdmissionResponse partAdmissionResponse = PartAdmissionResponse.builder()
             .moreTimeNeeded(NO)
+            .freeMediation(NO)
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.instalments())
             .statementOfMeans(SampleStatementOfMeans.builder().build())
@@ -72,6 +74,7 @@ public class PartAdmissionResponseMapperTest {
     public void shouldMapPartAdmissionResponseFromCCD() {
         //given
         CCDPartAdmissionResponse ccdPartAdmissionResponse = CCDPartAdmissionResponse.builder()
+            .freeMediationOption(CCDYesNoOption.YES)
             .moreTimeNeededOption(CCDYesNoOption.YES)
             .paymentIntention(CCDPaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)

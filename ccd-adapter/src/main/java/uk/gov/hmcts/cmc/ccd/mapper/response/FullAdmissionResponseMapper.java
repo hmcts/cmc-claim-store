@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import java.util.Optional;
+
 @Component
 public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionResponse, FullAdmissionResponse> {
 
@@ -58,13 +60,13 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
     public FullAdmissionResponse from(CCDFullAdmissionResponse ccdFullAdmissionResponse) {
         CCDYesNoOption ccdFreeMediation = ccdFullAdmissionResponse.getFreeMediationOption();
         CCDYesNoOption moreTimeNeeded = ccdFullAdmissionResponse.getMoreTimeNeededOption();
-        return new FullAdmissionResponse(
-            ccdFreeMediation != null ? YesNoOption.valueOf(ccdFreeMediation.name()) : null,
-            moreTimeNeeded != null ? YesNoOption.valueOf(moreTimeNeeded.name()) : null,
-            partyMapper.from(ccdFullAdmissionResponse.getDefendant()),
-            statementOfTruthMapper.from(ccdFullAdmissionResponse.getStatementOfTruth()),
-            paymentIntentionMapper.from(ccdFullAdmissionResponse.getPaymentIntention()),
-            statementOfMeansMapper.from(ccdFullAdmissionResponse.getStatementOfMeans())
-        );
+        return FullAdmissionResponse.builder()
+            .freeMediation(YesNoOption.valueOf(Optional.ofNullable(ccdFreeMediation).orElse(CCDYesNoOption.NO).name()))
+            .moreTimeNeeded(YesNoOption.valueOf(Optional.ofNullable(moreTimeNeeded).orElse(CCDYesNoOption.NO).name()))
+            .defendant(partyMapper.from(ccdFullAdmissionResponse.getDefendant()))
+            .statementOfTruth(statementOfTruthMapper.from(ccdFullAdmissionResponse.getStatementOfTruth()))
+            .paymentIntention(paymentIntentionMapper.from(ccdFullAdmissionResponse.getPaymentIntention()))
+            .statementOfMeans(statementOfMeansMapper.from(ccdFullAdmissionResponse.getStatementOfMeans()))
+            .build();
     }
 }
