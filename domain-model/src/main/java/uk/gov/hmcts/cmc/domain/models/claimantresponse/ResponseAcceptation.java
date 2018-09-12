@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -38,6 +39,14 @@ public class ResponseAcceptation extends ClaimantResponse {
         this.courtDetermination = courtDetermination;
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
+    }
+
+    public Optional<CourtDetermination> getCourtDetermination() {
+        return Optional.ofNullable(courtDetermination);
+    }
+
+    public Optional<PaymentIntention> getClaimantPaymentIntention() {
+        return Optional.ofNullable(claimantPaymentIntention);
     }
 
     @Override
