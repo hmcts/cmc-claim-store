@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -75,7 +74,7 @@ public class CCDCaseApi {
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CCDCaseDataToClaim ccdCaseDataToClaim,
-        @Nullable JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -216,9 +215,7 @@ public class CCDCaseApi {
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
         Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        if (jobSchedulerService != null) {
-            jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
-        }
+        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
