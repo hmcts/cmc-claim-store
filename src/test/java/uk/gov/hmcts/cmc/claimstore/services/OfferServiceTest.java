@@ -8,15 +8,21 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantInvalidRepaymentPlanException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,7 +53,7 @@ public class OfferServiceTest {
 
     private OffersService offersService;
 
-    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
+    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule = new ClaimantRepaymentPlanRule();
 
     @Mock
     private ClaimService claimService;
@@ -177,6 +183,31 @@ public class OfferServiceTest {
         offersService.signSettlementAgreement(settledClaim.getExternalId(), buildSettlement(), AUTHORISATION);
     }
 
+    @Test(expected = ClaimantInvalidRepaymentPlanException.class)
+    public void signSettlementAgreementShouldThrowSettlementAgreementWithInvalidPaymentPlan() {
+
+        Claim invalidClaim = SampleClaim.getWithResponse(
+            PartAdmissionResponse.builder()
+                .paymentIntention(buildInstallmentPaymentIntentionWithStartDate(LocalDate.now().plusMonths(2)))
+                .build()
+        );
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(
+            Offer.builder()
+                .content("Claimant's offer")
+                .paymentIntention(buildInstallmentPaymentIntentionWithStartDate(LocalDate.now()))
+                .build(),
+            MadeBy.CLAIMANT
+        );
+
+        when(claimService.getClaimByExternalId(eq(invalidClaim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(invalidClaim);
+
+        offersService.signSettlementAgreement(invalidClaim.getExternalId(), settlement, AUTHORISATION);
+    }
+
+
     private static Settlement buildSettlement() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(
@@ -189,6 +220,13 @@ public class OfferServiceTest {
         settlement.accept(MadeBy.CLAIMANT);
 
         return settlement;
+    }
+
+    private static PaymentIntention buildInstallmentPaymentIntentionWithStartDate(LocalDate startDate) {
+        return SamplePaymentIntention.builder()
+            .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
+                SampleRepaymentPlan.builder().withFirstPaymentDate(startDate).build())
+            .build();
     }
 
     private static Claim buildClaimWithOffer() {

@@ -73,7 +73,7 @@ public class ClaimantRepaymentPlanRuleTest {
     }
 
     @Test(expected = ClaimantInvalidRepaymentPlanException.class)
-    public void shouldNotValidateWhenInstallmentsAndDefendantDateIsBeforeOneMonthAndClaimantDateIsBeforeDefendantDate() {
+    public void shouldFailWhenInstallmentsAndDefendantDateIsBeforeOneMonthAndClaimantDateIsBeforeDefendantDate() {
         Claim claim = SampleClaim.getWithResponse(
             PartAdmissionResponse.builder().paymentIntention(installmentPaymentIntentionBeforeOneMonth).build()
         );
