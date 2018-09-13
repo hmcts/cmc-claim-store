@@ -164,8 +164,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isOk());
 
-        verify(jobService, never()).scheduleJob(any(JobData.class), any());
-        verify(jobService, never()).scheduleJob(any(JobData.class), any());
+        verify(jobService, never()).scheduleJob(any(JobData.class), any(ZonedDateTime.class));
     }
 
     private List<Claim> extractClaims(List<CaseDetails> result) {

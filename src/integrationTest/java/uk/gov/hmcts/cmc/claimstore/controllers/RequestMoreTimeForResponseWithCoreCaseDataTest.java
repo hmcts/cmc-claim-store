@@ -135,8 +135,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
         verify(notificationClient, times(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
 
-        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
-        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
+        verify(jobService, never()).rescheduleJob(any(JobData.class), any(ZonedDateTime.class));
     }
 
     private ResultActions makeRequest(String externalId) throws Exception {

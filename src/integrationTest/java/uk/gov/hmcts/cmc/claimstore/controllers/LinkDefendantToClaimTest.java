@@ -85,6 +85,6 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
             .extracting(Claim::getId, Claim::getDefendantId)
             .containsExactly(claim.getId(), "555");
 
-        verify(jobService, never()).scheduleJob(any(JobData.class), any());
+        verify(jobService, never()).scheduleJob(any(JobData.class), any(ZonedDateTime.class));
     }
 }

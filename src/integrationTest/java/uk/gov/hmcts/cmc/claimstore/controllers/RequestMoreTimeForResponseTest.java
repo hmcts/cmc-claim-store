@@ -113,8 +113,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk());
 
-        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
-        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
+        verify(jobService, never()).rescheduleJob(any(JobData.class), any(ZonedDateTime.class));
     }
 
     @Test
