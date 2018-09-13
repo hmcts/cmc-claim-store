@@ -36,7 +36,6 @@ public class JobSchedulerService {
 
     public void scheduleEmailNotificationsForDefendantResponse(Claim claim) {
         if (defenceRemindersAreEnabled()) {
-            System.out.println("WIBBLE!");
             LocalDate responseDeadline = claim.getResponseDeadline();
 
             Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
@@ -50,8 +49,6 @@ public class JobSchedulerService {
                 createReminderJobData(claim, notificationData, lastReminderDay),
                 responseDeadline.minusDays(lastReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
             );
-        } else {
-            System.out.println("Wobble...");
         }
     }
 
