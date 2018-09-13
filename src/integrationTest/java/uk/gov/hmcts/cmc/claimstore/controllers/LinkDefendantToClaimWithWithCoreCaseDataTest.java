@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -43,8 +44,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 @TestPropertySource(
     properties = {
         "document_management.api_gateway.url=false",
-        "core_case_data.api.url=http://core-case-data-api",
-        "feature_toggles.defenceReminders=true"
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
 public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegrationTest {
@@ -66,24 +66,8 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .willReturn(PDF_BYTES);
-    }
-
-    @Test
-    public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        List<CaseDetails> searchOutput = listOfCaseDetails();
-        when(coreCaseDataApi.searchForCitizen(
-            eq(BEARER_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(DEFENDANT_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(searchCriteria(claimData.getExternalId().toString()))
-            )
-        ).thenReturn(searchOutput);
 
         UserDetails defendantDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
@@ -105,8 +89,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
             eq("1516189555935242"),
-            eq(LINK_DEFENDANT.getValue())
-            )
+            eq(LINK_DEFENDANT.getValue()))
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
         given(coreCaseDataApi.submitEventForCitizen(
@@ -117,8 +100,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
             eq(CASE_TYPE_ID),
             eq("1516189555935242"),
             eq(IGNORE_WARNING),
-            any()
-            )
+            any())
         ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
 
         given(caseAccessApi
@@ -131,6 +113,22 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
                 anyString()
             )
         ).willReturn(ImmutableList.of("1516189555935242"));
+    }
+
+    @Test
+    public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
+        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
+
+        List<CaseDetails> searchOutput = listOfCaseDetails();
+        when(coreCaseDataApi.searchForCitizen(
+            eq(BEARER_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(DEFENDANT_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(searchCriteria(claimData.getExternalId().toString()))
+            )
+        ).thenReturn(searchOutput);
 
         webClient
             .perform(put("/claims/defendant/link")
@@ -145,6 +143,32 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
 
         verify(jobService).scheduleJob(any(JobData.class), eq(firstReminderDate));
         verify(jobService).scheduleJob(any(JobData.class), eq(lastReminderDate));
+    }
+
+    @Test
+    public void shouldNotScheduleRemindersIfFeatureIsOff() throws Exception {
+        when(featureToggleApi.checkFeature("defenceReminders")).thenReturn(false);
+
+        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
+
+        List<CaseDetails> searchOutput = listOfCaseDetails();
+        when(coreCaseDataApi.searchForCitizen(
+            eq(BEARER_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(DEFENDANT_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(searchCriteria(claimData.getExternalId().toString()))
+            )
+        ).thenReturn(searchOutput);
+
+        webClient
+            .perform(put("/claims/defendant/link")
+                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
+            .andExpect(status().isOk());
+
+        verify(jobService, never()).scheduleJob(any(JobData.class), any());
+        verify(jobService, never()).scheduleJob(any(JobData.class), any());
     }
 
     private List<Claim> extractClaims(List<CaseDetails> result) {

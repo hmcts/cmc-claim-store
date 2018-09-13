@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -41,10 +42,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 @TestPropertySource(
     properties = {
         "document_management.api_gateway.url=false",
-        "core_case_data.api.url=http://core-case-data-api",
-        "feature_toggles.defenceReminders=true"
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
+@SuppressWarnings("unchecked")
 public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_ID = "100";
@@ -58,23 +59,8 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
 
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
-    }
-
-    @Test
-    public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        when(coreCaseDataApi.searchForCitizen(
-            eq(BEARER_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(DEFENDANT_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(searchCriteria(claimData.getExternalId().toString()))
-            )
-        ).thenReturn(listOfCaseDetails(), listOfCaseDetailsWithMoreTimeExtension());
 
         given(coreCaseDataApi.startEventForCitizen(
             eq(BEARER_TOKEN),
@@ -83,8 +69,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
             eq("1516189555935242"),
-            eq(MORE_TIME_REQUESTED_ONLINE.getValue())
-            )
+            eq(MORE_TIME_REQUESTED_ONLINE.getValue()))
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
         given(coreCaseDataApi.submitEventForCitizen(
@@ -95,9 +80,22 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
             eq(CASE_TYPE_ID),
             eq("1516189555935242"),
             eq(IGNORE_WARNING),
-            any()
-            )
+            any())
         ).willReturn(successfulCoreCaseDataStoreSubmitResponseWithMoreTimeExtension());
+    }
+
+    @Test
+    public void shouldUpdatedResponseDeadlineWhenEverythingIsOk() throws Exception {
+        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
+
+        when(coreCaseDataApi.searchForCitizen(
+            eq(BEARER_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(DEFENDANT_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(searchCriteria(claimData.getExternalId().toString())))
+        ).thenReturn(listOfCaseDetails(), listOfCaseDetailsWithMoreTimeExtension());
 
         MvcResult result = makeRequest(claimData.getExternalId().toString())
             .andExpect(status().isOk())
@@ -115,6 +113,32 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
         verify(jobService).rescheduleJob(any(JobData.class), eq(lastReminderDate));
     }
 
+    @Test
+    public void shouldNotScheduleReminderForUpdatedResponseDeadlineIfFeatureIsDisabled() throws Exception {
+        when(featureToggleApi.checkFeature("defenceReminders")).thenReturn(false);
+
+        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
+
+        when(coreCaseDataApi.searchForCitizen(
+            eq(BEARER_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(DEFENDANT_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(searchCriteria(claimData.getExternalId().toString())))
+        ).thenReturn(listOfCaseDetails(), listOfCaseDetailsWithMoreTimeExtension());
+
+        makeRequest(claimData.getExternalId().toString())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(notificationClient, times(3))
+            .sendEmail(anyString(), anyString(), anyMap(), anyString());
+
+        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
+        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
+    }
+
     private ResultActions makeRequest(String externalId) throws Exception {
         return makeRequest(externalId, Maps.newHashMap(HttpHeaders.AUTHORIZATION, BEARER_TOKEN));
     }
@@ -122,9 +146,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
     private ResultActions makeRequest(String externalId, Map<String, String> headers) throws Exception {
         MockHttpServletRequestBuilder builder = post("/claims/" + externalId + "/request-more-time");
 
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            builder.header(header.getKey(), header.getValue());
-        }
+        headers.forEach(builder::header);
 
         return webClient.perform(builder);
     }

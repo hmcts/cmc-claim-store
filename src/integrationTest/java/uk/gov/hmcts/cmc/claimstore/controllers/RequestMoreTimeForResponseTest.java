@@ -30,15 +30,16 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=false",
-        "feature_toggles.defenceReminders=true"
+        "core_case_data.api.url=false"
     }
 )
 public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
@@ -105,6 +106,18 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldNotRescheduleNotificationJobEvenWhenEverythingIsOkIfFeatureIsDisabled() throws Exception {
+        when(featureToggleApi.checkFeature("defenceReminders")).thenReturn(false);
+        caseRepository.linkDefendant(BEARER_TOKEN);
+
+        makeRequest(claim.getExternalId())
+            .andExpect(status().isOk());
+
+        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
+        verify(jobService, never()).rescheduleJob(any(JobData.class), any());
+    }
+
+    @Test
     public void shouldRetrySendNotifications() throws Exception {
         caseRepository.linkDefendant(BEARER_TOKEN);
 
@@ -165,9 +178,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     private ResultActions makeRequest(String externalId, Map<String, String> headers) throws Exception {
         MockHttpServletRequestBuilder builder = post("/claims/" + externalId + "/request-more-time");
 
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            builder.header(header.getKey(), header.getValue());
-        }
+        headers.forEach(builder::header);
 
         return webClient.perform(builder);
     }

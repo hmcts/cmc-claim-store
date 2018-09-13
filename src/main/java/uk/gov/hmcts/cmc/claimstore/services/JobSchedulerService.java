@@ -1,8 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableMap;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.featuretoggle.FeatureToggleApi;
 import uk.gov.hmcts.cmc.claimstore.jobs.NotificationEmailJob;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
@@ -18,22 +20,23 @@ public class JobSchedulerService {
     private final JobService jobService;
     private final int firstReminderDay;
     private final int lastReminderDay;
-    private final boolean enabled;
+    private final FeatureToggleApi featureToggleApi;
 
     public JobSchedulerService(
         JobService jobService,
         @Value("${dateCalculations.firstResponseReminderDay}") int firstReminderDay,
         @Value("${dateCalculations.lastResponseReminderDay}") int lastReminderDay,
-        @Value("${feature_toggles.defenceReminders}") boolean enabled
+        FeatureToggleApi featureToggleApi
     ) {
         this.jobService = jobService;
         this.firstReminderDay = firstReminderDay;
         this.lastReminderDay = lastReminderDay;
-        this.enabled = enabled;
+        this.featureToggleApi = featureToggleApi;
     }
 
     public void scheduleEmailNotificationsForDefendantResponse(Claim claim) {
-        if (enabled) {
+        if (defenceRemindersAreEnabled()) {
+            System.out.println("WIBBLE!");
             LocalDate responseDeadline = claim.getResponseDeadline();
 
             Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
@@ -47,6 +50,8 @@ public class JobSchedulerService {
                 createReminderJobData(claim, notificationData, lastReminderDay),
                 responseDeadline.minusDays(lastReminderDay).atTime(8, 0).atZone(ZoneOffset.UTC)
             );
+        } else {
+            System.out.println("Wobble...");
         }
     }
 
@@ -54,7 +59,7 @@ public class JobSchedulerService {
         Claim claim,
         LocalDate responseDeadline
     ) {
-        if (enabled) {
+        if (defenceRemindersAreEnabled()) {
             Map<String, Object> notificationData = ImmutableMap.of("caseReference", claim.getReferenceNumber());
 
             jobService.rescheduleJob(
@@ -90,4 +95,13 @@ public class JobSchedulerService {
             .data(data).build();
     }
 
+    private boolean defenceRemindersAreEnabled() {
+        boolean defenceReminders;
+        try {
+            defenceReminders = featureToggleApi.checkFeature("defenceReminders");
+        } catch (FeignException exception) {
+            defenceReminders = false;
+        }
+        return defenceReminders;
+    }
 }
