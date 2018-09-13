@@ -9,10 +9,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullAdmissionResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDPartAdmissionResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
-import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
@@ -28,15 +28,16 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class FullAdmissionResponseMapperTest {
+public class PartAdmissionResponseMapperTest {
 
     @Autowired
-    private FullAdmissionResponseMapper mapper;
+    private PartAdmissionResponseMapper mapper;
 
     @Test
-    public void shouldMapFullAdmissionResponseImmediatePaymentToCCD() {
+    public void shouldMapPartAdmissionResponseImmediatePaymentToCCD() {
         //given
-        FullAdmissionResponse fullAdmissionResponse = FullAdmissionResponse.builder()
+        PartAdmissionResponse partAdmissionResponse = PartAdmissionResponse.builder()
+            .freeMediation(NO)
             .moreTimeNeeded(NO)
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.immediately())
@@ -44,17 +45,18 @@ public class FullAdmissionResponseMapperTest {
             .build();
 
         //when
-        CCDFullAdmissionResponse ccdFullAdmissionResponse = mapper.to(fullAdmissionResponse);
+        CCDPartAdmissionResponse ccdPartAdmissionResponse = mapper.to(partAdmissionResponse);
 
         //then
-        assertThat(fullAdmissionResponse).isEqualTo(ccdFullAdmissionResponse);
+        assertThat(partAdmissionResponse).isEqualTo(ccdPartAdmissionResponse);
     }
 
     @Test
-    public void shouldMapFullAdmissionResponseStatementOfMeansToCCD() {
+    public void shouldMapPartAdmissionResponseStatementOfMeansToCCD() {
         //given
-        FullAdmissionResponse fullAdmissionResponse = FullAdmissionResponse.builder()
+        PartAdmissionResponse partAdmissionResponse = PartAdmissionResponse.builder()
             .moreTimeNeeded(NO)
+            .freeMediation(NO)
             .defendant(SampleParty.builder().individual())
             .paymentIntention(SamplePaymentIntention.instalments())
             .statementOfMeans(SampleStatementOfMeans.builder().build())
@@ -62,18 +64,18 @@ public class FullAdmissionResponseMapperTest {
             .build();
 
         //when
-        CCDFullAdmissionResponse ccdFullAdmissionResponse = mapper.to(fullAdmissionResponse);
+        CCDPartAdmissionResponse ccdPartAdmissionResponse = mapper.to(partAdmissionResponse);
 
         //then
-        assertThat(fullAdmissionResponse).isEqualTo(ccdFullAdmissionResponse);
+        assertThat(partAdmissionResponse).isEqualTo(ccdPartAdmissionResponse);
     }
 
     @Test
-    public void shouldMapFullAdmissionResponseFromCCD() {
+    public void shouldMapPartAdmissionResponseFromCCD() {
         //given
-        CCDFullAdmissionResponse ccdFullAdmissionResponse = CCDFullAdmissionResponse.builder()
-            .moreTimeNeededOption(CCDYesNoOption.YES)
+        CCDPartAdmissionResponse ccdPartAdmissionResponse = CCDPartAdmissionResponse.builder()
             .freeMediationOption(CCDYesNoOption.YES)
+            .moreTimeNeededOption(CCDYesNoOption.YES)
             .paymentIntention(CCDPaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)
                 .paymentDate(LocalDate.now().plusDays(7))
@@ -84,10 +86,10 @@ public class FullAdmissionResponseMapperTest {
             .build();
 
         //when
-        FullAdmissionResponse fullAdmissionResponse = mapper.from(ccdFullAdmissionResponse);
+        PartAdmissionResponse partAdmissionResponse = mapper.from(ccdPartAdmissionResponse);
 
         //then
-        assertThat(fullAdmissionResponse).isEqualTo(ccdFullAdmissionResponse);
+        assertThat(partAdmissionResponse).isEqualTo(ccdPartAdmissionResponse);
     }
 
 }
