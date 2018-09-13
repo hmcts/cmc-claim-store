@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.featuretoggle.FeatureToggleApi;
+import uk.gov.hmcts.cmc.claimstore.featuretoggle.FeatureTogglesApi;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -58,7 +58,7 @@ public abstract class MockSpringTest {
     protected TestingSupportRepository testingSupportRepository;
 
     @MockBean
-    protected FeatureToggleApi featureToggleApi;
+    protected FeatureTogglesApi featureTogglesApi;
 
     @MockBean
     protected UserService userService;
@@ -110,7 +110,7 @@ public abstract class MockSpringTest {
 
     @Before
     public void featuresDefaultToTrue() {
-        when(featureToggleApi.checkFeature(anyString())).thenReturn(true);
+        when(featureTogglesApi.checkFeature(anyString())).thenReturn(true);
     }
 
     protected <T> T deserializeObjectFrom(MvcResult result, Class<T> targetClass) throws UnsupportedEncodingException {

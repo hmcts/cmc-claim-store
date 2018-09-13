@@ -115,7 +115,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
 
     @Test
     public void shouldNotScheduleReminderForUpdatedResponseDeadlineIfFeatureIsDisabled() throws Exception {
-        when(featureToggleApi.checkFeature("defenceReminders")).thenReturn(false);
+        when(featureTogglesApi.checkFeature("defenceReminders")).thenReturn(false);
 
         ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
 

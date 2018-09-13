@@ -72,7 +72,7 @@ public class LinkDefendantToClaimTest extends BaseIntegrationTest {
 
     @Test
     public void shouldNotScheduleRemindersIfFeatureIsOff() throws Exception {
-        when(featureToggleApi.checkFeature("defenceReminders")).thenReturn(false);
+        when(featureTogglesApi.checkFeature("defenceReminders")).thenReturn(false);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 

@@ -145,7 +145,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
 
     @Test
     public void shouldNotScheduleRemindersIfFeatureIsOff() throws Exception {
-        when(featureToggleApi.checkFeature("defenceReminders")).thenReturn(false);
+        when(featureTogglesApi.checkFeature("defenceReminders")).thenReturn(false);
 
         ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
 
