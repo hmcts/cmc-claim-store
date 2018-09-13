@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.featuretoggle.FeatureToggleApi;
+import uk.gov.hmcts.cmc.claimstore.featuretoggle.FeatureTogglesApi;
 import uk.gov.hmcts.cmc.claimstore.jobs.NotificationEmailJob;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
@@ -20,18 +20,18 @@ public class JobSchedulerService {
     private final JobService jobService;
     private final int firstReminderDay;
     private final int lastReminderDay;
-    private final FeatureToggleApi featureToggleApi;
+    private final FeatureTogglesApi featureTogglesApi;
 
     public JobSchedulerService(
         JobService jobService,
         @Value("${dateCalculations.firstResponseReminderDay}") int firstReminderDay,
         @Value("${dateCalculations.lastResponseReminderDay}") int lastReminderDay,
-        FeatureToggleApi featureToggleApi
+        FeatureTogglesApi featureTogglesApi
     ) {
         this.jobService = jobService;
         this.firstReminderDay = firstReminderDay;
         this.lastReminderDay = lastReminderDay;
-        this.featureToggleApi = featureToggleApi;
+        this.featureTogglesApi = featureTogglesApi;
     }
 
     public void scheduleEmailNotificationsForDefendantResponse(Claim claim) {
@@ -95,7 +95,7 @@ public class JobSchedulerService {
     private boolean defenceRemindersAreEnabled() {
         boolean defenceReminders;
         try {
-            defenceReminders = featureToggleApi.checkFeature("defenceReminders");
+            defenceReminders = featureTogglesApi.checkFeature("defenceReminders");
         } catch (FeignException exception) {
             defenceReminders = false;
         }

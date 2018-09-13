@@ -58,10 +58,6 @@ idam:
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
 
-featureToggle:
-  api:
-    url: "http://feature-toggle-api:8580"
-
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
@@ -115,6 +111,8 @@ staff-notifications:
 feature_toggles:
   watermark_pdf: false
   emailToStaff: true
+  api:
+    url: "${FEATURE_TOGGLES_API_URL}"
 
 feign:
   httpclient:
