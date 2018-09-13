@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,6 +36,7 @@ import uk.gov.service.notify.NotificationClient;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -110,7 +110,7 @@ public abstract class MockSpringTest {
 
     @Before
     public void featuresDefaultToTrue() {
-        when(featureToggleApi.checkFeature(Mockito.anyString())).thenReturn(true);
+        when(featureToggleApi.checkFeature(anyString())).thenReturn(true);
     }
 
     protected <T> T deserializeObjectFrom(MvcResult result, Class<T> targetClass) throws UnsupportedEncodingException {
