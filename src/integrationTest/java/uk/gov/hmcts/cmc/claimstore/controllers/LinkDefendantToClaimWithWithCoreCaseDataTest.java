@@ -110,8 +110,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
                 anyString(),
                 anyString(),
                 anyString(),
-                anyString()
-            )
+                anyString())
         ).willReturn(ImmutableList.of("1516189555935242"));
     }
 
@@ -126,8 +125,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
             eq(DEFENDANT_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(searchCriteria(claimData.getExternalId().toString()))
-            )
+            eq(searchCriteria(claimData.getExternalId().toString())))
         ).thenReturn(searchOutput);
 
         webClient
@@ -158,8 +156,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
             eq(DEFENDANT_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(searchCriteria(claimData.getExternalId().toString()))
-            )
+            eq(searchCriteria(claimData.getExternalId().toString())))
         ).thenReturn(searchOutput);
 
         webClient
