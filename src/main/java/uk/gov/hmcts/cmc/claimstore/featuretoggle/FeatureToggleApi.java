@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(name = "feature-toggle-api", url = "${featureToggle.api.url}")
 public interface FeatureToggleApi {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/api/ff4j/check/{feature}")
+    @RequestMapping(method = RequestMethod.GET, value = "/api/ff4j/check/cmc_{feature}")
     boolean checkFeature(@PathVariable("feature") String feature);
 }

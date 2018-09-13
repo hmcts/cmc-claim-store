@@ -60,7 +60,7 @@ idam:
 
 featureToggle:
   api:
-    url: "http://localhost:8580"
+    url: "http://feature-toggle-api:8580"
 
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
