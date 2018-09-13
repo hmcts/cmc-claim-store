@@ -9,7 +9,7 @@ locals {
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
   ccdCnpUrl = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
-  ccdApiUrl = "${var.env == "sprod" ? local.ccdCnpUrl : "false"}"
+  ccdApiUrl = "${var.env == "sprod" || var.env == "demo" ? local.ccdCnpUrl : "false"}"
 
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
