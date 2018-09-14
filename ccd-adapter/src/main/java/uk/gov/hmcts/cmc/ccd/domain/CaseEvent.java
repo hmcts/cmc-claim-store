@@ -5,6 +5,7 @@ public enum CaseEvent {
     SUBMIT_PRE_PAYMENT("SubmitPrePayment"),
     SUBMIT_POST_PAYMENT("SubmitPostPayment"),
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
+    CCJ_ISSUED("CCJIssued"),
     DEFENCE_SUBMITTED("DefenceSubmitted"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),

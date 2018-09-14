@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_ISSUED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
@@ -164,13 +165,18 @@ public class CoreCaseDataService {
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
     ) {
         CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
-
-        return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+        if (issue) {
+            ccdCase.setCountyCourtJudgmentIssuedAt(nowInUTC());
+            return update(authorisation, ccdCase, CCJ_ISSUED);
+        } else {
+            return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+        }
     }
 
     public CaseDetails linkSealedClaimDocument(

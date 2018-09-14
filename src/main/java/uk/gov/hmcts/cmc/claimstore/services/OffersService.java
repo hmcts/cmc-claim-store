@@ -20,6 +20,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_MADE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJECTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_REACHED;
+import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 
 @Service
 @Transactional(transactionManager = "transactionManager")
@@ -118,7 +119,7 @@ public class OffersService {
     public Claim signSettlementAgreement(String externalId, Settlement settlement, String authorisation) {
         final Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertSettlementIsNotReached(claim);
-        final String userAction = userAction("OFFER_ACCEPTED_BY", claim.getClaimData().getClaimant().getName());
+        final String userAction = userAction("OFFER_ACCEPTED_BY", CLAIMANT.name());
         this.caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
 
         final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
