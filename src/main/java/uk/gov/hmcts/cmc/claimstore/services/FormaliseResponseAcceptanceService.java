@@ -45,7 +45,11 @@ public class FormaliseResponseAcceptanceService {
         this.offersService = offersService;
     }
 
-    public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
+    public void formalise(Claim claim, ClaimantResponse claimantResponse, String authorisation) {
+        if (!(claimantResponse instanceof ResponseAcceptation)) {
+            return;
+        }
+        ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
         switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
