@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
@@ -81,7 +80,7 @@ public class FormaliseResponseAcceptanceService {
             paymentIntention = getDefendantPaymentIntention(claim.getResponse().orElseThrow(IllegalAccessError::new));
             settlement.makeOffer(prepareOffer(response, paymentIntention), DEFENDANT);
         }
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.accept(CLAIMANT);
         this.offersService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
     }
 
