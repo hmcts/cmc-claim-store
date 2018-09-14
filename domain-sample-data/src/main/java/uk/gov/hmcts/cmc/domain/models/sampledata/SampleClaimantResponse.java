@@ -33,7 +33,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return this;
         }
 
-        public  ClaimantResponseAcceptation withFormaliseOption(FormaliseOption formaliseOption) {
+        public ClaimantResponseAcceptation withFormaliseOption(FormaliseOption formaliseOption) {
             this.formaliseOption = formaliseOption;
             return this;
         }
