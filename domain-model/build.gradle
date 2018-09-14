@@ -4,6 +4,7 @@ plugins {
 }
 
 apply plugin: 'net.ltgt.apt'
+apply plugin: 'info.solidsoft.pitest'
 
 sourceCompatibility = 1.8
 
@@ -24,4 +25,12 @@ dependencies {
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
   testCompile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
   testCompile group: 'org.glassfish.web', name: 'javax.el', version: '2.2.6'
+}
+
+pitest {
+  threads = 4
+
+  if (project.name in ['module-without-any-test']) {
+    failWhenNoMutations = false
+  }
 }

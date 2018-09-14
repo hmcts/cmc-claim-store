@@ -1,4 +1,5 @@
 apply plugin: 'net.ltgt.apt'
+apply plugin: 'info.solidsoft.pitest'
 
 def versions = [
   logback          : '1.2.3',
@@ -21,4 +22,12 @@ dependencies {
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+}
+
+pitest {
+  threads = 4
+
+  if (project.name in ['module-without-any-test']) {
+    failWhenNoMutations = false
+  }
 }

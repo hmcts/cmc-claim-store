@@ -3,6 +3,7 @@ plugins {
 }
 
 apply plugin: 'net.ltgt.apt'
+apply plugin: 'info.solidsoft.pitest'
 
 dependencies {
   compile project(':domain-model')
@@ -29,4 +30,12 @@ task testJar (type: Jar) {
 
 artifacts {
   testArtifacts testJar
+}
+
+pitest {
+  threads = 4
+
+  if (project.name in ['module-without-any-test']) {
+    failWhenNoMutations = false
+  }
 }

@@ -2,6 +2,8 @@ plugins {
   id 'jacoco'
 }
 
+apply plugin: 'info.solidsoft.pitest'
+
 dependencies {
   compile project(':domain-model')
 
@@ -12,4 +14,13 @@ dependencies {
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
   testCompile project(':domain-sample-data')
+}
+
+
+pitest {
+  threads = 4
+
+  if (project.name in ['module-without-any-test']) {
+    failWhenNoMutations = false
+  }
 }
