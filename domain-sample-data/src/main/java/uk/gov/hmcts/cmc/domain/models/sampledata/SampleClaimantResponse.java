@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
@@ -21,6 +22,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
         private BigDecimal amountPaid = BigDecimal.TEN;
+        private FormaliseOption formaliseOption = REJECT_PLAN_GO_TO_JUDGE;
 
         public static ClaimantResponseAcceptation builder() {
             return new ClaimantResponseAcceptation();
@@ -31,11 +33,16 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return this;
         }
 
+        public  ClaimantResponseAcceptation withFormaliseOption(FormaliseOption formaliseOption) {
+            this.formaliseOption = formaliseOption;
+            return this;
+        }
+
         @Override
         public ClaimantResponse build() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
-                .formaliseOption(REJECT_PLAN_GO_TO_JUDGE)
+                .formaliseOption(formaliseOption)
                 .build();
         }
     }
