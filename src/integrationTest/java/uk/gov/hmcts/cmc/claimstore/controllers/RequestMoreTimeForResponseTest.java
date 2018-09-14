@@ -107,7 +107,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldNotRescheduleNotificationJobEvenWhenEverythingIsOkIfFeatureIsDisabled() throws Exception {
-        when(featureTogglesApi.checkFeature("defenceReminders")).thenReturn(false);
+        when(featureTogglesApi.checkFeature("defence_reminders")).thenReturn(false);
         caseRepository.linkDefendant(BEARER_TOKEN);
 
         makeRequest(claim.getExternalId())

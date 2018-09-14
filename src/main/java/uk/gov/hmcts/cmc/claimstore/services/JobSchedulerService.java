@@ -95,7 +95,7 @@ public class JobSchedulerService {
     private boolean defenceRemindersAreEnabled() {
         boolean defenceReminders;
         try {
-            defenceReminders = featureTogglesApi.checkFeature("defenceReminders");
+            defenceReminders = featureTogglesApi.checkFeature("defence_reminders");
         } catch (FeignException exception) {
             defenceReminders = false;
         }
