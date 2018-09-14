@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -22,12 +25,14 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.COURT;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.DEFENDANT;
 
 @Service
 public class FormaliseResponseAcceptanceService {
+    private static final Logger logger = LoggerFactory.getLogger(FormaliseResponseAcceptanceService.class);
 
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final OffersService offersService;
@@ -41,7 +46,11 @@ public class FormaliseResponseAcceptanceService {
         this.offersService = offersService;
     }
 
-    public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
+    public void formalise(Claim claim, ClaimantResponse claimantResponse, String authorisation) {
+        if (!(claimantResponse instanceof ResponseAcceptation)) {
+            return;
+        }
+        ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
         switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
@@ -49,8 +58,11 @@ public class FormaliseResponseAcceptanceService {
             case SETTLEMENT:
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
+            case REFER_TO_JUDGE:
+                logger.debug("No need to formalise for " + REFER_TO_JUDGE);
+                break;
             default:
-                throw new IllegalStateException("Can't formalise for " + responseAcceptation.getFormaliseOption());
+                throw new IllegalStateException("Invalid formaliseOption");
         }
     }
 
@@ -124,13 +136,12 @@ public class FormaliseResponseAcceptanceService {
             .payBySetDate(acceptedPaymentIntention.getPaymentDate().orElse(null))
             .build();
 
-        boolean issued = true;
         this.countyCourtJudgmentService.save(
             claim.getSubmitterId(),
             countyCourtJudgment,
             claim.getExternalId(),
             authorisation,
-            issued);
+            true);
     }
 
     private LocalDate defendantDateOfBirth(Party party) {

@@ -11,7 +11,7 @@ import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REJECT_PLAN_GO_TO_JUDGE;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 
 public class ResponseAcceptationTest {
 
@@ -28,7 +28,7 @@ public class ResponseAcceptationTest {
     public void shouldBeInvalidWhenAmountNotPresent() {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
             .amountPaid(null)
-            .formaliseOption(REJECT_PLAN_GO_TO_JUDGE)
+            .formaliseOption(REFER_TO_JUDGE)
             .build();
 
         Set<String> response = validate(claimantResponse);
@@ -40,7 +40,7 @@ public class ResponseAcceptationTest {
     public void shouldBeInvalidWhenAmountIsNegative() {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
             .amountPaid(BigDecimal.valueOf(-10))
-            .formaliseOption(REJECT_PLAN_GO_TO_JUDGE)
+            .formaliseOption(REFER_TO_JUDGE)
             .build();
 
         Set<String> response = validate(claimantResponse);
@@ -52,7 +52,7 @@ public class ResponseAcceptationTest {
     public void shouldBeValidWhenAmountIsZero() {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
             .amountPaid(ZERO)
-            .formaliseOption(REJECT_PLAN_GO_TO_JUDGE)
+            .formaliseOption(REFER_TO_JUDGE)
             .build();
 
         Set<String> response = validate(claimantResponse);
