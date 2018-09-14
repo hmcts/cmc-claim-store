@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -15,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -49,10 +46,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formaliseOption(FormaliseOption.CCJ)
             .build();
 
-        ArgumentCaptor CCJObject = ArgumentCaptor.forClass(CountyCourtJudgment.class);
-
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
-        CountyCourtJudgment countyCourtJudgment = (CountyCourtJudgment) CCJObject.capture();
 
         verify(countyCourtJudgmentService).save(
             eq(claim.getSubmitterId()),
@@ -60,7 +54,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getExternalId()),
             eq(AUTH),
             eq(true));
-        assertThat(countyCourtJudgment.getRepaymentPlan()).isNotNull();
     }
 
     @Test
