@@ -176,7 +176,7 @@ public class FormaliseResponseAcceptanceService {
     private PaymentIntention getDefendantPaymentIntention(Response response) {
         switch (response.getResponseType()) {
             case PART_ADMISSION:
-                return ((PartAdmissionResponse) response).getPaymentIntention().orElse(null);
+                return ((PartAdmissionResponse) response).getPaymentIntention().orElseThrow(IllegalStateException::new);
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response).getPaymentIntention();
             default:
