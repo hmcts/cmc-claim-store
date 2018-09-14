@@ -10,4 +10,5 @@ public class CCDResponse {
     private CCDResponseType responseType;
     private CCDFullDefenceResponse fullDefenceResponse;
     private CCDFullAdmissionResponse fullAdmissionResponse;
+    private CCDPartAdmissionResponse partAdmissionResponse;
 }
