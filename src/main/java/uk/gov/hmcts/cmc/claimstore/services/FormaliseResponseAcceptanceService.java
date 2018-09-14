@@ -91,19 +91,8 @@ public class FormaliseResponseAcceptanceService {
         switch (paymentIntention.getPaymentOption()) {
             case BY_SPECIFIED_DATE:
                 LocalDate completionDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
-                builder.completionDate(completionDate);
-                String amount;
-                if (response instanceof PartAdmissionResponse) {
-                    PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
-                    amount = formatMoney(partAdmissionResponse.getAmount());
-                } else {
-                    amount = "the full amount";
-                }
-                builder.content(
-                    String.format("%s will pay %s, no later than %s",
-                        response.getDefendant().getName(), amount, formatDate(completionDate)
-                    )
-                );
+                String contentBySetDate = prepareOfferContentsBySetDate(response, builder, completionDate);
+                builder.content(contentBySetDate);
                 break;
             case INSTALMENTS:
                 RepaymentPlan repaymentPlan = paymentIntention.getRepaymentPlan().orElseThrow(IllegalAccessError::new);
@@ -121,6 +110,29 @@ public class FormaliseResponseAcceptanceService {
                 throw new IllegalStateException("Invalid payment option " + paymentIntention.getPaymentOption());
         }
         return builder.build();
+    }
+
+    private String prepareOfferContentsBySetDate(
+        Response response,
+        Offer.OfferBuilder builder,
+        LocalDate completionDate
+    ) {
+        builder.completionDate(completionDate);
+        String amount;
+        switch (response.getResponseType()) {
+            case PART_ADMISSION:
+                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+                amount = formatMoney(partAdmissionResponse.getAmount());
+                break;
+            case FULL_ADMISSION:
+                amount = "the full amount";
+                break;
+            default:
+                throw new IllegalStateException("Invalid response type " + response.getResponseType());
+        }
+        return String.format("%s will pay %s, no later than %s",
+            response.getDefendant().getName(), amount, formatDate(completionDate)
+        );
     }
 
     private void formaliseCCJ(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -162,12 +174,13 @@ public class FormaliseResponseAcceptanceService {
     }
 
     private PaymentIntention getDefendantPaymentIntention(Response response) {
-        if (response instanceof FullAdmissionResponse) {
-            return ((FullAdmissionResponse) response).getPaymentIntention();
-        } else if (response instanceof PartAdmissionResponse) {
-            return ((PartAdmissionResponse) response).getPaymentIntention().orElse(null);
-        } else {
-            return null;
+        switch (response.getResponseType()) {
+            case PART_ADMISSION:
+                return ((PartAdmissionResponse) response).getPaymentIntention().orElse(null);
+            case FULL_ADMISSION:
+                return ((FullAdmissionResponse) response).getPaymentIntention();
+            default:
+                return null;
         }
     }
 }
