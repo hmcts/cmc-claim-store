@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -42,7 +43,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     private CountyCourtJudgmentService countyCourtJudgmentService;
 
     @Captor
-    ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
+    private ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
 
     @Before
     public void before() {
@@ -61,7 +62,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void formaliseCCJWithDefendantPaymentIntentionAccepted() {
+    public void formaliseCCJWithDefendantPaymentIntentionBySetDateAccepted() {
         Response response = SampleResponse
             .PartAdmission.builder()
             .buildWithPaymentOptionBySpecifiedDate();
@@ -91,6 +92,41 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getPayBySetDate()
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(respondentPayingBySetDate);
+
+        verifyZeroInteractions(offersService);
+    }
+
+    @Test
+    public void formaliseCCJWithDefendantPaymentIntentionByInstalmentsAccepted() {
+        Response response = SampleResponse
+            .PartAdmission.builder()
+            .buildWithPaymentOptionInstallments();
+
+        RepaymentPlan repaymentPlanOfDefendant = ((PartAdmissionResponse) response)
+            .getPaymentIntention()
+            .get()
+            .getRepaymentPlan()
+            .orElseThrow(IllegalStateException::new);
+
+        Claim claim = SampleClaim.getWithResponse(response);
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.CCJ)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+
+        verify(countyCourtJudgmentService).save(
+            eq(claim.getSubmitterId()),
+            countyCourtJudgmentArgumentCaptor.capture(),
+            eq(claim.getExternalId()),
+            eq(AUTH),
+            eq(true));
+
+        assertThat(countyCourtJudgmentArgumentCaptor
+            .getValue()
+            .getRepaymentPlan().orElseThrow(IllegalAccessError::new))
+            .isEqualTo(repaymentPlanOfDefendant);
 
         verifyZeroInteractions(offersService);
     }
@@ -128,6 +164,43 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getPayBySetDate()
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
+
+        verifyZeroInteractions(offersService);
+    }
+
+    @Test
+    public void formaliseCCJWithClaimantPaymentIntentionPresent() {
+        Response response = SampleResponse
+            .PartAdmission.builder()
+            .buildWithPaymentOptionBySpecifiedDate();
+
+        Claim claim = SampleClaim.getWithResponse(response);
+
+        PaymentIntention paymentIntentionByInstalments = SamplePaymentIntention.instalments();
+        RepaymentPlan appliedRepaymentPlan = paymentIntentionByInstalments
+            .getRepaymentPlan()
+            .orElseThrow(IllegalStateException::new);
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .claimantPaymentIntention(paymentIntentionByInstalments)
+            .formaliseOption(FormaliseOption.CCJ)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+
+        verify(countyCourtJudgmentService).save(
+            eq(claim.getSubmitterId()),
+            countyCourtJudgmentArgumentCaptor.capture(),
+            eq(claim.getExternalId()),
+            eq(AUTH),
+            eq(true));
+
+        assertThat(countyCourtJudgmentArgumentCaptor
+            .getValue()
+            .getRepaymentPlan()
+            .orElseThrow(IllegalStateException::new))
+            .isEqualTo(appliedRepaymentPlan);
 
         verifyZeroInteractions(offersService);
     }
