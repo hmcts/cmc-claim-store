@@ -69,15 +69,12 @@ public class FormaliseResponseAcceptanceService {
         Settlement settlement = new Settlement();
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-        PaymentIntention paymentIntention;
+        PaymentIntention paymentIntention = acceptedPaymentIntention(responseAcceptation, response);
         if (courtDetermination.isPresent()) {
-            paymentIntention = courtDetermination.get().getCourtCalculatedPaymentIntention();
             settlement.makeOffer(prepareOffer(response, paymentIntention), COURT);
         } else if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
-            paymentIntention = responseAcceptation.getClaimantPaymentIntention().get();
             settlement.makeOffer(prepareOffer(response, paymentIntention), CLAIMANT);
         } else {
-            paymentIntention = getDefendantPaymentIntention(claim.getResponse().orElseThrow(IllegalAccessError::new));
             settlement.makeOffer(prepareOffer(response, paymentIntention), DEFENDANT);
         }
         settlement.accept(CLAIMANT);
