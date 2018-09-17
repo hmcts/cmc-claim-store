@@ -10,14 +10,14 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
 import java.util.Map;
 
 @Service
-public class FullAdmissionStaffEmailContentProvider
+public class FullAndPartAdmissionStaffEmailContentProvider
     implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
     private final StaffEmailTemplates emailTemplates;
 
     @Autowired
-    public FullAdmissionStaffEmailContentProvider(
+    public FullAndPartAdmissionStaffEmailContentProvider(
         TemplateService templateService,
         StaffEmailTemplates emailTemplates
     ) {
