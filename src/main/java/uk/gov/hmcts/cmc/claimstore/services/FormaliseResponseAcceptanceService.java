@@ -77,7 +77,7 @@ public class FormaliseResponseAcceptanceService {
         } else {
             settlement.makeOffer(prepareOffer(response, paymentIntention), DEFENDANT);
         }
-        settlement.accept(CLAIMANT);
+        settlement.acceptCourtDetermination(CLAIMANT);
         this.offersService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
     }
 
@@ -88,6 +88,7 @@ public class FormaliseResponseAcceptanceService {
         switch (paymentIntention.getPaymentOption()) {
             case BY_SPECIFIED_DATE:
                 LocalDate completionDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
+                builder.completionDate(completionDate);
                 String contentBySetDate = prepareOfferContentsBySetDate(response, builder, completionDate);
                 builder.content(contentBySetDate);
                 break;
@@ -161,10 +162,11 @@ public class FormaliseResponseAcceptanceService {
 
     private PaymentIntention acceptedPaymentIntention(ResponseAcceptation responseAcceptation, Response response) {
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
+        Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
         if (courtDetermination.isPresent()) {
             return courtDetermination.get().getCourtCalculatedPaymentIntention();
-        } else if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
-            return responseAcceptation.getClaimantPaymentIntention().get();
+        } else if (claimantPaymentIntention.isPresent()) {
+            return claimantPaymentIntention.get();
         } else {
             return getDefendantPaymentIntention(response);
         }
@@ -177,7 +179,7 @@ public class FormaliseResponseAcceptanceService {
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response).getPaymentIntention();
             default:
-                return null;
+                throw new IllegalStateException("Invalid response type " + response.getResponseType());
         }
     }
 }
