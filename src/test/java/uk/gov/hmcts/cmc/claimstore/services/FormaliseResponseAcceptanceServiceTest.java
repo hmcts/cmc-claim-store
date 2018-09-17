@@ -44,7 +44,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testFormaliseWhenResponseNotPresent() {
+    public void formaliseWhenResponseNotPresent() {
         Claim claim = SampleClaim.builder().build();
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -54,7 +54,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void testFormaliseCCJWithDefendantPaymentIntentionAccepted() {
+    public void formaliseCCJWithDefendantPaymentIntentionAccepted() {
         Response response = SampleResponse
             .PartAdmission.builder()
             .buildWithPaymentOptionBySpecifiedDate();
@@ -76,7 +76,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void testFormaliseCCJWithCourtDeterminedIntentionAccepted() {
+    public void formaliseCCJWithCourtDeterminedIntentionAccepted() {
         Response response = SampleResponse
             .PartAdmission.builder()
             .buildWithPaymentOptionBySpecifiedDate();
@@ -114,7 +114,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void testFormaliseDoesNothingWhenReferredToJudge() {
+    public void formaliseDoesNothingWhenReferredToJudge() {
         Claim claim = SampleClaim.getWithDefaultResponse();
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -125,7 +125,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void testFormaliseDoesNothingWhenResponseIsNotAcceptation() {
+    public void formaliseDoesNothingWhenResponseIsNotAcceptation() {
         Claim claim = SampleClaim.getWithDefaultResponse();
         ClaimantResponse response = ResponseRejection.builder().build();
         assertThatCode(() -> formaliseResponseAcceptanceService
