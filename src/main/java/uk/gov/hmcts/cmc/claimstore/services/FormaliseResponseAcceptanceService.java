@@ -77,7 +77,7 @@ public class FormaliseResponseAcceptanceService {
         } else {
             settlement.makeOffer(prepareOffer(response, paymentIntention), DEFENDANT);
         }
-        settlement.accept(CLAIMANT);
+        settlement.acceptCourtDetermination(CLAIMANT);
         this.offersService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
     }
 
