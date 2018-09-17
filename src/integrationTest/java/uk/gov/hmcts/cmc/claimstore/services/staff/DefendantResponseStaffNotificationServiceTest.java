@@ -106,7 +106,8 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Pay immediately " + claimWithFullAdmission.getReferenceNumber());
+            .getSubject()).startsWith("Civil Money Claim full admission submitted: Pay immediately "
+            + claimWithFullAdmission.getReferenceNumber());
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
             "The defendant has offered to pay immediately in response to the money claim made against them"
@@ -125,7 +126,8 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Pay by a set date " + claimWithFullAdmission.getReferenceNumber());
+            .getSubject()).startsWith("Civil Money Claim full admission submitted: Pay by a set date "
+            + claimWithFullAdmission.getReferenceNumber());
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
             "The defendant has offered to pay by a set date in response to the money claim made against them"
@@ -144,7 +146,68 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Pay by instalments " + claimWithFullAdmission.getReferenceNumber());
+            .getSubject()).startsWith("Civil Money Claim full admission submitted: Pay by instalments "
+            + claimWithFullAdmission.getReferenceNumber());
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The defendant has offered to pay by instalments in response to the money claim made against them"
+        );
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedContentPartAdmissionPayImmediately() {
+        Claim claimWithFullAdmission = SampleClaim.builder()
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullAdmission, DEFENDANT_EMAIL);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).startsWith("Civil Money Claim partial admission submitted: Pay immediately "
+            + claimWithFullAdmission.getReferenceNumber());
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The defendant has offered to pay immediately in response to the money claim made against them"
+        );
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedContentPartAdmissionPayBySetDate() {
+        Claim claimWithFullAdmission = SampleClaim.builder()
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate())
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullAdmission, DEFENDANT_EMAIL);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).startsWith("Civil Money Claim partial admission submitted: Pay by a set date "
+            + claimWithFullAdmission.getReferenceNumber());
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The defendant has offered to pay by a set date in response to the money claim made against them"
+        );
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedContentPartAdmissionPayByInstalments() {
+        Claim claimWithFullAdmission = SampleClaim.builder()
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments())
+            .withRespondedAt(LocalDateTime.now())
+            .build();
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullAdmission, DEFENDANT_EMAIL);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).startsWith("Civil Money Claim partial admission submitted: Pay by instalments "
+            + claimWithFullAdmission.getReferenceNumber());
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
             "The defendant has offered to pay by instalments in response to the money claim made against them"
