@@ -308,6 +308,9 @@ sonarqube {
     property "sonar.projectName", "CMC :: Claim Store"
     property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
     property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
+    property "sonar.host.url", "https://sonar.reform.hmcts.net/"
+    property "sonar.pitest.mode", "reuseReport"
+    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/claimstore/idam/models/**," +
@@ -324,7 +327,8 @@ sonarqube {
 pitest {
   threads = 4
   outputFormats = ['XML', 'HTML']
-  timestampedReports = false
+  timestampedReports = true
+  mutationThreshold = 50
 }
 
 bootJar {
