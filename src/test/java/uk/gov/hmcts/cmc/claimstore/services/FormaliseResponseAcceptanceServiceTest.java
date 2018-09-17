@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -12,11 +13,15 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -77,23 +82,35 @@ public class FormaliseResponseAcceptanceServiceTest {
             .buildWithPaymentOptionBySpecifiedDate();
 
         Claim claim = SampleClaim.getWithResponse(response);
+        PaymentIntention paymentIntention = SamplePaymentIntention.bySetDate();
+        LocalDate appliedPaymentDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
+
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .courtDetermination(CourtDetermination
                 .builder()
-                .courtCalculatedPaymentIntention(SamplePaymentIntention.bySetDate())
+                .courtCalculatedPaymentIntention(paymentIntention)
                 .build())
             .formaliseOption(FormaliseOption.CCJ)
             .build();
+
+        ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor = ArgumentCaptor
+            .forClass(CountyCourtJudgment.class);
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
             eq(claim.getSubmitterId()),
-            any(CountyCourtJudgment.class),
+            countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH),
             eq(true));
+
+        assertThat(countyCourtJudgmentArgumentCaptor
+            .getValue()
+            .getPayBySetDate()
+            .orElseThrow(IllegalStateException::new))
+            .isEqualTo(appliedPaymentDate);
     }
 
     @Test
