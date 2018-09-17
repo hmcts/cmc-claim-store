@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -23,19 +25,24 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class FormaliseResponseAcceptanceServiceTest {
     private static final String AUTH = "AUTH";
     private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
+
     @Mock
     private OffersService offersService;
+
     @Mock
     private CountyCourtJudgmentService countyCourtJudgmentService;
+
+    @Captor
+    ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
 
     @Before
     public void before() {
@@ -59,6 +66,11 @@ public class FormaliseResponseAcceptanceServiceTest {
             .PartAdmission.builder()
             .buildWithPaymentOptionBySpecifiedDate();
 
+        LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) response)
+            .getPaymentIntention()
+            .get().getPaymentDate()
+            .orElseThrow(IllegalStateException::new);
+
         Claim claim = SampleClaim.getWithResponse(response);
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -69,10 +81,18 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         verify(countyCourtJudgmentService).save(
             eq(claim.getSubmitterId()),
-            any(CountyCourtJudgment.class),
+            countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH),
             eq(true));
+
+        assertThat(countyCourtJudgmentArgumentCaptor
+            .getValue()
+            .getPayBySetDate()
+            .orElseThrow(IllegalStateException::new))
+            .isEqualTo(respondentPayingBySetDate);
+
+        verifyZeroInteractions(offersService);
     }
 
     @Test
@@ -94,9 +114,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formaliseOption(FormaliseOption.CCJ)
             .build();
 
-        ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor = ArgumentCaptor
-            .forClass(CountyCourtJudgment.class);
-
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
@@ -111,6 +128,8 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getPayBySetDate()
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
+
+        verifyZeroInteractions(offersService);
     }
 
     @Test
@@ -122,6 +141,9 @@ public class FormaliseResponseAcceptanceServiceTest {
             .build();
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
+
+        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyZeroInteractions(offersService);
     }
 
     @Test
@@ -130,5 +152,8 @@ public class FormaliseResponseAcceptanceServiceTest {
         ClaimantResponse response = ResponseRejection.builder().build();
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, response, AUTH)).doesNotThrowAnyException();
+
+        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyZeroInteractions(offersService);
     }
 }
