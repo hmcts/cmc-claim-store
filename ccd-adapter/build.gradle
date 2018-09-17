@@ -33,7 +33,7 @@ artifacts {
 }
 
 pitest {
-  threads = 4
+  threads =4
 
   if (project.name in ['module-without-any-test']) {
     failWhenNoMutations = false

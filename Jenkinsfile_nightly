@@ -1,0 +1,18 @@
+#!groovy
+
+properties([
+        parameters([string(name: 'LIB_VERSION', defaultValue: 'master', description: 'Branch name of pipeline library to use')]),
+        pipelineTriggers([cron('15 01 * * *')])
+])
+
+library "Infrastructure@${params.LIB_VERSION}"
+
+String product = "cmc"
+
+String component = "claim-store"
+
+def type = "java"
+
+    withNightlyPipeline(type, product, component) {
+        enableMutationTest()
+    }
