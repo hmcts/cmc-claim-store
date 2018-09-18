@@ -96,7 +96,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void formaliseSettlementWhenNoFormaliseOptionPresent() {
 
         Claim claim = SampleClaim.getWithDefaultResponse();
