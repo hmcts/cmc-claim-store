@@ -63,13 +63,14 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseCCJWithDefendantPaymentIntentionBySetDateAccepted() {
-        Response response = SampleResponse
+        PartAdmissionResponse response = SampleResponse
             .PartAdmission.builder()
             .buildWithPaymentOptionBySpecifiedDate();
 
-        LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) response)
+        LocalDate respondentPayingBySetDate = response
             .getPaymentIntention()
-            .get().getPaymentDate()
+            .orElseThrow(IllegalStateException::new)
+            .getPaymentDate()
             .orElseThrow(IllegalStateException::new);
 
         Claim claim = SampleClaim.getWithResponse(response);
@@ -85,7 +86,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH),
-            eq(true));
+            eq(false));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -98,13 +99,13 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseCCJWithDefendantPaymentIntentionByInstalmentsAccepted() {
-        Response response = SampleResponse
+        PartAdmissionResponse response = SampleResponse
             .PartAdmission.builder()
             .buildWithPaymentOptionInstallments();
 
-        RepaymentPlan repaymentPlanOfDefendant = ((PartAdmissionResponse) response)
+        RepaymentPlan repaymentPlanOfDefendant = response
             .getPaymentIntention()
-            .get()
+            .orElseThrow(IllegalStateException::new)
             .getRepaymentPlan()
             .orElseThrow(IllegalStateException::new);
 
@@ -121,7 +122,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH),
-            eq(true));
+            eq(false));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -157,7 +158,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH),
-            eq(true));
+            eq(false));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -194,7 +195,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH),
-            eq(true));
+            eq(false));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -212,8 +213,9 @@ public class FormaliseResponseAcceptanceServiceTest {
             .builder()
             .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
             .build();
-        assertThatCode(() -> formaliseResponseAcceptanceService
-            .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
+        assertThatCode(
+            () -> formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH)
+        ).doesNotThrowAnyException();
 
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(offersService);
@@ -223,8 +225,9 @@ public class FormaliseResponseAcceptanceServiceTest {
     public void formaliseDoesNothingWhenResponseIsNotAcceptation() {
         Claim claim = SampleClaim.getWithDefaultResponse();
         ClaimantResponse response = ResponseRejection.builder().build();
-        assertThatCode(() -> formaliseResponseAcceptanceService
-            .formalise(claim, response, AUTH)).doesNotThrowAnyException();
+        assertThatCode(
+            () -> formaliseResponseAcceptanceService.formalise(claim, response, AUTH)
+        ).doesNotThrowAnyException();
 
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(offersService);

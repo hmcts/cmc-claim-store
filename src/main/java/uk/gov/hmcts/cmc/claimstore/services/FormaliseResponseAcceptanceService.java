@@ -150,7 +150,7 @@ public class FormaliseResponseAcceptanceService {
             countyCourtJudgment,
             claim.getExternalId(),
             authorisation,
-            true);
+            false);
     }
 
     private LocalDate defendantDateOfBirth(Party party) {
