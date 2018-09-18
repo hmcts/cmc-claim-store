@@ -6,8 +6,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import static java.math.BigDecimal.TEN;
+import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 
 public class ResponseAcceptationTest {
 
@@ -22,9 +26,9 @@ public class ResponseAcceptationTest {
 
     @Test
     public void shouldBeInvalidWhenAmountNotPresent() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
-            .builder()
-            .withAmountPaid(null)
+        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
+            .amountPaid(null)
+            .formaliseOption(REFER_TO_JUDGE)
             .build();
 
         Set<String> response = validate(claimantResponse);
@@ -34,9 +38,9 @@ public class ResponseAcceptationTest {
 
     @Test
     public void shouldBeInvalidWhenAmountIsNegative() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
-            .builder()
-            .withAmountPaid(BigDecimal.valueOf(-10))
+        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(-10))
+            .formaliseOption(REFER_TO_JUDGE)
             .build();
 
         Set<String> response = validate(claimantResponse);
@@ -46,13 +50,28 @@ public class ResponseAcceptationTest {
 
     @Test
     public void shouldBeValidWhenAmountIsZero() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
-            .builder()
-            .withAmountPaid(BigDecimal.ZERO)
+        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
+            .amountPaid(ZERO)
+            .formaliseOption(REFER_TO_JUDGE)
             .build();
 
         Set<String> response = validate(claimantResponse);
 
         assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenMissingPaymentIntentionInCourtDetermination() {
+        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
+            .amountPaid(TEN)
+            .courtDetermination(CourtDetermination.builder()
+                .courtCalculatedPaymentIntention(null)
+                .build())
+            .formaliseOption(CCJ)
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
     }
 }
