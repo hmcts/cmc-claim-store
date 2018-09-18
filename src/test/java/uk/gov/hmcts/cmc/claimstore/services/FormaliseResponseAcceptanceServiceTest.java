@@ -68,16 +68,54 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void formaliseCCJWhenResponseIsNotAdmissions() {
+        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
+
+        Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.CCJ)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void formaliseSettlementWhenResponseIsNotAdmissions() {
+        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
+
+        Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(FormaliseOption.SETTLEMENT)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void formaliseSettlementWhenNoFormaliseOptionPresent() {
+
+        Claim claim = SampleClaim.getWithDefaultResponse();
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation.builder().build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+    }
+
     @Test
     public void formaliseCCJWithDefendantPaymentIntentionBySetDateAccepted() {
-        Response partAdmissionsResponsePayingBySetDate = getPartAdmissionsResponsePayingBySetDate();
+        Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
 
-        LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) partAdmissionsResponsePayingBySetDate)
+        LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
             .getPaymentIntention()
             .get().getPaymentDate()
             .orElseThrow(IllegalStateException::new);
 
-        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayingBySetDate);
+        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(FormaliseOption.CCJ)
@@ -103,15 +141,15 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseCCJWithDefendantPaymentIntentionByInstalmentsAccepted() {
-        Response partAdmissionResponsePayingByInstalments = getPartAdmissionResponsePayingByInstalments();
+        Response admissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
-        RepaymentPlan repaymentPlanOfDefendant = ((PartAdmissionResponse) partAdmissionResponsePayingByInstalments)
+        RepaymentPlan repaymentPlanOfDefendant = ((PartAdmissionResponse) admissionResponsePayByInstalments)
             .getPaymentIntention()
             .get()
             .getRepaymentPlan()
             .orElseThrow(IllegalStateException::new);
 
-        Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayingByInstalments);
+        Claim claim = SampleClaim.getWithResponse(admissionResponsePayByInstalments);
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(FormaliseOption.CCJ)
@@ -136,9 +174,9 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseCCJWithCourtDeterminedIntentionAccepted() {
-        Response partAdmissionsResponsePayingBySetDate = getPartAdmissionsResponsePayingBySetDate();
+        Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
 
-        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayingBySetDate);
+        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
         PaymentIntention paymentIntention = SamplePaymentIntention.bySetDate();
         LocalDate appliedPaymentDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
@@ -172,9 +210,9 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseCCJWithClaimantPaymentIntentionPresent() {
-        Response partAdmissionsResponsePayingBySetDate = getPartAdmissionsResponsePayingBySetDate();
+        Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
 
-        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayingBySetDate);
+        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
         PaymentIntention paymentIntentionByInstalments = SamplePaymentIntention.instalments();
         RepaymentPlan appliedRepaymentPlan = paymentIntentionByInstalments
@@ -241,12 +279,12 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseSettlementWithDefendantPaymentIntentionBySetDateAccepted() {
-        Response partAdmissionResponsePayingBySetDate = getPartAdmissionsResponsePayingBySetDate();
+        Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
 
-        PaymentIntention paymentIntentionOfDefendant = ((PartAdmissionResponse) partAdmissionResponsePayingBySetDate)
+        PaymentIntention paymentIntentionOfDefendant = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
             .getPaymentIntention().orElseThrow(IllegalStateException::new);
 
-        Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayingBySetDate);
+        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -275,12 +313,12 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseSettlementWithDefendantPaymentIntentionByInstalments() {
-        Response partAdmissionResponsePayingByInstalments = getPartAdmissionResponsePayingByInstalments();
+        Response partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
         PaymentIntention paymentIntentionOfDefendant = ((PartAdmissionResponse)
-            partAdmissionResponsePayingByInstalments).getPaymentIntention().orElseThrow(IllegalStateException::new);
+            partAdmissionResponsePayByInstalments).getPaymentIntention().orElseThrow(IllegalStateException::new);
 
-        Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayingByInstalments);
+        Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayByInstalments);
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -435,13 +473,13 @@ public class FormaliseResponseAcceptanceServiceTest {
         verifyZeroInteractions(offersService);
     }
 
-    private PartAdmissionResponse getPartAdmissionResponsePayingByInstalments() {
+    private PartAdmissionResponse getPartAdmissionResponsePayByInstalments() {
         return SampleResponse
             .PartAdmission.builder()
             .buildWithPaymentOptionInstallments();
     }
 
-    private Response getPartAdmissionsResponsePayingBySetDate() {
+    private Response getPartAdmissionsResponsePayBySetDate() {
         return SampleResponse
             .PartAdmission.builder()
             .buildWithPaymentOptionBySpecifiedDate();
