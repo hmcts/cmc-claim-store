@@ -7,20 +7,17 @@ import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.fromNullableUTCtoLocalZone;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.fromUTC;
 
 @Component
 public class CaseMapper implements Mapper<CCDCase, Claim> {
@@ -52,6 +49,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
             builder.countyCourtJudgmentRequestedAt(claim.getCountyCourtJudgmentRequestedAt());
         }
+
+        claim.getCountyCourtJudgmentIssuedAt().ifPresent(builder::countyCourtJudgmentIssuedAt);
 
         if (claim.getRespondedAt() != null) {
             builder.respondedAt(claim.getRespondedAt());
@@ -92,57 +91,52 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
             .claimData(claimMapper.to(claim.getClaimData()))
             .defendantEmail(claim.getDefendantEmail())
+            .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .build();
     }
 
     @Override
     public Claim from(CCDCase ccdCase) {
 
-        CountyCourtJudgment countyCourtJudgment = null;
+        Claim.ClaimBuilder builder = Claim.builder()
+            .id(ccdCase.getId())
+            .submitterId(ccdCase.getSubmitterId())
+            .letterHolderId(ccdCase.getLetterHolderId())
+            .defendantId(ccdCase.getDefendantId())
+            .externalId(ccdCase.getExternalId())
+            .referenceNumber(ccdCase.getReferenceNumber())
+            .claimData(claimMapper.from(ccdCase.getClaimData()))
+            .createdAt(LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME))
+            .issuedOn(LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE))
+            .responseDeadline(ccdCase.getResponseDeadline())
+            .moreTimeRequested(ccdCase.getMoreTimeRequested() == YES)
+            .submitterEmail(ccdCase.getSubmitterEmail())
+            .respondedAt(fromNullableUTCtoLocalZone(ccdCase.getRespondedAt()))
+            .defendantEmail(ccdCase.getDefendantEmail())
+            .countyCourtJudgmentRequestedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()))
+            .settlementReachedAt(fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()))
+            .countyCourtJudgmentIssuedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt()));
+
         if (ccdCase.getCountyCourtJudgment() != null) {
-            countyCourtJudgment = countyCourtJudgmentMapper.from(ccdCase.getCountyCourtJudgment());
+            builder.countyCourtJudgment(countyCourtJudgmentMapper.from(ccdCase.getCountyCourtJudgment()));
         }
 
-        Response response = null;
         if (ccdCase.getResponse() != null) {
-            response = responseMapper.from(ccdCase.getResponse());
+            builder.response(responseMapper.from(ccdCase.getResponse()));
         }
 
-        Settlement settlement = null;
         if (ccdCase.getSettlement() != null) {
-            settlement = settlementMapper.from(ccdCase.getSettlement());
+            builder.settlement(settlementMapper.from(ccdCase.getSettlement()));
         }
 
-        return new Claim(
-            ccdCase.getId(),
-            ccdCase.getSubmitterId(),
-            ccdCase.getLetterHolderId(),
-            ccdCase.getDefendantId(),
-            ccdCase.getExternalId(),
-            ccdCase.getReferenceNumber(),
-            claimMapper.from(ccdCase.getClaimData()),
-            fromUTC(LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME)),
-            LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE),
-            ccdCase.getResponseDeadline(),
-            ccdCase.getMoreTimeRequested() == YES,
-            ccdCase.getSubmitterEmail(),
-            fromNullableUTCtoLocalZone(ccdCase.getRespondedAt()),
-            response,
-            ccdCase.getDefendantEmail(),
-            countyCourtJudgment,
-            fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()),
-            settlement,
-            fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()),
-            mapSealedClaimDocument(ccdCase.getSealedClaimDocument()),
-            null,
-            null,
-            null,
-            null,
-            null
-        );
-    }
+        if (ccdCase.getFeatures() != null) {
+            builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
+        }
 
-    private URI mapSealedClaimDocument(CCDDocument sealedClaimDocumentUri) {
-        return sealedClaimDocumentUri != null ? URI.create(sealedClaimDocumentUri.getDocumentUrl()) : null;
+        if (ccdCase.getSealedClaimDocument() != null) {
+            builder.sealedClaimDocument(URI.create(ccdCase.getSealedClaimDocument().getDocumentUrl()));
+        }
+
+        return builder.build();
     }
 }
