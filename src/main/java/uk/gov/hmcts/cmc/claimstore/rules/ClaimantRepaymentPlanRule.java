@@ -15,9 +15,25 @@ import java.time.LocalDate;
 @Service
 public class ClaimantRepaymentPlanRule {
 
+    private static final String INVALID_RESPONSE_TYPE =
+        "Defendant response must be part or full admission";
+    private static final String INVALID_DEFENDANT_REPAYMENT_TYPE =
+        "Expected defendant response to be installments or set date";
+    private static final String EXPECTED_PAYMENT_INTENTION =
+        "Expected payment intention to be present on defendant response";
+    private static final String EXPECTED_REPAYMENT_PLAN =
+        "Expected repayment plan to be present on defendant response";
+    private static final String EXPECTED_DEFENDANT_RESPONSE =
+        "Expected defendant response to be present";
+    private static final String INSTALLMENT_DATE_MUST_BE_AFTER =
+        "Claimant first installment date must be after %s";
+    private static final String INSTALLMENT_DATE_MUST_BE_ONE_MONTH =
+        "Claimant first installment date must be at least one month from now";
+
+
     public void assertClaimantRepaymentPlanIsValid(Claim claim, RepaymentPlan proposedPlan) {
         Response response = claim.getResponse().orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-            ClaimantInvalidRepaymentPlanException.EXPECTED_DEFENDANT_RESPONSE));
+            EXPECTED_DEFENDANT_RESPONSE));
 
         switch (getPaymentOptionForResponse(response)) {
             case INSTALMENTS:
@@ -28,7 +44,7 @@ public class ClaimantRepaymentPlanRule {
                 break;
             default:
                 throw new ClaimantInvalidRepaymentPlanException(
-                    ClaimantInvalidRepaymentPlanException.INVALID_DEFENDANT_REPAYMENT_TYPE);
+                    INVALID_DEFENDANT_REPAYMENT_TYPE);
         }
     }
 
@@ -40,15 +56,14 @@ public class ClaimantRepaymentPlanRule {
 
         if (claimantPlan.getFirstPaymentDate().isBefore(thresholdDate)) {
             throw new ClaimantInvalidRepaymentPlanException(
-                "Claimant first installment date must be before " + thresholdDate);
+                String.format(INSTALLMENT_DATE_MUST_BE_AFTER, thresholdDate));
         }
     }
 
     private void assertInstallmentsIsValidAgainstSetDate(RepaymentPlan claimantPlan) {
         LocalDate oneMonthFromNow = CalculateMonthIncrement.calculateMonthlyIncrement(LocalDate.now());
         if (claimantPlan.getFirstPaymentDate().isBefore(oneMonthFromNow)) {
-            throw new ClaimantInvalidRepaymentPlanException(
-                "Claimant first installment date must be at least one month from now");
+            throw new ClaimantInvalidRepaymentPlanException(INSTALLMENT_DATE_MUST_BE_ONE_MONTH);
         }
     }
 
@@ -57,13 +72,13 @@ public class ClaimantRepaymentPlanRule {
             case PART_ADMISSION:
                 return ((PartAdmissionResponse) response).getPaymentIntention()
                     .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        ClaimantInvalidRepaymentPlanException.EXPECTED_PAYMENT_INTENTION))
+                        EXPECTED_PAYMENT_INTENTION))
                     .getPaymentOption();
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response).getPaymentIntention().getPaymentOption();
             default:
                 throw new ClaimantInvalidRepaymentPlanException(
-                    ClaimantInvalidRepaymentPlanException.INVALID_RESPONSE_TYPE);
+                    INVALID_RESPONSE_TYPE);
         }
     }
 
@@ -73,19 +88,19 @@ public class ClaimantRepaymentPlanRule {
                 return ((PartAdmissionResponse) response)
                     .getPaymentIntention()
                     .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        ClaimantInvalidRepaymentPlanException.EXPECTED_PAYMENT_INTENTION))
+                        EXPECTED_PAYMENT_INTENTION))
                     .getRepaymentPlan()
                     .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        ClaimantInvalidRepaymentPlanException.EXPECTED_REPAYMENT_PLAN));
+                        EXPECTED_REPAYMENT_PLAN));
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response)
                     .getPaymentIntention()
                     .getRepaymentPlan()
                     .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        ClaimantInvalidRepaymentPlanException.EXPECTED_REPAYMENT_PLAN));
+                        EXPECTED_REPAYMENT_PLAN));
             default:
                 throw new ClaimantInvalidRepaymentPlanException(
-                    ClaimantInvalidRepaymentPlanException.INVALID_RESPONSE_TYPE);
+                    INVALID_RESPONSE_TYPE);
 
         }
     }

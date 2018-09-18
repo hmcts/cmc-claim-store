@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantInvalidRepaymentPlanException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
@@ -15,9 +16,16 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,7 +46,7 @@ public class CountyCourtJudgmentServiceTest {
 
     private CountyCourtJudgmentService countyCourtJudgmentService;
 
-    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
+    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule = new ClaimantRepaymentPlanRule();
 
     @Mock
     private ClaimService claimService;
@@ -140,5 +148,29 @@ public class CountyCourtJudgmentServiceTest {
             .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+    }
+
+    @Test(expected = ClaimantInvalidRepaymentPlanException.class)
+    public void saveThrowsExceptionWhenClaimantRepaymentPlanStartDateDoesNotMeetCriteria() {
+
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
+            .withRepaymentPlan(
+                SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build())
+            .build();
+
+        Claim invalidClaim = SampleClaim.getWithResponse(
+            PartAdmissionResponse.builder()
+                .paymentIntention(SamplePaymentIntention.builder()
+                    .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
+                        SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusMonths(2)).build())
+                    .build())
+                .build()
+        );
+
+        when(claimService.getClaimByExternalId(eq(invalidClaim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(invalidClaim);
+
+        countyCourtJudgmentService.save(USER_ID, ccj, invalidClaim.getExternalId(), AUTHORISATION, true);
+
     }
 }

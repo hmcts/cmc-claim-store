@@ -134,6 +134,7 @@ public class ClaimantRepaymentPlanRuleTest {
                 SamplePaymentIntention.builder().paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(null).build()
             ).build());
 
+
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
             SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
     }
