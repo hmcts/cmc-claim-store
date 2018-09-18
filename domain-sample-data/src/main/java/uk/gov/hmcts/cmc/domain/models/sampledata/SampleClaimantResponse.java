@@ -1,10 +1,17 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 
 import java.math.BigDecimal;
+
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 
 public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>> {
 
@@ -19,6 +26,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
         private BigDecimal amountPaid = BigDecimal.TEN;
+        private FormaliseOption formaliseOption = REFER_TO_JUDGE;
 
         public static ClaimantResponseAcceptation builder() {
             return new ClaimantResponseAcceptation();
@@ -29,10 +37,64 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return this;
         }
 
+        public ClaimantResponseAcceptation withFormaliseOption(FormaliseOption formaliseOption) {
+            this.formaliseOption = formaliseOption;
+            return this;
+        }
+
         @Override
         public ClaimantResponse build() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
+                .formaliseOption(formaliseOption)
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptationIssueCCJWithDefendantPaymentIntention() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(CCJ)
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptationIssueCCJWithClaimantPaymentIntention() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(CCJ)
+                .claimantPaymentIntention(bySetDate())
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptationIssueCCJWithCourtDetermination() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(CCJ)
+                .claimantPaymentIntention(bySetDate())
+                .courtDetermination(SampleCourtDetermination.bySetDate())
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptationIssueSettlementWithDefendantPaymentIntention() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(SETTLEMENT)
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptationIssueSettlementWithClaimantPaymentIntention() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(SETTLEMENT)
+                .claimantPaymentIntention(bySetDate())
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptationIssueSettlementWithCourtDetermination() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(SETTLEMENT)
+                .claimantPaymentIntention(bySetDate())
+                .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();
         }
     }

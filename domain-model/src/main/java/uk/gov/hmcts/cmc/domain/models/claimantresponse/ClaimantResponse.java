@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     @JsonSubTypes.Type(value = ResponseAcceptation.class, name = "acceptation"),
     @JsonSubTypes.Type(value = ResponseRejection.class, name = "rejection")
 })
+@Getter
 @EqualsAndHashCode
 public abstract class ClaimantResponse {
 
@@ -25,10 +27,6 @@ public abstract class ClaimantResponse {
 
     public ClaimantResponse(BigDecimal amountPaid) {
         this.amountPaid = amountPaid;
-    }
-
-    public BigDecimal getAmountPaid() {
-        return amountPaid;
     }
 
     @Override

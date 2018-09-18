@@ -127,8 +127,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
-        claimRepository.saveClaimantResponse(claimId, jsonMapper.toJson(response));
+    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
+        claimRepository.saveClaimantResponse(claim.getExternalId(), jsonMapper.toJson(response));
     }
 
     @Override

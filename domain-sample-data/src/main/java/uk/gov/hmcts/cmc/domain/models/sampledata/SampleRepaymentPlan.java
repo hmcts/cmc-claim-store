@@ -32,6 +32,10 @@ public class SampleRepaymentPlan {
     }
 
     public RepaymentPlan build() {
-        return new RepaymentPlan(instalmentAmount, firstPaymentDate, paymentSchedule);
+        return RepaymentPlan.builder()
+            .paymentSchedule(paymentSchedule)
+            .firstPaymentDate(firstPaymentDate)
+            .instalmentAmount(instalmentAmount)
+            .build();
     }
 }
