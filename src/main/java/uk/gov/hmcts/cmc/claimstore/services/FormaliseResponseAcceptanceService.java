@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -25,6 +24,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.COURT;
@@ -47,15 +47,13 @@ public class FormaliseResponseAcceptanceService {
     }
 
     public void formalise(Claim claim, ClaimantResponse claimantResponse, String authorisation) {
-        if (!(claimantResponse instanceof ResponseAcceptation)) {
+        if (ACCEPTATION != claimantResponse.getType()) {
             return;
         }
+
         ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
-        FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption();
-        if (formaliseOption == null) {
-            throw new IllegalArgumentException("formaliseOption must not be null");
-        }
-        switch (formaliseOption) {
+
+        switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;

@@ -96,16 +96,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void formaliseSettlementWhenNoFormaliseOptionPresent() {
-
-        Claim claim = SampleClaim.getWithDefaultResponse();
-
-        ResponseAcceptation responseAcceptation = ResponseAcceptation.builder().build();
-
-        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
-    }
-
     @Test
     public void formaliseCCJWithDefendantPaymentIntentionBySetDateAccepted() {
         Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();

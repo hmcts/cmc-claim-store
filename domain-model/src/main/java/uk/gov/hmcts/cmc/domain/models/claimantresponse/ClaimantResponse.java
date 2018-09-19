@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ResponseAcceptation.class, name = "acceptation"),
     @JsonSubTypes.Type(value = ResponseRejection.class, name = "rejection")
@@ -20,13 +20,16 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Getter
 @EqualsAndHashCode
 public abstract class ClaimantResponse {
+    @NotNull
+    private final ClaimantResponseType type;
 
     @NotNull
     @Min(value = 0)
     private final BigDecimal amountPaid;
 
-    public ClaimantResponse(BigDecimal amountPaid) {
+    public ClaimantResponse(ClaimantResponseType type, BigDecimal amountPaid) {
         this.amountPaid = amountPaid;
+        this.type = type;
     }
 
     @Override

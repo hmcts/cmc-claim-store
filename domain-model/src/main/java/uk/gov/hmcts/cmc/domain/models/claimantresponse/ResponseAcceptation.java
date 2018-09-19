@@ -35,7 +35,7 @@ public class ResponseAcceptation extends ClaimantResponse {
         PaymentIntention claimantPaymentIntention,
         FormaliseOption formaliseOption
     ) {
-        super(amountPaid);
+        super(ClaimantResponseType.ACCEPTATION, amountPaid);
         this.courtDetermination = courtDetermination;
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;

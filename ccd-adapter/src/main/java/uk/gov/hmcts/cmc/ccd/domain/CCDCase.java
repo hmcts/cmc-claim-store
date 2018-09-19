@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 
@@ -35,4 +36,5 @@ public class CCDCase {
     private CCDDocument sealedClaimDocument;
     private String features;
     private LocalDateTime countyCourtJudgmentIssuedAt;
+    private CCDClaimantResponse claimantResponse;
 }
