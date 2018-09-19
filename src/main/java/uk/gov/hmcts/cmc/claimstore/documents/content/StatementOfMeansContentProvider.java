@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -73,6 +74,21 @@ public class StatementOfMeansContentProvider {
                 .map(this::createIncome)
                 .collect(toList())
         );
+
+        Optional.ofNullable(statementOfMeans.getLivingArrangement())
+            .ifPresent(
+                livingArrangement -> contentBuilder.put("livingArrangements", livingArrangement.getDescription())
+            );
+
+        Optional.ofNullable(statementOfMeans.getPensionerStatus())
+            .ifPresent(
+                pensionerStatus -> contentBuilder.put("pensionerStatus", pensionerStatus.getDescription())
+            );
+
+        Optional.ofNullable(statementOfMeans.getDisabilityStatus())
+            .ifPresent(
+                disabilityStatus -> contentBuilder.put("disabilityStatus", disabilityStatus.getDescription())
+            );
 
         return contentBuilder.build();
     }

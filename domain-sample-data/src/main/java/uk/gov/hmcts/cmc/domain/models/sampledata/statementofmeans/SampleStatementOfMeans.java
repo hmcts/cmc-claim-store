@@ -5,12 +5,15 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingArrangement;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PensionerStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
@@ -76,6 +79,9 @@ public class SampleStatementOfMeans {
                 .amount(TEN)
                 .build()
             ))
+            .livingArrangement(LivingArrangement.SINGLE_OVER_25)
+            .pensionerStatus(PensionerStatus.SINGLE)
+            .disabilityStatus(DisabilityStatus.SINGLE)
             .build();
     }
 
