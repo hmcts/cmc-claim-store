@@ -100,7 +100,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
+    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
         throw new NotImplementedException("Save claimant response not implemented on CCD");
     }
 

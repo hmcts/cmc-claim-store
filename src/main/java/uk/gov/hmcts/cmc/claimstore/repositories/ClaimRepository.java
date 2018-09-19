@@ -177,10 +177,10 @@ public interface ClaimRepository {
         "UPDATE CLAIM SET "
             + "claimant_response = :response::JSONB, "
             + "claimant_responded_at = now() AT TIME ZONE 'utc' "
-            + "WHERE id = :id"
+            + "WHERE external_id = :externalId"
     )
     void saveClaimantResponse(
-        @Bind("id") long id,
+        @Bind("externalId") String externalId,
         @Bind("response") String response
     );
 
