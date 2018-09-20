@@ -14,8 +14,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = ResponseAcceptation.class, name = "acceptation"),
-    @JsonSubTypes.Type(value = ResponseRejection.class, name = "rejection")
+    @JsonSubTypes.Type(value = ResponseAcceptation.class, name = "ACCEPTATION"),
+    @JsonSubTypes.Type(value = ResponseRejection.class, name = "REJECTION")
 })
 @Getter
 @EqualsAndHashCode
