@@ -7,10 +7,10 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.hmcts.cmc.domain.constraints.EachNotNull;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -51,14 +51,11 @@ public class StatementOfMeans {
     @EachNotNull
     private final List<CourtOrder> courtOrders;
 
-    // @NotNull
-    private final LivingArrangement livingArrangement;
+    @NotNull
+    private final LivingPartner partner;
 
     // @NotNull
-    private final PensionerStatus pensionerStatus;
-
-    // @NotNull
-    private final DisabilityStatus disabilityStatus;
+    private final DisabilityStatus disability;
 
     @NotBlank
     private final String reason;
@@ -72,9 +69,8 @@ public class StatementOfMeans {
         List<Income> incomes,
         List<Expense> expenses,
         List<CourtOrder> courtOrders,
-        LivingArrangement livingArrangement,
-        PensionerStatus pensionerStatus,
-        DisabilityStatus disabilityStatus,
+        LivingPartner partner,
+        DisabilityStatus disability,
         String reason
     ) {
         this.residence = residence;
@@ -85,9 +81,8 @@ public class StatementOfMeans {
         this.incomes = incomes;
         this.expenses = expenses;
         this.courtOrders = courtOrders;
-        this.livingArrangement = livingArrangement;
-        this.pensionerStatus = pensionerStatus;
-        this.disabilityStatus = disabilityStatus;
+        this.partner = partner;
+        this.disability = disability;
         this.reason = reason;
     }
 
@@ -123,16 +118,12 @@ public class StatementOfMeans {
         return courtOrders != null ? courtOrders : emptyList();
     }
 
-    public LivingArrangement getLivingArrangement() {
-        return livingArrangement;
-    }
-
-    public PensionerStatus getPensionerStatus() {
-        return pensionerStatus;
+    public LivingPartner getPartner() {
+        return partner;
     }
 
     public DisabilityStatus getDisabilityStatus() {
-        return disabilityStatus;
+        return disability;
     }
 
     public String getReason() {

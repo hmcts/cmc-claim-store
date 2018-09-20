@@ -75,14 +75,9 @@ public class StatementOfMeansContentProvider {
                 .collect(toList())
         );
 
-        Optional.ofNullable(statementOfMeans.getLivingArrangement())
+        Optional.ofNullable(statementOfMeans.getPartner())
             .ifPresent(
-                livingArrangement -> contentBuilder.put("livingArrangements", livingArrangement.getDescription())
-            );
-
-        Optional.ofNullable(statementOfMeans.getPensionerStatus())
-            .ifPresent(
-                pensionerStatus -> contentBuilder.put("pensionerStatus", pensionerStatus.getDescription())
+                partner -> contentBuilder.put("partner", partner)
             );
 
         Optional.ofNullable(statementOfMeans.getDisabilityStatus())

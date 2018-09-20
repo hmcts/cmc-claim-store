@@ -90,6 +90,12 @@
       "amountOwed": 10,
       "monthlyInstalmentAmount": 1
     }],
+    "partner": {
+      "declared": true,
+      "disability": "NO",
+      "ageGroup": "ADULT"
+    },
+    "disability": "YES",
     "reason": "My reason"
   }
 }

@@ -10,10 +10,9 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingArrangement;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.PensionerStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
@@ -79,9 +78,12 @@ public class SampleStatementOfMeans {
                 .amount(TEN)
                 .build()
             ))
-            .livingArrangement(LivingArrangement.SINGLE_OVER_25)
-            .pensionerStatus(PensionerStatus.SINGLE)
-            .disabilityStatus(DisabilityStatus.SINGLE)
+            .partner(LivingPartner.builder()
+                .declared(true)
+                .ageGroup(LivingPartner.AgeGroupType.ADULT)
+                .disability(DisabilityStatus.NO)
+                .build())
+            .disability(DisabilityStatus.YES)
             .build();
     }
 

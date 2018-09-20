@@ -21,9 +21,12 @@ public class OtherDependants {
     @NotBlank
     private final String details;
 
-    public OtherDependants(Integer numberOfPeople, String details) {
+    private final boolean anyDisabled;
+
+    public OtherDependants(Integer numberOfPeople, String details, boolean anyDisabled) {
         this.numberOfPeople = numberOfPeople;
         this.details = details;
+        this.anyDisabled = anyDisabled;
     }
 
     public Integer getNumberOfPeople() {
@@ -32,6 +35,10 @@ public class OtherDependants {
 
     public String getDetails() {
         return details;
+    }
+
+    public boolean areAnyDisabled() {
+        return this.anyDisabled;
     }
 
     @Override

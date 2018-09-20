@@ -69,7 +69,8 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
         return new Dependant(
             children,
             ccdDependant.getNumberOfMaintainedChildren(),
-            otherDependants
+            otherDependants,
+            false
         );
     }
 
@@ -78,7 +79,7 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
             return null;
         }
 
-        return new OtherDependants(ccdOtherDependants.getNumberOfPeople(), ccdOtherDependants.getDetails());
+        return new OtherDependants(ccdOtherDependants.getNumberOfPeople(), ccdOtherDependants.getDetails(), false);
     }
 
 }
