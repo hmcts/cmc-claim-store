@@ -58,7 +58,7 @@ public class Claim {
     private final LocalDateTime countyCourtJudgmentIssuedAt;
     private final LocalDate directionsQuestionnaireDeadline;
     @DateNotInTheFuture
-    private final LocalDate moneyReceived;
+    private final LocalDate moneyReceivedOn;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -88,7 +88,7 @@ public class Claim {
         ClaimantResponse claimantResponse,
         LocalDateTime countyCourtJudgmentIssuedAt,
         LocalDate directionsQuestionnaireDeadline,
-        LocalDate moneyReceived
+        LocalDate moneyReceivedOn
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -115,7 +115,7 @@ public class Claim {
         this.claimantResponse = claimantResponse;
         this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
-        this.moneyReceived = moneyReceived;
+        this.moneyReceivedOn = moneyReceivedOn;
     }
 
     public Long getId() {
@@ -238,7 +238,7 @@ public class Claim {
         return directionsQuestionnaireDeadline;
     }
 
-    public LocalDate getMoneyReceived() { return moneyReceived; }
+    public LocalDate getMoneyReceivedOn() { return moneyReceivedOn; }
 
     @Override
     public String toString() {

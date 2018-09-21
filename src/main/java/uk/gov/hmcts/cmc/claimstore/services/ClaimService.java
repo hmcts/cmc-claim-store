@@ -308,8 +308,8 @@ public class ClaimService {
         }
     }
 
-    public void saveMoneyReceived(Claim claim, LocalDate moneyReceived, String authorisation){
-        caseRepository.saveMoneyReceived(claim, moneyReceived, authorisation);
+    public void saveMoneyReceivedOn(Claim claim, LocalDate moneyReceivedOn, String authorisation){
+        caseRepository.saveMoneyReceivedOn(claim, moneyReceivedOn, authorisation);
     }
 
     private static boolean isFullDefenceWithNoMediation(Response response) {

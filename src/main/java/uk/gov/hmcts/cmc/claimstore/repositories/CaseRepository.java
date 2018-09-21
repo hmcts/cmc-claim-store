@@ -33,7 +33,7 @@ public interface CaseRepository {
 
     void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
-    void saveMoneyReceived(Claim claim, LocalDate moneyReceived, String authorisation);
+    void saveMoneyReceivedOn(Claim claim, LocalDate moneyReceivedOn, String authorisation);
 
     void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
 

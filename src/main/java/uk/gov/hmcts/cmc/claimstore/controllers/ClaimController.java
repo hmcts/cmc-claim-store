@@ -136,10 +136,11 @@ public class ClaimController {
         return claimService.savePrePayment(externalId, authorisation);
     }
 
-    @PutMapping("/{claimReference:" + CLAIM_CITIZEN_REFERENCE_PATTERN + "}/paid-in-full/date-paid/{moneyReceived}")
-    public void moneyReceived(
-        @PathVariable("moneyReceived") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceived,
+    @PutMapping("/{claimReference:" + CLAIM_CITIZEN_REFERENCE_PATTERN + "}/paid-in-full/date-paid/{moneyReceivedOn}")
+    public void moneyReceivedOn(
+        @Valid @NotNull @RequestBody Claim claim,
+        @PathVariable("moneyReceivedOn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceivedOn,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation){
-        claimService.saveMoneyReceived(moneyReceived, authorisation);
+        claimService.saveMoneyReceivedOn(claim, moneyReceivedOn, authorisation);
     }
 }

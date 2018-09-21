@@ -132,8 +132,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveMoneyReceived(Claim claim, LocalDate moneyReceived, String authorization) {
-        claimRepository.saveMoneyReceived(claim.getExternalId(), moneyReceived);
+    public void saveMoneyReceivedOn(Claim claim, LocalDate moneyReceivedOn, String authorization) {
+        claimRepository.saveMoneyReceivedOn(claim.getExternalId(), moneyReceivedOn);
     }
 
     @Override

@@ -1,2 +1,2 @@
 ALTER TABLE claim
-  ADD COLUMN moneyReceived DATE;
+  ADD COLUMN moneyReceivedOn DATE;
