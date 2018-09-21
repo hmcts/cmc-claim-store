@@ -27,18 +27,23 @@ public class ResponseAcceptation extends ClaimantResponse {
     @NotNull
     private final FormaliseOption formaliseOption;
 
+    @NotNull
+    private final DeterminationDecisionType determinationDecisionType;
+
     @Builder
     @JsonCreator
     public ResponseAcceptation(
         BigDecimal amountPaid,
         CourtDetermination courtDetermination,
         PaymentIntention claimantPaymentIntention,
-        FormaliseOption formaliseOption
+        FormaliseOption formaliseOption,
+        DeterminationDecisionType determinationDecisionType
     ) {
         super(amountPaid);
         this.courtDetermination = courtDetermination;
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
+        this.determinationDecisionType = determinationDecisionType;
     }
 
     public Optional<CourtDetermination> getCourtDetermination() {
