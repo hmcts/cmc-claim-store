@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,8 @@ public interface CaseRepository {
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
     void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
+
+    void saveMoneyReceived(Claim claim, LocalDate moneyReceived, String authorisation);
 
     void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
 

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
+import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -56,6 +57,8 @@ public class Claim {
     private final ClaimantResponse claimantResponse;
     private final LocalDateTime countyCourtJudgmentIssuedAt;
     private final LocalDate directionsQuestionnaireDeadline;
+    @DateNotInTheFuture
+    private final LocalDate moneyReceived;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -84,7 +87,8 @@ public class Claim {
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
         LocalDateTime countyCourtJudgmentIssuedAt,
-        LocalDate directionsQuestionnaireDeadline
+        LocalDate directionsQuestionnaireDeadline,
+        LocalDate moneyReceived
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -111,6 +115,7 @@ public class Claim {
         this.claimantResponse = claimantResponse;
         this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
+        this.moneyReceived = moneyReceived;
     }
 
     public Long getId() {
@@ -232,6 +237,8 @@ public class Claim {
     public LocalDate getDirectionsQuestionnaireDeadline() {
         return directionsQuestionnaireDeadline;
     }
+
+    public LocalDate getMoneyReceived() { return moneyReceived; }
 
     @Override
     public String toString() {

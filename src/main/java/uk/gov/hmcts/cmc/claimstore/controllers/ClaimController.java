@@ -15,15 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
+import org.springframework.format.annotation.DateTimeFormat;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_CITIZEN_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
@@ -129,5 +134,12 @@ public class ClaimController {
     public CaseReference preSubmit(@PathVariable("externalId") String externalId,
                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.savePrePayment(externalId, authorisation);
+    }
+
+    @PutMapping("/{claimReference:" + CLAIM_CITIZEN_REFERENCE_PATTERN + "}/paid-in-full/date-paid/{moneyReceived}")
+    public void moneyReceived(
+        @PathVariable("moneyReceived") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceived,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation){
+        claimService.saveMoneyReceived(moneyReceived, authorisation);
     }
 }

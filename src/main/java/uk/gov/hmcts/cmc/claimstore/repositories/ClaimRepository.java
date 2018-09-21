@@ -184,6 +184,16 @@ public interface ClaimRepository {
         @Bind("response") String response
     );
 
+    // Date money received
+    @SqlUpdate(
+        "UPDATE claim SET moneyReceived = :moneyReceived "
+            + "WHERE external_id = :externalId"
+    )
+    void saveMoneyReceived(
+        @Bind("externalId") String externalId,
+        @Bind("moneyReceived") LocalDate moneyReceived
+    );
+
     @SqlUpdate("UPDATE claim SET "
         + " directions_questionnaire_deadline = :dqDeadline"
         + " WHERE external_id = :externalId")

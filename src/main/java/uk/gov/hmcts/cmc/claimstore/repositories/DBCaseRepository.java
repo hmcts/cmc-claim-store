@@ -132,6 +132,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public void saveMoneyReceived(Claim claim, LocalDate moneyReceived, String authorization) {
+        claimRepository.saveMoneyReceived(claim.getExternalId(), moneyReceived);
+    }
+
+    @Override
     public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
         claimRepository.updateDirectionsQuestionnaireDeadline(externalId, dqDeadline);
     }

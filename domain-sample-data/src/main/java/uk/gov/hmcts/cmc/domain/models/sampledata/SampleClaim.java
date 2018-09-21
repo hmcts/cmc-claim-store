@@ -60,6 +60,7 @@ public final class SampleClaim {
     private ClaimantResponse claimantResponse;
     private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
+    private LocalDate moneyReceived;
 
     private SampleClaim() {
     }
@@ -187,7 +188,8 @@ public final class SampleClaim {
             claimantRespondedAt,
             claimantResponse,
             countyCourtJudgmentIssuedAt,
-            directionsQuestionnaireDeadline
+            directionsQuestionnaireDeadline,
+            moneyReceived
         );
     }
 

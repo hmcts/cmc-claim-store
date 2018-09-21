@@ -7,6 +7,8 @@ public final class PathPatterns {
 
     public static final String CLAIM_REFERENCE_PATTERN = "^\\d{3}(?:LR|MC)\\d{3}$";
 
+    public static final String CLAIM_CITIZEN_REFERENCE_PATTERN = "^\\d{3}(?:MC)\\d{3}$";
+
     private PathPatterns() {
         // NO-OP
     }

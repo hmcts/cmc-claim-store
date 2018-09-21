@@ -308,6 +308,10 @@ public class ClaimService {
         }
     }
 
+    public void saveMoneyReceived(Claim claim, LocalDate moneyReceived, String authorisation){
+        caseRepository.saveMoneyReceived(claim, moneyReceived, authorisation);
+    }
+
     private static boolean isFullDefenceWithNoMediation(Response response) {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
             && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
