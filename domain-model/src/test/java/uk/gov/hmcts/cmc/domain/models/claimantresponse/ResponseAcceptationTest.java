@@ -39,6 +39,30 @@ public class ResponseAcceptationTest {
     }
 
     @Test
+    public void shouldBeInvalidWhenFormaliseOptionNotPresent() {
+        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
+            .amountPaid(TEN)
+            .determinationDecisionType(DEFENDANT)
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenDeterminationDecisionTypeNotPresent() {
+        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
+            .amountPaid(TEN)
+            .formaliseOption(REFER_TO_JUDGE)
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
     public void shouldBeInvalidWhenAmountIsNegative() {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
             .amountPaid(BigDecimal.valueOf(-10))
