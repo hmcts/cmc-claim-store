@@ -136,7 +136,7 @@ public class ClaimController {
         return claimService.savePrePayment(externalId, authorisation);
     }
 
-    @PutMapping("/{claimReference:" + CLAIM_CITIZEN_REFERENCE_PATTERN + "}/paid-in-full/date-paid/{moneyReceivedOn}")
+    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full/date-paid/{moneyReceivedOn}")
     public void moneyReceivedOn(
         @Valid @NotNull @RequestBody Claim claim,
         @PathVariable("moneyReceivedOn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceivedOn,
