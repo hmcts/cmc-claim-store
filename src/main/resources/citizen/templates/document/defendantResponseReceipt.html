@@ -281,14 +281,14 @@
       {% if responseType == "PART_ADMISSION" %}
         {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
           <tr>
-            <td>How much money do they admit they owe?</td>
+            <td>How much money have you paid?</td>
             <td>
               <p>{{ amount }}</p>
             </td>
           </tr>
         {% else %}
           <tr>
-            <td>How much money have you paid?</td>
+            <td>How much money do they admit they owe?</td>
             <td>
               <p>{{ amount }}</p>
             </td>
