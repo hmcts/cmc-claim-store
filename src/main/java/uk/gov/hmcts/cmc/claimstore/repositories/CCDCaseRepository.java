@@ -105,6 +105,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public void saveMoneyReceivedOn(Claim claim, LocalDate moneyReceivedOn, String authorisation) {
+        throw new NotImplementedException("Save received to be implemented on CCD");
+    }
+
+    @Override
     public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
         throw new NotImplementedException("We do not implement CCD yet");
     }

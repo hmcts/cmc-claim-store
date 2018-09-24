@@ -185,7 +185,7 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET moneyReceivedOn = :moneyReceivedOn "
+        "UPDATE claim SET money_received_on = :moneyReceivedOn "
             + "WHERE external_id = :externalId"
     )
     void saveMoneyReceivedOn(

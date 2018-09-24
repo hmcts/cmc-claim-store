@@ -35,4 +35,5 @@ public class CCDCase {
     private CCDDocument sealedClaimDocument;
     private String features;
     private LocalDateTime countyCourtJudgmentIssuedAt;
+    private LocalDate moneyReceivedOn;
 }
