@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.0.1.RELEASE'
+def springBootVersion = '2.0.5.RELEASE'
 def springCloudVersion = 'Finchley.RELEASE'
 
 allprojects {

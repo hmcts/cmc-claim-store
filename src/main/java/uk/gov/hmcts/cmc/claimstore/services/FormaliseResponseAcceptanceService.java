@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -50,7 +51,11 @@ public class FormaliseResponseAcceptanceService {
             return;
         }
         ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
-        switch (responseAcceptation.getFormaliseOption()) {
+        FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption();
+        if (formaliseOption == null) {
+            throw new IllegalArgumentException("formaliseOption must not be null");
+        }
+        switch (formaliseOption) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;
