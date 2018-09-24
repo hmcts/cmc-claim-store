@@ -238,7 +238,9 @@ public class Claim {
         return directionsQuestionnaireDeadline;
     }
 
-    public LocalDate getMoneyReceivedOn() { return moneyReceivedOn; }
+    public LocalDate getMoneyReceivedOn() {
+        return moneyReceivedOn;
+    }
 
     @Override
     public String toString() {

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import org.springframework.format.annotation.DateTimeFormat;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -23,12 +22,10 @@ import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_CITIZEN_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
@@ -140,7 +137,7 @@ public class ClaimController {
     public void moneyReceivedOn(
         @Valid @NotNull @RequestBody Claim claim,
         @PathVariable("moneyReceivedOn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceivedOn,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation){
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
         claimService.saveMoneyReceivedOn(claim, moneyReceivedOn, authorisation);
     }
 }

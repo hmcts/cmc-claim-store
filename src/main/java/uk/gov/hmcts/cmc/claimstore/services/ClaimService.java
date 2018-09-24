@@ -308,7 +308,7 @@ public class ClaimService {
         }
     }
 
-    public void saveMoneyReceivedOn(Claim claim, LocalDate moneyReceivedOn, String authorisation){
+    public void saveMoneyReceivedOn(Claim claim, LocalDate moneyReceivedOn, String authorisation) {
         caseRepository.saveMoneyReceivedOn(claim, moneyReceivedOn, authorisation);
     }
 
