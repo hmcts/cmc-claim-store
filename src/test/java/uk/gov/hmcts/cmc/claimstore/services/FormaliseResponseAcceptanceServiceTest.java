@@ -268,7 +268,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH),
-            eq(true));
+            eq(false));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
