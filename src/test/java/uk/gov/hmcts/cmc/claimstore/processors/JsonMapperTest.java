@@ -182,8 +182,6 @@ public class JsonMapperTest {
 
         //then
         Response expected = SampleResponse.FullAdmission.builder().build();
-        System.out.println("Expected: " + expected);
-        System.out.println("Actual: " + output);
         assertThat(output).isEqualTo(expected);
     }
 
