@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.math.BigDecimal;
 
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
 public class CCDResponseRejection {
     private BigDecimal amountPaid;
 
-    private boolean freeMediation;
+    private CCDYesNoOption freeMediationOption;
 
     private String reason;
 }

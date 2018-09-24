@@ -101,12 +101,12 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
-        throw new NotImplementedException("Save claimant response not implemented on CCD");
+        coreCaseDataService.saveClaimantResponse(claim, response, authorization);
     }
 
     @Override
-    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
-        throw new NotImplementedException("We do not implement CCD yet");
+    public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
+        coreCaseDataService.saveDirectionsQuestionnaireDeadline(claim, dqDeadline, authorization);
     }
 
     @Override

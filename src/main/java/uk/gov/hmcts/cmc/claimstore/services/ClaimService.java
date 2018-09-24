@@ -304,7 +304,7 @@ public class ClaimService {
         if (isFullDefenceWithNoMediation(response)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-            caseRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), deadline, authorization);
+            caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
         }
     }
 

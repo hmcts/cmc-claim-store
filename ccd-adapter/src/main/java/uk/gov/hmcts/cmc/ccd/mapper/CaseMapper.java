@@ -55,6 +55,10 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.countyCourtJudgmentRequestedAt(claim.getCountyCourtJudgmentRequestedAt());
         }
 
+        if (claim.getDirectionsQuestionnaireDeadline() != null) {
+            builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
+        }
+
         claim.getCountyCourtJudgmentIssuedAt().ifPresent(builder::countyCourtJudgmentIssuedAt);
 
         if (claim.getRespondedAt() != null) {
@@ -69,6 +73,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         if (claim.getSettlementReachedAt() != null) {
             builder.settlementReachedAt(claim.getSettlementReachedAt());
         }
+
+        claim.getClaimantRespondedAt().ifPresent(builder::claimantRespondedAt);
 
         if (claim.getLetterHolderId() != null) {
             builder.letterHolderId(claim.getLetterHolderId());
@@ -123,7 +129,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .defendantEmail(ccdCase.getDefendantEmail())
             .countyCourtJudgmentRequestedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()))
             .settlementReachedAt(fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()))
-            .countyCourtJudgmentIssuedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt()));
+            .countyCourtJudgmentIssuedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt()))
+            .claimantRespondedAt(fromNullableUTCtoLocalZone(ccdCase.getClaimantRespondedAt()));
 
         if (ccdCase.getCountyCourtJudgment() != null) {
             builder.countyCourtJudgment(countyCourtJudgmentMapper.from(ccdCase.getCountyCourtJudgment()));
@@ -147,6 +154,10 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
         if (ccdCase.getClaimantResponse() != null) {
             builder.claimantResponse(claimantResponseMapper.from(ccdCase.getClaimantResponse()));
+        }
+
+        if (ccdCase.getDirectionsQuestionnaireDeadline() != null) {
+            builder.directionsQuestionnaireDeadline(ccdCase.getDirectionsQuestionnaireDeadline());
         }
 
         return builder.build();

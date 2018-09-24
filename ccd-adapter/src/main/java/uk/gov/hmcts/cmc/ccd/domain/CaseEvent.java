@@ -7,6 +7,8 @@ public enum CaseEvent {
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
     CCJ_ISSUED("CCJIssued"),
     DEFENCE_SUBMITTED("DefenceSubmitted"),
+    DIRECTIONS_QUESTIONNAIRE_DEADLINE_SUBMITTED("DirectionsQuestionnaireDeadlineSubmitted"),
+    CLAIMANT_RESPONSE_SUBMITTED("ClaimantResponseSubmitted"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),

@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -58,6 +60,7 @@ public class CoreCaseDataService {
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
+    private final ClaimantResponseMapper claimantResponseMapper;
     private final UserService userService;
     private final JsonMapper jsonMapper;
     private final ReferenceNumberService referenceNumberService;
@@ -73,6 +76,7 @@ public class CoreCaseDataService {
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
+        ClaimantResponseMapper claimantResponseMapper,
         UserService userService,
         JsonMapper jsonMapper,
         ReferenceNumberService referenceNumberService,
@@ -85,6 +89,7 @@ public class CoreCaseDataService {
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
+        this.claimantResponseMapper = claimantResponseMapper;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.referenceNumberService = referenceNumberService;
@@ -202,6 +207,20 @@ public class CoreCaseDataService {
         ccdCase.setResponse(responseMapper.to(response));
         ccdCase.setDefendantEmail(defendantEmail);
         ccdCase.setRespondedAt(nowInUTC());
+
+        return update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+    }
+
+
+    public CaseDetails saveClaimantResponse(
+        Claim claim,
+        ClaimantResponse response,
+        String authorisation
+    ) {
+
+        CCDCase ccdCase = caseMapper.to(claim);
+        ccdCase.setClaimantResponse(claimantResponseMapper.to(response));
+        ccdCase.setClaimantRespondedAt(nowInUTC());
 
         return update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
@@ -423,5 +442,12 @@ public class CoreCaseDataService {
         CCDCase ccdCase = jsonMapper.convertValue(caseData, CCDCase.class);
 
         return caseMapper.from(ccdCase);
+    }
+
+    public void saveDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorisation) {
+        CCDCase ccdCase = caseMapper.to(claim);
+        ccdCase.setDirectionsQuestionnaireDeadline(dqDeadline);
+
+        update(authorisation, ccdCase, DEFENCE_SUBMITTED);
     }
 }

@@ -37,4 +37,6 @@ public class CCDCase {
     private String features;
     private LocalDateTime countyCourtJudgmentIssuedAt;
     private CCDClaimantResponse claimantResponse;
+    private LocalDateTime claimantRespondedAt;
+    private LocalDate directionsQuestionnaireDeadline;
 }

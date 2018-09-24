@@ -39,6 +39,7 @@ public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, Claim
                 ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
                 builder.claimantResponseType(CCDClaimantResponseType.REJECTION)
                     .responseRejection(responseRejectionMapper.to(responseRejection));
+                break;
             default:
                 throw new MappingException("Invalid claimant response type " + claimantResponse.getType());
         }

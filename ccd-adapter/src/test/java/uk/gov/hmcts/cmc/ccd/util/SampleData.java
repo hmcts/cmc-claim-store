@@ -18,13 +18,23 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPayment;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount;
@@ -301,6 +311,54 @@ public class SampleData {
         return CCDResponse.builder()
             .responseType(CCDResponseType.FULL_DEFENCE)
             .fullDefenceResponse(getFullDefenceResponse())
+            .build();
+    }
+
+    public static CCDClaimantResponse getCCDClaimantResponse(CCDFormaliseOption formaliseOption) {
+        return CCDClaimantResponse.builder()
+            .claimantResponseType(CCDClaimantResponseType.ACCEPTATION)
+            .responseAcceptation(getResponseAcceptation(formaliseOption))
+            .build();
+    }
+
+    public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntention())
+            .courtDetermination(getCCDCourtDetermination())
+            .formaliseOption(formaliseOption)
+            .build();
+    }
+
+    public static CCDResponseRejection getResponseRejection() {
+        return CCDResponseRejection.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .freeMediationOption(CCDYesNoOption.YES)
+            .reason("Rejection Reason")
+            .build();
+    }
+
+    private static CCDCourtDetermination getCCDCourtDetermination() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtCalculatedPaymentIntention(getCCDPaymentIntention())
+            .build();
+    }
+
+    private static CCDPaymentIntention getCCDPaymentIntention() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.of(2017, 10, 12))
+            .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
+            .repaymentPlan(getCCDRepaymentplan())
+            .build();
+    }
+
+    private static CCDRepaymentPlan getCCDRepaymentplan() {
+        return CCDRepaymentPlan.builder()
+            .firstPaymentDate(LocalDate.of(2017, 10, 12))
+            .instalmentAmount(BigDecimal.valueOf(123.98))
+            .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
+            .completionDate(LocalDate.of(2018, 10, 12))
             .build();
     }
 
