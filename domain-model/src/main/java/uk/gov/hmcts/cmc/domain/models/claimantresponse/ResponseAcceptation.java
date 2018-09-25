@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import java.math.BigDecimal;
 import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -24,10 +23,8 @@ public class ResponseAcceptation extends ClaimantResponse {
     @Valid
     private final PaymentIntention claimantPaymentIntention;
 
-    @NotNull
     private final FormaliseOption formaliseOption;
 
-    @NotNull
     private final DeterminationDecisionType determinationDecisionType;
 
     @Builder
