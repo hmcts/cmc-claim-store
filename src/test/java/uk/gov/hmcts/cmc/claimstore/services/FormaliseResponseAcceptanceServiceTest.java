@@ -73,6 +73,22 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
     }
 
+
+    @Test(expected = IllegalArgumentException.class)
+    public void formaliseShouldThrowErrorWhenDeterminationDecisionTypeIsMissing() {
+        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
+
+        Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(CCJ)
+            .determinationDecisionType(null)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+    }
+
     @Test(expected = IllegalStateException.class)
     public void formaliseCCJWhenResponseIsNotAdmissions() {
         Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
