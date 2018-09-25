@@ -312,5 +312,10 @@ public final class SampleClaim {
         this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
+
+    public SampleClaim withMoneyReceivedOn(LocalDate moneyReceivedOn) {
+        this.moneyReceivedOn = moneyReceivedOn;
+        return this;
+    }
 }
 
