@@ -15,19 +15,19 @@ public class SampleCourtDetermination {
 
     public static CourtDetermination immediately() {
         return builder()
-            .courtCalculatedPaymentIntention(SamplePaymentIntention.immediately())
+            .courtDecision(SamplePaymentIntention.immediately())
             .build();
     }
 
     public static CourtDetermination bySetDate() {
         return builder()
-            .courtCalculatedPaymentIntention(SamplePaymentIntention.bySetDate())
+            .courtDecision(SamplePaymentIntention.bySetDate())
             .build();
     }
 
     public static CourtDetermination instalments() {
         return builder()
-            .courtCalculatedPaymentIntention(SamplePaymentIntention.instalments())
+            .courtDecision(SamplePaymentIntention.instalments())
             .build();
     }
 }

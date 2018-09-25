@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -18,14 +19,21 @@ public class CourtDetermination {
 
     @NotNull
     @Valid
-    private final PaymentIntention courtCalculatedPaymentIntention;
+    private final PaymentIntention courtDecision;
 
     private final String rejectionReason;
 
+    @NotNull
+    private final BigDecimal disposableIncome;
+
     @Builder
-    public CourtDetermination(PaymentIntention courtCalculatedPaymentIntention, String rejectionReason) {
-        this.courtCalculatedPaymentIntention = courtCalculatedPaymentIntention;
+    public CourtDetermination(PaymentIntention courtDecision,
+                              String rejectionReason,
+                              BigDecimal disposableIncome
+    ) {
+        this.courtDecision = courtDecision;
         this.rejectionReason = rejectionReason;
+        this.disposableIncome = disposableIncome;
     }
 
     public Optional<String> getRejectionReason() {

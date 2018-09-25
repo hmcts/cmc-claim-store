@@ -194,7 +194,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .builder()
             .courtDetermination(CourtDetermination
                 .builder()
-                .courtCalculatedPaymentIntention(paymentIntention)
+                .courtDecision(paymentIntention)
                 .build())
             .formaliseOption(CCJ)
             .determinationDecisionType(COURT)
@@ -370,7 +370,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .builder()
             .courtDetermination(CourtDetermination
                 .builder()
-                .courtCalculatedPaymentIntention(paymentIntention)
+                .courtDecision(paymentIntention)
                 .build())
             .formaliseOption(SETTLEMENT)
             .determinationDecisionType(COURT)

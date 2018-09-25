@@ -182,7 +182,7 @@ public class FormaliseResponseAcceptanceService {
             case COURT:
                 return responseAcceptation
                     .getCourtDetermination().orElseThrow(IllegalStateException::new)
-                    .getCourtCalculatedPaymentIntention();
+                    .getCourtDecision();
             default:
                 throw new IllegalStateException("Invalid determination decision type " + determinationDecisionType);
         }
