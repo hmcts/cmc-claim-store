@@ -5,7 +5,7 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullAndPartAdmissionStaffEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService.wrapInMap;
 
-public class FullAndPartAdmissionStaffEmailContentProviderTest {
+public class DefendantAdmissionStaffEmailContentProviderTest {
 
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
 
@@ -26,11 +26,11 @@ public class FullAndPartAdmissionStaffEmailContentProviderTest {
 
     private StaffEmailTemplates templates = new StaffEmailTemplates();
 
-    private FullAndPartAdmissionStaffEmailContentProvider service;
+    private DefendantAdmissionStaffEmailContentProvider service;
 
     @Before
     public void beforeEachTest() {
-        service = new FullAndPartAdmissionStaffEmailContentProvider(
+        service = new DefendantAdmissionStaffEmailContentProvider(
             templateService,
             templates
         );

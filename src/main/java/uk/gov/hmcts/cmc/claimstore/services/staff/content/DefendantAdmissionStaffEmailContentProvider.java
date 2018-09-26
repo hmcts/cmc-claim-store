@@ -10,14 +10,14 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
 import java.util.Map;
 
 @Service
-public class FullAndPartAdmissionStaffEmailContentProvider
+public class DefendantAdmissionStaffEmailContentProvider
     implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
     private final StaffEmailTemplates emailTemplates;
 
     @Autowired
-    public FullAndPartAdmissionStaffEmailContentProvider(
+    public DefendantAdmissionStaffEmailContentProvider(
         TemplateService templateService,
         StaffEmailTemplates emailTemplates
     ) {
@@ -28,8 +28,8 @@ public class FullAndPartAdmissionStaffEmailContentProvider
     @Override
     public EmailContent createContent(Map<String, Object> input) {
         return new EmailContent(
-            evaluateTemplate(emailTemplates.getFullAdmissionResponseEmailSubject(), input),
-            evaluateTemplate(emailTemplates.getFullAdmissionResponseEmailBody(), input)
+            evaluateTemplate(emailTemplates.getDefendantAdmissionResponseEmailSubject(), input),
+            evaluateTemplate(emailTemplates.getDefendantAdmissionResponseEmailBody(), input)
         );
     }
 

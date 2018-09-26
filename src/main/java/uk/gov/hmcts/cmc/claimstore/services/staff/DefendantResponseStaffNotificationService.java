@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullAndPartAdmissionStaffEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -35,7 +35,7 @@ public class DefendantResponseStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
     private final FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider;
-    private final FullAndPartAdmissionStaffEmailContentProvider fullAndPartAdmissionStaffEmailContentProvider;
+    private final DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
 
     @Autowired
@@ -43,12 +43,12 @@ public class DefendantResponseStaffNotificationService {
         EmailService emailService,
         StaffEmailProperties emailProperties,
         FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
-        FullAndPartAdmissionStaffEmailContentProvider fullAndPartAdmissionStaffEmailContentProvider,
+        DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider,
         DefendantResponseReceiptService defendantResponseReceiptService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;
-        this.fullAndPartAdmissionStaffEmailContentProvider = fullAndPartAdmissionStaffEmailContentProvider;
+        this.defendantAdmissionStaffEmailContentProvider = defendantAdmissionStaffEmailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
@@ -60,7 +60,7 @@ public class DefendantResponseStaffNotificationService {
         EmailContent emailContent;
 
         emailContent = isFullAdmission(responseType) || isPartAdmission(responseType)
-            ? fullAndPartAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
+            ? defendantAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
             : fullDefenceStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail));
 
         emailService.sendEmail(
@@ -74,11 +74,11 @@ public class DefendantResponseStaffNotificationService {
         );
     }
 
-    private boolean isPartAdmission(ResponseType responseType) {
+    private static boolean isPartAdmission(ResponseType responseType) {
         return responseType == PART_ADMISSION;
     }
 
-    private boolean isFullAdmission(ResponseType responseType) {
+    private static boolean isFullAdmission(ResponseType responseType) {
         return responseType == FULL_ADMISSION;
     }
 
@@ -88,7 +88,6 @@ public class DefendantResponseStaffNotificationService {
     ) {
         Map<String, Object> map = new HashMap<>();
 
-        System.out.println("In wrapInMap - 1");
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         map.put("claim", claim);
         map.put("response", response);
@@ -97,12 +96,8 @@ public class DefendantResponseStaffNotificationService {
             .getDefendant()
             .getMobilePhone()
             .orElse(null));
-        map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-        map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
 
-        System.out.println("In wrapInMap - 2");
-
-        if (response.getResponseType() == FULL_ADMISSION) {
+        if (isFullAdmission(response.getResponseType())) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
             map.put("responseType", "full admission");
             map.put("paymentOption", fullAdmissionResponse.getPaymentIntention().getPaymentOption());
@@ -110,8 +105,7 @@ public class DefendantResponseStaffNotificationService {
                 .getPaymentOption().getDescription().toLowerCase());
         }
 
-
-        if (response.getResponseType() == PART_ADMISSION) {
+        if (isPartAdmission(response.getResponseType())) {
             PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
             map.put("responseType", "partial admission");
             partAdmissionResponse.getPaymentIntention().ifPresent(paymentIntention ->
