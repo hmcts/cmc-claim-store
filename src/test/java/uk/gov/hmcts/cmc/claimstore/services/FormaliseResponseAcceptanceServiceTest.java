@@ -10,11 +10,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -489,17 +487,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             .build();
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
-
-        verifyZeroInteractions(countyCourtJudgmentService);
-        verifyZeroInteractions(offersService);
-    }
-
-    @Test
-    public void doNotFormaliseWhenResponseIsNotAcceptation() {
-        Claim claim = SampleClaim.getWithDefaultResponse();
-        ClaimantResponse response = ResponseRejection.builder().build();
-        assertThatCode(() -> formaliseResponseAcceptanceService
-            .formalise(claim, response, AUTH)).doesNotThrowAnyException();
 
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(offersService);
