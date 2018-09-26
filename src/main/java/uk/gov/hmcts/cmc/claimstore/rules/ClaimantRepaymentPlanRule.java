@@ -15,19 +15,21 @@ import java.time.LocalDate;
 @Service
 public class ClaimantRepaymentPlanRule {
 
-    private static final String INVALID_RESPONSE_TYPE =
+    public static final String INVALID_RESPONSE_TYPE =
         "Defendant response must be part or full admission";
-    private static final String INVALID_DEFENDANT_REPAYMENT_TYPE =
+    public static final String INVALID_DEFENDANT_REPAYMENT_TYPE =
         "Expected defendant response to be installments or set date";
-    private static final String EXPECTED_PAYMENT_INTENTION =
+    public static final String EXPECTED_PAYMENT_INTENTION =
         "Expected payment intention to be present on defendant response";
-    private static final String EXPECTED_REPAYMENT_PLAN =
+    public static final String EXPECTED_REPAYMENT_PLAN_DEFENDANT =
         "Expected repayment plan to be present on defendant response";
-    private static final String EXPECTED_DEFENDANT_RESPONSE =
+    public static final String EXPECTED_REPAYMENT_PLAN_CLAIMANT =
+        "Expected repayment plan to be present on claimant response";
+    public static final String EXPECTED_DEFENDANT_RESPONSE =
         "Expected defendant response to be present";
-    private static final String INSTALLMENT_DATE_MUST_BE_AFTER =
+    public static final String INSTALLMENT_DATE_MUST_BE_AFTER =
         "Claimant first installment date must be after %s";
-    private static final String INSTALLMENT_DATE_MUST_BE_ONE_MONTH =
+    public static final String INSTALLMENT_DATE_MUST_BE_ONE_MONTH =
         "Claimant first installment date must be at least one month from now";
 
 
@@ -50,9 +52,17 @@ public class ClaimantRepaymentPlanRule {
 
 
     private void assertInstallmentsIsValidAgainstInstallments(RepaymentPlan claimantPlan, RepaymentPlan defendantPlan) {
+        if (claimantPlan == null) {
+            throw new ClaimantInvalidRepaymentPlanException(EXPECTED_REPAYMENT_PLAN_CLAIMANT);
+        }
+
+        if (defendantPlan == null) {
+            throw new ClaimantInvalidRepaymentPlanException(EXPECTED_REPAYMENT_PLAN_DEFENDANT);
+        }
+
         LocalDate defendantStartDate = defendantPlan.getFirstPaymentDate();
-        LocalDate oneMonthForNow = CalculateMonthIncrement.calculateMonthlyIncrement(LocalDate.now());
-        LocalDate thresholdDate = defendantStartDate.isBefore(oneMonthForNow) ? defendantStartDate : oneMonthForNow;
+        LocalDate monthFromNow = CalculateMonthIncrement.calculateMonthlyIncrement(LocalDate.now());
+        LocalDate thresholdDate = defendantStartDate.isBefore(monthFromNow) ? defendantStartDate : monthFromNow;
 
         if (claimantPlan.getFirstPaymentDate().isBefore(thresholdDate)) {
             throw new ClaimantInvalidRepaymentPlanException(
@@ -61,6 +71,10 @@ public class ClaimantRepaymentPlanRule {
     }
 
     private void assertInstallmentsIsValidAgainstSetDate(RepaymentPlan claimantPlan) {
+        if (claimantPlan == null) {
+            throw new ClaimantInvalidRepaymentPlanException(EXPECTED_REPAYMENT_PLAN_CLAIMANT);
+        }
+
         LocalDate oneMonthFromNow = CalculateMonthIncrement.calculateMonthlyIncrement(LocalDate.now());
         if (claimantPlan.getFirstPaymentDate().isBefore(oneMonthFromNow)) {
             throw new ClaimantInvalidRepaymentPlanException(INSTALLMENT_DATE_MUST_BE_ONE_MONTH);
@@ -91,13 +105,13 @@ public class ClaimantRepaymentPlanRule {
                         EXPECTED_PAYMENT_INTENTION))
                     .getRepaymentPlan()
                     .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        EXPECTED_REPAYMENT_PLAN));
+                        EXPECTED_REPAYMENT_PLAN_DEFENDANT));
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response)
                     .getPaymentIntention()
                     .getRepaymentPlan()
                     .orElseThrow(() -> new ClaimantInvalidRepaymentPlanException(
-                        EXPECTED_REPAYMENT_PLAN));
+                        EXPECTED_REPAYMENT_PLAN_DEFENDANT));
             default:
                 throw new ClaimantInvalidRepaymentPlanException(
                     INVALID_RESPONSE_TYPE);
