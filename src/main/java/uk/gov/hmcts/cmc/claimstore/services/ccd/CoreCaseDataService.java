@@ -42,7 +42,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_ISSUED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
@@ -158,9 +158,11 @@ public class CoreCaseDataService {
         Claim claim,
         LocalDate newResponseDeadline
     ) {
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setResponseDeadline(newResponseDeadline);
-        ccdCase.setMoreTimeRequested(YES);
+        CCDCase ccdCase = CCDCase.builder()
+            .id(claim.getId())
+            .responseDeadline(newResponseDeadline)
+            .moreTimeRequested(YES)
+            .build();
 
         CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
         jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
@@ -169,18 +171,20 @@ public class CoreCaseDataService {
 
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
-        Claim claim,
+        Long caseId,
         CountyCourtJudgment countyCourtJudgment,
         boolean issue
     ) {
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
-        ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
+        CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
+            .id(caseId)
+            .countyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment))
+            .countyCourtJudgmentRequestedAt(nowInUTC());
+
         if (issue) {
-            ccdCase.setCountyCourtJudgmentIssuedAt(nowInUTC());
-            return update(authorisation, ccdCase, CCJ_ISSUED);
+            ccdCase.countyCourtJudgmentIssuedAt(nowInUTC());
+            return update(authorisation, ccdCase.build(), CCJ_ISSUED);
         } else {
-            return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+            return update(authorisation, ccdCase.build(), DEFAULT_CCJ_REQUESTED);
         }
     }
 
@@ -197,32 +201,35 @@ public class CoreCaseDataService {
     }
 
     public CaseDetails saveDefendantResponse(
-        Claim claim,
+        Long caseId,
         String defendantEmail,
         Response response,
         String authorisation
     ) {
 
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setResponse(responseMapper.to(response));
-        ccdCase.setDefendantEmail(defendantEmail);
-        ccdCase.setRespondedAt(nowInUTC());
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .response(responseMapper.to(response))
+            .defendantEmail(defendantEmail)
+            .respondedAt(nowInUTC())
+            .build();
 
-        return update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+        return update(authorisation, ccdCase, CaseEvent.valueOf(response.getResponseType().name() + "_SUBMITTED"));
     }
 
 
     public CaseDetails saveClaimantResponse(
-        Claim claim,
+        Long caseId,
         ClaimantResponse response,
         String authorisation
     ) {
 
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setClaimantResponse(claimantResponseMapper.to(response));
-        ccdCase.setClaimantRespondedAt(nowInUTC());
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .claimantResponse(claimantResponseMapper.to(response))
+            .build();
 
-        return update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+        return update(authorisation, ccdCase, CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name()));
     }
 
     public CaseDetails saveSettlement(
@@ -256,11 +263,11 @@ public class CoreCaseDataService {
 
     public CaseDetails updateResponseDeadline(
         String authorisation,
-        Claim claim,
+        Long caseId,
         LocalDate newResponseDeadline
     ) {
         CCDCase ccdCase = CCDCase.builder()
-            .id(claim.getId())
+            .id(caseId)
             .responseDeadline(newResponseDeadline)
             .build();
 
@@ -444,10 +451,12 @@ public class CoreCaseDataService {
         return caseMapper.from(ccdCase);
     }
 
-    public void saveDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorisation) {
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setDirectionsQuestionnaireDeadline(dqDeadline);
+    public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .directionsQuestionnaireDeadline(dqDeadline)
+            .build();
 
-        update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+        update(authorisation, ccdCase, DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 }

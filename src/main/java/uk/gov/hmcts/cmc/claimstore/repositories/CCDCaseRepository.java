@@ -86,7 +86,7 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment,
         boolean issue
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment, issue);
 
     }
 
@@ -96,17 +96,17 @@ public class CCDCaseRepository implements CaseRepository {
         String defendantEmail,
         Response response,
         String authorization) {
-        coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
+        coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
     }
 
     @Override
     public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
-        coreCaseDataService.saveClaimantResponse(claim, response, authorization);
+        coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
     }
 
     @Override
     public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
-        coreCaseDataService.saveDirectionsQuestionnaireDeadline(claim, dqDeadline, authorization);
+        coreCaseDataService.saveDirectionsQuestionnaireDeadline(claim.getId(), dqDeadline, authorization);
     }
 
     @Override
