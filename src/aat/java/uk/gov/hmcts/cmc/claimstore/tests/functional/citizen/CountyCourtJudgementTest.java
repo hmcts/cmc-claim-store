@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmission;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -39,7 +40,7 @@ public class CountyCourtJudgementTest extends BaseTest {
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withPaymentOptionImmediately()
+            .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
         Claim updatedCase = commonOperations.requestCCJ(createdCase.getExternalId(), ccj, false, claimant)
@@ -74,7 +75,7 @@ public class CountyCourtJudgementTest extends BaseTest {
             .statusCode(HttpStatus.OK.value());
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withPaymentOptionImmediately()
+            .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
         Claim updatedCase = commonOperations.requestCCJ(externalId, ccj, true, claimant)
@@ -104,7 +105,7 @@ public class CountyCourtJudgementTest extends BaseTest {
         updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
 
         CountyCourtJudgment invalidCCJ = SampleCountyCourtJudgment.builder()
-            .withPaymentOption(null)
+            .paymentOption(null)
             .build();
 
         commonOperations.requestCCJ(createdCase.getExternalId(), invalidCCJ, false, claimant)
@@ -121,7 +122,7 @@ public class CountyCourtJudgementTest extends BaseTest {
         );
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withPaymentOptionImmediately()
+            .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
         commonOperations.requestCCJ(createdCase.getExternalId(), ccj, false, claimant)

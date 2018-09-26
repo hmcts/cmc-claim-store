@@ -38,14 +38,18 @@ public class ValidCountyCourtJudgmentValidatorTest {
 
     @Test
     public void shouldReturnTrueForNullPaymentOptionInput() {
-        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().withPaymentOption(null).build();
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
+            .paymentOption(null)
+            .build();
         assertThat(validator.isValid(ccj, context)).isTrue();
     }
 
     @Test
     public void shouldReturnTrueForValidModelWithImmediatelyPaymentOption() {
 
-        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build();
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .build();
 
         assertThat(validator.isValid(ccj, context)).isTrue();
     }
@@ -54,7 +58,8 @@ public class ValidCountyCourtJudgmentValidatorTest {
     public void shouldReturnTrueForValidModelWithPayByInstalmentsPaymentOption() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withRepaymentPlan(
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(
                 SampleRepaymentPlan.builder().build()
             ).build();
 
@@ -65,7 +70,8 @@ public class ValidCountyCourtJudgmentValidatorTest {
     public void shouldReturnTrueForValidModelWithPayBySetDatePaymentOption() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withPayBySetDate(
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .payBySetDate(
                 LocalDate.now().plusDays(100)
             ).build();
 
@@ -76,8 +82,9 @@ public class ValidCountyCourtJudgmentValidatorTest {
     public void shouldReturnFalseForImmediatelyWithPopulatedRepaymentPlan() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withPaymentOption(PaymentOption.IMMEDIATELY).build();
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .build();
 
         assertThat(validator.isValid(ccj, context)).isFalse();
     }
@@ -86,8 +93,9 @@ public class ValidCountyCourtJudgmentValidatorTest {
     public void shouldReturnFalseForImmediatelyWithPopulatedPayBySetDate() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withPayBySetDate(LocalDate.now().plusDays(100))
-            .withPaymentOption(PaymentOption.IMMEDIATELY).build();
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .payBySetDate(LocalDate.now().plusDays(100))
+            .build();
 
         assertThat(validator.isValid(ccj, context)).isFalse();
     }
@@ -96,8 +104,9 @@ public class ValidCountyCourtJudgmentValidatorTest {
     public void shouldReturnFalseForByInstalmentsWithPopulatedPayBySetDate() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withPayBySetDate(LocalDate.now().plusDays(100))
-            .withPaymentOption(PaymentOption.INSTALMENTS).build();
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .payBySetDate(LocalDate.now().plusDays(100))
+            .build();
 
         assertThat(validator.isValid(ccj, context)).isFalse();
     }
@@ -106,8 +115,9 @@ public class ValidCountyCourtJudgmentValidatorTest {
     public void shouldReturnFalseForBySetDateWithPopulatedRepaymentPlan() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withPaymentOption(PaymentOption.BY_SPECIFIED_DATE).build();
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .build();
 
         assertThat(validator.isValid(ccj, context)).isFalse();
     }

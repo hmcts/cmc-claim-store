@@ -15,7 +15,7 @@ public class OfferValidationTest {
 
     @Test
     public void shouldHaveNoValidationErrorsForValidOffer() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         Set<String> validationErrors = validate(offer);
 
@@ -25,7 +25,7 @@ public class OfferValidationTest {
     @Test
     public void shouldBeInvalidIfTextIsNull() {
         Offer offer = SampleOffer.builder()
-            .withContent(null)
+            .content(null)
             .build();
 
         Set<String> validationErrors = validate(offer);
@@ -36,7 +36,7 @@ public class OfferValidationTest {
     @Test
     public void shouldBeInvalidIfTextExceedsLengthLimit() {
         Offer offer = SampleOffer.builder()
-            .withContent(StringUtils.repeat('X', Offer.CONTENT_LENGTH_LIMIT + 1))
+            .content(StringUtils.repeat('X', Offer.CONTENT_LENGTH_LIMIT + 1))
             .build();
 
         Set<String> validationErrors = validate(offer);
@@ -49,7 +49,7 @@ public class OfferValidationTest {
     @Test
     public void shouldBeInvalidIfCompletionDateIsNull() {
         Offer offer = SampleOffer.builder()
-            .withCompletionDate(null)
+            .completionDate(null)
             .build();
 
         Set<String> validationErrors = validate(offer);
@@ -60,7 +60,7 @@ public class OfferValidationTest {
     @Test
     public void shouldBeInvalidIfCompletionDateIsToday() {
         Offer offer = SampleOffer.builder()
-            .withCompletionDate(LocalDate.now())
+            .completionDate(LocalDate.now())
             .build();
 
         Set<String> validationErrors = validate(offer);
@@ -71,7 +71,7 @@ public class OfferValidationTest {
     @Test
     public void shouldBeInvalidIfCompletionDateIsYesterday() {
         Offer offer = SampleOffer.builder()
-            .withCompletionDate(LocalDate.now().minusDays(1))
+            .completionDate(LocalDate.now().minusDays(1))
             .build();
 
         Set<String> validationErrors = validate(offer);

@@ -189,14 +189,14 @@ public class OfferServiceTest {
 
     private static Claim buildClaimWithOffer() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
+        settlement.makeOffer(SampleOffer.builder().build(), madeBy);
 
         return SampleClaim.builder().withSettlement(settlement).build();
     }
 
     private static Claim buildClaimWithAcceptedOffer() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.validDefaults(), madeBy);
+        settlement.makeOffer(SampleOffer.builder().build(), madeBy);
         settlement.accept(MadeBy.CLAIMANT);
 
 
