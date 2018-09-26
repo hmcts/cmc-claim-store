@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import java.math.BigDecimal;
 import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -24,8 +23,9 @@ public class ResponseAcceptation extends ClaimantResponse {
     @Valid
     private final PaymentIntention claimantPaymentIntention;
 
-    @NotNull
     private final FormaliseOption formaliseOption;
+
+    private final DeterminationDecisionType determinationDecisionType;
 
     @Builder
     @JsonCreator
@@ -33,12 +33,14 @@ public class ResponseAcceptation extends ClaimantResponse {
         BigDecimal amountPaid,
         CourtDetermination courtDetermination,
         PaymentIntention claimantPaymentIntention,
-        FormaliseOption formaliseOption
+        FormaliseOption formaliseOption,
+        DeterminationDecisionType determinationDecisionType
     ) {
         super(ClaimantResponseType.ACCEPTATION, amountPaid);
         this.courtDetermination = courtDetermination;
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
+        this.determinationDecisionType = determinationDecisionType;
     }
 
     public Optional<CourtDetermination> getCourtDetermination() {

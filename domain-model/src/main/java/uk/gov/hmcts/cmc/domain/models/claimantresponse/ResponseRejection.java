@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import javax.validation.constraints.Size;
@@ -18,7 +17,6 @@ public class ResponseRejection extends ClaimantResponse {
 
     private final boolean freeMediation;
 
-    @NotBlank
     @Size(max = 99000)
     private final String reason;
 
