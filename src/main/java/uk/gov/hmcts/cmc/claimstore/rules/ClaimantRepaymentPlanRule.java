@@ -39,10 +39,10 @@ public class ClaimantRepaymentPlanRule {
 
         switch (getPaymentOptionForResponse(response)) {
             case INSTALMENTS:
-                assertInstallmentsIsValidAgainstInstallments(proposedPlan, getRepaymentPlanForResponse(response));
+                isPaymentPlanDateValidAgainstDefendantPlan(proposedPlan, getRepaymentPlanForResponse(response));
                 break;
             case BY_SPECIFIED_DATE:
-                assertInstallmentsIsValidAgainstSetDate(proposedPlan);
+                isPaymentPlanStartDateValidAgainstSetDate(proposedPlan);
                 break;
             default:
                 throw new ClaimantInvalidRepaymentPlanException(
@@ -51,7 +51,7 @@ public class ClaimantRepaymentPlanRule {
     }
 
 
-    private void assertInstallmentsIsValidAgainstInstallments(RepaymentPlan claimantPlan, RepaymentPlan defendantPlan) {
+    private void isPaymentPlanDateValidAgainstDefendantPlan(RepaymentPlan claimantPlan, RepaymentPlan defendantPlan) {
         if (claimantPlan == null) {
             throw new ClaimantInvalidRepaymentPlanException(EXPECTED_REPAYMENT_PLAN_CLAIMANT);
         }
@@ -70,7 +70,7 @@ public class ClaimantRepaymentPlanRule {
         }
     }
 
-    private void assertInstallmentsIsValidAgainstSetDate(RepaymentPlan claimantPlan) {
+    private void isPaymentPlanStartDateValidAgainstSetDate(RepaymentPlan claimantPlan) {
         if (claimantPlan == null) {
             throw new ClaimantInvalidRepaymentPlanException(EXPECTED_REPAYMENT_PLAN_CLAIMANT);
         }
