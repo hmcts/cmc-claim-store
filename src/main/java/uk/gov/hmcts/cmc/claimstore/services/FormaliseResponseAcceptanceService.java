@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -71,8 +71,8 @@ public class FormaliseResponseAcceptanceService {
         Settlement settlement = new Settlement();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         PaymentIntention paymentIntention = acceptedPaymentIntention(responseAcceptation, response);
-        DeterminationDecisionType determinationDecisionType = responseAcceptation.getDeterminationDecisionType();
-        switch (determinationDecisionType) {
+        DecisionType decisionType = responseAcceptation.getDecisionType();
+        switch (decisionType) {
             case DEFENDANT:
                 settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.DEFENDANT);
                 break;
@@ -83,7 +83,7 @@ public class FormaliseResponseAcceptanceService {
                 settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.COURT);
                 break;
             default:
-                throw new IllegalStateException("Invalid determination decision type " + determinationDecisionType);
+                throw new IllegalStateException("Invalid determination decision type " + decisionType);
 
         }
         settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
@@ -149,7 +149,7 @@ public class FormaliseResponseAcceptanceService {
         CountyCourtJudgment countyCourtJudgment = CountyCourtJudgment.builder()
             .defendantDateOfBirth(defendantDateOfBirth(response.getDefendant()))
             .paymentOption(acceptedPaymentIntention.getPaymentOption())
-            .paidAmount(responseAcceptation.getAmountPaid())
+            .paidAmount(responseAcceptation.getAmountPaid().orElse(null))
             .repaymentPlan(acceptedPaymentIntention.getRepaymentPlan().orElse(null))
             .payBySetDate(acceptedPaymentIntention.getPaymentDate().orElse(null))
             .build();
@@ -170,11 +170,11 @@ public class FormaliseResponseAcceptanceService {
     }
 
     private PaymentIntention acceptedPaymentIntention(ResponseAcceptation responseAcceptation, Response response) {
-        DeterminationDecisionType determinationDecisionType = responseAcceptation.getDeterminationDecisionType();
-        if (determinationDecisionType == null) {
+        DecisionType decisionType = responseAcceptation.getDecisionType();
+        if (decisionType == null) {
             throw new IllegalArgumentException("formaliseOption must not be null");
         }
-        switch (determinationDecisionType) {
+        switch (decisionType) {
             case DEFENDANT:
                 return getDefendantPaymentIntention(response);
             case CLAIMANT:
@@ -184,7 +184,7 @@ public class FormaliseResponseAcceptanceService {
                     .getCourtDetermination().orElseThrow(IllegalStateException::new)
                     .getCourtDecision();
             default:
-                throw new IllegalStateException("Invalid determination decision type " + determinationDecisionType);
+                throw new IllegalStateException("Invalid determination decision type " + decisionType);
         }
     }
 

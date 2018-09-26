@@ -74,7 +74,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
     }
 
     @Test
