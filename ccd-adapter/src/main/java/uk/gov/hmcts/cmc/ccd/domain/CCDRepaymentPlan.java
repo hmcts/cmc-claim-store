@@ -13,4 +13,5 @@ public class CCDRepaymentPlan {
     private BigDecimal instalmentAmount;
     private LocalDate firstPaymentDate;
     private CCDPaymentSchedule paymentSchedule;
+    private LocalDate completionDate;
 }
