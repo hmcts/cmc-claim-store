@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -43,11 +42,7 @@ public class FormaliseResponseAcceptanceService {
         this.offersService = offersService;
     }
 
-    public void formalise(Claim claim, ClaimantResponse claimantResponse, String authorisation) {
-        if (!(claimantResponse instanceof ResponseAcceptation)) {
-            return;
-        }
-        ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+    public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
         FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption();
         if (formaliseOption == null) {
             throw new IllegalArgumentException("formaliseOption must not be null");
