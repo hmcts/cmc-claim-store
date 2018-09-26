@@ -46,7 +46,9 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
         claim = SampleClaim
             .builder()
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build())
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .build())
             .withClaimData(SampleClaimData.submittedByClaimant())
             .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
