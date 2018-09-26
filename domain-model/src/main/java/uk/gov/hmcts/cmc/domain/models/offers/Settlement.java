@@ -28,6 +28,11 @@ public class Settlement {
         partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
     }
 
+    public void acceptCourtDetermination(MadeBy party) {
+        assertOfferCanBeAccepted();
+        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+    }
+
     public void reject(MadeBy party) {
         assertOfferCanBeResponded(party);
         partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
@@ -81,6 +86,10 @@ public class Settlement {
     private void assertOfferCanBeResponded(MadeBy party) {
         assertOfferCanBeMadeBy(party);
 
+        assertOfferCanBeAccepted();
+    }
+
+    private void assertOfferCanBeAccepted() {
         if (!lastStatementIsOffer()) {
             throw new IllegalSettlementStatementException(
                 format("Last statement was: %s , offer expected.", getLastStatement().getType().name().toLowerCase())
