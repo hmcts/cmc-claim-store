@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import javax.validation.constraints.Min;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -18,6 +19,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public abstract class ClaimantResponse {
 
+    @Min(value = 0)
     private final BigDecimal amountPaid;
 
     public ClaimantResponse(BigDecimal amountPaid) {

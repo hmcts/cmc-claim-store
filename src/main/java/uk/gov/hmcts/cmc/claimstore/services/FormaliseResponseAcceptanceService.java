@@ -78,7 +78,7 @@ public class FormaliseResponseAcceptanceService {
                 settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.COURT);
                 break;
             default:
-                throw new IllegalStateException("Invalid determination decision type " + decisionType);
+                throw new IllegalStateException("Invalid decision type " + decisionType);
 
         }
         settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
@@ -179,7 +179,7 @@ public class FormaliseResponseAcceptanceService {
                     .getCourtDetermination().orElseThrow(IllegalStateException::new)
                     .getCourtDecision();
             default:
-                throw new IllegalStateException("Invalid determination decision type " + decisionType);
+                throw new IllegalStateException("Invalid decision type " + decisionType);
         }
     }
 

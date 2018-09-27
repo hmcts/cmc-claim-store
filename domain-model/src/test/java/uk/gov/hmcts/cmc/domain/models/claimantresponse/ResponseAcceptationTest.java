@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static java.math.BigDecimal.TEN;
@@ -35,6 +36,19 @@ public class ResponseAcceptationTest {
         Set<String> response = validate(claimantResponse);
 
         assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenAmountIsNegative() {
+        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(-10))
+            .formaliseOption(REFER_TO_JUDGE)
+            .decisionType(DEFENDANT)
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
     }
 
     @Test
