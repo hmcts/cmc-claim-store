@@ -51,6 +51,10 @@ public class StatementOfMeans {
     @EachNotNull
     private final List<CourtOrder> courtOrders;
 
+    @Valid
+    @EachNotNull
+    private final List<PriorityDebt> priorityDebts;
+
     @NotBlank
     private final String reason;
 
@@ -63,6 +67,7 @@ public class StatementOfMeans {
         List<Income> incomes,
         List<Expense> expenses,
         List<CourtOrder> courtOrders,
+        List<PriorityDebt> priorityDebts,
         String reason
     ) {
         this.residence = residence;
@@ -73,6 +78,7 @@ public class StatementOfMeans {
         this.incomes = incomes;
         this.expenses = expenses;
         this.courtOrders = courtOrders;
+        this.priorityDebts = priorityDebts;
         this.reason = reason;
     }
 
@@ -107,6 +113,8 @@ public class StatementOfMeans {
     public List<CourtOrder> getCourtOrders() {
         return courtOrders != null ? courtOrders : emptyList();
     }
+
+    public List<PriorityDebt> getPriorityDebts() { return priorityDebts != null ? priorityDebts : emptyList(); }
 
     public String getReason() {
         return reason;
