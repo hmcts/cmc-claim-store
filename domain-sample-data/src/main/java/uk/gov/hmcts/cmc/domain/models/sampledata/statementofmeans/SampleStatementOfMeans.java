@@ -80,10 +80,11 @@ public class SampleStatementOfMeans {
             ))
             .partner(LivingPartner.builder()
                 .declared(true)
-                .ageGroup(LivingPartner.AgeGroupType.ADULT)
+                .adult(true)
                 .disability(DisabilityStatus.NO)
                 .build())
             .disability(DisabilityStatus.YES)
+            .carer(false)
             .build();
     }
 

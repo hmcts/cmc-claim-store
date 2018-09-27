@@ -9,30 +9,14 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 @EqualsAndHashCode
 public class LivingPartner {
-    public enum AgeGroupType {
-        CHILD("Under 18"),
-        YOUNG_ADULT("Young adult, under 25"),
-        ADULT("Adult, over 25"),
-        PENSIONER("Pensioner");
-
-        String description;
-
-        AgeGroupType(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return this.description;
-        }
-    }
 
     private final boolean declared;
-    private final AgeGroupType ageGroup;
+    private final boolean adult;
     private final DisabilityStatus disability;
 
-    public LivingPartner(boolean declared, AgeGroupType ageGroup, DisabilityStatus disability) {
+    public LivingPartner(boolean declared, boolean adult, DisabilityStatus disability) {
         this.declared = declared;
-        this.ageGroup = ageGroup;
+        this.adult = adult;
         this.disability = disability;
     }
 
@@ -40,8 +24,8 @@ public class LivingPartner {
         return declared;
     }
 
-    public AgeGroupType getAgeGroup() {
-        return ageGroup;
+    public boolean isAdult() {
+        return adult;
     }
 
     public DisabilityStatus getDisability() {

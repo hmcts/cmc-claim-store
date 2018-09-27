@@ -51,11 +51,13 @@ public class StatementOfMeans {
     @EachNotNull
     private final List<CourtOrder> courtOrders;
 
-    @NotNull
+    //    @NotNull
     private final LivingPartner partner;
 
     // @NotNull
     private final DisabilityStatus disability;
+
+    private final boolean carer;
 
     @NotBlank
     private final String reason;
@@ -71,6 +73,7 @@ public class StatementOfMeans {
         List<CourtOrder> courtOrders,
         LivingPartner partner,
         DisabilityStatus disability,
+        boolean carer,
         String reason
     ) {
         this.residence = residence;
@@ -83,6 +86,7 @@ public class StatementOfMeans {
         this.courtOrders = courtOrders;
         this.partner = partner;
         this.disability = disability;
+        this.carer = carer;
         this.reason = reason;
     }
 
@@ -124,6 +128,10 @@ public class StatementOfMeans {
 
     public DisabilityStatus getDisabilityStatus() {
         return disability;
+    }
+
+    public boolean isCarer() {
+        return carer;
     }
 
     public String getReason() {

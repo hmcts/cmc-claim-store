@@ -85,6 +85,8 @@ public class StatementOfMeansContentProvider {
                 disabilityStatus -> contentBuilder.put("disabilityStatus", disabilityStatus.getDescription())
             );
 
+        contentBuilder.put("carer", statementOfMeans.isCarer());
+
         return contentBuilder.build();
     }
 

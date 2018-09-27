@@ -93,9 +93,10 @@
     "partner": {
       "declared": true,
       "disability": "NO",
-      "ageGroup": "ADULT"
+      "adult": true
     },
     "disability": "YES",
+    "carer": false,
     "reason": "My reason"
   }
 }

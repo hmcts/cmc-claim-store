@@ -169,6 +169,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             courtOrders,
             null,
             null,
+            false,
             ccdStatementOfMeans.getReason()
         );
     }
