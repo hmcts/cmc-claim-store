@@ -18,4 +18,14 @@ public class ResponseRejectionTest {
 
         assertThat(response).hasSize(0);
     }
+
+    @Test
+    public void shouldBeValidWhenReasonNotPresent() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseRejection.builder()
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(0);
+    }
 }

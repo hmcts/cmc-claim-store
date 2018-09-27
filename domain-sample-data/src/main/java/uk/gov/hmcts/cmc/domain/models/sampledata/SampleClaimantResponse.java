@@ -112,7 +112,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
     public static class ClaimantResponseRejection extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
         private BigDecimal amountPaid = BigDecimal.TEN;
-        private boolean freeMediation = false;
+        private Boolean freeMediation = false;
 
         public ClaimantResponseRejection withAmountPaid(BigDecimal amountPaid) {
             this.amountPaid = amountPaid;
