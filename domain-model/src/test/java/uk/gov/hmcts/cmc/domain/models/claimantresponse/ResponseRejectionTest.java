@@ -18,15 +18,4 @@ public class ResponseRejectionTest {
 
         assertThat(response).hasSize(0);
     }
-
-    @Test
-    public void shouldBeInvalidWhenAmountNotPresent() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseRejection.builder()
-            .withAmountPaid(null)
-            .build();
-
-        Set<String> response = validate(claimantResponse);
-
-        assertThat(response).hasSize(1);
-    }
 }
