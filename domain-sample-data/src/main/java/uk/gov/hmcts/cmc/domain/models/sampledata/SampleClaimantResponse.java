@@ -111,19 +111,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
 
     public static class ClaimantResponseRejection extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
-        private BigDecimal amountPaid = BigDecimal.TEN;
-        private Boolean freeMediation = false;
-
-        public ClaimantResponseRejection withAmountPaid(BigDecimal amountPaid) {
-            this.amountPaid = amountPaid;
-            return this;
-        }
-
-        public ClaimantResponseRejection withFreeMediation(boolean freeMediation) {
-            this.freeMediation = freeMediation;
-            return this;
-        }
-
         public static ClaimantResponseRejection builder() {
             return new ClaimantResponseRejection();
         }
@@ -131,8 +118,9 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         @Override
         public ClaimantResponse build() {
             return ResponseRejection.builder()
-                .amountPaid(amountPaid)
-                .freeMediation(freeMediation)
+                .amountPaid(BigDecimal.TEN)
+                .freeMediation(false)
+                .reason("Some valid reason")
                 .build();
         }
     }
