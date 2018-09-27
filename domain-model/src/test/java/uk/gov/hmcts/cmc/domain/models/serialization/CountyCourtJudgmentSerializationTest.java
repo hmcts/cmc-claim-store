@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -25,8 +26,9 @@ public class CountyCourtJudgmentSerializationTest {
         //given
         CompanyDetails defendant = SampleTheirDetails.builder().companyDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
-            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withStatementOfTruth(new StatementOfTruth(defendant.getContactPerson().get(), "Director"))
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .statementOfTruth(new StatementOfTruth(defendant.getContactPerson().get(), "Director"))
             .build();
 
         //when
