@@ -148,7 +148,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
-    public void fshouldSaveClaimantResponseAcceptationIssueSettlementWithClaimantPaymentIntention() {
+    public void shouldSaveClaimantResponseAcceptationIssueSettlementWithClaimantPaymentIntention() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention(),
             claim.getExternalId(),
