@@ -13,16 +13,18 @@ import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 import static uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule.EVERY_MONTH;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 
 public class CourtDeterminationTest {
 
     @Test
     public void shouldBeSuccessfulValidationForValidCourtDeterminationBySetDate() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
-            .courtCalculatedPaymentIntention(PaymentIntention.builder()
+            .courtDecision(PaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)
                 .paymentDate(now().plusDays(30))
                 .build())
+            .disposableIncome(TEN)
             .build();
 
         Set<String> response = validate(courtDetermination);
@@ -33,7 +35,7 @@ public class CourtDeterminationTest {
     @Test
     public void shouldBeSuccessfulValidationForValidCourtDeterminationByInstallment() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
-            .courtCalculatedPaymentIntention(PaymentIntention.builder()
+            .courtDecision(PaymentIntention.builder()
                 .paymentOption(INSTALMENTS)
                 .repaymentPlan(RepaymentPlan.builder()
                     .firstPaymentDate(now().plusDays(14))
@@ -41,6 +43,7 @@ public class CourtDeterminationTest {
                     .paymentSchedule(EVERY_MONTH)
                     .build())
                 .build())
+            .disposableIncome(TEN)
             .build();
 
         Set<String> response = validate(courtDetermination);
@@ -51,7 +54,19 @@ public class CourtDeterminationTest {
     @Test
     public void shouldBeInvalidWhenMissingCourtCalculatedPaymentIntention() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
-            .courtCalculatedPaymentIntention(null)
+            .courtDecision(null)
+            .disposableIncome(TEN)
+            .build();
+
+        Set<String> response = validate(courtDetermination);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenMissingDisposableIncome() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
             .build();
 
         Set<String> response = validate(courtDetermination);
