@@ -167,6 +167,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .incomes(incomes)
             .expenses(expenses)
             .courtOrders(courtOrders)
+            .priorityDebts(null) // TODO
             .partner(null) // TODO
             .disability(null) // TODO
             .carer(false) // TODO
