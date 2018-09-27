@@ -4,10 +4,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import java.util.List;
-import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -50,8 +50,8 @@ public class Dependant {
         return Optional.ofNullable(otherDependants);
     }
 
-    public boolean areAnyChildrenDisabled() {
-        return this.anyDisabledChildren;
+    public boolean isAnyDisabledChildren() {
+        return anyDisabledChildren;
     }
 
     @Override

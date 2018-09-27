@@ -80,7 +80,7 @@ public class StatementOfMeansContentProvider {
                 partner -> contentBuilder.put("partner", partner)
             );
 
-        Optional.ofNullable(statementOfMeans.getDisabilityStatus())
+        Optional.ofNullable(statementOfMeans.getDisability())
             .ifPresent(
                 disabilityStatus -> contentBuilder.put("disabilityStatus", disabilityStatus.getDescription())
             );

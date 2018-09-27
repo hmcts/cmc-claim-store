@@ -126,7 +126,7 @@ public class StatementOfMeans {
         return partner;
     }
 
-    public DisabilityStatus getDisabilityStatus() {
+    public DisabilityStatus getDisability() {
         return disability;
     }
 
