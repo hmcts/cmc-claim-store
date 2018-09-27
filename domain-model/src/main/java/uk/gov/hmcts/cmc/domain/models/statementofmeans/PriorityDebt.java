@@ -4,10 +4,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
-import uk.gov.hmcts.cmc.domain.constraints.ValidExpense;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
