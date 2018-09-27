@@ -39,7 +39,7 @@ public class AmountContentProviderTest {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.validDefaults())
             .withCountyCourtJudgment(SampleCountyCourtJudgment.builder()
-                .withPaidAmount(null).build())
+                .paidAmount(null).build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
@@ -58,7 +58,7 @@ public class AmountContentProviderTest {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.validDefaults())
             .withCountyCourtJudgment(SampleCountyCourtJudgment.builder()
-                .withPaidAmount(BigDecimal.valueOf(10)).build())
+                .paidAmount(BigDecimal.valueOf(10)).build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
 
