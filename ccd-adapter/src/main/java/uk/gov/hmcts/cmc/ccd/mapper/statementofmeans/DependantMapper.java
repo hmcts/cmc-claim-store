@@ -66,12 +66,12 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
 
         OtherDependants otherDependants = mapOtherDependant(ccdDependant.getOtherDependants());
 
-        return new Dependant(
-            children,
-            ccdDependant.getNumberOfMaintainedChildren(),
-            otherDependants,
-            false
-        );
+        return Dependant.builder()
+            .children(children)
+            .numberOfMaintainedChildren(ccdDependant.getNumberOfMaintainedChildren())
+            .otherDependants(otherDependants)
+            .anyDisabledChildren(false) // TODO
+            .build();
     }
 
     private OtherDependants mapOtherDependant(CCDOtherDependants ccdOtherDependants) {
@@ -79,7 +79,11 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
             return null;
         }
 
-        return new OtherDependants(ccdOtherDependants.getNumberOfPeople(), ccdOtherDependants.getDetails(), false);
+        return OtherDependants.builder()
+            .numberOfPeople(ccdOtherDependants.getNumberOfPeople())
+            .details(ccdOtherDependants.getDetails())
+            .anyDisabled(false) // TODO
+            .build();
     }
 
 }
