@@ -91,9 +91,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getReason())
-            .isEqualTo("He paid 10 but he actually owes 10,000. No I do not accept this.");
-        assertThat(claimantResponse.isFreeMediation()).isFalse();
+        assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
         assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
     }
 
