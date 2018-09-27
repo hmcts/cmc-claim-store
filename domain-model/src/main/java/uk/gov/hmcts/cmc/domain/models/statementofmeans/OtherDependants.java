@@ -23,9 +23,9 @@ public class OtherDependants {
     @NotBlank
     private final String details;
 
-    private final Boolean anyDisabled;
+    private final boolean anyDisabled;
 
-    public OtherDependants(Integer numberOfPeople, String details, Boolean anyDisabled) {
+    public OtherDependants(Integer numberOfPeople, String details, boolean anyDisabled) {
         this.numberOfPeople = numberOfPeople;
         this.details = details;
         this.anyDisabled = anyDisabled;

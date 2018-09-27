@@ -81,7 +81,6 @@ public class SampleStatementOfMeans {
                 .build()
             ))
             .partner(LivingPartner.builder()
-                .declared(true)
                 .over18(true)
                 .disability(DisabilityStatus.NO)
                 .build())

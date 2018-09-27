@@ -51,10 +51,10 @@ public class StatementOfMeans {
     @EachNotNull
     private final List<CourtOrder> courtOrders;
 
-    //    @NotNull
+    @Valid
     private final LivingPartner partner;
 
-    // @NotNull
+    @NotNull
     private final DisabilityStatus disability;
 
     private final boolean carer;
@@ -122,8 +122,8 @@ public class StatementOfMeans {
         return courtOrders != null ? courtOrders : emptyList();
     }
 
-    public LivingPartner getPartner() {
-        return partner;
+    public Optional<LivingPartner> getPartner() {
+        return Optional.ofNullable(partner);
     }
 
     public DisabilityStatus getDisability() {
