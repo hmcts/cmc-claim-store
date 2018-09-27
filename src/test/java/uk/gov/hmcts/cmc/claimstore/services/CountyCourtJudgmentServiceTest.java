@@ -10,10 +10,13 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Redetermination;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -44,6 +47,11 @@ public class CountyCourtJudgmentServiceTest {
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
+
+    private Redetermination redetermination = Redetermination.builder()
+        .explaination("I feel defendant can pay").build();
+
+    private UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
 
     @Before
     public void setup() {
@@ -87,6 +95,25 @@ public class CountyCourtJudgmentServiceTest {
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_ISSUED), eq(claim.getReferenceNumber()));
     }
 
+    @Test
+    public void redeterminationShouldFinishSuccessfullyForHappyPath() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().build())
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
+
+        verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
+            eq(AUTHORISATION), eq(userDetails.getFullName()));
+
+        verify(claimService, once()).saveRedetermination(eq(AUTHORISATION), any(), eq(redetermination), eq(USER_ID));
+    }
+
     @Test(expected = NotFoundException.class)
     public void saveThrowsNotFoundExceptionWhenClaimDoesNotExist() {
 
@@ -94,6 +121,15 @@ public class CountyCourtJudgmentServiceTest {
             .thenThrow(new NotFoundException("Claim not found by id"));
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void redeterminationThrowsNotFoundExceptionWhenClaimDoesNotExist() {
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+            .thenThrow(new NotFoundException("Claim not found by id"));
+
+        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -106,6 +142,19 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
         countyCourtJudgmentService.save(differentUser, DATA, EXTERNAL_ID, AUTHORISATION, false);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void redeterminationThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {
+
+        String differentUser = "34234234";
+        UserDetails userDetails = SampleUserDetails.builder().withUserId(differentUser).build();
+
+        Claim claim = SampleClaim.getDefault();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -128,6 +177,17 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
+
+    @Test(expected = ForbiddenActionException.class)
+    public void redeterminationThrowsForbiddenActionExceptionWhenCountyCourtJudgmentIsNotRequestedYet() {
+        Claim respondedClaim = SampleClaim.getWithDefaultResponse();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+            .thenReturn(respondedClaim);
+
+        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
+    }
+
     @Test(expected = ForbiddenActionException.class)
     public void saveThrowsForbiddenActionExceptionWhenCountyCourtJudgmentWasAlreadySubmitted() {
         Claim respondedClaim = SampleClaim.getDefault();
@@ -136,5 +196,24 @@ public class CountyCourtJudgmentServiceTest {
             .thenReturn(respondedClaim);
 
         countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+    }
+
+
+    @Test(expected = ForbiddenActionException.class)
+    public void saveThrowsForbiddenActionExceptionWhenRedeterminationWasAlreadySubmitted() {
+        LocalDateTime submissionDate = LocalDate.of(2018, 4, 26).atStartOfDay();
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullAdmission.builder().build())
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
+            .withCountyCourtJudgmentRequestedAt(submissionDate)
+            .withRedetermination(redetermination)
+            .withRedeterminationRequestedAt(submissionDate)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
     }
 }

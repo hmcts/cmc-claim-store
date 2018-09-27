@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.PDF;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 
 public class DefendantResponseStaffNotificationServiceTest extends MockSpringTest {
@@ -173,7 +173,7 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
             .get(0);
 
         String expectedFileName = buildResponseFileBaseName(claimWithFullDefenceResponse.getReferenceNumber())
-            + EXTENSION;
+            + PDF;
 
         assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedFileName);

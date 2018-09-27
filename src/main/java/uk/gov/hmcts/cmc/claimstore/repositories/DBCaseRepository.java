@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Redetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -210,5 +211,10 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentUri) {
         claimRepository.linkSealedClaimDocument(claim.getId(), documentUri.toString());
+    }
+
+    @Override
+    public void saveRedetermination(String authorisation, Claim claim, Redetermination redetermination, String submitterId) {
+        claimRepository.saveRedetermination(claim.getExternalId(), redetermination);
     }
 }

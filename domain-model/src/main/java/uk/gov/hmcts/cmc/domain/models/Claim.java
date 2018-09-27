@@ -56,6 +56,8 @@ public class Claim {
     private final ClaimantResponse claimantResponse;
     private final LocalDateTime countyCourtJudgmentIssuedAt;
     private final LocalDate directionsQuestionnaireDeadline;
+    private final Redetermination redetermination;
+    private final LocalDateTime redeterminationRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -84,7 +86,9 @@ public class Claim {
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
         LocalDateTime countyCourtJudgmentIssuedAt,
-        LocalDate directionsQuestionnaireDeadline
+        LocalDate directionsQuestionnaireDeadline,
+        Redetermination redetermination,
+        LocalDateTime redeterminationRequestedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -111,6 +115,8 @@ public class Claim {
         this.claimantResponse = claimantResponse;
         this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
+        this.redetermination = redetermination;
+        this.redeterminationRequestedAt = redeterminationRequestedAt;
     }
 
     public Long getId() {
@@ -231,6 +237,14 @@ public class Claim {
 
     public LocalDate getDirectionsQuestionnaireDeadline() {
         return directionsQuestionnaireDeadline;
+    }
+
+    public Optional<LocalDateTime> getRedeterminationRequestedAt() {
+        return Optional.ofNullable(redeterminationRequestedAt);
+    }
+
+    public Optional<Redetermination> getRedetermination() {
+        return Optional.ofNullable(redetermination);
     }
 
     @Override

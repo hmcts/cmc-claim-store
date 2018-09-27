@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Redetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -55,5 +56,7 @@ public interface CaseRepository {
     Claim saveClaim(String authorisation, Claim claim);
 
     void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI);
+
+    void saveRedetermination(String authorisation, Claim claim, Redetermination redetermination, String submitterId);
 }
 

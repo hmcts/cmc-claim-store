@@ -54,4 +54,12 @@ public class StaffEmailTemplates {
     public String getBulkPrintEmailSubject() {
         return readString("/staff/templates/email/bulkPrintFailure/subject.txt");
     }
+
+    public String getReDeterminationRequestEmailBody() {
+        return readString("/staff/templates/email/redeterminationRequest/body.txt");
+    }
+
+    public String getReDeterminationRequestEmailSubject() {
+        return readString("/staff/templates/email/redeterminationRequest/subject.txt");
+    }
 }

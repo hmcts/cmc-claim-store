@@ -8,6 +8,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import org.skife.jdbi.v2.sqlobject.customizers.SingleValueResult;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.ClaimMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Redetermination;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -203,6 +204,14 @@ public interface ClaimRepository {
         @Bind("ccjRequestedAt") LocalDateTime ccjRequestedAt,
         @Bind("ccjIssuedAt") LocalDateTime ccjIssuedAt
     );
+
+    @SqlUpdate("UPDATE claim SET "
+        + " redetermination = :redeterminationData::JSONB,"
+        + " redetermination_requested_at = now() AT TIME ZONE 'utc' "
+        + " WHERE external_id = :externalId")
+    void saveRedetermination(
+        @Bind("externalId") String externalId,
+        @Bind("redeterminationData") Redetermination redetermination);
 
     @SqlUpdate(
         "UPDATE claim SET "

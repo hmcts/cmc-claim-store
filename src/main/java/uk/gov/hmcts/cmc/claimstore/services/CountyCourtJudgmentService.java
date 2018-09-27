@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Redetermination;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -65,5 +67,21 @@ public class CountyCourtJudgmentService {
         } else {
             return AppInsightsEvent.CCJ_REQUESTED;
         }
+    }
+
+    public Claim redetermination(UserDetails userDetails, Redetermination redetermination, String externalId, String authorisation) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+
+        authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
+        countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgement(claim);
+
+        claimService.saveRedetermination(authorisation, claim, redetermination, userDetails.getId());
+
+        Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
+
+        eventProducer.createRedeterminationEvent(claimWithReDetermination, authorisation, userDetails.getFullName());
+
+        return claimWithReDetermination;
+
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.http.MediaType;
 
 public class PDF {
     public static final String CONTENT_TYPE = MediaType.APPLICATION_PDF_VALUE;
-    public static final String EXTENSION = ".pdf";
+    public static final String PDF = ".pdf";
 
     private final String fileBaseName;
     private final byte[] bytes;
@@ -15,7 +15,7 @@ public class PDF {
     }
 
     public String getFilename() {
-        return fileBaseName + EXTENSION;
+        return fileBaseName + PDF;
     }
 
     public byte[] getBytes() {

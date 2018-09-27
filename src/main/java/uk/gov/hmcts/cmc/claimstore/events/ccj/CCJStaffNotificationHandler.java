@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.events.RedeterminationEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 
 @Component
@@ -20,5 +21,10 @@ public class CCJStaffNotificationHandler {
     @EventListener
     public void onDefaultJudgmentRequestSubmitted(CountyCourtJudgmentEvent event) {
         this.ccjStaffNotificationService.notifyStaffCCJRequestSubmitted(event.getClaim());
+    }
+
+    @EventListener
+    public void onRedeterminationRequest(RedeterminationEvent event) {
+        this.ccjStaffNotificationService.notifyStaffCCJRedeterminationRequest(event.getClaim(), event.getSubmitterName());
     }
 }

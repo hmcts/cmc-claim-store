@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.Redetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -60,6 +61,10 @@ public final class SampleClaim {
     private ClaimantResponse claimantResponse;
     private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
+    private LocalDateTime redeterminationRequestedAt;
+    private Redetermination redetermination = Redetermination.builder()
+        .explaination("I feel defendant can pay")
+        .build();
 
     private SampleClaim() {
     }
@@ -187,7 +192,9 @@ public final class SampleClaim {
             claimantRespondedAt,
             claimantResponse,
             countyCourtJudgmentIssuedAt,
-            directionsQuestionnaireDeadline
+            directionsQuestionnaireDeadline,
+            redetermination,
+            redeterminationRequestedAt
         );
     }
 
@@ -288,6 +295,17 @@ public final class SampleClaim {
 
     public SampleClaim withSettlementReachedAt(LocalDateTime settlementReachedAt) {
         this.settlementReachedAt = settlementReachedAt;
+        return this;
+    }
+
+
+    public SampleClaim withRedetermination(Redetermination redetermination) {
+        this.redetermination = redetermination;
+        return this;
+    }
+
+    public SampleClaim withRedeterminationRequestedAt(LocalDateTime redeterminationRequestedAt) {
+        this.redeterminationRequestedAt = redeterminationRequestedAt;
         return this;
     }
 
