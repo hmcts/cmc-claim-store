@@ -7,8 +7,8 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -46,7 +46,9 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
         claim = SampleClaim
             .builder()
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build())
+            .withCountyCourtJudgment(SampleCountyCourtJudgment.builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .build())
             .withClaimData(SampleClaimData.submittedByClaimant())
             .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))

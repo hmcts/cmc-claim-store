@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SettlementTest {
 
     private static final String COUNTER_OFFER = "Get me a new roof instead";
-    private static final Offer offer = SampleOffer.validDefaults();
+    private static final Offer offer = SampleOffer.builder().build();
 
     @Mock
     private PartyStatement partyStatement;
@@ -44,7 +44,7 @@ public class SettlementTest {
     @Test
     public void getLastStatementShouldReturnLastStatement() {
         Offer counterOffer = SampleOffer.builder()
-            .withContent(COUNTER_OFFER)
+            .content(COUNTER_OFFER)
             .build();
 
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
@@ -176,7 +176,7 @@ public class SettlementTest {
         settlement.reject(MadeBy.DEFENDANT);
 
         Offer counterOffer = SampleOffer.builder()
-            .withContent(COUNTER_OFFER)
+            .content(COUNTER_OFFER)
             .build();
 
         settlement.makeOffer(counterOffer, MadeBy.DEFENDANT);
@@ -210,7 +210,7 @@ public class SettlementTest {
 
     @Test
     public void isSettlementThroughAdmissionsShouldShouldReturnFalseForOffersRoute() {
-        settlement.makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
 
         assertThat(settlement.isSettlementThroughAdmissions()).isFalse();
