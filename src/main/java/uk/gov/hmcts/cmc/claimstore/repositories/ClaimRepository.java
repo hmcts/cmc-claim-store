@@ -206,12 +206,12 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate("UPDATE claim SET "
-        + " redetermination = :redeterminationData::JSONB,"
+        + " redetermination = :redetermination::JSONB,"
         + " redetermination_requested_at = now() AT TIME ZONE 'utc' "
         + " WHERE external_id = :externalId")
     void saveRedetermination(
         @Bind("externalId") String externalId,
-        @Bind("redeterminationData") Redetermination redetermination);
+        @Bind("redetermination") String redetermination);
 
     @SqlUpdate(
         "UPDATE claim SET "

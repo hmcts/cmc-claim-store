@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Re
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
+import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
@@ -84,14 +85,23 @@ public class CCJStaffNotificationService {
         Map<String, Object> map = createParameterMap(claim, submitterName);
 
         EmailContent emailContent = redeterminationNotificationEmailContentProvider.createContent(map);
+        ImmutableList.Builder<EmailAttachment> attachments = ImmutableList.builder();
+        attachments.add(staffPdfCreatorService.createSealedClaimPdfAttachment(claim));
+        attachments.add(staffPdfCreatorService.createResponsePdfAttachment(claim));
+
+        if (claim.getSettlementReachedAt() != null) {
+            attachments.add(staffPdfCreatorService.createSettlementReachedPdfAttachment(claim));
+        }
+
+        if (claim.getClaimantRespondedAt().isPresent()) {
+            attachments.add(staffPdfCreatorService.createClaimantResponsePdfAttachment(claim));
+        }
+
         return new EmailData(
             staffEmailProperties.getRecipient(),
             emailContent.getSubject(),
             emailContent.getBody(),
-            ImmutableList.of(staffPdfCreatorService.createSealedClaimPdfAttachment(claim),
-                staffPdfCreatorService.createResponsePdfAttachment(claim),
-                staffPdfCreatorService.createSettlementReachedPdfAttachment(claim),
-                staffPdfCreatorService.createClaimantResponsePdfAttachment(claim))
+            attachments.build()
         );
     }
 }

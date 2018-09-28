@@ -62,9 +62,7 @@ public final class SampleClaim {
     private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
     private LocalDateTime redeterminationRequestedAt;
-    private Redetermination redetermination = Redetermination.builder()
-        .explaination("I feel defendant can pay")
-        .build();
+    private Redetermination redetermination = new Redetermination("I feel defendant can pay");
 
     private SampleClaim() {
     }

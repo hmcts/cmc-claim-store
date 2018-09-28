@@ -215,6 +215,6 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     public void saveRedetermination(String authorisation, Claim claim, Redetermination redetermination, String submitterId) {
-        claimRepository.saveRedetermination(claim.getExternalId(), redetermination);
+        claimRepository.saveRedetermination(claim.getExternalId(), jsonMapper.toJson(redetermination));
     }
 }
