@@ -127,7 +127,9 @@ public class StatementOfMeans {
         return courtOrders != null ? courtOrders : emptyList();
     }
 
-    public List<PriorityDebt> getPriorityDebts() { return priorityDebts != null ? priorityDebts : emptyList(); }
+    public List<PriorityDebt> getPriorityDebts() {
+        return priorityDebts != null ? priorityDebts : emptyList();
+    }
 
     public Optional<LivingPartner> getPartner() {
         return Optional.ofNullable(partner);

@@ -10,7 +10,7 @@ import static java.math.BigDecimal.TEN;
 import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType.DEFENDANT;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 
@@ -26,16 +26,16 @@ public class ResponseAcceptationTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenAmountNotPresent() {
+    public void shouldBeValidWhenAmountIsZero() {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
-            .amountPaid(null)
+            .amountPaid(ZERO)
             .formaliseOption(REFER_TO_JUDGE)
-            .determinationDecisionType(DEFENDANT)
+            .decisionType(DEFENDANT)
             .build();
 
         Set<String> response = validate(claimantResponse);
 
-        assertThat(response).hasSize(1);
+        assertThat(response).hasSize(0);
     }
 
     @Test
@@ -43,25 +43,12 @@ public class ResponseAcceptationTest {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
             .amountPaid(BigDecimal.valueOf(-10))
             .formaliseOption(REFER_TO_JUDGE)
-            .determinationDecisionType(DEFENDANT)
+            .decisionType(DEFENDANT)
             .build();
 
         Set<String> response = validate(claimantResponse);
 
         assertThat(response).hasSize(1);
-    }
-
-    @Test
-    public void shouldBeValidWhenAmountIsZero() {
-        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
-            .amountPaid(ZERO)
-            .formaliseOption(REFER_TO_JUDGE)
-            .determinationDecisionType(DEFENDANT)
-            .build();
-
-        Set<String> response = validate(claimantResponse);
-
-        assertThat(response).hasSize(0);
     }
 
     @Test
@@ -73,7 +60,7 @@ public class ResponseAcceptationTest {
                 .disposableIncome(TEN)
                 .build())
             .formaliseOption(CCJ)
-            .determinationDecisionType(DEFENDANT)
+            .decisionType(DEFENDANT)
             .build();
 
         Set<String> response = validate(claimantResponse);
