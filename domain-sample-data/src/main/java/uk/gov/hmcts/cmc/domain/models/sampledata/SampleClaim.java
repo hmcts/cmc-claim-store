@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.Redetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -72,7 +73,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -87,7 +88,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
