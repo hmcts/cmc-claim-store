@@ -115,9 +115,16 @@
 
 <header>
   <table>
+    {% if ccj.admissionResponse == "false" %}
     <tr align="right">
       <td colspan="2"><h3 class="row-spacing">Request for judgment by default</h3></td>
     </tr>
+    {% endif %}
+    {% if ccj.admissionResponse == "true" %}
+    <tr align="right">
+      <td colspan="2"><h3 class="row-spacing">Judgment by admission</h3></td>
+    </tr>
+    {% endif %}
     <tr>
       <td colspan="2"><p>In the County Court Business Centre</p></td>
     </tr>

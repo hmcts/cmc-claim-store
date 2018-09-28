@@ -7,6 +7,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RequestSubmittedNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -63,12 +65,17 @@ public class CCJStaffNotificationService {
 
     private Map<String, Object> createParameterMap(Claim claim) {
         Map<String, Object> map = new HashMap<>();
+
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
         map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
-
+        if (admissionResponse(claim)) {
+            map.put("admissionResponse", true);
+        } else {
+            map.put("admissionResponse", false);
+        }
         return map;
     }
 
@@ -80,5 +87,12 @@ public class CCJStaffNotificationService {
             buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
                 claim.getClaimData().getDefendant().getName()) + EXTENSION
         );
+    }
+
+    private boolean admissionResponse(Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        return response.getResponseType().equals(ResponseType.PART_ADMISSION)
+            || response.getResponseType().equals(ResponseType.FULL_ADMISSION);
     }
 }

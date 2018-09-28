@@ -1,1 +1,5 @@
+{% if admissionResponse == 'true' %}
+Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} judgment by admission requested
+{% else %}
 Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} default judgment requested
+{% endif %}
