@@ -23,6 +23,7 @@ public class StatementOfMeansTest {
                 .incomes(Arrays.asList(IncomeTest.newSampleOfIncomeBuilder().build()))
                 .expenses(Arrays.asList(ExpenseTest.newSampleOfExpenseBuilder().build()))
                 .courtOrders(Arrays.asList(CourtOrderTest.newSampleOfCourtOrderBuilder().build()))
+                .disability(DisabilityStatus.NO)
                 .reason("Reason");
     }
 
@@ -44,7 +45,7 @@ public class StatementOfMeansTest {
         Set<String> errors = validate(statementOfMeans);
         //then
         assertThat(errors)
-                .hasSize(4);
+                .hasSize(5);
     }
 
     @Test
@@ -304,6 +305,22 @@ public class StatementOfMeansTest {
         assertThat(errors)
                 .hasSize(1)
                 .contains("reason : may not be empty");
+    }
+
+    @Test
+    public void shouldBeInvalidForNullDisability() {
+        // given
+        StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
+            .disability(null)
+            .build();
+
+        // when
+        Set<String> errors = validate(statementOfMeans);
+
+        // then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("disability : may not be null");
     }
 
     @Test

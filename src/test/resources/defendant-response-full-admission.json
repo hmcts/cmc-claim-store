@@ -56,8 +56,10 @@
       "numberOfMaintainedChildren": 2,
       "otherDependants": {
         "numberOfPeople": 3,
-        "details": "Three other dependants"
-      }
+        "details": "Three other dependants",
+        "anyDisabled": false
+      },
+      "anyDisabledChildren": false
     },
     "employment": {
       "employers": [{
@@ -90,6 +92,14 @@
       "amountOwed": 10,
       "monthlyInstalmentAmount": 1
     }],
+    "partner": {
+      "declared": true,
+      "disability": "NO",
+      "over18": true,
+      "pensioner": false
+    },
+    "disability": "YES",
+    "carer": false,
     "reason": "My reason"
   }
 }
