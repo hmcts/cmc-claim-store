@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
@@ -46,9 +47,9 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentWithPaymentOptionImmediatelyToCCD() {
         //given
         final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
-            .withPaymentOptionImmediately()
-            .withPaidAmount(BigDecimal.TEN)
-            .withStatementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .paidAmount(BigDecimal.TEN)
+            .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
             .build();
 
         //when
@@ -62,8 +63,9 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentWithPaymentOptionSpecifiedDateToCCD() {
         //given
         final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
-            .withPayBySetDate(now())
-            .withStatementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .payBySetDate(now())
+            .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
             .build();
 
         //when
@@ -77,8 +79,9 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentWithPaymentOptionInstalmentsToCCD() {
         //given
         final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
-            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withStatementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
             .build();
 
         //when
