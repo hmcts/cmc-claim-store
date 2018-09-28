@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -133,7 +133,6 @@ public class ClaimController {
         return claimService.savePrePayment(externalId, authorisation);
     }
 
-    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full/date-paid/{moneyReceivedOn}")
     public void moneyReceivedOn(
         @Valid @NotNull @RequestBody Claim claim,
         @PathVariable("moneyReceivedOn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceivedOn,
