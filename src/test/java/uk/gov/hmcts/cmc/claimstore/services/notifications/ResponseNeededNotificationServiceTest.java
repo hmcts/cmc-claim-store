@@ -11,6 +11,7 @@ import org.quartz.JobDetail;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -58,7 +59,7 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
 

@@ -62,7 +62,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .defendant(SampleParty.builder().individual())
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
-                .paymentDeclaration(SamplePaymentDeclaration.validDefaults())
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())

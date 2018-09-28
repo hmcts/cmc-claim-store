@@ -14,7 +14,7 @@ public class AddressTest {
     @Test
     public void shouldBeSuccessfulValidationForCorrectAddress() {
         //given
-        Address address = SampleAddress.validDefaults();
+        Address address = SampleAddress.builder().build();
         //when
         Set<String> response = validate(address);
         //then
@@ -25,7 +25,7 @@ public class AddressTest {
     public void shouldBeInvalidForNullLineOne() {
         //given
         Address address = SampleAddress.builder()
-            .withLine1(null)
+            .line1(null)
             .build();
         //when
         Set<String> errors = validate(address);
@@ -39,7 +39,7 @@ public class AddressTest {
     public void shouldBeInvalidForEmptyLineOne() {
         //given
         Address address = SampleAddress.builder()
-            .withLine1("")
+            .line1("")
             .build();
         //when
         Set<String> errors = validate(address);
@@ -53,7 +53,7 @@ public class AddressTest {
     public void shouldBeInvalidForTooLongLineOne() {
         //given
         Address address = SampleAddress.builder()
-            .withLine1(StringUtils.repeat("a", 101))
+            .line1(StringUtils.repeat("a", 101))
             .build();
         //when
         Set<String> errors = validate(address);
@@ -67,7 +67,7 @@ public class AddressTest {
     public void shouldBeInvalidForTooLongLineTwo() {
         //given
         Address address = SampleAddress.builder()
-            .withLine2(StringUtils.repeat("a", 101))
+            .line2(StringUtils.repeat("a", 101))
             .build();
         //when
         Set<String> errors = validate(address);
@@ -81,7 +81,7 @@ public class AddressTest {
     public void shouldBeInvalidForTooLongLineThree() {
         //given
         Address address = SampleAddress.builder()
-            .withLine3(StringUtils.repeat("a", 101))
+            .line3(StringUtils.repeat("a", 101))
             .build();
         //when
         Set<String> errors = validate(address);
@@ -95,7 +95,7 @@ public class AddressTest {
     public void shouldBeInvalidForEmptyCity() {
         //given
         Address address = SampleAddress.builder()
-            .withCity("")
+            .city("")
             .build();
         //when
         Set<String> errors = validate(address);
@@ -109,7 +109,7 @@ public class AddressTest {
     public void shouldBeInvalidForTooLongCity() {
         //given
         Address address = SampleAddress.builder()
-            .withCity(StringUtils.repeat("a", 101))
+            .city(StringUtils.repeat("a", 101))
             .build();
         //when
         Set<String> errors = validate(address);
@@ -123,7 +123,7 @@ public class AddressTest {
     public void shouldBeInvalidForNullPostcode() {
         //given
         Address address = SampleAddress.builder()
-            .withPostcode(null)
+            .postcode(null)
             .build();
         //when
         Set<String> errors = validate(address);
@@ -137,7 +137,7 @@ public class AddressTest {
     public void shouldBeInvalidForEmptyPostcode() {
         //given
         Address address = SampleAddress.builder()
-            .withPostcode("")
+            .postcode("")
             .build();
         //when
         Set<String> errors = validate(address);
@@ -151,7 +151,7 @@ public class AddressTest {
     public void shouldBeInvalidForInvalidPostcode() {
         //given
         Address address = SampleAddress.builder()
-            .withPostcode("SW123456")
+            .postcode("SW123456")
             .build();
         //when
         Set<String> errors = validate(address);

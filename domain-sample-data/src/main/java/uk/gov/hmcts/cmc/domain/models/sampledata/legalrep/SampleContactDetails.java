@@ -1,38 +1,18 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata.legalrep;
 
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails.ContactDetailsBuilder;
 
 public class SampleContactDetails {
 
-    private String phone = "7873738547";
-    private String email = "representative@example.org";
-    private String dxNumber = "DX123456";
-
-    public static SampleContactDetails builder() {
-        return new SampleContactDetails();
+    private SampleContactDetails() {
+        super();
     }
 
-    public static ContactDetails validDefaults() {
-        return builder().build();
+    public static ContactDetailsBuilder builder() {
+        return ContactDetails.builder()
+            .phone("7873738547")
+            .email("representative@example.org")
+            .dxAddress("DX123456");
     }
-
-    public SampleContactDetails withPhone(String phone) {
-        this.phone = phone;
-        return this;
-    }
-
-    public SampleContactDetails withEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public SampleContactDetails withDxNumber(String dxNumber) {
-        this.dxNumber = dxNumber;
-        return this;
-    }
-
-    public ContactDetails build() {
-        return new ContactDetails(phone, email, dxNumber);
-    }
-
 }
