@@ -52,10 +52,10 @@ public class ClaimantResponseServiceTest {
     private AppInsights appInsights;
 
     @Mock
-    FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
+    private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
 
     @Before
-    public void setup() {
+    public void setUp() {
         claimantResponseService = new ClaimantResponseService(
             claimService,
             appInsights,
