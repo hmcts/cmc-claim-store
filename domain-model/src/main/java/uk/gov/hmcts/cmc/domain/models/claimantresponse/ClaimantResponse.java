@@ -6,8 +6,8 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -19,7 +19,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public abstract class ClaimantResponse {
 
-    @NotNull
     @Min(value = 0)
     private final BigDecimal amountPaid;
 
@@ -27,8 +26,8 @@ public abstract class ClaimantResponse {
         this.amountPaid = amountPaid;
     }
 
-    public BigDecimal getAmountPaid() {
-        return amountPaid;
+    public Optional<BigDecimal> getAmountPaid() {
+        return Optional.ofNullable(amountPaid);
     }
 
     @Override

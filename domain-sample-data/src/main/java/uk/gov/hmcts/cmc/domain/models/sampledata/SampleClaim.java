@@ -3,9 +3,12 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -57,6 +60,7 @@ public final class SampleClaim {
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
     private LocalDateTime countyCourtJudgmentIssuedAt = null;
+    private LocalDate directionsQuestionnaireDeadline;
 
     private SampleClaim() {
     }
@@ -66,9 +70,31 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YesNoOption.YES)
+                .build()
             ).build();
+    }
+
+    public static Claim getClaimWithFullDefenceNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YesNoOption.NO)
+                .build()
+            )
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
     }
 
     public static Claim getWithDefaultResponse() {
@@ -161,7 +187,8 @@ public final class SampleClaim {
             features,
             claimantRespondedAt,
             claimantResponse,
-            countyCourtJudgmentIssuedAt
+            countyCourtJudgmentIssuedAt,
+            directionsQuestionnaireDeadline
         );
     }
 
@@ -277,6 +304,11 @@ public final class SampleClaim {
 
     public SampleClaim withClaimantRespondedAt(LocalDateTime localDateTime) {
         this.claimantRespondedAt = localDateTime;
+        return this;
+    }
+
+    public SampleClaim withDirectionsQuestionnaireDeadline(LocalDate dqDeadline) {
+        this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
 

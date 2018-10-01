@@ -13,7 +13,7 @@ public class ContactDetailsTest {
 
     @Test
     public void shouldBeValidForValidObject() {
-        ContactDetails contactDetails = SampleContactDetails.validDefaults();
+        ContactDetails contactDetails = SampleContactDetails.builder().build();
 
         Set<String> validationErrors = validate(contactDetails);
 
@@ -23,9 +23,9 @@ public class ContactDetailsTest {
     @Test
     public void shouldBeValidForNullValues() {
         ContactDetails contactDetails = SampleContactDetails.builder()
-            .withPhone(null)
-            .withEmail(null)
-            .withDxNumber(null)
+            .phone(null)
+            .email(null)
+            .dxAddress(null)
             .build();
 
         Set<String> validationErrors = validate(contactDetails);
@@ -36,8 +36,8 @@ public class ContactDetailsTest {
     @Test
     public void shouldBeValidForEmptyValues() {
         ContactDetails contactDetails = SampleContactDetails.builder()
-            .withEmail("")
-            .withDxNumber("")
+            .email("")
+            .dxAddress("")
             .build();
 
         Set<String> validationErrors = validate(contactDetails);
@@ -48,7 +48,7 @@ public class ContactDetailsTest {
     @Test
     public void phoneNumberShouldNotBeValidForEmptyValue() {
         ContactDetails contactDetails = SampleContactDetails.builder()
-            .withPhone("")
+            .phone("")
             .build();
 
         Set<String> validationErrors = validate(contactDetails);
@@ -59,7 +59,7 @@ public class ContactDetailsTest {
     @Test
     public void shouldBeInvalidForInvalidPhoneNumber() {
         ContactDetails contactDetails = SampleContactDetails.builder()
-            .withPhone("123")
+            .phone("123")
             .build();
 
         Set<String> validationErrors = validate(contactDetails);
@@ -70,7 +70,7 @@ public class ContactDetailsTest {
     @Test
     public void shouldBeInvalidForInvalidEmail() {
         ContactDetails contactDetails = SampleContactDetails.builder()
-            .withEmail("this is not a valid email")
+            .email("this is not a valid email")
             .build();
 
         Set<String> validationErrors = validate(contactDetails);
@@ -81,7 +81,7 @@ public class ContactDetailsTest {
     @Test
     public void shouldBeValidFor255CharsDxNumber() {
         ContactDetails contactDetails = SampleContactDetails.builder()
-            .withDxNumber(StringUtils.repeat("X", 255))
+            .dxAddress(StringUtils.repeat("X", 255))
             .build();
 
         Set<String> validationErrors = validate(contactDetails);
@@ -92,7 +92,7 @@ public class ContactDetailsTest {
     @Test
     public void shouldBeInvalidForTooLongDxNumber() {
         ContactDetails contactDetails = SampleContactDetails.builder()
-            .withDxNumber(StringUtils.repeat("X", 256))
+            .dxAddress(StringUtils.repeat("X", 256))
             .build();
 
         Set<String> validationErrors = validate(contactDetails);

@@ -20,19 +20,22 @@ public class ClaimantResponseService {
     private final CaseRepository caseRepository;
     private final ClaimantResponseRule claimantResponseRule;
     private final EventProducer eventProducer;
+    private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
 
     public ClaimantResponseService(
         ClaimService claimService,
         AppInsights appInsights,
         CaseRepository caseRepository,
         ClaimantResponseRule claimantResponseRule,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        FormaliseResponseAcceptanceService formaliseResponseAcceptanceService
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
         this.caseRepository = caseRepository;
         this.claimantResponseRule = claimantResponseRule;
         this.eventProducer = eventProducer;
+        this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -45,8 +48,12 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        caseRepository.saveClaimantResponse(claim.getId(), response, authorization);
+        caseRepository.saveClaimantResponse(claim, response, authorization);
         eventProducer.createClaimantResponseEvent(claim);
+
+        if (response instanceof ResponseAcceptation && ((ResponseAcceptation) response).getFormaliseOption() != null) {
+            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) response, authorization);
+        }
 
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
