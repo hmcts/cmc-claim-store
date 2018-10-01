@@ -49,12 +49,12 @@ public class ClaimantResponseService {
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
         caseRepository.saveClaimantResponse(claim, response, authorization);
-        eventProducer.createClaimantResponseEvent(claim);
 
         if (response instanceof ResponseAcceptation && ((ResponseAcceptation) response).getFormaliseOption() != null) {
             formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) response, authorization);
         }
 
+        eventProducer.createClaimantResponseEvent(claim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
 
