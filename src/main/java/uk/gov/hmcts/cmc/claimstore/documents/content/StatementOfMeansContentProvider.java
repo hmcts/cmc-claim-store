@@ -79,7 +79,10 @@ public class StatementOfMeansContentProvider {
                 partner -> contentBuilder.put("partner", partner)
             );
 
-        contentBuilder.put("disabilityStatus", statementOfMeans.getDisability().getDescription());
+        statementOfMeans.getDisability()
+            .ifPresent(
+                disability -> contentBuilder.put("disability", disability.getDescription())
+            );
 
         contentBuilder.put("carer", statementOfMeans.isCarer());
 

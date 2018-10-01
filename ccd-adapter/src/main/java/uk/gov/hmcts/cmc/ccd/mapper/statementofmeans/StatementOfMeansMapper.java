@@ -171,6 +171,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .partner(null) // TODO
             .disability(null) // TODO
             .carer(false) // TODO
+            .reason(ccdStatementOfMeans.getReason())
             .build();
     }
 }

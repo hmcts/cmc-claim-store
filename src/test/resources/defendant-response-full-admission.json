@@ -93,7 +93,6 @@
       "monthlyInstalmentAmount": 1
     }],
     "partner": {
-      "declared": true,
       "disability": "NO",
       "over18": true,
       "pensioner": false

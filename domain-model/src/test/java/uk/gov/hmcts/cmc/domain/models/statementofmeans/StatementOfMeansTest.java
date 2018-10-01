@@ -45,7 +45,7 @@ public class StatementOfMeansTest {
         Set<String> errors = validate(statementOfMeans);
         //then
         assertThat(errors)
-                .hasSize(5);
+                .hasSize(4);
     }
 
     @Test
@@ -305,22 +305,6 @@ public class StatementOfMeansTest {
         assertThat(errors)
                 .hasSize(1)
                 .contains("reason : may not be empty");
-    }
-
-    @Test
-    public void shouldBeInvalidForNullDisability() {
-        // given
-        StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-            .disability(null)
-            .build();
-
-        // when
-        Set<String> errors = validate(statementOfMeans);
-
-        // then
-        assertThat(errors)
-            .hasSize(1)
-            .contains("disability : may not be null");
     }
 
     @Test

@@ -58,7 +58,6 @@ public class StatementOfMeans {
     @Valid
     private final LivingPartner partner;
 
-    @NotNull
     private final DisabilityStatus disability;
 
     private final boolean carer;
@@ -135,8 +134,8 @@ public class StatementOfMeans {
         return Optional.ofNullable(partner);
     }
 
-    public DisabilityStatus getDisability() {
-        return disability;
+    public Optional<DisabilityStatus> getDisability() {
+        return Optional.ofNullable(disability);
     }
 
     public boolean isCarer() {
