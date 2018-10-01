@@ -6,8 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClientException;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -107,6 +110,26 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
         verify(notificationClient).sendEmail(anyString(), anyString(),
             anyMap(), eq(reference));
+    }
+
+    @Test
+    public void newFeatureFlagShouldBeTrueIfClaimHasFeatures() throws Exception {
+        Claim claim = SampleClaim.builder().withFeatures(Collections.singletonList("sampleFeatures")).build();
+        service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
+
+        verify(notificationClient).sendEmail(anyString(), anyString(), templateParameters.capture(), anyString());
+
+        assertThat(templateParameters.getValue()).containsEntry(NotificationTemplateParameters.NEW_FEATURES, "true");
+    }
+
+    @Test
+    public void newFeatureFlagShouldBeFalseIfClaimHasNoFeatures() throws Exception {
+        Claim claim  = SampleClaim.builder().withFeatures(Collections.emptyList()).build();
+        service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
+
+        verify(notificationClient).sendEmail(anyString(), anyString(), templateParameters.capture(), anyString());
+
+        assertThat(templateParameters.getValue()).containsEntry(NotificationTemplateParameters.NEW_FEATURES, "false");
     }
 
 }

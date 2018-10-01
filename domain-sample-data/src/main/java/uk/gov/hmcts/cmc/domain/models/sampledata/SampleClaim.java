@@ -311,5 +311,10 @@ public final class SampleClaim {
         this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
+
+    public SampleClaim withFeatures(List<String> features) {
+        this.features = features;
+        return this;
+    }
 }
 
