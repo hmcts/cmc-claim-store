@@ -94,6 +94,9 @@ public class EmailTemplates {
     @NotEmpty
     private String responseByClaimantEmailToDefendant;
 
+    @NotEmpty
+    private String claimantSaysDefendantHasPaidInFull;
+
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
     }
@@ -260,5 +263,13 @@ public class EmailTemplates {
 
     public void setResponseByClaimantEmailToDefendant(String responseByClaimantEmailToDefendant) {
         this.responseByClaimantEmailToDefendant = responseByClaimantEmailToDefendant;
+    }
+
+    public String getClaimantSaysDefendantHasPaidInFull() {
+        return claimantSaysDefendantHasPaidInFull;
+    }
+
+    public void setClaimantSaysDefendantHasPaidInFull(String claimantSaysDefendantHasPaidInFull) {
+        this.claimantSaysDefendantHasPaidInFull = claimantSaysDefendantHasPaidInFull;
     }
 }
