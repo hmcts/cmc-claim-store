@@ -133,10 +133,11 @@ public class ClaimController {
         return claimService.savePrePayment(externalId, authorisation);
     }
 
+    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full/{moneyReceivedOn}")
     public void moneyReceivedOn(
-        @Valid @NotNull @RequestBody Claim claim,
+        @PathVariable("externalId") String externalId,
         @PathVariable("moneyReceivedOn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceivedOn,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
-        claimService.saveMoneyReceivedOn(claim, moneyReceivedOn, authorisation);
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
+        claimService.saveMoneyReceivedOn(externalId, moneyReceivedOn, authorisation);
     }
 }

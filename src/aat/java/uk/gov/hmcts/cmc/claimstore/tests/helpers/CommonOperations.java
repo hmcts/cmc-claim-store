@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -213,5 +214,15 @@ public class CommonOperations {
             .body(jsonMapper.toJson(ccj))
             .when()
             .post(issuePath);
+    }
+
+    public Response paidInFull(String externalId, LocalDate moneyReceivedDate, User user) {
+        String path = "/claims/" + externalId + "/paid-in-full/" + moneyReceivedDate;
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .when()
+            .put(path);
     }
 }
