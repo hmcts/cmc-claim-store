@@ -9,6 +9,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -78,7 +79,7 @@ public class CountyCourtJudgmentRuleTest {
             .withCountyCourtJudgmentRequestedAt(now())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
@@ -91,7 +92,7 @@ public class CountyCourtJudgmentRuleTest {
             .withCountyCourtJudgmentRequestedAt(now())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, true);

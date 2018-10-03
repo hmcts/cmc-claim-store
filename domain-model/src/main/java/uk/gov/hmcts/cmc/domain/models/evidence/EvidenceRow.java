@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.evidence;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 @EqualsAndHashCode
 public class EvidenceRow {
 

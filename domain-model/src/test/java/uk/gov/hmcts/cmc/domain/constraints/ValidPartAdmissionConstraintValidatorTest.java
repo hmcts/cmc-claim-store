@@ -132,7 +132,7 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldBeInvalidWhenBothPaymentDeclarationAndPaymentIntentionArePopulated() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentDeclaration(SamplePaymentDeclaration.validDefaults())
+            .paymentDeclaration(SamplePaymentDeclaration.builder().build())
             .paymentIntention(SamplePaymentIntention.immediately())
             .build();
 
@@ -142,7 +142,7 @@ public class ValidPartAdmissionConstraintValidatorTest {
     @Test
     public void shouldInvalidWhenOnlyPaymentDeclarationIsPopulatedAndItIsValid() {
         PartAdmissionResponse partAdmissionResponse = builder()
-            .paymentDeclaration(SamplePaymentDeclaration.validDefaults())
+            .paymentDeclaration(SamplePaymentDeclaration.builder().build())
             .build();
 
         assertThat(validator.isValid(partAdmissionResponse, validatorContext)).isTrue();
