@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.amount;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.MinTotalAmount;
@@ -16,6 +17,7 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 @EqualsAndHashCode
 public class AmountBreakDown implements Amount {
 

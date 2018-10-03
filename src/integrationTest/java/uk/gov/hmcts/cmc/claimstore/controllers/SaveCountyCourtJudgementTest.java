@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -75,7 +76,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         claimStore.updateResponseDeadline(claim.getExternalId());
 
         CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build();
+            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
 
         makeRequest(claim.getExternalId(), countyCourtJudgment, false)
             .andExpect(status().isOk());
@@ -91,7 +92,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         claimStore.saveResponse(claim, SampleResponse.PartAdmission.builder().build());
 
         CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build();
+            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
 
         makeRequest(claim.getExternalId(), countyCourtJudgment, true)
             .andExpect(status().isOk());
@@ -107,7 +108,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         claimStore.saveResponse(claim, SampleResponse.PartAdmission.builder().build());
 
         CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build();
+            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
 
         makeRequest(claim.getExternalId(), countyCourtJudgment, true)
             .andExpect(status().isOk());
@@ -124,7 +125,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         claimStore.saveResponse(claim, SampleResponse.PartAdmission.builder().build());
 
         CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().withPaymentOptionImmediately().build();
+            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
 
         makeRequest(claim.getExternalId(), countyCourtJudgment, true)
             .andExpect(status().isOk());

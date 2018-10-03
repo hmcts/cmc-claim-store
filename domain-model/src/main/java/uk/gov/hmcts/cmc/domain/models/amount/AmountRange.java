@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.amount;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Builder
 @EqualsAndHashCode
 public class AmountRange implements Amount {
 
