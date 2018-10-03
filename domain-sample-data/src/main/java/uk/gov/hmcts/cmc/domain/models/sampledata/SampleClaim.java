@@ -318,5 +318,10 @@ public final class SampleClaim {
         this.moneyReceivedOn = moneyReceivedOn;
         return this;
     }
+
+    public SampleClaim withFeatures(List<String> features) {
+        this.features = features;
+        return this;
+    }
 }
 
