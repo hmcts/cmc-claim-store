@@ -114,7 +114,9 @@ public class StatementOfMeans {
         return courtOrders != null ? courtOrders : emptyList();
     }
 
-    public List<PriorityDebt> getPriorityDebts() { return priorityDebts != null ? priorityDebts : emptyList(); }
+    public List<PriorityDebt> getPriorityDebts() {
+        return priorityDebts != null ? priorityDebts : emptyList();
+    }
 
     public String getReason() {
         return reason;
