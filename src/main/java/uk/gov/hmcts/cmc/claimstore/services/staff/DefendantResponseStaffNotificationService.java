@@ -98,7 +98,6 @@ public class DefendantResponseStaffNotificationService {
         if (isFullAdmission(response.getResponseType())) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
             map.put("responseType", "full admission");
-            map.put("paymentOption", fullAdmissionResponse.getPaymentIntention().getPaymentOption());
             map.put("paymentOptionDescription", fullAdmissionResponse.getPaymentIntention()
                 .getPaymentOption().getDescription().toLowerCase());
         }
@@ -106,8 +105,6 @@ public class DefendantResponseStaffNotificationService {
         if (isPartAdmission(response.getResponseType())) {
             PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
             map.put("responseType", "partial admission");
-            partAdmissionResponse.getPaymentIntention().ifPresent(paymentIntention ->
-                map.put("paymentOption", paymentIntention.getPaymentOption()));
             partAdmissionResponse.getPaymentIntention().ifPresent(paymentIntention ->
                 map.put("paymentOptionDescription", paymentIntention.getPaymentOption()
                     .getDescription().toLowerCase()));
