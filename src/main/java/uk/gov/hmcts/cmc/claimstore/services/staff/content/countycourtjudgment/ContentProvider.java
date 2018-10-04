@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
+import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,15 +31,8 @@ public class ContentProvider {
             claim.getCountyCourtJudgment(),
             claim.getCountyCourtJudgmentRequestedAt(),
             amountContentProvider.create(claim),
-            admissionResponse(claim)
+            ResponseHelper.admissionResponse(claim)
             )
         );
-    }
-
-    private boolean admissionResponse(Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
-        return response.getResponseType().equals(ResponseType.PART_ADMISSION)
-            || response.getResponseType().equals(ResponseType.FULL_ADMISSION);
     }
 }

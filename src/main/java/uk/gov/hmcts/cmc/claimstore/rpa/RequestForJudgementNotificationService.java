@@ -47,8 +47,11 @@ public class RequestForJudgementNotificationService {
     public void notifyRobotics(CountyCourtJudgmentEvent event) {
         requireNonNull(event);
 
-        EmailData emailData = prepareEmailData(event.getClaim());
-        emailService.sendEmail(emailProperties.getSender(), emailData);
+        if (!event.isIssue()) {
+
+            EmailData emailData = prepareEmailData(event.getClaim());
+            emailService.sendEmail(emailProperties.getSender(), emailData);
+        }
     }
 
     private EmailData prepareEmailData(Claim claim) {
