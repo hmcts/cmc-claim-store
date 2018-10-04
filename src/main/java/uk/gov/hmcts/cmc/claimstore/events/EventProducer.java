@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkSealedClaimDocumentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPrePaymentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDSettlementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -125,5 +127,14 @@ public class EventProducer {
 
     public void createCCDClaimantResponseEvent(Claim claim, ClaimantResponse response, String authorization) {
         publisher.publishEvent(new CCDClaimantResponseEvent(claim, response, authorization));
+    }
+
+    public void createCCDSettlementEvent(
+        Claim claim,
+                                                      Settlement settlement,
+        String authorization,
+        String userAction
+    ) {
+        publisher.publishEvent(new CCDSettlementEvent(claim, settlement, authorization, userAction));
     }
 }

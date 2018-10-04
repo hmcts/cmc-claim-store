@@ -50,7 +50,10 @@ public class OffersService {
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAction("OFFER_MADE_BY", party.name()));
+        String userAction = userAction("OFFER_MADE_BY", party.name());
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+
+        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
         appInsights.trackEvent(OFFER_MADE, updated.getReferenceNumber());
@@ -65,8 +68,9 @@ public class OffersService {
 
         settlement.accept(party);
 
-        caseRepository.updateSettlement(claim, settlement, authorisation,
-            userAction("OFFER_ACCEPTED_BY", party.name()));
+        String userAction = userAction("OFFER_ACCEPTED_BY", party.name());
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferAcceptedEvent(updated, party);
@@ -84,6 +88,7 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
+        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
         appInsights.trackEvent(OFFER_REJECTED, updated.getReferenceNumber());
         return updated;
     }
@@ -98,6 +103,8 @@ public class OffersService {
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
+
+        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
         appInsights.trackEvent(SETTLEMENT_REACHED, updated.getReferenceNumber());
         return updated;
     }
@@ -124,6 +131,7 @@ public class OffersService {
 
         final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createSignSettlementAgreementEvent(signedSettlementClaim);
+        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
         appInsights.trackEvent(CLAIMANT_RESPONSE_GENERATED_OFFER_MADE, signedSettlementClaim.getReferenceNumber());
 
         return signedSettlementClaim;

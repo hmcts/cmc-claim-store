@@ -124,6 +124,17 @@ public class CCDCaseHandler {
         ccdCaseRepository.linkSealedClaimDocument(authorization, ccdClaim, event.getSealedClaimDocument());
     }
 
+    @EventListener
+    @Async
+    public void updateSettlement(CCDSettlementEvent event) {
+        String authorization = event.getAuthorization();
+        Claim claim = event.getClaim();
+        Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
+            .orElseThrow(IllegalStateException::new);
+
+        ccdCaseRepository.updateSettlement(ccdClaim, event.getSettlement(), authorization, event.getUserAction());
+    }
+
     private static boolean isFullDefenceWithNoMediation(Response response) {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
             && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
