@@ -86,11 +86,8 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment,
         boolean issue
     ) {
-        if (issue) {
-            throw new NotImplementedException("Save county court judgement issued not implemented on CCD");
-        } else {
-            coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
-        }
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
+
     }
 
     @Override
@@ -103,8 +100,13 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
+    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
         throw new NotImplementedException("Save claimant response not implemented on CCD");
+    }
+
+    @Override
+    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
+        throw new NotImplementedException("We do not implement CCD yet");
     }
 
     @Override

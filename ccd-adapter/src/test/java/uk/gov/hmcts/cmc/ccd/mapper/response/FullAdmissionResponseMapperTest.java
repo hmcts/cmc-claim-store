@@ -73,6 +73,7 @@ public class FullAdmissionResponseMapperTest {
         //given
         CCDFullAdmissionResponse ccdFullAdmissionResponse = CCDFullAdmissionResponse.builder()
             .moreTimeNeededOption(CCDYesNoOption.YES)
+            .freeMediationOption(CCDYesNoOption.YES)
             .paymentIntention(CCDPaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)
                 .paymentDate(LocalDate.now().plusDays(7))

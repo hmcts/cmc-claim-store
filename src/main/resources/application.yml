@@ -81,8 +81,8 @@ notifications:
   respondToClaimUrl: "${RESPOND_TO_CLAIM_URL:}"
   templates:
     email:
-      claimantClaimIssued: "58e645b8-bcd6-4462-822c-f17da9dd3dc7"
-      defendantClaimIssued: "49027a97-412e-45ee-86df-bf2fa6df6d8c"
+      claimantClaimIssued: "f034e121-e9d4-441a-91b9-52d0c7d14d73"
+      defendantClaimIssued: "b261ef40-ca55-4f36-b8ff-7f1f34347058"
       defendantResponseIssuedToIndividual: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseIssuedToCompany: "611ee21b-0063-4fee-a344-393b73868486"
       defendantResponseNeeded: "15f9985a-1775-4f64-a6c7-7616bdbabb1c"
@@ -101,8 +101,9 @@ notifications:
       offerCounterSignedEmailToOriginator: "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1"
       offerCounterSignedEmailToOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
       claimantResponseWithMediationIssued: "287bb764-075f-4c7a-8049-ec9f7cd83812"
+      claimantResponseWithNoMediationIssued: "9c740162-7516-4954-a023-6c1e48ba02f6"
+      defendantResponseWithNoMediationIssued: "613ca230-ab62-4370-bacd-ecc65b92132a"
       responseByClaimantEmailToDefendant: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
-
 staff-notifications:
   sender:
   recipient:

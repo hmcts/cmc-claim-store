@@ -27,10 +27,11 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
             return null;
         }
 
-        return new RepaymentPlan(
-            ccdRepaymentPlan.getInstalmentAmount(),
-            ccdRepaymentPlan.getFirstPaymentDate(),
-            PaymentSchedule.valueOf(ccdRepaymentPlan.getPaymentSchedule().name())
-        );
+        return RepaymentPlan.builder()
+            .instalmentAmount(ccdRepaymentPlan.getInstalmentAmount())
+            .firstPaymentDate(ccdRepaymentPlan.getFirstPaymentDate())
+            .paymentSchedule(PaymentSchedule.valueOf(ccdRepaymentPlan.getPaymentSchedule().name()))
+            .completionDate(ccdRepaymentPlan.getCompletionDate())
+            .build();
     }
 }

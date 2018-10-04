@@ -5,9 +5,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -16,9 +16,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode(callSuper = true)
 public class ResponseRejection extends ClaimantResponse {
 
-    private final boolean freeMediation;
+    private final Boolean freeMediation;
 
-    @NotBlank
     @Size(max = 99000)
     private final String reason;
 
@@ -28,6 +27,14 @@ public class ResponseRejection extends ClaimantResponse {
         super(amountPaid);
         this.freeMediation = freeMediation;
         this.reason = reason;
+    }
+
+    public Optional<Boolean> getFreeMediation() {
+        return Optional.ofNullable(freeMediation);
+    }
+
+    public Optional<String> getReason() {
+        return Optional.ofNullable(reason);
     }
 
     @Override
