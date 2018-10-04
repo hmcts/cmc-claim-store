@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseApi {
 
     public static enum CaseState {

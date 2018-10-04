@@ -50,6 +50,7 @@ public class ClaimantResponseService {
 
         caseRepository.saveClaimantResponse(claim, response, authorization);
         eventProducer.createClaimantResponseEvent(claim);
+        eventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
         formaliseResponseAcceptanceService.formalise(claim, response, authorization);
 
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());

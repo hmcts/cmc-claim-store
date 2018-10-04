@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -53,7 +54,6 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_I
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CoreCaseDataService {
 
     private final CaseMapper caseMapper;
@@ -142,7 +142,10 @@ public class CoreCaseDataService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
         CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+
+        if (StringUtils.isBlank(claim.getReferenceNumber())) {
+            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+        }
 
         CaseDetails caseDetails = update(authorisation, ccdCase, SUBMIT_POST_PAYMENT);
 
@@ -214,9 +217,21 @@ public class CoreCaseDataService {
             .respondedAt(nowInUTC())
             .build();
 
-        return update(authorisation, ccdCase, CaseEvent.valueOf(response.getResponseType().name() + "_SUBMITTED"));
+        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response) + "_RESPONSE_SUBMITTED"));
     }
 
+    private String getResponseTypeName(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                return ((FullDefenceResponse) response).getDefenceType().name();
+            case FULL_ADMISSION:
+            case PART_ADMISSION:
+                return response.getResponseType().name();
+            default:
+                throw new IllegalArgumentException("Invalid response type " + response.getResponseType());
+
+        }
+    }
 
     public CaseDetails saveClaimantResponse(
         Long caseId,

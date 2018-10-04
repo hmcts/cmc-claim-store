@@ -24,7 +24,7 @@ public class CourtDeterminationAssert extends AbstractAssert<CourtDeterminationA
 
         });
 
-        assertThat(actual.getCourtCalculatedPaymentIntention()).isEqualTo(ccdCourtDetermination.getCourtCalculatedPaymentIntention());
+        assertThat(actual.getCourtDecision()).isEqualTo(ccdCourtDetermination.getCourtDecision());
 
         return this;
     }

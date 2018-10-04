@@ -140,7 +140,9 @@ public class ClaimService {
     }
 
     public CaseReference savePrePayment(String externalId, String authorisation) {
-        return caseRepository.savePrePaymentClaim(externalId, authorisation);
+        CaseReference caseReference = caseRepository.savePrePaymentClaim(externalId, authorisation);
+        eventProducer.createCCDPrePaymentEvent(externalId, authorisation);
+        return caseReference;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -189,8 +191,10 @@ public class ClaimService {
             authorisation
         );
 
+
         Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
         trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
+        eventProducer.createCCDClaimIssuedEvent(retrievedClaim, authorisation);
 
         return retrievedClaim;
     }
@@ -215,6 +219,7 @@ public class ClaimService {
         claim = getClaimByExternalId(externalId, authorisation);
         UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
+        eventProducer.createMoreTimeForCCDResponseRequestedEvent(authorisation, externalId, newDeadline);
 
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, claim.getReferenceNumber());
         return claim;
@@ -274,10 +279,13 @@ public class ClaimService {
 
     public void linkDefendantToClaim(String authorisation) {
         caseRepository.linkDefendant(authorisation);
+        eventProducer.linkDefendantCCDEvent(authorisation);
     }
 
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
         caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
+        eventProducer.linkSealedClaimDocumentCCDEvent(authorisation, claim, sealedClaimDocument);
+
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
@@ -291,6 +299,7 @@ public class ClaimService {
         boolean issue
     ) {
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
+        eventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment, issue);
         appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
     }
 

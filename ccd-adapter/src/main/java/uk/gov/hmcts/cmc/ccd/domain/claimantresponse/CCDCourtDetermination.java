@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 @Builder
 @Value
 public class CCDCourtDetermination {
-    private CCDPaymentIntention courtCalculatedPaymentIntention;
+    private CCDPaymentIntention courtDecision;
 
     private String rejectionReason;
 }

@@ -17,8 +17,8 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
     @Override
     public CCDCourtDetermination to(CourtDetermination courtDetermination) {
         CCDCourtDetermination.CCDCourtDeterminationBuilder builder = CCDCourtDetermination.builder()
-            .courtCalculatedPaymentIntention(paymentIntentionMapper
-                .to(courtDetermination.getCourtCalculatedPaymentIntention()));
+            .courtDecision(paymentIntentionMapper
+                .to(courtDetermination.getCourtDecision()));
 
         courtDetermination.getRejectionReason().ifPresent(builder::rejectionReason);
         return builder.build();
@@ -27,8 +27,8 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
     @Override
     public CourtDetermination from(CCDCourtDetermination ccdCourtDetermination) {
         return CourtDetermination.builder()
-            .courtCalculatedPaymentIntention(paymentIntentionMapper
-                .from(ccdCourtDetermination.getCourtCalculatedPaymentIntention()))
+            .courtDecision(paymentIntentionMapper
+                .from(ccdCourtDetermination.getCourtDecision()))
             .rejectionReason(ccdCourtDetermination.getRejectionReason())
             .build();
     }
