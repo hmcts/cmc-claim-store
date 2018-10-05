@@ -111,9 +111,7 @@ public class TotalAmountCalculator {
     ) {
         BigDecimal accruedInterest = ZERO;
 
-        //will be null for breakdown of interest, total interest specified
-        //ValidInterestDateConstraintValidator - this is valid if date null too
-        if (null != interestDate && interestDate.isEndDateOnClaimComplete()) {
+        if (interestDate.isEndDateOnClaimComplete()) {
             accruedInterest = calculateInterest(
                 interest.getSpecificDailyAmount()
                     .orElseGet(() -> calculateDailyAmount(claimAmount, interest.getRate())),
