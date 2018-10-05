@@ -50,17 +50,4 @@ public class CountyCourtJudgmentPdfServiceTest {
         countyCourtJudgmentPdfService.createPdf(SampleClaim.getDefault());
         verify(documentTemplates).getCountyCourtJudgmentByRequest();
     }
-
-    @Test
-    public void shouldUseCorrectTemplateForCCJIssue() {
-        countyCourtJudgmentPdfService.createPdf(SampleClaim.builder()
-            .withCountyCourtJudgmentIssuedAt(LocalDateTime.now())
-            .withClaimData(SampleClaimData.submittedByClaimant())
-            .withCountyCourtJudgment(
-                SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
-                    .build()
-            ).build());
-        verify(documentTemplates).getCountyCourtJudgmentIssued();
-    }
 }
