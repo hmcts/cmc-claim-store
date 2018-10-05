@@ -39,7 +39,7 @@ public class InterestContentProvider {
         LocalDate interestEndDate
     ) {
         requireNonNull(interest);
-        requireNonNull(interestDate);
+//        requireNonNull(interestDate); this can be null
         requireNonNull(claimAmount);
         requireNonNull(issuedOn);
 
