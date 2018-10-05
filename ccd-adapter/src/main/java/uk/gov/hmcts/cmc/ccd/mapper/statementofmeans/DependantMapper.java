@@ -70,7 +70,6 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
             .children(children)
             .numberOfMaintainedChildren(ccdDependant.getNumberOfMaintainedChildren())
             .otherDependants(otherDependants)
-            .anyDisabledChildren(false) // TODO
             .build();
     }
 
@@ -82,7 +81,6 @@ public class DependantMapper implements Mapper<CCDDependant, Dependant> {
         return OtherDependants.builder()
             .numberOfPeople(ccdOtherDependants.getNumberOfPeople())
             .details(ccdOtherDependants.getDetails())
-            .anyDisabled(false) // TODO
             .build();
     }
 
