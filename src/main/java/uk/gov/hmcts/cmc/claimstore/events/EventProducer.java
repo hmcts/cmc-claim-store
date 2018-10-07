@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkSealedClaimDocumentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPrePaymentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDSettlementEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingLinkDefendantEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingResponseDeadlineEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
@@ -112,7 +114,7 @@ public class EventProducer {
         CountyCourtJudgment countyCourtJudgment,
         boolean issue
     ) {
-        publisher.publishEvent(new CCDCountyCourtJudgmentEvent(authorisation, claim,countyCourtJudgment, issue));
+        publisher.publishEvent(new CCDCountyCourtJudgmentEvent(authorisation, claim, countyCourtJudgment, issue));
     }
 
     public void linkSealedClaimDocumentCCDEvent(String authorisation, Claim claim, URI sealedClaimDocument) {
@@ -131,10 +133,22 @@ public class EventProducer {
 
     public void createCCDSettlementEvent(
         Claim claim,
-                                                      Settlement settlement,
+        Settlement settlement,
         String authorization,
         String userAction
     ) {
         publisher.publishEvent(new CCDSettlementEvent(claim, settlement, authorization, userAction));
+    }
+
+    public void createCCDResponseDeadlineEvent(
+        String claimReferenceNumber,
+        String authorisation,
+        LocalDate newDeadline
+    ) {
+        publisher.publishEvent(new CCDTestingResponseDeadlineEvent(claimReferenceNumber, authorisation, newDeadline));
+    }
+
+    public void createCCDLinkDefendantEvent(String claimReferenceNumber, String defendantId) {
+        publisher.publishEvent(new CCDTestingLinkDefendantEvent(claimReferenceNumber, defendantId));
     }
 }

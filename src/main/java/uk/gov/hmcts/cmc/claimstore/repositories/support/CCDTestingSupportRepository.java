@@ -12,8 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
-@Service("supportRepository")
+@Service("ccdSupportRepository")
 public class CCDTestingSupportRepository implements SupportRepository {
 
     private final UserService userService;
