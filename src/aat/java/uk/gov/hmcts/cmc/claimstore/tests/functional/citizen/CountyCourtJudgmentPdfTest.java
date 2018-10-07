@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
-public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
+public class CountyCourtJudgmentPdfTest extends BasePdfTest {
 
     @Autowired
     private AmountContentProvider amountContentProvider;
