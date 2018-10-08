@@ -48,12 +48,4 @@ public class SolicitorPdfTest extends BasePdfTest {
         return testData::submittedBySolicitorBuilder;
     }
 
-    private static String getFullAddressString(Address address) {
-        return address.getLine1() + " \n"
-            + address.getLine2() + " \n"
-            // line 3 is not used
-            + address.getCity() + " \n"
-            + address.getPostcode();
-    }
-
 }

@@ -1,17 +1,23 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
+import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -39,8 +45,21 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
     public void before() {
         user = idamTestService.createCitizen();
         claim = createCase();
-        defendant = idamTestService.createDefendant(claim.getLetterHolderId());
-        commonOperations.linkDefendant(defendant.getAuthorisation());
+        modifyResponseDeadline(claim, user);
+        //defendant = idamTestService.createDefendant(claim.getLetterHolderId());
+        //commonOperations.linkDefendant(defendant.getAuthorisation());
+    }
+
+    @Test
+    public void shouldBeAbleToFindDataInCCJByDefault() throws IOException {
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .build();
+
+        claim = submitCCJ(countyCourtJudgment, false);
+        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        assertionsOnPdf(claim, pdfAsText);
     }
 
     @Test
@@ -53,7 +72,7 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
             .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
-        claim = submitCCJByAdmission(countyCourtJudgment);
+        claim = submitCCJ(countyCourtJudgment, false);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -69,7 +88,7 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
-        claim = submitCCJByAdmission(countyCourtJudgment);
+        claim = submitCCJ(countyCourtJudgment, false);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -85,7 +104,7 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
-        claim = submitCCJByAdmission(countyCourtJudgment);
+        claim = submitCCJ(countyCourtJudgment, false);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -101,7 +120,7 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
             .payBySetDate(LocalDate.now().plusDays(20))
             .build();
 
-        claim = submitCCJByAdmission(countyCourtJudgment);
+        claim = submitCCJ(countyCourtJudgment, false);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -113,17 +132,19 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
 
     }
 
-    private Claim submitCCJByAdmission(CountyCourtJudgment countyCourtJudgment) {
+    private Claim submitCCJ(CountyCourtJudgment countyCourtJudgment, boolean isIssue) {
         Claim claimReturnedAfterCCJIssued = commonOperations
-            .requestCCJ(claim.getExternalId(), countyCourtJudgment, true, user)
+            .requestCCJ(claim.getExternalId(), countyCourtJudgment, isIssue, user)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract()
             .body().as(Claim.class);
 
-        assertTrue(claimReturnedAfterCCJIssued.getCountyCourtJudgmentIssuedAt().isPresent());
-
+        assertThat(claimReturnedAfterCCJIssued.getCountyCourtJudgmentRequestedAt()).isNotNull();
+        if(isIssue){
+            assertTrue(claimReturnedAfterCCJIssued.getCountyCourtJudgmentIssuedAt().isPresent());
+        }
         return claimReturnedAfterCCJIssued;
     }
 
@@ -134,13 +155,27 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
 
     @Override
     protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
-        assertThat(pdfAsText).contains("Judgment by admission");
+        ClaimData claimData = createdCase.getClaimData();
+        assertThat(pdfAsText).contains("Request for judgment by default");
+        assertThat(pdfAsText).contains("In the County Court Business Centre");
+        assertThat(pdfAsText).contains("Online Civil Money Claims");
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
-        assertThat(pdfAsText).contains("Date of order: " + formatDate(createdCase
-            .getCountyCourtJudgmentIssuedAt()
-            .orElseThrow(IllegalArgumentException::new)));
-        assertThat(pdfAsText).contains("Claimant name: " + createdCase.getClaimData().getClaimant().getName());
-        assertThat(pdfAsText).contains("Defendant name: " + createdCase.getClaimData().getDefendant().getName());
+        assertThat(pdfAsText).contains("Requested: " + formatDate(createdCase
+            .getCountyCourtJudgmentRequestedAt()));
+        assertThat(pdfAsText).contains("Claimant details");
+        assertThat(pdfAsText).contains("Name: " + claimData.getClaimant().getName());
+        assertThat(pdfAsText).contains("Address: " +
+            getFullAddressString(claimData.getClaimant().getAddress()));
+        claimData.getClaimant().getMobilePhone()
+            .ifPresent(value -> assertThat(pdfAsText).contains("Telephone: " + value));
+        assertThat(pdfAsText).contains("Defendant details");
+        assertThat(pdfAsText).contains("Name: " + claimData.getDefendant().getName());
+        assertThat(pdfAsText).contains("Address: " +
+            getFullAddressString(claimData.getDefendant().getAddress()));
+        claimData.getDefendant().getEmail().ifPresent(email -> assertThat(pdfAsText).contains("Email: " + email));
+        assertThat(pdfAsText).contains("Claim amount details");
+        assertThat(pdfAsText).contains("Claim amount: " +
+            Formatting.formatMoney(((AmountBreakDown) createdCase.getClaimData().getAmount()).getTotalAmount()));
 
         String amountToBePaid = amountContentProvider.create(createdCase).getRemainingAmount();
         assertThat(pdfAsText).contains("It is ordered that you must pay the claimant " + amountToBePaid
@@ -177,5 +212,16 @@ public class CountyCourtJudgmentPdfTest extends BasePdfTest {
                 throw new NotFoundException(countyCourtJudgment.getPaymentOption() + "not found");
         }
 
+    }
+
+    private void modifyResponseDeadline(Claim caseCreated, User user) {
+        LocalDate newResponseDeadline = caseCreated.getResponseDeadline().minusDays(60);
+        String path = "/testing-support/claims/" + caseCreated.getReferenceNumber() + "/response-deadline/" + newResponseDeadline;
+        RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .when()
+            .put(path).then().statusCode(HttpStatus.OK.value());
     }
 }

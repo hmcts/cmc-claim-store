@@ -22,9 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
@@ -111,11 +110,9 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
     }
 
     @Test
-    public void shouldNotSendResponseEmailWhenIssued() {
-
+    public void shouldNotSendRoboticsEmailWhenCCJByAdmission() {
         CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE", true);
         service.notifyRobotics(event);
-        verifyNoMoreInteractions(emailService);
-        verify(emailService, times(0)).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+        verifyZeroInteractions(emailService);
     }
 }
