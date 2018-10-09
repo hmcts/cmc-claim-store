@@ -26,6 +26,7 @@ public class SampleCourtDetermination {
     public static CourtDetermination bySetDate() {
         return builder()
             .courtDecision(SamplePaymentIntention.bySetDate())
+            .courtPaymentIntention(SamplePaymentIntention.bySetDate())
             .disposableIncome(TEN)
             .decisionType(COURT)
             .build();
