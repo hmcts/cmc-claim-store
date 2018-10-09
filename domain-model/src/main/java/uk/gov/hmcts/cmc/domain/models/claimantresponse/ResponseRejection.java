@@ -24,7 +24,7 @@ public class ResponseRejection extends ClaimantResponse {
     @Builder
     @JsonCreator
     public ResponseRejection(BigDecimal amountPaid, boolean freeMediation, String reason) {
-        super(amountPaid);
+        super(ClaimantResponseType.REJECTION, amountPaid);
         this.freeMediation = freeMediation;
         this.reason = reason;
     }

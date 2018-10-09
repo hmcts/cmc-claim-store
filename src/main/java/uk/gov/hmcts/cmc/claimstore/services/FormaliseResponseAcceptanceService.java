@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -66,12 +67,13 @@ public class FormaliseResponseAcceptanceService {
         Settlement settlement = new Settlement();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         PaymentIntention paymentIntention = acceptedPaymentIntention(responseAcceptation, response);
-        DecisionType decisionType = responseAcceptation.getDecisionType();
+        DecisionType decisionType = getDecisionType(responseAcceptation);
         switch (decisionType) {
             case DEFENDANT:
                 settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.DEFENDANT);
                 break;
             case CLAIMANT:
+            case CLAIMANT_IN_FAVOUR_OF_DEFENDANT:
                 settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.CLAIMANT);
                 break;
             case COURT:
@@ -83,6 +85,18 @@ public class FormaliseResponseAcceptanceService {
         }
         settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
         this.offersService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
+    }
+
+    private DecisionType getDecisionType(ResponseAcceptation responseAcceptation) {
+        if (responseAcceptation.getCourtDetermination().isPresent()) {
+            return responseAcceptation.getCourtDetermination().get().getDecisionType();
+        }
+
+        if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
+            return DecisionType.CLAIMANT;
+        }
+
+        return DecisionType.DEFENDANT;
     }
 
     private Offer prepareOffer(Response response, PaymentIntention paymentIntention) {
@@ -141,17 +155,22 @@ public class FormaliseResponseAcceptanceService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
 
-        CountyCourtJudgment countyCourtJudgment = CountyCourtJudgment.builder()
+        CountyCourtJudgment.CountyCourtJudgmentBuilder countyCourtJudgment = CountyCourtJudgment.builder()
             .defendantDateOfBirth(defendantDateOfBirth(response.getDefendant()))
             .paymentOption(acceptedPaymentIntention.getPaymentOption())
             .paidAmount(responseAcceptation.getAmountPaid().orElse(null))
             .repaymentPlan(acceptedPaymentIntention.getRepaymentPlan().orElse(null))
-            .payBySetDate(acceptedPaymentIntention.getPaymentDate().orElse(null))
-            .build();
+            .payBySetDate(acceptedPaymentIntention.getPaymentDate().orElse(null));
+
+        if (responseAcceptation.getCourtDetermination().isPresent()) {
+            countyCourtJudgment.ccjType(CountyCourtJudgmentType.DETERMINATION);
+        } else {
+            countyCourtJudgment.ccjType(CountyCourtJudgmentType.ADMISSIONS);
+        }
 
         this.countyCourtJudgmentService.save(
             claim.getSubmitterId(),
-            countyCourtJudgment,
+            countyCourtJudgment.build(),
             claim.getExternalId(),
             authorisation,
             true);
@@ -165,22 +184,16 @@ public class FormaliseResponseAcceptanceService {
     }
 
     private PaymentIntention acceptedPaymentIntention(ResponseAcceptation responseAcceptation, Response response) {
-        DecisionType decisionType = responseAcceptation.getDecisionType();
-        if (decisionType == null) {
-            throw new IllegalArgumentException("formaliseOption must not be null");
+
+        if (responseAcceptation.getCourtDetermination().isPresent()) {
+            return responseAcceptation.getCourtDetermination().get().getCourtDecision();
         }
-        switch (decisionType) {
-            case DEFENDANT:
-                return getDefendantPaymentIntention(response);
-            case CLAIMANT:
-                return responseAcceptation.getClaimantPaymentIntention().orElseThrow(IllegalStateException::new);
-            case COURT:
-                return responseAcceptation
-                    .getCourtDetermination().orElseThrow(IllegalStateException::new)
-                    .getCourtDecision();
-            default:
-                throw new IllegalStateException("Invalid decision type " + decisionType);
+
+        if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
+            return responseAcceptation.getClaimantPaymentIntention().get();
         }
+
+        return getDefendantPaymentIntention(response);
     }
 
     private PaymentIntention getDefendantPaymentIntention(Response response) {
