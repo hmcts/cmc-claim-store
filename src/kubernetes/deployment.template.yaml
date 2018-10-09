@@ -100,6 +100,16 @@ spec:
               value: 'true'
             - name: ROOT_APPENDER
               value: 'CMC'
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              value: '${APPINSIGHTS_INSTRUMENTATIONKEY}'
+            - name: DOCUMENT_MANAGEMENT_URL
+              value: 'false'
+            - name: SPRING_MAIL_HOST
+              value: 'mta.reform.hmcts.net'
+            - name: REFORM_ENVIRONMENT
+              value: 'preview'
+            - name: CORE_CASE_DATA_API_URL
+              value: 'false'
           envFrom:
             - configMapRef:
                 name: ${SERVICE_NAME}-config
@@ -118,21 +128,42 @@ spec:
             - containerPort: 4400
               name: http
           imagePullPolicy: Always
-
-# Azure Internal Loadbalancer.
 ---
+#
+# Service
+#
 apiVersion: v1
 kind: Service
 metadata:
   name: ${SERVICE_NAME}
   namespace: ${NAMESPACE}
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  labels:
+    app: ${SERVICE_NAME}
 spec:
-  type: LoadBalancer
   ports:
-    - port: 80
-      # Make sure targetPort is the same as 'containerPort' above...
-      targetPort: 4400
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 4400
   selector:
     app: ${SERVICE_NAME}
+---
+#
+# Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: ${SERVICE_FQDN}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${SERVICE_NAME}
+          servicePort: 80
