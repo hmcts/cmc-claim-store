@@ -4,9 +4,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.Min;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -14,21 +13,20 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 @EqualsAndHashCode
 @Getter
-public class OtherDependants {
+public class LivingPartner {
 
+    @Valid
     @NotNull
-    @Min(1)
-    private final Integer numberOfPeople;
+    private final DisabilityStatus disability;
 
-    @NotBlank
-    private final String details;
+    private final boolean over18;
 
-    private final boolean anyDisabled;
+    private final boolean pensioner;
 
-    public OtherDependants(Integer numberOfPeople, String details, boolean anyDisabled) {
-        this.numberOfPeople = numberOfPeople;
-        this.details = details;
-        this.anyDisabled = anyDisabled;
+    public LivingPartner(DisabilityStatus disability, boolean over18, boolean pensioner) {
+        this.over18 = over18;
+        this.disability = disability;
+        this.pensioner = pensioner;
     }
 
     @Override
