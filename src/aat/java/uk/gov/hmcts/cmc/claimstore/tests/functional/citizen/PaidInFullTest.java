@@ -5,8 +5,10 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseSubmitClaimTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.time.LocalDate;
@@ -15,18 +17,13 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MoneyReceivedTest extends BaseSubmitClaimTest {
+public class PaidInFullTest extends BaseTest {
 
     private User claimant;
 
     @Before
     public void before() {
         claimant = idamTestService.createCitizen();
-    }
-
-    @Override
-    protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
-        return testData::submittedByClaimantBuilder;
     }
 
     @Test
@@ -37,16 +34,16 @@ public class MoneyReceivedTest extends BaseSubmitClaimTest {
             claimantId
         );
 
-        LocalDate moneyReceivedDate = LocalDate.now();
+        PaidInFull paidInFull = new PaidInFull(LocalDate.now());
 
         Claim updatedCase = commonOperations
-            .paidInFull(createdCase.getExternalId(), moneyReceivedDate, user)
+            .paidInFull(createdCase.getExternalId(), paidInFull, claimant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
-            .extract().body().as(Claim.class);;
+            .extract().body().as(Claim.class);
 
-        assertThat(updatedCase.getMoneyReceivedOn()).isEqualTo(moneyReceivedDate);
+        assertThat(updatedCase.getMoneyReceivedOn()).isEqualTo(paidInFull);
     }
 
     @Test(expected = NotFoundException.class)
@@ -57,10 +54,10 @@ public class MoneyReceivedTest extends BaseSubmitClaimTest {
             claimantId
         );
 
-        LocalDate moneyReceivedDate = LocalDate.now();
+        PaidInFull paidInFull = new PaidInFull(LocalDate.now());
 
         commonOperations
-            .paidInFull( UUID.randomUUID().toString(), moneyReceivedDate, user)
+            .paidInFull( UUID.randomUUID().toString(), paidInFull, claimant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()

@@ -32,6 +32,7 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
             .post("/claims/" + user.getUserDetails().getId());
     }
 
+    // FAILS
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
@@ -48,6 +49,7 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
             within(2, ChronoUnit.MINUTES));
     }
 
+    // FAILS
     @Test
     public void shouldReturnUnprocessableEntityWhenInvalidClaimIsSubmitted() {
         ClaimData claimData = getSampleClaimDataBuilder().get().withAmount(null).build();
@@ -56,6 +58,7 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
+    // FAILS
     @Test
     public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();

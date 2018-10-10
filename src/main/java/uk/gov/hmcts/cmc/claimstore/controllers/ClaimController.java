@@ -18,10 +18,10 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
-import java.time.LocalDate;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -133,11 +133,11 @@ public class ClaimController {
         return claimService.savePrePayment(externalId, authorisation);
     }
 
-    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full/{moneyReceivedOn}")
+    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full")
     public void moneyReceivedOn(
         @PathVariable("externalId") String externalId,
-        @PathVariable("moneyReceivedOn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moneyReceivedOn,
+        @Valid @NotNull @RequestBody PaidInFull paidInFull,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
-        claimService.saveMoneyReceivedOn(externalId, moneyReceivedOn, authorisation);
+        claimService.saveMoneyReceivedOn(externalId, paidInFull, authorisation);
     }
 }

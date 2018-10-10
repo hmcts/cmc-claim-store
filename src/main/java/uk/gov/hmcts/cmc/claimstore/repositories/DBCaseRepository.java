@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -132,8 +133,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveMoneyReceivedOn(Claim claim, LocalDate moneyReceivedOn, String authorization) {
-        claimRepository.saveMoneyReceivedOn(claim.getExternalId(), moneyReceivedOn);
+    public void saveMoneyReceivedOn(Claim claim, PaidInFull paidInFull, String authorization) {
+        claimRepository.saveMoneyReceivedOn(claim.getExternalId(), paidInFull.getMoneyReceivedOn());
     }
 
     @Override
