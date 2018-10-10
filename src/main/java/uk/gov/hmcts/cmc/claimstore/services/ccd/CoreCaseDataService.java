@@ -41,7 +41,6 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_ISSUED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
