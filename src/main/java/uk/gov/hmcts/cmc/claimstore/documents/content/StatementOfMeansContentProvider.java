@@ -74,6 +74,18 @@ public class StatementOfMeansContentProvider {
                 .collect(toList())
         );
 
+        statementOfMeans.getPartner()
+            .ifPresent(
+                partner -> contentBuilder.put("partner", partner)
+            );
+
+        statementOfMeans.getDisability()
+            .ifPresent(
+                disability -> contentBuilder.put("disability", disability.getDescription())
+            );
+
+        contentBuilder.put("carer", statementOfMeans.isCarer());
+
         return contentBuilder.build();
     }
 
