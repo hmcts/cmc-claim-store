@@ -31,7 +31,7 @@ public class GenerateSettlementAgreementCopyTest extends BaseGetTest {
         claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
 
         Settlement settlement = new Settlement();
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
 

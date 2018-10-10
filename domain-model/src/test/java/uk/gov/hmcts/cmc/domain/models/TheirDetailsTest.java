@@ -69,7 +69,7 @@ public class TheirDetailsTest {
     public void shouldBeInvalidWhenGivenInvalidAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withAddress(SampleAddress.builder()
-                .withPostcode("")
+                .postcode("")
                 .build())
             .partyDetails();
 
@@ -169,7 +169,7 @@ public class TheirDetailsTest {
     public void shouldBeInvalidWhenGivenInvalidServiceAddress() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withServiceAddress(SampleAddress.builder()
-                .withPostcode("")
+                .postcode("")
                 .build())
             .partyDetails();
 

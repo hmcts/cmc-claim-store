@@ -35,8 +35,9 @@ public class StatementOfValueProviderTest {
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
-                        .withHigherValue(BigDecimal.valueOf(100.50))
-                        .withLowerValue(BigDecimal.valueOf(200.95)).build()
+                        .lowerValue(BigDecimal.valueOf(200.95))
+                        .higherValue(BigDecimal.valueOf(100.50))
+                        .build()
                 ).build());
 
         //when
@@ -54,8 +55,8 @@ public class StatementOfValueProviderTest {
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
-                        .withLowerValue(null)
-                        .withHigherValue(BigDecimal.valueOf(100.50))
+                        .lowerValue(null)
+                        .higherValue(BigDecimal.valueOf(100.50))
                         .build()
                 ).build());
 
@@ -97,8 +98,9 @@ public class StatementOfValueProviderTest {
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
-                        .withHigherValue(BigDecimal.valueOf(100.50))
-                        .withLowerValue(BigDecimal.valueOf(200.95)).build()
+                        .lowerValue(BigDecimal.valueOf(200.95))
+                        .higherValue(BigDecimal.valueOf(100.50))
+                        .build()
                 )
                 .withPersonalInjury(new PersonalInjury(MORE_THAN_THOUSAND_POUNDS))
                 .withHousingDisrepair(null)
@@ -121,8 +123,8 @@ public class StatementOfValueProviderTest {
             SampleClaimData.builder()
                 .withPersonalInjury(null)
                 .withAmount(SampleAmountRange.builder()
-                    .withHigherValue(BigDecimal.valueOf(100.50))
-                    .withLowerValue(BigDecimal.valueOf(200.95))
+                    .lowerValue(BigDecimal.valueOf(200.95))
+                    .higherValue(BigDecimal.valueOf(100.50))
                     .build()
                 ).build());
 
@@ -140,8 +142,8 @@ public class StatementOfValueProviderTest {
             SampleClaimData.builder()
                 .withAmount(
                     SampleAmountRange.builder()
-                        .withHigherValue(BigDecimal.valueOf(100.50))
-                        .withLowerValue(BigDecimal.valueOf(200.95))
+                        .lowerValue(BigDecimal.valueOf(200.95))
+                        .higherValue(BigDecimal.valueOf(100.50))
                         .build()
                 ).build());
 

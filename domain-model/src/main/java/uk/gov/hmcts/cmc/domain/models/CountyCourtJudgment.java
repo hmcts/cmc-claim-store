@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
@@ -40,6 +41,7 @@ public class CountyCourtJudgment {
     @Valid
     private final StatementOfTruth statementOfTruth;
 
+    @Builder
     public CountyCourtJudgment(
         LocalDate defendantDateOfBirth,
         PaymentOption paymentOption,
