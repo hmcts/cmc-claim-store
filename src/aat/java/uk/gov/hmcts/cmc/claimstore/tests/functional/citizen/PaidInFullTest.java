@@ -6,14 +6,11 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
-import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseSubmitClaimTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,7 +54,7 @@ public class PaidInFullTest extends BaseTest {
         PaidInFull paidInFull = new PaidInFull(LocalDate.now());
 
         commonOperations
-            .paidInFull( UUID.randomUUID().toString(), paidInFull, claimant)
+            .paidInFull(UUID.randomUUID().toString(), paidInFull, claimant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()

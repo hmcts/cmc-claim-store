@@ -8,13 +8,16 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.domain.models.*;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -213,14 +216,14 @@ public class CommonOperations {
             .post(issuePath);
     }
 
-    public Response paidInFull(String externalId, PaidInFull moneyReceivedOn, User user) {
+    public Response paidInFull(String externalId, PaidInFull paidInFull, User user) {
         String path = "/claims/" + externalId + "/paid-in-full";
 
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .body(jsonMapper.toJson(moneyReceivedOn))
+            .body(jsonMapper.toJson(paidInFull))
             .when()
             .put(path);
     }
