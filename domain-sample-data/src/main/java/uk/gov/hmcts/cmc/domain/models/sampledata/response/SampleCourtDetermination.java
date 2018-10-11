@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination.CourtDeterminationBuilder;
 
 import static java.math.BigDecimal.TEN;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
 
 public class SampleCourtDetermination {
 
@@ -25,7 +26,9 @@ public class SampleCourtDetermination {
     public static CourtDetermination bySetDate() {
         return builder()
             .courtDecision(SamplePaymentIntention.bySetDate())
+            .courtPaymentIntention(SamplePaymentIntention.bySetDate())
             .disposableIncome(TEN)
+            .decisionType(COURT)
             .build();
     }
 
@@ -33,6 +36,7 @@ public class SampleCourtDetermination {
         return builder()
             .courtDecision(SamplePaymentIntention.instalments())
             .disposableIncome(TEN)
+            .decisionType(COURT)
             .build();
     }
 }

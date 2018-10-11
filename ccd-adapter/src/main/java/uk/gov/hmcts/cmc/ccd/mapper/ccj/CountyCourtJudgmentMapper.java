@@ -37,6 +37,7 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
         countyCourtJudgment.getPayBySetDate().ifPresent(builder::payBySetDate);
         countyCourtJudgment.getStatementOfTruth()
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
+        builder.ccjType(countyCourtJudgment.getCcjType());
 
         return builder.build();
     }
@@ -50,7 +51,8 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
             ccdCountyCourtJudgment.getPaidAmount(),
             repaymentPlanMapper.from(ccdCountyCourtJudgment.getRepaymentPlan()),
             ccdCountyCourtJudgment.getPayBySetDate(),
-            statementOfTruthMapper.from(ccdCountyCourtJudgment.getStatementOfTruth())
+            statementOfTruthMapper.from(ccdCountyCourtJudgment.getStatementOfTruth()),
+            ccdCountyCourtJudgment.getCcjType()
         );
     }
 }
