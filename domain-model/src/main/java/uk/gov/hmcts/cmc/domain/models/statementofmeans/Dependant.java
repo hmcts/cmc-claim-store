@@ -25,13 +25,17 @@ public class Dependant {
     @Valid
     private final OtherDependants otherDependants;
 
+    private final boolean anyDisabledChildren;
+
     public Dependant(
         List<Child> children,
         Integer numberOfMaintainedChildren,
-        OtherDependants otherDependants) {
+        OtherDependants otherDependants,
+        boolean anyDisabledChildren) {
         this.children = children;
         this.numberOfMaintainedChildren = numberOfMaintainedChildren;
         this.otherDependants = otherDependants;
+        this.anyDisabledChildren = anyDisabledChildren;
     }
 
     public List<Child> getChildren() {
@@ -44,6 +48,10 @@ public class Dependant {
 
     public Optional<OtherDependants> getOtherDependants() {
         return Optional.ofNullable(otherDependants);
+    }
+
+    public boolean isAnyDisabledChildren() {
+        return anyDisabledChildren;
     }
 
     @Override
