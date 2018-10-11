@@ -49,7 +49,7 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BasePdfTest {
     public void shouldBeAbleToFindDataInCCJIssuedRepaymentImmediatelyPdf() throws IOException {
         Response fullAdmissionResponse = SampleResponse.FullAdmission.builder().build();
         submitDefendantResponse(fullAdmissionResponse, claim.getExternalId());
-        ClaimantResponse response = 
+        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseAcceptation.validDefaultAcceptation();
 
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
