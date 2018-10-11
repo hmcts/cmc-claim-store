@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -88,8 +90,9 @@ public class FormaliseResponseAcceptanceService {
     }
 
     private DecisionType getDecisionType(ResponseAcceptation responseAcceptation) {
-        if (responseAcceptation.getCourtDetermination().isPresent()) {
-            return responseAcceptation.getCourtDetermination().get().getDecisionType();
+        Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
+        if (courtDetermination.isPresent()) {
+            return courtDetermination.get().getDecisionType();
         }
 
         if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
@@ -185,15 +188,13 @@ public class FormaliseResponseAcceptanceService {
 
     private PaymentIntention acceptedPaymentIntention(ResponseAcceptation responseAcceptation, Response response) {
 
-        if (responseAcceptation.getCourtDetermination().isPresent()) {
-            return responseAcceptation.getCourtDetermination().get().getCourtDecision();
+        Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
+        if (courtDetermination.isPresent()) {
+            return courtDetermination.get().getCourtDecision();
         }
 
-        if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
-            return responseAcceptation.getClaimantPaymentIntention().get();
-        }
-
-        return getDefendantPaymentIntention(response);
+        Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
+        return claimantPaymentIntention.orElseGet(() -> getDefendantPaymentIntention(response));
     }
 
     private PaymentIntention getDefendantPaymentIntention(Response response) {
