@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
@@ -109,8 +108,8 @@ public class DefaultCountyCourtJudgmentPdfTest extends BasePdfTest {
         AmountContent amountContent = amountContentProvider.create(createdCase);
         assertHeaderDetails(createdCase, pdfAsText);
         assertPartyAndContactDetails(createdCase, pdfAsText, claimData);
-        assertClaimAmountDetails(createdCase, pdfAsText);
         assertTotalAmount(createdCase, pdfAsText, amountContent);
+        assertClaimAmountDetails(createdCase, pdfAsText);
         assertDeclaration(createdCase, pdfAsText);
     }
 
@@ -141,34 +140,34 @@ public class DefaultCountyCourtJudgmentPdfTest extends BasePdfTest {
     private void assertPartyAndContactDetails(Claim createdCase, String pdfAsText, ClaimData claimData) {
         assertThat(pdfAsText).contains("Claimant details");
         assertThat(pdfAsText).contains("Name: " + claimData.getClaimant().getName());
-        assertThat(pdfAsText).contains("Address: " +
-            getFullAddressString(claimData.getClaimant().getAddress()));
+        assertThat(pdfAsText).contains("Address: "
+            + getFullAddressString(claimData.getClaimant().getAddress()));
         claimData.getClaimant().getMobilePhone()
             .ifPresent(value -> assertThat(pdfAsText).contains("Telephone: " + value));
         assertThat(pdfAsText).contains("Defendant details");
         assertThat(pdfAsText).contains("Name: " + claimData.getDefendant().getName());
-        assertThat(pdfAsText).contains("Address: " +
-            getFullAddressString(claimData.getDefendant().getAddress()));
+        assertThat(pdfAsText).contains("Address: "
+            + getFullAddressString(claimData.getDefendant().getAddress()));
         claimData.getDefendant().getEmail().ifPresent(value -> assertThat(pdfAsText).contains("Email:"));
     }
 
     private void assertClaimAmountDetails(Claim createdCase, String pdfAsText) {
         ClaimData claimData = createdCase.getClaimData();
         assertThat(pdfAsText).contains("Claim amount details");
-        assertThat(pdfAsText).contains("Claim amount: " +
-            Formatting.formatMoney(((AmountBreakDown) claimData.getAmount()).getTotalAmount()));
+        assertThat(pdfAsText).contains("Claim amount: "
+            + Formatting.formatMoney(((AmountBreakDown) claimData.getAmount()).getTotalAmount()));
         assertInterest(claimData, pdfAsText);
         CountyCourtJudgment countyCourtJudgment = createdCase.getCountyCourtJudgment();
         PaymentOption paymentOption = countyCourtJudgment.getPaymentOption();
         switch (paymentOption) {
             case IMMEDIATELY:
-                assertThat(pdfAsText).contains("When you want the \n" +
-                    "defendant to pay: " + paymentOption.getDescription());
+                assertThat(pdfAsText).contains("When you want the \n"
+                    + "defendant to pay: " + paymentOption.getDescription());
                 break;
             case INSTALMENTS:
             case BY_SPECIFIED_DATE:
-                assertThat(pdfAsText).contains("How you want the \n" +
-                    "defendant to pay: " + paymentOption.getDescription());
+                assertThat(pdfAsText).contains("How you want the \n"
+                    + "defendant to pay: " + paymentOption.getDescription());
                 break;
             default:
                 throw new IllegalArgumentException("Wrong payment option: " + paymentOption.name());
@@ -191,6 +190,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BasePdfTest {
                     .getInterest()
                     .getInterestBreakdown()
                     .getTotalAmount()));
+                break;
             default:
                 throw new IllegalArgumentException("Incorrect interest type: " + interestType);
         }
@@ -200,28 +200,29 @@ public class DefaultCountyCourtJudgmentPdfTest extends BasePdfTest {
         ClaimData claimData = createdCase.getClaimData();
 
         assertThat(pdfAsText).contains("Total amount");
-        assertThat(pdfAsText).contains("Claim amount: " +
-            Formatting.formatMoney(((AmountBreakDown) claimData.getAmount()).getTotalAmount()));
+        assertThat(pdfAsText).contains("Claim amount: "
+            + Formatting.formatMoney(((AmountBreakDown) claimData.getAmount()).getTotalAmount()));
         assertInterest(claimData, pdfAsText);
         assertThat(pdfAsText).contains("Claim fee: " + amountContent.getFeeAmount());
         assertThat(pdfAsText).contains("Subtotal: " + amountContent.getSubTotalAmount());
-        assertThat(pdfAsText).contains("Amount already paid by \n" +
-            "defendant: " + amountContent.getPaidAmount());
+        assertThat(pdfAsText).contains("Amount already paid by \n"
+            + "defendant: " + amountContent.getPaidAmount());
         assertThat(pdfAsText).contains("Total: " + amountContent.getRemainingAmount());
 
     }
 
     private void assertDeclaration(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Declaration");
-        assertThat(pdfAsText).contains("I declare that the details I have given are true to the \n" +
-            "best of my knowledge.");
+        assertThat(pdfAsText).contains("I declare that the details I have given are true to the \n"
+            + "best of my knowledge.");
         assertThat(pdfAsText).contains(createdCase.getClaimData().getClaimant().getName());
         assertThat(pdfAsText).contains(formatDate(createdCase.getCountyCourtJudgmentRequestedAt()));
     }
 
     private void modifyResponseDeadline(Claim caseCreated, User user) {
         LocalDate newResponseDeadline = caseCreated.getResponseDeadline().minusDays(60);
-        String path = "/testing-support/claims/" + caseCreated.getReferenceNumber() + "/response-deadline/" + newResponseDeadline;
+        String path = "/testing-support/claims/" + caseCreated.getReferenceNumber() + "/response-deadline/"
+            + newResponseDeadline;
         RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

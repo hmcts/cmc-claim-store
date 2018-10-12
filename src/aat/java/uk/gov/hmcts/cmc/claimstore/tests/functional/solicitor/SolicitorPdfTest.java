@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
