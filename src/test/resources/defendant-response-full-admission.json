@@ -41,7 +41,9 @@
     "repaymentPlan": {
       "instalmentAmount": 100,
       "firstPaymentDate": "2100-10-10",
-      "paymentSchedule": "EACH_WEEK"
+      "paymentSchedule": "EACH_WEEK",
+      "completionDate": "2101-06-10",
+      "paymentLength": "8 months"
     }
   },
   "statementOfMeans": {
