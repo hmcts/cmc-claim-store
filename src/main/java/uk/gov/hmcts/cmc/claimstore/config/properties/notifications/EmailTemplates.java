@@ -10,6 +10,9 @@ import javax.validation.constraints.NotEmpty;
 public class EmailTemplates {
 
     @NotEmpty
+    private String claimantSaysDefendantHasPaidInFull;
+
+    @NotEmpty
     private String claimantClaimIssued;
 
     @NotEmpty
@@ -90,9 +93,6 @@ public class EmailTemplates {
 
     @NotEmpty
     private String offerCounterSignedEmailToOtherParty;
-
-    @NotEmpty
-    private String claimantSaysDefendantHasPaidInFull;
 
     @NotEmpty
     private String responseByClaimantEmailToDefendant;
