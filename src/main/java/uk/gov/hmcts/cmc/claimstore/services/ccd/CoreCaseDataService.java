@@ -205,7 +205,7 @@ public class CoreCaseDataService {
             .respondedAt(nowInUTC())
             .build();
 
-        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response) + "_RESPONSE_SUBMITTED"));
+        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response)));
     }
 
     private String getResponseTypeName(Response response) {
