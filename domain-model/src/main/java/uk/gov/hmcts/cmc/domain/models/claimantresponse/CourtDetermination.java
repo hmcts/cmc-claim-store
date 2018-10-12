@@ -21,19 +21,31 @@ public class CourtDetermination {
     @Valid
     private final PaymentIntention courtDecision;
 
+    @NotNull
+    @Valid
+    private final PaymentIntention courtPaymentIntention;
+
     private final String rejectionReason;
 
     @NotNull
     private final BigDecimal disposableIncome;
 
+    @NotNull
+    private final DecisionType decisionType;
+
     @Builder
-    public CourtDetermination(PaymentIntention courtDecision,
-                              String rejectionReason,
-                              BigDecimal disposableIncome
+    public CourtDetermination(
+        PaymentIntention courtDecision,
+        PaymentIntention courtPaymentIntention,
+        String rejectionReason,
+        BigDecimal disposableIncome,
+        DecisionType decisionType
     ) {
         this.courtDecision = courtDecision;
+        this.courtPaymentIntention = courtPaymentIntention;
         this.rejectionReason = rejectionReason;
         this.disposableIncome = disposableIncome;
+        this.decisionType = decisionType;
     }
 
     public Optional<String> getRejectionReason() {

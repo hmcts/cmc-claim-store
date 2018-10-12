@@ -25,6 +25,11 @@ public class CourtDeterminationTest {
                 .paymentDate(now().plusDays(30))
                 .build())
             .disposableIncome(TEN)
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .decisionType(DecisionType.CLAIMANT)
             .build();
 
         Set<String> response = validate(courtDetermination);
@@ -43,7 +48,12 @@ public class CourtDeterminationTest {
                     .paymentSchedule(EVERY_MONTH)
                     .build())
                 .build())
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
             .disposableIncome(TEN)
+            .decisionType(DecisionType.CLAIMANT)
             .build();
 
         Set<String> response = validate(courtDetermination);
@@ -55,6 +65,11 @@ public class CourtDeterminationTest {
     public void shouldBeInvalidWhenMissingCourtCalculatedPaymentIntention() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(null)
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .decisionType(DecisionType.CLAIMANT)
             .disposableIncome(TEN)
             .build();
 
@@ -67,6 +82,11 @@ public class CourtDeterminationTest {
     public void shouldBeInvalidWhenMissingDisposableIncome() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(bySetDate())
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .decisionType(DecisionType.CLAIMANT)
             .build();
 
         Set<String> response = validate(courtDetermination);
