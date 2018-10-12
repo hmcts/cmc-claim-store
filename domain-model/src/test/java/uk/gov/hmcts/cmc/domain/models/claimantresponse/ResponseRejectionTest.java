@@ -23,7 +23,7 @@ public class ResponseRejectionTest {
     @Test
     public void shouldBeValidWhenReasonNotPresent() {
         ClaimantResponse claimantResponse = ResponseRejection.builder().build();
-        
+
         Set<String> response = validate(claimantResponse);
 
         assertThat(response).hasSize(0);

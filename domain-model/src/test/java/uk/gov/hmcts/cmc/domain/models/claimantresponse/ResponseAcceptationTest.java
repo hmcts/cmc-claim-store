@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -30,7 +31,6 @@ public class ResponseAcceptationTest {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
             .amountPaid(ZERO)
             .formaliseOption(REFER_TO_JUDGE)
-            .decisionType(DEFENDANT)
             .build();
 
         Set<String> response = validate(claimantResponse);
@@ -43,7 +43,6 @@ public class ResponseAcceptationTest {
         ClaimantResponse claimantResponse = ResponseAcceptation.builder()
             .amountPaid(BigDecimal.valueOf(-10))
             .formaliseOption(REFER_TO_JUDGE)
-            .decisionType(DEFENDANT)
             .build();
 
         Set<String> response = validate(claimantResponse);
@@ -57,10 +56,11 @@ public class ResponseAcceptationTest {
             .amountPaid(TEN)
             .courtDetermination(CourtDetermination.builder()
                 .courtDecision(null)
+                .courtPaymentIntention(SamplePaymentIntention.bySetDate())
                 .disposableIncome(TEN)
+                .decisionType(DEFENDANT)
                 .build())
             .formaliseOption(CCJ)
-            .decisionType(DEFENDANT)
             .build();
 
         Set<String> response = validate(claimantResponse);
