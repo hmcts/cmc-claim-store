@@ -92,10 +92,10 @@ public class EmailTemplates {
     private String offerCounterSignedEmailToOtherParty;
 
     @NotEmpty
-    private String responseByClaimantEmailToDefendant;
+    private String claimantSaysDefendantHasPaidInFull;
 
     @NotEmpty
-    private String claimantSaysDefendantHasPaidInFull;
+    private String responseByClaimantEmailToDefendant;
 
     public String getClaimantMoreTimeRequested() {
         return claimantMoreTimeRequested;
