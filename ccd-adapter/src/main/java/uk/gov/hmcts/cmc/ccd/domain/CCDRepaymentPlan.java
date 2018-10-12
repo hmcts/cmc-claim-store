@@ -14,4 +14,5 @@ public class CCDRepaymentPlan {
     private LocalDate firstPaymentDate;
     private CCDPaymentSchedule paymentSchedule;
     private LocalDate completionDate;
+    private String paymentLength;
 }

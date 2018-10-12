@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -26,6 +27,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
@@ -64,7 +66,8 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(USER_ID, ccj, EXTERNAL_ID, AUTHORISATION, false);
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(false));
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(false));
