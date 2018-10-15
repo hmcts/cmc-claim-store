@@ -33,7 +33,6 @@ public class AmountContentProvider {
         BigDecimal admittedAmount = isPartAdmissionResponse
             ? ((PartAdmissionResponse) response).getAmount()
             : claimAmount;
-
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
         InterestContent interestContent = null;
         BigDecimal interestRealValue = ZERO;
@@ -60,7 +59,8 @@ public class AmountContentProvider {
             formatMoney(admittedAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
-                .subtract(paidAmount))
+                .subtract(paidAmount)),
+            formatMoney(admittedAmount)
         );
 
     }

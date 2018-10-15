@@ -31,7 +31,8 @@ public class ContentProvider {
             claim.getCountyCourtJudgment(),
             claim.getCountyCourtJudgmentRequestedAt(),
             amountContentProvider.create(claim),
-            ResponseHelper.admissionResponse(claim)
+            ResponseHelper.admissionResponse(claim),
+            ResponseHelper.partAdmissionResponse(claim)
             )
         );
     }

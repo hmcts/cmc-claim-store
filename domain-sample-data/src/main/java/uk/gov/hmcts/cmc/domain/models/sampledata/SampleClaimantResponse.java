@@ -8,9 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDeterminati
 
 import java.math.BigDecimal;
 
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
@@ -50,7 +47,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(formaliseOption)
-                .decisionType(DEFENDANT)
                 .build();
         }
 
@@ -58,7 +54,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
-                .decisionType(DEFENDANT)
                 .build();
         }
 
@@ -66,7 +61,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
-                .decisionType(CLAIMANT)
                 .claimantPaymentIntention(bySetDate())
                 .build();
         }
@@ -75,7 +69,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
-                .decisionType(COURT)
                 .claimantPaymentIntention(bySetDate())
                 .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();
@@ -85,7 +78,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
-                .decisionType(DEFENDANT)
                 .build();
         }
 
@@ -93,7 +85,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
-                .decisionType(CLAIMANT)
                 .claimantPaymentIntention(bySetDate())
                 .build();
         }
@@ -102,7 +93,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
-                .decisionType(COURT)
                 .claimantPaymentIntention(bySetDate())
                 .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();

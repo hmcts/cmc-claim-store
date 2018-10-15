@@ -390,16 +390,29 @@
   </div>
     <div class="section">
       <div class="section-heading">
+        {% if ccj.admissionResponse == true %}
+        <strong>Judgment details</strong>
+      {% else %}
         <strong>Total amount</strong>
+      {% endif %}
       </div>
       <div class="section-body">
-          <table>
+      <table>
+        {% if ccj.admissionResponse == true %}
+        <tr>
+          <td><strong>Judgment amount:</strong></td>
+          <td>
+            {{ ccj.amount.admittedAmount }}
+          </td>
+        </tr>
+        {% else %}
         <tr>
           <td><strong>Claim amount:</strong></td>
           <td>
             {{ ccj.amount.totalAmount }}
           </td>
         </tr>
+        {% endif %}
         {% if ccj.amount.interest is defined %}
         <tr class="no-border">
           <td><strong>Interest to date of judgment:</strong></td>
@@ -427,9 +440,15 @@
         </tr>
         <tr>
           <td><strong>Subtotal:</strong></td>
+          {% if ccj.partAdmissionResponse == true %}
+          <td>
+            {{ ccj.amount.remainingAmount }}
+          </td>
+          {% else %}
           <td>
             {{ ccj.amount.subTotalAmount }}
           </td>
+          {% endif %}
         </tr>
         <tr>
           <td><strong>Amount already paid by defendant:</strong></td>
