@@ -62,7 +62,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationIssueCCJWithClaimantPaymentIntention() {
+        public ClaimantResponse buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)

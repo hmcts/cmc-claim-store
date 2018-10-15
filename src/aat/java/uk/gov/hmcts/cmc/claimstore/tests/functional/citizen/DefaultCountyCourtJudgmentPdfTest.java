@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -99,11 +98,10 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
     @Override
     protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         ClaimData claimData = createdCase.getClaimData();
-        AmountContent amountContent = amountContentProvider.create(createdCase);
         assertHeaderDetails(createdCase, pdfAsText, "Request for judgment by default");
         assertPartyAndContactDetails(claimData, pdfAsText);
         assertClaimAmountDetails(createdCase, pdfAsText);
-        assertTotalAmount(createdCase, pdfAsText, amountContent);
+        assertTotalAmount(createdCase, pdfAsText, amountContentProvider.create(createdCase));
         assertDeclaration(createdCase, pdfAsText);
     }
 
@@ -125,7 +123,8 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
 
     private void modifyResponseDeadline(Claim caseCreated, User user) {
         LocalDate newResponseDeadline = caseCreated.getResponseDeadline().minusDays(60);
-        String path = "/testing-support/claims/" + caseCreated.getReferenceNumber() + "/response-deadline/" + newResponseDeadline;
+        String path = "/testing-support/claims/" + caseCreated.getReferenceNumber()
+            + "/response-deadline/" + newResponseDeadline;
         RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

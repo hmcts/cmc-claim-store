@@ -90,7 +90,7 @@ public class ClaimantResponseTest extends BaseTest {
     @Test
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
         commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntention(),
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
             claim.getExternalId(),
             claimant
         ).then()
