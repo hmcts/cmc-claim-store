@@ -450,7 +450,7 @@ public class TotalAmountCalculatorTest {
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
-                    .withAmount(validDefaults())
+                    .withAmount(SampleAmountBreakdown.builder().build())
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
                     .withInterest(
                         standardInterestBuilder()
@@ -470,7 +470,7 @@ public class TotalAmountCalculatorTest {
         Claim claimStandardInterest = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
-                    .withAmount(validDefaults())
+                    .withAmount(SampleAmountBreakdown.builder().build())
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
                     .withInterest(
                         standardInterestBuilder()
