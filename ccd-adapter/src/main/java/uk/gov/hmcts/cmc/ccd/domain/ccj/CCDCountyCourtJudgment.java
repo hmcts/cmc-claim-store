@@ -5,6 +5,7 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,4 +20,5 @@ public class CCDCountyCourtJudgment {
     private CCDRepaymentPlan repaymentPlan;
     private LocalDate payBySetDate;
     private CCDStatementOfTruth statementOfTruth;
+    private CountyCourtJudgmentType ccjType;
 }

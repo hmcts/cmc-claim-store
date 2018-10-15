@@ -341,7 +341,8 @@ public class SampleData {
     private static CCDCourtDetermination getCCDCourtDetermination() {
         return CCDCourtDetermination.builder()
             .rejectionReason("Rejection reason")
-            .courtCalculatedPaymentIntention(getCCDPaymentIntention())
+            .courtPaymentIntention(getCCDPaymentIntention())
+            .courtDecision(getCCDPaymentIntention())
             .build();
     }
 

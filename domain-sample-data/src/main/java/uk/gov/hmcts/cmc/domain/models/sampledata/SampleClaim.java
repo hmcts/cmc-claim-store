@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -69,7 +70,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -84,7 +85,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .withPaymentOptionImmediately()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -308,6 +309,11 @@ public final class SampleClaim {
 
     public SampleClaim withDirectionsQuestionnaireDeadline(LocalDate dqDeadline) {
         this.directionsQuestionnaireDeadline = dqDeadline;
+        return this;
+    }
+
+    public SampleClaim withFeatures(List<String> features) {
+        this.features = features;
         return this;
     }
 }

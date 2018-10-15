@@ -21,10 +21,12 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
                 ccdResponseAcceptation.getFormaliseOption(), actual.getFormaliseOption());
         }
 
-        if (!Objects.equals(actual.getAmountPaid(), ccdResponseAcceptation.getAmountPaid())) {
-            failWithMessage("Expected ResponseAcceptation.amountPaid to be <%s> but was <%s>",
-                ccdResponseAcceptation.getAmountPaid(), actual.getAmountPaid());
-        }
+        actual.getAmountPaid().ifPresent(amountPaid -> {
+            if (!Objects.equals(amountPaid, ccdResponseAcceptation.getAmountPaid())) {
+                failWithMessage("Expected ResponseAcceptation.amountPaid to be <%s> but was <%s>",
+                    ccdResponseAcceptation.getAmountPaid(), amountPaid);
+            }
+        });
 
         actual.getCourtDetermination().ifPresent(courtDetermination ->
             assertThat(courtDetermination).isEqualTo(ccdResponseAcceptation.getCourtDetermination()));

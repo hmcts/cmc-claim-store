@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion.claimantresponse;
 
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 
@@ -24,8 +25,9 @@ public class CourtDeterminationAssert extends AbstractAssert<CourtDeterminationA
 
         });
 
-        assertThat(actual.getCourtCalculatedPaymentIntention()).isEqualTo(ccdCourtDetermination.getCourtCalculatedPaymentIntention());
-
+        assertThat(actual.getCourtPaymentIntention()).isEqualTo(ccdCourtDetermination.getCourtPaymentIntention());
+        assertThat(actual.getCourtDecision()).isEqualTo(ccdCourtDetermination.getCourtDecision());
+        Assertions.assertThat(actual.getDisposableIncome()).isEqualTo(ccdCourtDetermination.getDisposableIncome());
         return this;
     }
 }

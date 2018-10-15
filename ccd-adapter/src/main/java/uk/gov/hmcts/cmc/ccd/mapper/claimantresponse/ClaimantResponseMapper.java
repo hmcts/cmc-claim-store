@@ -48,7 +48,8 @@ public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, Claim
 
     @Override
     public ClaimantResponse from(CCDClaimantResponse ccdClaimantResponse) {
-        switch (ccdClaimantResponse.getClaimantResponseType()) {
+        CCDClaimantResponseType type = ccdClaimantResponse.getClaimantResponseType();
+        switch (type) {
             case ACCEPTATION:
                 CCDResponseAcceptation responseAcceptation = ccdClaimantResponse.getResponseAcceptation();
                 return responseAcceptationMapper.from(responseAcceptation);
@@ -56,7 +57,7 @@ public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, Claim
                 CCDResponseRejection responseRejection = ccdClaimantResponse.getResponseRejection();
                 return responseRejectionMapper.from(responseRejection);
             default:
-                throw new MappingException("Invalid claimant response type " + ccdClaimantResponse.getClaimantResponseType());
+                throw new MappingException("Invalid claimant response type " + type);
         }
 
     }

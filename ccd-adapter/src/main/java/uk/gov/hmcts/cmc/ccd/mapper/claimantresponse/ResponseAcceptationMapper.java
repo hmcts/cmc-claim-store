@@ -25,14 +25,17 @@ public class ResponseAcceptationMapper implements Mapper<CCDResponseAcceptation,
     @Override
     public CCDResponseAcceptation to(ResponseAcceptation responseAcceptation) {
         CCDResponseAcceptation.CCDResponseAcceptationBuilder builder = CCDResponseAcceptation.builder();
-        builder.amountPaid(responseAcceptation.getAmountPaid())
-            .formaliseOption(CCDFormaliseOption.valueOf(responseAcceptation.getFormaliseOption().name()));
+        builder.formaliseOption(CCDFormaliseOption.valueOf(responseAcceptation.getFormaliseOption().name()));
 
-        responseAcceptation.getClaimantPaymentIntention()
-            .ifPresent(paymentIntention -> builder.claimantPaymentIntention(paymentIntentionMapper.to(paymentIntention)));
+        responseAcceptation.getAmountPaid().ifPresent(builder::amountPaid);
 
-        responseAcceptation.getCourtDetermination()
-            .ifPresent(courtDetermination -> builder.courtDetermination(courtDeterminationMapper.to(courtDetermination)));
+        responseAcceptation.getClaimantPaymentIntention().ifPresent(
+            paymentIntention -> builder.claimantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
+        );
+
+        responseAcceptation.getCourtDetermination().ifPresent(
+            courtDetermination -> builder.courtDetermination(courtDeterminationMapper.to(courtDetermination))
+        );
 
         return builder.build();
     }

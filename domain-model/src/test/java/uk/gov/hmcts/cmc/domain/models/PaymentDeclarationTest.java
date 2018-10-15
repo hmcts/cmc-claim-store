@@ -15,7 +15,7 @@ public class PaymentDeclarationTest {
     @Test
     public void shouldHaveNoValidationMessageWhenInstanceIsValid() {
         //given
-        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.validDefaults();
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder().build();
         //when
         Set<String> response = validate(paymentDeclaration);
         //then
@@ -26,8 +26,8 @@ public class PaymentDeclarationTest {
     public void shouldHaveValidationMessageWhenPaidDateIsNull() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation("defence")
-            .withPaidDate(null)
+            .explanation("defence")
+            .paidDate(null)
             .build();
         //when
         Set<String> errors = validate(paymentDeclaration);
@@ -41,8 +41,8 @@ public class PaymentDeclarationTest {
     public void shouldHaveValidationMessageWhenPaidDateIsInTheFuture() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation("defence")
-            .withPaidDate(LocalDate.now().plusYears(1))
+            .explanation("defence")
+            .paidDate(LocalDate.now().plusYears(1))
             .build();
         //when
         Set<String> errors = validate(paymentDeclaration);
@@ -56,7 +56,7 @@ public class PaymentDeclarationTest {
     public void shouldHaveValidationMessageWhenExplanationIsNull() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation(null)
+            .explanation(null)
             .build();
         //when
         Set<String> errors = validate(paymentDeclaration);
@@ -70,7 +70,7 @@ public class PaymentDeclarationTest {
     public void shouldHaveValidationMessageWhenExplanationIsEmpty() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation("")
+            .explanation("")
             .build();
         //when
         Set<String> errors = validate(paymentDeclaration);
@@ -84,7 +84,7 @@ public class PaymentDeclarationTest {
     public void shouldHaveValidationMessageWhenExplanationExceedsSizeLimit() {
         //given
         PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
-            .withExplanation(randomAlphanumeric(99001))
+            .explanation(randomAlphanumeric(99001))
             .build();
         //when
         Set<String> errors = validate(paymentDeclaration);

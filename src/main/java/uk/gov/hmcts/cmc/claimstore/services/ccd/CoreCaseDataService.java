@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -214,9 +215,21 @@ public class CoreCaseDataService {
             .respondedAt(nowInUTC())
             .build();
 
-        return update(authorisation, ccdCase, CaseEvent.valueOf(response.getResponseType().name() + "_SUBMITTED"));
+        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response)));
     }
 
+    private String getResponseTypeName(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                return ((FullDefenceResponse) response).getDefenceType().name();
+            case FULL_ADMISSION:
+            case PART_ADMISSION:
+                return response.getResponseType().name();
+            default:
+                throw new IllegalArgumentException("Invalid response type " + response.getResponseType());
+
+        }
+    }
 
     public CaseDetails saveClaimantResponse(
         Long caseId,

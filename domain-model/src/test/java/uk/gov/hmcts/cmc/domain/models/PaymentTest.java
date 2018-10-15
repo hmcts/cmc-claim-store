@@ -13,7 +13,7 @@ public class PaymentTest {
     @Test
     public void shouldBeSuccessfulValidationForPayment() {
         //given
-        Payment payment = SamplePayment.validDefaults();
+        Payment payment = SamplePayment.builder().build();
         //when
         Set<String> errors = validate(payment);
         //then
