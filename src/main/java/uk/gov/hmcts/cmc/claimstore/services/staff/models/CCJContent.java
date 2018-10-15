@@ -24,12 +24,15 @@ public class CCJContent {
     private final String signerName;
     private final String signerRole;
     private final boolean admissionResponse;
+    private final boolean partAdmissionResponse;
+
 
     public CCJContent(Map<String, Object> claim,
                       CountyCourtJudgment countyCourtJudgment,
                       LocalDateTime countyCourtJudgmentRequestedAt,
                       AmountContent amount,
-                      boolean admissionResponse) {
+                      boolean admissionResponse,
+                      boolean partAdmissionResponse) {
         requireNonNull(claim);
         requireNonNull(countyCourtJudgment);
         requireNonNull(countyCourtJudgmentRequestedAt);
@@ -50,6 +53,7 @@ public class CCJContent {
         this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
         this.admissionResponse = admissionResponse;
+        this.partAdmissionResponse = partAdmissionResponse;
     }
 
     public Map<String, Object> getClaim() {
@@ -87,4 +91,9 @@ public class CCJContent {
     public boolean isAdmissionResponse() {
         return admissionResponse;
     }
+
+    public boolean isPartAdmissionResponse() {
+        return partAdmissionResponse;
+    }
+
 }

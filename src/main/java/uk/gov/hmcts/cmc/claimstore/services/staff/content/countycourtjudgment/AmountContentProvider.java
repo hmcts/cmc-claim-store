@@ -60,8 +60,7 @@ public class AmountContentProvider {
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
                 .subtract(paidAmount)),
-            formatMoney(admittedAmount),
-            isPartAdmissionResponse
+            formatMoney(admittedAmount)
         );
 
     }

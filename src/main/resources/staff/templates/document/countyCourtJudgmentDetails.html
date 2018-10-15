@@ -390,7 +390,7 @@
   </div>
     <div class="section">
       <div class="section-heading">
-      {% if ccj.amount.isPartAdmissionResponse  == true %}
+        {% if ccj.admissionResponse == true %}
         <strong>Judgment details</strong>
       {% else %}
         <strong>Total amount</strong>
@@ -398,7 +398,7 @@
       </div>
       <div class="section-body">
       <table>
-        {% if ccj.amount.isPartAdmissionResponse  == true %}
+        {% if ccj.admissionResponse == true %}
         <tr>
           <td><strong>Judgment amount:</strong></td>
           <td>
@@ -440,9 +440,15 @@
         </tr>
         <tr>
           <td><strong>Subtotal:</strong></td>
+          {% if ccj.partAdmissionResponse == true %}
+          <td>
+            {{ ccj.amount.remainingAmount }}
+          </td>
+          {% else %}
           <td>
             {{ ccj.amount.subTotalAmount }}
           </td>
+          {% endif %}
         </tr>
         <tr>
           <td><strong>Amount already paid by defendant:</strong></td>
