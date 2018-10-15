@@ -11,6 +11,8 @@ public enum CaseEvent {
     FULL_ADMISSION("AdmitAll"),
     PART_ADMISSION("AdmitPart"),
     DIRECTIONS_QUESTIONNAIRE_DEADLINE("DirectionsQuestionnaireDeadline"),
+    CLAIMANT_RESPONSE_ACCEPTATION("ClaimantResponseAcceptation"),
+    CLAIMANT_RESPONSE_REJECTION("ClaimantResponseRejection"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
