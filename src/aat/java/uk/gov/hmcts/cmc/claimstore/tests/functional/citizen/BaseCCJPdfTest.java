@@ -15,8 +15,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public abstract class BaseCCJPdfTest extends BasePdfTest {
 
-    protected void assertHeaderDetails(Claim createdCase, String pdfAsText, String expectedHeader) {
-        assertThat(pdfAsText).contains(expectedHeader);
+    protected void assertHeaderDetails(Claim createdCase, String pdfAsText, String expectedTitle) {
+        assertThat(pdfAsText).contains(expectedTitle);
         assertThat(pdfAsText).contains("In the County Court Business Centre");
         assertThat(pdfAsText).contains("Online Civil Money Claims");
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
