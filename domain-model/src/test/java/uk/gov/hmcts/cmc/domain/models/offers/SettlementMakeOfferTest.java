@@ -20,7 +20,7 @@ public class SettlementMakeOfferTest {
 
     @Test
     public void shouldAllowDefendantToMakeAnInitialOffer() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
 
@@ -35,7 +35,7 @@ public class SettlementMakeOfferTest {
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowDefendantToMakeTwoOffersInARow() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
@@ -43,7 +43,7 @@ public class SettlementMakeOfferTest {
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowClaimantToMakeTwoOffersInARow() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         settlement.makeOffer(offer, MadeBy.CLAIMANT);
         settlement.makeOffer(offer, MadeBy.CLAIMANT);
@@ -51,7 +51,7 @@ public class SettlementMakeOfferTest {
 
     @Test
     public void shouldAllowToMakeACounterOffers() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         settlement.makeOffer(offer, MadeBy.CLAIMANT);
         settlement.makeOffer(offer, MadeBy.DEFENDANT);

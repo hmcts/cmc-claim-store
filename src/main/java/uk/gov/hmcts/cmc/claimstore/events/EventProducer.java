@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
@@ -66,5 +67,9 @@ public class EventProducer {
 
     public void createSignSettlementAgreementEvent(Claim claim) {
         publisher.publishEvent(new SignSettlementAgreementEvent(claim));
+    }
+
+    public void createClaimantResponseEvent(Claim claim) {
+        publisher.publishEvent(new ClaimantResponseEvent(claim));
     }
 }

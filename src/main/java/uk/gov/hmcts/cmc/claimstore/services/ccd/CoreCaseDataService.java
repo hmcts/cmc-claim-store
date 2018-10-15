@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -38,8 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_ISSUED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
@@ -164,13 +165,18 @@ public class CoreCaseDataService {
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment
+        CountyCourtJudgment countyCourtJudgment,
+        boolean issue
     ) {
         CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
-
-        return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+        if (issue) {
+            ccdCase.setCountyCourtJudgmentIssuedAt(nowInUTC());
+            return update(authorisation, ccdCase, CCJ_ISSUED);
+        } else {
+            return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+        }
     }
 
     public CaseDetails linkSealedClaimDocument(
@@ -192,12 +198,27 @@ public class CoreCaseDataService {
         String authorisation
     ) {
 
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setResponse(responseMapper.to(response));
-        ccdCase.setDefendantEmail(defendantEmail);
-        ccdCase.setRespondedAt(nowInUTC());
+        CCDCase ccdCase = CCDCase.builder()
+            .id(claim.getId())
+            .response(responseMapper.to(response))
+            .defendantEmail(defendantEmail)
+            .respondedAt(nowInUTC())
+            .build();
 
-        return update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response)));
+    }
+
+    private String getResponseTypeName(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                return ((FullDefenceResponse) response).getDefenceType().name();
+            case FULL_ADMISSION:
+            case PART_ADMISSION:
+                return response.getResponseType().name();
+            default:
+                throw new IllegalArgumentException("Invalid response type " + response.getResponseType());
+
+        }
     }
 
     public CaseDetails saveSettlement(

@@ -41,7 +41,7 @@ public class SettlementOfferTest extends BaseTest {
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
@@ -66,7 +66,7 @@ public class SettlementOfferTest extends BaseTest {
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
@@ -91,7 +91,7 @@ public class SettlementOfferTest extends BaseTest {
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
@@ -140,7 +140,7 @@ public class SettlementOfferTest extends BaseTest {
         User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
@@ -201,7 +201,7 @@ public class SettlementOfferTest extends BaseTest {
 
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
             .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)

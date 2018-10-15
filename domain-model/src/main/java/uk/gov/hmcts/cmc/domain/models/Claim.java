@@ -23,7 +23,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
     value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
-        "amountWithInterestUntilIssueDate", "totalInterest",  "serviceDate", "amountWithInterest"},
+        "amountWithInterestUntilIssueDate", "totalInterest",  "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
     allowGetters = true
 )
 @Builder
@@ -55,6 +55,7 @@ public class Claim {
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponse claimantResponse;
     private final LocalDateTime countyCourtJudgmentIssuedAt;
+    private final LocalDate directionsQuestionnaireDeadline;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -82,7 +83,8 @@ public class Claim {
         List<String> features,
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
-        LocalDateTime countyCourtJudgmentIssuedAt
+        LocalDateTime countyCourtJudgmentIssuedAt,
+        LocalDate directionsQuestionnaireDeadline
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -108,6 +110,7 @@ public class Claim {
         this.claimantRespondedAt = claimantRespondedAt;
         this.claimantResponse = claimantResponse;
         this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
+        this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
     }
 
     public Long getId() {
@@ -228,6 +231,10 @@ public class Claim {
 
     public Optional<LocalDateTime> getCountyCourtJudgmentIssuedAt() {
         return Optional.ofNullable(countyCourtJudgmentIssuedAt);
+    }
+
+    public LocalDate getDirectionsQuestionnaireDeadline() {
+        return directionsQuestionnaireDeadline;
     }
 
     @Override

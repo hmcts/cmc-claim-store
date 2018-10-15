@@ -56,7 +56,7 @@ public abstract class BaseOfferTest extends BaseIntegrationTest {
                 post(format("/claims/%s/offers/%s", claim.getExternalId(), MadeBy.DEFENDANT.name()))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, DEFENDANT_AUTH_TOKEN)
-                    .content(jsonMapper.toJson(SampleOffer.validDefaults()))
+                    .content(jsonMapper.toJson(SampleOffer.builder().build()))
             )
             .andExpect(status().isCreated());
     }
@@ -67,7 +67,7 @@ public abstract class BaseOfferTest extends BaseIntegrationTest {
                 post(format("/claims/%s/offers/%s", claim.getExternalId(), MadeBy.CLAIMANT.name()))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, CLAIMANT_AUTH_TOKEN)
-                    .content(jsonMapper.toJson(SampleOffer.validDefaults()))
+                    .content(jsonMapper.toJson(SampleOffer.builder().build()))
             )
             .andExpect(status().isCreated());
     }

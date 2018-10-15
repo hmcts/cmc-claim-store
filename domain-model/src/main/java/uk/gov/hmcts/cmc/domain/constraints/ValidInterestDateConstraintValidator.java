@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class ValidInterestDateConstraintValidator implements ConstraintValidator<ValidInterest, InterestDate> {
+public class ValidInterestDateConstraintValidator implements ConstraintValidator<ValidInterestDate, InterestDate> {
 
     @Override
     public boolean isValid(InterestDate interestDate, ConstraintValidatorContext validatorContext) {

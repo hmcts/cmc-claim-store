@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseClaimPdfTest;
+import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClaimPdfTest extends BaseClaimPdfTest {
+public class ClaimPdfTest extends BasePdfTest {
 
     @Before
     public void before() {
@@ -26,13 +26,18 @@ public class ClaimPdfTest extends BaseClaimPdfTest {
         shouldBeAbleToFindTestClaimDataInPdf("claimIssueReceipt");
     }
 
+    @Test
+    public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
+        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim");
+    }
+
     @Override
     protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
         return testData::submittedByClaimantBuilder;
     }
 
     @Override
-    protected void assertionsOnClaimPdf(Claim createdCase, String pdfAsText) {
+    protected void assertionsOnPdf(Claim createdCase, String pdfAsText) {
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
         assertThat(pdfAsText).contains("Issued on: " + Formatting.formatDate(createdCase.getIssuedOn()));
         assertThat(pdfAsText).contains("Name: " + createdCase.getClaimData().getClaimant().getName());

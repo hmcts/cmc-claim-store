@@ -5,10 +5,12 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
@@ -37,7 +39,9 @@ public class SampleStatementOfMeans {
                 .otherDependants(OtherDependants.builder()
                     .numberOfPeople(3)
                     .details("Three other dependants")
+                    .anyDisabled(false)
                     .build())
+                .anyDisabledChildren(false)
                 .build())
             .employment(Employment.builder()
                 .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
@@ -67,15 +71,21 @@ public class SampleStatementOfMeans {
             .expenses(asList(Expense.builder()
                 .type(Expense.ExpenseType.COUNCIL_TAX)
                 .frequency(PaymentFrequency.MONTH)
-                .amountPaid(TEN)
+                .amount(TEN)
                 .build()
             ))
             .incomes(asList(Income.builder()
                 .type(Income.IncomeType.JOB)
                 .frequency(PaymentFrequency.MONTH)
-                .amountReceived(TEN)
+                .amount(TEN)
                 .build()
             ))
+            .partner(LivingPartner.builder()
+                .over18(true)
+                .disability(DisabilityStatus.NO)
+                .build())
+            .disability(DisabilityStatus.YES)
+            .carer(false)
             .build();
     }
 

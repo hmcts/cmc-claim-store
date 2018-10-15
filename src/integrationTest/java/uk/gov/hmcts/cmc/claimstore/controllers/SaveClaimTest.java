@@ -62,7 +62,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .isEqualTo(claimData);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .contains(claimData);
+            .isEqualTo(claimData);
     }
 
 
@@ -97,7 +97,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getFeatures)
-            .contains(features);
+            .isEqualTo(features);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
         assertThat(emailData.getAttachments()).hasSize(1)
             .first().extracting(EmailAttachment::getFilename)
-            .containsExactly(savedClaim.getReferenceNumber() + "-claim-form.pdf");
+            .isEqualTo(savedClaim.getReferenceNumber() + "-claim-form.pdf");
     }
 
     @Test

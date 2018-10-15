@@ -56,18 +56,18 @@ public class Expense {
     @NotNull
     @Money
     @DecimalMin(value = "0.01")
-    private final BigDecimal amountPaid;
+    private final BigDecimal amount;
 
     public Expense(
         ExpenseType type,
         String otherName,
         PaymentFrequency frequency,
-        BigDecimal amountPaid
+        BigDecimal amount
     ) {
         this.type = type;
         this.otherName = otherName;
         this.frequency = frequency;
-        this.amountPaid = amountPaid;
+        this.amount = amount;
     }
 
     public ExpenseType getType() {
@@ -82,8 +82,8 @@ public class Expense {
         return frequency;
     }
 
-    public BigDecimal getAmountPaid() {
-        return amountPaid;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
     @Override

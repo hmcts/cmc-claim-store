@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
@@ -18,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @EqualsAndHashCode
+@Getter
 @ValidCountyCourtJudgment
 public class CountyCourtJudgment {
 
@@ -40,13 +43,17 @@ public class CountyCourtJudgment {
     @Valid
     private final StatementOfTruth statementOfTruth;
 
+    private final CountyCourtJudgmentType ccjType;
+
+    @Builder
     public CountyCourtJudgment(
         LocalDate defendantDateOfBirth,
         PaymentOption paymentOption,
         BigDecimal paidAmount,
         RepaymentPlan repaymentPlan,
         LocalDate payBySetDate,
-        StatementOfTruth statementOfTruth
+        StatementOfTruth statementOfTruth,
+        CountyCourtJudgmentType ccjType
     ) {
         this.defendantDateOfBirth = defendantDateOfBirth;
         this.paymentOption = paymentOption;
@@ -54,14 +61,11 @@ public class CountyCourtJudgment {
         this.repaymentPlan = repaymentPlan;
         this.payBySetDate = payBySetDate;
         this.statementOfTruth = statementOfTruth;
+        this.ccjType = ccjType;
     }
 
     public Optional<LocalDate> getDefendantDateOfBirth() {
         return Optional.ofNullable(defendantDateOfBirth);
-    }
-
-    public PaymentOption getPaymentOption() {
-        return paymentOption;
     }
 
     public Optional<BigDecimal> getPaidAmount() {

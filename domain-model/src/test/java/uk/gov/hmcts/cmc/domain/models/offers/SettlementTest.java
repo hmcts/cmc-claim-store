@@ -6,17 +6,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.util.List;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementTest {
 
     private static final String COUNTER_OFFER = "Get me a new roof instead";
-    private static final Offer offer = SampleOffer.validDefaults();
+    private static final Offer offer = SampleOffer.builder().build();
 
     @Mock
     private PartyStatement partyStatement;
@@ -42,7 +44,7 @@ public class SettlementTest {
     @Test
     public void getLastStatementShouldReturnLastStatement() {
         Offer counterOffer = SampleOffer.builder()
-            .withContent(COUNTER_OFFER)
+            .content(COUNTER_OFFER)
             .build();
 
         settlement.makeOffer(offer, MadeBy.DEFENDANT);
@@ -174,7 +176,7 @@ public class SettlementTest {
         settlement.reject(MadeBy.DEFENDANT);
 
         Offer counterOffer = SampleOffer.builder()
-            .withContent(COUNTER_OFFER)
+            .content(COUNTER_OFFER)
             .build();
 
         settlement.makeOffer(counterOffer, MadeBy.DEFENDANT);
@@ -192,5 +194,26 @@ public class SettlementTest {
         settlement.getLastOfferStatement();
     }
 
+    @Test
+    public void isSettlementThroughAdmissionsShouldShouldReturnTrueForAdmissionsRoute() {
+        Offer admissionOffer = Offer.builder()
+            .content("Defendant full admission offer")
+            .completionDate(now().plusDays(14))
+            .paymentIntention(PaymentIntention.builder().build())
+            .build();
+
+        settlement.makeOffer(admissionOffer, MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        assertThat(settlement.isSettlementThroughAdmissions()).isTrue();
+    }
+
+    @Test
+    public void isSettlementThroughAdmissionsShouldShouldReturnFalseForOffersRoute() {
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        assertThat(settlement.isSettlementThroughAdmissions()).isFalse();
+    }
 
 }

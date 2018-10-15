@@ -41,7 +41,9 @@
     "repaymentPlan": {
       "instalmentAmount": 100,
       "firstPaymentDate": "2100-10-10",
-      "paymentSchedule": "EACH_WEEK"
+      "paymentSchedule": "EACH_WEEK",
+      "completionDate": "2101-06-10",
+      "paymentLength": "8 months"
     }
   },
   "statementOfMeans": {
@@ -56,8 +58,10 @@
       "numberOfMaintainedChildren": 2,
       "otherDependants": {
         "numberOfPeople": 3,
-        "details": "Three other dependants"
-      }
+        "details": "Three other dependants",
+        "anyDisabled": false
+      },
+      "anyDisabledChildren": false
     },
     "employment": {
       "employers": [{
@@ -78,18 +82,25 @@
     "incomes": [{
       "type": "JOB",
       "frequency": "MONTH",
-      "amountReceived": 10
+      "amount": 10
     }],
     "expenses": [{
       "type": "COUNCIL_TAX",
       "frequency": "MONTH",
-      "amountPaid": 10
+      "amount": 10
     }],
     "courtOrders": [{
       "claimNumber": "Reference",
       "amountOwed": 10,
       "monthlyInstalmentAmount": 1
     }],
+    "partner": {
+      "disability": "NO",
+      "over18": true,
+      "pensioner": false
+    },
+    "disability": "YES",
+    "carer": false,
     "reason": "My reason"
   }
 }

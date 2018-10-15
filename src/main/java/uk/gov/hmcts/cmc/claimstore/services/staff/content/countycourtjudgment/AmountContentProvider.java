@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvide
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -24,11 +26,19 @@ public class AmountContentProvider {
 
     public AmountContent create(Claim claim) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
+
+        Response response = claim.getResponse().orElse(null);
+
+        boolean isPartAdmissionResponse = response instanceof PartAdmissionResponse;
+        BigDecimal admittedAmount = isPartAdmissionResponse
+            ? ((PartAdmissionResponse) response).getAmount()
+            : claimAmount;
+
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
         InterestContent interestContent = null;
         BigDecimal interestRealValue = ZERO;
 
-        if (claim.getClaimData().getInterest().getType() != NO_INTEREST) {
+        if (claim.getClaimData().getInterest().getType() != NO_INTEREST && !isPartAdmissionResponse) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
@@ -47,7 +57,7 @@ public class AmountContentProvider {
             interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
-            formatMoney(claimAmount
+            formatMoney(admittedAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
                 .subtract(paidAmount))

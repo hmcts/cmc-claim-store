@@ -24,8 +24,11 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -71,7 +74,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
     }
 
     @Test
@@ -88,10 +91,28 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getReason())
-            .isEqualTo("He paid 10 but he actually owes 10,000. No I do not accept this.");
-        assertThat(claimantResponse.isFreeMediation()).isFalse();
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
+        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
+    }
+
+    @Test
+    public void shouldSendNotificationsWhenEverythingIsOkForAcceptation() throws Exception {
+        ClaimantResponse response = SampleClaimantResponse.validDefaultAcceptation();
+
+        makeRequest(claim.getExternalId(), SUBMITTER_ID, response);
+
+        verify(notificationClient, times(1))
+            .sendEmail(anyString(), anyString(), anyMap(), anyString());
+    }
+
+    @Test
+    public void shouldSendNotificationsWhenEverythingIsOkForRejection() throws Exception {
+        ClaimantResponse response = SampleClaimantResponse.validDefaultRejection();
+
+        makeRequest(claim.getExternalId(), SUBMITTER_ID, response);
+
+        verify(notificationClient, times(1))
+            .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
     private ResultActions makeRequest(
