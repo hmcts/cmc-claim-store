@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 
 public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
@@ -106,7 +107,7 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
             .get(0);
 
         String expectedPinLetterFileName
-            = DocumentNameUtils.buildDefendantLetterFileBaseName(claim.getReferenceNumber());
+            = DocumentNameUtils.buildDefendantLetterFileBaseName(claim.getReferenceNumber()) + EXTENSION;
 
         assertThat(emailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedPinLetterFileName);
@@ -115,7 +116,8 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
             .getAttachments()
             .get(1);
 
-        String expectedSealedClaimFileName = DocumentNameUtils.buildSealedClaimFileBaseName(claim.getReferenceNumber());
+        String expectedSealedClaimFileName = DocumentNameUtils.buildSealedClaimFileBaseName(claim.getReferenceNumber())
+            + EXTENSION;
 
         assertThat(sealedClaimEmailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(sealedClaimEmailAttachment.getFilename()).isEqualTo(expectedSealedClaimFileName);

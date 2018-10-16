@@ -46,7 +46,7 @@ public class DefenceResponseJsonMapperTest {
     public void shouldMapIndividualDefenceResponseToRPA() throws JSONException {
         Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder().withDefendantDetails(SampleParty.builder()
-                .withCorrespondenceAddress(SampleAddress.builder().withLine1("102").build()).individual()).build())
+                .withCorrespondenceAddress(SampleAddress.builder().line1("102").build()).individual()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
@@ -78,7 +78,7 @@ public class DefenceResponseJsonMapperTest {
         Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
                 .withDefendantDetails(SampleParty.builder().withAddress(SampleAddress.builder()
-                    .withPostcode("MK3 0AL").build()).withCorrespondenceAddress(null).individual()).build())
+                    .postcode("MK3 0AL").build()).withCorrespondenceAddress(null).individual()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())

@@ -17,13 +17,12 @@ public class SampleParty {
     private String name = "John Rambo";
     private String businessName = "Trading as name";
     private String contactPerson = "Steven Seagal";
-    private Address address = SampleAddress.validDefaults();
-    private Address correspondenceAddress = SampleAddress.validDefaults();
+    private Address address = SampleAddress.builder().build();
+    private Address correspondenceAddress = SampleAddress.builder().build();
     private String title = "Dr.";
     private String mobilePhone = "07873727165";
     private LocalDate dateOfBirth = LocalDate.of(1968, 1, 2);
-    private Representative representative = SampleRepresentative.builder()
-        .build();
+    private Representative representative = SampleRepresentative.builder().build();
     private String companiesHouseNumber;
 
     public static SampleParty builder() {

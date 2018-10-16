@@ -9,6 +9,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment.CountyCourtJudgmentBuilder;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -42,7 +44,7 @@ public class RequestForJudgementJsonMapperTest {
     public void shouldMapRequestForJudgementImmediatelyWithPaidAlready() throws JSONException {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
-            .withPaidAmount(PAID_ALREADY)
+            .paidAmount(PAID_ALREADY)
             .build();
 
         Claim claim = SampleClaim.builder()
@@ -59,7 +61,7 @@ public class RequestForJudgementJsonMapperTest {
     public void shouldMapRequestForJudgementImmediatelyButNothingPaid() throws JSONException {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
-            .withPaidAmount(null)
+            .paidAmount(null)
             .build();
 
         Claim claim = SampleClaim.builder()
@@ -76,8 +78,9 @@ public class RequestForJudgementJsonMapperTest {
     public void shouldMapRequestForJudgementPaidInFull() throws JSONException {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
-            .withPaidAmount(PAID_ALREADY)
-            .withPayBySetDate(PAY_BY_SET_DATE)
+            .paidAmount(PAID_ALREADY)
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .payBySetDate(PAY_BY_SET_DATE)
             .build();
 
         Claim claim = SampleClaim.builder()
@@ -94,14 +97,15 @@ public class RequestForJudgementJsonMapperTest {
     public void shouldMapRequestForJudgementPayingFortnightly() throws JSONException {
         RepaymentPlan repaymentPlan = SampleRepaymentPlan
             .builder()
-            .withPaymentSchedule(PaymentSchedule.EVERY_TWO_WEEKS)
-            .withFirstPaymentDate(FIRST_PAYMENT_DATE)
-            .withInstalmentAmount(BigDecimal.valueOf(100.00))
+            .paymentSchedule(PaymentSchedule.EVERY_TWO_WEEKS)
+            .firstPaymentDate(FIRST_PAYMENT_DATE)
+            .instalmentAmount(BigDecimal.valueOf(100.00))
             .build();
 
-        SampleCountyCourtJudgment countyCourtJudgment = new SampleCountyCourtJudgment()
-            .withPaidAmount(PAID_ALREADY)
-            .withRepaymentPlan(repaymentPlan);
+        CountyCourtJudgmentBuilder countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .paidAmount(PAID_ALREADY)
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(repaymentPlan);
 
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(CCJ_REQUESTED_AT)
@@ -117,14 +121,14 @@ public class RequestForJudgementJsonMapperTest {
     public void shouldMapRequestForJudgementPayingWeekly() throws JSONException {
         RepaymentPlan repaymentPlan = SampleRepaymentPlan
             .builder()
-            .withPaymentSchedule(PaymentSchedule.EACH_WEEK)
-            .withFirstPaymentDate(PAY_BY_SET_DATE)
+            .paymentSchedule(PaymentSchedule.EACH_WEEK)
+            .firstPaymentDate(PAY_BY_SET_DATE)
             .build();
 
-        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
-            .builder()
-            .withPaidAmount(PAID_ALREADY)
-            .withRepaymentPlan(repaymentPlan)
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .paidAmount(PAID_ALREADY)
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(repaymentPlan)
             .build();
 
         Claim claim = SampleClaim.builder().withDefendantEmail("defendant@email.com")
@@ -139,16 +143,15 @@ public class RequestForJudgementJsonMapperTest {
 
     @Test
     public void shouldMapRequestForJudgementPayingMonthly() throws JSONException {
-        RepaymentPlan replaymentPlan = SampleRepaymentPlan
-            .builder()
-            .withPaymentSchedule(PaymentSchedule.EVERY_MONTH)
-            .withFirstPaymentDate(PAY_BY_SET_DATE)
+        RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder()
+            .paymentSchedule(PaymentSchedule.EVERY_MONTH)
+            .firstPaymentDate(PAY_BY_SET_DATE)
             .build();
 
-        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
-            .builder()
-            .withPaidAmount(PAID_ALREADY)
-            .withRepaymentPlan(replaymentPlan)
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .paidAmount(PAID_ALREADY)
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(repaymentPlan)
             .build();
 
         Claim claim = SampleClaim.builder()

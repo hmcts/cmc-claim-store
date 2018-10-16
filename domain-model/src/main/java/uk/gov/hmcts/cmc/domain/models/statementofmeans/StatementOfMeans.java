@@ -51,6 +51,16 @@ public class StatementOfMeans {
     @EachNotNull
     private final List<CourtOrder> courtOrders;
 
+    @Valid
+    @EachNotNull
+    private final List<PriorityDebt> priorityDebts;
+
+    @Valid
+    private final LivingPartner partner;
+
+    private final DisabilityStatus disability;
+
+    private final boolean carer;
     @NotBlank
     private final String reason;
 
@@ -63,6 +73,10 @@ public class StatementOfMeans {
         List<Income> incomes,
         List<Expense> expenses,
         List<CourtOrder> courtOrders,
+        List<PriorityDebt> priorityDebts,
+        LivingPartner partner,
+        DisabilityStatus disability,
+        boolean carer,
         String reason
     ) {
         this.residence = residence;
@@ -73,6 +87,10 @@ public class StatementOfMeans {
         this.incomes = incomes;
         this.expenses = expenses;
         this.courtOrders = courtOrders;
+        this.priorityDebts = priorityDebts;
+        this.partner = partner;
+        this.disability = disability;
+        this.carer = carer;
         this.reason = reason;
     }
 
@@ -106,6 +124,22 @@ public class StatementOfMeans {
 
     public List<CourtOrder> getCourtOrders() {
         return courtOrders != null ? courtOrders : emptyList();
+    }
+
+    public List<PriorityDebt> getPriorityDebts() {
+        return priorityDebts != null ? priorityDebts : emptyList();
+    }
+
+    public Optional<LivingPartner> getPartner() {
+        return Optional.ofNullable(partner);
+    }
+
+    public Optional<DisabilityStatus> getDisability() {
+        return Optional.ofNullable(disability);
+    }
+
+    public boolean isCarer() {
+        return carer;
     }
 
     public String getReason() {

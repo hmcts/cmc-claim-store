@@ -10,11 +10,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -31,9 +29,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType.CLAIMANT;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType.COURT;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType.DEFENDANT;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
@@ -73,22 +71,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
     }
 
-
-    @Test(expected = IllegalArgumentException.class)
-    public void formaliseShouldThrowErrorWhenDeterminationDecisionTypeIsMissing() {
-        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
-
-        Claim claim = SampleClaim.getWithResponse(fullDefenceResponse);
-
-        ResponseAcceptation responseAcceptation = ResponseAcceptation
-            .builder()
-            .formaliseOption(CCJ)
-            .determinationDecisionType(null)
-            .build();
-
-        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
-    }
-
     @Test(expected = IllegalStateException.class)
     public void formaliseCCJWhenResponseIsNotAdmissions() {
         Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
@@ -98,7 +80,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(CCJ)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -113,7 +94,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(SETTLEMENT)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -142,7 +122,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(CCJ)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -177,7 +156,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(CCJ)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -211,9 +189,9 @@ public class FormaliseResponseAcceptanceServiceTest {
             .courtDetermination(CourtDetermination
                 .builder()
                 .courtDecision(paymentIntention)
+                .decisionType(COURT)
                 .build())
             .formaliseOption(CCJ)
-            .determinationDecisionType(COURT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -235,6 +213,81 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
+    public void formaliseCCJWithCourtDeterminedHavingClaimantDecisionType() {
+        Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
+
+        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
+
+        PaymentIntention paymentIntention = SamplePaymentIntention.bySetDate();
+        LocalDate appliedPaymentDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
+
+        PaymentIntention claimantPaymentIntention = SamplePaymentIntention.instalments();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .courtDetermination(CourtDetermination
+                .builder()
+                .courtPaymentIntention(claimantPaymentIntention)
+                .courtDecision(paymentIntention)
+                .decisionType(CLAIMANT)
+                .build())
+            .formaliseOption(CCJ)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+
+        verify(countyCourtJudgmentService).save(
+            eq(claim.getSubmitterId()),
+            countyCourtJudgmentArgumentCaptor.capture(),
+            eq(claim.getExternalId()),
+            eq(AUTH),
+            eq(true));
+
+        assertThat(countyCourtJudgmentArgumentCaptor
+            .getValue()
+            .getPayBySetDate()
+            .orElseThrow(IllegalStateException::new))
+            .isEqualTo(appliedPaymentDate);
+
+        verifyZeroInteractions(offersService);
+    }
+
+    @Test
+    public void formaliseCCJWithCourtDeterminedHavingDefendantDecisionType() {
+        Response partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
+
+        Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayByInstalments);
+
+        PaymentIntention paymentIntention = SamplePaymentIntention.instalments();
+
+        PaymentIntention claimantPaymentIntention = SamplePaymentIntention.bySetDate();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .courtDetermination(CourtDetermination
+                .builder()
+                .courtPaymentIntention(claimantPaymentIntention)
+                .courtDecision(paymentIntention)
+                .decisionType(DEFENDANT)
+                .build())
+            .formaliseOption(CCJ)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+
+        verify(countyCourtJudgmentService).save(
+            eq(claim.getSubmitterId()),
+            countyCourtJudgmentArgumentCaptor.capture(),
+            eq(claim.getExternalId()),
+            eq(AUTH),
+            eq(true));
+
+        assertThat(!countyCourtJudgmentArgumentCaptor
+            .getValue()
+            .getPayBySetDate().isPresent());
+
+        verifyZeroInteractions(offersService);
+    }
+
+    @Test
     public void formaliseCCJWithClaimantPaymentIntentionPresent() {
         Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
 
@@ -249,7 +302,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             .builder()
             .claimantPaymentIntention(paymentIntentionByInstalments)
             .formaliseOption(CCJ)
-            .determinationDecisionType(CLAIMANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -284,7 +336,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(CCJ)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -317,7 +368,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(SETTLEMENT)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -352,7 +402,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(SETTLEMENT)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -387,9 +436,9 @@ public class FormaliseResponseAcceptanceServiceTest {
             .courtDetermination(CourtDetermination
                 .builder()
                 .courtDecision(paymentIntention)
+                .decisionType(COURT)
                 .build())
             .formaliseOption(SETTLEMENT)
-            .determinationDecisionType(COURT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -423,7 +472,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             .builder()
             .claimantPaymentIntention(paymentIntention)
             .formaliseOption(SETTLEMENT)
-            .determinationDecisionType(CLAIMANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -458,7 +506,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
             .formaliseOption(SETTLEMENT)
-            .determinationDecisionType(DEFENDANT)
             .build();
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
@@ -490,17 +537,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             .build();
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
-
-        verifyZeroInteractions(countyCourtJudgmentService);
-        verifyZeroInteractions(offersService);
-    }
-
-    @Test
-    public void doNotFormaliseWhenResponseIsNotAcceptation() {
-        Claim claim = SampleClaim.getWithDefaultResponse();
-        ClaimantResponse response = ResponseRejection.builder().build();
-        assertThatCode(() -> formaliseResponseAcceptanceService
-            .formalise(claim, response, AUTH)).doesNotThrowAnyException();
 
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(offersService);
