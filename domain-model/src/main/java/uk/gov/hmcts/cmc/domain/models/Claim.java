@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
     allowGetters = true
 )
+@Getter
 @Builder
 @EqualsAndHashCode
 public class Claim {
@@ -118,80 +120,12 @@ public class Claim {
         this.moneyReceivedOn = moneyReceivedOn;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getSubmitterId() {
-        return submitterId;
-    }
-
-    public String getLetterHolderId() {
-        return letterHolderId;
-    }
-
-    public String getDefendantId() {
-        return defendantId;
-    }
-
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public ClaimData getClaimData() {
-        return claimData;
-    }
-
-    public String getReferenceNumber() {
-        return referenceNumber;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDate getIssuedOn() {
-        return issuedOn;
-    }
-
-    public LocalDate getResponseDeadline() {
-        return responseDeadline;
-    }
-
-    public boolean isMoreTimeRequested() {
-        return moreTimeRequested;
-    }
-
-    public String getSubmitterEmail() {
-        return submitterEmail;
-    }
-
-    public LocalDateTime getRespondedAt() {
-        return respondedAt;
-    }
-
     public Optional<Response> getResponse() {
         return Optional.ofNullable(response);
     }
 
-    public String getDefendantEmail() {
-        return defendantEmail;
-    }
-
-    public CountyCourtJudgment getCountyCourtJudgment() {
-        return countyCourtJudgment;
-    }
-
-    public LocalDateTime getCountyCourtJudgmentRequestedAt() {
-        return countyCourtJudgmentRequestedAt;
-    }
-
     public Optional<Settlement> getSettlement() {
         return Optional.ofNullable(settlement);
-    }
-
-    public LocalDateTime getSettlementReachedAt() {
-        return settlementReachedAt;
     }
 
     public Optional<URI> getSealedClaimDocument() {
@@ -226,16 +160,8 @@ public class Claim {
         return Optional.ofNullable(claimantRespondedAt);
     }
 
-    public List<String> getFeatures() {
-        return features;
-    }
-
     public Optional<LocalDateTime> getCountyCourtJudgmentIssuedAt() {
         return Optional.ofNullable(countyCourtJudgmentIssuedAt);
-    }
-
-    public LocalDate getDirectionsQuestionnaireDeadline() {
-        return directionsQuestionnaireDeadline;
     }
 
     public Optional<LocalDate> getMoneyReceivedOn() {
