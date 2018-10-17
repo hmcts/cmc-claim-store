@@ -54,7 +54,6 @@ public class PaidInFullTest extends BaseTest {
             .paidInFull(createdCase.getExternalId(), new PaidInFull(null), claimant)
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-
     }
 
     @Test
@@ -69,7 +68,6 @@ public class PaidInFullTest extends BaseTest {
             .paidInFull(createdCase.getExternalId(), new PaidInFull(LocalDate.now().plusWeeks(1)), claimant)
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-
     }
 
     @Test
