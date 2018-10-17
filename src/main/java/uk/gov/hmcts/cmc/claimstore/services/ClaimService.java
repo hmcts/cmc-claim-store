@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -38,6 +39,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -309,9 +312,21 @@ public class ClaimService {
         }
     }
 
-    public void saveMoneyReceivedOn(String externalId, PaidInFull paidInFull, String authorisation) {
+    public Claim paidInFull(String externalId, PaidInFull paidInFull, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-        caseRepository.saveMoneyReceivedOn(claim, paidInFull, authorisation);
+        assertPaidInFull(claim);
+        this.caseRepository.paidInFull(claim, paidInFull, authorisation);
+        Claim updatedClaim = getClaimByExternalId(externalId, authorisation);
+        this.eventProducer.createPaidInFullEvent(updatedClaim);
+        return updatedClaim;
+    }
+
+    private void assertPaidInFull(Claim claim) {
+        requireNonNull(claim, "claim object can not be null");
+        if (claim.getMoneyReceivedOn().isPresent()) {
+            throw new ConflictException(format("Paid in full for claim %s has been already submitted",
+                claim.getExternalId()));
+        }
     }
 
     private static boolean isFullDefenceWithNoMediation(Response response) {

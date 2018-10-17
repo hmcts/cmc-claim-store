@@ -221,7 +221,7 @@ public class CommonOperations {
 
         return RestAssured
             .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
             .body(jsonMapper.toJson(paidInFull))
             .when()

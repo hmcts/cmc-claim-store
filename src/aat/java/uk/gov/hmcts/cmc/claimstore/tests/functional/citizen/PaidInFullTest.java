@@ -3,14 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,25 +38,63 @@ public class PaidInFullTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        assertThat(updatedCase.getMoneyReceivedOn()).isEqualTo(paidInFull);
+        assertThat(updatedCase.getMoneyReceivedOn().orElseThrow(AssertionError::new))
+            .isEqualTo(paidInFull.getMoneyReceivedOn());
     }
 
-    @Test(expected = NotFoundException.class)
-    public void shouldFailWhenClaimNotFound() {
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidRequestBodyIsSubmitted() {
         String claimantId = claimant.getUserDetails().getId();
-        commonOperations.submitClaim(
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
+
+        commonOperations
+            .paidInFull(createdCase.getExternalId(), new PaidInFull(null), claimant)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenPaidInFullDateIsInFuture() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
+
+        commonOperations
+            .paidInFull(createdCase.getExternalId(), new PaidInFull(LocalDate.now().plusWeeks(1)), claimant)
+            .then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+
+    }
+
+    @Test
+    public void shouldNoAllowSubmitPaidInFullIfAlreadyDone() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimantId
         );
 
         PaidInFull paidInFull = new PaidInFull(LocalDate.now());
 
-        commonOperations
-            .paidInFull(UUID.randomUUID().toString(), paidInFull, claimant)
+        Claim updatedCase = commonOperations
+            .paidInFull(createdCase.getExternalId(), paidInFull, claimant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
 
+        assertThat(updatedCase.getMoneyReceivedOn().orElseThrow(AssertionError::new))
+            .isEqualTo(paidInFull.getMoneyReceivedOn());
+
+        commonOperations
+            .paidInFull(createdCase.getExternalId(), paidInFull, claimant)
+            .then()
+            .statusCode(HttpStatus.CONFLICT.value());
     }
 }

@@ -238,8 +238,8 @@ public class Claim {
         return directionsQuestionnaireDeadline;
     }
 
-    public LocalDate getMoneyReceivedOn() {
-        return moneyReceivedOn;
+    public Optional<LocalDate> getMoneyReceivedOn() {
+        return Optional.ofNullable(moneyReceivedOn);
     }
 
     @Override

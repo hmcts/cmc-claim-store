@@ -188,7 +188,7 @@ public interface ClaimRepository {
         "UPDATE claim SET money_received_on = :moneyReceivedOn "
             + "WHERE external_id = :externalId"
     )
-    void saveMoneyReceivedOn(
+    void updateMoneyReceivedOn(
         @Bind("externalId") String externalId,
         @Bind("moneyReceivedOn") LocalDate moneyReceivedOn
     );

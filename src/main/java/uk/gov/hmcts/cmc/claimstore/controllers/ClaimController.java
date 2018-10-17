@@ -133,10 +133,10 @@ public class ClaimController {
     }
 
     @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full")
-    public void moneyReceivedOn(
+    public Claim paidInFull(
         @PathVariable("externalId") String externalId,
         @Valid @NotNull @RequestBody PaidInFull paidInFull,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
-        claimService.saveMoneyReceivedOn(externalId, paidInFull, authorisation);
+        return claimService.paidInFull(externalId, paidInFull, authorisation);
     }
 }
