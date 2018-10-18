@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.assertion.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDCourtOrder;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 import java.util.List;
 import java.util.Objects;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAssert, StatementOfMeans> {
@@ -68,10 +68,10 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
         actual.getPartner()
             .ifPresent(livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getPartner()));
 
-        Assertions.assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
+        assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
 
         actual.getDisability()
-            .ifPresent(disability -> Assertions.assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisability()));
+            .ifPresent(disability -> assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisability()));
 
         return this;
     }
@@ -84,7 +84,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
             .map(CCDCollectionElement::getValue)
             .filter(ccdPriorityDebt -> priorityDebt.getType().equals(ccdPriorityDebt.getType()))
             .findFirst()
-            .ifPresent(ccdPriorityDebt -> Assertions.assertThat(priorityDebt).isEqualTo(ccdPriorityDebt));
+            .ifPresent(ccdPriorityDebt -> assertThat(priorityDebt).isEqualTo(ccdPriorityDebt));
     }
 
     private void assertExpense(Expense expense, List<CCDCollectionElement<CCDExpense>> ccdExpenses) {

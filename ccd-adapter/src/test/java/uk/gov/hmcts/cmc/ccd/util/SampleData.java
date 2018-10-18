@@ -52,7 +52,6 @@ import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
 import java.math.BigDecimal;
@@ -77,6 +76,7 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAc
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt.PriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.JOINT_OWN_HOME;
 
 public class SampleData {
@@ -434,9 +434,9 @@ public class SampleData {
             ))
             .priorityDebts(asList(
                 CCDCollectionElement.<PriorityDebt>builder().value(PriorityDebt.builder()
-                    .frequency(PaymentFrequency.MONTH)
+                    .frequency(MONTH)
                     .amount(new BigDecimal(132.89))
-                    .type(PriorityDebt.PriorityDebtType.ELECTRICITY)
+                    .type(ELECTRICITY)
                     .build()
                 ).build()
             ))
