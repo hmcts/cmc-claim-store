@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 
 @Service
 public class FormaliseResponseAcceptanceService {
@@ -58,7 +57,7 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                logger.debug("No need to formalise for " + REFER_TO_JUDGE);
+                // No action required
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
