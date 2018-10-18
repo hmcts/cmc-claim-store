@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDCourtOrder;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.util.List;
@@ -60,7 +62,29 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
         actual.getExpenses()
             .forEach(expense -> assertExpense(expense, ccdStatementOfMeans.getExpenses()));
 
+        actual.getPriorityDebts()
+            .forEach(priorityDebt -> assertPriorityDebt(priorityDebt, ccdStatementOfMeans.getPriorityDebts()));
+
+        actual.getPartner()
+            .ifPresent(livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getPartner()));
+
+        Assertions.assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
+
+        actual.getDisability()
+            .ifPresent(disability -> Assertions.assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisability()));
+
         return this;
+    }
+
+    private void assertPriorityDebt(
+        PriorityDebt priorityDebt,
+        List<CCDCollectionElement<PriorityDebt>> ccdPriorityDebts
+    ) {
+        ccdPriorityDebts.stream()
+            .map(CCDCollectionElement::getValue)
+            .filter(ccdPriorityDebt -> priorityDebt.getType().equals(ccdPriorityDebt.getType()))
+            .findFirst()
+            .ifPresent(ccdPriorityDebt -> Assertions.assertThat(priorityDebt).isEqualTo(ccdPriorityDebt));
     }
 
     private void assertExpense(Expense expense, List<CCDCollectionElement<CCDExpense>> ccdExpenses) {

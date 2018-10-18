@@ -240,6 +240,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             .claimantResponse(claimantResponseMapper.to(response))
+            .claimantRespondedAt(nowInUTC())
             .build();
 
         return update(authorisation, ccdCase, CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name()));

@@ -46,10 +46,14 @@ import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployment;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -421,13 +425,29 @@ public class SampleData {
                 ).build()
             ))
             .courtOrders(asList(
-                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder().build().builder()
+                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder()
                     .amountOwed(TEN)
                     .claimNumber("Reference")
                     .monthlyInstalmentAmount(ONE)
                     .build()
                 ).build()
             ))
+            .priorityDebts(asList(
+                CCDCollectionElement.<PriorityDebt>builder().value(PriorityDebt.builder()
+                    .frequency(PaymentFrequency.MONTH)
+                    .amount(new BigDecimal(132.89))
+                    .type(PriorityDebt.PriorityDebtType.ELECTRICITY)
+                    .build()
+                ).build()
+            ))
+            .carer(CCDYesNoOption.YES)
+            .partner(CCDLivingPartner.builder()
+                .disability(DisabilityStatus.SEVERE)
+                .over18(CCDYesNoOption.YES)
+                .pensioner(CCDYesNoOption.YES)
+                .build()
+            )
+            .disability(DisabilityStatus.YES)
             .build();
     }
 }
