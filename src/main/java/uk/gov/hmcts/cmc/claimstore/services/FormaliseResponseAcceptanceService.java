@@ -58,7 +58,7 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                logger.info("No need to formalise for ", REFER_TO_JUDGE);
+                logger.info("No need to formalise for {%s}" + REFER_TO_JUDGE);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
