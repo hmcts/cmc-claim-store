@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -169,6 +170,35 @@ public class CoreCaseDataServiceTest {
 
         CaseReference reference = service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
 
+        verify(coreCaseDataApi).submitForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(true),
+            any(CaseDataContent.class)
+        );
+
+        assertNotNull(reference);
+        assertEquals(SampleClaim.CLAIM_ID.toString(), reference.getCaseReference());
+    }
+
+    @Test (expected = CoreCaseDataStoreException.class)
+    public void shouldThrowCCDExceptionWhenSubmitFails() {
+        when(coreCaseDataApi.submitForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(true),
+            any(CaseDataContent.class)
+        ))
+            .thenThrow(new RuntimeException("Any runtime exception"));
+
+        CaseReference reference = service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
+
         assertNotNull(reference);
         assertEquals(SampleClaim.CLAIM_ID.toString(), reference.getCaseReference());
     }
@@ -215,14 +245,18 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(countyCourtJudgmentMapper.to(providedCCJ)).thenReturn(CCDCountyCourtJudgment.builder().build());
 
-        CaseDetails caseDetails = service.saveCountyCourtJudgment(AUTHORISATION, providedClaim, providedCCJ, false);
+        CaseDetails caseDetails = service.saveCountyCourtJudgment(AUTHORISATION,
+            providedClaim,
+            providedCCJ,
+            false);
 
         assertNotNull(caseDetails);
     }
 
     @Test
     public void linkSealedClaimDocumentShouldReturnCaseDetails() {
-        CaseDetails caseDetails = service.linkSealedClaimDocument(AUTHORISATION, SampleClaim.CLAIM_ID, URI.create("http://localhost/sealedClaim.pdf"));
+        CaseDetails caseDetails = service.linkSealedClaimDocument(AUTHORISATION, SampleClaim.CLAIM_ID,
+            URI.create("http://localhost/sealedClaim.pdf"));
 
         assertNotNull(caseDetails);
     }
@@ -234,7 +268,11 @@ public class CoreCaseDataServiceTest {
 
         when(responseMapper.to(providedResponse)).thenReturn(CCDResponse.builder().build());
 
-        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim, "defendant@email.com", providedResponse, AUTHORISATION);
+        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim,
+            "defendant@email.com",
+            providedResponse,
+            AUTHORISATION
+        );
 
         assertNotNull(caseDetails);
     }
@@ -243,7 +281,12 @@ public class CoreCaseDataServiceTest {
     public void saveSettlementShouldReturnCaseDetails() {
         Settlement providedSettlement = SampleSettlement.validDefaults();
 
-        CaseDetails caseDetails = service.saveSettlement(SampleClaim.CLAIM_ID, providedSettlement, AUTHORISATION, CaseEvent.SETTLED_PRE_JUDGMENT);
+        CaseDetails caseDetails = service.saveSettlement(
+            SampleClaim.CLAIM_ID,
+            providedSettlement,
+            AUTHORISATION,
+            CaseEvent.SETTLED_PRE_JUDGMENT
+        );
 
         assertNotNull(caseDetails);
     }
@@ -252,7 +295,11 @@ public class CoreCaseDataServiceTest {
     public void reachSettlementAgreementShouldReturnCaseDetails() {
         Settlement providedSettlement = SampleSettlement.validDefaults();
 
-        CaseDetails caseDetails = service.reachSettlementAgreement(SampleClaim.CLAIM_ID, providedSettlement, AUTHORISATION, CaseEvent.SETTLED_PRE_JUDGMENT);
+        CaseDetails caseDetails = service.reachSettlementAgreement(
+            SampleClaim.CLAIM_ID,
+            providedSettlement,
+            AUTHORISATION,
+            CaseEvent.SETTLED_PRE_JUDGMENT);
 
         assertNotNull(caseDetails);
     }
