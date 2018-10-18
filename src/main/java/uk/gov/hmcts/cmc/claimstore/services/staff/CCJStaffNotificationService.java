@@ -70,11 +70,7 @@ public class CCJStaffNotificationService {
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
         map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
-        if (ResponseHelper.admissionResponse(claim)) {
-            map.put("admissionResponse", true);
-        } else {
-            map.put("admissionResponse", false);
-        }
+        map.put("admissionResponse", ResponseHelper.admissionResponse(claim));
         return map;
     }
 

@@ -88,7 +88,7 @@ public class CCJContent {
         return signerRole;
     }
 
-    public boolean isAdmissionResponse() {
+    public boolean getAdmissionResponse() {
         return admissionResponse;
     }
 
