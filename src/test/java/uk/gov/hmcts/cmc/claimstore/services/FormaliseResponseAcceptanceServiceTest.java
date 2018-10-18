@@ -105,7 +105,8 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
             .getPaymentIntention()
-            .get().getPaymentDate()
+            .get()
+            .getPaymentDate()
             .orElseThrow(IllegalStateException::new);
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
@@ -270,9 +271,10 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(AUTH),
             eq(true));
 
-        assertThat(!countyCourtJudgmentArgumentCaptor
+
+        assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
-            .getPayBySetDate().isPresent());
+            .getPayBySetDate().isPresent()).isFalse();
 
         verifyZeroInteractions(offersService);
     }
@@ -492,6 +494,43 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getPaymentIntention();
 
         Claim claim = SampleClaim.getWithResponse(fullAdmissionResponseWithInstalments);
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .formaliseOption(SETTLEMENT)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+
+        verify(offersService).signSettlementAgreement(
+            eq(claim.getExternalId()),
+            settlementArgumentCaptor.capture(),
+            eq(AUTH));
+
+        PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
+            .getValue()
+            .getLastOfferStatement()
+            .getOffer()
+            .orElseThrow(IllegalStateException::new)
+            .getPaymentIntention()
+            .orElseThrow(IllegalAccessError::new);
+
+        assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntentionOfDefendant);
+
+        verifyZeroInteractions(countyCourtJudgmentService);
+    }
+
+    @Test
+    public void formaliseSettlementWithFullAdmissionsBySetDateAndDefendantPaymentIntention() {
+        Response fullAdmissionResponseBySetDate = SampleResponse
+            .FullAdmission
+            .builder()
+            .buildWithPaymentOptionBySpecifiedDate();
+
+        PaymentIntention paymentIntentionOfDefendant = ((FullAdmissionResponse) fullAdmissionResponseBySetDate)
+            .getPaymentIntention();
+
+        Claim claim = SampleClaim.getWithResponse(fullAdmissionResponseBySetDate);
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
