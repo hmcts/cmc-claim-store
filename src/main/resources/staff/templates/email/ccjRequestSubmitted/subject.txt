@@ -1,5 +1,1 @@
-{% if admissionResponse == true %}
-Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} judgment by admission requested
-{% else %}
-Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} default judgment requested
-{% endif %}
+Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} {{ admissionResponse ? "judgment by admission requested" : "default judgment requested" }}
