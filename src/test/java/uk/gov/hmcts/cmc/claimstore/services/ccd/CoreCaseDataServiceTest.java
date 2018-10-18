@@ -94,7 +94,7 @@ public class CoreCaseDataServiceTest {
     private CoreCaseDataService service;
 
     @Before
-    public void setup() {
+    public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(ANONYMOUS_USER);
