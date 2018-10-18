@@ -435,7 +435,7 @@ public class SampleData {
             .priorityDebts(asList(
                 CCDCollectionElement.<PriorityDebt>builder().value(PriorityDebt.builder()
                     .frequency(MONTH)
-                    .amount(new BigDecimal(132.89))
+                    .amount(BigDecimal.valueOf(132.89))
                     .type(ELECTRICITY)
                     .build()
                 ).build()
