@@ -49,6 +49,7 @@ public class ClaimDataContentProvider {
         totalAmountComponents.add(claim.getClaimData().getFeesPaidInPound());
 
         InterestContent interestContent = null;
+
         if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
