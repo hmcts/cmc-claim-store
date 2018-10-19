@@ -6,12 +6,12 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.PaidInFullStaffNotificationService;
 
 @Component
-public class PaidInFullStaffNotificationHandle {
+public class PaidInFullStaffNotificationHandler {
 
     private final PaidInFullStaffNotificationService paidInFullStaffNotificationService;
 
     @Autowired
-    public PaidInFullStaffNotificationHandle(PaidInFullStaffNotificationService paidInFullStaffNotificationService) {
+    public PaidInFullStaffNotificationHandler(PaidInFullStaffNotificationService paidInFullStaffNotificationService) {
         this.paidInFullStaffNotificationService = paidInFullStaffNotificationService;
     }
 

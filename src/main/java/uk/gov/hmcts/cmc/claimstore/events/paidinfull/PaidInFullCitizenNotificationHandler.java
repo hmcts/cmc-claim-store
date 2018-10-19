@@ -12,12 +12,12 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.PaidInFull.referenceForDefendant;
 
 @Component
-public class PaidInFullCitizenNotificationHandle {
+public class PaidInFullCitizenNotificationHandler {
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
 
-    public PaidInFullCitizenNotificationHandle(
+    public PaidInFullCitizenNotificationHandler(
         NotificationService notificationService,
         NotificationsProperties notificationsProperties
     ) {
