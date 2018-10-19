@@ -28,7 +28,7 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     private NotificationService notificationService;
 
     @Before
-    public void setup() {
+    public void setUp() {
         when(properties.getTemplates()).thenReturn(templates);
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
