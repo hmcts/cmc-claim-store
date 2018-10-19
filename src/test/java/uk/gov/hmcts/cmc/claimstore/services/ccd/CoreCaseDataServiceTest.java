@@ -122,6 +122,7 @@ public class CoreCaseDataServiceTest {
                 .eventId("eventId")
                 .token("token")
                 .build());
+
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
@@ -136,6 +137,7 @@ public class CoreCaseDataServiceTest {
                 .eventId("eventId")
                 .token("token")
                 .build());
+        
         when(coreCaseDataApi.submitEventForCitizen(
             eq(AUTHORISATION),
             eq(AUTH_TOKEN),
