@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandle;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.services.staff.PaidInFullStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -19,14 +19,14 @@ public class PaidInFullStaffNotificationHandlerTest {
 
     private static final PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getDefault());
 
-    private PaidInFullStaffNotificationHandle handler;
+    private PaidInFullStaffNotificationHandler handler;
 
     @Mock
     PaidInFullStaffNotificationService paidInFullStaffNotificationService;
 
     @Before
     public void setup() {
-        handler = new PaidInFullStaffNotificationHandle(paidInFullStaffNotificationService);
+        handler = new PaidInFullStaffNotificationHandler(paidInFullStaffNotificationService);
     }
 
     @Test
