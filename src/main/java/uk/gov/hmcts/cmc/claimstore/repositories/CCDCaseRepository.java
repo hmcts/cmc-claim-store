@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -102,6 +103,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
         throw new NotImplementedException("Save claimant response not implemented on CCD");
+    }
+
+    @Override
+    public void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation) {
+        throw new NotImplementedException("Save received to be implemented on CCD");
     }
 
     @Override
