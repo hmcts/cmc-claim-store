@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -314,15 +315,22 @@ public class ClaimService {
 
     public Claim paidInFull(String externalId, PaidInFull paidInFull, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-        assertPaidInFull(claim);
+        String claimantId = userService.getUserDetails(authorisation).getId();
+        assertPaidInFull(claim, claimantId);
         this.caseRepository.paidInFull(claim, paidInFull, authorisation);
         Claim updatedClaim = getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createPaidInFullEvent(updatedClaim);
         return updatedClaim;
     }
 
-    private void assertPaidInFull(Claim claim) {
+    public void assertPaidInFull(Claim claim, String claimantId) {
         requireNonNull(claim, "claim object can not be null");
+        requireNonNull(claimantId, "submitterId object can not be null");
+        if (!claim.getSubmitterId().equals(claimantId)) {
+            throw new ClaimantLinkException(
+                String.format("Claim %s is not linked with claimant %s", claim.getReferenceNumber(), claimantId)
+            );
+        }
         if (claim.getMoneyReceivedOn().isPresent()) {
             throw new ConflictException(format("Paid in full for claim %s has been already submitted",
                 claim.getExternalId()));

@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -64,6 +65,9 @@ public class ClaimServiceTest {
 
     private static final UserDetails validDefendant
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
+
+    private static final UserDetails validClaimant
+        = SampleUserDetails.builder().withUserId(USER_ID).withMail(SUBMITTER_EMAIL).build();
 
     private static final UserDetails claimantDetails
         = SampleUserDetails.builder().withUserId("11").withMail(SUBMITTER_EMAIL).build();
@@ -121,7 +125,7 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void getClaimByIdShouldThrowNotFoundException() {
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
+        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(empty());
 
         claimService.getClaimById(CLAIM_ID);
     }
@@ -141,7 +145,7 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void getClaimByLetterHolderIdShouldThrowExceptionWhenClaimDoesNotExist() {
 
-        Optional<Claim> result = Optional.empty();
+        Optional<Claim> result = empty();
         String letterHolderId = "0";
 
         when(caseRepository.getByLetterHolderId(eq(letterHolderId), any())).thenReturn(result);
@@ -152,7 +156,7 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void getClaimByExternalIdShouldThrowExceptionWhenClaimDoesNotExist() {
 
-        Optional<Claim> result = Optional.empty();
+        Optional<Claim> result = empty();
         String externalId = "does not exist";
 
         when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
@@ -201,7 +205,7 @@ public class ClaimServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.empty());
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(empty());
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
@@ -275,7 +279,7 @@ public class ClaimServiceTest {
 
     @Test
     public void paidInFullShouldFinishSuccessfully() {
-
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(validClaimant);
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
             .thenReturn(Optional.of(claim));
         PaidInFull paidInFull = new PaidInFull(now());
@@ -289,6 +293,7 @@ public class ClaimServiceTest {
 
     @Test(expected = ConflictException.class)
     public void paidInFullShouldThrowConflictExceptionIfAlreadyPaidInFull() {
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(validClaimant);
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
             .thenReturn(Optional.of(createPaidInFullClaim(now())));
@@ -298,7 +303,7 @@ public class ClaimServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void paidInFullShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.empty());
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(empty());
 
         claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
     }

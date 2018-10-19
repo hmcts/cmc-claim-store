@@ -8,8 +8,9 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 
-import java.time.LocalDate;
+import java.util.UUID;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PaidInFullTest extends BaseTest {
@@ -29,7 +30,7 @@ public class PaidInFullTest extends BaseTest {
             claimantId
         );
 
-        PaidInFull paidInFull = new PaidInFull(LocalDate.now());
+        PaidInFull paidInFull = new PaidInFull(now());
 
         Claim updatedCase = commonOperations
             .paidInFull(createdCase.getExternalId(), paidInFull, claimant)
@@ -65,7 +66,7 @@ public class PaidInFullTest extends BaseTest {
         );
 
         commonOperations
-            .paidInFull(createdCase.getExternalId(), new PaidInFull(LocalDate.now().plusWeeks(1)), claimant)
+            .paidInFull(createdCase.getExternalId(), new PaidInFull(now().plusWeeks(1)), claimant)
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
@@ -78,7 +79,7 @@ public class PaidInFullTest extends BaseTest {
             claimantId
         );
 
-        PaidInFull paidInFull = new PaidInFull(LocalDate.now());
+        PaidInFull paidInFull = new PaidInFull(now());
 
         Claim updatedCase = commonOperations
             .paidInFull(createdCase.getExternalId(), paidInFull, claimant)
@@ -94,5 +95,28 @@ public class PaidInFullTest extends BaseTest {
             .paidInFull(createdCase.getExternalId(), paidInFull, claimant)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    public void shouldNotAllowPaidInFullWhenClaimDoesNotExist() {
+        commonOperations
+            .paidInFull(UUID.randomUUID().toString(), new PaidInFull(now()), claimant)
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void shouldNotAllowPaidInFullWhenUserIsNotOwner() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
+
+        User claimantNotOwner = idamTestService.createCitizen();
+        commonOperations
+            .paidInFull(createdCase.getExternalId(), new PaidInFull(now()), claimantNotOwner)
+            .then()
+            .statusCode(HttpStatus.FORBIDDEN.value());
     }
 }
