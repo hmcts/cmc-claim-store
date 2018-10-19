@@ -38,7 +38,7 @@ public class PaidInFullRuleTest {
         paidInFullRule.assertPaidInFull(claim, claim.getSubmitterId());
     }
 
-    @Test
+    @Test(expected = Test.None.class)
     public void shouldAllowForValidPaidInFull() {
         Claim claim = SampleClaim.getDefault();
         paidInFullRule.assertPaidInFull(claim, claim.getSubmitterId());
