@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -37,6 +40,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -305,6 +310,30 @@ public class ClaimService {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
             caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
+        }
+    }
+
+    public Claim paidInFull(String externalId, PaidInFull paidInFull, String authorisation) {
+        Claim claim = getClaimByExternalId(externalId, authorisation);
+        String claimantId = userService.getUserDetails(authorisation).getId();
+        assertPaidInFull(claim, claimantId);
+        this.caseRepository.paidInFull(claim, paidInFull, authorisation);
+        Claim updatedClaim = getClaimByExternalId(externalId, authorisation);
+        this.eventProducer.createPaidInFullEvent(updatedClaim);
+        return updatedClaim;
+    }
+
+    public void assertPaidInFull(Claim claim, String claimantId) {
+        requireNonNull(claim, "claim object can not be null");
+        requireNonNull(claimantId, "submitterId object can not be null");
+        if (!claim.getSubmitterId().equals(claimantId)) {
+            throw new ClaimantLinkException(
+                String.format("Claim %s is not linked with claimant %s", claim.getReferenceNumber(), claimantId)
+            );
+        }
+        if (claim.getMoneyReceivedOn().isPresent()) {
+            throw new ConflictException(format("Paid in full for claim %s has been already submitted",
+                claim.getExternalId()));
         }
     }
 

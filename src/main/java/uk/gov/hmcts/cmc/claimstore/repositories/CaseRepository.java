@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -31,6 +32,8 @@ public interface CaseRepository {
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
     void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
+
+    void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation);
 
     void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization);
 
