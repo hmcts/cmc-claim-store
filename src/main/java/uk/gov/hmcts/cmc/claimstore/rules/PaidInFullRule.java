@@ -14,9 +14,9 @@ public class PaidInFullRule {
     public void assertPaidInFull(Claim claim, String claimantId) {
         requireNonNull(claim, "claim object can not be null");
         requireNonNull(claimantId, "submitterId object can not be null");
-        if (!claim.getSubmitterId().equals(claimantId)) {
+        if (!claimantId.equals(claim.getSubmitterId())) {
             throw new ClaimantLinkException(
-                String.format("Claim %s is not linked with claimant %s", claim.getReferenceNumber(), claimantId)
+                format("Claim %s is not linked with claimant %s", claim.getReferenceNumber(), claimantId)
             );
         }
         if (claim.getMoneyReceivedOn().isPresent()) {
