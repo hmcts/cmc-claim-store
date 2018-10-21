@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullCitizenNotificationHandle;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullCitizenNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 @RunWith(MockitoJUnitRunner.class)
 public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationServiceTest {
 
-    private PaidInFullCitizenNotificationHandle handler;
+    private PaidInFullCitizenNotificationHandler handler;
 
     @Mock
     private NotificationService notificationService;
@@ -35,7 +35,7 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
         when(emailTemplates.getClaimantSaysDefendantHasPaidInFull())
             .thenReturn(CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE);
 
-        handler = new PaidInFullCitizenNotificationHandle(
+        handler = new PaidInFullCitizenNotificationHandler(
             notificationService,
             properties
         );
