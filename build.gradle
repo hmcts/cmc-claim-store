@@ -307,6 +307,7 @@ sonarqube {
       "**/ExceptionForClient.java," +
       "**/config/**," +
       "**/*Exception.java," +
+      "**/*Event.java," +
       "**/PathPatterns.java," +
       "**/ClaimRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
