@@ -49,9 +49,9 @@ public class CourtDeterminationMapperTest {
         CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDetermination();
 
         //when
-        CourtDetermination response = mapper.from(ccdCourtDetermination);
+        CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
 
         //then
-        assertThat(response).isEqualTo(ccdCourtDetermination);
+        assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
     }
 }
