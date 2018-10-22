@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 
 @Component
@@ -53,7 +54,8 @@ public class CountyCourtJudgmentService {
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
 
-        if (countyCourtJudgment.getPaymentOption() == PaymentOption.INSTALMENTS) {
+        if (countyCourtJudgment.getCcjType() != CountyCourtJudgmentType.ADMISSIONS &&
+            countyCourtJudgment.getPaymentOption() == PaymentOption.INSTALMENTS) {
             claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
                 countyCourtJudgment.getRepaymentPlan().orElse(null));
 

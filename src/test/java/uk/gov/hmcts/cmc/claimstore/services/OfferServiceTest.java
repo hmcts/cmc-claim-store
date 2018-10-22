@@ -225,7 +225,7 @@ public class OfferServiceTest {
     private static PaymentIntention buildInstallmentPaymentIntentionWithStartDate(LocalDate startDate) {
         return SamplePaymentIntention.builder()
             .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
-                SampleRepaymentPlan.builder().withFirstPaymentDate(startDate).build())
+                SampleRepaymentPlan.builder().firstPaymentDate(startDate).build())
             .build();
     }
 

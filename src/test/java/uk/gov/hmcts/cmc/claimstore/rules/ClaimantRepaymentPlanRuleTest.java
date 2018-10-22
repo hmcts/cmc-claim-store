@@ -29,12 +29,12 @@ public class ClaimantRepaymentPlanRuleTest {
 
     private final PaymentIntention installmentPaymentIntentionBeforeOneMonth = SamplePaymentIntention.builder()
         .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusDays(3)).build())
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusDays(3)).build())
         .build();
 
     private final PaymentIntention installmentPaymentIntentionAfterOneMonth = SamplePaymentIntention.builder()
         .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusMonths(2)).build())
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusMonths(2)).build())
         .build();
 
 
@@ -48,7 +48,7 @@ public class ClaimantRepaymentPlanRuleTest {
             String.format(ClaimantRepaymentPlanRule.INSTALLMENT_DATE_MUST_BE_AFTER, "")));
 
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build());
 
     }
 
@@ -59,7 +59,7 @@ public class ClaimantRepaymentPlanRuleTest {
         );
 
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusMonths(2)).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusMonths(2)).build());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ClaimantRepaymentPlanRuleTest {
             StringContains.containsString(String.format(ClaimantRepaymentPlanRule.INSTALLMENT_DATE_MUST_BE_AFTER, "")));
 
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ClaimantRepaymentPlanRuleTest {
         );
 
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusMonths(1).plusDays(1)).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusMonths(1).plusDays(1)).build());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class ClaimantRepaymentPlanRuleTest {
         expectedException.expectMessage(
             StringContains.containsString(String.format(ClaimantRepaymentPlanRule.INSTALLMENT_DATE_MUST_BE_AFTER, "")));
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusDays(2)).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusDays(2)).build());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class ClaimantRepaymentPlanRuleTest {
         );
 
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusDays(4)).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusDays(4)).build());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ClaimantRepaymentPlanRuleTest {
         expectedException.expectMessage(
             StringContains.containsString(String.format(ClaimantRepaymentPlanRule.EXPECTED_DEFENDANT_RESPONSE, "")));
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class ClaimantRepaymentPlanRuleTest {
         expectedException.expect(ClaimantInvalidRepaymentPlanException.class);
         expectedException.expectMessage(StringContains.containsString(ClaimantRepaymentPlanRule.INVALID_RESPONSE_TYPE));
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build());
 
     }
 
@@ -140,7 +140,7 @@ public class ClaimantRepaymentPlanRuleTest {
         expectedException.expectMessage(
             StringContains.containsString(ClaimantRepaymentPlanRule.INVALID_DEFENDANT_REPAYMENT_TYPE));
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ClaimantRepaymentPlanRuleTest {
         expectedException.expectMessage(
             StringContains.containsString(ClaimantRepaymentPlanRule.EXPECTED_PAYMENT_INTENTION));
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build());
     }
 
     @Test
@@ -167,6 +167,6 @@ public class ClaimantRepaymentPlanRuleTest {
         expectedException.expectMessage(
             StringContains.containsString(ClaimantRepaymentPlanRule.EXPECTED_REPAYMENT_PLAN_DEFENDANT));
         claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-            SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build());
+            SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build());
     }
 }

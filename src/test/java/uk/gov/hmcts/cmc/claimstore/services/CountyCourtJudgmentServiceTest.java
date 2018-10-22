@@ -153,15 +153,15 @@ public class CountyCourtJudgmentServiceTest {
     public void saveThrowsExceptionWhenClaimantRepaymentPlanStartDateDoesNotMeetCriteria() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .withRepaymentPlan(
-                SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now()).build())
+            .repaymentPlan(
+                SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build())
             .build();
 
         Claim invalidClaim = SampleClaim.getWithResponse(
             PartAdmissionResponse.builder()
                 .paymentIntention(SamplePaymentIntention.builder()
                     .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
-                        SampleRepaymentPlan.builder().withFirstPaymentDate(LocalDate.now().plusMonths(2)).build())
+                        SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusMonths(2)).build())
                     .build())
                 .build()
         );
