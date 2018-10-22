@@ -309,7 +309,7 @@
           {% if ccj.amount.interest.interestEndDateType equals "SUBMISSION" %}
           {{ ccj.claim.claim.issuedOn }}
           {% else %}
-          {{ ccj.amount.interest.dailyAmount }} per day from isByAdmission date until the claim is settled or judgment made.
+          {{ ccj.amount.interest.dailyAmount }} per day from issue date until the claim is settled or judgment made.
           {% endif %}
         </td>
       </tr>
