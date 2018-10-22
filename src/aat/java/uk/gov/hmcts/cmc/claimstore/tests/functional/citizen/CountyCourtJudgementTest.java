@@ -10,8 +10,9 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmission;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class CountyCourtJudgementTest extends BaseTest {
             .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
-        Claim updatedCase = commonOperations.requestCCJ(createdCase.getExternalId(), ccj, false, claimant)
+        Claim updatedCase = commonOperations.requestCCJ(createdCase.getExternalId(), ccj, claimant)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()
@@ -51,46 +52,6 @@ public class CountyCourtJudgementTest extends BaseTest {
 
         assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
         assertThat(updatedCase.getCountyCourtJudgmentRequestedAt())
-            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
-    }
-
-    @Test
-    public void shouldBeAbleToSuccessfullyIssueCCJ() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendant(
-            defendant.getAuthorisation()
-        );
-
-        uk.gov.hmcts.cmc.domain.models.response.Response fullAdmissionResponse = FullAdmission.builder().build();
-
-        String externalId = createdCase.getExternalId();
-        commonOperations.submitResponse(fullAdmissionResponse, externalId, defendant)
-            .then()
-            .statusCode(HttpStatus.OK.value());
-
-        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .paymentOption(PaymentOption.IMMEDIATELY)
-            .build();
-
-        Claim updatedCase = commonOperations.requestCCJ(externalId, ccj, true, claimant)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-
-        assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
-        assertThat(updatedCase.getCountyCourtJudgmentRequestedAt())
-            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
-
-        assertThat(updatedCase.getCountyCourtJudgmentIssuedAt().isPresent()).isTrue();
-
-        assertThat(updatedCase.getCountyCourtJudgmentIssuedAt().get())
             .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
     }
 
@@ -108,7 +69,7 @@ public class CountyCourtJudgementTest extends BaseTest {
             .paymentOption(null)
             .build();
 
-        commonOperations.requestCCJ(createdCase.getExternalId(), invalidCCJ, false, claimant)
+        commonOperations.requestCCJ(createdCase.getExternalId(), invalidCCJ, claimant)
             .then()
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
@@ -125,7 +86,30 @@ public class CountyCourtJudgementTest extends BaseTest {
             .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
-        commonOperations.requestCCJ(createdCase.getExternalId(), ccj, false, claimant)
+        commonOperations.requestCCJ(createdCase.getExternalId(), ccj, claimant)
+            .then()
+            .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    public void shouldNotBeAllowedToRequestCCJWhenResponseWasSubmitted() {
+        String claimantId = claimant.getUserDetails().getId();
+        Claim createdCase = commonOperations.submitClaim(
+            claimant.getAuthorisation(),
+            claimantId
+        );
+
+        User defendant = idamTestService.createCitizen();
+        commonOperations.linkDefendant(defendant.getAuthorisation());
+
+        Response response = SampleResponse.PartAdmission.validDefaults();
+        commonOperations.submitResponse(response, createdCase.getExternalId(), defendant);
+
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .build();
+
+        commonOperations.requestCCJ(createdCase.getExternalId(), ccj, claimant)
             .then()
             .statusCode(HttpStatus.FORBIDDEN.value());
     }

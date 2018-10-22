@@ -107,7 +107,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
 
     private Claim submitCCJ(CountyCourtJudgment countyCourtJudgment, boolean isIssue) {
         Claim claimReturnedAfterCCJIssued = commonOperations
-            .requestCCJ(claim.getExternalId(), countyCourtJudgment, isIssue, user)
+            .requestCCJ(claim.getExternalId(), countyCourtJudgment, user)
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()

@@ -22,10 +22,10 @@ public class CountyCourtJudgmentRule {
         this.claimDeadlineService = claimDeadlineService;
     }
 
-    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim, boolean issue) {
+    public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim, boolean isByAdmission) {
         Objects.requireNonNull(claim, "claim object can not be null");
         String externalId = claim.getExternalId();
-        if (!issue) {
+        if (!isByAdmission) {
             if (isResponseAlreadySubmitted(claim)) {
                 throw new ForbiddenActionException("Response for the claim " + externalId + " was submitted");
             }

@@ -166,12 +166,12 @@ public class CoreCaseDataService {
         String authorisation,
         Claim claim,
         CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        boolean isByAdmission
     ) {
         CCDCase ccdCase = caseMapper.to(claim);
         ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
         ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
-        if (issue) {
+        if (isByAdmission) {
             ccdCase.setCountyCourtJudgmentIssuedAt(nowInUTC());
             return update(authorisation, ccdCase, CCJ_ISSUED);
         } else {

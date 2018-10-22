@@ -111,10 +111,10 @@ public class DBCaseRepository implements CaseRepository {
         String authorisation,
         Claim claim,
         CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        boolean isByAdmission
     ) {
         final String externalId = claim.getExternalId();
-        LocalDateTime ccjIssuedDate = issue ? nowInUTC() : null;
+        LocalDateTime ccjIssuedDate = isByAdmission ? nowInUTC() : null;
 
         claimRepository.saveCountyCourtJudgment(externalId,
             jsonMapper.toJson(countyCourtJudgment), nowInUTC(), ccjIssuedDate

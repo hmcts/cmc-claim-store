@@ -46,8 +46,8 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
-        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation, issue));
+    public void createCountyCourtJudgmentEvent(Claim claim, String authorisation, boolean isByAdmission) {
+        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation, isByAdmission));
     }
 
     public void createOfferMadeEvent(Claim claim) {

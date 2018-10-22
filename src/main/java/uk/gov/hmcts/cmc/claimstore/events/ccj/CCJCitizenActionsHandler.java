@@ -21,7 +21,8 @@ public class CCJCitizenActionsHandler {
     public void sendNotification(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
 
-        if (event.isIssue()) {
+        if (event.isByAdmission()) {
+            ccjNotificationService.notifyClaimantForCCJRequest(claim);
             ccjNotificationService.notifyDefendantForCCJIssue(claim);
         } else {
             ccjNotificationService.notifyClaimantForCCJRequest(claim);

@@ -110,10 +110,10 @@ public class EventProducerTest {
     public void shouldCreateCountyCourtJudgmentSubmittedEvent() throws Exception {
 
         // given
-        boolean issue = false;
-        CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM, AUTHORISATION, issue);
+        boolean isByAdmission = false;
+        CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM, AUTHORISATION, isByAdmission);
         // when
-        eventProducer.createCountyCourtJudgmentEvent(CLAIM, AUTHORISATION, issue);
+        eventProducer.createCountyCourtJudgmentEvent(CLAIM, AUTHORISATION, isByAdmission);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));

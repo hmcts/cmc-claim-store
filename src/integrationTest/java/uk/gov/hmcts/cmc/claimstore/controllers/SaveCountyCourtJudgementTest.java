@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -54,6 +53,8 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         claim = claimStore.saveClaim(SampleClaimData.builder()
             .withExternalId(UUID.randomUUID()).build(), SUBMITTER_ID, LocalDate.now());
 
+        claimStore.updateResponseDeadline(claim.getExternalId());
+
         UserDetails defendantDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
             .withMail(DEFENDANT_EMAIL)
@@ -73,13 +74,11 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSaveCountyCourtJudgementRequest() throws Exception {
-        claimStore.updateResponseDeadline(claim.getExternalId());
 
         CountyCourtJudgment countyCourtJudgment
             = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
 
-        makeRequest(claim.getExternalId(), countyCourtJudgment, false)
-            .andExpect(status().isOk());
+        makeRequest(claim.getExternalId(), countyCourtJudgment).andExpect(status().isOk());
 
         Claim claimWithCCJRequest = claimStore.getClaimByExternalId(claim.getExternalId());
 
@@ -88,29 +87,11 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldSaveCountyCourtJudgementIssue() throws Exception {
-        claimStore.saveResponse(claim, SampleResponse.PartAdmission.builder().build());
-
-        CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
-
-        makeRequest(claim.getExternalId(), countyCourtJudgment, true)
-            .andExpect(status().isOk());
-
-        Claim claimWithCCJIssued = claimStore.getClaimByExternalId(claim.getExternalId());
-
-        assertThat(claimWithCCJIssued.getCountyCourtJudgmentRequestedAt()).isNotNull();
-        assertThat(claimWithCCJIssued.getCountyCourtJudgmentIssuedAt().isPresent()).isTrue();
-    }
-
-    @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
-        claimStore.saveResponse(claim, SampleResponse.PartAdmission.builder().build());
-
         CountyCourtJudgment countyCourtJudgment
             = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
 
-        makeRequest(claim.getExternalId(), countyCourtJudgment, true)
+        makeRequest(claim.getExternalId(), countyCourtJudgment)
             .andExpect(status().isOk());
 
         verify(ccjStaffNotificationHandler)
@@ -122,28 +103,21 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
-        claimStore.saveResponse(claim, SampleResponse.PartAdmission.builder().build());
-
         CountyCourtJudgment countyCourtJudgment
             = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
 
-        makeRequest(claim.getExternalId(), countyCourtJudgment, true)
+        makeRequest(claim.getExternalId(), countyCourtJudgment)
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
-    private ResultActions makeRequest(
-        String externalId,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
-    ) throws Exception {
+    private ResultActions makeRequest(String externalId, CountyCourtJudgment countyCourtJudgment) throws Exception {
         String path = "/claims/" + externalId + "/county-court-judgment";
-        String issuePath = issue ? path.concat("?issue=true") : path;
 
         return webClient
-            .perform(post(issuePath)
+            .perform(post(path)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(countyCourtJudgment))

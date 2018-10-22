@@ -203,17 +203,14 @@ public class CommonOperations {
             .post("/responses/" + claimExternalId + "/claimant/" + claimant.getUserDetails().getId());
     }
 
-    public Response requestCCJ(String externalId, CountyCourtJudgment ccj, boolean issue, User user) {
-        String path = "/claims/" + externalId + "/county-court-judgment";
-        String issuePath = issue ? path.concat("?issue=true") : path;
-
+    public Response requestCCJ(String externalId, CountyCourtJudgment ccj, User user) {
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
             .body(jsonMapper.toJson(ccj))
             .when()
-            .post(issuePath);
+            .post("/claims/" + externalId + "/county-court-judgment");
     }
 
     public Response paidInFull(String externalId, PaidInFull paidInFull, User user) {

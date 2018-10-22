@@ -15,9 +15,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 @RunWith(MockitoJUnitRunner.class)
 public class CCJCitizenActionsHandlerTest {
 
-    private static final CountyCourtJudgmentEvent EVENT = new CountyCourtJudgmentEvent(
-        SampleClaimIssuedEvent.CLAIM, "Bearer token here", false
-    );
     private CCJCitizenActionsHandler handler;
 
     @Mock
@@ -30,8 +27,28 @@ public class CCJCitizenActionsHandlerTest {
 
     @Test
     public void notifyClaimantSuccessfully() {
-        handler.sendNotification(EVENT);
+        CountyCourtJudgmentEvent eventWithoutAdmission = new CountyCourtJudgmentEvent(
+            SampleClaimIssuedEvent.CLAIM,
+            "Bearer token here",
+            false
+        );
 
-        verify(ccjNotificationService, once()).notifyClaimantForCCJRequest(eq(EVENT.getClaim()));
+        handler.sendNotification(eventWithoutAdmission);
+
+        verify(ccjNotificationService, once()).notifyClaimantForCCJRequest(eq(eventWithoutAdmission.getClaim()));
+    }
+
+    @Test
+    public void notifyClaimantAndDefendantSuccessfullyWhenByAdmission() {
+        CountyCourtJudgmentEvent eventWithAdmission = new CountyCourtJudgmentEvent(
+            SampleClaimIssuedEvent.CLAIM,
+            "Bearer token here",
+            true
+        );
+
+        handler.sendNotification(eventWithAdmission);
+
+        verify(ccjNotificationService, once()).notifyClaimantForCCJRequest(eq(eventWithAdmission.getClaim()));
+        verify(ccjNotificationService, once()).notifyDefendantForCCJIssue(eq(eventWithAdmission.getClaim()));
     }
 }

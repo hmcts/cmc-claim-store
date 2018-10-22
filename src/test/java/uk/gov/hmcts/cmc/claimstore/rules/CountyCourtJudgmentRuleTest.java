@@ -36,7 +36,7 @@ public class CountyCourtJudgmentRuleTest {
     private ClaimDeadlineService claimDeadlineService = new ClaimDeadlineService();
 
     private CountyCourtJudgmentRule countyCourtJudgmentRule;
-    private boolean issue = false;
+    private boolean isByAdmission = false;
 
     @Before
     public void beforeEachTest() {
@@ -47,27 +47,27 @@ public class CountyCourtJudgmentRuleTest {
     public void shouldNotThrowExceptionWhenDeadlineWasYesterdayAndCCJCanBeRequested() {
         Claim claim = SampleClaim.builder().withResponseDeadline(LocalDate.now().minusDays(1)).build();
         assertThatCode(() ->
-            countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue)
+            countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, isByAdmission)
         ).doesNotThrowAnyException();
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void shouldThrowExceptionWhenUserCannotRequestCountyCourtJudgmentBecauseDeadlineIsTomorrow() {
         Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(1));
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, isByAdmission);
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void shouldThrowExceptionWhenClaimWasResponded() {
         Claim respondedClaim = SampleClaim.builder().withRespondedAt(now().minusDays(2)).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(respondedClaim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(respondedClaim, isByAdmission);
     }
 
     @Test
     public void shouldCallClaimDeadlineServicePassingCurrentUKTimeToCheckIfJudgementCanBeRequested() {
         LocalDate deadlineDay = LocalDate.now().minusMonths(2);
         Claim claim = SampleClaim.builder().withResponseDeadline(deadlineDay).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, isByAdmission);
 
         verify(claimDeadlineService).isPastDeadline(currentDateTime.capture(), eq(deadlineDay));
         assertThat(currentDateTime.getValue()).isCloseTo(nowInLocalZone(), within(10, ChronoUnit.SECONDS));
@@ -82,7 +82,7 @@ public class CountyCourtJudgmentRuleTest {
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, isByAdmission);
     }
 
     @Test(expected = ForbiddenActionException.class)

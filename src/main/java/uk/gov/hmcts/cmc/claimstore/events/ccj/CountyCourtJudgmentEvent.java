@@ -13,12 +13,12 @@ public class CountyCourtJudgmentEvent {
 
     private final Claim claim;
     private final String authorisation;
-    private final boolean issue;
+    private final boolean isByAdmission;
 
-    public CountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
+    public CountyCourtJudgmentEvent(Claim claim, String authorisation, boolean isByAdmission) {
         this.claim = claim;
         this.authorisation = authorisation;
-        this.issue = issue;
+        this.isByAdmission = isByAdmission;
     }
 
     @Override
