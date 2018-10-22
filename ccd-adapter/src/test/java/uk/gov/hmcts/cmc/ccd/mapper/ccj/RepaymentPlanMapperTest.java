@@ -42,7 +42,7 @@ public class RepaymentPlanMapperTest {
     @Test
     public void shouldMapMonthlyRepaymentPlanToCCD() {
         //given
-        final RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder().withPaymentSchedule(EVERY_MONTH).build();
+        final RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder().paymentSchedule(EVERY_MONTH).build();
 
         //when
         CCDRepaymentPlan ccdRepaymentPlan = repaymentPlanMapper.to(repaymentPlan);
@@ -54,7 +54,7 @@ public class RepaymentPlanMapperTest {
     @Test
     public void shouldMapFortnightlyRepaymentPlanToCCD() {
         //given
-        final RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder().withPaymentSchedule(EVERY_TWO_WEEKS).build();
+        final RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder().paymentSchedule(EVERY_TWO_WEEKS).build();
 
         //when
         CCDRepaymentPlan ccdRepaymentPlan = repaymentPlanMapper.to(repaymentPlan);

@@ -158,17 +158,16 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .otherDetail(ccdStatementOfMeans.getResidence().getOtherDetail())
             .build();
 
-        return new StatementOfMeans(
-            residence,
-            dependantMapper.from(ccdStatementOfMeans.getDependant()),
-            employmentMapper.from(ccdStatementOfMeans.getEmployment()),
-            bankAccounts,
-            debts,
-            incomes,
-            expenses,
-            courtOrders,
-            ccdStatementOfMeans.getReason()
-
-        );
+        return StatementOfMeans.builder()
+            .residence(residence)
+            .dependant(dependantMapper.from(ccdStatementOfMeans.getDependant()))
+            .employment(employmentMapper.from(ccdStatementOfMeans.getEmployment()))
+            .bankAccounts(bankAccounts)
+            .debts(debts)
+            .incomes(incomes)
+            .expenses(expenses)
+            .courtOrders(courtOrders)
+            .reason(ccdStatementOfMeans.getReason())
+            .build();
     }
 }

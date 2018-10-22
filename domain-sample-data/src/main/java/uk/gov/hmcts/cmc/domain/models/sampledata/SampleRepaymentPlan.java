@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan.RepaymentPlanBuilder;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 
 import java.math.BigDecimal;
@@ -8,30 +9,17 @@ import java.time.LocalDate;
 
 public class SampleRepaymentPlan {
 
-    private BigDecimal instalmentAmount = BigDecimal.valueOf(100);
-    private LocalDate firstPaymentDate = LocalDate.of(2100, 10, 10);
-    private PaymentSchedule paymentSchedule = PaymentSchedule.EACH_WEEK;
-
-    public static SampleRepaymentPlan builder() {
-        return new SampleRepaymentPlan();
+    private SampleRepaymentPlan() {
+        super();
     }
 
-    public SampleRepaymentPlan withInstalmentAmount(BigDecimal instalmentAmount) {
-        this.instalmentAmount = instalmentAmount;
-        return this;
-    }
-
-    public SampleRepaymentPlan withFirstPaymentDate(LocalDate firstPaymentDate) {
-        this.firstPaymentDate = firstPaymentDate;
-        return this;
-    }
-
-    public SampleRepaymentPlan withPaymentSchedule(PaymentSchedule paymentSchedule) {
-        this.paymentSchedule = paymentSchedule;
-        return this;
-    }
-
-    public RepaymentPlan build() {
-        return new RepaymentPlan(instalmentAmount, firstPaymentDate, paymentSchedule);
+    public static RepaymentPlanBuilder builder() {
+        return RepaymentPlan.builder()
+            .instalmentAmount(BigDecimal.valueOf(100))
+            .paymentSchedule(PaymentSchedule.EACH_WEEK)
+            .firstPaymentDate(LocalDate.of(2100, 10, 10))
+            .completionDate(LocalDate.of(2101, 06, 10))
+            .paymentLength("8 months")
+            ;
     }
 }

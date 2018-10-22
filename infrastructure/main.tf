@@ -7,6 +7,7 @@ locals {
   s2sUrl = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
   sendLetterUrl = "http://rpe-send-letter-service-${local.local_env}.service.${local.local_ase}.internal"
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
+  featureTogglesApiUrl = "http://rpe-feature-toggle-api-${local.local_env}.service.${local.local_ase}.internal"
 
   ccdCnpUrl = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
   ccdApiUrl = "${var.env == "sprod" ? local.ccdCnpUrl : "false"}"
@@ -181,6 +182,7 @@ module "claim-store-api" {
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
+    FEATURE_TOGGLES_API_URL = "${local.featureTogglesApiUrl}"
     FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
 
     ROOT_APPENDER = "CMC"
