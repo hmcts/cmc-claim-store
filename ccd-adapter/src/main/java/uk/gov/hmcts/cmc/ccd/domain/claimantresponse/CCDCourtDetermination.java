@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 
 import java.math.BigDecimal;
 
@@ -13,4 +14,5 @@ public class CCDCourtDetermination {
     private CCDPaymentIntention courtPaymentIntention;
     private String rejectionReason;
     private BigDecimal disposableIncome;
+    private DecisionType decisionType;
 }

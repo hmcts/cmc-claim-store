@@ -49,6 +49,7 @@ import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
@@ -342,11 +343,13 @@ public class SampleData {
             .build();
     }
 
-    private static CCDCourtDetermination getCCDCourtDetermination() {
+    public static CCDCourtDetermination getCCDCourtDetermination() {
         return CCDCourtDetermination.builder()
             .rejectionReason("Rejection reason")
             .courtPaymentIntention(getCCDPaymentIntention())
             .courtDecision(getCCDPaymentIntention())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
             .build();
     }
 
