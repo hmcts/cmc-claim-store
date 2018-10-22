@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -12,6 +13,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 @EqualsAndHashCode
+@Getter
 public class OtherDependants {
 
     @NotNull
@@ -21,17 +23,12 @@ public class OtherDependants {
     @NotBlank
     private final String details;
 
-    public OtherDependants(Integer numberOfPeople, String details) {
+    private final boolean anyDisabled;
+
+    public OtherDependants(Integer numberOfPeople, String details, boolean anyDisabled) {
         this.numberOfPeople = numberOfPeople;
         this.details = details;
-    }
-
-    public Integer getNumberOfPeople() {
-        return numberOfPeople;
-    }
-
-    public String getDetails() {
-        return details;
+        this.anyDisabled = anyDisabled;
     }
 
     @Override

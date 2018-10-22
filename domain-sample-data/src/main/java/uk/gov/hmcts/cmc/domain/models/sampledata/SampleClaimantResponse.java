@@ -8,9 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDeterminati
 
 import java.math.BigDecimal;
 
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType.CLAIMANT;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType.COURT;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DeterminationDecisionType.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
@@ -50,7 +47,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(formaliseOption)
-                .determinationDecisionType(DEFENDANT)
                 .build();
         }
 
@@ -58,7 +54,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
-                .determinationDecisionType(DEFENDANT)
                 .build();
         }
 
@@ -66,7 +61,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
-                .determinationDecisionType(CLAIMANT)
                 .claimantPaymentIntention(bySetDate())
                 .build();
         }
@@ -75,7 +69,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
-                .determinationDecisionType(COURT)
                 .claimantPaymentIntention(bySetDate())
                 .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();
@@ -85,7 +78,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
-                .determinationDecisionType(DEFENDANT)
                 .build();
         }
 
@@ -93,7 +85,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
-                .determinationDecisionType(CLAIMANT)
                 .claimantPaymentIntention(bySetDate())
                 .build();
         }
@@ -102,7 +93,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(SETTLEMENT)
-                .determinationDecisionType(COURT)
                 .claimantPaymentIntention(bySetDate())
                 .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();
@@ -111,25 +101,6 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
 
     public static class ClaimantResponseRejection extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
-        private BigDecimal amountPaid = BigDecimal.TEN;
-        private boolean freeMediation = false;
-        private String reason = "He paid 10 but he actually owes 10,000. No I do not accept this.";
-
-        public ClaimantResponseRejection withAmountPaid(BigDecimal amountPaid) {
-            this.amountPaid = amountPaid;
-            return this;
-        }
-
-        public ClaimantResponseRejection withFreeMediation(boolean freeMediation) {
-            this.freeMediation = freeMediation;
-            return this;
-        }
-
-        public ClaimantResponseRejection withReason(String reason) {
-            this.reason = reason;
-            return this;
-        }
-
         public static ClaimantResponseRejection builder() {
             return new ClaimantResponseRejection();
         }
@@ -137,9 +108,9 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         @Override
         public ClaimantResponse build() {
             return ResponseRejection.builder()
-                .amountPaid(amountPaid)
-                .freeMediation(freeMediation)
-                .reason(reason)
+                .amountPaid(BigDecimal.TEN)
+                .freeMediation(false)
+                .reason("Some valid reason")
                 .build();
         }
     }

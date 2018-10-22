@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -213,5 +214,17 @@ public class CommonOperations {
             .body(jsonMapper.toJson(ccj))
             .when()
             .post(issuePath);
+    }
+
+    public Response paidInFull(String externalId, PaidInFull paidInFull, User user) {
+        String path = "/claims/" + externalId + "/paid-in-full";
+
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .body(jsonMapper.toJson(paidInFull))
+            .when()
+            .put(path);
     }
 }

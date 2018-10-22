@@ -23,6 +23,7 @@ public class StatementOfMeansTest {
                 .incomes(Arrays.asList(IncomeTest.newSampleOfIncomeBuilder().build()))
                 .expenses(Arrays.asList(ExpenseTest.newSampleOfExpenseBuilder().build()))
                 .courtOrders(Arrays.asList(CourtOrderTest.newSampleOfCourtOrderBuilder().build()))
+                .disability(DisabilityStatus.NO)
                 .reason("Reason");
     }
 

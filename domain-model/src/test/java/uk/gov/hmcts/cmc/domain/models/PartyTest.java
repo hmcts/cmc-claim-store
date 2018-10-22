@@ -69,7 +69,7 @@ public class PartyTest {
     public void shouldReturnValidationErrorsWhenGivenInvalidAddress() {
         Party party = SampleParty.builder()
             .withAddress(SampleAddress.builder()
-                .withPostcode("")
+                .postcode("")
                 .build())
             .party();
 
@@ -95,7 +95,7 @@ public class PartyTest {
     public void shouldReturnValidationErrorsWhenGivenInvalidCorrespondenceAddress() {
         Party party = SampleParty.builder()
             .withCorrespondenceAddress(SampleAddress.builder()
-                .withPostcode("")
+                .postcode("")
                 .build())
             .party();
 
