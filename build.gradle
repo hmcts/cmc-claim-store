@@ -309,7 +309,7 @@ sonarqube {
       "**/*Exception.java," +
       "**/*Event.java," +
       "**/PathPatterns.java," +
-      "**/*Repository.java," +
+      "**/ClaimRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**"
   }
