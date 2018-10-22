@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
@@ -129,5 +130,13 @@ public class ClaimController {
     public CaseReference preSubmit(@PathVariable("externalId") String externalId,
                                    @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.savePrePayment(externalId, authorisation);
+    }
+
+    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full")
+    public Claim paidInFull(
+        @PathVariable("externalId") String externalId,
+        @Valid @NotNull @RequestBody PaidInFull paidInFull,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.paidInFull(externalId, paidInFull, authorisation);
     }
 }
