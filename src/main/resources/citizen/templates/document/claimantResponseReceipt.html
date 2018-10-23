@@ -146,7 +146,7 @@
 <header>
   <table>
     <tr>
-      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant’s response</h2></td>
+      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Claimant’s response</h2></td>
     </tr>
     <tr>
       <td colspan="2"><p>In the County Court Business Centre</p></td>
@@ -171,71 +171,71 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Defendant’s details</strong>
+    <strong>Claimant’s details</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
         <td>Name:</td>
         <td>
-          {{ defendant.fullName }}
+          {{ claimant.fullName }}
         </td>
       </tr>
-      {% if defendant.contactPerson is defined %}
+      {% if claimant.contactPerson is defined %}
       <tr>
         <td>Contact person:</td>
         <td>
-          {{ defendant.contactPerson }}
+          {{ claimant.contactPerson }}
         </td>
       </tr>
       {% endif %}
-      {% if defendant.businessName is defined %}
+      {% if claimant.businessName is defined %}
       <tr>
         <td>Business name:</td>
         <td>
-          Trading as {{ defendant.businessName }}
+          Trading as {{ claimant.businessName }}
         </td>
       </tr>
       {% endif %}
       <tr>
         <td class="keep-formatting">Address:
-          {% if defendant.addressAmended %}
+          {% if claimant.addressAmended %}
           (as amended)
           {% endif %}
         </td>
         <td>
-          {{ defendant.address.line1 }}
+          {{ claimant.address.line1 }}
           <br/>
-          {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
-          {{ defendant.address.line2 }}
-          <br/>
-          {% endif %}
-          {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
-          {{ defendant.address.line3 }}
+          {% if claimant.address.line2 is defined and claimant.address.line2 is not empty %}
+          {{ claimant.address.line2 }}
           <br/>
           {% endif %}
-          {{ defendant.address.city }}
+          {% if claimant.address.line3 is defined and claimant.address.line3 is not empty %}
+          {{ claimant.address.line3 }}
           <br/>
-          {{ defendant.address.postcode }}
+          {% endif %}
+          {{ claimant.address.city }}
+          <br/>
+          {{ claimant.address.postcode }}
         </td>
       </tr>
-      {% if defendant.correspondenceAddress is defined and defendant.correspondenceAddress is not empty %}
+      {% if claimant.correspondenceAddress is defined and claimant.correspondenceAddress is not empty %}
       <tr class="no-border">
         <td>Correspondence address:</td>
         <td>
-          {{ defendant.correspondenceAddress.line1 }}
+          {{ claimant.correspondenceAddress.line1 }}
           <br/>
-          {% if defendant.correspondenceAddress.line2 is defined and defendant.correspondenceAddress.line2 is not empty %}
+          {% if claimant.correspondenceAddress.line2 is defined and claimant.correspondenceAddress.line2 is not empty %}
           {{ defendant.correspondenceAddress.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.correspondenceAddress.line3 is defined and defendant.correspondenceAddress.line3 is not empty %}
-          {{ defendant.correspondenceAddress.line3 }}
+          {% if claimant.correspondenceAddress.line3 is defined and claimant.correspondenceAddress.line3 is not empty %}
+          {{ claimant.correspondenceAddress.line3 }}
           <br/>
           {% endif %}
-          {{ defendant.correspondenceAddress.city }}
+          {{ claimant.correspondenceAddress.city }}
           <br/>
-          {{ defendant.correspondenceAddress.postcode }}
+          {{ claimant.correspondenceAddress.postcode }}
         </td>
       </tr>
       {% endif %}
@@ -243,22 +243,22 @@
       <tr>
         <td>Date of birth:</td>
         <td>
-          {{ defendant.dateOfBirth }}
+          {{ claimant.dateOfBirth }}
         </td>
       </tr>
       {% endif %}
-      {% if defendant.mobilePhone is defined and defendant.mobilePhone is not empty %}
+      {% if claimant.mobilePhone is defined and claimant.mobilePhone is not empty %}
       <tr>
         <td>Telephone:</td>
         <td>
-          {{ defendant.mobilePhone }}
+          {{ claimant.mobilePhone }}
         </td>
       </tr>
       {% endif %}
       <tr>
         <td>Email:</td>
         <td>
-          {{ defendant.email }}
+          {{ claimant.email }}
         </td>
       </tr>
     </table>
@@ -267,12 +267,12 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Defendant's response to the claim</strong>
+    <strong>Claimant's response to the claim</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Defendant's response:</td>
+        <td>Claimant's response:</td>
         <td>
           {{ responseTypeSelected }}
         </td>

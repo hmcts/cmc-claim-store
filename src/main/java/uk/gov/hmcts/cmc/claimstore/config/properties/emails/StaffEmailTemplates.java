@@ -55,6 +55,15 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/bulkPrintFailure/subject.txt");
     }
 
+    public String getPaidInFullEmailBody() {
+        return readString("/staff/templates/email/paidInFull/body.txt");
+    }
+
+    public String getPaidInFullEmailSubject() {
+        return readString("/staff/templates/email/paidInFull/subject.txt");
+    }
+
+
     public String getReDeterminationRequestEmailBody() {
         return readString("/staff/templates/email/redeterminationRequest/body.txt");
     }

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.SignSettlementAgreementEvent;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
@@ -71,6 +72,10 @@ public class EventProducer {
 
     public void createClaimantResponseEvent(Claim claim) {
         publisher.publishEvent(new ClaimantResponseEvent(claim));
+    }
+
+    public void createPaidInFullEvent(Claim claim) {
+        publisher.publishEvent(new PaidInFullEvent(claim));
     }
 
     public void createRedeterminationEvent(Claim claim, String authorisation, String submitterName) {

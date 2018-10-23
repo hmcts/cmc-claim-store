@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -22,15 +23,21 @@ public class ClaimantResponseContentProvider {
     private final PartyDetailsContentProvider partyDetailsContentProvider;
     private final ClaimDataContentProvider claimDataContentProvider;
     private final NotificationsProperties notificationsProperties;
+    private final ResponseAcceptationContentProvider responseAcceptationContentProvider;
+    private final ResponseRejectionContentProvider responseRejectionContentProvider;
 
     public ClaimantResponseContentProvider(
         PartyDetailsContentProvider partyDetailsContentProvider,
         ClaimDataContentProvider claimDataContentProvider,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        ResponseAcceptationContentProvider responseAcceptationContentProvider,
+        ResponseRejectionContentProvider responseRejectionContentProvider
     ) {
         this.partyDetailsContentProvider = partyDetailsContentProvider;
         this.claimDataContentProvider = claimDataContentProvider;
         this.notificationsProperties = notificationsProperties;
+        this.responseAcceptationContentProvider = responseAcceptationContentProvider;
+        this.responseRejectionContentProvider = responseRejectionContentProvider;
     }
 
     public Map<String, Object> createContent(Claim claim) {
@@ -62,14 +69,24 @@ public class ClaimantResponseContentProvider {
             claim.getSubmitterEmail()
         ));
 
-        if (claimantResponse instanceof ResponseAcceptation) {
-            content.put("responseType", "acceptation");
+        content.put("responseType", claimantResponse.getType());
 
-
-        } else if (claimantResponse instanceof ResponseRejection) {
-            content.put("responseType", "rejection");
+        switch (claimantResponse.getType()) {
+            case ACCEPTATION:
+                content.putAll(
+                    responseAcceptationContentProvider.createContent((ResponseAcceptation) claimantResponse)
+                );
+                break;
+            case REJECTION:
+                content.putAll(
+                    responseRejectionContentProvider.createContent((ResponseRejection) claimantResponse)
+                );
+                break;
+            default:
+                throw new MappingException("Invalid responseType " + claimantResponse.getType());
 
         }
+
         return content;
     }
 }

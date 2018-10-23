@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Redetermination;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -50,7 +51,9 @@ public class CountyCourtJudgmentServiceTest {
     private AppInsights appInsights;
 
     private Redetermination redetermination = Redetermination.builder()
-        .explaination("I feel defendant can pay").build();
+        .explaination("I feel defendant can pay")
+        .partType(MadeBy.CLAIMANT)
+        .build();
 
     private UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
 

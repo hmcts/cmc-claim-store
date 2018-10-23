@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -62,8 +63,9 @@ public final class SampleClaim {
     private ClaimantResponse claimantResponse;
     private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
+    private LocalDate moneyReceivedOn;
     private LocalDateTime redeterminationRequestedAt;
-    private Redetermination redetermination = new Redetermination("I feel defendant can pay");
+    private Redetermination redetermination = new Redetermination("I feel defendant can pay", CLAIMANT);
 
     private SampleClaim() {
     }
@@ -192,6 +194,7 @@ public final class SampleClaim {
             claimantResponse,
             countyCourtJudgmentIssuedAt,
             directionsQuestionnaireDeadline,
+            moneyReceivedOn,
             redetermination,
             redeterminationRequestedAt
         );
@@ -325,6 +328,11 @@ public final class SampleClaim {
 
     public SampleClaim withDirectionsQuestionnaireDeadline(LocalDate dqDeadline) {
         this.directionsQuestionnaireDeadline = dqDeadline;
+        return this;
+    }
+
+    public SampleClaim withMoneyReceivedOn(LocalDate moneyReceivedOn) {
+        this.moneyReceivedOn = moneyReceivedOn;
         return this;
     }
 
