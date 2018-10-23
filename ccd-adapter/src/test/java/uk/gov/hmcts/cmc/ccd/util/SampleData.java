@@ -319,10 +319,17 @@ public class SampleData {
             .build();
     }
 
-    public static CCDClaimantResponse getCCDClaimantResponse(CCDFormaliseOption formaliseOption) {
+    public static CCDClaimantResponse getCCDClaimantAcceptanceResponse(CCDFormaliseOption formaliseOption) {
         return CCDClaimantResponse.builder()
             .claimantResponseType(CCDClaimantResponseType.ACCEPTATION)
             .responseAcceptation(getResponseAcceptation(formaliseOption))
+            .build();
+    }
+
+    public static CCDClaimantResponse getCCDClaimantREjectionResponse() {
+        return CCDClaimantResponse.builder()
+            .claimantResponseType(CCDClaimantResponseType.REJECTION)
+            .responseRejection(getResponseRejection())
             .build();
     }
 
