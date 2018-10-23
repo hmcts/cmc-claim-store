@@ -56,6 +56,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .paymentOption(PaymentOption.INSTALMENTS)
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
@@ -70,6 +71,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .paymentOption(PaymentOption.INSTALMENTS)
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
@@ -82,6 +84,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
     public void shouldBeAbleToFindDataForRepaymentBySetDatePdf() throws IOException {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
             .payBySetDate(LocalDate.now().plusDays(20))
             .build();

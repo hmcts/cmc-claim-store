@@ -116,7 +116,7 @@
 <header>
   <table>
     {% set responseType = ccj.responseType %}
-    {% if responseType and (responseType == 'FULL_ADMISSION' or responseType == 'PART_ADMISSION')  %}
+    {% if responseType is defined and (responseType == 'FULL_ADMISSION' or responseType == 'PART_ADMISSION')  %}
       <tr align="right">
         <td colspan="2"><h3 class="row-spacing">Judgment by admission</h3></td>
       </tr>
