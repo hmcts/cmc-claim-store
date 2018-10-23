@@ -54,8 +54,8 @@ public class CountyCourtJudgmentService {
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
 
-        if (countyCourtJudgment.getCcjType() != CountyCourtJudgmentType.ADMISSIONS &&
-            countyCourtJudgment.getPaymentOption() == PaymentOption.INSTALMENTS) {
+        if (countyCourtJudgment.getCcjType() != CountyCourtJudgmentType.DEFAULT
+            && countyCourtJudgment.getPaymentOption() != PaymentOption.IMMEDIATELY) {
             claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
                 countyCourtJudgment.getRepaymentPlan().orElse(null));
 

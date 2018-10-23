@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -153,8 +154,10 @@ public class CountyCourtJudgmentServiceTest {
     public void saveThrowsExceptionWhenClaimantRepaymentPlanStartDateDoesNotMeetCriteria() {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
+            .paymentOption(PaymentOption.INSTALMENTS)
             .repaymentPlan(
                 SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build())
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
             .build();
 
         Claim invalidClaim = SampleClaim.getWithResponse(
@@ -171,5 +174,29 @@ public class CountyCourtJudgmentServiceTest {
 
         countyCourtJudgmentService.save(USER_ID, ccj, invalidClaim.getExternalId(), AUTHORISATION, true);
 
+    }
+
+    @Test
+    public void saveShouldFinishDefaultCCJRequestSuccessfullyWithInstallmentDateEarlierThanOneMonth() {
+        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(
+                SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build())
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
+            .build();
+
+        Claim invalidClaim = SampleClaim.getWithResponse(
+            PartAdmissionResponse.builder()
+                .paymentIntention(SamplePaymentIntention.builder()
+                    .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
+                        SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusMonths(2)).build())
+                    .build())
+                .build()
+        );
+
+        when(claimService.getClaimByExternalId(eq(invalidClaim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(invalidClaim);
+
+        countyCourtJudgmentService.save(USER_ID, ccj, invalidClaim.getExternalId(), AUTHORISATION, true);
     }
 }
