@@ -23,16 +23,13 @@ public class CCJContent {
     private final RepaymentPlanContent repaymentPlan;
     private final String signerName;
     private final String signerRole;
-    private final boolean admissionResponse;
-    private final boolean partAdmissionResponse;
-
+    private final String responseType;
 
     public CCJContent(Map<String, Object> claim,
                       CountyCourtJudgment countyCourtJudgment,
                       LocalDateTime countyCourtJudgmentRequestedAt,
                       AmountContent amount,
-                      boolean admissionResponse,
-                      boolean partAdmissionResponse) {
+                      String responseType) {
         requireNonNull(claim);
         requireNonNull(countyCourtJudgment);
         requireNonNull(countyCourtJudgmentRequestedAt);
@@ -52,8 +49,7 @@ public class CCJContent {
         Optional<StatementOfTruth> optionalStatementOfTruth = countyCourtJudgment.getStatementOfTruth();
         this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
-        this.admissionResponse = admissionResponse;
-        this.partAdmissionResponse = partAdmissionResponse;
+        this.responseType = responseType;
     }
 
     public Map<String, Object> getClaim() {
@@ -88,12 +84,7 @@ public class CCJContent {
         return signerRole;
     }
 
-    public boolean getAdmissionResponse() {
-        return admissionResponse;
+    public String getResponseType() {
+        return responseType;
     }
-
-    public boolean isPartAdmissionResponse() {
-        return partAdmissionResponse;
-    }
-
 }

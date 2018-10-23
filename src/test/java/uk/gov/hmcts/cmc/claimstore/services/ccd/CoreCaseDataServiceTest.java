@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -240,15 +241,17 @@ public class CoreCaseDataServiceTest {
     @Test
     public void saveCountyCourtJudgmentShouldReturnCaseDetails() {
         Claim providedClaim = SampleClaim.getDefault();
-        CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment.builder().build();
+        CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
+            .build();
 
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(countyCourtJudgmentMapper.to(providedCCJ)).thenReturn(CCDCountyCourtJudgment.builder().build());
 
         CaseDetails caseDetails = service.saveCountyCourtJudgment(AUTHORISATION,
             providedClaim,
-            providedCCJ,
-            false);
+            providedCCJ);
 
         assertNotNull(caseDetails);
     }

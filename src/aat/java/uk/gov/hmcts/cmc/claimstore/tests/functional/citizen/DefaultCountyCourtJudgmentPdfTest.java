@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Am
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -22,7 +23,6 @@ import java.time.LocalDate;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
 
@@ -43,9 +43,10 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
 
-        claim = submitCCJ(countyCourtJudgment, false);
+        claim = submitCCJ(countyCourtJudgment);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -58,7 +59,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
-        claim = submitCCJ(countyCourtJudgment, false);
+        claim = submitCCJ(countyCourtJudgment);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -72,7 +73,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
-        claim = submitCCJ(countyCourtJudgment, false);
+        claim = submitCCJ(countyCourtJudgment);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -85,7 +86,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .payBySetDate(LocalDate.now().plusDays(20))
             .build();
 
-        claim = submitCCJ(countyCourtJudgment, false);
+        claim = submitCCJ(countyCourtJudgment);
         String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -105,7 +106,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
         assertDeclaration(createdCase, pdfAsText);
     }
 
-    private Claim submitCCJ(CountyCourtJudgment countyCourtJudgment, boolean isIssue) {
+    private Claim submitCCJ(CountyCourtJudgment countyCourtJudgment) {
         Claim claimReturnedAfterCCJIssued = commonOperations
             .requestCCJ(claim.getExternalId(), countyCourtJudgment, user)
             .then()
@@ -115,9 +116,6 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .body().as(Claim.class);
 
         assertThat(claimReturnedAfterCCJIssued.getCountyCourtJudgmentRequestedAt()).isNotNull();
-        if (isIssue) {
-            assertTrue(claimReturnedAfterCCJIssued.getCountyCourtJudgmentIssuedAt().isPresent());
-        }
         return claimReturnedAfterCCJIssued;
     }
 

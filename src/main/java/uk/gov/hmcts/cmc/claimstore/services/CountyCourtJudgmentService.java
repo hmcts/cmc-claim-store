@@ -39,31 +39,27 @@ public class CountyCourtJudgmentService {
         String submitterId,
         CountyCourtJudgment countyCourtJudgment,
         String externalId,
-        String authorisation,
-        boolean isByAdmission
+        String authorisation
+
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
 
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, isByAdmission);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, countyCourtJudgment.getCcjType());
 
-        claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, isByAdmission);
+        claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
 
         Claim claimWithCCJ = claimService.getClaimByExternalId(externalId, authorisation);
 
-        eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation, isByAdmission);
+        eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation, countyCourtJudgment.getCcjType());
 
-        appInsights.trackEvent(getAppInsightsEvent(isByAdmission), claim.getReferenceNumber());
+        appInsights.trackEvent(getAppInsightsEvent(), claim.getReferenceNumber());
 
         return claimWithCCJ;
     }
 
-    private AppInsightsEvent getAppInsightsEvent(boolean isByAdmission) {
-        if (isByAdmission) {
-            return AppInsightsEvent.CCJ_ISSUED;
-        } else {
-            return AppInsightsEvent.CCJ_REQUESTED;
-        }
+    private AppInsightsEvent getAppInsightsEvent() {
+        return AppInsightsEvent.CCJ_REQUESTED;
     }
 }

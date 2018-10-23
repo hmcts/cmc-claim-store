@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -26,6 +27,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
@@ -33,7 +35,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 @RunWith(MockitoJUnitRunner.class)
 public class CountyCourtJudgmentServiceTest {
 
-    private static final CountyCourtJudgment DATA = SampleCountyCourtJudgment.builder().build();
     private static final String AUTHORISATION = "Bearer: aaa";
 
     private CountyCourtJudgmentService countyCourtJudgmentService;
@@ -65,16 +66,20 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
-        countyCourtJudgmentService.save(USER_ID, ccj, EXTERNAL_ID, AUTHORISATION, false);
+        CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(USER_ID, ccjByDefault, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(false));
-        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(false));
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(
+            any(Claim.class),
+            any(),
+            eq(CountyCourtJudgmentType.DEFAULT)
+        );
+        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
     }
 
     @Test
-    public void saveShouldFinishCCJIssueSuccessfullyForHappyPath() {
+    public void saveShouldFinishCCJByAdmissionSuccessfullyForHappyPath() {
 
         Claim claim = SampleClaim.builder()
             .withResponse(SampleResponse.FullAdmission.builder().build())
@@ -82,11 +87,15 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, true);
+        CountyCourtJudgment ccjByAdmission = SampleCountyCourtJudgment.builder().ccjType(ADMISSIONS).build();
+        countyCourtJudgmentService.save(USER_ID, ccjByAdmission, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(true));
-        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(true));
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_ISSUED), eq(claim.getReferenceNumber()));
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(
+            any(Claim.class), any(),
+            eq(CountyCourtJudgmentType.ADMISSIONS)
+        );
+        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = NotFoundException.class)
@@ -95,7 +104,8 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenThrow(new NotFoundException("Claim not found by id"));
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(USER_ID, ccjByDefault, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -107,7 +117,8 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(differentUser, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(differentUser, ccjByDefault, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -117,7 +128,8 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(USER_ID, ccjByDefault, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -127,7 +139,8 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(USER_ID, ccjByDefault, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -136,7 +149,7 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
-
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
+        countyCourtJudgmentService.save(USER_ID, ccjByDefault, EXTERNAL_ID, AUTHORISATION);
     }
 }

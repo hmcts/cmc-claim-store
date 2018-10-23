@@ -46,9 +46,17 @@ public class RequestForJudgementNotificationService {
     @EventListener
     public void notifyRobotics(CountyCourtJudgmentEvent event) {
         requireNonNull(event);
-        if (!event.isByAdmission()) {
-            EmailData emailData = prepareEmailData(event.getClaim());
-            emailService.sendEmail(emailProperties.getSender(), emailData);
+        switch ((event.getCountyCourtJudgmentType())) {
+            case DEFAULT:
+                EmailData emailData = prepareEmailData(event.getClaim());
+                emailService.sendEmail(emailProperties.getSender(), emailData);
+                break;
+            case DETERMINATION:
+            case ADMISSIONS:
+                //No RPA email sent
+                break;
+            default:
+                throw new IllegalArgumentException("Incorrect event: " + event.getCountyCourtJudgmentType().name());
         }
     }
 

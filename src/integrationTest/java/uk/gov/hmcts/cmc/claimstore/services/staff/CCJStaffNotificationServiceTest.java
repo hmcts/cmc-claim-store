@@ -67,7 +67,6 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
             .builder()
             .withResponse(admissionResponse)
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
-            .withCountyCourtJudgmentIssuedAt(LocalDateTime.now())
             .withCountyCourtJudgment(SampleCountyCourtJudgment
                 .builder()
                 .paymentOption(PaymentOption.IMMEDIATELY)

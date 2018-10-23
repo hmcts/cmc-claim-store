@@ -25,8 +25,7 @@ public interface CaseRepository {
     void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean isByAdmission
+        CountyCourtJudgment countyCourtJudgment
     );
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);

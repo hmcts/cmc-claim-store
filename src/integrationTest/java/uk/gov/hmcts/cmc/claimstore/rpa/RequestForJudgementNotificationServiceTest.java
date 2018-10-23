@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -56,7 +57,7 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
             .withCountyCourtJudgment(countyCourtJudgment)
             .build();
 
-        event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE", false);
+        event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE", CountyCourtJudgmentType.DEFAULT);
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
 
@@ -111,7 +112,20 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldNotSendRoboticsEmailWhenCCJByAdmission() {
-        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE", true);
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claim,
+            "AUTH_CODE",
+            CountyCourtJudgmentType.ADMISSIONS);
+
+        service.notifyRobotics(event);
+        verifyZeroInteractions(emailService);
+    }
+
+    @Test
+    public void shouldNotSendRoboticsEmailWhenCCJByDetermination() {
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claim,
+            "AUTH_CODE",
+            CountyCourtJudgmentType.DETERMINATION);
+
         service.notifyRobotics(event);
         verifyZeroInteractions(emailService);
     }

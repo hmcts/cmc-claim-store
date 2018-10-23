@@ -84,10 +84,9 @@ public class CCDCaseRepository implements CaseRepository {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean isByAdmission
+        CountyCourtJudgment countyCourtJudgment
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, isByAdmission);
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
 
     }
 

@@ -11,21 +11,25 @@ public class CCJCitizenActionsHandler {
     private final CCJNotificationService ccjNotificationService;
 
     @Autowired
-    public CCJCitizenActionsHandler(
-        CCJNotificationService ccjNotificationService
-    ) {
+    public CCJCitizenActionsHandler(CCJNotificationService ccjNotificationService) {
         this.ccjNotificationService = ccjNotificationService;
     }
 
     @EventListener
     public void sendNotification(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
-
-        if (event.isByAdmission()) {
-            ccjNotificationService.notifyClaimantForCCJRequest(claim);
-            ccjNotificationService.notifyDefendantForCCJIssue(claim);
-        } else {
-            ccjNotificationService.notifyClaimantForCCJRequest(claim);
+        switch (event.getCountyCourtJudgmentType()) {
+            case DEFAULT:
+                ccjNotificationService.notifyClaimantForCCJRequest(claim);
+                break;
+            case ADMISSIONS:
+            case DETERMINATION:
+                ccjNotificationService.notifyClaimantForCCJRequest(claim);
+                ccjNotificationService.notifyDefendantForCCJIssue(claim);
+                break;
+            default:
+                throw new IllegalArgumentException("Incorrect event provided: "
+                    + event.getCountyCourtJudgmentType().name());
         }
     }
 }

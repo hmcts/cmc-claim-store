@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -107,13 +108,13 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateCountyCourtJudgmentSubmittedEvent() throws Exception {
-
-        // given
-        boolean isByAdmission = false;
-        CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM, AUTHORISATION, isByAdmission);
+    public void shouldCreateDefaultCountyCourtJudgmentSubmittedEvent() throws Exception {
+        //given
+        CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM,
+            AUTHORISATION,
+            CountyCourtJudgmentType.DEFAULT);
         // when
-        eventProducer.createCountyCourtJudgmentEvent(CLAIM, AUTHORISATION, isByAdmission);
+        eventProducer.createCountyCourtJudgmentEvent(CLAIM, AUTHORISATION, CountyCourtJudgmentType.DEFAULT);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));

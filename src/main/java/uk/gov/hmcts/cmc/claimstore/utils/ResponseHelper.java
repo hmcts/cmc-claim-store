@@ -20,12 +20,12 @@ public class ResponseHelper {
         }
     }
 
-    public static boolean partAdmissionResponse(Claim claim) {
+    public static String getResponseType(Claim claim) {
         if (claim.getResponse().isPresent()) {
             Response response = claim.getResponse().get();
-            return response.getResponseType().equals(ResponseType.PART_ADMISSION);
+            return response.getResponseType().name();
         } else {
-            return false;
+            return null;
         }
     }
 }

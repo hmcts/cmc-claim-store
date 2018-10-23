@@ -5,7 +5,7 @@ public enum CaseEvent {
     SUBMIT_PRE_PAYMENT("SubmitPrePayment"),
     SUBMIT_POST_PAYMENT("SubmitPostPayment"),
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
-    CCJ_ISSUED("CCJIssued"),
+    CCJ_BY_ADMISSION("CCJByAdmission"),
     DISPUTE("DisputesAll"),
     ALREADY_PAID("StatesPaid"),
     FULL_ADMISSION("AdmitAll"),

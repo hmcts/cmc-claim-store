@@ -30,6 +30,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 
 @RestController
 @RequestMapping("/support")
@@ -98,7 +99,7 @@ public class SupportController {
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
-            new CountyCourtJudgmentEvent(claim, authorisation, false)
+            new CountyCourtJudgmentEvent(claim, authorisation, CountyCourtJudgmentType.DEFAULT)
         );
     }
 

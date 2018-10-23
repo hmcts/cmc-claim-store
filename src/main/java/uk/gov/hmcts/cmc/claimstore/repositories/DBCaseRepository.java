@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,15 +109,11 @@ public class DBCaseRepository implements CaseRepository {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean isByAdmission
+        CountyCourtJudgment countyCourtJudgment
     ) {
         final String externalId = claim.getExternalId();
-        LocalDateTime ccjIssuedDate = isByAdmission ? nowInUTC() : null;
 
-        claimRepository.saveCountyCourtJudgment(externalId,
-            jsonMapper.toJson(countyCourtJudgment), nowInUTC(), ccjIssuedDate
-        );
+        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment), nowInUTC());
     }
 
     @Override

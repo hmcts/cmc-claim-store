@@ -84,7 +84,6 @@ public class ClaimantResponseTest extends BaseTest {
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
         assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
-        assertThat(claimWithClaimantResponse.getCountyCourtJudgmentIssuedAt()).isNotEmpty();
     }
 
     @Test

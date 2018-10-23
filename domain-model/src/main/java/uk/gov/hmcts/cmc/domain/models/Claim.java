@@ -58,7 +58,6 @@ public class Claim {
     private final List<String> features;
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponse claimantResponse;
-    private final LocalDateTime countyCourtJudgmentIssuedAt;
     private final LocalDate directionsQuestionnaireDeadline;
     @DateNotInTheFuture
     private final LocalDate moneyReceivedOn;
@@ -89,7 +88,6 @@ public class Claim {
         List<String> features,
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
-        LocalDateTime countyCourtJudgmentIssuedAt,
         LocalDate directionsQuestionnaireDeadline,
         LocalDate moneyReceivedOn
     ) {
@@ -116,7 +114,6 @@ public class Claim {
         this.features = features;
         this.claimantRespondedAt = claimantRespondedAt;
         this.claimantResponse = claimantResponse;
-        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
         this.moneyReceivedOn = moneyReceivedOn;
     }
@@ -163,10 +160,6 @@ public class Claim {
 
     public Optional<LocalDateTime> getClaimantRespondedAt() {
         return Optional.ofNullable(claimantRespondedAt);
-    }
-
-    public Optional<LocalDateTime> getCountyCourtJudgmentIssuedAt() {
-        return Optional.ofNullable(countyCourtJudgmentIssuedAt);
     }
 
     public Optional<LocalDate> getMoneyReceivedOn() {

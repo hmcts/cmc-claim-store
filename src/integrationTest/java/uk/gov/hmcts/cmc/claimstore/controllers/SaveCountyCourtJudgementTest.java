@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -40,6 +41,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
+
+    private static final CountyCourtJudgment COUNTY_COURT_JUDGMENT
+        = SampleCountyCourtJudgment
+        .builder()
+        .ccjType(CountyCourtJudgmentType.DEFAULT)
+        .paymentOption(PaymentOption.IMMEDIATELY)
+        .build();
+
     @MockBean
     private CCJStaffNotificationHandler ccjStaffNotificationHandler;
 
@@ -47,6 +56,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
     private ArgumentCaptor<CountyCourtJudgmentEvent> countyCourtJudgementEventArgument;
 
     private Claim claim;
+
 
     @Before
     public void setUp() {
@@ -75,24 +85,16 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
     @Test
     public void shouldSaveCountyCourtJudgementRequest() throws Exception {
 
-        CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
-
-        makeRequest(claim.getExternalId(), countyCourtJudgment).andExpect(status().isOk());
+        makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
 
         Claim claimWithCCJRequest = claimStore.getClaimByExternalId(claim.getExternalId());
 
         assertThat(claimWithCCJRequest.getCountyCourtJudgmentRequestedAt()).isNotNull();
-        assertThat(claimWithCCJRequest.getCountyCourtJudgmentIssuedAt().isPresent()).isFalse();
     }
 
     @Test
     public void shouldInvokeStaffActionsHandlerAfterSuccessfulSave() throws Exception {
-        CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
-
-        makeRequest(claim.getExternalId(), countyCourtJudgment)
-            .andExpect(status().isOk());
+        makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
 
         verify(ccjStaffNotificationHandler)
             .onDefaultJudgmentRequestSubmitted(countyCourtJudgementEventArgument.capture());
@@ -103,11 +105,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
-        CountyCourtJudgment countyCourtJudgment
-            = SampleCountyCourtJudgment.builder().paymentOption(PaymentOption.IMMEDIATELY).build();
-
-        makeRequest(claim.getExternalId(), countyCourtJudgment)
-            .andExpect(status().isOk());
+        makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
 
         verify(notificationClient, times(1))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());

@@ -46,6 +46,6 @@ public class CountyCourtJudgmentController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         String submitterId = userService.getUserDetails(authorisation).getId();
-        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation, false);
+        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation);
     }
 }

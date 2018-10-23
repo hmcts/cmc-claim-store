@@ -131,8 +131,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -165,8 +164,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -201,8 +199,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -240,8 +237,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -278,8 +274,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
 
         assertThat(countyCourtJudgmentArgumentCaptor
@@ -312,8 +307,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -346,8 +340,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
