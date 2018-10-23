@@ -75,20 +75,19 @@ public class CountyCourtJudgementTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotBeAllowedToRequestCCJWhenResponseDeadlineHasNotPassed() {
+    public void shouldNotBeAllowedToDefaultCCJWhenResponseDeadlineHasNotPassed() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimantId
         );
-
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
-        commonOperations.requestCCJ(createdCase.getExternalId(), ccj, claimant)
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN.value());
+        io.restassured.response.Response response = commonOperations
+            .requestCCJ(createdCase.getExternalId(), ccj, claimant);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
