@@ -35,7 +35,7 @@ public interface CaseRepository {
 
     void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation);
 
-    void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
+    void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization);
 
     void linkDefendant(String authorisation);
 
