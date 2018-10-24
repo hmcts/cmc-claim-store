@@ -1,5 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
+import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ClaimantResponseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.CourtDeterminationAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseAcceptationAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseRejectionAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.FullAdmissionResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.FullDefenceResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.PartAdmissionResponseAssert;
@@ -36,6 +40,10 @@ import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
@@ -69,6 +77,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
@@ -243,6 +252,22 @@ public class Assertions {
         return new ResponseAssert(response);
     }
 
+    public static ClaimantResponseAssert assertThat(ClaimantResponse response) {
+        return new ClaimantResponseAssert(response);
+    }
+
+    public static ResponseRejectionAssert assertThat(ResponseRejection responseRejection) {
+        return new ResponseRejectionAssert(responseRejection);
+    }
+
+    public static CourtDeterminationAssert assertThat(CourtDetermination courtDetermination) {
+        return new CourtDeterminationAssert(courtDetermination);
+    }
+
+    public static ResponseAcceptationAssert assertThat(ResponseAcceptation responseAcceptation) {
+        return new ResponseAcceptationAssert(responseAcceptation);
+    }
+
     public static FullAdmissionResponseAssert assertThat(FullAdmissionResponse fullAdmissionResponse) {
         return new FullAdmissionResponseAssert(fullAdmissionResponse);
     }
@@ -281,6 +306,10 @@ public class Assertions {
 
     public static ExpenseAssert assertThat(Expense expense) {
         return new ExpenseAssert(expense);
+    }
+
+    public static LivingPartnerAssert assertThat(LivingPartner livingPartner) {
+        return new LivingPartnerAssert(livingPartner);
     }
 
     public static SelfEmploymentAssert assertThat(SelfEmployment selfEmployment) {
