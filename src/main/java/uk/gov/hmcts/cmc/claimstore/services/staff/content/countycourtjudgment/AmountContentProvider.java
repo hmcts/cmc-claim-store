@@ -50,7 +50,7 @@ public class AmountContentProvider {
 
         return new AmountContent(
             formatMoney(claimAmount),
-            formatMoney(claimAmount
+            formatMoney(admittedAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)),
             interestContent,

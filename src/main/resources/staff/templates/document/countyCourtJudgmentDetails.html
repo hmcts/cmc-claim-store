@@ -117,6 +117,12 @@
   <table>
     {% set responseType = ccj.responseType %}
     {% if responseType is defined and (responseType == 'FULL_ADMISSION' or responseType == 'PART_ADMISSION')  %}
+      {% set admissionResponse = true %}
+    {% else %}
+     {% set admissionResponse = false %}
+    {% endif %}
+
+    {% if admissionResponse == true  %}
       <tr align="right">
         <td colspan="2"><h3 class="row-spacing">Judgment by admission</h3></td>
       </tr>
@@ -390,7 +396,7 @@
   </div>
     <div class="section">
       <div class="section-heading">
-        {% if ccj.responseType == true %}
+        {% if admissionResponse == true %}
         <strong>Judgment details</strong>
       {% else %}
         <strong>Total amount</strong>
@@ -398,7 +404,7 @@
       </div>
       <div class="section-body">
       <table>
-        {% if ccj.admissionResponse == true %}
+        {% if admissionResponse == true %}
         <tr>
           <td><strong>Judgment amount:</strong></td>
           <td>
@@ -440,15 +446,9 @@
         </tr>
         <tr>
           <td><strong>Subtotal:</strong></td>
-          {% if ccj.responseType equals "PART_ADMISSION" %}
-          <td>
-            {{ ccj.amount.remainingAmount }}
-          </td>
-          {% else %}
           <td>
             {{ ccj.amount.subTotalAmount }}
           </td>
-          {% endif %}
         </tr>
         <tr>
           <td><strong>Amount already paid by defendant:</strong></td>

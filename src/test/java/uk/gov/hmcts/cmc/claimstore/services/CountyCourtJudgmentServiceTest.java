@@ -92,7 +92,7 @@ public class CountyCourtJudgmentServiceTest {
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(
             any(Claim.class), any(),
-            eq(CountyCourtJudgmentType.ADMISSIONS)
+            eq(ADMISSIONS)
         );
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));

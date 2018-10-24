@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -42,6 +43,7 @@ public class CountyCourtJudgementTest extends BaseTest {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
 
         Claim updatedCase = commonOperations.requestCCJ(createdCase.getExternalId(), ccj, claimant)
@@ -83,6 +85,7 @@ public class CountyCourtJudgementTest extends BaseTest {
         );
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
 
         io.restassured.response.Response response = commonOperations
@@ -106,6 +109,7 @@ public class CountyCourtJudgementTest extends BaseTest {
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
             .paymentOption(PaymentOption.IMMEDIATELY)
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
 
         commonOperations.requestCCJ(createdCase.getExternalId(), ccj, claimant)

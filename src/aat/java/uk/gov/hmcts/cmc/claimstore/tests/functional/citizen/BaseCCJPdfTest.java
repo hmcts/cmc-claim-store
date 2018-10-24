@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.AmountContent;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
+import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -84,8 +85,11 @@ public abstract class BaseCCJPdfTest extends BasePdfTest {
 
     protected void assertTotalAmount(Claim caseGiven, String pdfAsText, AmountContent amountContent) {
         ClaimData claimData = caseGiven.getClaimData();
-
-        assertThat(pdfAsText).contains("Total amount");
+        if(ResponseHelper.admissionResponse(caseGiven)){
+            assertThat(pdfAsText).contains("Judgment amount");
+        } else {
+            assertThat(pdfAsText).contains("Total amount");
+        }
         assertThat(pdfAsText).contains("Claim amount: "
             + Formatting.formatMoney(((AmountBreakDown) claimData.getAmount()).getTotalAmount()));
         assertInterest(claimData, pdfAsText);
