@@ -1,0 +1,1 @@
+Civil Money Claim {{ responseType }} submitted: Pay {{ paymentOptionDescription }} {{ claim.referenceNumber }} - {{ claim.claimData.claimant.name }} v {{ claim.claimData.defendant.name }}
