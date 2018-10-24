@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -26,15 +27,19 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
+    private final ClaimantResponseMapper claimantResponseMapper;
 
     public CaseMapper(ClaimMapper claimMapper,
                       CountyCourtJudgmentMapper countyCourtJudgmentMapper,
                       ResponseMapper responseMapper,
-                      SettlementMapper settlementMapper) {
+                      SettlementMapper settlementMapper,
+                      ClaimantResponseMapper claimantResponseMapper
+    ) {
         this.claimMapper = claimMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
+        this.claimantResponseMapper = claimantResponseMapper;
     }
 
     @Override
@@ -48,6 +53,10 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
             builder.countyCourtJudgmentRequestedAt(claim.getCountyCourtJudgmentRequestedAt());
+        }
+
+        if (claim.getDirectionsQuestionnaireDeadline() != null) {
+            builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
         }
 
         claim.getCountyCourtJudgmentIssuedAt().ifPresent(builder::countyCourtJudgmentIssuedAt);
@@ -65,6 +74,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.settlementReachedAt(claim.getSettlementReachedAt());
         }
 
+        claim.getClaimantRespondedAt().ifPresent(builder::claimantRespondedAt);
+
         if (claim.getLetterHolderId() != null) {
             builder.letterHolderId(claim.getLetterHolderId());
         }
@@ -78,6 +89,9 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
                 .documentUrl(document.toString())
                 .build())
         );
+
+        claim.getClaimantResponse()
+            .ifPresent(claimantResponse -> builder.claimantResponse(claimantResponseMapper.to(claimantResponse)));
 
         return builder
             .id(claim.getId())
@@ -115,7 +129,8 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .defendantEmail(ccdCase.getDefendantEmail())
             .countyCourtJudgmentRequestedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()))
             .settlementReachedAt(fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()))
-            .countyCourtJudgmentIssuedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt()));
+            .countyCourtJudgmentIssuedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt()))
+            .claimantRespondedAt(fromNullableUTCtoLocalZone(ccdCase.getClaimantRespondedAt()));
 
         if (ccdCase.getCountyCourtJudgment() != null) {
             builder.countyCourtJudgment(countyCourtJudgmentMapper.from(ccdCase.getCountyCourtJudgment()));
@@ -135,6 +150,14 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
 
         if (ccdCase.getSealedClaimDocument() != null) {
             builder.sealedClaimDocument(URI.create(ccdCase.getSealedClaimDocument().getDocumentUrl()));
+        }
+
+        if (ccdCase.getClaimantResponse() != null) {
+            builder.claimantResponse(claimantResponseMapper.from(ccdCase.getClaimantResponse()));
+        }
+
+        if (ccdCase.getDirectionsQuestionnaireDeadline() != null) {
+            builder.directionsQuestionnaireDeadline(ccdCase.getDirectionsQuestionnaireDeadline());
         }
 
         return builder.build();
