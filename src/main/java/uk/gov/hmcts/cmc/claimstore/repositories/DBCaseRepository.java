@@ -139,8 +139,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
-        claimRepository.updateDirectionsQuestionnaireDeadline(externalId, dqDeadline);
+    public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
+        claimRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), dqDeadline);
     }
 
     @Override
