@@ -86,7 +86,7 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         CountyCourtJudgment countyCourtJudgment
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
 
     }
 
@@ -96,12 +96,12 @@ public class CCDCaseRepository implements CaseRepository {
         String defendantEmail,
         Response response,
         String authorization) {
-        coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
+        coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
     }
 
     @Override
     public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
-        throw new NotImplementedException("Save claimant response not implemented on CCD");
+        coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
     }
 
     @Override
@@ -110,8 +110,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
-        throw new NotImplementedException("We do not implement CCD yet");
+    public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
+        coreCaseDataService.saveDirectionsQuestionnaireDeadline(claim.getId(), dqDeadline, authorization);
     }
 
     @Override

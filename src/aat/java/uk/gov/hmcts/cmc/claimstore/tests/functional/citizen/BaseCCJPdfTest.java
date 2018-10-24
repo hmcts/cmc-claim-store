@@ -85,7 +85,7 @@ public abstract class BaseCCJPdfTest extends BasePdfTest {
 
     protected void assertTotalAmount(Claim caseGiven, String pdfAsText, AmountContent amountContent) {
         ClaimData claimData = caseGiven.getClaimData();
-        if(ResponseHelper.admissionResponse(caseGiven)){
+        if (ResponseHelper.admissionResponse(caseGiven)) {
             assertThat(pdfAsText).contains("Judgment amount");
         } else {
             assertThat(pdfAsText).contains("Total amount");
