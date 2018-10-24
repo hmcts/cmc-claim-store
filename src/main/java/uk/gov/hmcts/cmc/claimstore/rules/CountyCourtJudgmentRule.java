@@ -44,7 +44,7 @@ public class CountyCourtJudgmentRule {
                 }
                 break;
             case ADMISSIONS:
-                claim.getResponse().orElseThrow(IllegalArgumentException::new);
+                Objects.requireNonNull(claim.getResponse().get(), "Claim response cannot be null");
                 break;
             case DETERMINATION:
                 // Action pending
