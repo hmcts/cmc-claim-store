@@ -264,7 +264,7 @@ public class ClaimServiceTest {
         verify(directionsQuestionnaireDeadlineCalculator)
             .calculateDirectionsQuestionnaireDeadlineCalculator(any());
         verify(caseRepository)
-            .updateDirectionsQuestionnaireDeadline(eq(EXTERNAL_ID), any(), eq(AUTHORISATION));
+            .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
     }
 
     @Test
@@ -276,7 +276,7 @@ public class ClaimServiceTest {
         verify(directionsQuestionnaireDeadlineCalculator, never())
             .calculateDirectionsQuestionnaireDeadlineCalculator(any());
         verify(caseRepository, never())
-            .updateDirectionsQuestionnaireDeadline(eq(EXTERNAL_ID), any(), eq(AUTHORISATION));
+            .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
     }
 
     @Test
