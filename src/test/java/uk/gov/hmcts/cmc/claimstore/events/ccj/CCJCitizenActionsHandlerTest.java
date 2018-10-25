@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.CCJNotificationService;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -29,9 +28,8 @@ public class CCJCitizenActionsHandlerTest {
     @Test
     public void notifyClaimantSuccessfully() {
         CountyCourtJudgmentEvent eventWithoutAdmission = new CountyCourtJudgmentEvent(
-            SampleClaimIssuedEvent.CLAIM,
-            "Bearer token here",
-            CountyCourtJudgmentType.DEFAULT
+            SampleClaimIssuedEvent.CLAIM_WITH_DEFAULT_CCJ,
+            "Bearer token here"
         );
 
         handler.sendNotification(eventWithoutAdmission);
@@ -42,9 +40,8 @@ public class CCJCitizenActionsHandlerTest {
     @Test
     public void notifyClaimantAndDefendantSuccessfullyWhenByAdmission() {
         CountyCourtJudgmentEvent eventWithAdmission = new CountyCourtJudgmentEvent(
-            SampleClaimIssuedEvent.CLAIM,
-            "Bearer token here",
-            CountyCourtJudgmentType.ADMISSIONS
+            SampleClaimIssuedEvent.CLAIM_WITH_CCJ_BY_ADMISSION,
+            "Bearer token here"
         );
 
         handler.sendNotification(eventWithAdmission);

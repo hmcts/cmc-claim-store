@@ -58,21 +58,19 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test
-    public void saveShouldFinishCCJRequestSuccessfullyForHappyPath() {
+    public void saveShouldFinishCCJByDefaultRequestSuccessfullyForHappyPath() {
 
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2)).build();
+        Claim claim = SampleClaim
+            .builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
         CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
         countyCourtJudgmentService.save(USER_ID, ccjByDefault, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentEvent(
-            any(Claim.class),
-            any(),
-            eq(DEFAULT)
-        );
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
     }
@@ -80,7 +78,8 @@ public class CountyCourtJudgmentServiceTest {
     @Test
     public void saveShouldFinishCCJByAdmissionSuccessfullyForHappyPath() {
 
-        Claim claim = SampleClaim.builder()
+        Claim claim = SampleClaim
+            .builder()
             .withResponse(SampleResponse.FullAdmission.builder().build())
             .build();
 
@@ -89,10 +88,7 @@ public class CountyCourtJudgmentServiceTest {
         CountyCourtJudgment ccjByAdmission = SampleCountyCourtJudgment.builder().ccjType(ADMISSIONS).build();
         countyCourtJudgmentService.save(USER_ID, ccjByAdmission, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentEvent(
-            any(Claim.class), any(),
-            eq(ADMISSIONS)
-        );
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
     }

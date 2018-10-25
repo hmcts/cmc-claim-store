@@ -48,16 +48,30 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
     private CountyCourtJudgmentEvent event;
 
+    private static final CountyCourtJudgment DEFAULT_CCJ = SampleCountyCourtJudgment
+        .builder()
+        .ccjType(CountyCourtJudgmentType.DEFAULT)
+        .build();
+
+    private static final CountyCourtJudgment CCJ_BY_ADMISSION = SampleCountyCourtJudgment
+        .builder()
+        .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+        .build();
+
+    private static final CountyCourtJudgment CCJ_BY_DETERMINATION = SampleCountyCourtJudgment
+        .builder()
+        .ccjType(CountyCourtJudgmentType.DETERMINATION)
+        .build();
+
     @Before
     public void setUp() {
-        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
 
         claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
-            .withCountyCourtJudgment(countyCourtJudgment)
+            .withCountyCourtJudgment(DEFAULT_CCJ)
             .build();
 
-        event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE", CountyCourtJudgmentType.DEFAULT);
+        event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE");
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
 
@@ -112,21 +126,30 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldNotSendRoboticsEmailWhenCCJByAdmission() {
-        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claim,
-            "AUTH_CODE",
-            CountyCourtJudgmentType.ADMISSIONS);
+        Claim claimWithCCJByAdmission = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .withCountyCourtJudgment(CCJ_BY_ADMISSION)
+            .build();
+
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByAdmission, "AUTH_CODE");
 
         service.notifyRobotics(event);
+
         verifyZeroInteractions(emailService);
     }
 
     @Test
     public void shouldNotSendRoboticsEmailWhenCCJByDetermination() {
-        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claim,
-            "AUTH_CODE",
-            CountyCourtJudgmentType.DETERMINATION);
+        Claim claimWithCCJByDetermination = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .withCountyCourtJudgment(CCJ_BY_DETERMINATION)
+            .build();
+
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByDetermination,
+            "AUTH_CODE");
 
         service.notifyRobotics(event);
+
         verifyZeroInteractions(emailService);
     }
 }

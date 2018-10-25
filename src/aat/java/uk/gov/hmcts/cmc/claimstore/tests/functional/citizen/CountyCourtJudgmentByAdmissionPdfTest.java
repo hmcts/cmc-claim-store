@@ -155,7 +155,6 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
         commonOperations.submitResponse(response, externalId, defendant)
             .then()
             .statusCode(HttpStatus.OK.value());
-
     }
 
     @Override
