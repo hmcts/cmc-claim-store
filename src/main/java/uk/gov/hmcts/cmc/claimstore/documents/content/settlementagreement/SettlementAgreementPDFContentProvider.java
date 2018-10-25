@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -50,6 +51,21 @@ public class SettlementAgreementPDFContentProvider {
         } else {
             content.put("formName", SETTLEMENT_FORM_NAME_OFFERS_ROUTE);
         }
+
+        getFirstPaymentDateFromOffer(acceptedOffer)
+            .ifPresent(paymentDate -> content.put("firstPaymentDate", paymentDate));
+
+
         return content;
+    }
+
+    private Optional<String> getFirstPaymentDateFromOffer(Offer acceptedOffer) {
+        StringBuffer firstPaymentDateStr = new StringBuffer();
+        acceptedOffer.getPaymentIntention().ifPresent(paymentIntention ->
+            paymentIntention.getRepaymentPlan().ifPresent(repaymentPlan ->
+                firstPaymentDateStr.append(formatDate(repaymentPlan.getFirstPaymentDate()))
+            )
+        );
+        return firstPaymentDateStr.length() > 0 ? Optional.of(firstPaymentDateStr.toString()) : Optional.empty();
     }
 }
