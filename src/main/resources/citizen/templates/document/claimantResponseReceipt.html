@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="UTF-8"/>
-  <title>Money Claim response receipt</title>
+  <title>Money Claim Claimant response receipt</title>
   <style>
     @page :first {
       size: 8.5in 11in;
@@ -161,7 +161,8 @@
       <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
     </tr>
     <tr>
-      <td colspan="2" class="spacing-bottom"><p><strong>Response submitted on: </strong> {{ defenceSubmittedOn }}</p>
+      <td colspan="2" class="spacing-bottom"><p><strong>Claimant Response submitted on: </strong> {{ claimantSubmittedOn
+        }}</p>
       </td>
     </tr>
   </table>
@@ -171,246 +172,42 @@
 
 <div class="section">
   <div class="section-heading">
-    <strong>Claimant’s details</strong>
-  </div>
-  <div class="section-body">
-    <table>
-      <tr>
-        <td>Name:</td>
-        <td>
-          {{ claimant.fullName }}
-        </td>
-      </tr>
-      {% if claimant.contactPerson is defined %}
-      <tr>
-        <td>Contact person:</td>
-        <td>
-          {{ claimant.contactPerson }}
-        </td>
-      </tr>
-      {% endif %}
-      {% if claimant.businessName is defined %}
-      <tr>
-        <td>Business name:</td>
-        <td>
-          Trading as {{ claimant.businessName }}
-        </td>
-      </tr>
-      {% endif %}
-      <tr>
-        <td class="keep-formatting">Address:
-          {% if claimant.addressAmended %}
-          (as amended)
-          {% endif %}
-        </td>
-        <td>
-          {{ claimant.address.line1 }}
-          <br/>
-          {% if claimant.address.line2 is defined and claimant.address.line2 is not empty %}
-          {{ claimant.address.line2 }}
-          <br/>
-          {% endif %}
-          {% if claimant.address.line3 is defined and claimant.address.line3 is not empty %}
-          {{ claimant.address.line3 }}
-          <br/>
-          {% endif %}
-          {{ claimant.address.city }}
-          <br/>
-          {{ claimant.address.postcode }}
-        </td>
-      </tr>
-      {% if claimant.correspondenceAddress is defined and claimant.correspondenceAddress is not empty %}
-      <tr class="no-border">
-        <td>Correspondence address:</td>
-        <td>
-          {{ claimant.correspondenceAddress.line1 }}
-          <br/>
-          {% if claimant.correspondenceAddress.line2 is defined and claimant.correspondenceAddress.line2 is not empty %}
-          {{ defendant.correspondenceAddress.line2 }}
-          <br/>
-          {% endif %}
-          {% if claimant.correspondenceAddress.line3 is defined and claimant.correspondenceAddress.line3 is not empty %}
-          {{ claimant.correspondenceAddress.line3 }}
-          <br/>
-          {% endif %}
-          {{ claimant.correspondenceAddress.city }}
-          <br/>
-          {{ claimant.correspondenceAddress.postcode }}
-        </td>
-      </tr>
-      {% endif %}
-      {% if defendant.dateOfBirth is defined and defendant.dateOfBirth is not empty %}
-      <tr>
-        <td>Date of birth:</td>
-        <td>
-          {{ claimant.dateOfBirth }}
-        </td>
-      </tr>
-      {% endif %}
-      {% if claimant.mobilePhone is defined and claimant.mobilePhone is not empty %}
-      <tr>
-        <td>Telephone:</td>
-        <td>
-          {{ claimant.mobilePhone }}
-        </td>
-      </tr>
-      {% endif %}
-      <tr>
-        <td>Email:</td>
-        <td>
-          {{ claimant.email }}
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
-
-<div class="section">
-  <div class="section-heading">
     <strong>Claimant's response to the claim</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td>Claimant's response:</td>
+        <td>Do you accept or reject the defendant’s admission?</td>
         <td>
-          {{ responseTypeSelected }}
-        </td>
-      </tr>
-
-      {% if responseType == "PART_ADMISSION" %}
-        {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
-          <tr>
-            <td>How much money have you paid?</td>
-            <td>
-              <p>{{ amount }}</p>
-            </td>
-          </tr>
-        {% else %}
-          <tr>
-            <td>How much money do they admit they owe?</td>
-            <td>
-              <p>{{ amount }}</p>
-            </td>
-          </tr>
-          {% if paymentDate is defined %}
-          <tr>
-            <td>When did you pay this amount?</td>
-            <td>
-              <p>{{ paymentDate }}</p>
-            </td>
-          </tr>
-          {% endif %}
-          {% if paymentMethod is defined and paymentMethod is not empty %}
-            <tr>
-              <td>How did you pay the amount claimed?</td>
-              <td>
-                <p>{{ paymentMethod | trim }}</p>
-              </td>
-            </tr>
-          {% endif %}
-        {% endif %}
-          <tr>
-            <td>Why are they disputing the full amount?</td>
-            <td>
-              <p>{{ responseDefence | trim }}</p>
-            </td>
-          </tr>
-      {% else %}
-        {% if responseDefence is defined and responseDefence is not empty %}
-        <tr>
-          <td class="no-border" colspan="2"><strong>Why they dispute the claim:</strong></td>
-        </tr>
-        <tr class="no-border">
-          <td colspan="2" class="single-cell">
-            <p>{{ responseDefence | trim}}</p>
-          </td>
-        </tr>
-        {% endif %}
-      {% endif %}
-
-      {% if events is defined and events is not empty %}
-      <tr>
-        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s timeline of what happened:</strong></td>
-      </tr>
-      {% for event in events %}
-      <tr class="subsection no-border">
-        <td class="no-border single-cell">
-          {{ event.date | trim }}
-        </td>
-        <td class="no-border single-cell">
-          {{ event.description | trim }}
-        </td>
-      </tr>
-      {% endfor %}
-      {% endif %}
-
-      {% if timelineComment is defined and timelineComment is not empty %}
-      <tr class="no-border">
-        <td><strong>Comments about claimant’s timeline:</strong></td>
-        <td>
-          {{ timelineComment }}
-        </td>
-      </tr>
-      {% endif %}
-
-      {% if evidences is defined and evidences is not empty %}
-      <tr>
-        <td colspan="2" style="white-space: pre-line"><strong>Defendant’s evidence:</strong></td>
-      </tr>
-      {% for row in evidences %}
-      <tr class="subsection no-border">
-        <td class="no-border single-cell">
-          {{ row.type | trim }}
-        </td>
-        <td class="no-border single-cell">
-          {{ row.description | trim }}
-        </td>
-      </tr>
-      {% endfor %}
-      {% endif %}
-
-      {% if evidenceComment is defined and evidenceComment is not empty %}
-      <tr class="no-border">
-        <td><strong>Comments about claimant’s evidence:</strong></td>
-        <td>
-          {{ evidenceComment }}
-        </td>
-      </tr>
-      {% endif %}
-
-      {% if paymentDeclaration is defined %}
-      <tr>
-        <td>When they paid this amount:</td>
-        <td>
-          {{ paymentDeclaration.paidDate }}
+          {{ defendantAdmissionAccepted }}
         </td>
       </tr>
       <tr>
-        <td>How they pay the amount claimed:</td>
+        <td><strong>Do you accept the defendant’s repayment plan?</strong></td>
         <td>
-          {{ paymentDeclaration.explanation }}
+          {{ paymentPlanAccepted }}
         </td>
       </tr>
-      {% endif %}
-
     </table>
   </div>
 </div>
 
-{% if responseType == "FULL_ADMISSION" or (responseType == "PART_ADMISSION" and paymentIntention is defined )%}
+{% if responseType == "ACCEPTATION" %}
 <div class="section">
   <div class="section-heading">
-    <strong>When the defendant will pay
-      {% if responseType == "PART_ADMISSION" %}
-        {{ amount }}
-      {% endif %}
-    </strong>
+    <strong>Claimant requested payment plan</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td><strong>When will they pay:</strong></td>
+        <td><strong>How would you like the defendant to pay?</strong></td>
+        <td>
+          {{ paymentOption }}
+        </td>
+      </tr>
+
+      <tr>
+        <td><strong>When would you like payments to be finished by:</strong></td>
         <td>
           {{ whenWillTheyPay }}
         </td>
@@ -436,377 +233,186 @@
         </td>
       </tr>
       {% endif %}
-      {% if statementOfMeans is defined %}
-      <tr class="no-border">
-        <td><strong>Explain why you can’t pay the full amount now:</strong></td>
-        <td>
-          {{ statementOfMeans.reason }}
-        </td>
-      </tr>
-      {% endif %}
     </table>
   </div>
 </div>
-
-{% if paymentOption == 'By instalments' or paymentOption == 'By a set date' %}
+{% if courtDetermination is defined %}
 <div class="section">
   <div class="section-heading">
-    <strong>The defendant’s financial details</strong>
-  </div>
-  <div class="section-body">
-    <table>
-      <tr class="no-border">
-        <td><strong>Where are they living?</strong></td>
-        <td>
-          {{ residenceTypeDescription }}
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Children:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Do any children live with them?</strong></td>
-        <td>
-          {% if children is defined and children is not empty %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
-        </td>
-      </tr>
-      {% for child in children | default([]) %}
-      <tr class="no-border">
-        <td>
-          {{ child.ageGroupType }}
-        </td>
-        <td>
-          {{ child.numberOfChildren }}
-        </td>
-      </tr>
-      {% if child.ageGroupType equals 'BETWEEN_16_AND_19' %}
-      <tr>
-        <td><strong>Number of children aged 16 to 19 full-time education or training:</strong></td>
-        <td>
-          {{ child.numberOfChildrenLivingWithYou }}
-        </td>
-      </tr>
-      {% endif %}
-      {% endfor %}
-
-      {% if maintainedChildren is defined %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Maintenance:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Number of children:</strong></td>
-        <td>
-          {{ maintainedChildren }}
-        </td>
-      </tr>
-      {% endif %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Financial support:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Do they support anyone else financially?</strong></td>
-        <td>
-          {% if otherDependants is defined %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
-        </td>
-      </tr>
-      {% if otherDependants is defined %}
-      <tr class="no-border">
-        <td><strong>Number of people:</strong></td>
-        <td>
-          {{ otherDependants.numberOfPeople }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Give details:</strong></td>
-        <td>
-          {{ otherDependants.details }}
-        </td>
-      </tr>
-      {% endif %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Employment details:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Are they currently working?</strong></td>
-        <td>
-          {% if employment.selfEmployment is defined or employment.employers is not empty %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Type of job:</strong></td>
-        <td>
-          {{ jobType }}
-        </td>
-      </tr>
-      {% for employer in employment.employers %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Who employs them?</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Employer name:</strong></td>
-        <td>
-          {{ employer.name }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Job title:</strong></td>
-        <td>
-          {{ employer.jobTitle }}
-        </td>
-      </tr>
-      {% endfor %}
-
-      {% if selfEmployment is defined %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Self-employment details:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Job title:</strong></td>
-        <td>
-          {{ selfEmployment.jobTitle }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Annual turnover:</strong></td>
-        <td>
-          {{ selfEmployment.annualTurnover }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Are they behind on tax payments?</strong></td>
-        <td>
-          {% if onTaxPayments is defined %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
-        </td>
-      </tr>
-      {% if onTaxPayments is defined %}
-      <tr class="no-border">
-        <td><strong>Amount they owe?</strong></td>
-        <td>
-          {{ onTaxPayments.amountYouOwe }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Reason:</strong></td>
-        <td>
-          {{ onTaxPayments.reason }}
-        </td>
-      </tr>
-      {% endif %}
-      {% endif %}
-
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts:</strong></td>
-      </tr>
-      {% for bankAccount in bankAccounts %}
-      <tr class="no-border">
-        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Type of account:</strong></td>
-        <td>
-          {{ bankAccount.type }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Balance:</strong></td>
-        <td>
-          {{ bankAccount.balance }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Joint account:</strong></td>
-        <td>
-          {% if bankAccount.joint %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-
-      {% if incomes is defined and incomes is not empty %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Monthly income:</strong></td>
-      </tr>
-      {% for income in incomes %}
-      <tr class="no-border">
-        <td>
-          {{ income.type }}
-        </td>
-        <td>
-          {{ income.amount }}
-        </td>
-      </tr>
-      {% endfor %}
-      {% endif %}
-
-      {% if expenses is defined and expenses is not empty %}
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Monthly expenses:</strong></td>
-      </tr>
-      {% for expense in expenses %}
-      <tr class="no-border">
-        <td>
-          {{ expense.type }}
-        </td>
-        <td>
-          {{ expense.amount }}
-        </td>
-      </tr>
-      {% endfor %}
-      {% endif %}
-
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Debts:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Do they have any debts?</strong></td>
-        <td>
-          {% if debts is defined and debts is not empty %}
-          Yes
-          {% else %}
-          No
-          {% endif %}
-        </td>
-      </tr>
-      {% for debt in debts | default([]) %}
-      <tr class="no-border">
-        <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Debt:</strong></td>
-        <td>
-          {{ debt.description }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Total owed:</strong></td>
-        <td>
-          {{ debt.totalOwed }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Monthly payments:</strong></td>
-        <td>
-          {{ debt.monthlyPayments }}
-        </td>
-      </tr>
-      {% endfor %}
-
-      <tr>
-        <td colspan="2" class="keep-white-space"><strong>Court orders:</strong></td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Has a court ordered them to pay anyone else?</strong></td>
-        {% if courtOrders is defined and courtOrders is not empty %}
-        <td>
-          Yes
-        </td>
-        {% else %}
-        <td>
-          No
-        </td>
-        {% endif %}
-      </tr>
-      {% for courtOrder in courtOrders | default([]) %}
-      <tr class="no-border">
-        <td><strong>Details about court orders:</strong></td>
-        <td>
-          {{ courtOrder.monthlyInstalmentAmount }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Amount they owe:</strong></td>
-        <td>
-          {{ courtOrder.amountOwed }}
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
-</div>
-{% endif %}
-{% endif %}
-
-<div class="section">
-  <div class="section-heading">
-    <strong>Statement of truth</strong>
+    <strong>Court offered payment plan</strong>
   </div>
   <div class="section-body">
     <table>
       <tr>
-        <td/>
-        <td class="no-border no-padding-right">
-          I believe the facts stated in this response are true.
+        <td><strong>How the defendant will pay?</strong></td>
+        <td>
+          {{ courtPaymentIntentionpaymentOption }}
         </td>
       </tr>
-      {% if signerName is not defined or signerName is empty %}
-      <tr class="no-border">
-        <td/>
-        <td class="no-border">{{ defendant.fullName }}</td>
-      </tr>
-      {% endif %}
 
-      {% if signerName is defined and signerName is not empty %}
+      <tr>
+        <td><strong>When will defendant pay:</strong></td>
+        <td>
+          {{ courtPaymentIntentionwhenWillTheyPay }}
+        </td>
+      </tr>
+
+      {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By instalments" %}
       <tr class="no-border">
-        <td class="no-border"/>
-        <td class="no-border"><strong>Company: </strong> {{ defendant.businessName }}</td>
+        <td><strong>Regular payments of:</strong></td>
+        <td>
+          {{ courtPaymentIntentionrepaymentPlan.instalmentAmount }}
+        </td>
       </tr>
       <tr class="no-border">
-        <td class="no-border"/>
-        <td class="no-border"><strong>Name: </strong> {{ signerName }}</td>
+        <td><strong>Frequency of payments:</strong></td>
+        <td>
+          {{ courtPaymentIntentionrepaymentPlan.paymentSchedule }}
+        </td>
       </tr>
       <tr class="no-border">
-        <td class="no-border"/>
-        <td class="no-border"><strong>Role: </strong>{{ signerRole }}</td>
+        <td><strong>Make the first payment on:</strong></td>
+        <td>
+          {{ courtPaymentIntentionrepaymentPlan.firstPaymentDate }}
+        </td>
       </tr>
       {% endif %}
+    </table>
+  </div>
+</div>
+<div class="section">
+  <div class="section-heading">
+    <strong>Court decision</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>How the defendant will pay?</strong></td>
+        <td>
+          {{ courtDecisionpaymentOption }}
+        </td>
+      </tr>
+
+      <tr>
+        <td><strong>When will defendant pay:</strong></td>
+        <td>
+          {{ courtDecisionwhenWillTheyPay }}
+        </td>
+      </tr>
+
+      {% if courtDecisionrepaymentPlan is defined and courtDecisionrepaymentPlan.repaymentOption == "By instalments" %}
       <tr class="no-border">
-        <td class="no-border"/>
-        <td class="no-border">{{ defenceSubmittedDate }}</td>
+        <td><strong>Regular payments of:</strong></td>
+        <td>
+          {{ courtDecisionrepaymentPlan.instalmentAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Frequency of payments:</strong></td>
+        <td>
+          {{ courtDecisionrepaymentPlan.paymentSchedule }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Make the first payment on:</strong></td>
+        <td>
+          {{ courtDecisionrepaymentPlan.firstPaymentDate }}
+        </td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+</div>
+{% endif %}
+<div class="section">
+  <div class="section-heading">
+    <strong>How claimant wish to proceed</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>How do you want to formalise the repayment plan?</strong></td>
+        <td>
+          {{ formaliseOption }}
+        </td>
       </tr>
     </table>
   </div>
 </div>
 
-{% if hasDefendantAlreadyPaid is not defined and responseType equals "FULL_DEFENCE" %}
+{% if ccj is defined %}
 <div class="section">
-  <h3>What happens next</h3>
-</div>
-
-<div class="section-body">
-  <table>
-    <tr>
-      <td><strong>Settle the claim</strong></td>
-      <td><p>
-        Unless you’ve been asked not to, you can still contact defendant directly.
-        If you can reach an agreement you may not have to go to a hearing.
-      </p></td>
-    </tr>
-    <tr>
-      <td><strong>Mediation</strong></td>
-      <td>
-        <p>If the defendant has asked for mediation then the claimant will be asked if they want to mediate.</p>
-        <p>
-          If the defendant hasn’t asked for mediation then the case will be reviewed by a judge and might go to a
-          hearing. The claimant and defendant will be contacted if a hearing date is scheduled and it will be explained
-          what they need to do to prepare.
-        </p>
-      </td>
-    </tr>
-  </table>
+  <div class="section-heading">
+    <strong>Judgment request</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Has the defendant paid some of the amount owed?</strong></td>
+        <td>
+          {% if ccj.paidAmount is defined %}
+          {{'yes'}}
+          {% else %}
+          {{ 'no' }}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Total to be paid by defendant</strong></td>
+        <td>
+          {{ totalAmount }}
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 {% endif %}
+{% if settlement is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Settlement request</strong>
+  </div>
+  <div class="section-body">
+    <table>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% if referToJudge is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Refer to Judge request</strong>
+  </div>
+  <div class="section-body">
+    <table>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+{% if responseType == "REJECTION" %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Claimant Rejection reason</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Why do you reject the defendant’s repayment plan?</strong></td>
+        <td>
+          {{ rejectionReason }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Do you wish to go for free mediation?</strong></td>
+        <td>
+          {{ freeMediation }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endif %}
+
 </body>
 </html>

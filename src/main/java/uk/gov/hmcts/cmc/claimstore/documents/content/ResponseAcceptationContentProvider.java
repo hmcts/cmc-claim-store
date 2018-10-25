@@ -1,74 +1,71 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
-import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
-import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Component
 public class ResponseAcceptationContentProvider {
+    public static final String ADMISSIONS_FORM_NO = "OCON9A";
 
-    private static final String DEFENCE_FORM_NO = "OCON9B";
+    private final PaymentIntentionContentProvider paymentIntentionContentProvider;
+
+    public ResponseAcceptationContentProvider(
+        PaymentIntentionContentProvider paymentIntentionContentProvider
+    ) {
+        this.paymentIntentionContentProvider = paymentIntentionContentProvider;
+    }
 
     public Map<String, Object> createContent(ResponseAcceptation responseAcceptation) {
         requireNonNull(responseAcceptation);
         Map<String, Object> content = new HashMap<>();
 
-        List<TimelineEvent> events = null;
-        List<EvidenceContent> evidences = null;
-        String timelineComment = null;
-        String evidenceComment = null;
+        responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
+            PaymentIntention courtDecision = courtDetermination.getCourtDecision();
+            content.put("courtDetermination", courtDetermination);
+            PaymentIntention courtPaymentIntention = courtDetermination.getCourtPaymentIntention();
+            content.putAll(paymentIntentionContentProvider.createContent(
+                courtDecision.getPaymentOption(),
+                courtDecision.getRepaymentPlan().orElse(null),
+                courtDecision.getPaymentDate().orElse(null),
+                "The agreed amount",
+                "courtDecision"
+            ));
 
-//        content.put("responseDefence", fullDefenceResponse.getDefence().orElse(null));
-//        content.put("responseTypeSelected", fullDefenceResponse.getDefenceType().getDescription());
-//        if (fullDefenceResponse.getDefenceType().equals(DefenceType.ALREADY_PAID)) {
-//            content.put("hasDefendantAlreadyPaid", true);
-//        }
-//
-//        fullDefenceResponse.getPaymentDeclaration().ifPresent(paymentDeclaration ->
-//            content.put("paymentDeclaration", createContentFor(paymentDeclaration))
-//        );
-//
-//        Optional<DefendantTimeline> defenceTimeline = fullDefenceResponse.getTimeline();
-//        if (defenceTimeline.isPresent()) {
-//            DefendantTimeline defendantTimeline = defenceTimeline.get();
-//            events = defendantTimeline.getEvents();
-//            timelineComment = defendantTimeline.getComment().orElse(null);
-//        }
-//
-//        Optional<DefendantEvidence> defenceEvidence = fullDefenceResponse.getEvidence();
-//        if (defenceEvidence.isPresent()) {
-//            DefendantEvidence defendantEvidence = defenceEvidence.get();
-//            evidences = Optional.ofNullable(defendantEvidence.getRows())
-//                .orElseGet(Collections::emptyList)
-//                .stream()
-//                .filter(Objects::nonNull)
-//                .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
-//                .collect(Collectors.toList());
-//            evidenceComment = defendantEvidence.getComment().orElse(null);
-//        }
-//
-//        content.put("events", events);
-//        content.put("timelineComment", timelineComment);
-//        content.put("evidences", evidences);
-//        content.put("evidenceComment", evidenceComment);
-//        content.put("formNumber", DEFENCE_FORM_NO);
+            content.putAll(paymentIntentionContentProvider.createContent(
+                courtPaymentIntention.getPaymentOption(),
+                courtPaymentIntention.getRepaymentPlan().orElse(null),
+                courtPaymentIntention.getPaymentDate().orElse(null),
+                "The agreed amount",
+                "courtPaymentIntention"
+                )
+            );
+        });
+
+        Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
+        if (claimantPaymentIntention.isPresent()) {
+            content.put("hasClaimantPaymentIntention", true);
+            content.put("paymentPlanAccepted", "I reject this repayment plan");
+            PaymentIntention paymentIntention = claimantPaymentIntention.get();
+            content.putAll(paymentIntentionContentProvider.createContent(
+                paymentIntention.getPaymentOption(),
+                paymentIntention.getRepaymentPlan().orElse(null),
+                paymentIntention.getPaymentDate().orElse(null),
+                "The agreed amount",
+                ""
+            ));
+        } else {
+            content.put("paymentPlanAccepted", "I accept this repayment plan");
+        }
+
+        content.put("formNumber", ADMISSIONS_FORM_NO);
+
         return content;
-    }
-
-    private Map<Object, Object> createContentFor(PaymentDeclaration paymentDeclaration) {
-        return ImmutableMap.builder()
-            .put("paidDate", formatDate(paymentDeclaration.getPaidDate()))
-            .put("explanation", paymentDeclaration.getExplanation())
-            .build();
     }
 }

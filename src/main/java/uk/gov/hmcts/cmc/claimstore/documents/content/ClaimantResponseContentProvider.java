@@ -10,12 +10,14 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
 public class ClaimantResponseContentProvider {
@@ -69,18 +71,24 @@ public class ClaimantResponseContentProvider {
             claim.getSubmitterEmail()
         ));
 
-        content.put("responseType", claimantResponse.getType());
+        content.put("responseType", claimantResponse.getType().name());
 
         switch (claimantResponse.getType()) {
-            case ACCEPTATION:
-                content.putAll(
-                    responseAcceptationContentProvider.createContent((ResponseAcceptation) claimantResponse)
-                );
-                break;
+            case ACCEPTATION: {
+                content.put("defendantAdmissionAccepted", "I accept this amount");
+                ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+                content.putAll(responseAcceptationContentProvider.createContent(responseAcceptation));
+                content.put("formaliseOption", responseAcceptation.getFormaliseOption().getDescription());
+
+                claim.getTotalAmountTillDateOfIssue().ifPresent(totalAmount -> content.put("totalAmount",
+                    formatMoney(totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO)))));
+
+                addFormalisedOption(claim, content, responseAcceptation);
+            }
+            break;
             case REJECTION:
-                content.putAll(
-                    responseRejectionContentProvider.createContent((ResponseRejection) claimantResponse)
-                );
+                content.put("defendantAdmissionAccepted", "I reject this amount");
+                content.putAll(responseRejectionContentProvider.createContent((ResponseRejection) claimantResponse));
                 break;
             default:
                 throw new MappingException("Invalid responseType " + claimantResponse.getType());
@@ -88,5 +96,20 @@ public class ClaimantResponseContentProvider {
         }
 
         return content;
+    }
+
+    private void addFormalisedOption(Claim claim, Map<String, Object> content, ResponseAcceptation responseAcceptation) {
+        switch (responseAcceptation.getFormaliseOption()) {
+            case CCJ:
+                content.put("ccj", claim.getCountyCourtJudgment());
+                break;
+            case SETTLEMENT:
+                claim.getSettlement().ifPresent(settlement -> content.put("settlement", settlement));
+                break;
+            case REFER_TO_JUDGE:
+                content.put("referToJudge", true);
+            default:
+                throw new MappingException("Invalid formalization type " + responseAcceptation.getFormaliseOption());
+        }
     }
 }
