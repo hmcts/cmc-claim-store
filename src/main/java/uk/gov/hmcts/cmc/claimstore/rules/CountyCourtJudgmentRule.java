@@ -54,7 +54,7 @@ public class CountyCourtJudgmentRule {
                 break;
             default:
                 throw new ForbiddenActionException("County Court Judgment for claim "
-                    + externalId + " cannot be requested yet");
+                    + externalId + " is not supported");
 
         }
     }
