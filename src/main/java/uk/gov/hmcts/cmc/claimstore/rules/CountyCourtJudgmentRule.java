@@ -6,9 +6,9 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
@@ -23,7 +23,7 @@ public class CountyCourtJudgmentRule {
 
     public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim,
                                                          CountyCourtJudgmentType countyCourtJudgmentType) {
-        Objects.requireNonNull(claim, "claim object can not be null");
+        requireNonNull(claim, "claim object can not be null");
         String externalId = claim.getExternalId();
 
         if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
@@ -44,7 +44,10 @@ public class CountyCourtJudgmentRule {
                 }
                 break;
             case ADMISSIONS:
-                Objects.requireNonNull(claim.getResponse().get(), "Claim response cannot be null");
+                if (!claim.getResponse().isPresent()) {
+                    throw new IllegalStateException("Claim response cannot be null for judgment type: "
+                        + countyCourtJudgmentType);
+                }
                 break;
             case DETERMINATION:
                 // Action pending
