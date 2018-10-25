@@ -47,6 +47,6 @@ public class CCJCitizenActionsHandlerTest {
         handler.sendNotification(eventWithAdmission);
 
         verify(ccjNotificationService, once()).notifyClaimantForCCJRequest(eq(eventWithAdmission.getClaim()));
-        verify(ccjNotificationService, once()).notifyDefendantForCCJIssue(eq(eventWithAdmission.getClaim()));
+        verify(ccjNotificationService, once()).notifyDefendantForCCJRequested(eq(eventWithAdmission.getClaim()));
     }
 }

@@ -54,12 +54,8 @@ public class CountyCourtJudgmentService {
 
         eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation);
 
-        appInsights.trackEvent(getAppInsightsEvent(), claim.getReferenceNumber());
+        appInsights.trackEvent(AppInsightsEvent.CCJ_REQUESTED, claim.getReferenceNumber());
 
         return claimWithCCJ;
-    }
-
-    private AppInsightsEvent getAppInsightsEvent() {
-        return AppInsightsEvent.CCJ_REQUESTED;
     }
 }

@@ -26,7 +26,7 @@ public class CCJCitizenActionsHandler {
                 break;
             case ADMISSIONS:
                 ccjNotificationService.notifyClaimantForCCJRequest(claim);
-                ccjNotificationService.notifyDefendantForCCJIssue(claim);
+                ccjNotificationService.notifyDefendantForCCJRequested(claim);
                 break;
             case DETERMINATION:
                 // TODO: Action to be taken
