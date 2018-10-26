@@ -31,7 +31,6 @@ public class StatementOfMeans {
     private final Employment employment;
 
     @Valid
-    //@NotEmpty
     @EachNotNull
     private final List<BankAccount> bankAccounts;
 
