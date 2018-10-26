@@ -20,7 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.Redetermination;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -329,7 +329,12 @@ public class ClaimService {
             && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
     }
 
-    public void saveRedetermination(String authorisation, Claim claim, Redetermination redetermination, String submitterId) {
-        caseRepository.saveRedetermination(authorisation, claim, redetermination, submitterId);
+    public void saveReDetermination(
+        String authorisation,
+        Claim claim,
+        ReDetermination redetermination,
+        String submitterId
+    ) {
+        caseRepository.saveReDetermination(authorisation, claim, redetermination, submitterId);
     }
 }

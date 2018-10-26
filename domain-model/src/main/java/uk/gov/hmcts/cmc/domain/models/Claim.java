@@ -62,8 +62,8 @@ public class Claim {
     private final LocalDate directionsQuestionnaireDeadline;
     @DateNotInTheFuture
     private final LocalDate moneyReceivedOn;
-    private final Redetermination redetermination;
-    private final LocalDateTime redeterminationRequestedAt;
+    private final ReDetermination reDetermination;
+    private final LocalDateTime reDeterminationRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @JsonCreator
@@ -94,8 +94,8 @@ public class Claim {
         LocalDateTime countyCourtJudgmentIssuedAt,
         LocalDate directionsQuestionnaireDeadline,
         LocalDate moneyReceivedOn,
-        Redetermination redetermination,
-        LocalDateTime redeterminationRequestedAt
+        ReDetermination reDetermination,
+        LocalDateTime reDeterminationRequestedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -123,8 +123,8 @@ public class Claim {
         this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
         this.moneyReceivedOn = moneyReceivedOn;
-        this.redetermination = redetermination;
-        this.redeterminationRequestedAt = redeterminationRequestedAt;
+        this.reDetermination = reDetermination;
+        this.reDeterminationRequestedAt = reDeterminationRequestedAt;
     }
 
     public Long getId() {
@@ -231,12 +231,12 @@ public class Claim {
         return Optional.ofNullable(moneyReceivedOn);
     }
 
-    public Optional<LocalDateTime> getRedeterminationRequestedAt() {
-        return Optional.ofNullable(redeterminationRequestedAt);
+    public Optional<LocalDateTime> getReDeterminationRequestedAt() {
+        return Optional.ofNullable(reDeterminationRequestedAt);
     }
 
-    public Optional<Redetermination> getRedetermination() {
-        return Optional.ofNullable(redetermination);
+    public Optional<ReDetermination> getReDetermination() {
+        return Optional.ofNullable(reDetermination);
     }
 
     @Override

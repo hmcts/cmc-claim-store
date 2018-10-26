@@ -4,7 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.Redetermination;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -64,8 +64,8 @@ public final class SampleClaim {
     private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
     private LocalDate moneyReceivedOn;
-    private LocalDateTime redeterminationRequestedAt;
-    private Redetermination redetermination = new Redetermination("I feel defendant can pay", CLAIMANT);
+    private LocalDateTime reDeterminationRequestedAt;
+    private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
 
     private SampleClaim() {
     }
@@ -195,8 +195,8 @@ public final class SampleClaim {
             countyCourtJudgmentIssuedAt,
             directionsQuestionnaireDeadline,
             moneyReceivedOn,
-            redetermination,
-            redeterminationRequestedAt
+            reDetermination,
+            reDeterminationRequestedAt
         );
     }
 
@@ -301,13 +301,13 @@ public final class SampleClaim {
     }
 
 
-    public SampleClaim withRedetermination(Redetermination redetermination) {
-        this.redetermination = redetermination;
+    public SampleClaim withReDetermination(ReDetermination reDetermination) {
+        this.reDetermination = reDetermination;
         return this;
     }
 
-    public SampleClaim withRedeterminationRequestedAt(LocalDateTime redeterminationRequestedAt) {
-        this.redeterminationRequestedAt = redeterminationRequestedAt;
+    public SampleClaim withReDeterminationRequestedAt(LocalDateTime reDeterminationRequestedAt) {
+        this.reDeterminationRequestedAt = reDeterminationRequestedAt;
         return this;
     }
 

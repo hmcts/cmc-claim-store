@@ -11,12 +11,12 @@ import java.util.Map;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 @Component
-public class RedeterminationNotificationEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
+public class ReDeterminationNotificationEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
     private final StaffEmailTemplates emailTemplates;
 
-    public RedeterminationNotificationEmailContentProvider(
+    public ReDeterminationNotificationEmailContentProvider(
         TemplateService templateService,
         StaffEmailTemplates emailTemplates
     ) {

@@ -25,6 +25,7 @@ public class CCJStaffNotificationHandler {
 
     @EventListener
     public void onRedeterminationRequest(RedeterminationEvent event) {
-        this.ccjStaffNotificationService.notifyStaffCCJRedeterminationRequest(event.getClaim(), event.getSubmitterName());
+        this.ccjStaffNotificationService
+            .notifyStaffCCJReDeterminationRequest(event.getClaim(), event.getSubmitterName());
     }
 }

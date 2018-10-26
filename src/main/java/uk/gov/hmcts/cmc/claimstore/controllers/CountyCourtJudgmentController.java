@@ -17,8 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Redetermination;
-import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -54,14 +53,14 @@ public class CountyCourtJudgmentController {
         return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation, issue);
     }
 
-    @PostMapping("/{externalId:" + UUID_PATTERN + "}/redetermination")
-    @ApiOperation("Redetermination Request to Judge")
-    public Claim redetermination(
+    @PostMapping("/{externalId:" + UUID_PATTERN + "}/reDetermination")
+    @ApiOperation("ReDetermination Request to Judge")
+    public Claim reDetermination(
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @NotNull @RequestBody @Valid Redetermination redetermination
+        @NotNull @RequestBody @Valid ReDetermination reDetermination
     ) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
-        return countyCourtJudgmentService.redetermination(userDetails, redetermination, externalId, authorisation);
+        return countyCourtJudgmentService.reDetermination(userDetails, reDetermination, externalId, authorisation);
     }
 }

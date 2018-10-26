@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RedeterminationNotificationEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ReDeterminationNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RequestSubmittedNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,7 +28,7 @@ public class CCJStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
     private final RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider;
-    private final RedeterminationNotificationEmailContentProvider redeterminationNotificationEmailContentProvider;
+    private final ReDeterminationNotificationEmailContentProvider reDeterminationNotificationEmailContentProvider;
     private final StaffPdfCreatorService staffPdfCreatorService;
 
     @Autowired
@@ -36,13 +36,13 @@ public class CCJStaffNotificationService {
         EmailService emailService,
         StaffEmailProperties staffEmailProperties,
         RequestSubmittedNotificationEmailContentProvider ccjRequestSubmittedEmailContentProvider,
-        RedeterminationNotificationEmailContentProvider redeterminationNotificationEmailContentProvider,
+        ReDeterminationNotificationEmailContentProvider reDeterminationNotificationEmailContentProvider,
         StaffPdfCreatorService staffPdfCreatorService
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.ccjRequestSubmittedEmailContentProvider = ccjRequestSubmittedEmailContentProvider;
-        this.redeterminationNotificationEmailContentProvider = redeterminationNotificationEmailContentProvider;
+        this.reDeterminationNotificationEmailContentProvider = reDeterminationNotificationEmailContentProvider;
         this.staffPdfCreatorService = staffPdfCreatorService;
     }
 
@@ -76,26 +76,23 @@ public class CCJStaffNotificationService {
         return map;
     }
 
-    public void notifyStaffCCJRedeterminationRequest(Claim claim, String submitterName) {
+    public void notifyStaffCCJReDeterminationRequest(Claim claim, String submitterName) {
         requireNonNull(claim);
         emailService.sendEmail(staffEmailProperties.getSender(), prepareReDeterminationEmailData(claim, submitterName));
     }
 
     private EmailData prepareReDeterminationEmailData(Claim claim, String submitterName) {
-        Map<String, Object> map = createParameterMap(claim, submitterName);
 
-        EmailContent emailContent = redeterminationNotificationEmailContentProvider.createContent(map);
         ImmutableList.Builder<EmailAttachment> attachments = ImmutableList.builder();
         attachments.add(staffPdfCreatorService.createSealedClaimPdfAttachment(claim));
         attachments.add(staffPdfCreatorService.createResponsePdfAttachment(claim));
 
-        if (claim.getSettlementReachedAt() != null) {
-            attachments.add(staffPdfCreatorService.createSettlementReachedPdfAttachment(claim));
-        }
-
         if (claim.getClaimantRespondedAt().isPresent()) {
             attachments.add(staffPdfCreatorService.createClaimantResponsePdfAttachment(claim));
         }
+
+        Map<String, Object> map = createParameterMap(claim, submitterName);
+        EmailContent emailContent = reDeterminationNotificationEmailContentProvider.createContent(map);
 
         return new EmailData(
             staffEmailProperties.getRecipient(),

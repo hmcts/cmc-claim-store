@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Redetermination;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -50,9 +50,9 @@ public class CountyCourtJudgmentServiceTest {
     @Mock
     private AppInsights appInsights;
 
-    private Redetermination redetermination = Redetermination.builder()
-        .explaination("I feel defendant can pay")
-        .partType(MadeBy.CLAIMANT)
+    private ReDetermination reDetermination = ReDetermination.builder()
+        .explanation("I feel defendant can pay")
+        .partyType(MadeBy.CLAIMANT)
         .build();
 
     private UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
@@ -101,7 +101,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test
-    public void redeterminationShouldFinishSuccessfullyForHappyPath() {
+    public void reDeterminationShouldFinishSuccessfullyForHappyPath() {
 
         Claim claim = SampleClaim.builder()
             .withResponse(SampleResponse.FullAdmission.builder().build())
@@ -111,12 +111,12 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
 
         verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
             eq(AUTHORISATION), eq(userDetails.getFullName()));
 
-        verify(claimService, once()).saveRedetermination(eq(AUTHORISATION), any(), eq(redetermination), eq(USER_ID));
+        verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(), eq(reDetermination), eq(USER_ID));
     }
 
     @Test(expected = NotFoundException.class)
@@ -129,12 +129,12 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void redeterminationThrowsNotFoundExceptionWhenClaimDoesNotExist() {
+    public void reDeterminationThrowsNotFoundExceptionWhenClaimDoesNotExist() {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenThrow(new NotFoundException("Claim not found by id"));
 
-        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -150,7 +150,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void redeterminationThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {
+    public void reDeterminationThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {
 
         String differentUser = "34234234";
         UserDetails userDetails = SampleUserDetails.builder().withUserId(differentUser).build();
@@ -159,7 +159,7 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -184,13 +184,13 @@ public class CountyCourtJudgmentServiceTest {
 
 
     @Test(expected = ForbiddenActionException.class)
-    public void redeterminationThrowsForbiddenActionExceptionWhenCountyCourtJudgmentIsNotRequestedYet() {
+    public void reDeterminationThrowsForbiddenActionExceptionWhenCountyCourtJudgmentIsNotRequestedYet() {
         Claim respondedClaim = SampleClaim.getWithDefaultResponse();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -212,13 +212,13 @@ public class CountyCourtJudgmentServiceTest {
             .withResponse(SampleResponse.FullAdmission.builder().build())
             .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
             .withCountyCourtJudgmentRequestedAt(submissionDate)
-            .withRedetermination(redetermination)
-            .withRedeterminationRequestedAt(submissionDate)
+            .withReDetermination(reDetermination)
+            .withReDeterminationRequestedAt(submissionDate)
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(claim);
 
-        countyCourtJudgmentService.redetermination(userDetails, redetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 }

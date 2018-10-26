@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Redetermination;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -69,13 +69,18 @@ public class CountyCourtJudgmentService {
         }
     }
 
-    public Claim redetermination(UserDetails userDetails, Redetermination redetermination, String externalId, String authorisation) {
+    public Claim reDetermination(
+        UserDetails userDetails,
+        ReDetermination redetermination,
+        String externalId,
+        String authorisation
+    ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
         countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgement(claim);
 
-        claimService.saveRedetermination(authorisation, claim, redetermination, userDetails.getId());
+        claimService.saveReDetermination(authorisation, claim, redetermination, userDetails.getId());
 
         Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
 

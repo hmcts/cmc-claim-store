@@ -192,10 +192,10 @@
   </div>
 </div>
 
-{% if responseType == "ACCEPTATION" %}
+{% if responseType == "ACCEPTATION" and hasClaimantPaymentIntention is defined %}
 <div class="section">
   <div class="section-heading">
-    <strong>Claimant requested payment plan</strong>
+    <strong>Claimant's requested repayment plan</strong>
   </div>
   <div class="section-body">
     <table>
@@ -207,7 +207,7 @@
       </tr>
 
       <tr>
-        <td><strong>When would you like payments to be finished by:</strong></td>
+        <td><strong>when will the defendant pay by:</strong></td>
         <td>
           {{ whenWillTheyPay }}
         </td>
@@ -239,7 +239,7 @@
 {% if courtDetermination is defined %}
 <div class="section">
   <div class="section-heading">
-    <strong>Court offered payment plan</strong>
+    <strong>Court's repayment plan</strong>
   </div>
   <div class="section-body">
     <table>
@@ -251,13 +251,14 @@
       </tr>
 
       <tr>
-        <td><strong>When will defendant pay:</strong></td>
+        <td><strong>when will the defendant pay by:</strong></td>
         <td>
           {{ courtPaymentIntentionwhenWillTheyPay }}
         </td>
       </tr>
 
-      {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By instalments" %}
+      {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By
+      instalments" %}
       <tr class="no-border">
         <td><strong>Regular payments of:</strong></td>
         <td>
@@ -294,7 +295,7 @@
       </tr>
 
       <tr>
-        <td><strong>When will defendant pay:</strong></td>
+        <td><strong>when will the defendant pay by:</strong></td>
         <td>
           {{ courtDecisionwhenWillTheyPay }}
         </td>
@@ -326,7 +327,7 @@
 {% endif %}
 <div class="section">
   <div class="section-heading">
-    <strong>How claimant wish to proceed</strong>
+    <strong>How the claimant wants to proceed</strong>
   </div>
   <div class="section-body">
     <table>
@@ -351,9 +352,9 @@
         <td><strong>Has the defendant paid some of the amount owed?</strong></td>
         <td>
           {% if ccj.paidAmount is defined %}
-          {{'yes'}}
+          {{'Yes'}}
           {% else %}
-          {{ 'no' }}
+          {{ 'No' }}
           {% endif %}
         </td>
       </tr>
@@ -367,52 +368,6 @@
   </div>
 </div>
 {% endif %}
-{% if settlement is defined %}
-<div class="section">
-  <div class="section-heading">
-    <strong>Settlement request</strong>
-  </div>
-  <div class="section-body">
-    <table>
-    </table>
-  </div>
-</div>
 {% endif %}
-{% if referToJudge is defined %}
-<div class="section">
-  <div class="section-heading">
-    <strong>Refer to Judge request</strong>
-  </div>
-  <div class="section-body">
-    <table>
-    </table>
-  </div>
-</div>
-{% endif %}
-{% endif %}
-{% if responseType == "REJECTION" %}
-<div class="section">
-  <div class="section-heading">
-    <strong>Claimant Rejection reason</strong>
-  </div>
-  <div class="section-body">
-    <table>
-      <tr>
-        <td><strong>Why do you reject the defendant’s repayment plan?</strong></td>
-        <td>
-          {{ rejectionReason }}
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Do you wish to go for free mediation?</strong></td>
-        <td>
-          {{ freeMediation }}
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
-{% endif %}
-
 </body>
 </html>

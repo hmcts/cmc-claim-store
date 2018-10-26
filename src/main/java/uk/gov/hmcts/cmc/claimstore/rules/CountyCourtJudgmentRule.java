@@ -66,7 +66,7 @@ public class CountyCourtJudgmentRule {
     }
 
     private boolean isCountyCourtJudgmentAlreadyRedetermined(Claim claim) {
-        return claim.getRedeterminationRequestedAt().isPresent();
+        return claim.getReDeterminationRequestedAt().isPresent();
     }
 
     public void assertRedeterminationCanBeRequestedOnCountyCourtJudgement(Claim claim) {

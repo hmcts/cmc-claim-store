@@ -44,21 +44,20 @@ public class ClaimantResponseContentProvider {
 
     public Map<String, Object> createContent(Claim claim) {
         requireNonNull(claim);
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         Map<String, Object> content = new HashMap<>();
 
         content.put("claim", claimDataContentProvider.createContent(claim));
-        claim.getClaimantRespondedAt().ifPresent(respondedAt ->
-        {
+        claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
             content.put("claimantSubmittedOn", formatDateTime(respondedAt));
             content.put("claimantSubmittedDate", formatDate(respondedAt));
         });
 
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
         content.put("amountPaid", claimantResponse.getAmountPaid());
         content.put("responseDashboardUrl", notificationsProperties.getFrontendBaseUrl());
 
+        Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
         content.put("defendant", partyDetailsContentProvider.createContent(
             claim.getClaimData().getDefendant(),
             defendantResponse.getDefendant(),
@@ -98,16 +97,19 @@ public class ClaimantResponseContentProvider {
         return content;
     }
 
-    private void addFormalisedOption(Claim claim, Map<String, Object> content, ResponseAcceptation responseAcceptation) {
+    private void addFormalisedOption(
+        Claim claim,
+        Map<String, Object> content,
+        ResponseAcceptation responseAcceptation
+    ) {
         switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 content.put("ccj", claim.getCountyCourtJudgment());
                 break;
             case SETTLEMENT:
-                claim.getSettlement().ifPresent(settlement -> content.put("settlement", settlement));
-                break;
             case REFER_TO_JUDGE:
-                content.put("referToJudge", true);
+                //No Action
+                break;
             default:
                 throw new MappingException("Invalid formalization type " + responseAcceptation.getFormaliseOption());
         }

@@ -74,7 +74,7 @@ public class DocumentNameUtils {
     public static String buildSettlementReachedFileBaseName(String number) {
         requireNonBlank(number);
 
-        return format( "%s-settlement-agreement", number);
+        return format("%s-settlement-agreement", number);
     }
 
 }
