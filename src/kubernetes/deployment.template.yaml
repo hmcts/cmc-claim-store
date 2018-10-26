@@ -147,6 +147,111 @@ spec:
           servicePort: 80
 ---
 #
+# FEATURE-TOGGLES
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: feature-toggle-api
+  namespace: ${NAMESPACE}
+data:
+  JAVA_OPTS: -Xms8m -Xmx256m -Djava.security.egd=file:/dev/./urandom -XX:MaxMetaspaceSize=128m
+  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+  FLYWAY_ENABLED: 'true'
+  FLYWAY_NOOP_STRATEGY: 'false'
+  FEATURES_DB_HOST: 'shared-database'
+  FEATURES_DB_CONN_OPTIONS: ''
+  FEATURES_DB_USER_NAME: 'features'
+  FEATURES_DB_PASSWORD: 'features'
+  TEST_ADMIN_USERNAME: 'admin@example.com'
+  TEST_ADMIN_PASSWORD: 'Password12'
+  TEST_EDITOR_USERNAME: 'editor@example.com'
+  TEST_EDITOR_PASSWORD: 'Password12'
+  LOGBACK_REQUIRE_THREAD: 'false'
+  LOGBACK_REQUIRE_ALERT_LEVEL: 'false'
+  LOGBACK_REQUIRE_ERROR_CODE: 'false'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feature-toggle-api
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feature-toggle-api
+  template:
+    metadata:
+      labels:
+        app: feature-toggle-api
+    spec:
+      containers:
+      - image: hmcts/feature-toggle-api
+        name: feature-toggle-api
+        envFrom:
+        - configMapRef:
+            name: feature-toggle-api
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1024Mi"
+            cpu: "2500m"
+        ports:
+        - containerPort: 8580
+          name: http
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feature-toggle-api
+  namespace: ${NAMESPACE}
+  labels:
+    app: feature-toggle-api
+spec:
+  ports:
+  - port: 8580
+  selector:
+    app: feature-toggle-api
+  clusterIP: None
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: feature-toggle-importer
+  namespace: ${NAMESPACE}
+spec:
+  schedule: '*/1 * * * *'
+  concurrencyPolicy: 'Forbid'
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: feature-toggle-importer
+        spec:
+          initContainers:
+          - name: init-wait-feature-toggle-api
+            image: busybox
+            command: ["sh", "-c", "for i in $(seq 1 300); do nc -zvw1 feature-toggle-api 8580 && exit 0 || sleep 3; done; exit 1"]
+          containers:
+          - image: hmcts/cmc-feature-toggle-importer
+            name: feature-toggle-importer
+            imagePullPolicy: Always
+            env:
+            - name: WAIT_HOSTS
+              value: 'feature-toggle-api:8580'
+            - name: VERBOSE
+              value: 'true'
+            - name: WAIT_HOSTS_TIMEOUT
+              value: '300'
+          restartPolicy: Never
+      backoffLimit: 4
+---
+#
 # DATABASE
 #
 ---
@@ -157,6 +262,8 @@ metadata:
   namespace: ${NAMESPACE}
 data:
   initdb.sql: |
+    CREATE USER features WITH PASSWORD 'features';
+    CREATE DATABASE features WITH OWNER = features ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     CREATE USER claimstore WITH PASSWORD 'claimstore';
     CREATE DATABASE claimstore WITH OWNER = claimstore ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
     CREATE USER cmc WITH PASSWORD 'cmc';
