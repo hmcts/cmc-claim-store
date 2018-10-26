@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
@@ -98,14 +100,18 @@ public class DefendantResponseStaffNotificationService {
         if (isFullAdmission(response.getResponseType())) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
             map.put("responseType", "full admission");
+            map.put("partAdmitPaymentIntention", fullAdmissionResponse.getPaymentIntention() != null);
             map.put("paymentOptionDescription", fullAdmissionResponse.getPaymentIntention()
                 .getPaymentOption().getDescription().toLowerCase());
         }
 
         if (isPartAdmission(response.getResponseType())) {
             PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+
             map.put("responseType", "partial admission");
-            partAdmissionResponse.getPaymentIntention().ifPresent(paymentIntention ->
+            Optional<PaymentIntention> responsePaymentIntention = partAdmissionResponse.getPaymentIntention();
+            map.put("partAdmitPaymentIntention", responsePaymentIntention.isPresent());
+            responsePaymentIntention.ifPresent(paymentIntention ->
                 map.put("paymentOptionDescription", paymentIntention.getPaymentOption()
                     .getDescription().toLowerCase()));
         }
