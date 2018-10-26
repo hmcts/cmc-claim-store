@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.PDF;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
@@ -123,6 +123,6 @@ public class DefendantResponseStaffNotificationService {
         byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         requireNonNull(defendantResponse);
 
-        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + PDF);
+        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
 }

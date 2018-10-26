@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.PDF;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonClaimFileBaseName;
@@ -93,7 +93,7 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
             .getAttachments()
             .get(0);
 
-        String expectedPdfFilename = buildSealedClaimFileBaseName(claim.getReferenceNumber()) + PDF;
+        String expectedPdfFilename = buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION;
 
         assertThat(sealedClaimEmailAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_PDF_VALUE);
         assertThat(sealedClaimEmailAttachment.getFilename()).isEqualTo(expectedPdfFilename);

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.PDF;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
@@ -48,12 +48,12 @@ public class BulkPrintStaffNotificationService {
 
         EmailAttachment defendantLetter = pdf(
             createPdf(defendantLetterDocument),
-            buildDefendantLetterFileBaseName(claim.getReferenceNumber()) + PDF
+            buildDefendantLetterFileBaseName(claim.getReferenceNumber()) + EXTENSION
         );
 
         EmailAttachment sealedClaim = pdf(
             createPdf(sealedClaimDocument),
-            buildSealedClaimFileBaseName(claim.getReferenceNumber()) + PDF
+            buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION
         );
 
         emailService.sendEmail(

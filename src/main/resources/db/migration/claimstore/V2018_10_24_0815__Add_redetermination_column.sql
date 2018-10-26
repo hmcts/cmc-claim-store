@@ -1,3 +1,3 @@
 ALTER TABLE claim
-  ADD COLUMN reDetermination JSONB,
-  ADD COLUMN reDetermination_requested_at TEXT;
+  ADD COLUMN re_determination JSONB,
+  ADD COLUMN re_determination_requested_at TEXT;

@@ -18,7 +18,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.DefenceResponseJsonMapper;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.PDF;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
@@ -77,7 +77,7 @@ public class DefenceResponseNotificationService {
     private EmailAttachment createResponsePdfAttachment(Claim claim) {
         byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
 
-        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + PDF);
+        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
 
 }

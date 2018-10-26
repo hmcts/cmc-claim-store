@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.PDF;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
@@ -46,28 +46,28 @@ public class StaffPdfCreatorService {
         byte[] claimantResponse = claimantResponseReceiptService.createPdf(claim);
         requireNonNull(claimantResponse);
 
-        return pdf(claimantResponse, buildClaimantResponseFileBaseName(claim.getReferenceNumber()) + PDF);
+        return pdf(claimantResponse, buildClaimantResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
 
     public EmailAttachment createResponsePdfAttachment(Claim claim) {
         byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
         requireNonNull(defendantResponse);
 
-        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + PDF);
+        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
 
     public EmailAttachment createSettlementReachedPdfAttachment(Claim claim) {
         byte[] settlementPdf = settlementAgreementCopyService.createPdf(claim);
         requireNonNull(settlementPdf);
 
-        return pdf(settlementPdf, buildSettlementReachedFileBaseName(claim.getReferenceNumber()) + PDF);
+        return pdf(settlementPdf, buildSettlementReachedFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
 
     public EmailAttachment createSealedClaimPdfAttachment(Claim claim) {
         byte[] sealedClaimPdf = sealedClaimPdfService.createPdf(claim);
         requireNonNull(sealedClaimPdf);
 
-        return pdf(sealedClaimPdf, buildSealedClaimFileBaseName(claim.getReferenceNumber()) + PDF);
+        return pdf(sealedClaimPdf, buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
 
     public EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
@@ -76,7 +76,7 @@ public class StaffPdfCreatorService {
         return pdf(
             generatedPdf,
             buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()) + PDF
+                claim.getClaimData().getDefendant().getName()) + EXTENSION
         );
     }
 }

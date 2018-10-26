@@ -214,8 +214,8 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate("UPDATE claim SET "
-        + " reDetermination = :reDetermination::JSONB,"
-        + " reDetermination_requested_at = now() AT TIME ZONE 'utc' "
+        + " re_determination = :reDetermination::JSONB,"
+        + " re_determination = now() AT TIME ZONE 'utc' "
         + " WHERE external_id = :externalId")
     void saveReDetermination(
         @Bind("externalId") String externalId,

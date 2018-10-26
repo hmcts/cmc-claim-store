@@ -53,7 +53,7 @@ public class CountyCourtJudgmentController {
         return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation, issue);
     }
 
-    @PostMapping("/{externalId:" + UUID_PATTERN + "}/reDetermination")
+    @PostMapping("/{externalId:" + UUID_PATTERN + "}/re-determination")
     @ApiOperation("ReDetermination Request to Judge")
     public Claim reDetermination(
         @PathVariable("externalId") String externalId,

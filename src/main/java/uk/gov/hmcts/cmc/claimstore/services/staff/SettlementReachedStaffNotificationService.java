@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.PDF;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
@@ -52,7 +52,7 @@ public class SettlementReachedStaffNotificationService {
                 emailContent.getBody(),
                 singletonList(pdf(
                     pdf,
-                    buildSettlementReachedFileBaseName(claim.getReferenceNumber()) + PDF)
+                    buildSettlementReachedFileBaseName(claim.getReferenceNumber()) + EXTENSION)
                 )
             )
         );

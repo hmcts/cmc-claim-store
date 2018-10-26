@@ -54,8 +54,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateTimeFromUTC(result.getTimestamp("county_court_judgment_issued_at")),
             toNullableLocalDateFromUTC(result.getTimestamp("directions_questionnaire_deadline")),
             toNullableLocalDateFromUTC(result.getTimestamp("money_received_on")),
-            toNullableEntity(result.getString("reDetermination"), ReDetermination.class),
-            toNullableLocalDateTimeFromUTC(result.getTimestamp("reDetermination_requested_at"))
+            toNullableEntity(result.getString("re_determination"), ReDetermination.class),
+            toNullableLocalDateTimeFromUTC(result.getTimestamp("re_determination_requested_at"))
         );
     }
 

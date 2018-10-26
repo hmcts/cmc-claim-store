@@ -7,5 +7,6 @@ public enum MadeBy {
     CLAIMANT,
     @JsonProperty("DEFENDANT")
     DEFENDANT,
+    @JsonProperty("COURT")
     COURT
 }

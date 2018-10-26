@@ -135,17 +135,17 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
         assertThat(attachments.size()).isEqualTo(3);
 
         EmailAttachment claimEmailAttachment = attachments.get(0);
-        String sealedClaimFileName = buildSealedClaimFileBaseName(claim.getReferenceNumber()) + PDF.PDF;
+        String sealedClaimFileName = buildSealedClaimFileBaseName(claim.getReferenceNumber()) + PDF.EXTENSION;
         assertThat(claimEmailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(claimEmailAttachment.getFilename()).isEqualTo(sealedClaimFileName);
 
         EmailAttachment responseEmailAttachment = attachments.get(1);
-        String responseFileName = buildResponseFileBaseName(claim.getReferenceNumber()) + PDF.PDF;
+        String responseFileName = buildResponseFileBaseName(claim.getReferenceNumber()) + PDF.EXTENSION;
         assertThat(responseEmailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(responseEmailAttachment.getFilename()).isEqualTo(responseFileName);
 
         EmailAttachment claimantResponseEmailAttachment = attachments.get(2);
-        String claimantResponseFileName = buildClaimantResponseFileBaseName(claim.getReferenceNumber()) + PDF.PDF;
+        String claimantResponseFileName = buildClaimantResponseFileBaseName(claim.getReferenceNumber()) + PDF.EXTENSION;
         assertThat(claimantResponseEmailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(claimantResponseEmailAttachment.getFilename()).isEqualTo(claimantResponseFileName);
     }
