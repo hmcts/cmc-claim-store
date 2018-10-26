@@ -76,7 +76,7 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedSettledForLessAndRepaymentByInstalmentsPdf() throws IOException {
-        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().build();
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
         submitDefendantResponse(partAdmissionResponse, claim.getExternalId());
 
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
