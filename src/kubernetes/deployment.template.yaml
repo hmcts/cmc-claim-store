@@ -17,7 +17,7 @@ spec:
       initContainers:
       - name: init-wait-db
         image: busybox
-        command: ["sh", "-c", "for i in $(seq 1 300); do nc -zvw1 shared-database 5432 && exit 0 || sleep 3; done; exit 1"]
+        command: ['sh', '-c', 'for i in $(seq 1 300); do nc -zvw1 shared-database 5432 && exit 0 || sleep 3; done; exit 1']
       containers:
         - image: ${IMAGE_NAME}
           name: ${SERVICE_NAME}
@@ -33,31 +33,33 @@ spec:
             - name: CLAIM_STORE_DB_USERNAME
               value: 'claimstore'
             - name: CLAIM_STORE_DB_PASSWORD
-              value: "claimstore"
+              value: 'claimstore'
             - name: CLAIM_STORE_DB_NAME
               value: 'claimstore'
             - name: CMC_DB_HOST
               value: 'shared-database'
             - name: CMC_DB_PORT
               value: '5432'
-            - name: CMC_DB_NAME
+            - name: CMC_DB_USERNAME
               value: 'cmc'
             - name: CMC_DB_PASSWORD
-              value: "cmc"
+              value: 'cmc'
+            - name: CMC_DB_NAME
+              value: 'cmc'
             - name: IDAM_S2S_AUTH_TOTP_SECRET
-              value: "${CLAIM_STORE_S2S_SECRET}"
+              value: '${CLAIM_STORE_S2S_SECRET}'
             - name: IDAM_CASEWORKER_ANONYMOUS_USERNAME
-              value: "${ANONYMOUS_CASEWORKER_USERNAME}"
+              value: '${ANONYMOUS_CASEWORKER_USERNAME}'
             - name: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
-              value: "${ANONYMOUS_CASEWORKER_PASSWORD}"
+              value: '${ANONYMOUS_CASEWORKER_PASSWORD}'
             - name: IDAM_CASEWORKER_SYSTEM_USERNAME
-              value: "${SYSTEM_UPDATE_USERNAME}"
+              value: '${SYSTEM_UPDATE_USERNAME}'
             - name: IDAM_CASEWORKER_SYSTEM_PASSWORD
-              value: "${SYSTEM_UPDATE_PASSWORD}"
+              value: '${SYSTEM_UPDATE_PASSWORD}'
             - name: OAUTH2_CLIENT_SECRET
-              value: "${OAUTH2_CLIENT_SECRET}"
+              value: '${OAUTH2_CLIENT_SECRET}'
             - name: GOV_NOTIFY_API_KEY
-              value: "${NOTIFY_API_KEY}"
+              value: '${NOTIFY_API_KEY}'
             - name: SPRING_MAIL_HOST
               value: 'mta.reform.hmcts.net'
             - name: SPRING_MAIL_PORT
@@ -71,17 +73,17 @@ spec:
             - name: STAFF_NOTIFICATIONS_SENDER
               value: 'noreply@reform.hmcts.net'
             - name: STAFF_NOTIFICATIONS_RECIPIENT
-              value: "${STAFF_EMAIL}"
+              value: '${STAFF_EMAIL}'
             - name: RPA_NOTIFICATIONS_SENDER
               value: 'noreply@reform.hmcts.net'
             - name: RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT
-              value: "${STAFF_EMAIL}"
+              value: '${STAFF_EMAIL}'
             - name: RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT
-              value: "${STAFF_EMAIL}"
+              value: '${STAFF_EMAIL}'
             - name: RPA_NOTIFICATIONS_RESPONSERECIPIENT
-              value: "${STAFF_EMAIL}"
+              value: '${STAFF_EMAIL}'
             - name: RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT
-              value: "${STAFF_EMAIL}"
+              value: '${STAFF_EMAIL}'
             - name: CLAIM_STORE_TEST_SUPPORT_ENABLED
               value: 'true'
             - name: FEATURE_TOGGLES_EMAILTOSTAFF
@@ -103,11 +105,11 @@ spec:
                 name: ${SERVICE_NAME}-config
           resources:
             requests:
-              memory: "1024Mi"
-              cpu: "500m"
+              memory: '1024Mi'
+              cpu: '500m'
             limits:
-              memory: "2048Mi"
-              cpu: "2500m"
+              memory: '2048Mi'
+              cpu: '2500m'
           ports:
             - containerPort: 4400
               name: http
@@ -194,11 +196,11 @@ spec:
             name: feature-toggle-api
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "200m"
+            memory: '256Mi'
+            cpu: '200m'
           limits:
-            memory: "1024Mi"
-            cpu: "2500m"
+            memory: '1024Mi'
+            cpu: '2500m'
         ports:
         - containerPort: 8580
           name: http
@@ -236,7 +238,7 @@ spec:
           initContainers:
           - name: init-wait-feature-toggle-api
             image: busybox
-            command: ["sh", "-c", "for i in $(seq 1 300); do nc -zvw1 feature-toggle-api 8580 && exit 0 || sleep 3; done; exit 1"]
+            command: ['sh', '-c', 'for i in $(seq 1 300); do nc -zvw1 feature-toggle-api 8580 && exit 0 || sleep 3; done; exit 1']
           containers:
           - image: hmcts/cmc-feature-toggle-importer
             name: feature-toggle-importer
@@ -289,11 +291,11 @@ spec:
         name: shared-database
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "200m"
+            memory: '256Mi'
+            cpu: '200m'
           limits:
-            memory: "1024Mi"
-            cpu: "1000m"
+            memory: '1024Mi'
+            cpu: '1000m'
         imagePullPolicy: Always
         ports:
         - containerPort: 5432
