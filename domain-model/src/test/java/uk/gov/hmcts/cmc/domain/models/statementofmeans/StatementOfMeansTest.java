@@ -115,20 +115,6 @@ public class StatementOfMeansTest {
                 .contains("employment.selfEmployment.annualTurnover : may not be null");
     }
 
-//    @Test
-//    public void shouldBeInvalidForEmptyBankAccount() {
-//        //given
-//        StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-//                .bankAccounts(Collections.EMPTY_LIST)
-//                .build();
-//        //when
-//        Set<String> errors = validate(statementOfMeans);
-//        //then
-//        assertThat(errors)
-//                .hasSize(1)
-//                .contains("bankAccounts : may not be empty");
-//    }
-
     @Test
     public void shouldBeInvalidForInvalidBankAccount() {
         //given
