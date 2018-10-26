@@ -61,6 +61,7 @@ public final class SampleClaim {
     private ClaimantResponse claimantResponse;
     private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
+    private LocalDate moneyReceivedOn;
 
     private SampleClaim() {
     }
@@ -188,7 +189,8 @@ public final class SampleClaim {
             claimantRespondedAt,
             claimantResponse,
             countyCourtJudgmentIssuedAt,
-            directionsQuestionnaireDeadline
+            directionsQuestionnaireDeadline,
+            moneyReceivedOn
         );
     }
 
@@ -311,7 +313,12 @@ public final class SampleClaim {
         this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
-
+  
+    public SampleClaim withMoneyReceivedOn(LocalDate moneyReceivedOn) {
+        this.moneyReceivedOn = moneyReceivedOn;
+        return this;
+    }
+  
     public SampleClaim withFeatures(List<String> features) {
         this.features = features;
         return this;

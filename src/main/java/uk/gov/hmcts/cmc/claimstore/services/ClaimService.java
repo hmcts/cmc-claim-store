@@ -14,10 +14,12 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
+import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -57,6 +59,7 @@ public class ClaimService {
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final AppInsights appInsights;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final PaidInFullRule paidInFullRule;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -70,7 +73,8 @@ public class ClaimService {
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
         AppInsights appInsights,
-        CCDCaseDataToClaim ccdCaseDataToClaim
+        CCDCaseDataToClaim ccdCaseDataToClaim,
+        PaidInFullRule paidInFullRule
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -82,6 +86,7 @@ public class ClaimService {
         this.appInsights = appInsights;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
+        this.paidInFullRule = paidInFullRule;
     }
 
     public Claim getClaimById(long claimId) {
@@ -304,8 +309,18 @@ public class ClaimService {
         if (isFullDefenceWithNoMediation(response)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-            caseRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), deadline, authorization);
+            caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
         }
+    }
+
+    public Claim paidInFull(String externalId, PaidInFull paidInFull, String authorisation) {
+        Claim claim = getClaimByExternalId(externalId, authorisation);
+        String claimantId = userService.getUserDetails(authorisation).getId();
+        this.paidInFullRule.assertPaidInFull(claim, claimantId);
+        this.caseRepository.paidInFull(claim, paidInFull, authorisation);
+        Claim updatedClaim = getClaimByExternalId(externalId, authorisation);
+        this.eventProducer.createPaidInFullEvent(updatedClaim);
+        return updatedClaim;
     }
 
     private static boolean isFullDefenceWithNoMediation(Response response) {
