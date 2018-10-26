@@ -126,59 +126,7 @@ public class Claim {
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getSubmitterId() {
-        return submitterId;
-    }
-
-    public String getLetterHolderId() {
-        return letterHolderId;
-    }
-
-    public String getDefendantId() {
-        return defendantId;
-    }
-
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public ClaimData getClaimData() {
-        return claimData;
-    }
-
-    public String getReferenceNumber() {
-        return referenceNumber;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDate getIssuedOn() {
-        return issuedOn;
-    }
-
-    public LocalDate getResponseDeadline() {
-        return responseDeadline;
-    }
-
-    public boolean isMoreTimeRequested() {
-        return moreTimeRequested;
-    }
-
-    public String getSubmitterEmail() {
-        return submitterEmail;
-    }
-
-    public LocalDateTime getRespondedAt() {
-        return respondedAt;
-    }
-
+    
     public Optional<Response> getResponse() {
         return Optional.ofNullable(response);
     }
