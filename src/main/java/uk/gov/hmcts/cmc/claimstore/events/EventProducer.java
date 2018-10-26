@@ -79,6 +79,6 @@ public class EventProducer {
     }
 
     public void createRedeterminationEvent(Claim claim, String authorisation, String submitterName) {
-        publisher.publishEvent(new RedeterminationEvent(claim, authorisation, submitterName));
+        publisher.publishEvent(new ReDeterminationEvent(claim, authorisation, submitterName));
     }
 }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.Claimant
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 
 public class ReDeterminationTest extends BaseTest {
 
@@ -111,6 +112,114 @@ public class ReDeterminationTest extends BaseTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidReDeterminationIsSubmitted() {
+        commonOperations.submitClaimantResponse(
+            ClaimantResponseAcceptation.builder().build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        commonOperations.submitReDetermination(
+            ReDetermination.builder().explanation(null).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    public void shouldNotBeAllowedToRequestReDeterminationWhenNoClaimantResponseGiven() {
+        String explanation = "I want it sooner";
+
+        commonOperations.submitReDetermination(
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.FORBIDDEN.value())
+            .body("message", containsString("County Court Judgment for the claim "
+                + claim.getExternalId()
+                + " is not yet submitted"));
+    }
+
+    @Test
+    public void shouldNotBeAllowedToRequestReDeterminationWhenAlreadyReDetermined() {
+        String explanation = "I want it sooner";
+
+        commonOperations.submitClaimantResponse(
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithDefendantPaymentIntention(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        commonOperations.submitReDetermination(
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.OK.value());
+
+        commonOperations.submitReDetermination(
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.FORBIDDEN.value())
+            .body("message", containsString("County Court Judgment for the claim "
+                + claim.getExternalId()
+                + " has been already redetermined"));
+    }
+
+    @Test
+    public void shouldNotBeAllowedToRequestReDeterminationWhenNoCCJRequested() {
+        String explanation = "I want it sooner";
+
+        commonOperations.submitClaimantResponse(
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithCourtDetermination(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        commonOperations.submitReDetermination(
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.FORBIDDEN.value())
+            .body("message", containsString("County Court Judgment for the claim "
+                + claim.getExternalId()
+                + " is not yet submitted"));
+    }
+
+    @Test
+    public void shouldNotAllowReDeterminationWhenUserIsNotOwner() {
+        String explanation = "I want it sooner";
+
+        commonOperations.submitClaimantResponse(
+            ClaimantResponseAcceptation.builder().build(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.CREATED.value());
+
+        User claimantNotOwner = idamTestService.createCitizen();
+
+        commonOperations.submitReDetermination(
+            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
+            claim.getExternalId(),
+            claimantNotOwner
+        ).then()
+            .statusCode(HttpStatus.FORBIDDEN.value())
+            .body("message", containsString("Provided user "
+                + claimantNotOwner.getUserDetails().getId()
+                + " is not a submitter on this claim (" + claimant.getUserDetails().getId()
+                + ")"));
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {

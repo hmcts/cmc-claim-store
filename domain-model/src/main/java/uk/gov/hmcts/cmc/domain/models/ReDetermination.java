@@ -20,6 +20,7 @@ public class ReDetermination {
     @NotNull
     private final String explanation;
 
+    @NotNull
     private final MadeBy partyType;
 
 

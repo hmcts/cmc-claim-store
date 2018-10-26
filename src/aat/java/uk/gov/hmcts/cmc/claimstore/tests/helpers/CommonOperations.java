@@ -215,7 +215,7 @@ public class CommonOperations {
             .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .body(jsonMapper.toJson(reDetermination))
             .when()
-            .post("/claims/" + claimExternalId + "/reDetermination");
+            .post("/claims/" + claimExternalId + "/re-determination");
     }
 
     public Response requestCCJ(String externalId, CountyCourtJudgment ccj, boolean issue, User user) {
