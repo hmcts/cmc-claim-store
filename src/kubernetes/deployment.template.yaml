@@ -33,7 +33,7 @@ spec:
             - name: CLAIM_STORE_DB_NAME
               value: 'claimstore'
             - name: CLAIM_STORE_DB_CONNECTION_OPTIONS
-              value: '?ssl&sslmode=require'
+              value: ''
             - name: CMC_DB_HOST
               value: 'shared-database'
             - name: CMC_DB_PORT
@@ -43,7 +43,7 @@ spec:
             - name: CMC_DB_PASSWORD
               value: "cmc"
             - name: CMC_DB_CONNECTION_OPTIONS
-              value: '?ssl&sslmode=require'
+              value: ''
             - name: IDAM_S2S_AUTH_TOTP_SECRET
               value: "${CLAIM_STORE_S2S_SECRET}"
             - name: IDAM_CASEWORKER_ANONYMOUS_USERNAME
