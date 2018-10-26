@@ -1,8 +1,7 @@
+{% if partAdmitPaymentIntention %}
 The defendant has offered to pay {{ paymentOptionDescription }} in response to the money claim made against them by {{ claim.claimData.claimant.name }}.
-{% if paymentOption == 'IMMEDIATELY' %}
-The defendant needs to tell the claimant and the court when they get paid on or before {{ responseDeadline }}.
 {% else %}
-The claimant needs to respond to the offer to pay by a set date on or before {{ fourteenDaysFromNow }}.
+The defendant states they have already paid what is owed in response to the money claim made against them by {{ claim.claimData.claimant.name }}.
 {% endif %}
 
 Defendant's details can be found on the attached defence copy. Additional contact details are:

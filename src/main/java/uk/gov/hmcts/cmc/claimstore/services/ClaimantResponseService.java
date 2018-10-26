@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
@@ -50,7 +51,7 @@ public class ClaimantResponseService {
 
         caseRepository.saveClaimantResponse(claim, response, authorization);
 
-        if (response instanceof ResponseAcceptation && ((ResponseAcceptation) response).getFormaliseOption() != null) {
+        if (ClaimantResponseType.ACCEPTATION.equals(response.getType())) {
             formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) response, authorization);
         }
 
