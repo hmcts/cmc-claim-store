@@ -14,6 +14,10 @@ spec:
       labels:
         app: ${SERVICE_NAME}
     spec:
+      initContainers:
+      - name: init-wait-db
+        image: busybox
+        command: ["sh", "-c", "for i in $(seq 1 300); do nc -zvw1 shared-database 5432 && exit 0 || sleep 3; done; exit 1"]
       containers:
         - image: ${IMAGE_NAME}
           name: ${SERVICE_NAME}
@@ -32,8 +36,6 @@ spec:
               value: "claimstore"
             - name: CLAIM_STORE_DB_NAME
               value: 'claimstore'
-            - name: CLAIM_STORE_DB_CONNECTION_OPTIONS
-              value: ''
             - name: CMC_DB_HOST
               value: 'shared-database'
             - name: CMC_DB_PORT
@@ -42,8 +44,6 @@ spec:
               value: 'cmc'
             - name: CMC_DB_PASSWORD
               value: "cmc"
-            - name: CMC_DB_CONNECTION_OPTIONS
-              value: ''
             - name: IDAM_S2S_AUTH_TOTP_SECRET
               value: "${CLAIM_STORE_S2S_SECRET}"
             - name: IDAM_CASEWORKER_ANONYMOUS_USERNAME
