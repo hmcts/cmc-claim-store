@@ -7,10 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 
 public final class SampleClaimIssuedEvent {
 
-    private SampleClaimIssuedEvent() {
-        // NO-OP
-    }
-
     public static final String CLAIMANT_EMAIL = SampleClaim.SUBMITTER_EMAIL;
     public static final String SUBMITTER_SURNAME = "Smith";
     public static final String SUBMITTER_FORENAME = "Steven";
@@ -32,5 +28,9 @@ public final class SampleClaimIssuedEvent {
             .ccjType(CountyCourtJudgmentType.ADMISSIONS)
             .build())
         .build();
+
+    private SampleClaimIssuedEvent() {
+        // NO-OP
+    }
 
 }
