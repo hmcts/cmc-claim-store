@@ -410,11 +410,49 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void formaliseSettlementWithCourtDeterminedPaymentIntention() {
+    public void formaliseSettlementWithCourtDeterminedPaymentIntentionByInstalments() {
 
         Claim claim = SampleClaim.getWithDefaultResponse();
 
         PaymentIntention paymentIntention = SamplePaymentIntention.instalments();
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .courtDetermination(CourtDetermination
+                .builder()
+                .courtDecision(paymentIntention)
+                .decisionType(COURT)
+                .build())
+            .formaliseOption(SETTLEMENT)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+
+        verify(offersService).signSettlementAgreement(
+            eq(claim.getExternalId()),
+            settlementArgumentCaptor.capture(),
+            eq(AUTH));
+
+        PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
+            .getValue()
+            .getLastOfferStatement()
+            .getOffer()
+            .orElseThrow(IllegalStateException::new)
+            .getPaymentIntention()
+            .orElseThrow(IllegalAccessError::new);
+
+        assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntention);
+
+        verifyZeroInteractions(countyCourtJudgmentService);
+    }
+
+    @Test
+    public void formaliseSettlementWithCourtDeterminedPaymentIntentionByImmediately() {
+
+        Response partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
+        Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayByInstalments);
+
+        PaymentIntention paymentIntention = SamplePaymentIntention.immediately();
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
