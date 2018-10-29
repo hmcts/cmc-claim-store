@@ -45,7 +45,7 @@ public class StatementOfMeansTest {
         Set<String> errors = validate(statementOfMeans);
         //then
         assertThat(errors)
-                .hasSize(4);
+                .hasSize(3);
     }
 
     @Test
