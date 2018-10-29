@@ -18,13 +18,23 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPayment;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPersonalInjury;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
 import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
 import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDFullDefenceResponse;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount;
@@ -36,10 +46,14 @@ import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployment;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -63,6 +77,7 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAc
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt.PriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.JOINT_OWN_HOME;
 
 public class SampleData {
@@ -304,6 +319,64 @@ public class SampleData {
             .build();
     }
 
+    public static CCDClaimantResponse getCCDClaimantAcceptanceResponse(CCDFormaliseOption formaliseOption) {
+        return CCDClaimantResponse.builder()
+            .claimantResponseType(CCDClaimantResponseType.ACCEPTATION)
+            .responseAcceptation(getResponseAcceptation(formaliseOption))
+            .build();
+    }
+
+    public static CCDClaimantResponse getCCDClaimantREjectionResponse() {
+        return CCDClaimantResponse.builder()
+            .claimantResponseType(CCDClaimantResponseType.REJECTION)
+            .responseRejection(getResponseRejection())
+            .build();
+    }
+
+    public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntention())
+            .courtDetermination(getCCDCourtDetermination())
+            .formaliseOption(formaliseOption)
+            .build();
+    }
+
+    public static CCDResponseRejection getResponseRejection() {
+        return CCDResponseRejection.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .freeMediationOption(CCDYesNoOption.YES)
+            .reason("Rejection Reason")
+            .build();
+    }
+
+    public static CCDCourtDetermination getCCDCourtDetermination() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtPaymentIntention(getCCDPaymentIntention())
+            .courtDecision(getCCDPaymentIntention())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
+            .build();
+    }
+
+    private static CCDPaymentIntention getCCDPaymentIntention() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.of(2017, 10, 12))
+            .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
+            .repaymentPlan(getCCDRepaymentplan())
+            .build();
+    }
+
+    private static CCDRepaymentPlan getCCDRepaymentplan() {
+        return CCDRepaymentPlan.builder()
+            .firstPaymentDate(LocalDate.of(2017, 10, 12))
+            .instalmentAmount(BigDecimal.valueOf(123.98))
+            .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
+            .completionDate(LocalDate.of(2018, 10, 12))
+            .build();
+    }
+
     public static CCDStatementOfMeans getCCDStatementOfMeans() {
         return CCDStatementOfMeans.builder()
             .residence(CCDResidence.builder().type(JOINT_OWN_HOME).build())
@@ -362,13 +435,29 @@ public class SampleData {
                 ).build()
             ))
             .courtOrders(asList(
-                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder().build().builder()
+                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder()
                     .amountOwed(TEN)
                     .claimNumber("Reference")
                     .monthlyInstalmentAmount(ONE)
                     .build()
                 ).build()
             ))
+            .priorityDebts(asList(
+                CCDCollectionElement.<PriorityDebt>builder().value(PriorityDebt.builder()
+                    .frequency(MONTH)
+                    .amount(BigDecimal.valueOf(132.89))
+                    .type(ELECTRICITY)
+                    .build()
+                ).build()
+            ))
+            .carer(CCDYesNoOption.YES)
+            .partner(CCDLivingPartner.builder()
+                .disability(DisabilityStatus.SEVERE)
+                .over18(CCDYesNoOption.YES)
+                .pensioner(CCDYesNoOption.YES)
+                .build()
+            )
+            .disability(DisabilityStatus.YES)
             .build();
     }
 }

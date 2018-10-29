@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -19,8 +20,10 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -40,7 +43,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_ISSUED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
@@ -58,6 +61,7 @@ public class CoreCaseDataService {
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
+    private final ClaimantResponseMapper claimantResponseMapper;
     private final UserService userService;
     private final JsonMapper jsonMapper;
     private final ReferenceNumberService referenceNumberService;
@@ -73,6 +77,7 @@ public class CoreCaseDataService {
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
+        ClaimantResponseMapper claimantResponseMapper,
         UserService userService,
         JsonMapper jsonMapper,
         ReferenceNumberService referenceNumberService,
@@ -85,6 +90,7 @@ public class CoreCaseDataService {
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
+        this.claimantResponseMapper = claimantResponseMapper;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.referenceNumberService = referenceNumberService;
@@ -153,9 +159,11 @@ public class CoreCaseDataService {
         Claim claim,
         LocalDate newResponseDeadline
     ) {
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setResponseDeadline(newResponseDeadline);
-        ccdCase.setMoreTimeRequested(YES);
+        CCDCase ccdCase = CCDCase.builder()
+            .id(claim.getId())
+            .responseDeadline(newResponseDeadline)
+            .moreTimeRequested(YES)
+            .build();
 
         CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
         jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
@@ -164,18 +172,20 @@ public class CoreCaseDataService {
 
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
-        Claim claim,
+        Long caseId,
         CountyCourtJudgment countyCourtJudgment,
         boolean issue
     ) {
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setCountyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment));
-        ccdCase.setCountyCourtJudgmentRequestedAt(nowInUTC());
+        CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
+            .id(caseId)
+            .countyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment))
+            .countyCourtJudgmentRequestedAt(nowInUTC());
+
         if (issue) {
-            ccdCase.setCountyCourtJudgmentIssuedAt(nowInUTC());
-            return update(authorisation, ccdCase, CCJ_ISSUED);
+            ccdCase.countyCourtJudgmentIssuedAt(nowInUTC());
+            return update(authorisation, ccdCase.build(), CCJ_ISSUED);
         } else {
-            return update(authorisation, ccdCase, DEFAULT_CCJ_REQUESTED);
+            return update(authorisation, ccdCase.build(), DEFAULT_CCJ_REQUESTED);
         }
     }
 
@@ -192,18 +202,48 @@ public class CoreCaseDataService {
     }
 
     public CaseDetails saveDefendantResponse(
-        Claim claim,
+        Long caseId,
         String defendantEmail,
         Response response,
         String authorisation
     ) {
 
-        CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setResponse(responseMapper.to(response));
-        ccdCase.setDefendantEmail(defendantEmail);
-        ccdCase.setRespondedAt(nowInUTC());
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .response(responseMapper.to(response))
+            .defendantEmail(defendantEmail)
+            .respondedAt(nowInUTC())
+            .build();
 
-        return update(authorisation, ccdCase, DEFENCE_SUBMITTED);
+        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response)));
+    }
+
+    private String getResponseTypeName(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                return ((FullDefenceResponse) response).getDefenceType().name();
+            case FULL_ADMISSION:
+            case PART_ADMISSION:
+                return response.getResponseType().name();
+            default:
+                throw new IllegalArgumentException("Invalid response type " + response.getResponseType());
+
+        }
+    }
+
+    public CaseDetails saveClaimantResponse(
+        Long caseId,
+        ClaimantResponse response,
+        String authorisation
+    ) {
+
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .claimantResponse(claimantResponseMapper.to(response))
+            .claimantRespondedAt(nowInUTC())
+            .build();
+
+        return update(authorisation, ccdCase, CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name()));
     }
 
     public CaseDetails saveSettlement(
@@ -237,11 +277,11 @@ public class CoreCaseDataService {
 
     public CaseDetails updateResponseDeadline(
         String authorisation,
-        Claim claim,
+        Long caseId,
         LocalDate newResponseDeadline
     ) {
         CCDCase ccdCase = CCDCase.builder()
-            .id(claim.getId())
+            .id(caseId)
             .responseDeadline(newResponseDeadline)
             .build();
 
@@ -423,5 +463,14 @@ public class CoreCaseDataService {
         CCDCase ccdCase = jsonMapper.convertValue(caseData, CCDCase.class);
 
         return caseMapper.from(ccdCase);
+    }
+
+    public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
+        CCDCase ccdCase = CCDCase.builder()
+            .id(caseId)
+            .directionsQuestionnaireDeadline(dqDeadline)
+            .build();
+
+        update(authorisation, ccdCase, DIRECTIONS_QUESTIONNAIRE_DEADLINE);
     }
 }

@@ -62,6 +62,9 @@ public interface ClaimRepository {
     List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
                                        @Bind("submitterId") String submitterId);
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim->'payment'->>'reference' = :payReference")
+    List<Claim> getByPaymentReference(String payReference);
+
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
     List<Claim> getAllNotMigratedClaims();
 
@@ -182,6 +185,15 @@ public interface ClaimRepository {
     void saveClaimantResponse(
         @Bind("externalId") String externalId,
         @Bind("response") String response
+    );
+
+    @SqlUpdate(
+        "UPDATE claim SET money_received_on = :moneyReceivedOn "
+            + "WHERE external_id = :externalId"
+    )
+    void updateMoneyReceivedOn(
+        @Bind("externalId") String externalId,
+        @Bind("moneyReceivedOn") LocalDate moneyReceivedOn
     );
 
     @SqlUpdate("UPDATE claim SET "

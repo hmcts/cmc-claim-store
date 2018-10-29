@@ -165,4 +165,15 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
         }
     }
+
+    public static class PaidInFull {
+
+        private PaidInFull() {
+            // do not instantiate
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference("%s-paid-in-full-notification-%s", CLAIMANT, claimReferenceNumber);
+        }
+    }
 }

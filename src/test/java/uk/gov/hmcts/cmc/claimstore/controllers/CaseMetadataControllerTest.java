@@ -126,6 +126,20 @@ public class CaseMetadataControllerTest {
         assertValid(sampleClaim, output.get(0));
     }
 
+    @Test
+    public void shouldReturnClaimsByPaymentReference() {
+        // given
+        when(claimService.getClaimByPaymentReference(eq("RC-1234-5678-0123-4567"), anyString()))
+            .thenReturn(singletonList(sampleClaim));
+
+        // when
+        List<CaseMetadata> output = controller.getByPaymentReference("RC-1234-5678-0123-4567");
+
+        // then
+        assertEquals(1, output.size());
+        assertValid(sampleClaim, output.get(0));
+    }
+
     private static void assertValid(Claim dto, CaseMetadata metadata) {
         assertEquals(dto.getId(), metadata.getId());
         assertEquals(dto.getSubmitterId(), metadata.getSubmitterId());
