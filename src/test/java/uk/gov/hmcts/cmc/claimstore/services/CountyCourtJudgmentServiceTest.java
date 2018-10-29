@@ -155,7 +155,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void reDeterminationThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {CountyCourtJudgmentController
+    public void reDeterminationThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {
 
         String differentUser = "34234234";
         UserDetails userDetails = SampleUserDetails.builder().withUserId(differentUser).build();
