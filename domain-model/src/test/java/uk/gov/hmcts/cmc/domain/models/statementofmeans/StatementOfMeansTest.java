@@ -116,6 +116,19 @@ public class StatementOfMeansTest {
     }
 
     @Test
+    public void shouldBeValidForEmptyBankAccount() {
+        //given
+        StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
+                .bankAccounts(Collections.EMPTY_LIST)
+                .build();
+        //when
+        Set<String> errors = validate(statementOfMeans);
+        //then
+        assertThat(errors)
+                .doesNotContain("bankAccounts : may not be empty");
+    }
+
+    @Test
     public void shouldBeInvalidForInvalidBankAccount() {
         //given
         BankAccount invalidBankAccount = BankAccount.builder().build();
