@@ -106,6 +106,7 @@ public class FormaliseResponseAcceptanceService {
         builder.paymentIntention(paymentIntention);
 
         switch (paymentIntention.getPaymentOption()) {
+            case IMMEDIATELY:
             case BY_SPECIFIED_DATE:
                 LocalDate completionDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
                 builder.completionDate(completionDate);
