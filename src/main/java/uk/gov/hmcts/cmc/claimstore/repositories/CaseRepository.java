@@ -44,6 +44,8 @@ public interface CaseRepository {
 
     List<Claim> getByDefendantEmail(String email, String authorisation);
 
+    List<Claim> getByPaymentReference(String payReference, String authorisation);
+
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);

@@ -153,6 +153,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        return claimRepository.getByPaymentReference(payReference);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return claimRepository.getByLetterHolderId(id);
     }

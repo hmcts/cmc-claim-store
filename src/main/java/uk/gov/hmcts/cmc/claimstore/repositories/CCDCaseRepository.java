@@ -76,6 +76,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        return ccdCaseApi.getByPaymentReference(payReference, authorisation);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }
