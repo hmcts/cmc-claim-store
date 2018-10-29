@@ -171,7 +171,6 @@ public class FormaliseResponseAcceptanceService {
         }
 
         this.countyCourtJudgmentService.save(
-            claim.getSubmitterId(),
             countyCourtJudgment.build(),
             claim.getExternalId(),
             authorisation,

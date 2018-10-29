@@ -44,6 +44,8 @@ public class CountyCourtJudgmentServiceTest {
 
     @Mock
     private ClaimService claimService;
+    @Mock
+    private UserService userService;
 
     @Mock
     private EventProducer eventProducer;
@@ -65,7 +67,10 @@ public class CountyCourtJudgmentServiceTest {
             new AuthorisationService(),
             eventProducer,
             new CountyCourtJudgmentRule(new ClaimDeadlineService()),
+            userService,
             appInsights);
+
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(userDetails);
     }
 
     @Test
@@ -77,7 +82,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
-        countyCourtJudgmentService.save(USER_ID, ccj, EXTERNAL_ID, AUTHORISATION, false);
+        countyCourtJudgmentService.save(ccj, EXTERNAL_ID, AUTHORISATION, false);
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(false));
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(false));
@@ -93,7 +98,7 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, true);
+        countyCourtJudgmentService.save(DATA, EXTERNAL_ID, AUTHORISATION, true);
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any(), eq(true));
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any(), eq(true));
@@ -111,7 +116,7 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
 
         verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
             eq(AUTHORISATION), eq(userDetails.getFullName()));
@@ -125,7 +130,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenThrow(new NotFoundException("Claim not found by id"));
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        countyCourtJudgmentService.save(DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
     @Test(expected = NotFoundException.class)
@@ -134,7 +139,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenThrow(new NotFoundException("Claim not found by id"));
 
-        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -146,11 +151,11 @@ public class CountyCourtJudgmentServiceTest {
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
 
-        countyCourtJudgmentService.save(differentUser, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        countyCourtJudgmentService.save(DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void reDeterminationThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {
+    public void reDeterminationThrowsForbiddenActionExceptionWhenClaimWasSubmittedBySomeoneElse() {CountyCourtJudgmentController
 
         String differentUser = "34234234";
         UserDetails userDetails = SampleUserDetails.builder().withUserId(differentUser).build();
@@ -158,8 +163,9 @@ public class CountyCourtJudgmentServiceTest {
         Claim claim = SampleClaim.getDefault();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
-        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -169,7 +175,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        countyCourtJudgmentService.save(DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -179,7 +185,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        countyCourtJudgmentService.save(DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
 
@@ -190,7 +196,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -200,7 +206,7 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(respondedClaim);
 
-        countyCourtJudgmentService.save(USER_ID, DATA, EXTERNAL_ID, AUTHORISATION, false);
+        countyCourtJudgmentService.save(DATA, EXTERNAL_ID, AUTHORISATION, false);
     }
 
 
@@ -219,6 +225,6 @@ public class CountyCourtJudgmentServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION)))
             .thenReturn(claim);
 
-        countyCourtJudgmentService.reDetermination(userDetails, reDetermination, EXTERNAL_ID, AUTHORISATION);
+        countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 }

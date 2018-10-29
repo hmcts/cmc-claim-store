@@ -19,6 +19,7 @@ public class CountyCourtJudgmentService {
     private final AuthorisationService authorisationService;
     private final EventProducer eventProducer;
     private final CountyCourtJudgmentRule countyCourtJudgmentRule;
+    private final UserService userService;
     private final AppInsights appInsights;
 
     @Autowired
@@ -27,26 +28,29 @@ public class CountyCourtJudgmentService {
         AuthorisationService authorisationService,
         EventProducer eventProducer,
         CountyCourtJudgmentRule countyCourtJudgmentRule,
+        UserService userService,
         AppInsights appInsights
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
         this.eventProducer = eventProducer;
         this.countyCourtJudgmentRule = countyCourtJudgmentRule;
+        this.userService = userService;
         this.appInsights = appInsights;
     }
 
     @Transactional(transactionManager = "transactionManager")
     public Claim save(
-        String submitterId,
         CountyCourtJudgment countyCourtJudgment,
         String externalId,
         String authorisation,
         boolean issue
     ) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
-        authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
+        authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
 
@@ -70,11 +74,12 @@ public class CountyCourtJudgmentService {
     }
 
     public Claim reDetermination(
-        UserDetails userDetails,
         ReDetermination redetermination,
         String externalId,
         String authorisation
     ) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
         authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());

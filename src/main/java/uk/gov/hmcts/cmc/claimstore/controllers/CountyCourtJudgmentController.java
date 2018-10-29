@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -49,8 +48,7 @@ public class CountyCourtJudgmentController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestParam(name = "issue", required = false) boolean issue
     ) {
-        String submitterId = userService.getUserDetails(authorisation).getId();
-        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation, issue);
+        return countyCourtJudgmentService.save(countyCourtJudgment, externalId, authorisation, issue);
     }
 
     @PostMapping("/{externalId:" + UUID_PATTERN + "}/re-determination")
@@ -60,7 +58,6 @@ public class CountyCourtJudgmentController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @NotNull @RequestBody @Valid ReDetermination reDetermination
     ) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        return countyCourtJudgmentService.reDetermination(userDetails, reDetermination, externalId, authorisation);
+        return countyCourtJudgmentService.reDetermination(reDetermination, externalId, authorisation);
     }
 }
