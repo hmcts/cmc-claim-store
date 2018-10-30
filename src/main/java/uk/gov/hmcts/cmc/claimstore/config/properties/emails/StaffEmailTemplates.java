@@ -63,4 +63,12 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/paidInFull/subject.txt");
     }
 
+
+    public String getReDeterminationRequestEmailBody() {
+        return readString("/staff/templates/email/redeterminationRequest/body.txt");
+    }
+
+    public String getReDeterminationRequestEmailSubject() {
+        return readString("/staff/templates/email/redeterminationRequest/subject.txt");
+    }
 }

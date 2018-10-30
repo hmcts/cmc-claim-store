@@ -56,7 +56,7 @@ public class PartyDetailsContentProvider {
      *                      defendant email)
      * @return party details content
      */
-    public PartyDetailsContent createContent(
+    public PartyDetailsContent     createContent(
         TheirDetails oppositeParty,
         Party ownParty,
         String ownPartyEmail,
