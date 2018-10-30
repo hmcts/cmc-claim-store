@@ -125,7 +125,7 @@ public class StatementOfMeansTest {
         Set<String> errors = validate(statementOfMeans);
         //then
         assertThat(errors)
-                .doesNotContain("bankAccounts : may not be empty");
+                .hasSize(0);
     }
 
     @Test
