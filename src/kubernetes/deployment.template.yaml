@@ -106,7 +106,7 @@ spec:
           resources:
             requests:
               memory: '1024Mi'
-              cpu: '500m'
+              cpu: '200m'
             limits:
               memory: '2048Mi'
               cpu: '2500m'
@@ -200,7 +200,7 @@ spec:
             cpu: '200m'
           limits:
             memory: '1024Mi'
-            cpu: '2500m'
+            cpu: '1000m'
         ports:
         - containerPort: 8580
           name: http
@@ -226,7 +226,7 @@ metadata:
   name: feature-toggle-importer
   namespace: ${NAMESPACE}
 spec:
-  schedule: '*/1 * * * *'
+  schedule: '*/5 * * * *'
   concurrencyPolicy: 'Forbid'
   jobTemplate:
     spec:
