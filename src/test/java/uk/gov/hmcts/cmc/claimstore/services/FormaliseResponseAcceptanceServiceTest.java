@@ -118,7 +118,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
-            eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
@@ -151,7 +150,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
-            eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
@@ -186,7 +184,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
-            eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
@@ -224,7 +221,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
-            eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
@@ -261,7 +257,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
-            eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
@@ -294,7 +289,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
-            eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
@@ -327,7 +321,6 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
         verify(countyCourtJudgmentService).save(
-            eq(claim.getSubmitterId()),
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));

@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -203,7 +204,9 @@ public class CommonOperations {
             .post("/responses/" + claimExternalId + "/claimant/" + claimant.getUserDetails().getId());
     }
 
+
     public Response requestCCJ(String externalId, CountyCourtJudgment ccj, User user) {
+        String path = "/claims/" + externalId + "/county-court-judgment";
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -211,6 +214,20 @@ public class CommonOperations {
             .body(jsonMapper.toJson(ccj))
             .when()
             .post("/claims/" + externalId + "/county-court-judgment");
+    }
+
+    public Response submitReDetermination(
+        ReDetermination reDetermination,
+        String claimExternalId,
+        User claimant
+    ) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
+            .body(jsonMapper.toJson(reDetermination))
+            .when()
+            .post("/claims/" + claimExternalId + "/re-determination");
     }
 
     public Response paidInFull(String externalId, PaidInFull paidInFull, User user) {

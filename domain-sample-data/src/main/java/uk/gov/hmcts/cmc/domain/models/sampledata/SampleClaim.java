@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -61,6 +63,8 @@ public final class SampleClaim {
     private ClaimantResponse claimantResponse;
     private LocalDate directionsQuestionnaireDeadline;
     private LocalDate moneyReceivedOn;
+    private LocalDateTime reDeterminationRequestedAt;
+    private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
 
     private SampleClaim() {
     }
@@ -188,7 +192,9 @@ public final class SampleClaim {
             claimantRespondedAt,
             claimantResponse,
             directionsQuestionnaireDeadline,
-            moneyReceivedOn
+            moneyReceivedOn,
+            reDetermination,
+            reDeterminationRequestedAt
         );
     }
 
@@ -287,6 +293,17 @@ public final class SampleClaim {
         return this;
     }
 
+
+    public SampleClaim withReDetermination(ReDetermination reDetermination) {
+        this.reDetermination = reDetermination;
+        return this;
+    }
+
+    public SampleClaim withReDeterminationRequestedAt(LocalDateTime reDeterminationRequestedAt) {
+        this.reDeterminationRequestedAt = reDeterminationRequestedAt;
+        return this;
+    }
+
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
         this.sealedClaimDocument = sealedClaimDocument;
         return this;
@@ -306,12 +323,12 @@ public final class SampleClaim {
         this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
-  
+
     public SampleClaim withMoneyReceivedOn(LocalDate moneyReceivedOn) {
         this.moneyReceivedOn = moneyReceivedOn;
         return this;
     }
-  
+
     public SampleClaim withFeatures(List<String> features) {
         this.features = features;
         return this;

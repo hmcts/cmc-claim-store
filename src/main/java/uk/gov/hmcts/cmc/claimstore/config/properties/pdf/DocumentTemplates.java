@@ -11,6 +11,10 @@ public class DocumentTemplates {
         return readBytes("/citizen/templates/document/defendantResponseReceipt.html");
     }
 
+    public byte[] getClaimantResponseReceipt() {
+        return readBytes("/citizen/templates/document/claimantResponseReceipt.html");
+    }
+
     public byte[] getClaimIssueReceipt() {
         return readBytes("/citizen/templates/document/claimIssueReceipt.html");
     }
