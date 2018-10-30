@@ -216,6 +216,14 @@ public interface ClaimRepository {
         @Bind("ccjIssuedAt") LocalDateTime ccjIssuedAt
     );
 
+    @SqlUpdate("UPDATE claim SET "
+        + " re_determination = :reDetermination::JSONB,"
+        + " re_determination_requested_at = now() AT TIME ZONE 'utc' "
+        + " WHERE external_id = :externalId")
+    void saveReDetermination(
+        @Bind("externalId") String externalId,
+        @Bind("reDetermination") String reDetermination);
+
     @SqlUpdate(
         "UPDATE claim SET "
             + "defendant_id = :defendantId,"

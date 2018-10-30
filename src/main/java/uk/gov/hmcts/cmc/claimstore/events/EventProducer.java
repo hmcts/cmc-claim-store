@@ -77,4 +77,8 @@ public class EventProducer {
     public void createPaidInFullEvent(Claim claim) {
         publisher.publishEvent(new PaidInFullEvent(claim));
     }
+
+    public void createRedeterminationEvent(Claim claim, String authorisation, String submitterName) {
+        publisher.publishEvent(new ReDeterminationEvent(claim, authorisation, submitterName));
+    }
 }
