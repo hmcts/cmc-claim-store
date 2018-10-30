@@ -144,6 +144,10 @@ public class ClaimService {
         return caseRepository.getByDefendantEmail(email, authorisation);
     }
 
+    public List<Claim> getClaimByPaymentReference(String payReference, String authorisation) {
+        return caseRepository.getByPaymentReference(payReference, authorisation);
+    }
+
     public CaseReference savePrePayment(String externalId, String authorisation) {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
