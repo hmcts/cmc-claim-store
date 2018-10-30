@@ -206,7 +206,6 @@ public class CommonOperations {
 
 
     public Response requestCCJ(String externalId, CountyCourtJudgment ccj, User user) {
-        String path = "/claims/" + externalId + "/county-court-judgment";
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
