@@ -2,7 +2,8 @@ package uk.gov.hmcts.cmc.ccd.domain.offers;
 
 public enum CCDMadeBy {
     CLAIMANT("claimant"),
-    DEFENDANT("defendant");
+    DEFENDANT("defendant"),
+    COURT("court");
 
     private final String value;
 

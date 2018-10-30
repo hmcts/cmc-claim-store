@@ -35,7 +35,7 @@ public interface CaseRepository {
 
     void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation);
 
-    void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
+    void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization);
 
     void linkDefendant(String authorisation);
 
@@ -44,6 +44,8 @@ public interface CaseRepository {
     List<Claim> getByClaimantEmail(String email, String authorisation);
 
     List<Claim> getByDefendantEmail(String email, String authorisation);
+
+    List<Claim> getByPaymentReference(String payReference, String authorisation);
 
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 

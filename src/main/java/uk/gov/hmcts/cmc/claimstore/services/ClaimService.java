@@ -144,6 +144,10 @@ public class ClaimService {
         return caseRepository.getByDefendantEmail(email, authorisation);
     }
 
+    public List<Claim> getClaimByPaymentReference(String payReference, String authorisation) {
+        return caseRepository.getByPaymentReference(payReference, authorisation);
+    }
+
     public CaseReference savePrePayment(String externalId, String authorisation) {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
@@ -309,7 +313,7 @@ public class ClaimService {
         if (isFullDefenceWithNoMediation(response)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-            caseRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), deadline, authorization);
+            caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
         }
     }
 

@@ -138,8 +138,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
-        claimRepository.updateDirectionsQuestionnaireDeadline(externalId, dqDeadline);
+    public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
+        claimRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), dqDeadline);
     }
 
     @Override
@@ -155,6 +155,11 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public List<Claim> getByDefendantEmail(String email, String authorisation) {
         return claimRepository.getByDefendantEmail(email);
+    }
+
+    @Override
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        return claimRepository.getByPaymentReference(payReference);
     }
 
     @Override
