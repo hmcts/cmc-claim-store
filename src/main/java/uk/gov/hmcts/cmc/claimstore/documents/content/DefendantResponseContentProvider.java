@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -76,19 +77,27 @@ public class DefendantResponseContentProvider {
         ));
         content.put("responseType", defendantResponse.getResponseType());
 
-        if (defendantResponse instanceof FullDefenceResponse) {
-            content.putAll(
-                fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
-            );
-        } else if (defendantResponse instanceof FullAdmissionResponse) {
-            content.putAll(
-                fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
-            );
-        } else if (defendantResponse instanceof PartAdmissionResponse) {
-            content.putAll(
-                partAdmissionResponseContentProvider.createContent((PartAdmissionResponse) defendantResponse)
-            );
+        switch (defendantResponse.getResponseType()) {
+            case FULL_DEFENCE:
+                content.putAll(
+                    fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
+                );
+                break;
+            case FULL_ADMISSION:
+                content.putAll(
+                    fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
+                );
+                break;
+            case PART_ADMISSION:
+                content.putAll(
+                    partAdmissionResponseContentProvider.createContent((PartAdmissionResponse) defendantResponse)
+                );
+                break;
+            default:
+                throw new MappingException("Invalid responseType " + defendantResponse.getResponseType());
+
         }
+
         return content;
     }
 }

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -157,5 +158,15 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI) {
         coreCaseDataService.linkSealedClaimDocument(authorisation, claim.getId(), documentURI);
+    }
+
+    @Override
+    public void saveReDetermination(
+        String authorisation,
+        Claim claim,
+        ReDetermination reDetermination,
+        String submitterId
+    ) {
+        throw new NotImplementedException("We do not implement CCD yet");
     }
 }
