@@ -614,7 +614,7 @@
         <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts:</strong></td>
       </tr>
       {% if bankAccounts is defined and bankAccounts is not empty %}
-        {% for bankAccount in bankAccounts | default([]) %}
+        {% for bankAccount in bankAccounts %}
         <tr class="no-border">
           <td><strong>{% if loop.length > 1 %} {{ loop.index + 1 }}. {% endif %} Type of account:</strong></td>
           <td>
