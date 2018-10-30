@@ -104,6 +104,8 @@ notifications:
       claimantResponseWithNoMediationIssued: "9c740162-7516-4954-a023-6c1e48ba02f6"
       defendantResponseWithNoMediationIssued: "613ca230-ab62-4370-bacd-ecc65b92132a"
       responseByClaimantEmailToDefendant: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
+      claimantSaysDefendantHasPaidInFull: "221e3923-1321-413a-a02e-ee8c94816cbf"
+
 staff-notifications:
   sender:
   recipient:

@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -132,8 +134,13 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
-        claimRepository.updateDirectionsQuestionnaireDeadline(externalId, dqDeadline);
+    public void paidInFull(Claim claim, PaidInFull paidInFull, String authorization) {
+        claimRepository.updateMoneyReceivedOn(claim.getExternalId(), paidInFull.getMoneyReceivedOn());
+    }
+
+    @Override
+    public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
+        claimRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), dqDeadline);
     }
 
     @Override
@@ -149,6 +156,11 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public List<Claim> getByDefendantEmail(String email, String authorisation) {
         return claimRepository.getByDefendantEmail(email);
+    }
+
+    @Override
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        return claimRepository.getByPaymentReference(payReference);
     }
 
     @Override
@@ -210,5 +222,15 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentUri) {
         claimRepository.linkSealedClaimDocument(claim.getId(), documentUri.toString());
+    }
+
+    @Override
+    public void saveReDetermination(
+        String authorisation,
+        Claim claim,
+        ReDetermination reDetermination,
+        String submitterId
+    ) {
+        claimRepository.saveReDetermination(claim.getExternalId(), jsonMapper.toJson(reDetermination));
     }
 }
