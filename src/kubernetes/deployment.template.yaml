@@ -226,7 +226,7 @@ metadata:
   name: feature-toggle-importer
   namespace: ${NAMESPACE}
 spec:
-  schedule: '*/1 * * * *'
+  schedule: '*/5 * * * *'
   concurrencyPolicy: 'Forbid'
   jobTemplate:
     spec:
