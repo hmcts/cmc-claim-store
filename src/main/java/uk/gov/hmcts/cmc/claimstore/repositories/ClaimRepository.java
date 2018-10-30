@@ -63,7 +63,7 @@ public interface ClaimRepository {
                                        @Bind("submitterId") String submitterId);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim->'payment'->>'reference' = :payReference")
-    List<Claim> getByPaymentReference(String payReference);
+    List<Claim> getByPaymentReference(@Bind("payReference") String payReference);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
     List<Claim> getAllNotMigratedClaims();
