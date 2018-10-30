@@ -8,7 +8,7 @@ public enum FormaliseOption {
     SETTLEMENT("Settlement"),
     REFER_TO_JUDGE("Refer to Judge");
 
-    private final String description;
+    String description;
 
     FormaliseOption(String description) {
         this.description = description;
