@@ -33,7 +33,8 @@ public class FullAdmissionResponseContentProvider {
                 fullAdmissionResponse.getPaymentIntention().getPaymentOption(),
                 fullAdmissionResponse.getPaymentIntention().getRepaymentPlan().orElse(null),
                 fullAdmissionResponse.getPaymentIntention().getPaymentDate().orElse(null),
-                "The full amount"
+                "The full amount",
+                ""
                 )
             );
 
