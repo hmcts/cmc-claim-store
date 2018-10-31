@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class SettlementAgreementPDFContentProviderTest {
 
@@ -23,12 +23,15 @@ public class SettlementAgreementPDFContentProviderTest {
 
     private Claim claimWithPaymentIntention;
 
+    private static final String SETTLEMENT_FORM_NAME_OFFERS_ROUTE = "OCON Settlement Agreement";
+    private static final String SETTLEMENT_FORM_NAME_ADMISSIONS_ROUTE = "OCON Settlement Agreement A";
+
     private final SettlementAgreementPDFContentProvider classToTest =
         new SettlementAgreementPDFContentProvider(new PartyDetailsContentProvider());
 
     @Before
     public void setup() {
-        Settlement settlement= new Settlement();
+        Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
 
@@ -52,30 +55,36 @@ public class SettlementAgreementPDFContentProviderTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenNullClaim(){
+    public void shouldThrowNullPointerWhenNullClaim() {
         classToTest.createContent(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentWhenNoResponse(){
+    public void shouldThrowIllegalArgumentWhenNoResponse() {
         classToTest.createContent(claimWithDefaultResponse);
     }
 
     @Test
-    public void shouldReturnContentMapWhenClaimOfferWithNoPaymentIntention(){
+    public void shouldReturnContentMapWithAllCommonFields() {
         Map<String, Object> contentMap = classToTest.createContent(claimWithSettlement);
         assertCommonFieldsIsPresent(contentMap);
-        assertFalse(contentMap.containsKey("firstPaymentDate"));
     }
 
     @Test
-    public void shouldReturnContentMapWhenClaimOfferWithPaymentIntentionIsPassed(){
-        Map<String, Object> contentMap = classToTest.createContent(claimWithPaymentIntention);
+    public void shouldReturnOconSettlementAFormNameInContentMapWhenPaymentIntention() {
+        Map<String, Object> contentMap = classToTest.createContent(claimWithSettlement);
         assertCommonFieldsIsPresent(contentMap);
-        assertTrue(contentMap.containsKey("firstPaymentDate"));
+        assertTrue(contentMap.containsValue(SETTLEMENT_FORM_NAME_OFFERS_ROUTE));
     }
 
-    private void assertCommonFieldsIsPresent(Map<String, Object> contentMap){
+    @Test
+    public void shouldReturnOconSettlementFormNameInContentMapWhenAdmission() {
+        Map<String, Object> contentMap = classToTest.createContent(claimWithPaymentIntention);
+        assertCommonFieldsIsPresent(contentMap);
+        assertTrue(contentMap.containsValue(SETTLEMENT_FORM_NAME_ADMISSIONS_ROUTE));
+    }
+
+    private void assertCommonFieldsIsPresent(Map<String, Object> contentMap) {
         assertTrue(contentMap.containsKey("settlementReachedAt"));
         assertTrue(contentMap.containsKey("acceptedOffer"));
         assertTrue(contentMap.containsKey("settlementReachedAt"));

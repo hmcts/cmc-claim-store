@@ -20,7 +20,9 @@ import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -69,20 +71,20 @@ public class FormaliseResponseAcceptanceService {
         Settlement settlement = new Settlement();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         PaymentIntention paymentIntention = acceptedPaymentIntention(responseAcceptation, response);
-        DecisionType decisionType = getDecisionType(responseAcceptation);
-        switch (decisionType) {
+        BigDecimal claimAmountTillDate = claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO);
+        switch (getDecisionType(responseAcceptation)) {
             case DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.DEFENDANT);
+                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.DEFENDANT);
                 break;
             case CLAIMANT:
             case CLAIMANT_IN_FAVOUR_OF_DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.CLAIMANT);
+                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.CLAIMANT);
                 break;
             case COURT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.COURT);
+                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.COURT);
                 break;
             default:
-                throw new IllegalStateException("Invalid decision type " + decisionType);
+                throw new IllegalStateException("Invalid decision type in the Claim");
 
         }
         settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
@@ -102,7 +104,7 @@ public class FormaliseResponseAcceptanceService {
         return DecisionType.DEFENDANT;
     }
 
-    private Offer prepareOffer(Response response, PaymentIntention paymentIntention) {
+    private Offer prepareOffer(Response response, PaymentIntention paymentIntention, BigDecimal claimAmountTillDate) {
         Offer.OfferBuilder builder = Offer.builder();
         builder.paymentIntention(paymentIntention);
 
@@ -111,20 +113,16 @@ public class FormaliseResponseAcceptanceService {
             case BY_SPECIFIED_DATE:
                 LocalDate completionDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
                 builder.completionDate(completionDate);
-                String contentBySetDate = prepareOfferContentsBySetDate(response, builder, completionDate);
-                builder.content(contentBySetDate);
+                builder.content(
+                    prepareOfferContentsBySetDate(response, builder, completionDate, claimAmountTillDate)
+                );
                 break;
             case INSTALMENTS:
                 RepaymentPlan repaymentPlan = paymentIntention.getRepaymentPlan().orElseThrow(IllegalAccessError::new);
                 builder.completionDate(repaymentPlan.getCompletionDate());
-                builder.content(String.format(
-                    "%s will pay instalments of %s %s. The first instalment will be paid by %s.",
-                    response.getDefendant().getName(),
-                    formatMoney(repaymentPlan.getInstalmentAmount()),
-                    repaymentPlan.getPaymentSchedule().getDescription(),
-                    formatDate(repaymentPlan.getFirstPaymentDate())
-
-                ));
+                builder.content(
+                    prepareOfferContentForRepayment(response, repaymentPlan, claimAmountTillDate)
+                );
                 break;
             default:
                 throw new IllegalStateException("Invalid payment option " + paymentIntention.getPaymentOption());
@@ -132,10 +130,23 @@ public class FormaliseResponseAcceptanceService {
         return builder.build();
     }
 
+    private String prepareOfferContentForRepayment(Response response, RepaymentPlan repaymentPlan,
+                                                   BigDecimal claimAmountTillDate) {
+        return String.format(
+            "%s will repay %s in instalments of %s %s. The first instalment will be paid by %s.",
+            response.getDefendant().getName(),
+            response.getResponseType() == ResponseType.PART_ADMISSION
+                ? formatMoney(((PartAdmissionResponse) response).getAmount()) : formatMoney(claimAmountTillDate),
+            formatMoney(repaymentPlan.getInstalmentAmount()),
+            repaymentPlan.getPaymentSchedule().getDescription(),
+            formatDate(repaymentPlan.getFirstPaymentDate()));
+    }
+
     private String prepareOfferContentsBySetDate(
         Response response,
         Offer.OfferBuilder builder,
-        LocalDate completionDate
+        LocalDate completionDate,
+        BigDecimal claimAmountTillDate
     ) {
         builder.completionDate(completionDate);
         String amount;
@@ -145,7 +156,7 @@ public class FormaliseResponseAcceptanceService {
                 amount = formatMoney(partAdmissionResponse.getAmount());
                 break;
             case FULL_ADMISSION:
-                amount = "the full amount";
+                amount = formatMoney(claimAmountTillDate);
                 break;
             default:
                 throw new IllegalStateException("Invalid response type " + response.getResponseType());

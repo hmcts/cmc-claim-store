@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -84,9 +85,8 @@ public class DefendantResponseContentProvider {
                 );
                 break;
             case FULL_ADMISSION:
-                content.putAll(
-                    fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
-                );
+                fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse,
+                    claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO));
                 break;
             case PART_ADMISSION:
                 content.putAll(
@@ -97,7 +97,6 @@ public class DefendantResponseContentProvider {
                 throw new MappingException("Invalid responseType " + defendantResponse.getResponseType());
 
         }
-
         return content;
     }
 }
