@@ -30,7 +30,7 @@ public class SettlementAgreementPDFContentProviderTest {
         new SettlementAgreementPDFContentProvider(new PartyDetailsContentProvider());
 
     @Before
-    public void setup() {
+    public void setUp() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
