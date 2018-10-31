@@ -12,6 +12,10 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 @Service
 public class ClaimantResponseService {
@@ -51,14 +55,32 @@ public class ClaimantResponseService {
 
         caseRepository.saveClaimantResponse(claim, response, authorization);
 
-        if (ClaimantResponseType.ACCEPTATION.equals(response.getType())) {
-            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) response, authorization);
-        }
+        formaliseResponseAcceptance(response, claim, authorization);
 
         eventProducer.createClaimantResponseEvent(claim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
 
+    private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if (ClaimantResponseType.ACCEPTATION.equals(claimantResponse.getType())
+            && !isResponseStatesPaid(response)) {
+            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+        }
+    }
+
+    private boolean isResponseStatesPaid(Response response) {
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                return ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
+            case PART_ADMISSION:
+                return ((PartAdmissionResponse) response).getPaymentIntention().isPresent();
+            default:
+                return false;
+        }
+    }
+    
     private AppInsightsEvent getAppInsightsEvent(ClaimantResponse claimantResponse) {
         if (claimantResponse instanceof ResponseAcceptation) {
             return AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
