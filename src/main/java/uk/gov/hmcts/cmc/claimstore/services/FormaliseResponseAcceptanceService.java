@@ -161,7 +161,7 @@ public class FormaliseResponseAcceptanceService {
             default:
                 throw new IllegalStateException("Invalid response type " + response.getResponseType());
         }
-        return String.format("%s will pay %s, no later than %s",
+        return String.format("%s will pay %s no later than %s",
             response.getDefendant().getName(), amount, formatDate(completionDate)
         );
     }
