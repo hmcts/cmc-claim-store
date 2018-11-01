@@ -30,8 +30,10 @@ public class AgreementCounterSignedCitizenActionsHandlerTest {
     private static final String FRONTEND_URL = "domain";
     private static final String ORIGINATOR_TEMPLATE_ID = "originator template id";
     private static final String OTHER_PARTY_TEMPLATE_ID = "other party template id";
-    private static final AgreementCountersignedEvent EVENT_BY_CLAIMANT = new AgreementCountersignedEvent(SampleClaim.getDefault(), MadeBy.CLAIMANT);
-    private static final AgreementCountersignedEvent EVENT_BY_DEFENDANT = new AgreementCountersignedEvent(SampleClaim.getDefault(), MadeBy.DEFENDANT);
+    private static final AgreementCountersignedEvent EVENT_BY_CLAIMANT =
+        new AgreementCountersignedEvent(SampleClaim.getDefault(), MadeBy.CLAIMANT);
+    private static final AgreementCountersignedEvent EVENT_BY_DEFENDANT =
+        new AgreementCountersignedEvent(SampleClaim.getDefault(), MadeBy.DEFENDANT);
 
     private AgreementCounterSignedCitizenActionsHandler handler;
 
