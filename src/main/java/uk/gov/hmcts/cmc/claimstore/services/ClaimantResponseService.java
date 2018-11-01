@@ -76,11 +76,12 @@ public class ClaimantResponseService {
                 return ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
             case PART_ADMISSION:
                 return ((PartAdmissionResponse) response).getPaymentIntention().isPresent();
+            case FULL_ADMISSION:
             default:
                 return false;
         }
     }
-    
+
     private AppInsightsEvent getAppInsightsEvent(ClaimantResponse claimantResponse) {
         if (claimantResponse instanceof ResponseAcceptation) {
             return AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
