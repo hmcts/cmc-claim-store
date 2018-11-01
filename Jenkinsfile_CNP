@@ -11,8 +11,6 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
   secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
   secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
-  secret('claim-store-db-password', 'CLAIM_STORE_DB_PASSWORD'),
-  secret('cmc-db-password', 'CMC_DB_PASSWORD'),
   secret('claim-store-s2s-secret', 'CLAIM_STORE_S2S_SECRET'),
   secret('anonymous-caseworker-username', 'ANONYMOUS_CASEWORKER_USERNAME'),
   secret('anonymous-caseworker-password', 'ANONYMOUS_CASEWORKER_PASSWORD'),
