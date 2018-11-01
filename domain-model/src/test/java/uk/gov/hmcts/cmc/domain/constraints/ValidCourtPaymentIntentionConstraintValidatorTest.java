@@ -14,6 +14,10 @@ import javax.validation.ConstraintValidatorContext;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 
@@ -28,6 +32,18 @@ public class ValidCourtPaymentIntentionConstraintValidatorTest {
     @Before
     public void beforeEachTest() {
         validator = new ValidCourtPaymentIntentionConstraintValidator();
+
+        ConstraintValidatorContext.ConstraintViolationBuilder builder = mock(
+            ConstraintValidatorContext.ConstraintViolationBuilder.class
+        );
+
+        when(builder.addPropertyNode(anyString()))
+            .thenReturn(
+                mock(ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext.class)
+            );
+
+        when(context.buildConstraintViolationWithTemplate(any())).thenReturn(builder);
+
     }
 
     @Test
@@ -82,6 +98,17 @@ public class ValidCourtPaymentIntentionConstraintValidatorTest {
             .disposableIncome(BigDecimal.ZERO)
             .build();
         assertThat(validator.isValid(courtDetermination, context)).isTrue();
+    }
+
+    @Test
+    public void shouldBeValidWhenCourtPaymentIntentionIsNullWithDecisionTypeDefendantAndDisposablePositive() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(null)
+            .decisionType(DecisionType.DEFENDANT)
+            .disposableIncome(BigDecimal.TEN)
+            .build();
+        assertThat(validator.isValid(courtDetermination, context)).isFalse();
     }
 
     @Test
