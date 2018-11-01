@@ -49,6 +49,7 @@ public class ResponseAcceptationContentProvider {
         });
 
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
+
         if (claimantPaymentIntention.isPresent()) {
             content.put("hasClaimantPaymentIntention", true);
             content.put("paymentPlanAccepted", "I reject this repayment plan");
@@ -65,7 +66,6 @@ public class ResponseAcceptationContentProvider {
         }
 
         content.put("formNumber", ADMISSIONS_FORM_NO);
-
         return content;
     }
 }
