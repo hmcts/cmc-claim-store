@@ -4,6 +4,7 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static java.math.BigDecimal.TEN;
@@ -87,6 +88,34 @@ public class CourtDeterminationTest {
                 .paymentDate(now().plusDays(30))
                 .build())
             .decisionType(DecisionType.CLAIMANT)
+            .build();
+
+        Set<String> response = validate(courtDetermination);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
+    public void shouldBeValidWhenMissingCourtPaymentIntentionAndZeroDisposableForDefendantDecision() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(null)
+            .decisionType(DecisionType.DEFENDANT)
+            .disposableIncome(BigDecimal.ZERO)
+            .build();
+
+        Set<String> response = validate(courtDetermination);
+
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldNotBeValidWhenMissingCourtPaymentIntentionAndNonZeroDisposableForDefendantDecision() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(null)
+            .decisionType(DecisionType.DEFENDANT)
+            .disposableIncome(BigDecimal.TEN)
             .build();
 
         Set<String> response = validate(courtDetermination);

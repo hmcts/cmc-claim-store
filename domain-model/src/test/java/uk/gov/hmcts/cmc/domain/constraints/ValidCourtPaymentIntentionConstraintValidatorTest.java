@@ -8,6 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+
+import java.math.BigDecimal;
 import javax.validation.ConstraintValidatorContext;
 
 import static java.time.LocalDate.now;
@@ -29,27 +31,44 @@ public class ValidCourtPaymentIntentionConstraintValidatorTest {
     }
 
     @Test
-    public void shouldNotBeValidWhenCourtPaymentIntentionIsPresent() {
+    public void shouldBeValidWhenCourtPaymentIntentionIsPresentAndDisposableIsPositive() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(bySetDate())
             .courtPaymentIntention(PaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)
                 .paymentDate(now().plusDays(30))
                 .build())
+            .disposableIncome(BigDecimal.valueOf(1000))
+            .decisionType(DecisionType.DEFENDANT)
+            .build();
+        assertThat(validator.isValid(courtDetermination, context)).isTrue();
+    }
+
+    @Test
+    public void shouldBeInvalidWhenCourtPaymentIntentionIsPresentAndDisposableIsZero() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .disposableIncome(BigDecimal.ZERO)
             .decisionType(DecisionType.DEFENDANT)
             .build();
         assertThat(validator.isValid(courtDetermination, context)).isFalse();
     }
 
+
     @Test
-    public void shouldNotBeValidWhenCourtPaymentIntentionIsPresentWithDecisionTypeClaimant() {
+    public void shouldBeInvalidWhenCourtPaymentIntentionIsPresentAndDisposableIsNegative() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(bySetDate())
             .courtPaymentIntention(PaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)
                 .paymentDate(now().plusDays(30))
                 .build())
-            .decisionType(DecisionType.CLAIMANT)
+            .disposableIncome(BigDecimal.valueOf(-1))
+            .decisionType(DecisionType.DEFENDANT)
             .build();
         assertThat(validator.isValid(courtDetermination, context)).isFalse();
     }
@@ -60,6 +79,49 @@ public class ValidCourtPaymentIntentionConstraintValidatorTest {
             .courtDecision(bySetDate())
             .courtPaymentIntention(null)
             .decisionType(DecisionType.DEFENDANT)
+            .disposableIncome(BigDecimal.ZERO)
+            .build();
+        assertThat(validator.isValid(courtDetermination, context)).isTrue();
+    }
+
+    @Test
+    public void shouldValidWhenCourtPaymentIntentionIsPresentWithDecisionTypeClaimantAndDisposableIsNegative() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .decisionType(DecisionType.CLAIMANT)
+            .disposableIncome(BigDecimal.valueOf(-1))
+            .build();
+        assertThat(validator.isValid(courtDetermination, context)).isFalse();
+    }
+
+    @Test
+    public void shouldValidWhenCourtPaymentIntentionIsPresentWithDecisionTypeClaimantAndDisposableIsZero() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .decisionType(DecisionType.CLAIMANT)
+            .disposableIncome(BigDecimal.ZERO)
+            .build();
+        assertThat(validator.isValid(courtDetermination, context)).isFalse();
+    }
+
+    @Test
+    public void shouldValidWhenCourtPaymentIntentionIsPresentWithDecisionTypeClaimantAndDisposableIsPositive() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .decisionType(DecisionType.CLAIMANT)
+            .disposableIncome(BigDecimal.valueOf(1000))
             .build();
         assertThat(validator.isValid(courtDetermination, context)).isTrue();
     }
