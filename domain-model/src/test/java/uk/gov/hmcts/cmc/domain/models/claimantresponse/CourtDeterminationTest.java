@@ -80,22 +80,6 @@ public class CourtDeterminationTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenMissingDisposableIncome() {
-        CourtDetermination courtDetermination = CourtDetermination.builder()
-            .courtDecision(bySetDate())
-            .courtPaymentIntention(PaymentIntention.builder()
-                .paymentOption(BY_SPECIFIED_DATE)
-                .paymentDate(now().plusDays(30))
-                .build())
-            .decisionType(DecisionType.CLAIMANT)
-            .build();
-
-        Set<String> response = validate(courtDetermination);
-
-        assertThat(response).hasSize(1);
-    }
-
-    @Test
     public void shouldBeValidWhenMissingCourtPaymentIntentionAndZeroDisposableForDefendantDecision() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(bySetDate())
