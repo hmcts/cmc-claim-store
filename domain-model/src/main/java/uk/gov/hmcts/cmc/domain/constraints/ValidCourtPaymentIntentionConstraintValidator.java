@@ -27,8 +27,11 @@ public class ValidCourtPaymentIntentionConstraintValidator
             setValidationErrors(context, Fields.DISPOSABLE_INCOME, "should not be less than 0");
             return false;
         }
+        
+        boolean[] booleans = new boolean[2];
+        booleans[0] = (courtDetermination.getDisposableIncome().compareTo(BigDecimal.ZERO) == 0);
+        booleans[1] = courtDetermination.getCourtPaymentIntention().isPresent();
 
-        return BooleanUtils.xor(new boolean[]{courtDetermination.getDisposableIncome().compareTo(BigDecimal.ZERO) == 0,
-            courtDetermination.getCourtPaymentIntention().isPresent()});
+        return BooleanUtils.xor(booleans);
     }
 }
