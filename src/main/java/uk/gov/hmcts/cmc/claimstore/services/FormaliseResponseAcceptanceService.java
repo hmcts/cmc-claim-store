@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -30,7 +28,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Service
 public class FormaliseResponseAcceptanceService {
-    private static final Logger logger = LoggerFactory.getLogger(FormaliseResponseAcceptanceService.class);
 
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final OffersService offersService;
@@ -172,7 +169,6 @@ public class FormaliseResponseAcceptanceService {
         }
 
         this.countyCourtJudgmentService.save(
-            claim.getSubmitterId(),
             countyCourtJudgment.build(),
             claim.getExternalId(),
             authorisation,
