@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import java.util.Set;
 
 import static java.math.BigDecimal.TEN;
+import static java.math.BigDecimal.ZERO;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
@@ -79,14 +80,26 @@ public class CourtDeterminationTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenMissingDisposableIncome() {
+    public void shouldBeValidWhenMissingCourtPaymentIntentionAndZeroDisposableForDefendantDecision() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(bySetDate())
-            .courtPaymentIntention(PaymentIntention.builder()
-                .paymentOption(BY_SPECIFIED_DATE)
-                .paymentDate(now().plusDays(30))
-                .build())
-            .decisionType(DecisionType.CLAIMANT)
+            .courtPaymentIntention(null)
+            .decisionType(DecisionType.DEFENDANT)
+            .disposableIncome(ZERO)
+            .build();
+
+        Set<String> response = validate(courtDetermination);
+
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldNotBeValidWhenMissingCourtPaymentIntentionAndNonZeroDisposableForDefendantDecision() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(bySetDate())
+            .courtPaymentIntention(null)
+            .decisionType(DecisionType.DEFENDANT)
+            .disposableIncome(TEN)
             .build();
 
         Set<String> response = validate(courtDetermination);
