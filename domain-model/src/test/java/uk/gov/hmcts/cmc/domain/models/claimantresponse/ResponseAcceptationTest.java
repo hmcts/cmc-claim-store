@@ -11,7 +11,7 @@ import static java.math.BigDecimal.TEN;
 import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFENDANT;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 
@@ -58,7 +58,7 @@ public class ResponseAcceptationTest {
                 .courtDecision(null)
                 .courtPaymentIntention(SamplePaymentIntention.bySetDate())
                 .disposableIncome(TEN)
-                .decisionType(DEFENDANT)
+                .decisionType(CLAIMANT)
                 .build())
             .formaliseOption(CCJ)
             .build();
