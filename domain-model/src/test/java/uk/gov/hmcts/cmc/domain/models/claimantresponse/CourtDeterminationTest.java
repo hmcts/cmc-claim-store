@@ -4,10 +4,10 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 import static java.math.BigDecimal.TEN;
+import static java.math.BigDecimal.ZERO;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
@@ -85,7 +85,7 @@ public class CourtDeterminationTest {
             .courtDecision(bySetDate())
             .courtPaymentIntention(null)
             .decisionType(DecisionType.DEFENDANT)
-            .disposableIncome(BigDecimal.ZERO)
+            .disposableIncome(ZERO)
             .build();
 
         Set<String> response = validate(courtDetermination);
@@ -99,7 +99,7 @@ public class CourtDeterminationTest {
             .courtDecision(bySetDate())
             .courtPaymentIntention(null)
             .decisionType(DecisionType.DEFENDANT)
-            .disposableIncome(BigDecimal.TEN)
+            .disposableIncome(TEN)
             .build();
 
         Set<String> response = validate(courtDetermination);

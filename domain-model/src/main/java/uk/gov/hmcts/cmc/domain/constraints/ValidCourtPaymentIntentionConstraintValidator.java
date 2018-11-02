@@ -14,6 +14,10 @@ public class ValidCourtPaymentIntentionConstraintValidator
 
     static class Fields {
         static final String DISPOSABLE_INCOME = "disposableIncome";
+
+        private Fields() {
+            // NO-OP
+        }
     }
 
     @Override
