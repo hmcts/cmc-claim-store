@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.ValidCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.math.BigDecimal;
@@ -15,13 +16,13 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode
+@ValidCourtDetermination
 public class CourtDetermination {
 
     @NotNull
     @Valid
     private final PaymentIntention courtDecision;
 
-    @NotNull
     @Valid
     private final PaymentIntention courtPaymentIntention;
 
@@ -50,6 +51,10 @@ public class CourtDetermination {
 
     public Optional<String> getRejectionReason() {
         return Optional.ofNullable(rejectionReason);
+    }
+
+    public Optional<PaymentIntention> getCourtPaymentIntention() {
+        return Optional.ofNullable(courtPaymentIntention);
     }
 
     @Override
