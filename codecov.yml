@@ -8,3 +8,5 @@ ignore:
   - "**/ClaimRepository.java"
   - "**/PathPatterns.java"
   - "**/cmc/claimstore/appinsights/**"
+  - "**/ccd/domain/**"
+  - "**/ccd/migration/**"
