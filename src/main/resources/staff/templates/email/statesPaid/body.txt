@@ -1,0 +1,27 @@
+{% if response.defenceType == 'DISPUTE' %}
+The defendant has submitted a States Paid defence.
+
+The Claimant has stated that the claim is: {{claimantResponse}}
+
+{%if claimantResponse == 'ACCEPTATION' %}
+
+Claimant has accepted the states paid defence. Please enter a code 73
+
+{% elseif claimantResponse == 'REJECTION' %}
+
+Claimant has rejected the states paid defence. Please enter a code 67 & 196
+
+{% endif %}
+
+
+Defendant's details can be found on the attached defence copy. Additional contact details are:
+
+Email: {{ defendantEmail }}
+
+{% if defendantMobilePhone is not empty %}
+Mobile number: {{ defendantMobilePhone }}
+{% else %}
+Mobile number: not given
+{% endif %}
+
+This email has been sent from HM Courts & Tribunals Service Civil Money Claims online court.

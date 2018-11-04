@@ -15,45 +15,31 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/claimIssued/subject.txt");
     }
 
-    public String getFullDefenceResponseEmailBody() {
-        return readString("/staff/templates/email/fullDefence/body.txt");
-    }
+    public String getFullDefenceResponseEmailBody() { return readString("/staff/templates/email/fullDefence/body.txt"); }
 
-    public String getFullDefenceResponseEmailSubject() {
-        return readString("/staff/templates/email/fullDefence/subject.txt");
-    }
+    public String getFullDefenceResponseEmailSubject() { return readString("/staff/templates/email/fullDefence/subject.txt"); }
 
-    public String getDefendantAdmissionResponseEmailBody() {
-        return readString("/staff/templates/email/defendantAdmission/body.txt");
-    }
+    public String getDefendantAdmissionResponseEmailBody() { return readString("/staff/templates/email/defendantAdmission/body.txt"); }
 
-    public String getDefendantAdmissionResponseEmailSubject() {
-        return readString("/staff/templates/email/defendantAdmission/subject.txt");
-    }
+    public String getDefendantAdmissionResponseEmailSubject() { return readString("/staff/templates/email/defendantAdmission/subject.txt"); }
 
-    public String getCCJRequestSubmittedEmailBody() {
-        return readString("/staff/templates/email/ccjRequestSubmitted/body.txt");
-    }
+    public String getStatesPaidEmailBody() { return readString("/staff/templates/email/statesPaid/body.txt"); }
 
-    public String getCCJRequestSubmittedEmailSubject() {
-        return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt");
-    }
+    public String getStatesPaidEmailSubject() { return readString("/staff/templates/email/statesPaid/subject.txt"); }
 
-    public String getSettlementAgreementEmailBody() {
-        return readString("/staff/templates/email/settlementAgreement/body.txt");
-    }
+    public String getCCJRequestSubmittedEmailBody() { return readString("/staff/templates/email/ccjRequestSubmitted/body.txt"); }
 
-    public String getSettlementAgreementEmailSubject() {
-        return readString("/staff/templates/email/settlementAgreement/subject.txt");
-    }
+    public String getCCJRequestSubmittedEmailSubject() { return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt"); }
+
+    public String getSettlementAgreementEmailBody() { return readString("/staff/templates/email/settlementAgreement/body.txt"); }
+
+    public String getSettlementAgreementEmailSubject() { return readString("/staff/templates/email/settlementAgreement/subject.txt"); }
 
     public String getBulkPrintEmailBody() {
         return readString("/staff/templates/email/bulkPrintFailure/body.txt");
     }
 
-    public String getBulkPrintEmailSubject() {
-        return readString("/staff/templates/email/bulkPrintFailure/subject.txt");
-    }
+    public String getBulkPrintEmailSubject() { return readString("/staff/templates/email/bulkPrintFailure/subject.txt"); }
 
     public String getPaidInFullEmailBody() {
         return readString("/staff/templates/email/paidInFull/body.txt");

@@ -1,0 +1,1 @@
+Civil Money Claim States Paid claimant response: {{ claim.claimData.claimant.name }} v {{ claim.claimData.defendant.name }} {{ claim.referenceNumber }}
