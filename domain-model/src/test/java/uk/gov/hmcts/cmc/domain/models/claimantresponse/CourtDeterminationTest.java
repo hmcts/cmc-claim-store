@@ -19,6 +19,44 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIn
 public class CourtDeterminationTest {
 
     @Test
+    public void shouldBeValidWhenCourtDeterminationMissingCourtPaymentIntentionForClaimantInFavourOfDefendant() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .disposableIncome(TEN)
+            .courtPaymentIntention(null)
+            .decisionType(DecisionType.CLAIMANT_IN_FAVOUR_OF_DEFENDANT)
+            .build();
+
+        Set<String> response = validate(courtDetermination);
+
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenCourtDeterminationHadCourtPaymentIntentionForClaimantInFavourOfDefendant() {
+        CourtDetermination courtDetermination = CourtDetermination.builder()
+            .courtDecision(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .disposableIncome(TEN)
+            .courtPaymentIntention(PaymentIntention.builder()
+                .paymentOption(BY_SPECIFIED_DATE)
+                .paymentDate(now().plusDays(30))
+                .build())
+            .decisionType(DecisionType.CLAIMANT_IN_FAVOUR_OF_DEFENDANT)
+            .build();
+
+        Set<String> response = validate(courtDetermination);
+
+        assertThat(response).hasSize(1)
+            .containsOnly("courtPaymentIntention : should be blank for decision CLAIMANT_IN_FAVOUR_OF_DEFENDANT");
+    }
+
+    @Test
     public void shouldBeSuccessfulValidationForValidCourtDeterminationBySetDate() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(PaymentIntention.builder()
