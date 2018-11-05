@@ -64,4 +64,25 @@ public class CountyCourtJudgmentRule {
     private boolean isCountyCourtJudgmentAlreadySubmitted(Claim claim) {
         return claim.getCountyCourtJudgment() != null;
     }
+
+    private boolean isCountyCourtJudgmentAlreadyRedetermined(Claim claim) {
+        return claim.getReDeterminationRequestedAt().isPresent();
+    }
+
+    public void assertRedeterminationCanBeRequestedOnCountyCourtJudgement(Claim claim) {
+        Objects.requireNonNull(claim, "claim object can not be null");
+
+        String externalId = claim.getExternalId();
+
+        if (!isCountyCourtJudgmentAlreadySubmitted(claim)) {
+            throw new ForbiddenActionException("County Court Judgment for the claim "
+                + externalId + " is not yet submitted");
+        }
+
+        if (isCountyCourtJudgmentAlreadyRedetermined(claim)) {
+            throw new ForbiddenActionException("County Court Judgment for the claim "
+                + externalId + " has been already redetermined");
+        }
+
+    }
 }

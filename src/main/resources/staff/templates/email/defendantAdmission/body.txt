@@ -1,4 +1,8 @@
+{% if partAdmitPaymentIntention %}
 The defendant has offered to pay {{ paymentOptionDescription }} in response to the money claim made against them by {{ claim.claimData.claimant.name }}.
+{% else %}
+The defendant states they have already paid what is owed in response to the money claim made against them by {{ claim.claimData.claimant.name }}.
+{% endif %}
 
 Defendant's details can be found on the attached defence copy. Additional contact details are:
 
