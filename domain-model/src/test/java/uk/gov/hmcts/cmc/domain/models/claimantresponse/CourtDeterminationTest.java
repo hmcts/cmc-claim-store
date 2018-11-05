@@ -19,7 +19,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIn
 public class CourtDeterminationTest {
 
     @Test
-    public void shouldBeValidWhenCourtDeterminationMissingCourtPaymentIntentionForClaimantInFavourOfDefendant() {
+    public void shouldBeValidWhenCourtPaymentIntentionIsBlankForClaimantInFavourOfDefendant() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(PaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)
@@ -36,7 +36,7 @@ public class CourtDeterminationTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenCourtDeterminationHadCourtPaymentIntentionForClaimantInFavourOfDefendant() {
+    public void shouldBeInvalidWhenCourtPaymentIntentionIsNotBlankForClaimantInFavourOfDefendant() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(PaymentIntention.builder()
                 .paymentOption(BY_SPECIFIED_DATE)
