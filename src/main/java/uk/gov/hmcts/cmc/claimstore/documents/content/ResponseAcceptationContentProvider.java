@@ -29,7 +29,6 @@ public class ResponseAcceptationContentProvider {
         responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
             PaymentIntention courtDecision = courtDetermination.getCourtDecision();
             content.put("courtDetermination", courtDetermination);
-            PaymentIntention courtPaymentIntention = courtDetermination.getCourtPaymentIntention();
             content.putAll(paymentIntentionContentProvider.createContent(
                 courtDecision.getPaymentOption(),
                 courtDecision.getRepaymentPlan().orElse(null),
@@ -38,17 +37,19 @@ public class ResponseAcceptationContentProvider {
                 "courtDecision"
             ));
 
-            content.putAll(paymentIntentionContentProvider.createContent(
-                courtPaymentIntention.getPaymentOption(),
-                courtPaymentIntention.getRepaymentPlan().orElse(null),
-                courtPaymentIntention.getPaymentDate().orElse(null),
-                "The agreed amount",
-                "courtPaymentIntention"
-                )
-            );
+            courtDetermination.getCourtPaymentIntention().ifPresent(courtPaymentIntention ->
+                content.putAll(paymentIntentionContentProvider.createContent(
+                    courtPaymentIntention.getPaymentOption(),
+                    courtPaymentIntention.getRepaymentPlan().orElse(null),
+                    courtPaymentIntention.getPaymentDate().orElse(null),
+                    "The agreed amount",
+                    "courtPaymentIntention"
+                    )
+                ));
         });
 
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
+
         if (claimantPaymentIntention.isPresent()) {
             content.put("hasClaimantPaymentIntention", true);
             content.put("paymentPlanAccepted", "I reject this repayment plan");
@@ -65,7 +66,6 @@ public class ResponseAcceptationContentProvider {
         }
 
         content.put("formNumber", ADMISSIONS_FORM_NO);
-
         return content;
     }
 }
