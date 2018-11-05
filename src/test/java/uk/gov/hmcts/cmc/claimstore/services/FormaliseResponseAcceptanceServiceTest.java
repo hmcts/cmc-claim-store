@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFENDANT;
@@ -49,6 +51,9 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Mock
     private CountyCourtJudgmentService countyCourtJudgmentService;
 
+    @Mock
+    private EventProducer eventProducer;
+
     @Captor
     private ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
 
@@ -57,8 +62,11 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Before
     public void before() {
-        formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(countyCourtJudgmentService,
-            offersService);
+        formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
+            countyCourtJudgmentService,
+            offersService,
+            eventProducer
+        );
     }
 
     @Test(expected = IllegalStateException.class)
@@ -589,7 +597,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void doNotFormaliseWhenReferredToJudge() {
+    public void createInterlocutoryJudgmentEventWhenReferredToJudge() {
         Claim claim = SampleClaim.getWithDefaultResponse();
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
@@ -598,6 +606,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
 
+        verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim), eq(responseAcceptation));
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(offersService);
     }
