@@ -36,7 +36,8 @@ public class ValidCourtPaymentIntentionConstraintValidator
 
         if (DecisionType.CLAIMANT_IN_FAVOUR_OF_DEFENDANT == courtDetermination.getDecisionType()) {
             if (courtDetermination.getCourtPaymentIntention().isPresent()) {
-                setValidationErrors(context, Fields.COURT_PAYMENT_INTENTION, "should be blank for decision " + DecisionType.CLAIMANT_IN_FAVOUR_OF_DEFENDANT.name());
+                setValidationErrors(context, Fields.COURT_PAYMENT_INTENTION,
+                    "should be blank for decision " + DecisionType.CLAIMANT_IN_FAVOUR_OF_DEFENDANT.name());
                 return false;
             } else {
                 return true;
