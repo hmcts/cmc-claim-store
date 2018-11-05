@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -22,9 +23,15 @@ public class CCJStaffNotificationHandlerTest {
     @Mock
     CCJStaffNotificationService ccjStaffNotificationService;
 
+    @Mock
+    InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService;
+
     @Before
     public void setup() {
-        handler = new CCJStaffNotificationHandler(ccjStaffNotificationService);
+        handler = new CCJStaffNotificationHandler(
+            ccjStaffNotificationService,
+            interlocutoryJudgmentStaffNotificationService
+        );
     }
 
     @Test

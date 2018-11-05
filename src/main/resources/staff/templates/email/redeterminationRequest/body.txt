@@ -1,3 +1,7 @@
 {{ partyName }} has requested a redetermination, please refer the attached to a District Judge.
 
+{% if interlocutoryJudgement %}
+Please issue an interlocutory judgement to be made against the defendant & re-determination by District Judge.
+{% endif %}
+
 This email has been sent from the HMCTS Civil Money Claims online court.

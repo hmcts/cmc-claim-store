@@ -49,10 +49,10 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        caseRepository.saveClaimantResponse(claim, response, authorization);
+        Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
         if (ClaimantResponseType.ACCEPTATION.equals(response.getType())) {
-            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) response, authorization);
+            formaliseResponseAcceptanceService.formalise(updatedClaim, (ResponseAcceptation) response, authorization);
         }
 
         eventProducer.createClaimantResponseEvent(claim);
