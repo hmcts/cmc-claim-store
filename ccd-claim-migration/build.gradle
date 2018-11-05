@@ -17,8 +17,8 @@ dependencies {
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
   compile group: 'org.springframework.retry', name: 'spring-retry'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.3'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.3.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.4'
 
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 }
