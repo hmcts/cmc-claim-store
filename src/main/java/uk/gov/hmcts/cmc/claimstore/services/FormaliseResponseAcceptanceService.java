@@ -178,7 +178,7 @@ public class FormaliseResponseAcceptanceService {
         }
 
         if (acceptedPaymentIntention.getPaymentOption() != PaymentOption.IMMEDIATELY) {
-            RepaymentPlan repaymentPlan = acceptedPaymentIntention.getRepaymentPlan().orElseThrow(IllegalAccessError::new);
+            RepaymentPlan repaymentPlan = acceptedPaymentIntention.getRepaymentPlan().orElse(null);
             claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim, repaymentPlan);
         }
 
