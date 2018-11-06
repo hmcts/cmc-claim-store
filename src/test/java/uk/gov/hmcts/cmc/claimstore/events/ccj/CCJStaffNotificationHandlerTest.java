@@ -46,7 +46,9 @@ public class CCJStaffNotificationHandlerTest {
 
     @Test
     public void notifyInterlocutoryJudgmentSubmitted() {
-        InterlocutoryJudgmentEvent interlocutoryJudgmentEvent = new InterlocutoryJudgmentEvent(getWithClaimantResponse());
+        InterlocutoryJudgmentEvent interlocutoryJudgmentEvent = new InterlocutoryJudgmentEvent(
+            getWithClaimantResponse()
+        );
         handler.onInterlocutoryJudgmentEvent(interlocutoryJudgmentEvent);
 
         verify(interlocutoryJudgmentStaffNotificationService, once())
