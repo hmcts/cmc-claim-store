@@ -41,7 +41,7 @@ public class FormaliseResponseAcceptanceService {
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
         OffersService offersService,
-        ClaimantRepaymentPlanRule claimantRepaymentPlanRule
+        ClaimantRepaymentPlanRule claimantRepaymentPlanRule,
         EventProducer eventProducer
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
