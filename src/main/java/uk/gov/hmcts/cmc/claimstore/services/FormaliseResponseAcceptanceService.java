@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -34,17 +35,19 @@ public class FormaliseResponseAcceptanceService {
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final OffersService offersService;
     private final ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
-
+    private final EventProducer eventProducer;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
         OffersService offersService,
         ClaimantRepaymentPlanRule claimantRepaymentPlanRule
-        ) {
+        EventProducer eventProducer
+    ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.offersService = offersService;
         this.claimantRepaymentPlanRule = claimantRepaymentPlanRule;
+        this.eventProducer = eventProducer;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -62,7 +65,7 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                // No action required
+                eventProducer.createInterlocutoryJudgmentEvent(claim, responseAcceptation);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
