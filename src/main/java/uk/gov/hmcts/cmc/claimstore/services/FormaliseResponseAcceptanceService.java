@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -46,11 +45,7 @@ public class FormaliseResponseAcceptanceService {
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
-        FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption();
-        if (formaliseOption == null) {
-            throw new IllegalArgumentException("formaliseOption must not be null");
-        }
-        switch (formaliseOption) {
+        switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;
@@ -91,15 +86,7 @@ public class FormaliseResponseAcceptanceService {
 
     private DecisionType getDecisionType(ResponseAcceptation responseAcceptation) {
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
-        if (courtDetermination.isPresent()) {
-            return courtDetermination.get().getDecisionType();
-        }
-
-        if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
-            return DecisionType.CLAIMANT;
-        }
-
-        return DecisionType.DEFENDANT;
+        return courtDetermination.map(CourtDetermination::getDecisionType).orElse(DecisionType.DEFENDANT);
     }
 
     private Offer prepareOffer(Response response, PaymentIntention paymentIntention) {
@@ -188,13 +175,10 @@ public class FormaliseResponseAcceptanceService {
 
     private PaymentIntention acceptedPaymentIntention(ResponseAcceptation responseAcceptation, Response response) {
 
-        Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
-        if (courtDetermination.isPresent()) {
-            return courtDetermination.get().getCourtDecision();
-        }
+        return responseAcceptation.getCourtDetermination()
+            .map(CourtDetermination::getCourtDecision)
+            .orElseGet(() -> getDefendantPaymentIntention(response));
 
-        Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
-        return claimantPaymentIntention.orElseGet(() -> getDefendantPaymentIntention(response));
     }
 
     private PaymentIntention getDefendantPaymentIntention(Response response) {
