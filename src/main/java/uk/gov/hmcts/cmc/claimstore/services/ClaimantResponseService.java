@@ -9,9 +9,10 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
 @Service
 public class ClaimantResponseService {
@@ -51,11 +52,11 @@ public class ClaimantResponseService {
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
-        if (ClaimantResponseType.ACCEPTATION.equals(response.getType())) {
+        if (ACCEPTATION == response.getType()) {
             formaliseResponseAcceptanceService.formalise(updatedClaim, (ResponseAcceptation) response, authorization);
         }
 
-        eventProducer.createClaimantResponseEvent(claim);
+        eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
 
