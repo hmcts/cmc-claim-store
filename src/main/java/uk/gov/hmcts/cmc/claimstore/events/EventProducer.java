@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import java.time.LocalDate;
@@ -76,5 +78,13 @@ public class EventProducer {
 
     public void createPaidInFullEvent(Claim claim) {
         publisher.publishEvent(new PaidInFullEvent(claim));
+    }
+
+    public void createRedeterminationEvent(Claim claim, String authorisation, String submitterName) {
+        publisher.publishEvent(new ReDeterminationEvent(claim, authorisation, submitterName));
+    }
+
+    public void createInterlocutoryJudgmentEvent(Claim claim, ResponseAcceptation responseAcceptation) {
+        publisher.publishEvent(new InterlocutoryJudgmentEvent(claim, responseAcceptation));
     }
 }

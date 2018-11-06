@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.migration.config;
 
 import org.skife.jdbi.v2.DBI;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -15,14 +15,18 @@ import javax.sql.DataSource;
 
 @Configuration
 public class EtlDbConfiguration {
+    @Bean
+    @Primary
+    @ConfigurationProperties("spring.datasource.claimstore")
+    public DataSourceProperties claimStoreDataSourceProperties() {
+        return new DataSourceProperties();
+    }
 
     @Bean
     @Primary
-    @ConfigurationProperties(prefix = "database")
-    public DataSource getDataSource() {
-        return DataSourceBuilder
-            .create()
-            .build();
+    @ConfigurationProperties("spring.datasource.claimstore")
+    public DataSource claimStoreDataSource() {
+        return claimStoreDataSourceProperties().initializeDataSourceBuilder().build();
     }
 
     @Bean

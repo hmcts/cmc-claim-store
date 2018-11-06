@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -30,18 +29,20 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Service
 public class FormaliseResponseAcceptanceService {
-    private static final Logger logger = LoggerFactory.getLogger(FormaliseResponseAcceptanceService.class);
 
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final OffersService offersService;
+    private final EventProducer eventProducer;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
-        OffersService offersService
+        OffersService offersService,
+        EventProducer eventProducer
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.offersService = offersService;
+        this.eventProducer = eventProducer;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -57,7 +58,7 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                // No action required
+                eventProducer.createInterlocutoryJudgmentEvent(claim, responseAcceptation);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
@@ -106,6 +107,7 @@ public class FormaliseResponseAcceptanceService {
         builder.paymentIntention(paymentIntention);
 
         switch (paymentIntention.getPaymentOption()) {
+            case IMMEDIATELY:
             case BY_SPECIFIED_DATE:
                 LocalDate completionDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
                 builder.completionDate(completionDate);
@@ -171,7 +173,6 @@ public class FormaliseResponseAcceptanceService {
         }
 
         this.countyCourtJudgmentService.save(
-            claim.getSubmitterId(),
             countyCourtJudgment.build(),
             claim.getExternalId(),
             authorisation,

@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 
 @Component
 public class CountyCourtJudgmentService {
@@ -17,6 +19,7 @@ public class CountyCourtJudgmentService {
     private final AuthorisationService authorisationService;
     private final EventProducer eventProducer;
     private final CountyCourtJudgmentRule countyCourtJudgmentRule;
+    private final UserService userService;
     private final AppInsights appInsights;
 
     @Autowired
@@ -25,26 +28,29 @@ public class CountyCourtJudgmentService {
         AuthorisationService authorisationService,
         EventProducer eventProducer,
         CountyCourtJudgmentRule countyCourtJudgmentRule,
+        UserService userService,
         AppInsights appInsights
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
         this.eventProducer = eventProducer;
         this.countyCourtJudgmentRule = countyCourtJudgmentRule;
+        this.userService = userService;
         this.appInsights = appInsights;
     }
 
     @Transactional(transactionManager = "transactionManager")
     public Claim save(
-        String submitterId,
         CountyCourtJudgment countyCourtJudgment,
         String externalId,
         String authorisation,
         boolean issue
     ) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
-        authorisationService.assertIsSubmitterOnClaim(claim, submitterId);
+        authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
 
@@ -65,5 +71,27 @@ public class CountyCourtJudgmentService {
         } else {
             return AppInsightsEvent.CCJ_REQUESTED;
         }
+    }
+
+    public Claim reDetermination(
+        ReDetermination redetermination,
+        String externalId,
+        String authorisation
+    ) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+
+        authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
+        countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgement(claim);
+
+        claimService.saveReDetermination(authorisation, claim, redetermination, userDetails.getId());
+
+        Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
+
+        eventProducer.createRedeterminationEvent(claimWithReDetermination, authorisation, userDetails.getFullName());
+
+        return claimWithReDetermination;
+
     }
 }

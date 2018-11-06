@@ -36,7 +36,7 @@ public class ClaimMigrator {
     public void migrate() {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
 
-        User user = userService.getUser(userService.authenticateSystemUpdateUser());
+        User user = userService.authenticateSystemUpdateUser();
         List<Claim> notMigratedClaims = claimRepository.getAllNotMigratedClaims();
 
         logger.info("User token: " + user.getAuthorisation());

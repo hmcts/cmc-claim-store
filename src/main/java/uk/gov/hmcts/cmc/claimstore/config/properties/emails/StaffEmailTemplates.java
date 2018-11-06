@@ -23,12 +23,12 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/fullDefence/subject.txt");
     }
 
-    public String getFullAdmissionResponseEmailBody() {
-        return readString("/staff/templates/email/fullAdmission/body.txt");
+    public String getDefendantAdmissionResponseEmailBody() {
+        return readString("/staff/templates/email/defendantAdmission/body.txt");
     }
 
-    public String getFullAdmissionResponseEmailSubject() {
-        return readString("/staff/templates/email/fullAdmission/subject.txt");
+    public String getDefendantAdmissionResponseEmailSubject() {
+        return readString("/staff/templates/email/defendantAdmission/subject.txt");
     }
 
     public String getCCJRequestSubmittedEmailBody() {
@@ -63,4 +63,12 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/paidInFull/subject.txt");
     }
 
+
+    public String getReDeterminationRequestEmailBody() {
+        return readString("/staff/templates/email/redeterminationRequest/body.txt");
+    }
+
+    public String getReDeterminationRequestEmailSubject() {
+        return readString("/staff/templates/email/redeterminationRequest/subject.txt");
+    }
 }
