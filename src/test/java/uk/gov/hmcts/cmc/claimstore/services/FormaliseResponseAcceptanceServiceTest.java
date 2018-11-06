@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -60,11 +61,15 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Captor
     private ArgumentCaptor<Settlement> settlementArgumentCaptor;
 
+    @Mock
+    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
+
     @Before
     public void before() {
         formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
             countyCourtJudgmentService,
             offersService,
+            claimantRepaymentPlanRule,
             eventProducer
         );
     }
