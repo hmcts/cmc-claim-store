@@ -11,8 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 
 @Component
@@ -59,13 +57,6 @@ public class CountyCourtJudgmentService {
         authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
-
-        if (countyCourtJudgment.getCcjType() != CountyCourtJudgmentType.DEFAULT
-            && countyCourtJudgment.getPaymentOption() != PaymentOption.IMMEDIATELY) {
-            claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
-                countyCourtJudgment.getRepaymentPlan().orElse(null));
-
-        }
 
         claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
 

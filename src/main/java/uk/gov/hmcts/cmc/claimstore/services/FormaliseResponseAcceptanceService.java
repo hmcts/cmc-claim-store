@@ -2,9 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
@@ -31,14 +33,18 @@ public class FormaliseResponseAcceptanceService {
 
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final OffersService offersService;
+    private final ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
+
 
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
-        OffersService offersService
-    ) {
+        OffersService offersService,
+        ClaimantRepaymentPlanRule claimantRepaymentPlanRule
+        ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.offersService = offersService;
+        this.claimantRepaymentPlanRule = claimantRepaymentPlanRule;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -48,7 +54,9 @@ public class FormaliseResponseAcceptanceService {
         }
         switch (formaliseOption) {
             case CCJ:
-                formaliseCCJ(claim, responseAcceptation, authorisation);
+                Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+                PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
+                formaliseCCJ(claim, responseAcceptation, acceptedPaymentIntention, response, authorisation);
                 break;
             case SETTLEMENT:
                 formaliseSettlement(claim, responseAcceptation, authorisation);
@@ -151,9 +159,7 @@ public class FormaliseResponseAcceptanceService {
         );
     }
 
-    private void formaliseCCJ(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-        PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
+    private void formaliseCCJ(Claim claim, ResponseAcceptation responseAcceptation, PaymentIntention acceptedPaymentIntention, Response response, String authorisation) {
 
         CountyCourtJudgment.CountyCourtJudgmentBuilder countyCourtJudgment = CountyCourtJudgment.builder()
             .defendantDateOfBirth(defendantDateOfBirth(response.getDefendant()))
@@ -166,6 +172,11 @@ public class FormaliseResponseAcceptanceService {
             countyCourtJudgment.ccjType(CountyCourtJudgmentType.DETERMINATION);
         } else {
             countyCourtJudgment.ccjType(CountyCourtJudgmentType.ADMISSIONS);
+        }
+
+        if (acceptedPaymentIntention.getPaymentOption() != PaymentOption.IMMEDIATELY) {
+            RepaymentPlan repaymentPlan = acceptedPaymentIntention.getRepaymentPlan().orElseThrow(IllegalAccessError::new);
+            claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim, repaymentPlan);
         }
 
         this.countyCourtJudgmentService.save(
