@@ -138,7 +138,7 @@ public class FormaliseResponseAcceptanceService {
             response.getResponseType() == ResponseType.PART_ADMISSION
                 ? formatMoney(((PartAdmissionResponse) response).getAmount()) : formatMoney(claimAmountTillDate),
             formatMoney(repaymentPlan.getInstalmentAmount()),
-            repaymentPlan.getPaymentSchedule().getDescription(),
+            repaymentPlan.getPaymentSchedule().getDescription().toLowerCase(),
             formatDate(repaymentPlan.getFirstPaymentDate()));
     }
 
