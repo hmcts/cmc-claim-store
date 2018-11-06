@@ -117,7 +117,7 @@ public final class SampleClaim {
 
     public static Claim getWithClaimantResponse() {
         return builder()
-            .withClaimData(SampleClaimData.validDefaults())
+            .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
