@@ -58,7 +58,7 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                eventProducer.createInterlocutoryJudgmentEvent(claim, responseAcceptation);
+                eventProducer.createInterlocutoryJudgmentEvent(claim);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");

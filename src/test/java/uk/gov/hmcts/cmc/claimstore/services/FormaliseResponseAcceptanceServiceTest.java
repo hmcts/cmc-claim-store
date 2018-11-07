@@ -606,7 +606,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThatCode(() -> formaliseResponseAcceptanceService
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
 
-        verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim), eq(responseAcceptation));
+        verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(offersService);
     }
