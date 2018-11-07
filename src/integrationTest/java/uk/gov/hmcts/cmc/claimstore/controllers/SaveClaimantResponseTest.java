@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,8 +42,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     @Before
     public void setUp() {
-        claim = claimStore.saveClaim(SampleClaimData.builder()
-            .withExternalId(UUID.randomUUID()).build(), SUBMITTER_ID, LocalDate.now());
+        claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant(), SUBMITTER_ID, LocalDate.now());
 
         UserDetails userDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
