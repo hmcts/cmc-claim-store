@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
@@ -44,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class ResendStaffNotificationsTest extends BaseIntegrationTest {
+
     @MockBean
     protected SendLetterApi sendLetterApi;
 
@@ -126,7 +128,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
-        given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
+        given(sendLetterApi.sendLetter(anyString(), any(Letter.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());

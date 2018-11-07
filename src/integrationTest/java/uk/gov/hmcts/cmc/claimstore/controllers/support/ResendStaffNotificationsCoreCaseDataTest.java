@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
@@ -104,7 +105,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN)))
             .willReturn(new GeneratePinResponse("pin-123", "333"));
-        given(sendLetterApi.sendLetter(any(), any())).willReturn(new SendLetterResponse(UUID.randomUUID()));
+        given(sendLetterApi.sendLetter(anyString(), any(Letter.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
 
