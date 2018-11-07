@@ -25,20 +25,16 @@ public class ValidResponseAcceptanceConstraintValidator
             return true;
         }
 
-        if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
-            if (!responseAcceptation.getCourtDetermination().isPresent()) {
-                setValidationErrors(context, Fields.COURT_DETERMINATION,
-                    "is mandatory when ".concat(Fields.CLAIMANT_PAYMENT_INTENTION).concat(" is present"));
-                return false;
-            }
+        if (responseAcceptation.getCourtDetermination().isPresent() && !responseAcceptation.getClaimantPaymentIntention().isPresent()) {
+            setValidationErrors(context, Fields.COURT_DETERMINATION,
+                "is mandatory when ".concat(Fields.CLAIMANT_PAYMENT_INTENTION).concat(" is present"));
+            return false;
         }
 
-        if (responseAcceptation.getCourtDetermination().isPresent()) {
-            if (!responseAcceptation.getClaimantPaymentIntention().isPresent()) {
-                setValidationErrors(context, Fields.CLAIMANT_PAYMENT_INTENTION,
-                    "is mandatory when ".concat(Fields.COURT_DETERMINATION).concat(" is present"));
-                return false;
-            }
+        if (responseAcceptation.getCourtDetermination().isPresent() && !responseAcceptation.getClaimantPaymentIntention().isPresent()) {
+            setValidationErrors(context, Fields.CLAIMANT_PAYMENT_INTENTION,
+                "is mandatory when ".concat(Fields.COURT_DETERMINATION).concat(" is present"));
+            return false;
         }
 
         return true;
