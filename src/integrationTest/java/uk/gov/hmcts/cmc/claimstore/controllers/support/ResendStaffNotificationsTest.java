@@ -128,7 +128,8 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
-        given(sendLetterApi.sendLetter(anyString(), any(Letter.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
+        given(sendLetterApi.sendLetter(anyString(), any(Letter.class)))
+            .willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isOk());

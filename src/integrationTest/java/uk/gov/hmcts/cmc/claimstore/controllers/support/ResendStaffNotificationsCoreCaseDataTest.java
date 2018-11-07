@@ -105,7 +105,8 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN)))
             .willReturn(new GeneratePinResponse("pin-123", "333"));
-        given(sendLetterApi.sendLetter(anyString(), any(Letter.class))).willReturn(new SendLetterResponse(UUID.randomUUID()));
+        given(sendLetterApi.sendLetter(anyString(), any(Letter.class)))
+            .willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
 
