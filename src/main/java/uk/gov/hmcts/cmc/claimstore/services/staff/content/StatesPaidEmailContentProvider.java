@@ -26,10 +26,10 @@ public class StatesPaidEmailContentProvider
     }
 
     @Override
-    public EmailContent createContent(Map<String, Object> input) {
+    public EmailContent createContent(Map<String, Object> claim) {
         return new EmailContent(
-            evaluateTemplate(emailTemplates.getStatesPaidEmailSubject(), input),
-            evaluateTemplate(emailTemplates.getStatesPaidEmailBody(), input)
+            evaluateTemplate(emailTemplates.getStatesPaidEmailSubject(), claim),
+            evaluateTemplate(emailTemplates.getStatesPaidEmailBody(), claim)
         );
     }
 

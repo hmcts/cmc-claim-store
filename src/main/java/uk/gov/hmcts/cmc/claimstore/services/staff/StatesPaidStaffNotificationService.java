@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
@@ -9,11 +8,12 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.StatesPaidEmailContent
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.response.*;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
@@ -36,14 +36,14 @@ public class StatesPaidStaffNotificationService {
         StaffEmailProperties emailProperties,
         StatesPaidEmailContentProvider emailContentProvider,
         DefendantResponseReceiptService defendantResponseReceiptService
-    ){
+    ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
-    public void notifyStaffClaimantResponseStatesPaidSubmittedFor(Claim claim){
+    public void notifyStaffClaimantResponseStatesPaidSubmittedFor(Claim claim) {
         EmailContent emailContent;
         emailContent = emailContentProvider.createContent(wrapInMap(claim));
 
@@ -59,18 +59,22 @@ public class StatesPaidStaffNotificationService {
 
     }
 
-    private static Map<String, Object> wrapInMap(Claim claim) {
+    public static Map<String, Object> wrapInMap(Claim claim) {
 
+        Map<String, Object> map = new HashMap<>();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
 
-        return ImmutableMap.<String, Object>builder()
-            .put("claim", claim)
-            .put("response", response)
-            .put("claimantResponse", claimantResponse.getType())
-            .put("defendantEmail", claim.getDefendantEmail())
-            .put("defendantMobilePhone", response.getDefendant().getMobilePhone().orElse(null))
-            .build();
+        map.put("claim", claim);
+        map.put("response", response);
+        map.put("claimantResponse", claimantResponse.getType());
+        map.put("defendantEmail", claim.getDefendantEmail());
+        map.put("defendantMobilePhone", response
+                .getDefendant()
+                .getMobilePhone()
+                .orElse(null));
+
+        return map;
     }
 
     private EmailAttachment createResponsePdfAttachment(Claim claim) {

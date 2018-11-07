@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotificationSer
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 @Component
@@ -16,33 +15,26 @@ public class ClaimantResponseStaffNotificationHandler {
     private final StatesPaidStaffNotificationService statesPaidStaffNotificationService;
 
     @Autowired
-    public ClaimantResponseStaffNotificationHandler(StatesPaidStaffNotificationService statesPaidStaffNotificationService) {
+    public ClaimantResponseStaffNotificationHandler(
+        StatesPaidStaffNotificationService statesPaidStaffNotificationService) {
         this.statesPaidStaffNotificationService = statesPaidStaffNotificationService;
     }
 
     @EventListener
     public void onClaimantResponse(ClaimantResponseEvent event) {
-        if (isResponseStatesPaid(event.getClaim())) {
+        if (isResponseFullDefenceStatesPaid(event.getClaim())) {
             this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(event.getClaim());
         }
     }
 
-    private static boolean isResponseStatesPaid(Claim claim) {
+    private static boolean isResponseFullDefenceStatesPaid(Claim claim) {
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalStateException::new).getResponseType();
 
-        switch (responseType) {
-            case FULL_DEFENCE:
-                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) claim.getResponse()
-                    .orElseThrow(IllegalStateException::new);
-                return fullDefenceResponse.getDefenceType() == DefenceType.ALREADY_PAID;
-            case PART_ADMISSION:
-                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) claim.getResponse()
-                    .orElseThrow(IllegalStateException::new);
-                return partAdmissionResponse.getPaymentIntention().isPresent();
-            case FULL_ADMISSION:
-                return false;
-            default:
-                return false;
+        if (responseType == ResponseType.FULL_DEFENCE) {
+            FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) claim.getResponse()
+                .orElseThrow(IllegalStateException::new);
+            return fullDefenceResponse.getDefenceType() == DefenceType.ALREADY_PAID;
         }
+        return false;
     }
 }

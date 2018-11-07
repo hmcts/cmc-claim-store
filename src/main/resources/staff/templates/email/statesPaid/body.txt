@@ -1,7 +1,6 @@
-{% if response.defenceType == 'DISPUTE' %}
 The defendant has submitted a States Paid defence.
 
-The Claimant has stated that the claim is: {{claimantResponse}}
+The claimant has stated that the claim is: {{claimantResponse}}
 
 {%if claimantResponse == 'ACCEPTATION' %}
 
@@ -12,7 +11,6 @@ Claimant has accepted the states paid defence. Please enter a code 73
 Claimant has rejected the states paid defence. Please enter a code 67 & 196
 
 {% endif %}
-
 
 Defendant's details can be found on the attached defence copy. Additional contact details are:
 
