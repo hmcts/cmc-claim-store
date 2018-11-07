@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -20,7 +19,6 @@ public class CountyCourtJudgmentService {
     private final AuthorisationService authorisationService;
     private final EventProducer eventProducer;
     private final CountyCourtJudgmentRule countyCourtJudgmentRule;
-    private final ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
     private final UserService userService;
     private final AppInsights appInsights;
 
@@ -30,7 +28,6 @@ public class CountyCourtJudgmentService {
         AuthorisationService authorisationService,
         EventProducer eventProducer,
         CountyCourtJudgmentRule countyCourtJudgmentRule,
-        ClaimantRepaymentPlanRule claimantRepaymentPlanRule,
         UserService userService,
         AppInsights appInsights
     ) {
@@ -38,7 +35,6 @@ public class CountyCourtJudgmentService {
         this.authorisationService = authorisationService;
         this.eventProducer = eventProducer;
         this.countyCourtJudgmentRule = countyCourtJudgmentRule;
-        this.claimantRepaymentPlanRule = claimantRepaymentPlanRule;
         this.userService = userService;
         this.appInsights = appInsights;
     }

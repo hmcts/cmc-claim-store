@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -55,14 +55,19 @@ public class FormaliseResponseAcceptanceService {
         if (formaliseOption == null) {
             throw new IllegalArgumentException("formaliseOption must not be null");
         }
+
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
         switch (formaliseOption) {
             case CCJ:
-                Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-                PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
-                formaliseCCJ(claim, responseAcceptation, acceptedPaymentIntention, response, authorisation);
+                PaymentIntention acceptedCCJPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
+                formaliseCCJ(claim, responseAcceptation, acceptedCCJPaymentIntention, response, authorisation);
                 break;
             case SETTLEMENT:
-                formaliseSettlement(claim, responseAcceptation, authorisation);
+                PaymentIntention acceptedSettlementPaymentIntention =
+                    acceptedPaymentIntention(responseAcceptation, response);
+                formaliseSettlement(claim, responseAcceptation,
+                    acceptedSettlementPaymentIntention, response, authorisation);
                 break;
             case REFER_TO_JUDGE:
                 eventProducer.createInterlocutoryJudgmentEvent(claim, responseAcceptation);
@@ -72,21 +77,27 @@ public class FormaliseResponseAcceptanceService {
         }
     }
 
-    private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
+    private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation,
+                                     PaymentIntention acceptedPaymentIntention,
+                                     Response response, String authorisation) {
         Settlement settlement = new Settlement();
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-        PaymentIntention paymentIntention = acceptedPaymentIntention(responseAcceptation, response);
+
+        if (acceptedPaymentIntention.getPaymentOption() != PaymentOption.IMMEDIATELY) {
+            claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
+                acceptedPaymentIntention.getRepaymentPlan().orElse(null));
+        }
+
         DecisionType decisionType = getDecisionType(responseAcceptation);
         switch (decisionType) {
             case DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.DEFENDANT);
+                settlement.makeOffer(prepareOffer(response, acceptedPaymentIntention), MadeBy.DEFENDANT);
                 break;
             case CLAIMANT:
             case CLAIMANT_IN_FAVOUR_OF_DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.CLAIMANT);
+                settlement.makeOffer(prepareOffer(response, acceptedPaymentIntention), MadeBy.CLAIMANT);
                 break;
             case COURT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention), MadeBy.COURT);
+                settlement.makeOffer(prepareOffer(response, acceptedPaymentIntention), MadeBy.COURT);
                 break;
             default:
                 throw new IllegalStateException("Invalid decision type " + decisionType);
@@ -162,7 +173,8 @@ public class FormaliseResponseAcceptanceService {
         );
     }
 
-    private void formaliseCCJ(Claim claim, ResponseAcceptation responseAcceptation, PaymentIntention acceptedPaymentIntention, Response response, String authorisation) {
+    private void formaliseCCJ(Claim claim, ResponseAcceptation responseAcceptation,
+                              PaymentIntention acceptedPaymentIntention, Response response, String authorisation) {
 
         CountyCourtJudgment.CountyCourtJudgmentBuilder countyCourtJudgment = CountyCourtJudgment.builder()
             .defendantDateOfBirth(defendantDateOfBirth(response.getDefendant()))
@@ -178,10 +190,9 @@ public class FormaliseResponseAcceptanceService {
         }
 
         if (acceptedPaymentIntention.getPaymentOption() != PaymentOption.IMMEDIATELY) {
-            RepaymentPlan repaymentPlan = acceptedPaymentIntention.getRepaymentPlan().orElse(null);
-            claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim, repaymentPlan);
+            claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
+                acceptedPaymentIntention.getRepaymentPlan().orElse(null));
         }
-
         this.countyCourtJudgmentService.save(
             countyCourtJudgment.build(),
             claim.getExternalId(),
