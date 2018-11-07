@@ -150,7 +150,7 @@ public class CourtDeterminationTest {
                 .paymentOption(BY_SPECIFIED_DATE)
                 .paymentDate(now().plusDays(30))
                 .build())
-            .disposableIncome(BigDecimal.ZERO)
+            .disposableIncome(ZERO)
             .decisionType(DecisionType.CLAIMANT)
             .build();
         Set<String> response = validate(courtDetermination);
