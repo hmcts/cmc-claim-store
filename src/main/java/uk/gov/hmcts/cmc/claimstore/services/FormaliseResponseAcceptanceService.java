@@ -114,7 +114,7 @@ public class FormaliseResponseAcceptanceService {
                 LocalDate completionDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
                 builder.completionDate(completionDate);
                 builder.content(
-                    prepareOfferContentsBySetDate(response, builder, completionDate, claimAmountTillDate)
+                    prepareOfferContentsBySetDate(response, completionDate, claimAmountTillDate)
                 );
                 break;
             case INSTALMENTS:
@@ -144,11 +144,9 @@ public class FormaliseResponseAcceptanceService {
 
     private String prepareOfferContentsBySetDate(
         Response response,
-        Offer.OfferBuilder builder,
         LocalDate completionDate,
         BigDecimal claimAmountTillDate
     ) {
-        builder.completionDate(completionDate);
         String amount;
         switch (response.getResponseType()) {
             case PART_ADMISSION:

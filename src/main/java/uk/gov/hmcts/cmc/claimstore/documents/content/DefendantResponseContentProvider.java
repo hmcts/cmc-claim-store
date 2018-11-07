@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -85,8 +84,10 @@ public class DefendantResponseContentProvider {
                 );
                 break;
             case FULL_ADMISSION:
-                fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse,
-                    claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO));
+                content.putAll(fullAdmissionResponseContentProvider
+                    .createContent((FullAdmissionResponse) defendantResponse,
+                        claim.getTotalAmountTillToday()
+                            .orElseThrow(() -> new IllegalArgumentException("Claim aount cant be empty or null"))));
                 break;
             case PART_ADMISSION:
                 content.putAll(
