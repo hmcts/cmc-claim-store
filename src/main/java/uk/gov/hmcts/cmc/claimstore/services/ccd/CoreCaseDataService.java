@@ -231,7 +231,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public CaseDetails saveClaimantResponse(
+    public Claim saveClaimantResponse(
         Long caseId,
         ClaimantResponse response,
         String authorisation
@@ -243,7 +243,10 @@ public class CoreCaseDataService {
             .claimantRespondedAt(nowInUTC())
             .build();
 
-        return update(authorisation, ccdCase, CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name()));
+        CaseDetails caseDetails = update(authorisation, ccdCase,
+            CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name())
+        );
+        return extractClaim(caseDetails);
     }
 
     public CaseDetails saveSettlement(
