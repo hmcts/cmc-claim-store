@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import javax.validation.ConstraintValidatorContext;
 
@@ -34,7 +33,7 @@ public class ValidResponseAcceptanceConstraintValidatorTest {
         .claimantPaymentIntention(null)
         .courtDetermination(CourtDetermination.builder()
             .courtDecision(bySetDate())
-            .courtPaymentIntention(SamplePaymentIntention.bySetDate())
+            .courtPaymentIntention(bySetDate())
             .disposableIncome(TEN)
             .decisionType(CLAIMANT)
             .build())
