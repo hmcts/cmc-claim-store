@@ -50,6 +50,7 @@ public class SettlementAgreementPDFContentProvider {
         } else {
             content.put("formName", SETTLEMENT_FORM_NAME_OFFERS_ROUTE);
         }
+
         return content;
     }
 }
