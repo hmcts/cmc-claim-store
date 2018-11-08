@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -58,9 +56,6 @@ public class ClaimantResponseServiceTest {
 
     @Mock
     private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {

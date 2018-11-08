@@ -64,7 +64,7 @@ public class ClaimantResponseService {
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
-        if (ClaimantResponseType.ACCEPTATION.equals(claimantResponse.getType())
+        if (ClaimantResponseType.ACCEPTATION == claimantResponse.getType()
             && !isResponseStatesPaid(response)) {
             formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
         }
