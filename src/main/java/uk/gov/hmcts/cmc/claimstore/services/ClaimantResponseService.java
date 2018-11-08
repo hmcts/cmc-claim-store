@@ -9,13 +9,14 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
 @Service
 public class ClaimantResponseService {
@@ -53,18 +54,18 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        caseRepository.saveClaimantResponse(claim, response, authorization);
+        Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
-        formaliseResponseAcceptance(response, claim, authorization);
+        formaliseResponseAcceptance(response, updatedClaim, authorization);
 
-        eventProducer.createClaimantResponseEvent(claim);
+        eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
 
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
-        if (ClaimantResponseType.ACCEPTATION == claimantResponse.getType()
+        if (ACCEPTATION == claimantResponse.getType()
             && !isResponseStatesPaid(response)) {
             formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
         }
