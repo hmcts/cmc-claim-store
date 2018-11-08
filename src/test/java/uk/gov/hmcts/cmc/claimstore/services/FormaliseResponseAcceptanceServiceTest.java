@@ -61,8 +61,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Captor
     private ArgumentCaptor<Settlement> settlementArgumentCaptor;
 
-    @Mock
-    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule;
+    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule = new ClaimantRepaymentPlanRule();
 
     @Before
     public void before() {
@@ -425,8 +424,9 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Test
     public void formaliseSettlementWithCourtDeterminedPaymentIntentionByInstalments() {
 
-        Claim claim = SampleClaim.getWithDefaultResponse();
+        Response fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
 
+        Claim claim = SampleClaim.getWithResponse(fullAdmissionResponseWithInstalments);
         PaymentIntention paymentIntention = SamplePaymentIntention.instalments();
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
@@ -500,8 +500,9 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Test
     public void formaliseSettlementWithClaimantsPaymentIntention() {
 
-        Claim claim = SampleClaim.getWithDefaultResponse();
+        Response fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
 
+        Claim claim = SampleClaim.getWithResponse(fullAdmissionResponseWithInstalments);
         PaymentIntention paymentIntention = SamplePaymentIntention.instalments();
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation

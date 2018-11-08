@@ -57,17 +57,14 @@ public class FormaliseResponseAcceptanceService {
         }
 
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
 
         switch (formaliseOption) {
             case CCJ:
-                PaymentIntention acceptedCCJPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
-                formaliseCCJ(claim, responseAcceptation, acceptedCCJPaymentIntention, response, authorisation);
+                formaliseCCJ(claim, responseAcceptation, acceptedPaymentIntention, response, authorisation);
                 break;
             case SETTLEMENT:
-                PaymentIntention acceptedSettlementPaymentIntention =
-                    acceptedPaymentIntention(responseAcceptation, response);
-                formaliseSettlement(claim, responseAcceptation,
-                    acceptedSettlementPaymentIntention, response, authorisation);
+                formaliseSettlement(claim, responseAcceptation, acceptedPaymentIntention, response, authorisation);
                 break;
             case REFER_TO_JUDGE:
                 eventProducer.createInterlocutoryJudgmentEvent(claim, responseAcceptation);
@@ -82,7 +79,7 @@ public class FormaliseResponseAcceptanceService {
                                      Response response, String authorisation) {
         Settlement settlement = new Settlement();
 
-        if (acceptedPaymentIntention.getPaymentOption() != PaymentOption.IMMEDIATELY) {
+        if (acceptedPaymentIntention.getRepaymentPlan().isPresent()) {
             claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
                 acceptedPaymentIntention.getRepaymentPlan().orElse(null));
         }
@@ -189,7 +186,7 @@ public class FormaliseResponseAcceptanceService {
             countyCourtJudgment.ccjType(CountyCourtJudgmentType.ADMISSIONS);
         }
 
-        if (acceptedPaymentIntention.getPaymentOption() != PaymentOption.IMMEDIATELY) {
+        if (acceptedPaymentIntention.getRepaymentPlan().isPresent()) {
             claimantRepaymentPlanRule.assertClaimantRepaymentPlanIsValid(claim,
                 acceptedPaymentIntention.getRepaymentPlan().orElse(null));
         }

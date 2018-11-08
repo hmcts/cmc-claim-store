@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimantRepaymentPlanRule;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -49,8 +48,6 @@ public class CountyCourtJudgmentServiceTest {
 
     private CountyCourtJudgmentService countyCourtJudgmentService;
 
-    private ClaimantRepaymentPlanRule claimantRepaymentPlanRule = new ClaimantRepaymentPlanRule();
-
     @Mock
     private ClaimService claimService;
     @Mock
@@ -76,7 +73,6 @@ public class CountyCourtJudgmentServiceTest {
             new AuthorisationService(),
             eventProducer,
             new CountyCourtJudgmentRule(new ClaimDeadlineService()),
-            claimantRepaymentPlanRule,
             userService,
             appInsights);
 
