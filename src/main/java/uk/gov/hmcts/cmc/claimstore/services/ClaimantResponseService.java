@@ -75,7 +75,7 @@ public class ClaimantResponseService {
             case FULL_DEFENCE:
                 return ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
             case PART_ADMISSION:
-                return ((PartAdmissionResponse) response).getPaymentIntention().isPresent();
+                return ((PartAdmissionResponse) response).getPaymentDeclaration().isPresent();
             case FULL_ADMISSION:
             default:
                 return false;
