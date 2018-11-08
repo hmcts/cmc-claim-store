@@ -24,11 +24,12 @@ public class CourtDetermination {
     private final PaymentIntention courtDecision;
 
     @Valid
+    @NotNull
     private final PaymentIntention courtPaymentIntention;
 
     private final String rejectionReason;
 
-    @NotNull
+    //Not Optional, Not Null Validation is @ValidCourtDetermination
     private final BigDecimal disposableIncome;
 
     @NotNull
@@ -51,10 +52,6 @@ public class CourtDetermination {
 
     public Optional<String> getRejectionReason() {
         return Optional.ofNullable(rejectionReason);
-    }
-
-    public Optional<PaymentIntention> getCourtPaymentIntention() {
-        return Optional.ofNullable(courtPaymentIntention);
     }
 
     @Override

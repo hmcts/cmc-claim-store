@@ -288,40 +288,6 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void formaliseCCJWithClaimantPaymentIntentionPresent() {
-        Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
-
-        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
-
-        PaymentIntention paymentIntentionByInstalments = SamplePaymentIntention.instalments();
-        RepaymentPlan appliedRepaymentPlan = paymentIntentionByInstalments
-            .getRepaymentPlan()
-            .orElseThrow(IllegalStateException::new);
-
-        ResponseAcceptation responseAcceptation = ResponseAcceptation
-            .builder()
-            .claimantPaymentIntention(paymentIntentionByInstalments)
-            .formaliseOption(CCJ)
-            .build();
-
-        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
-
-        verify(countyCourtJudgmentService).save(
-            countyCourtJudgmentArgumentCaptor.capture(),
-            eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
-
-        assertThat(countyCourtJudgmentArgumentCaptor
-            .getValue()
-            .getRepaymentPlan()
-            .orElseThrow(IllegalStateException::new))
-            .isEqualTo(appliedRepaymentPlan);
-
-        verifyZeroInteractions(offersService);
-    }
-
-    @Test
     public void formaliseCCJWithFullAdmissionAndDefendantsPaymentIntention() {
         Response fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
 
