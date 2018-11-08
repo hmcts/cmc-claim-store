@@ -119,8 +119,6 @@ module "claim-store-api" {
   instance_size = "${local.sku_size}"
 
   app_settings = {
-    DUMMY = "force-change"
-
     //    logging vars
     REFORM_TEAM = "${var.product}"
     REFORM_SERVICE_NAME = "${var.microservice}"
