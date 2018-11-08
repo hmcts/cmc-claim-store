@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.domain.constraints;
 
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
+import java.util.Optional;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -25,13 +28,16 @@ public class ValidResponseAcceptanceConstraintValidator
             return true;
         }
 
-        if (responseAcceptation.getCourtDetermination().isPresent() && !responseAcceptation.getClaimantPaymentIntention().isPresent()) {
+        Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
+        Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
+
+        if (claimantPaymentIntention.isPresent() && !courtDetermination.isPresent()) {
             setValidationErrors(context, Fields.COURT_DETERMINATION,
                 "is mandatory when " + Fields.CLAIMANT_PAYMENT_INTENTION + " is present");
             return false;
         }
 
-        if (responseAcceptation.getCourtDetermination().isPresent() && !responseAcceptation.getClaimantPaymentIntention().isPresent()) {
+        if (courtDetermination.isPresent() && !claimantPaymentIntention.isPresent()) {
             setValidationErrors(context, Fields.CLAIMANT_PAYMENT_INTENTION,
                 "is mandatory when " + Fields.COURT_DETERMINATION + " is present");
             return false;
