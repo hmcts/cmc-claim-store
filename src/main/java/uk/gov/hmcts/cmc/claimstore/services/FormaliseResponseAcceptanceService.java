@@ -89,14 +89,14 @@ public class FormaliseResponseAcceptanceService {
         BigDecimal claimAmountTillDate = claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO);
         switch (getDecisionType(responseAcceptation)) {
             case DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.DEFENDANT);
+                settlement.makeOffer(prepareOffer(response, acceptedPaymentIntention, claimAmountTillDate), MadeBy.DEFENDANT);
                 break;
             case CLAIMANT:
             case CLAIMANT_IN_FAVOUR_OF_DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.CLAIMANT);
+                settlement.makeOffer(prepareOffer(response, acceptedPaymentIntention, claimAmountTillDate), MadeBy.CLAIMANT);
                 break;
             case COURT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.COURT);
+                settlement.makeOffer(prepareOffer(response, acceptedPaymentIntention, claimAmountTillDate), MadeBy.COURT);
                 break;
             default:
                 throw new IllegalStateException("Invalid decision type in the Claim");
