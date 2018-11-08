@@ -137,7 +137,9 @@ public class ClaimantResponseServiceTest {
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
-            .buildAcceptationIssueCCJWithDefendantPaymentIntention();
+            .withFormaliseOption(null)
+            .withAmountPaid(new BigDecimal(100))
+            .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
