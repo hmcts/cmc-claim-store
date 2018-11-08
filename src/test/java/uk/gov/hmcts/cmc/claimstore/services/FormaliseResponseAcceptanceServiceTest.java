@@ -499,40 +499,6 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void formaliseSettlementWithClaimantsPaymentIntention() {
-
-        Response fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
-
-        Claim claim = SampleClaim.getWithResponse(fullAdmissionResponseWithInstalments);
-        PaymentIntention paymentIntention = SamplePaymentIntention.instalments();
-
-        ResponseAcceptation responseAcceptation = ResponseAcceptation
-            .builder()
-            .claimantPaymentIntention(paymentIntention)
-            .formaliseOption(SETTLEMENT)
-            .build();
-
-        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
-
-        verify(offersService).signSettlementAgreement(
-            eq(claim.getExternalId()),
-            settlementArgumentCaptor.capture(),
-            eq(AUTH));
-
-        PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
-            .getValue()
-            .getLastOfferStatement()
-            .getOffer()
-            .orElseThrow(IllegalStateException::new)
-            .getPaymentIntention()
-            .orElseThrow(IllegalAccessError::new);
-
-        assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntention);
-
-        verifyZeroInteractions(countyCourtJudgmentService);
-    }
-
-    @Test
     public void formaliseSettlementWithFullAdmissionsAndDefendantsPaymentIntention() {
         FullAdmissionResponse fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
 

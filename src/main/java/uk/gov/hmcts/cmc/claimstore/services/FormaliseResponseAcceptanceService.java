@@ -60,7 +60,7 @@ public class FormaliseResponseAcceptanceService {
 
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
-        switch (formaliseOption) {
+        switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 PaymentIntention acceptedCCJPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
                 formaliseCCJ(claim, responseAcceptation, acceptedCCJPaymentIntention, response, authorisation);
