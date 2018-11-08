@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -13,11 +12,9 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class InterlocutoryJudgmentEvent {
 
     private final Claim claim;
-    private final ResponseAcceptation responseAcceptation;
 
-    public InterlocutoryJudgmentEvent(Claim claim, ResponseAcceptation responseAcceptation) {
+    public InterlocutoryJudgmentEvent(Claim claim) {
         this.claim = claim;
-        this.responseAcceptation = responseAcceptation;
     }
 
     @Override
