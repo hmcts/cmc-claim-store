@@ -27,13 +27,13 @@ public class ValidResponseAcceptanceConstraintValidator
 
         if (responseAcceptation.getCourtDetermination().isPresent() && !responseAcceptation.getClaimantPaymentIntention().isPresent()) {
             setValidationErrors(context, Fields.COURT_DETERMINATION,
-                "is mandatory when ".concat(Fields.CLAIMANT_PAYMENT_INTENTION).concat(" is present"));
+                "is mandatory when " + Fields.CLAIMANT_PAYMENT_INTENTION + " is present");
             return false;
         }
 
         if (responseAcceptation.getCourtDetermination().isPresent() && !responseAcceptation.getClaimantPaymentIntention().isPresent()) {
             setValidationErrors(context, Fields.CLAIMANT_PAYMENT_INTENTION,
-                "is mandatory when ".concat(Fields.COURT_DETERMINATION).concat(" is present"));
+                "is mandatory when " + Fields.COURT_DETERMINATION + " is present");
             return false;
         }
 

@@ -42,7 +42,7 @@ public class ValidCourtDeterminationConstraintValidator
         DecisionType decisionType = courtDetermination.getDecisionType();
         if (DecisionType.DEFENDANT != decisionType && disposableIncome.compareTo(BigDecimal.ZERO) == 0) {
             setValidationErrors(context, Fields.DISPOSABLE_INCOME,
-                "should be greater than 0 for ".concat(decisionType.name()).concat(" decision type"));
+                "should be greater than 0 for " + decisionType.name() + (" decision type"));
             return false;
         }
 
