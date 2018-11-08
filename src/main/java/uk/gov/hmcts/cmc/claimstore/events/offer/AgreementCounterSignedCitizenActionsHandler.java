@@ -7,13 +7,13 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.AgreementCounterSigned;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.COUNTER_SIGNING_PARTY;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.DEFENDANT;
@@ -50,7 +50,7 @@ public class AgreementCounterSignedCitizenActionsHandler {
         notificationService.sendMail(
             targetEmail,
             notificationsProperties.getTemplates().getEmail().getOfferCounterSignedEmailToOtherParty(),
-            aggregateParams(claim, event.party),
+            aggregateParams(claim),
             reference
         );
     }
@@ -72,20 +72,21 @@ public class AgreementCounterSignedCitizenActionsHandler {
         notificationService.sendMail(
             targetEmail,
             notificationsProperties.getTemplates().getEmail().getOfferCounterSignedEmailToOriginator(),
-            aggregateParams(claim, event.party),
+            aggregateParams(claim),
             reference
         );
     }
 
-    private Map<String, String> aggregateParams(Claim claim, MadeBy madeBy) {
-        String counterSignParty = madeBy == CLAIMANT
-            ? claim.getClaimData().getClaimant().getName()
-            : claim.getClaimData().getDefendant().getName();
+    private Map<String, String> aggregateParams(Claim claim) {
+        Map<String, String> parameters = new HashMap<>();
 
-        HashMap<String, String> parameters = new HashMap<>();
+        // used by originator and other party emails
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        parameters.put(COUNTER_SIGNING_PARTY, counterSignParty);
+
+        // only used by other party email
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
 
         return parameters;
     }
