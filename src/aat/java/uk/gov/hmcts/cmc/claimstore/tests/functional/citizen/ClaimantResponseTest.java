@@ -88,21 +88,6 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
-    public void shouldSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
-    }
-
-    @Test
     public void shouldSaveClaimantResponseAcceptationIssueCCJWithCourtDetermination() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithCourtDetermination(),
@@ -136,21 +121,6 @@ public class ClaimantResponseTest extends BaseTest {
     public void shouldSaveClaimantResponseAcceptationIssueSettlementWithDefendantPaymentIntention() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithDefendantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertClaimantResponseFormaliseAsSettlement(claimWithClaimantResponse);
-    }
-
-    @Test
-    public void shouldSaveClaimantResponseAcceptationIssueSettlementWithClaimantPaymentIntention() {
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention(),
             claim.getExternalId(),
             claimant
         ).then()

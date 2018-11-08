@@ -36,16 +36,15 @@ public class ResponseAcceptationContentProvider {
                 "The agreed amount",
                 "courtDecision"
             ));
-
-            courtDetermination.getCourtPaymentIntention().ifPresent(courtPaymentIntention ->
-                content.putAll(paymentIntentionContentProvider.createContent(
-                    courtPaymentIntention.getPaymentOption(),
-                    courtPaymentIntention.getRepaymentPlan().orElse(null),
-                    courtPaymentIntention.getPaymentDate().orElse(null),
-                    "The agreed amount",
-                    "courtPaymentIntention"
-                    )
-                ));
+            PaymentIntention courtPaymentIntention = courtDetermination.getCourtPaymentIntention();
+            content.putAll(paymentIntentionContentProvider.createContent(
+                courtPaymentIntention.getPaymentOption(),
+                courtPaymentIntention.getRepaymentPlan().orElse(null),
+                courtPaymentIntention.getPaymentDate().orElse(null),
+                "The agreed amount",
+                "courtPaymentIntention"
+                )
+            );
         });
 
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
