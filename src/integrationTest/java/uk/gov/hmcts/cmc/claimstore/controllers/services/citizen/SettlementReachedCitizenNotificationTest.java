@@ -54,10 +54,8 @@ public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
 
     private Map<String, String> counterSignedEmailDataFor(String counterSigningPartyName) {
         Map<String, String> emailData = new HashMap<>();
-        emailData.put(
-            NotificationTemplateParameters.COUNTER_SIGNING_PARTY,
-            counterSigningPartyName
-        );
+        emailData.put(NotificationTemplateParameters.CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        emailData.put(NotificationTemplateParameters.DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         emailData.put(NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         emailData.put(NotificationTemplateParameters.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
         return emailData;
