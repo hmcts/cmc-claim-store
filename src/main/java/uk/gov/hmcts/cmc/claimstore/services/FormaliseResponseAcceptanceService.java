@@ -59,14 +59,15 @@ public class FormaliseResponseAcceptanceService {
         }
 
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-        PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
 
         switch (formaliseOption) {
             case CCJ:
-                formaliseCCJ(claim, responseAcceptation, acceptedPaymentIntention, response, authorisation);
+                PaymentIntention acceptedCCJPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
+                formaliseCCJ(claim, responseAcceptation, acceptedCCJPaymentIntention, response, authorisation);
                 break;
             case SETTLEMENT:
-                formaliseSettlement(claim, responseAcceptation, acceptedPaymentIntention, response, authorisation);
+                PaymentIntention acceptedSettlementPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
+                formaliseSettlement(claim, responseAcceptation, acceptedSettlementPaymentIntention, response, authorisation);
                 break;
             case REFER_TO_JUDGE:
                 eventProducer.createInterlocutoryJudgmentEvent(claim);

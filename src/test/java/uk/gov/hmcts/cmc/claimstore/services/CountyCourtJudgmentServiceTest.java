@@ -234,32 +234,6 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
     }
 
-    @Test(expected = ClaimantInvalidRepaymentPlanException.class)
-    public void saveThrowsExceptionWhenClaimantRepaymentPlanStartDateDoesNotMeetCriteria() {
-
-        CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
-            .paymentOption(PaymentOption.INSTALMENTS)
-            .repaymentPlan(
-                SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now()).build())
-            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
-            .build();
-
-        Claim invalidClaim = SampleClaim.getWithResponse(
-            PartAdmissionResponse.builder()
-                .paymentIntention(SamplePaymentIntention.builder()
-                    .paymentOption(PaymentOption.INSTALMENTS).repaymentPlan(
-                        SampleRepaymentPlan.builder().firstPaymentDate(LocalDate.now().plusMonths(2)).build())
-                    .build())
-                .build()
-        );
-
-        when(claimService.getClaimByExternalId(eq(invalidClaim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(invalidClaim);
-
-        countyCourtJudgmentService.save(ccj, invalidClaim.getExternalId(), AUTHORISATION, true);
-
-    }
-
     @Test
     public void saveShouldFinishDefaultCCJRequestSuccessfullyWithInstallmentDateEarlierThanOneMonth() {
         CountyCourtJudgment ccj = SampleCountyCourtJudgment.builder()
