@@ -18,10 +18,8 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
     public CCDCourtDetermination to(CourtDetermination courtDetermination) {
         CCDCourtDetermination.CCDCourtDeterminationBuilder builder = CCDCourtDetermination.builder()
             .courtDecision(paymentIntentionMapper.to(courtDetermination.getCourtDecision()))
-            .disposableIncome(courtDetermination.getDisposableIncome());
-
-        courtDetermination.getCourtPaymentIntention()
-            .ifPresent(paymentIntention -> builder.courtPaymentIntention(paymentIntentionMapper.to(paymentIntention)));
+            .disposableIncome(courtDetermination.getDisposableIncome())
+            .courtPaymentIntention(paymentIntentionMapper.to(courtDetermination.getCourtPaymentIntention()));
 
         courtDetermination.getRejectionReason().ifPresent(builder::rejectionReason);
         return builder.build();
@@ -32,13 +30,10 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
         CourtDetermination.CourtDeterminationBuilder builder = CourtDetermination.builder()
             .courtDecision(paymentIntentionMapper.from(ccdCourtDetermination.getCourtDecision()))
             .disposableIncome(ccdCourtDetermination.getDisposableIncome())
-            .rejectionReason(ccdCourtDetermination.getRejectionReason());
+            .courtPaymentIntention(paymentIntentionMapper.from(ccdCourtDetermination.getCourtPaymentIntention()));
 
-        if (ccdCourtDetermination.getCourtPaymentIntention() != null) {
-
-            builder.courtPaymentIntention(paymentIntentionMapper
-                .from(ccdCourtDetermination.getCourtPaymentIntention())
-            );
+        if (ccdCourtDetermination.getRejectionReason() != null) {
+            builder.rejectionReason(ccdCourtDetermination.getRejectionReason());
         }
         return builder.build();
     }
