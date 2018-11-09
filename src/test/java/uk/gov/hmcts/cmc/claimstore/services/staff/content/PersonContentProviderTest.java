@@ -25,16 +25,16 @@ public class PersonContentProviderTest {
         partyType = "individual";
         name = "John James Smith";
         address = SampleAddress.builder()
-            .withLine1("28 Somewhere Homes")
-            .withLine2("75 That Way Road")
-            .withLine3("")
-            .withCity("London")
-            .withPostcode("AQ9 5FS")
+            .line1("28 Somewhere Homes")
+            .line2("75 That Way Road")
+            .line3("")
+            .city("London")
+            .postcode("AQ9 5FS")
             .build();
         correspondenceAddress = SampleAddress.builder()
-            .withLine1("Correspondence Road")
-            .withCity("Manchester")
-            .withPostcode("CQ9 6FS")
+            .line1("Correspondence Road")
+            .city("Manchester")
+            .postcode("CQ9 6FS")
             .build();
         emailAddress = "blah@blah.com";
         mobileNumber = "07786556746";

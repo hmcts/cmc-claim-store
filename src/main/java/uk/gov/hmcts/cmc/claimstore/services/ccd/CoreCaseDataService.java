@@ -217,7 +217,7 @@ public class CoreCaseDataService {
             .respondedAt(nowInUTC())
             .build();
 
-        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response) + "_RESPONSE_SUBMITTED"));
+        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response)));
     }
 
     private String getResponseTypeName(Response response) {
@@ -233,7 +233,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public CaseDetails saveClaimantResponse(
+    public Claim saveClaimantResponse(
         Long caseId,
         ClaimantResponse response,
         String authorisation
@@ -242,9 +242,13 @@ public class CoreCaseDataService {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             .claimantResponse(claimantResponseMapper.to(response))
+            .claimantRespondedAt(nowInUTC())
             .build();
 
-        return update(authorisation, ccdCase, CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name()));
+        CaseDetails caseDetails = update(authorisation, ccdCase,
+            CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name())
+        );
+        return extractClaim(caseDetails);
     }
 
     public CaseDetails saveSettlement(

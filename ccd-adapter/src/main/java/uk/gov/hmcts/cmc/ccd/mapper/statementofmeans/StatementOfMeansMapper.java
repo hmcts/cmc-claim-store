@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.statementofmeans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDDebt;
@@ -16,11 +17,13 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
@@ -35,6 +38,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private final IncomeMapper incomeMapper;
     private final ExpenseMapper expenseMapper;
     private final CourtOrderMapper courtOrderMapper;
+    private final LivingPartnerMapper livingPartnerMapper;
 
     @Autowired
     public StatementOfMeansMapper(
@@ -44,8 +48,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         DebtMapper debtMapper,
         IncomeMapper incomeMapper,
         ExpenseMapper expenseMapper,
-        CourtOrderMapper courtOrderMapper
-    ) {
+        CourtOrderMapper courtOrderMapper,
+        LivingPartnerMapper livingPartnerMapper) {
         this.dependantMapper = dependantMapper;
         this.employmentMapper = employmentMapper;
         this.bankAccountMapper = bankAccountMapper;
@@ -53,6 +57,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         this.incomeMapper = incomeMapper;
         this.expenseMapper = expenseMapper;
         this.courtOrderMapper = courtOrderMapper;
+        this.livingPartnerMapper = livingPartnerMapper;
     }
 
     @Override
@@ -114,6 +119,18 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .collect(Collectors.toList())
         );
 
+        builder.priorityDebts(
+            statementOfMeans.getPriorityDebts()
+                .stream()
+                .filter(Objects::nonNull)
+                .map(priorityDebt -> CCDCollectionElement.<PriorityDebt>builder().value(priorityDebt).build())
+                .collect(Collectors.toList())
+        );
+
+        statementOfMeans.getPartner().ifPresent(partner -> builder.partner(livingPartnerMapper.to(partner)));
+        statementOfMeans.getDisability().ifPresent(builder::disability);
+        builder.carer(CCDYesNoOption.valueOf(statementOfMeans.isCarer()));
+
         return builder.build();
     }
 
@@ -153,22 +170,30 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .map(courtOrderMapper::from)
             .collect(Collectors.toList());
 
+        List<PriorityDebt> priorityDebts = asStream(ccdStatementOfMeans.getPriorityDebts())
+            .map(CCDCollectionElement::getValue)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
         Residence residence = Residence.builder()
             .type(ccdStatementOfMeans.getResidence().getType())
             .otherDetail(ccdStatementOfMeans.getResidence().getOtherDetail())
             .build();
 
-        return new StatementOfMeans(
-            residence,
-            dependantMapper.from(ccdStatementOfMeans.getDependant()),
-            employmentMapper.from(ccdStatementOfMeans.getEmployment()),
-            bankAccounts,
-            debts,
-            incomes,
-            expenses,
-            courtOrders,
-            ccdStatementOfMeans.getReason()
-
-        );
+        return StatementOfMeans.builder()
+            .residence(residence)
+            .dependant(dependantMapper.from(ccdStatementOfMeans.getDependant()))
+            .employment(employmentMapper.from(ccdStatementOfMeans.getEmployment()))
+            .bankAccounts(bankAccounts)
+            .debts(debts)
+            .incomes(incomes)
+            .expenses(expenses)
+            .courtOrders(courtOrders)
+            .priorityDebts(priorityDebts)
+            .reason(ccdStatementOfMeans.getReason())
+            .partner(livingPartnerMapper.from(ccdStatementOfMeans.getPartner()))
+            .disability(ccdStatementOfMeans.getDisability())
+            .carer(Optional.ofNullable(ccdStatementOfMeans.getCarer()).orElse(CCDYesNoOption.NO).toBoolean())
+            .build();
     }
 }

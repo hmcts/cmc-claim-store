@@ -18,11 +18,11 @@ public class ClaimantResponseAssert extends AbstractAssert<ClaimantResponseAsser
     public ClaimantResponseAssert isEqualTo(CCDClaimantResponse ccdResponse) {
         isNotNull();
 
-        if (ccdResponse.getClaimantResponseType().equals(ACCEPTATION) ) {
+        if (ccdResponse.getClaimantResponseType().equals(ACCEPTATION)) {
             assertThat((ResponseAcceptation) actual).isEqualTo(ccdResponse.getResponseAcceptation());
         }
 
-        if (ccdResponse.getClaimantResponseType().equals(REJECTION) ) {
+        if (ccdResponse.getClaimantResponseType().equals(REJECTION)) {
             assertThat((ResponseRejection) actual).isEqualTo(ccdResponse.getResponseRejection());
         }
 

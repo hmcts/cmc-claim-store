@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -15,10 +16,12 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
+import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -28,7 +31,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -61,6 +66,9 @@ public class ClaimServiceTest {
 
     private static final UserDetails validDefendant
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
+
+    private static final UserDetails validClaimant
+        = SampleUserDetails.builder().withUserId(USER_ID).withMail(SUBMITTER_EMAIL).build();
 
     private static final UserDetails claimantDetails
         = SampleUserDetails.builder().withUserId("11").withMail(SUBMITTER_EMAIL).build();
@@ -101,7 +109,8 @@ public class ClaimServiceTest {
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
-            ccdCaseDataToClaim);
+            ccdCaseDataToClaim,
+            new PaidInFullRule());
     }
 
     @Test
@@ -118,7 +127,7 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void getClaimByIdShouldThrowNotFoundException() {
 
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(Optional.empty());
+        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(empty());
 
         claimService.getClaimById(CLAIM_ID);
     }
@@ -138,7 +147,7 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void getClaimByLetterHolderIdShouldThrowExceptionWhenClaimDoesNotExist() {
 
-        Optional<Claim> result = Optional.empty();
+        Optional<Claim> result = empty();
         String letterHolderId = "0";
 
         when(caseRepository.getByLetterHolderId(eq(letterHolderId), any())).thenReturn(result);
@@ -149,7 +158,7 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void getClaimByExternalIdShouldThrowExceptionWhenClaimDoesNotExist() {
 
-        Optional<Claim> result = Optional.empty();
+        Optional<Claim> result = empty();
         String externalId = "does not exist";
 
         when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
@@ -198,7 +207,7 @@ public class ClaimServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(Optional.empty());
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(empty());
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
@@ -206,7 +215,7 @@ public class ClaimServiceTest {
     @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
     public void requestMoreTimeForResponseThrowsMoreTimeRequestedAfterDeadlineWhenItsTooLateForMoreTimeRequest() {
 
-        LocalDate responseDeadlineInThePast = LocalDate.now()
+        LocalDate responseDeadlineInThePast = now()
             .minusDays(10);
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
@@ -270,20 +279,41 @@ public class ClaimServiceTest {
             .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
     }
 
+    @Test
+    public void paidInFullShouldFinishSuccessfully() {
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(validClaimant);
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(Optional.of(claim));
+        PaidInFull paidInFull = new PaidInFull(now());
+
+        claimService.paidInFull(EXTERNAL_ID, paidInFull, AUTHORISATION);
+
+        verify(caseRepository, once()).paidInFull(eq(claim), eq(paidInFull), eq(AUTHORISATION));
+
+        verify(eventProducer, once()).createPaidInFullEvent(eq(claim));
+    }
+
+    @Test(expected = ConflictException.class)
+    public void paidInFullShouldThrowConflictExceptionIfAlreadyPaidInFull() {
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(validClaimant);
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+            .thenReturn(Optional.of(createPaidInFullClaim(now())));
+
+        claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void paidInFullShouldThrowNotFoundExceptionWhenClaimNotFound() {
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(empty());
+
+        claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
+    }
+
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
-        return SampleClaim.builder()
-            .withClaimId(CLAIM_ID)
-            .withSubmitterId(USER_ID)
-            .withLetterHolderId(letterHolderId)
-            .withDefendantId(DEFENDANT_ID)
-            .withExternalId(EXTERNAL_ID)
-            .withReferenceNumber(REFERENCE_NUMBER)
+        return createSampleClaim()
             .withClaimData(claimData)
-            .withCreatedAt(NOW_IN_LOCAL_ZONE)
-            .withIssuedOn(ISSUE_DATE)
-            .withResponseDeadline(RESPONSE_DEADLINE)
-            .withMoreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
-            .withSubmitterEmail(SUBMITTER_EMAIL)
+            .withLetterHolderId(letterHolderId)
             .build();
     }
 
@@ -298,9 +328,30 @@ public class ClaimServiceTest {
             .withClaimData(VALID_APP)
             .withCreatedAt(NOW_IN_LOCAL_ZONE)
             .withIssuedOn(ISSUE_DATE)
+            .withSubmitterEmail(SUBMITTER_EMAIL)
             .withResponseDeadline(responseDeadline)
             .withMoreTimeRequested(moreTimeAlreadyRequested)
-            .withSubmitterEmail(SUBMITTER_EMAIL)
             .build();
+    }
+
+    private static Claim createPaidInFullClaim(LocalDate moneyReceivedOn) {
+        return createSampleClaim()
+            .withClaimData(VALID_APP)
+            .withMoneyReceivedOn(moneyReceivedOn)
+            .build();
+    }
+
+    private static SampleClaim createSampleClaim() {
+        return SampleClaim.builder()
+            .withClaimId(CLAIM_ID)
+            .withSubmitterId(USER_ID)
+            .withDefendantId(DEFENDANT_ID)
+            .withExternalId(EXTERNAL_ID)
+            .withReferenceNumber(REFERENCE_NUMBER)
+            .withCreatedAt(NOW_IN_LOCAL_ZONE)
+            .withIssuedOn(ISSUE_DATE)
+            .withResponseDeadline(RESPONSE_DEADLINE)
+            .withMoreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
+            .withSubmitterEmail(SUBMITTER_EMAIL);
     }
 }

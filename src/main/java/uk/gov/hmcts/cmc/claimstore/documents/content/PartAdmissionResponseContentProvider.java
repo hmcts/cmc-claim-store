@@ -83,7 +83,8 @@ public class PartAdmissionResponseContentProvider {
                     paymentIntention.getPaymentOption(),
                     paymentIntention.getRepaymentPlan().orElse(null),
                     paymentIntention.getPaymentDate().orElse(null),
-                    formatMoney(partAdmissionResponse.getAmount())
+                    formatMoney(partAdmissionResponse.getAmount()),
+                    ""
                     )
                 )
         );

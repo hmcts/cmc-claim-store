@@ -144,13 +144,13 @@ public class JsonMapperTest {
                             .build())
             .withAmount(
                 SampleAmountRange.builder()
-                    .withHigherValue(BigDecimal.valueOf(123.56))
-                    .withLowerValue(BigDecimal.valueOf(123.56))
+                    .lowerValue(BigDecimal.valueOf(123.56))
+                    .higherValue(BigDecimal.valueOf(123.56))
                     .build())
             .withDefendant(
                 SampleTheirDetails.builder()
                     .withRepresentative(SampleRepresentative.builder().build())
-                    .withServiceAddress(SampleAddress.validDefaults())
+                    .withServiceAddress(SampleAddress.builder().build())
                     .individualDetails())
             .withTimeline(null)
             .withPayment(null)

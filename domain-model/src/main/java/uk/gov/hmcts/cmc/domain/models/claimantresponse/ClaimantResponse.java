@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -23,13 +24,16 @@ public abstract class ClaimantResponse {
     @NotNull
     private final ClaimantResponseType type;
 
-    @NotNull
     @Min(value = 0)
     private final BigDecimal amountPaid;
 
     public ClaimantResponse(ClaimantResponseType type, BigDecimal amountPaid) {
         this.amountPaid = amountPaid;
         this.type = type;
+    }
+
+    public Optional<BigDecimal> getAmountPaid() {
+        return Optional.ofNullable(amountPaid);
     }
 
     @Override

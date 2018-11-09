@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.RepaymentPlanContent;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 
 import java.math.BigDecimal;
@@ -29,8 +30,9 @@ public class RepaymentPlanContentProviderTest {
     public void createRepaymentPlanPaymentOption() {
         LocalDate firstPaymentDate = now().plusDays(1);
         RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder()
-            .withInstalmentAmount(BigDecimal.valueOf(80))
-            .withFirstPaymentDate(firstPaymentDate)
+            .instalmentAmount(BigDecimal.valueOf(80))
+            .paymentSchedule(PaymentSchedule.EVERY_MONTH)
+            .firstPaymentDate(firstPaymentDate)
             .build();
 
         RepaymentPlanContent repaymentPlanContent = create(INSTALMENTS, repaymentPlan, null);

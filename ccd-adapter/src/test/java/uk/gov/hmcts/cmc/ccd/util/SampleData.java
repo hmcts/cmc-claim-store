@@ -46,10 +46,14 @@ import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDEmployment;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDResidence;
 import uk.gov.hmcts.cmc.ccd.domain.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -73,6 +77,7 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAc
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt.PriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.JOINT_OWN_HOME;
 
 public class SampleData {
@@ -314,10 +319,17 @@ public class SampleData {
             .build();
     }
 
-    public static CCDClaimantResponse getCCDClaimantResponse(CCDFormaliseOption formaliseOption) {
+    public static CCDClaimantResponse getCCDClaimantAcceptanceResponse(CCDFormaliseOption formaliseOption) {
         return CCDClaimantResponse.builder()
             .claimantResponseType(CCDClaimantResponseType.ACCEPTATION)
             .responseAcceptation(getResponseAcceptation(formaliseOption))
+            .build();
+    }
+
+    public static CCDClaimantResponse getCCDClaimantREjectionResponse() {
+        return CCDClaimantResponse.builder()
+            .claimantResponseType(CCDClaimantResponseType.REJECTION)
+            .responseRejection(getResponseRejection())
             .build();
     }
 
@@ -338,10 +350,13 @@ public class SampleData {
             .build();
     }
 
-    private static CCDCourtDetermination getCCDCourtDetermination() {
+    public static CCDCourtDetermination getCCDCourtDetermination() {
         return CCDCourtDetermination.builder()
             .rejectionReason("Rejection reason")
+            .courtPaymentIntention(getCCDPaymentIntention())
             .courtDecision(getCCDPaymentIntention())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
             .build();
     }
 
@@ -420,13 +435,29 @@ public class SampleData {
                 ).build()
             ))
             .courtOrders(asList(
-                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder().build().builder()
+                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder()
                     .amountOwed(TEN)
                     .claimNumber("Reference")
                     .monthlyInstalmentAmount(ONE)
                     .build()
                 ).build()
             ))
+            .priorityDebts(asList(
+                CCDCollectionElement.<PriorityDebt>builder().value(PriorityDebt.builder()
+                    .frequency(MONTH)
+                    .amount(BigDecimal.valueOf(132.89))
+                    .type(ELECTRICITY)
+                    .build()
+                ).build()
+            ))
+            .carer(CCDYesNoOption.YES)
+            .partner(CCDLivingPartner.builder()
+                .disability(DisabilityStatus.SEVERE)
+                .over18(CCDYesNoOption.YES)
+                .pensioner(CCDYesNoOption.YES)
+                .build()
+            )
+            .disability(DisabilityStatus.YES)
             .build();
     }
 }
