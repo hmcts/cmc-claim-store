@@ -84,9 +84,10 @@ public class DefendantResponseContentProvider {
                 );
                 break;
             case FULL_ADMISSION:
-                content.putAll(
-                    fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
-                );
+                content.putAll(fullAdmissionResponseContentProvider
+                    .createContent((FullAdmissionResponse) defendantResponse,
+                        claim.getTotalAmountTillToday()
+                            .orElseThrow(() -> new IllegalArgumentException("Claim aount cant be empty or null"))));
                 break;
             case PART_ADMISSION:
                 content.putAll(
@@ -97,7 +98,6 @@ public class DefendantResponseContentProvider {
                 throw new MappingException("Invalid responseType " + defendantResponse.getResponseType());
 
         }
-
         return content;
     }
 }

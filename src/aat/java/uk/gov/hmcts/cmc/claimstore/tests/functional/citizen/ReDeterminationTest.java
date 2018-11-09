@@ -61,33 +61,6 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
-    public void shouldSaveReDeterminationWithoutCourtDetermination() {
-        String explanation = "I want it sooner";
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.OK.value());
-
-        Claim claimWithReDetermination
-            = commonOperations.retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertThat(claimWithReDetermination.getReDeterminationRequestedAt()).isNotEmpty();
-        ReDetermination reDetermination = claimWithReDetermination.getReDetermination()
-            .orElseThrow(AssertionError::new);
-
-        assertThat(reDetermination.getExplanation()).isEqualTo(explanation);
-    }
-
-    @Test
     public void shouldSaveReDeterminationWithDefendantPaymentIntentionAccepted() {
         String explanation = "I want it sooner";
         commonOperations.submitClaimantResponse(
