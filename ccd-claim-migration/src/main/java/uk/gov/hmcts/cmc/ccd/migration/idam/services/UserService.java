@@ -42,7 +42,7 @@ public class UserService {
         return idamApi.retrieveUserDetails(authorisation);
     }
 
-    public User authenticateSystemUpdateUser(){
+    public User authenticateSystemUpdateUser() {
         IdamCaseworker system = idamCaseworkerProperties.getSystem();
         return authenticateUser(system.getUsername(), system.getPassword());
     }

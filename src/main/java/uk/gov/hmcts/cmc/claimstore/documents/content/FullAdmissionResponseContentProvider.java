@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
 public class FullAdmissionResponseContentProvider {
@@ -24,7 +26,8 @@ public class FullAdmissionResponseContentProvider {
         this.statementOfMeansContentProvider = statementOfMeansContentProvider;
     }
 
-    public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse) {
+    public Map<String, Object> createContent(FullAdmissionResponse fullAdmissionResponse,
+                                             BigDecimal claimAmountTillDate) {
         requireNonNull(fullAdmissionResponse);
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
@@ -33,7 +36,7 @@ public class FullAdmissionResponseContentProvider {
                 fullAdmissionResponse.getPaymentIntention().getPaymentOption(),
                 fullAdmissionResponse.getPaymentIntention().getRepaymentPlan().orElse(null),
                 fullAdmissionResponse.getPaymentIntention().getPaymentDate().orElse(null),
-                "The full amount"
+                formatMoney(claimAmountTillDate), ""
                 )
             );
 

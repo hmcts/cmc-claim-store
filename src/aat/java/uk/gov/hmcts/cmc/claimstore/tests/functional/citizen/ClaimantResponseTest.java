@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.math.BigDecimal;
 
+import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
@@ -55,7 +56,7 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
     }
 
     @Test
@@ -78,27 +79,12 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
         assertThat(claimantResponse.getFormaliseOption()).isEqualTo(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
         assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
         assertThat(claimWithClaimantResponse.getCountyCourtJudgmentIssuedAt()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
     }
 
     @Test
@@ -146,27 +132,12 @@ public class ClaimantResponseTest extends BaseTest {
         assertClaimantResponseFormaliseAsSettlement(claimWithClaimantResponse);
     }
 
-    @Test
-    public void shouldSaveClaimantResponseAcceptationIssueSettlementWithClaimantPaymentIntention() {
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertClaimantResponseFormaliseAsSettlement(claimWithClaimantResponse);
-    }
-
     private void assertClaimantResponseFormaliseAsSettlement(Claim claimWithClaimantResponse) {
         assertThat(claimWithClaimantResponse.getClaimantRespondedAt()).isNotEmpty();
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
         assertThat(claimantResponse.getFormaliseOption()).isEqualTo(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
@@ -189,10 +160,8 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getReason())
-            .isEqualTo("He paid 10 but he actually owes 10,000. No I do not accept this.");
-        assertThat(claimantResponse.isFreeMediation()).isFalse();
-        assertThat(claimantResponse.getAmountPaid()).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {

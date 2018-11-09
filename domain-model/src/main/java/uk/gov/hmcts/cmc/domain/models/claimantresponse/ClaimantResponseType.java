@@ -1,5 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
+import lombok.Getter;
+
+@Getter
 public enum ClaimantResponseType {
     ACCEPTATION("acceptation"),
     REJECTION("rejection");
@@ -8,9 +11,5 @@ public enum ClaimantResponseType {
 
     ClaimantResponseType(String description) {
         this.description = description;
-    }
-
-    public String getDescription() {
-        return this.description;
     }
 }

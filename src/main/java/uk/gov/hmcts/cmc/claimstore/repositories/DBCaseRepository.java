@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -125,8 +127,16 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
+    public Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
         claimRepository.saveClaimantResponse(claim.getExternalId(), jsonMapper.toJson(response));
+        return claimRepository
+            .getClaimByExternalId(claim.getExternalId())
+            .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
+    }
+
+    @Override
+    public void paidInFull(Claim claim, PaidInFull paidInFull, String authorization) {
+        claimRepository.updateMoneyReceivedOn(claim.getExternalId(), paidInFull.getMoneyReceivedOn());
     }
 
     @Override
@@ -147,6 +157,11 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public List<Claim> getByDefendantEmail(String email, String authorisation) {
         return claimRepository.getByDefendantEmail(email);
+    }
+
+    @Override
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        return claimRepository.getByPaymentReference(payReference);
     }
 
     @Override
@@ -208,5 +223,15 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentUri) {
         claimRepository.linkSealedClaimDocument(claim.getId(), documentUri.toString());
+    }
+
+    @Override
+    public void saveReDetermination(
+        String authorisation,
+        Claim claim,
+        ReDetermination reDetermination,
+        String submitterId
+    ) {
+        claimRepository.saveReDetermination(claim.getExternalId(), jsonMapper.toJson(reDetermination));
     }
 }

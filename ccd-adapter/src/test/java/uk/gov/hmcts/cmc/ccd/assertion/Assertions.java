@@ -77,6 +77,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
@@ -305,6 +306,10 @@ public class Assertions {
 
     public static ExpenseAssert assertThat(Expense expense) {
         return new ExpenseAssert(expense);
+    }
+
+    public static LivingPartnerAssert assertThat(LivingPartner livingPartner) {
+        return new LivingPartnerAssert(livingPartner);
     }
 
     public static SelfEmploymentAssert assertThat(SelfEmployment selfEmployment) {

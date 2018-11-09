@@ -12,25 +12,24 @@ import java.util.List;
 
 public class SampleSettlement {
 
-    public static final PartyStatement offerPartyStatement
-        = SamplePartyStatement.validDefaults();
+    public static final PartyStatement offerPartyStatement = SamplePartyStatement.builder().build();
 
     public static final PartyStatement rejectPartyStatement = SamplePartyStatement.builder()
-        .withStatementType(StatementType.REJECTION)
-        .withMadeBy(MadeBy.CLAIMANT)
-        .withOffer(null)
+        .type(StatementType.REJECTION)
+        .madeBy(MadeBy.CLAIMANT)
+        .offer(null)
         .build();
 
     public static final PartyStatement acceptPartyStatement = SamplePartyStatement.builder()
-        .withStatementType(StatementType.ACCEPTATION)
-        .withMadeBy(MadeBy.CLAIMANT)
-        .withOffer(null)
+        .type(StatementType.ACCEPTATION)
+        .madeBy(MadeBy.CLAIMANT)
+        .offer(null)
         .build();
 
     public static final PartyStatement counterSignPartyStatement = SamplePartyStatement.builder()
-        .withStatementType(StatementType.COUNTERSIGNATURE)
-        .withMadeBy(MadeBy.DEFENDANT)
-        .withOffer(null)
+        .type(StatementType.COUNTERSIGNATURE)
+        .madeBy(MadeBy.DEFENDANT)
+        .offer(null)
         .build();
 
     private List<PartyStatement> partyStatements = new ArrayList<>(Collections.singletonList(offerPartyStatement));

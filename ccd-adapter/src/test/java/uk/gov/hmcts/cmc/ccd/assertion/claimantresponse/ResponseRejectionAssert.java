@@ -16,21 +16,25 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
     public ResponseRejectionAssert isEqualTo(CCDResponseRejection ccdResponseRejection) {
         isNotNull();
 
-        CCDYesNoOption freeMediation = CCDYesNoOption.valueOf(actual.isFreeMediation());
+        CCDYesNoOption freeMediation = CCDYesNoOption.valueOf(actual.getFreeMediation().orElse(false));
         if (!Objects.equals(freeMediation, ccdResponseRejection.getFreeMediationOption())) {
             failWithMessage("Expected ResponseRejection.freeMediation to be <%s> but was <%s>",
                 ccdResponseRejection.getFreeMediationOption(), freeMediation);
         }
 
-        if (!Objects.equals(actual.getAmountPaid(), ccdResponseRejection.getAmountPaid())) {
-            failWithMessage("Expected ResponseRejection.amountPaid to be <%s> but was <%s>",
-                ccdResponseRejection.getAmountPaid(), actual.getAmountPaid());
-        }
+        actual.getAmountPaid().ifPresent(amountPaid -> {
+            if (!Objects.equals(amountPaid, ccdResponseRejection.getAmountPaid())) {
+                failWithMessage("Expected ResponseRejection.amountPaid to be <%s> but was <%s>",
+                    ccdResponseRejection.getAmountPaid(), amountPaid);
+            }
+        });
 
-        if (!Objects.equals(actual.getReason(), ccdResponseRejection.getReason())) {
-            failWithMessage("Expected ResponseRejection.reason to be <%s> but was <%s>",
-                ccdResponseRejection.getReason(), actual.getReason());
-        }
+        actual.getReason().ifPresent(reason -> {
+            if (!Objects.equals(reason, ccdResponseRejection.getReason())) {
+                failWithMessage("Expected ResponseRejection.reason to be <%s> but was <%s>",
+                    ccdResponseRejection.getReason(), reason);
+            }
+        });
 
         return this;
     }

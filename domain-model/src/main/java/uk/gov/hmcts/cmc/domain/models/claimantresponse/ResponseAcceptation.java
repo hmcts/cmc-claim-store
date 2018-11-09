@@ -5,16 +5,19 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.constraints.ValidResponseAcceptance;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
+@ValidResponseAcceptance
 public class ResponseAcceptation extends ClaimantResponse {
 
     @Valid
@@ -23,9 +26,8 @@ public class ResponseAcceptation extends ClaimantResponse {
     @Valid
     private final PaymentIntention claimantPaymentIntention;
 
+    @NotNull
     private final FormaliseOption formaliseOption;
-
-    private final DeterminationDecisionType determinationDecisionType;
 
     @Builder
     @JsonCreator
@@ -33,14 +35,12 @@ public class ResponseAcceptation extends ClaimantResponse {
         BigDecimal amountPaid,
         CourtDetermination courtDetermination,
         PaymentIntention claimantPaymentIntention,
-        FormaliseOption formaliseOption,
-        DeterminationDecisionType determinationDecisionType
+        FormaliseOption formaliseOption
     ) {
         super(ClaimantResponseType.ACCEPTATION, amountPaid);
         this.courtDetermination = courtDetermination;
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
-        this.determinationDecisionType = determinationDecisionType;
     }
 
     public Optional<CourtDetermination> getCourtDetermination() {

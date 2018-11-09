@@ -6,19 +6,18 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
-import java.util.Optional;
-
 @Component
 public class ResponseRejectionMapper implements Mapper<CCDResponseRejection, ResponseRejection> {
     @Override
     public CCDResponseRejection to(ResponseRejection responseRejection) {
-        Boolean mediation = Optional.ofNullable(responseRejection.isFreeMediation()).orElse(CCDYesNoOption.NO.toBoolean());
+        Boolean mediation = responseRejection.getFreeMediation().orElse(CCDYesNoOption.NO.toBoolean());
 
-        return CCDResponseRejection.builder()
-            .amountPaid(responseRejection.getAmountPaid())
-            .freeMediationOption(CCDYesNoOption.valueOf(mediation))
-            .reason(responseRejection.getReason())
-            .build();
+        CCDResponseRejection.CCDResponseRejectionBuilder rejection = CCDResponseRejection.builder()
+            .freeMediationOption(CCDYesNoOption.valueOf(mediation));
+
+        responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
+        responseRejection.getReason().ifPresent(rejection::reason);
+        return rejection.build();
     }
 
     @Override
@@ -27,7 +26,7 @@ public class ResponseRejectionMapper implements Mapper<CCDResponseRejection, Res
             .amountPaid(ccdResponseRejection.getAmountPaid())
             .reason(ccdResponseRejection.getReason());
 
-        if(ccdResponseRejection.getFreeMediationOption() != null){
+        if (ccdResponseRejection.getFreeMediationOption() != null) {
             builder.freeMediation(ccdResponseRejection.getFreeMediationOption().toBoolean());
         }
 

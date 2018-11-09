@@ -111,6 +111,11 @@ public class CCDCaseApi {
         return getAllCasesBy(user, ImmutableMap.of("case.defendantEmail", defendantEmail));
     }
 
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        User user = userService.getUser(authorisation);
+        return getAllCasesBy(user, ImmutableMap.of("case.claimData.payment.reference", payReference));
+    }
+
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         List<CaseDetails> result = searchAll(user, ImmutableMap.of("case.externalId", externalId));

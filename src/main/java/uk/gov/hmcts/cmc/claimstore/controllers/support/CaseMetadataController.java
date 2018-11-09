@@ -109,4 +109,15 @@ public class CaseMetadataController {
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());
     }
+
+    @PostMapping("/filters/payments")
+    public List<CaseMetadata> getByPaymentReference(@RequestParam("reference") String payReference) {
+        return claimService.getClaimByPaymentReference(
+            payReference,
+            userService.authenticateAnonymousCaseWorker().getAuthorisation()
+        )
+            .stream()
+            .map(CaseMetadata::fromClaim)
+            .collect(Collectors.toList());
+    }
 }
