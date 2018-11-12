@@ -10,11 +10,11 @@ import uk.gov.hmcts.cmc.domain.SensitiveAwareToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -93,7 +93,8 @@ public abstract class Party implements NamedParty {
     }
 
     public static void main(String[] args) {
-        System.out.println(new Individual("Should be masked", new Address("line1", "line2", "line3", "city", "postcode"),
+        System.out.println(new Individual("Should be masked",
+            new Address("line1", "line2", "line3", "city", "postcode"),
             null, "+447012345678", null, LocalDate.now()));
     }
 }

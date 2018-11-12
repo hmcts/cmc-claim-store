@@ -17,10 +17,9 @@ public class SensitiveAwareToStringBuilder {
         StringBuilder toString = new StringBuilder();
         List<Field> fields = getAllFields(new LinkedList<>(), object.getClass());
         for (Field field : fields) {
+            String name = field.getName();
+            Object value;
             try {
-                String name = field.getName();
-                Object value;
-
                 if (!Modifier.isPublic(field.getModifiers())) {
                     field.setAccessible(true);
                 }
@@ -29,17 +28,15 @@ public class SensitiveAwareToStringBuilder {
                     ? getMaskedValue(field.get(object))
                     : field.get(object);
 
-                toString.append(name).append("=").append(value).append(", ");
             } catch (IllegalArgumentException | IllegalAccessException e) {
+                value = "[exception thrown while accessing]";
             }
+            toString.append(name).append("=").append(value).append(", ");
+
         }
         return "[" + toString.toString().replaceAll(",\\s*$", "") + "]";
     }
 
-    /**
-     * @param input
-     * @return
-     */
     private static String getMaskedValue(Object input) {
         char[] value = input.toString().toCharArray();
         StringBuilder output = new StringBuilder();
