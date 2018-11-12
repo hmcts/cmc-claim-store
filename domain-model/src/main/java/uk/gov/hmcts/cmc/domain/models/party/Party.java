@@ -47,6 +47,7 @@ public abstract class Party implements NamedParty {
     private final Address correspondenceAddress;
 
     @Size(max = 30, message = "may not be longer than {max} characters")
+    @Sensitive
     private final String mobilePhone;
 
     @Valid
