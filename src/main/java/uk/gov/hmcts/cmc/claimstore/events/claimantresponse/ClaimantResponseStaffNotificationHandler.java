@@ -22,8 +22,9 @@ public class ClaimantResponseStaffNotificationHandler {
 
     @EventListener
     public void onClaimantResponse(ClaimantResponseEvent event) {
-        if (isResponseFullDefenceStatesPaid(event.getClaim())) {
-            this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(event.getClaim());
+        Claim claim = event.getClaim();
+        if (isResponseFullDefenceStatesPaid(claim)) {
+            this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claim);
         }
     }
 
