@@ -1,3 +1,12 @@
+buildscript {
+  repositories {
+    jcenter()
+    maven { url 'http://repo.spring.io/plugins-release' }
+  }
+  dependencies {
+  }
+}
+
 plugins {
   id 'java'
   id 'jacoco'
@@ -5,10 +14,23 @@ plugins {
 
 apply plugin: 'net.ltgt.apt'
 
+ext {
+  aspectjVersion = '1.8.9'
+  springVersion = '5.1.2.RELEASE'
+}
+
 sourceCompatibility = 1.8
 
 repositories {
   mavenCentral()
+}
+
+configurations {
+  ajc
+  aspects
+  compile {
+    extendsFrom aspects
+  }
 }
 
 dependencies {
@@ -25,4 +47,45 @@ dependencies {
   testCompile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
   testCompile group: 'org.glassfish.web', name: 'javax.el', version: '2.2.6'
   testCompile group: 'com.google.guava', name: 'guava', version: '20.0'
+
+  compile "org.aspectj:aspectjrt:$aspectjVersion"
+  compile "org.aspectj:aspectjweaver:$aspectjVersion"
+
+  ajc "org.aspectj:aspectjtools:$aspectjVersion"
+  aspects "org.springframework:spring-aspects:$springVersion"
+}
+
+def aspectj = { destDir, aspectPath, inpath, classpath ->
+  ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
+    classpath: configurations.ajc.asPath)
+
+  ant.iajc(
+    maxmem: "1024m", fork: "true", Xlint: "ignore",
+    destDir: destDir,
+    aspectPath: aspectPath,
+    inpath: inpath,
+    classpath: classpath,
+    source: project.sourceCompatibility,
+    target: project.targetCompatibility
+  )
+}
+
+compileJava {
+  doLast {
+    aspectj project.sourceSets.main.output.classesDir.absolutePath,
+      configurations.aspects.asPath,
+      project.sourceSets.main.output.classesDir.absolutePath,
+      project.sourceSets.main.runtimeClasspath.asPath
+  }
+}
+
+compileTestJava {
+  dependsOn jar
+
+  doLast {
+    aspectj project.sourceSets.test.output.classesDir.absolutePath,
+      configurations.aspects.asPath + jar.archivePath,
+      project.sourceSets.test.output.classesDir.absolutePath,
+      project.sourceSets.test.runtimeClasspath.asPath
+  }
 }

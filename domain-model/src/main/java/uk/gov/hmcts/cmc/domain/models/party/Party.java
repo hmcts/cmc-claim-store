@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.hmcts.cmc.domain.Sensitive;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -34,6 +36,7 @@ public abstract class Party implements NamedParty {
 
     @NotBlank
     @Size(max = 255, message = "may not be longer than {max} characters")
+    @Sensitive
     private final String name;
 
     @Valid
@@ -89,4 +92,9 @@ public abstract class Party implements NamedParty {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 
+    public static void main(String[] args) {
+        System.out.println(new Individual("Should be masked",
+            new Address("line1", "line2", "line3", "city", "postcode"),
+            null, "+447012345678", null, LocalDate.now()));
+    }
 }
