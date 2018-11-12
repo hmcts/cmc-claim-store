@@ -297,25 +297,24 @@ def listFiles(String pattern) {
     .collect(Collectors.joining(","))
 }
 
-sonarqube {
-  properties {
-    property "sonar.projectName", "CMC :: Claim Store"
-    property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
-    property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
-    property "sonar.exclusions", "**/ccd/domain/**," +
-      "**/cmc/domain/models/**," +
-      "**/cmc/claimstore/idam/models/**," +
-      "**/ExceptionForClient.java," +
-      "**/config/**," +
-      "**/*Exception.java," +
-      "**/*Event.java," +
-      "**/PathPatterns.java," +
-      "**/ClaimRepository.java," +
-      "**/cmc/claimstore/appinsights/**," +
-      "**/ccd/migration/**," +
-      "**/EmailData.java"
-  }
-}
+//sonarqube {
+//  properties {
+//    property "sonar.projectName", "CMC :: Claim Store"
+//    property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
+//    property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
+//    property "sonar.exclusions", "**/ccd/domain/**," +
+//      "**/cmc/domain/models/**," +
+//      "**/cmc/claimstore/idam/models/**," +
+//      "**/ExceptionForClient.java," +
+//      "**/config/**," +
+//      "**/*Exception.java," +
+//      "**/*Event.java," +
+//      "**/PathPatterns.java," +
+//      "**/ClaimRepository.java," +
+//      "**/cmc/claimstore/appinsights/**," +
+//      "**/ccd/migration/**"
+//  }
+//}
 
 bootJar {
   archiveName = 'claim-store.jar'
