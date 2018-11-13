@@ -312,7 +312,8 @@ sonarqube {
       "**/PathPatterns.java," +
       "**/ClaimRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
-      "**/ccd/migration/**"
+      "**/ccd/migration/**," +
+      "**/EmailData.java"
   }
 }
 
