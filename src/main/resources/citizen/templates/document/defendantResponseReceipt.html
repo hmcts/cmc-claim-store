@@ -401,7 +401,7 @@
 {% if responseType == "FULL_ADMISSION" or (responseType == "PART_ADMISSION" and paymentIntention is defined )%}
 <div class="section">
   <div class="section-heading">
-    <strong>When the defendant will pay
+    <strong>How the defendant will pay
       {% if responseType == "PART_ADMISSION" %}
         {{ amount }}
       {% endif %}
@@ -409,14 +409,14 @@
   </div>
   <div class="section-body">
     <table>
-      <tr>
-        <td><strong>When will they pay:</strong></td>
-        <td>
-          {{ whenWillTheyPay }}
-        </td>
-      </tr>
 
       {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
+      <tr class="no-border">
+        <td><strong>First payment by:</strong></td>
+        <td>
+          {{ repaymentPlan.firstPaymentDate }}
+        </td>
+      </tr>
       <tr class="no-border">
         <td><strong>Regular payments of:</strong></td>
         <td>
@@ -429,13 +429,15 @@
           {{ repaymentPlan.paymentSchedule }}
         </td>
       </tr>
+      {% endif %}
+
       <tr class="no-border">
-        <td><strong>Make the first payment on:</strong></td>
+        <td><strong>Final payment by:</strong></td>
         <td>
-          {{ repaymentPlan.firstPaymentDate }}
+          {{ whenWillTheyPay }}
         </td>
       </tr>
-      {% endif %}
+
       {% if statementOfMeans is defined %}
       <tr class="no-border">
         <td><strong>Explain why you can’t pay the full amount now:</strong></td>
