@@ -73,6 +73,9 @@ public class CCJStaffNotificationService {
 
         Optional.ofNullable(submitterName).ifPresent(name -> map.put("partyName", name));
 
+        claim.getReDetermination()
+            .ifPresent(reDetermination -> map.put("reasonForReDetermination", reDetermination.getExplanation()));
+
         return map;
     }
 
