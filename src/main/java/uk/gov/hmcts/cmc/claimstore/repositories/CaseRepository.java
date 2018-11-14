@@ -31,7 +31,7 @@ public interface CaseRepository {
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
-    void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
+    Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
     void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation);
 

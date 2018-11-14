@@ -1,0 +1,13 @@
+ignore:
+  - "**/cmc/domain/models/**"
+  - "**/cmc/claimstore/idam/models/**"
+  - "**/config/**"
+  - "**/*Exception.java"
+  - "**/ExceptionForClient.java"
+  - "**/*Event.java"
+  - "**/ClaimRepository.java"
+  - "**/PathPatterns.java"
+  - "**/cmc/claimstore/appinsights/**"
+  - "**/ccd/domain/**"
+  - "**/ccd/migration/**"
+  - "**/EmailData.java"

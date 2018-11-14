@@ -124,8 +124,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
+    public Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
         claimRepository.saveClaimantResponse(claim.getExternalId(), jsonMapper.toJson(response));
+        return claimRepository
+            .getClaimByExternalId(claim.getExternalId())
+            .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
     }
 
     @Override

@@ -183,6 +183,18 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
+        String subject = String.format("Redetermination request %s %s v %s",
+            claim.getReferenceNumber(),
+            claim.getClaimData().getClaimant().getName(),
+            claim.getClaimData().getDefendant().getName()
+        );
+        assertThat(emailDataArgument.getValue()
+            .getSubject()).isEqualTo(subject);
+
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).doesNotContain("Please issue an interlocutory judgement to be made against the defendant & "
+            + "re-determination by District Judge.");
+
         List<EmailAttachment> attachments = emailDataArgument.getValue().getAttachments();
         assertThat(attachments.size()).isEqualTo(3);
 

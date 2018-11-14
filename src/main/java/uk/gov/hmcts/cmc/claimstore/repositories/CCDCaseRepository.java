@@ -106,8 +106,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
-        coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
+    public Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
+        return coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
     }
 
     @Override

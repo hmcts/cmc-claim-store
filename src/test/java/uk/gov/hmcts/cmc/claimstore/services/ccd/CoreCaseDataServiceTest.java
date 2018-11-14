@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -325,75 +326,84 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void saveClaimantAcceptationResponseShouldReturnCaseDetails() {
+    public void saveClaimantAcceptationResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
-
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
+        
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
             AUTHORISATION
         );
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
     }
 
     @Test
-    public void saveClaimantAcceptationWithCCJResponseShouldReturnCaseDetails() {
+    public void saveClaimantAcceptationWithCCJResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueCCJWithDefendantPaymentIntention();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
             AUTHORISATION
         );
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
     }
 
     @Test
-    public void saveClaimantAcceptationWithSettlementResponseShouldReturnCaseDetails() {
+    public void saveClaimantAcceptationWithSettlementResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
-            claimantResponse,
-            AUTHORISATION
-        );
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(), claimantResponse, AUTHORISATION);
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
     }
 
     @Test
-    public void saveClaimantRejectionResponseShouldReturnCaseDetails() {
+    public void saveClaimantRejectionResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
             AUTHORISATION
         );
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
     }

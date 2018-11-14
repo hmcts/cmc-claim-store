@@ -114,6 +114,17 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getWithClaimantResponse() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+            .build();
+    }
+
     public static Claim getDefaultForLegal() {
         return builder().build();
     }
