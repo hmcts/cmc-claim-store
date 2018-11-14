@@ -43,15 +43,14 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
     @Autowired
     private DefendantResponseStaffNotificationService service;
 
+    private Claim claimWithFullDefenceAlreadyPaidResponse;
+
     @Before
     public void beforeEachTest() {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
-    }
 
-    @Test
-    public void shouldSendEmailToExpectedRecipient() {
-        Claim claimWithFullDefenceResponse = SampleClaim.builder()
+        claimWithFullDefenceAlreadyPaidResponse = SampleClaim.builder()
             .withResponse(
                 SampleResponse.FullDefence
                     .builder()
@@ -61,8 +60,12 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
             )
             .withRespondedAt(LocalDateTime.now())
             .build();
+    }
 
-        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceResponse, DEFENDANT_EMAIL);
+    @Test
+    public void shouldSendEmailToExpectedRecipient() {
+
+        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceAlreadyPaidResponse, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -71,18 +74,8 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
 
     @Test
     public void shouldSendEmailWithExpectedContentFullDefence() {
-        Claim claimWithFullDefenceResponse = SampleClaim.builder()
-            .withResponse(
-                SampleResponse.FullDefence
-                    .builder()
-                    .withDefenceType(DefenceType.ALREADY_PAID)
-                    .withMediation(null)
-                    .build()
-            )
-            .withRespondedAt(LocalDateTime.now())
-            .build();
 
-        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceResponse, DEFENDANT_EMAIL);
+        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceAlreadyPaidResponse, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -216,18 +209,8 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        Claim claimWithFullDefenceResponse = SampleClaim.builder()
-            .withResponse(
-                SampleResponse.FullDefence
-                    .builder()
-                    .withDefenceType(DefenceType.ALREADY_PAID)
-                    .withMediation(null)
-                    .build()
-            )
-            .withRespondedAt(LocalDateTime.now())
-            .build();
 
-        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceResponse, DEFENDANT_EMAIL);
+        service.notifyStaffDefenceSubmittedFor(claimWithFullDefenceAlreadyPaidResponse, DEFENDANT_EMAIL);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -235,8 +218,8 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
             .getAttachments()
             .get(0);
 
-        String expectedFileName = buildResponseFileBaseName(claimWithFullDefenceResponse.getReferenceNumber())
-            + EXTENSION;
+        String expectedFileName = buildResponseFileBaseName(claimWithFullDefenceAlreadyPaidResponse
+            .getReferenceNumber()) + EXTENSION;
 
         assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedFileName);
