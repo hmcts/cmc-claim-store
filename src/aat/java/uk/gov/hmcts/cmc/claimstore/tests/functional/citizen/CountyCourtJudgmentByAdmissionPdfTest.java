@@ -62,7 +62,7 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
-            .buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate();
+            .buildAcceptationIssueCCJWithCourtDetermination();
 
         io.restassured.response.Response responseReceived = commonOperations
             .submitClaimantResponse(claimantResponse, claim.getExternalId(), user);

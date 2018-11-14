@@ -87,18 +87,13 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
-    public void shouldSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
+    public void shouldNotSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
             claim.getExternalId(),
             claimant
         ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
