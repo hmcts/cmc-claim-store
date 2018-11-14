@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -164,6 +165,7 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachmentsForReDetermination() throws IOException {
+        String explanation = "I want to get paid sooner";
         claim = SampleClaim
             .builder()
             .withResponse(SampleResponse.FullAdmission.builder().build())
@@ -177,6 +179,7 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
                 .paymentOption(PaymentOption.IMMEDIATELY)
                 .build())
             .withClaimData(SampleClaimData.submittedByClaimant())
+            .withReDetermination(ReDetermination.builder().explanation(explanation).build())
             .build();
 
         service.notifyStaffCCJReDeterminationRequest(claim, "Michael George");
@@ -194,6 +197,9 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
         assertThat(emailDataArgument.getValue()
             .getMessage()).doesNotContain("Please issue an interlocutory judgement to be made against the defendant & "
             + "re-determination by District Judge.");
+
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).contains("Reason for request: " + explanation + ".");
 
         List<EmailAttachment> attachments = emailDataArgument.getValue().getAttachments();
         assertThat(attachments.size()).isEqualTo(3);
