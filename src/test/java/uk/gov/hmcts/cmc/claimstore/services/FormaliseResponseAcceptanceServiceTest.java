@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
@@ -279,19 +280,21 @@ public class FormaliseResponseAcceptanceServiceTest {
     }
 
     @Test
-    public void formaliseCCJWithClaimantPaymentIntentionPresent() {
+    public void formaliseCCJWithCourtDeterminationPresent() {
         Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
 
-        PaymentIntention paymentIntentionByInstalments = SamplePaymentIntention.instalments();
-        RepaymentPlan appliedRepaymentPlan = paymentIntentionByInstalments
+        CourtDetermination courtDeterminedPaymentPlanByInstalments = SampleCourtDetermination.instalments();
+
+        RepaymentPlan appliedPlan = courtDeterminedPaymentPlanByInstalments
+            .getCourtDecision()
             .getRepaymentPlan()
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(IllegalArgumentException::new);
 
         ResponseAcceptation responseAcceptation = ResponseAcceptation
             .builder()
-            .claimantPaymentIntention(paymentIntentionByInstalments)
+            .courtDetermination(SampleCourtDetermination.instalments())
             .formaliseOption(CCJ)
             .build();
 
@@ -306,7 +309,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getRepaymentPlan()
             .orElseThrow(IllegalStateException::new))
-            .isEqualTo(appliedRepaymentPlan);
+            .isEqualTo(appliedPlan);
 
         verifyZeroInteractions(offersService);
     }

@@ -53,7 +53,6 @@ public class CCJStaffNotificationHandlerTest {
             SampleClaimIssuedEvent.CLAIM, "Bearer token here");
 
         handler.onDefaultJudgmentRequestSubmitted(event);
-        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(EVENT.getClaim()));
 
         verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
     }
