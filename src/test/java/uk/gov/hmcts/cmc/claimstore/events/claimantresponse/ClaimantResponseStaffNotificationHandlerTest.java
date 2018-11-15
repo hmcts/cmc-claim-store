@@ -21,10 +21,10 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     private ClaimantResponseStaffNotificationHandler handler;
 
     @Mock
-    StatesPaidStaffNotificationService statesPaidStaffNotificationService;
+    private StatesPaidStaffNotificationService statesPaidStaffNotificationService;
 
     @Before
-    public void setup() {
+    public void setUp() {
         handler = new ClaimantResponseStaffNotificationHandler(statesPaidStaffNotificationService);
     }
 
