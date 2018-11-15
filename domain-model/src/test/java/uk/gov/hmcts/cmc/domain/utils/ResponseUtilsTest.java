@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
-
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -15,13 +14,14 @@ public class ResponseUtilsTest {
     @Test
     public void isResponseStatesPaidOnFullDefenceAlreadyPaidResponseShouldBeTrue() {
         Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build();
+        
         assertThat(ResponseUtils.isResponseStatesPaid(response)).isTrue();
     }
 
     @Test
     public void isResponseStatesPaidOnPartAdmissionWithPaymentDeclarationShouldBeTrue() {
-        Response response = PartAdmissionResponse.builder().
-            paymentDeclaration(SamplePaymentDeclaration.builder().build()).build();
+        Response response = PartAdmissionResponse.builder()
+            .paymentDeclaration(SamplePaymentDeclaration.builder().build()).build();
 
         assertThat(ResponseUtils.isResponseStatesPaid(response)).isTrue();
     }
