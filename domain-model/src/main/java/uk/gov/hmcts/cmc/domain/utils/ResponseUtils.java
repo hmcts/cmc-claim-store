@@ -1,6 +1,10 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
-import uk.gov.hmcts.cmc.domain.models.response.*;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 public class ResponseUtils {
 
