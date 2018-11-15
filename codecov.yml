@@ -10,3 +10,4 @@ ignore:
   - "**/cmc/claimstore/appinsights/**"
   - "**/ccd/domain/**"
   - "**/ccd/migration/**"
+  - "**/EmailData.java"
