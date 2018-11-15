@@ -74,8 +74,6 @@ public class DefendantResponseStaffNotificationService {
         );
     }
 
-
-
     private static boolean isPartAdmission(ResponseType responseType) {
         return responseType == PART_ADMISSION;
     }

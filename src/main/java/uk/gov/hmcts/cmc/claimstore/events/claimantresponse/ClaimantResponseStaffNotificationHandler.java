@@ -5,9 +5,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
 
 @Component
 public class ClaimantResponseStaffNotificationHandler {
@@ -26,16 +24,5 @@ public class ClaimantResponseStaffNotificationHandler {
         if (isResponseFullDefenceStatesPaid(claim)) {
             this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claim);
         }
-    }
-
-    private static boolean isResponseFullDefenceStatesPaid(Claim claim) {
-        ResponseType responseType = claim.getResponse().orElseThrow(IllegalStateException::new).getResponseType();
-
-        if (responseType == ResponseType.FULL_DEFENCE) {
-            FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) claim.getResponse()
-                .orElseThrow(IllegalStateException::new);
-            return fullDefenceResponse.getDefenceType() == DefenceType.ALREADY_PAID;
-        }
-        return false;
     }
 }

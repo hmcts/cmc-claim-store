@@ -22,7 +22,6 @@ import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
-
 @Service
 public class StatesPaidStaffNotificationService {
     private final EmailService emailService;
@@ -62,8 +61,8 @@ public class StatesPaidStaffNotificationService {
     public static Map<String, Object> wrapInMap(Claim claim) {
 
         Map<String, Object> map = new HashMap<>();
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
 
         map.put("claim", claim);
         map.put("response", response);
@@ -83,6 +82,4 @@ public class StatesPaidStaffNotificationService {
 
         return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
     }
-
-
 }

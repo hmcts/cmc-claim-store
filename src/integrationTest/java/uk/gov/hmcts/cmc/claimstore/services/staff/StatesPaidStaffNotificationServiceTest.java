@@ -45,18 +45,7 @@ public class StatesPaidStaffNotificationServiceTest extends MockSpringTest {
 
     @Before
     public void beforeEachTest() {
-        claimWithFullDefenceResponse = SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
-            .withResponse(
-                SampleResponse.FullDefence
-                    .builder()
-                    .withDefenceType(DefenceType.ALREADY_PAID)
-                    .withMediation(null)
-                    .build())
-            .withRespondedAt(LocalDateTime.now())
-            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
-            .build();
-
+        claimWithFullDefenceResponse = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
@@ -79,8 +68,15 @@ public class StatesPaidStaffNotificationServiceTest extends MockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
+        String subject = String.format("CCivil Money Claim States Paid claimant response: %s v %s %s",
+
+            claimWithFullDefenceResponse.getClaimData().getClaimant().getName(),
+            claimWithFullDefenceResponse.getClaimData().getDefendant().getName(),
+            claimWithFullDefenceResponse.getReferenceNumber()
+        );
+
         assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Civil Money Claim States Paid");
+            .getSubject()).isEqualTo(subject);
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
             "The defendant has submitted a States Paid defence."
@@ -89,7 +85,6 @@ public class StatesPaidStaffNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-
 
         service.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
 
