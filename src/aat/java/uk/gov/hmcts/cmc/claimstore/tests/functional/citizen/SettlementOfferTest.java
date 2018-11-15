@@ -8,14 +8,12 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
-import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -279,33 +277,6 @@ public class SettlementOfferTest extends BaseTest {
             .statusCode(HttpStatus.OK.value())
             .and()
             .extract().body().as(Claim.class);
-    }
-
-    @Test
-    public void shouldBeAbleToSuccessfullySubmitSettlementAgreement() {
-        Claim claim = createClaimWithFullAdmissionResponse();
-        Settlement settlement = new Settlement();
-        settlement.makeOffer(
-            Offer.builder()
-                .content("Defendant's admission content")
-                .completionDate(LocalDate.now().plusDays(60))
-                .build(),
-            MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
-
-        Claim claimSigned = commonOperations.signSettlementAgreement(
-            claim.getExternalId(),
-            claimant.getAuthorisation(),
-            settlement
-        )
-            .then()
-            .statusCode(HttpStatus.CREATED.value())
-            .and()
-            .extract().body().as(Claim.class);
-
-        assertThat(claimSigned.getSettlement().isPresent()).isTrue();
-        assertThat(claimSigned.getSettlement().get().getPartyStatements().size())
-            .isEqualTo(settlement.getPartyStatements().size());
     }
 
     private Claim createClaimWithFullAdmissionResponse() {
