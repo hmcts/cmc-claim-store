@@ -54,14 +54,15 @@ public class ClaimantResponseService {
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
-        formaliseResponseAcceptance(response, updatedClaim, authorization);
+        formaliseResponseAcceptance(updatedClaim, authorization);
 
         eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
 
-    private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
+    private void formaliseResponseAcceptance(Claim claim, String authorization) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
 
         if (ACCEPTATION == claimantResponse.getType()
             && !ResponseUtils.isResponseStatesPaid(response)) {

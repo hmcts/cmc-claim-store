@@ -14,7 +14,7 @@ public class ResponseUtilsTest {
     @Test
     public void isResponseStatesPaidOnFullDefenceAlreadyPaidResponseShouldBeTrue() {
         Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build();
-        
+
         assertThat(ResponseUtils.isResponseStatesPaid(response)).isTrue();
     }
 

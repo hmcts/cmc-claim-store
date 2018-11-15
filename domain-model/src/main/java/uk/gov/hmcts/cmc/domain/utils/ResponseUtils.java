@@ -21,7 +21,6 @@ public class ResponseUtils {
                 return ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
             case PART_ADMISSION:
                 return ((PartAdmissionResponse) response).getPaymentDeclaration().isPresent();
-            case FULL_ADMISSION:
             default:
                 return false;
         }
