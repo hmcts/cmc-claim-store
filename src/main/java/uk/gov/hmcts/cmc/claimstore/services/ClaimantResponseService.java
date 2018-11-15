@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
@@ -66,20 +67,8 @@ public class ClaimantResponseService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         if (ACCEPTATION == claimantResponse.getType()
-            && !isResponseStatesPaid(response)) {
+            && !ResponseUtils.isResponseStatesPaid(response)) {
             formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
-        }
-    }
-
-    private boolean isResponseStatesPaid(Response response) {
-        switch (response.getResponseType()) {
-            case FULL_DEFENCE:
-                return ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
-            case PART_ADMISSION:
-                return ((PartAdmissionResponse) response).getPaymentDeclaration().isPresent();
-            case FULL_ADMISSION:
-            default:
-                return false;
         }
     }
 
