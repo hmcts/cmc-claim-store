@@ -7,6 +7,10 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 public class ResponseUtils {
 
+    private ResponseUtils() {
+        // utility class, no instances
+    }
+
     public static boolean isResponseFullDefenceStatesPaid(Claim claim) {
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
 

@@ -176,18 +176,21 @@ public final class SampleClaim {
 
     public static Claim getClaimFullDefenceStatesPaidWithAcceptation() {
         return builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(YesNoOption.NO)
+                    .build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
-            ).withResponse(SampleResponse.FullDefence
-                .builder()
-                .withDefenceType(DefenceType.ALREADY_PAID)
-                .withMediation(YesNoOption.NO)
-                .build()
             )
-            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
     }
 

@@ -63,8 +63,7 @@ public class StatesPaidStaffNotificationServiceTest extends MockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
-        String subject = String.format("CCivil Money Claim States Paid claimant response: %s v %s %s",
-
+        String subject = String.format("Civil Money Claim States Paid claimant response: %s v %s %s",
             claimWithFullDefenceResponse.getClaimData().getClaimant().getName(),
             claimWithFullDefenceResponse.getClaimData().getDefendant().getName(),
             claimWithFullDefenceResponse.getReferenceNumber()

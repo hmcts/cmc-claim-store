@@ -5,6 +5,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
 
 @Component
