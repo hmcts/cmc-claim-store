@@ -109,7 +109,7 @@ public class MigrateCoreCaseDataService {
     private void grantAccess(
         String caseId, String userId
     ) {
-        User user = userService.getUser(userService.authenticateAnonymousCaseworker());
+        User user = userService.authenticateAnonymousCaseWorker();
 
         caseAccessApi.grantAccessToCase(
             user.getAuthorisation(),

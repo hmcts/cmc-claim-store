@@ -36,7 +36,7 @@ public class AmountMapperTest {
     @Test
     public void shouldMapAmountRangeToCCD() {
         //given
-        Amount amount = SampleAmountRange.validDefaults();
+        Amount amount = SampleAmountRange.builder().build();
 
         //when
         CCDAmount ccdAmount = amountMapper.to(amount);
@@ -65,7 +65,7 @@ public class AmountMapperTest {
     @Test
     public void shouldMapAmountBreakDownToCCD() {
         //given
-        Amount amount = SampleAmountBreakdown.validDefaults();
+        Amount amount = SampleAmountBreakdown.builder().build();
 
         //when
         CCDAmount ccdAmount = amountMapper.to(amount);

@@ -25,8 +25,8 @@ public class PartyDetailsContentProviderTest {
         .individualDetails();
 
     private final Address correspondenceAddress = SampleAddress.builder()
-        .withLine1("Correspondence Road 1")
-        .withPostcode("BB 127NQ")
+        .line1("Correspondence Road 1")
+        .postcode("BB 127NQ")
         .build();
 
     private Individual notAmendedDetails() {
@@ -45,9 +45,9 @@ public class PartyDetailsContentProviderTest {
             .withName("John Doe")
             .withAddress(
                 SampleAddress.builder()
-                    .withLine1("Somewhere")
-                    .withCity("Manchester")
-                    .withPostcode("BB12 7NQ")
+                    .line1("Somewhere")
+                    .city("Manchester")
+                    .postcode("BB12 7NQ")
                     .build()
             )
             .withDateOfBirth(

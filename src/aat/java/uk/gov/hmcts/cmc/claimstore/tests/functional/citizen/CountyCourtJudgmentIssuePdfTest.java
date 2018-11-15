@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Am
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -49,7 +50,7 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
-            .withPaymentOptionImmediately()
+            .paymentOption(PaymentOption.IMMEDIATELY)
             .build();
 
         claim = submitCCJByAdmission(countyCourtJudgment);
@@ -64,7 +65,8 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
-            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
         claim = submitCCJByAdmission(countyCourtJudgment);
@@ -74,12 +76,13 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInCCJIssuedSettledForLessAndRepaymentByInstalmentsPdf() throws IOException {
-        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().build();
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
         submitDefendantResponse(partAdmissionResponse, claim.getExternalId());
 
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
-            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
             .build();
 
         claim = submitCCJByAdmission(countyCourtJudgment);
@@ -94,7 +97,8 @@ public class CountyCourtJudgmentIssuePdfTest extends BasePdfTest {
 
         CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
             .builder()
-            .withPayBySetDate(LocalDate.now().plusDays(20))
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .payBySetDate(LocalDate.now().plusDays(20))
             .build();
 
         claim = submitCCJByAdmission(countyCourtJudgment);

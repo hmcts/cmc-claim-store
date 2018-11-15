@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullAdmissionStaffEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -17,13 +19,12 @@ import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
@@ -34,7 +35,7 @@ public class DefendantResponseStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
     private final FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider;
-    private final FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider;
+    private final DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
 
     @Autowired
@@ -42,12 +43,12 @@ public class DefendantResponseStaffNotificationService {
         EmailService emailService,
         StaffEmailProperties emailProperties,
         FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
-        FullAdmissionStaffEmailContentProvider fullAdmissionStaffEmailContentProvider,
+        DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider,
         DefendantResponseReceiptService defendantResponseReceiptService) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;
-        this.fullAdmissionStaffEmailContentProvider = fullAdmissionStaffEmailContentProvider;
+        this.defendantAdmissionStaffEmailContentProvider = defendantAdmissionStaffEmailContentProvider;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
     }
 
@@ -56,13 +57,10 @@ public class DefendantResponseStaffNotificationService {
         String defendantEmail
     ) {
         ResponseType responseType = claim.getResponse().orElseThrow(IllegalArgumentException::new).getResponseType();
+        EmailContent emailContent;
 
-        if (isPartAdmission(responseType)) {
-            return;
-        }
-
-        EmailContent emailContent = isFullAdmission(responseType)
-            ? fullAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
+        emailContent = isFullAdmission(responseType) || isPartAdmission(responseType)
+            ? defendantAdmissionStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail))
             : fullDefenceStaffEmailContentProvider.createContent(wrapInMap(claim, defendantEmail));
 
         emailService.sendEmail(
@@ -76,11 +74,11 @@ public class DefendantResponseStaffNotificationService {
         );
     }
 
-    private boolean isPartAdmission(ResponseType responseType) {
+    private static boolean isPartAdmission(ResponseType responseType) {
         return responseType == PART_ADMISSION;
     }
 
-    private boolean isFullAdmission(ResponseType responseType) {
+    private static boolean isFullAdmission(ResponseType responseType) {
         return responseType == FULL_ADMISSION;
     }
 
@@ -98,14 +96,24 @@ public class DefendantResponseStaffNotificationService {
             .getDefendant()
             .getMobilePhone()
             .orElse(null));
-        map.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-        map.put("fourteenDaysFromNow", formatDate(now().plusDays(14)));
 
-        if (response.getResponseType() == FULL_ADMISSION) {
+        if (isFullAdmission(response.getResponseType())) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
-            map.put("paymentOption", fullAdmissionResponse.getPaymentIntention().getPaymentOption());
+            map.put("responseType", "full admission");
+            map.put("partAdmitPaymentIntention", fullAdmissionResponse.getPaymentIntention() != null);
             map.put("paymentOptionDescription", fullAdmissionResponse.getPaymentIntention()
                 .getPaymentOption().getDescription().toLowerCase());
+        }
+
+        if (isPartAdmission(response.getResponseType())) {
+            PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+
+            map.put("responseType", "partial admission");
+            Optional<PaymentIntention> responsePaymentIntention = partAdmissionResponse.getPaymentIntention();
+            map.put("partAdmitPaymentIntention", responsePaymentIntention.isPresent());
+            responsePaymentIntention.ifPresent(paymentIntention ->
+                map.put("paymentOptionDescription", paymentIntention.getPaymentOption()
+                    .getDescription().toLowerCase()));
         }
 
         return map;

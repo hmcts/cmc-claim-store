@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
+
 @Service
 public class ClaimantResponseService {
 
@@ -48,10 +50,13 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        caseRepository.saveClaimantResponse(claim, response, authorization);
-        eventProducer.createClaimantResponseEvent(claim);
-        formaliseResponseAcceptanceService.formalise(claim, response, authorization);
+        Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
+        if (ACCEPTATION == response.getType()) {
+            formaliseResponseAcceptanceService.formalise(updatedClaim, (ResponseAcceptation) response, authorization);
+        }
+
+        eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
 

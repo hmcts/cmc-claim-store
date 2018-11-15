@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -47,7 +48,16 @@ public class CountyCourtJudgmentController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestParam(name = "issue", required = false) boolean issue
     ) {
-        String submitterId = userService.getUserDetails(authorisation).getId();
-        return countyCourtJudgmentService.save(submitterId, countyCourtJudgment, externalId, authorisation, issue);
+        return countyCourtJudgmentService.save(countyCourtJudgment, externalId, authorisation, issue);
+    }
+
+    @PostMapping("/{externalId:" + UUID_PATTERN + "}/re-determination")
+    @ApiOperation("ReDetermination Request to Judge")
+    public Claim reDetermination(
+        @PathVariable("externalId") String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @NotNull @RequestBody @Valid ReDetermination reDetermination
+    ) {
+        return countyCourtJudgmentService.reDetermination(reDetermination, externalId, authorisation);
     }
 }

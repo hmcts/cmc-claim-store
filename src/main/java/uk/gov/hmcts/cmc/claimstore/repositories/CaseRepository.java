@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -30,9 +32,11 @@ public interface CaseRepository {
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
-    void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
+    Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
-    void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
+    void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation);
+
+    void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization);
 
     void linkDefendant(String authorisation);
 
@@ -41,6 +45,8 @@ public interface CaseRepository {
     List<Claim> getByClaimantEmail(String email, String authorisation);
 
     List<Claim> getByDefendantEmail(String email, String authorisation);
+
+    List<Claim> getByPaymentReference(String payReference, String authorisation);
 
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
@@ -55,5 +61,7 @@ public interface CaseRepository {
     Claim saveClaim(String authorisation, Claim claim);
 
     void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI);
+
+    void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination, String submitterId);
 }
 

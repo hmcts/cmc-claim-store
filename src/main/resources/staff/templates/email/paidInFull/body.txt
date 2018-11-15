@@ -1,0 +1,1 @@
+{{ claimantName }} has confirmed that the claim has been satisfied. The case is settled and no further action is required.

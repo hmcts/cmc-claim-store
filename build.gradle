@@ -4,7 +4,7 @@ plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.6.RELEASE'
   id 'org.springframework.boot' version '2.0.4.RELEASE'
-  id 'org.owasp.dependencycheck' version '3.3.1'
+  id 'org.owasp.dependencycheck' version '3.3.2'
   id 'com.github.ben-manes.versions' version '0.20.0'
   id 'org.sonarqube' version '2.6.2'
   id 'jacoco'
@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = '2.0.5.RELEASE'
-def springCloudVersion = 'Finchley.RELEASE'
+def springCloudVersion = 'Finchley.SR1'
 
 allprojects {
   apply plugin: 'java'
@@ -142,7 +142,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.1.4'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.1'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -162,12 +162,13 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '6.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.1.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.3.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.2.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
 
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8'
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
   compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
@@ -177,18 +178,18 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.0.1'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
-  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.1.1'
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.2.0'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.8.3'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.22.0'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.1'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.0'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
 
 }
@@ -307,10 +308,12 @@ sonarqube {
       "**/ExceptionForClient.java," +
       "**/config/**," +
       "**/*Exception.java," +
+      "**/*Event.java," +
       "**/PathPatterns.java," +
       "**/ClaimRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
-      "**/ccd/migration/**"
+      "**/ccd/migration/**," +
+      "**/EmailData.java"
   }
 }
 

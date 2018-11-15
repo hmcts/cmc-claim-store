@@ -21,7 +21,7 @@ public class RepaymentPlan {
 
     @NotNull
     @Money
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "1.00")
     private final BigDecimal instalmentAmount;
 
     @NotNull
@@ -33,17 +33,21 @@ public class RepaymentPlan {
 
     private final LocalDate completionDate;
 
+    private final String paymentLength;
+
     @Builder
     public RepaymentPlan(
         BigDecimal instalmentAmount,
         LocalDate firstPaymentDate,
         PaymentSchedule paymentSchedule,
-        LocalDate completionDate
+        LocalDate completionDate,
+        String paymentLength
     ) {
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
         this.paymentSchedule = paymentSchedule;
         this.completionDate = completionDate;
+        this.paymentLength = paymentLength;
     }
 
     @Override

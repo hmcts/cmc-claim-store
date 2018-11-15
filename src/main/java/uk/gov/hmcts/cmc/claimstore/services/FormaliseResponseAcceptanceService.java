@@ -1,16 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
@@ -19,43 +19,35 @@ import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
-import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
-import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.COURT;
-import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.DEFENDANT;
 
 @Service
 public class FormaliseResponseAcceptanceService {
-    private static final Logger logger = LoggerFactory.getLogger(FormaliseResponseAcceptanceService.class);
 
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final OffersService offersService;
+    private final EventProducer eventProducer;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
-        OffersService offersService
+        OffersService offersService,
+        EventProducer eventProducer
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.offersService = offersService;
+        this.eventProducer = eventProducer;
     }
 
-    public void formalise(Claim claim, ClaimantResponse claimantResponse, String authorisation) {
-        if (!(claimantResponse instanceof ResponseAcceptation)) {
-            return;
-        }
-        ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
-        FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption();
-        if (formaliseOption == null) {
-            throw new IllegalArgumentException("formaliseOption must not be null");
-        }
-        switch (formaliseOption) {
+    public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
+        switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;
@@ -63,7 +55,7 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                logger.debug("No need to formalise for " + REFER_TO_JUDGE);
+                eventProducer.createInterlocutoryJudgmentEvent(claim);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
@@ -72,42 +64,52 @@ public class FormaliseResponseAcceptanceService {
 
     private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
         Settlement settlement = new Settlement();
-        Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         PaymentIntention paymentIntention = acceptedPaymentIntention(responseAcceptation, response);
-        if (courtDetermination.isPresent()) {
-            settlement.makeOffer(prepareOffer(response, paymentIntention), COURT);
-        } else if (responseAcceptation.getClaimantPaymentIntention().isPresent()) {
-            settlement.makeOffer(prepareOffer(response, paymentIntention), CLAIMANT);
-        } else {
-            settlement.makeOffer(prepareOffer(response, paymentIntention), DEFENDANT);
+        BigDecimal claimAmountTillDate = claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO);
+        switch (getDecisionType(responseAcceptation)) {
+            case DEFENDANT:
+                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.DEFENDANT);
+                break;
+            case CLAIMANT:
+            case CLAIMANT_IN_FAVOUR_OF_DEFENDANT:
+                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.CLAIMANT);
+                break;
+            case COURT:
+                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.COURT);
+                break;
+            default:
+                throw new IllegalStateException("Invalid decision type in the Claim");
+
         }
-        settlement.acceptCourtDetermination(CLAIMANT);
+        settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
         this.offersService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
     }
 
-    private Offer prepareOffer(Response response, PaymentIntention paymentIntention) {
+    private DecisionType getDecisionType(ResponseAcceptation responseAcceptation) {
+        Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
+        return courtDetermination.map(CourtDetermination::getDecisionType).orElse(DecisionType.DEFENDANT);
+    }
+
+    private Offer prepareOffer(Response response, PaymentIntention paymentIntention, BigDecimal claimAmountTillDate) {
         Offer.OfferBuilder builder = Offer.builder();
         builder.paymentIntention(paymentIntention);
 
         switch (paymentIntention.getPaymentOption()) {
+            case IMMEDIATELY:
             case BY_SPECIFIED_DATE:
                 LocalDate completionDate = paymentIntention.getPaymentDate().orElseThrow(IllegalStateException::new);
                 builder.completionDate(completionDate);
-                String contentBySetDate = prepareOfferContentsBySetDate(response, builder, completionDate);
-                builder.content(contentBySetDate);
+                builder.content(
+                    prepareOfferContentsBySetDate(response, completionDate, claimAmountTillDate)
+                );
                 break;
             case INSTALMENTS:
                 RepaymentPlan repaymentPlan = paymentIntention.getRepaymentPlan().orElseThrow(IllegalAccessError::new);
                 builder.completionDate(repaymentPlan.getCompletionDate());
-                builder.content(String.format(
-                    "%s will pay instalments of %s %s. The first instalment will be paid by %s.",
-                    response.getDefendant().getName(),
-                    formatMoney(repaymentPlan.getInstalmentAmount()),
-                    repaymentPlan.getPaymentSchedule().getDescription(),
-                    formatDate(repaymentPlan.getFirstPaymentDate())
-
-                ));
+                builder.content(
+                    prepareOfferContentForRepayment(response, repaymentPlan, claimAmountTillDate)
+                );
                 break;
             default:
                 throw new IllegalStateException("Invalid payment option " + paymentIntention.getPaymentOption());
@@ -115,12 +117,23 @@ public class FormaliseResponseAcceptanceService {
         return builder.build();
     }
 
+    private String prepareOfferContentForRepayment(Response response, RepaymentPlan repaymentPlan,
+                                                   BigDecimal claimAmountTillDate) {
+        return String.format(
+            "%s will repay %s in instalments of %s %s. The first instalment will be paid by %s.",
+            response.getDefendant().getName(),
+            response.getResponseType() == ResponseType.PART_ADMISSION
+                ? formatMoney(((PartAdmissionResponse) response).getAmount()) : formatMoney(claimAmountTillDate),
+            formatMoney(repaymentPlan.getInstalmentAmount()),
+            repaymentPlan.getPaymentSchedule().getDescription().toLowerCase(),
+            formatDate(repaymentPlan.getFirstPaymentDate()));
+    }
+
     private String prepareOfferContentsBySetDate(
         Response response,
-        Offer.OfferBuilder builder,
-        LocalDate completionDate
+        LocalDate completionDate,
+        BigDecimal claimAmountTillDate
     ) {
-        builder.completionDate(completionDate);
         String amount;
         switch (response.getResponseType()) {
             case PART_ADMISSION:
@@ -128,12 +141,12 @@ public class FormaliseResponseAcceptanceService {
                 amount = formatMoney(partAdmissionResponse.getAmount());
                 break;
             case FULL_ADMISSION:
-                amount = "the full amount";
+                amount = formatMoney(claimAmountTillDate);
                 break;
             default:
                 throw new IllegalStateException("Invalid response type " + response.getResponseType());
         }
-        return String.format("%s will pay %s, no later than %s",
+        return String.format("%s will pay %s no later than %s",
             response.getDefendant().getName(), amount, formatDate(completionDate)
         );
     }
@@ -142,17 +155,21 @@ public class FormaliseResponseAcceptanceService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         PaymentIntention acceptedPaymentIntention = acceptedPaymentIntention(responseAcceptation, response);
 
-        CountyCourtJudgment countyCourtJudgment = CountyCourtJudgment.builder()
+        CountyCourtJudgment.CountyCourtJudgmentBuilder countyCourtJudgment = CountyCourtJudgment.builder()
             .defendantDateOfBirth(defendantDateOfBirth(response.getDefendant()))
             .paymentOption(acceptedPaymentIntention.getPaymentOption())
-            .paidAmount(responseAcceptation.getAmountPaid())
+            .paidAmount(responseAcceptation.getAmountPaid().orElse(null))
             .repaymentPlan(acceptedPaymentIntention.getRepaymentPlan().orElse(null))
-            .payBySetDate(acceptedPaymentIntention.getPaymentDate().orElse(null))
-            .build();
+            .payBySetDate(acceptedPaymentIntention.getPaymentDate().orElse(null));
+
+        if (responseAcceptation.getCourtDetermination().isPresent()) {
+            countyCourtJudgment.ccjType(CountyCourtJudgmentType.DETERMINATION);
+        } else {
+            countyCourtJudgment.ccjType(CountyCourtJudgmentType.ADMISSIONS);
+        }
 
         this.countyCourtJudgmentService.save(
-            claim.getSubmitterId(),
-            countyCourtJudgment,
+            countyCourtJudgment.build(),
             claim.getExternalId(),
             authorisation,
             true);
@@ -166,15 +183,11 @@ public class FormaliseResponseAcceptanceService {
     }
 
     private PaymentIntention acceptedPaymentIntention(ResponseAcceptation responseAcceptation, Response response) {
-        Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
-        Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
-        if (courtDetermination.isPresent()) {
-            return courtDetermination.get().getCourtCalculatedPaymentIntention();
-        } else if (claimantPaymentIntention.isPresent()) {
-            return claimantPaymentIntention.get();
-        } else {
-            return getDefendantPaymentIntention(response);
-        }
+
+        return responseAcceptation.getCourtDetermination()
+            .map(CourtDetermination::getCourtDecision)
+            .orElseGet(() -> getDefendantPaymentIntention(response));
+
     }
 
     private PaymentIntention getDefendantPaymentIntention(Response response) {

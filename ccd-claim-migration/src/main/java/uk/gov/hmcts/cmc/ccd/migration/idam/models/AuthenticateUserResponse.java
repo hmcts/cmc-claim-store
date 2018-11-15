@@ -1,23 +1,19 @@
 package uk.gov.hmcts.cmc.ccd.migration.idam.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthenticateUserResponse {
-    @JsonProperty("default-url")
-    private String defaultUser;
-    @JsonProperty("access-token")
-    private String accessToken;
 
-    public AuthenticateUserResponse(String defaultUser, String accessToken) {
-        this.defaultUser = defaultUser;
-        this.accessToken = accessToken;
+    private String code;
+
+    @JsonCreator
+    public AuthenticateUserResponse(String code) {
+        this.code = code;
     }
 
-    public String getDefaultUser() {
-        return defaultUser;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
+    public String getCode() {
+        return code;
     }
 }
