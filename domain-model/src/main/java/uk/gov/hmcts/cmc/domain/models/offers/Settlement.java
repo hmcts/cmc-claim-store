@@ -34,7 +34,7 @@ public class Settlement {
     }
 
     public void reject(MadeBy party) {
-        assertOfferCanBeResponded(party);
+        assertOfferCanBeRejected(party);
         partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
     }
 
@@ -44,7 +44,7 @@ public class Settlement {
     }
 
     @JsonIgnore
-    PartyStatement getLastStatement() {
+    public PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
             throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
         }
@@ -87,6 +87,17 @@ public class Settlement {
         assertOfferCanBeMadeBy(party);
 
         assertOfferCanBeAccepted();
+    }
+
+    private void assertOfferCanBeRejected(MadeBy party) {
+        assertOfferCanBeMadeBy(party);
+
+        if (!lastStatementIsOffer() && !lastStatementIsAcceptationNotBy(party)) {
+            throw new IllegalSettlementStatementException(
+                format("Last statement was: %s , offer or acceptation expected.",
+                    getLastStatement().getType().name().toLowerCase())
+            );
+        }
     }
 
     private void assertOfferCanBeAccepted() {
