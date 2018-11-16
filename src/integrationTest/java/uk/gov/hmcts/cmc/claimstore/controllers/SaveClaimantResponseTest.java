@@ -147,7 +147,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId(), SUBMITTER_ID, response);
 
-        verify(notificationClient, times(2))
+        verify(notificationClient, times(1))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 

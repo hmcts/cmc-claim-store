@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
@@ -129,8 +130,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(countyCourtJudgmentService).save(
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -162,8 +162,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(countyCourtJudgmentService).save(
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -197,8 +196,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(countyCourtJudgmentService).save(
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -235,8 +233,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(countyCourtJudgmentService).save(
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -272,13 +269,47 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(countyCourtJudgmentService).save(
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
             .getPayBySetDate().isPresent()).isFalse();
+
+        verifyZeroInteractions(offersService);
+    }
+
+    @Test
+    public void formaliseCCJWithCourtDeterminationPresent() {
+        Response partAdmissionsResponsePayBySetDate = getPartAdmissionsResponsePayBySetDate();
+
+        Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
+
+        CourtDetermination courtDeterminedPaymentPlanByInstalments = SampleCourtDetermination.instalments();
+
+        RepaymentPlan appliedPlan = courtDeterminedPaymentPlanByInstalments
+            .getCourtDecision()
+            .getRepaymentPlan()
+            .orElseThrow(IllegalArgumentException::new);
+
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .courtDetermination(SampleCourtDetermination.instalments())
+            .formaliseOption(CCJ)
+            .build();
+
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+
+        verify(countyCourtJudgmentService).save(
+            countyCourtJudgmentArgumentCaptor.capture(),
+            eq(claim.getExternalId()),
+            eq(AUTH));
+
+        assertThat(countyCourtJudgmentArgumentCaptor
+            .getValue()
+            .getRepaymentPlan()
+            .orElseThrow(IllegalStateException::new))
+            .isEqualTo(appliedPlan);
 
         verifyZeroInteractions(offersService);
     }
@@ -304,8 +335,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(countyCourtJudgmentService).save(
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
-            eq(AUTH),
-            eq(true));
+            eq(AUTH));
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()

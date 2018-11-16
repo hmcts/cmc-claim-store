@@ -189,6 +189,17 @@ public class CommonOperations {
             .post("/responses/" + claimExternalId + "/claimant/" + claimant.getUserDetails().getId());
     }
 
+
+    public Response requestCCJ(String externalId, CountyCourtJudgment ccj, User user) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
+            .body(jsonMapper.toJson(ccj))
+            .when()
+            .post("/claims/" + externalId + "/county-court-judgment");
+    }
+
     public Response submitReDetermination(
         ReDetermination reDetermination,
         String claimExternalId,
@@ -201,19 +212,6 @@ public class CommonOperations {
             .body(jsonMapper.toJson(reDetermination))
             .when()
             .post("/claims/" + claimExternalId + "/re-determination");
-    }
-
-    public Response requestCCJ(String externalId, CountyCourtJudgment ccj, boolean issue, User user) {
-        String path = "/claims/" + externalId + "/county-court-judgment";
-        String issuePath = issue ? path.concat("?issue=true") : path;
-
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .body(jsonMapper.toJson(ccj))
-            .when()
-            .post(issuePath);
     }
 
     public Response paidInFull(String externalId, PaidInFull paidInFull, User user) {

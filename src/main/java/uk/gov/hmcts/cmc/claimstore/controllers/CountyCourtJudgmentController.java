@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -45,10 +44,9 @@ public class CountyCourtJudgmentController {
     public Claim save(
         @PathVariable("externalId") String externalId,
         @NotNull @RequestBody @Valid CountyCourtJudgment countyCourtJudgment,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestParam(name = "issue", required = false) boolean issue
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return countyCourtJudgmentService.save(countyCourtJudgment, externalId, authorisation, issue);
+        return countyCourtJudgmentService.save(countyCourtJudgment, externalId, authorisation);
     }
 
     @PostMapping("/{externalId:" + UUID_PATTERN + "}/re-determination")
