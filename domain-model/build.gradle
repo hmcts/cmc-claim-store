@@ -15,7 +15,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
   compile group: 'cz.jirutka.validator', name: 'validator-collection', version: '2.2.0'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
 
   testCompile project(':domain-sample-data')

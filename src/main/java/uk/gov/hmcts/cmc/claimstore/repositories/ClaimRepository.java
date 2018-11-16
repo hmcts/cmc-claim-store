@@ -62,6 +62,9 @@ public interface ClaimRepository {
     List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
                                        @Bind("submitterId") String submitterId);
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim->'payment'->>'reference' = :payReference")
+    List<Claim> getByPaymentReference(@Bind("payReference") String payReference);
+
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
     List<Claim> getAllNotMigratedClaims();
 
@@ -212,6 +215,14 @@ public interface ClaimRepository {
         @Bind("ccjRequestedAt") LocalDateTime ccjRequestedAt,
         @Bind("ccjIssuedAt") LocalDateTime ccjIssuedAt
     );
+
+    @SqlUpdate("UPDATE claim SET "
+        + " re_determination = :reDetermination::JSONB,"
+        + " re_determination_requested_at = now() AT TIME ZONE 'utc' "
+        + " WHERE external_id = :externalId")
+    void saveReDetermination(
+        @Bind("externalId") String externalId,
+        @Bind("reDetermination") String reDetermination);
 
     @SqlUpdate(
         "UPDATE claim SET "

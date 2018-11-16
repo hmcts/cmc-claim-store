@@ -11,6 +11,10 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
+
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
 @Service
 public class ClaimantResponseService {
@@ -48,14 +52,21 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        caseRepository.saveClaimantResponse(claim, response, authorization);
+        Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
-        if (response instanceof ResponseAcceptation && ((ResponseAcceptation) response).getFormaliseOption() != null) {
-            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) response, authorization);
-        }
+        formaliseResponseAcceptance(response, updatedClaim, authorization);
 
-        eventProducer.createClaimantResponseEvent(claim);
+        eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
+    }
+
+    private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if (ACCEPTATION == claimantResponse.getType()
+            && !ResponseUtils.isResponseStatesPaid(response)) {
+            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+        }
     }
 
     private AppInsightsEvent getAppInsightsEvent(ClaimantResponse claimantResponse) {

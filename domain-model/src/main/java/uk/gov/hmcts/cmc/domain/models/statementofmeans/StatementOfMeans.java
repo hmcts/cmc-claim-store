@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.hmcts.cmc.domain.constraints.EachNotNull;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class StatementOfMeans {
     private final Employment employment;
 
     @Valid
-    @NotEmpty
     @EachNotNull
     private final List<BankAccount> bankAccounts;
 

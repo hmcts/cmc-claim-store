@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -76,6 +77,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        return ccdCaseApi.getByPaymentReference(payReference, authorisation);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }
@@ -87,7 +93,7 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment,
         boolean issue
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment, issue);
 
     }
 
@@ -97,12 +103,12 @@ public class CCDCaseRepository implements CaseRepository {
         String defendantEmail,
         Response response,
         String authorization) {
-        coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
+        coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
     }
 
     @Override
-    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
-        throw new NotImplementedException("Save claimant response not implemented on CCD");
+    public Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
+        return coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
     }
 
     @Override
@@ -111,8 +117,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
-        throw new NotImplementedException("We do not implement CCD yet");
+    public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
+        coreCaseDataService.saveDirectionsQuestionnaireDeadline(claim.getId(), dqDeadline, authorization);
     }
 
     @Override
@@ -152,5 +158,15 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI) {
         coreCaseDataService.linkSealedClaimDocument(authorisation, claim.getId(), documentURI);
+    }
+
+    @Override
+    public void saveReDetermination(
+        String authorisation,
+        Claim claim,
+        ReDetermination reDetermination,
+        String submitterId
+    ) {
+        throw new NotImplementedException("We do not implement CCD yet");
     }
 }

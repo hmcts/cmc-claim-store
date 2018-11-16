@@ -13,11 +13,13 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.util.List;
 import java.util.Objects;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAssert, StatementOfMeans> {
@@ -60,7 +62,29 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
         actual.getExpenses()
             .forEach(expense -> assertExpense(expense, ccdStatementOfMeans.getExpenses()));
 
+        actual.getPriorityDebts()
+            .forEach(priorityDebt -> assertPriorityDebt(priorityDebt, ccdStatementOfMeans.getPriorityDebts()));
+
+        actual.getPartner()
+            .ifPresent(livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getPartner()));
+
+        assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
+
+        actual.getDisability()
+            .ifPresent(disability -> assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisability()));
+
         return this;
+    }
+
+    private void assertPriorityDebt(
+        PriorityDebt priorityDebt,
+        List<CCDCollectionElement<PriorityDebt>> ccdPriorityDebts
+    ) {
+        ccdPriorityDebts.stream()
+            .map(CCDCollectionElement::getValue)
+            .filter(ccdPriorityDebt -> priorityDebt.getType().equals(ccdPriorityDebt.getType()))
+            .findFirst()
+            .ifPresent(ccdPriorityDebt -> assertThat(priorityDebt).isEqualTo(ccdPriorityDebt));
     }
 
     private void assertExpense(Expense expense, List<CCDCollectionElement<CCDExpense>> ccdExpenses) {

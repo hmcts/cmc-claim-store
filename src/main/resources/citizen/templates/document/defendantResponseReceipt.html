@@ -604,28 +604,33 @@
       {% endif %}
 
       <tr>
-        <td colspan="2" class="keep-white-space"><strong>Bank and savings accounts</strong></td>
+        <td><strong>Bank and savings accounts</strong></td>
+      {% if bankAccounts is defined and bankAccounts is not empty %}
       </tr>
       {% for bankAccount in bankAccounts %}
       <tr class="no-border">
         <td><strong>{% if loop.length > 1 %}{{ loop.index + 1 }}. {% endif %}Type of account</strong></td>
-        <td>
-          {{ bankAccount.type }}
-        </td>
+          <td>
+            {{ bankAccount.type }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Balance</strong></td>
+          <td>
+            {{ bankAccount.balance }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Joint account</strong></td>
+          <td>
+            {{ bankAccount.joint ? "Yes" : "No" }}
+          </td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <td>None</td>
       </tr>
-      <tr class="no-border">
-        <td><strong>Balance</strong></td>
-        <td>
-          {{ bankAccount.balance }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Joint account</strong></td>
-        <td>
-          {{ bankAccount.joint ? "Yes" : "No" }}
-        </td>
-      </tr>
-      {% endfor %}
+      {% endif %}
 
       {% if incomes is defined and incomes is not empty %}
       <tr>

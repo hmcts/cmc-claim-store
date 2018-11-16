@@ -13,13 +13,18 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantEvidence;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +36,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation.builder;
 
 @TestPropertySource(
     properties = {
@@ -43,8 +50,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     @Before
     public void setUp() {
-        claim = claimStore.saveClaim(SampleClaimData.builder()
-            .withExternalId(UUID.randomUUID()).build(), SUBMITTER_ID, LocalDate.now());
+        claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant(), SUBMITTER_ID, LocalDate.now());
 
         UserDetails userDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
@@ -52,8 +58,15 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .withRoles("letter-" + claim.getLetterHolderId())
             .build();
 
+        UserDetails claimantDetails = SampleUserDetails.builder()
+            .withUserId(SUBMITTER_ID)
+            .withMail(CLAIMANT_EMAIL)
+            .build();
+
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(userDetails);
+        when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(claimantDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, claimantDetails));
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
         caseRepository.linkDefendant(BEARER_TOKEN);
 
@@ -62,7 +75,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSaveClaimantResponseAcceptation() throws Exception {
-        ClaimantResponse response = SampleClaimantResponse.validDefaultAcceptation();
+        ClaimantResponse response = builder().buildAcceptationIssueCCJWithCourtDetermination();
 
         makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
             .andExpect(status().isCreated());
@@ -97,11 +110,44 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOkForAcceptation() throws Exception {
-        ClaimantResponse response = SampleClaimantResponse.validDefaultAcceptation();
+
+        claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant(), SUBMITTER_ID, LocalDate.now());
+
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withMail(DEFENDANT_EMAIL)
+            .withRoles("letter-" + claim.getLetterHolderId())
+            .build();
+
+        UserDetails claimantDetails = SampleUserDetails.builder()
+            .withUserId(SUBMITTER_ID)
+            .withMail(CLAIMANT_EMAIL)
+            .build();
+
+        when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(userDetails);
+        when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(claimantDetails);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, claimantDetails));
+        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
+        caseRepository.linkDefendant(BEARER_TOKEN);
+
+
+        Response defendantResponse = PartAdmissionResponse.builder()
+            .defendant(SampleParty.builder().individual())
+            .moreTimeNeeded(YesNoOption.NO)
+            .amount(BigDecimal.valueOf(120))
+            .paymentDeclaration(null)
+            .defence("defense")
+            .timeline(SampleDefendantTimeline.validDefaults())
+            .evidence(SampleDefendantEvidence.validDefaults())
+            .build();
+        claimStore.saveResponse(claim, defendantResponse);
+
+        ClaimantResponse response = builder().buildAcceptationIssueCCJWithCourtDetermination();
 
         makeRequest(claim.getExternalId(), SUBMITTER_ID, response);
 
-        verify(notificationClient, times(1))
+        verify(notificationClient, times(2))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
@@ -123,7 +169,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         return webClient
             .perform(post("/responses/" + externalId + "/claimant/" + claimantId)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(response))
             );
     }
