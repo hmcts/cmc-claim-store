@@ -102,4 +102,10 @@ public class AmountContentProviderTest {
             .isEqualTo("£70.89");
     }
 
+    @Test(expected = NullPointerException.class)
+    public void throwExceptionWhenCountyCourtJudgementIsMissing() {
+        Claim claim = SampleClaim.getWithDefaultResponse();
+        amountContentProvider.create(claim);
+    }
+
 }
