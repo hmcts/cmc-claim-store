@@ -81,12 +81,12 @@ public class DefendantResponseContentProvider {
         switch (defendantResponse.getResponseType()) {
             case FULL_DEFENCE:
                 claim.getTotalAmountTillToday().ifPresent(
-                amount -> content.put("amount", formatMoney(amount))
-            );
-            content.putAll(
-                fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
-            );
-        break;
+                    amount -> content.put("amount", formatMoney(amount))
+                );
+                content.putAll(
+                    fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
+                );
+                break;
             case FULL_ADMISSION:
                 content.putAll(fullAdmissionResponseContentProvider
                     .createContent((FullAdmissionResponse) defendantResponse,
