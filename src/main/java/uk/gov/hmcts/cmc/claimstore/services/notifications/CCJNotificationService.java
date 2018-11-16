@@ -48,7 +48,7 @@ public class CCJNotificationService {
         );
     }
 
-    public void notifyDefendantForCCJIssue(Claim claim) {
+    public void notifyDefendantForCCJRequested(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         sendNotificationEmail(
             claim.getDefendantEmail(),
