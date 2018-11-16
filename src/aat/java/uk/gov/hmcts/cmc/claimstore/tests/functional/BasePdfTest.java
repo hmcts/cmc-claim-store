@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
+import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -74,5 +75,13 @@ public abstract class BasePdfTest extends BaseTest {
         } finally {
             document.close();
         }
+    }
+
+    protected static String getFullAddressString(Address address) {
+        return address.getLine1() + " \n"
+            + address.getLine2() + " \n"
+            + address.getLine3() + " \n"
+            + address.getCity() + " \n"
+            + address.getPostcode();
     }
 }

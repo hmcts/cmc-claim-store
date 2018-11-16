@@ -13,6 +13,7 @@ public class AmountContent {
     private String feeAmount;
     private String paidAmount;
     private String remainingAmount;
+    private String admittedAmount;
 
     public AmountContent(
         String totalAmount,
@@ -20,7 +21,8 @@ public class AmountContent {
         InterestContent interest,
         String feeAmount,
         String paidAmount,
-        String remainingAmount
+        String remainingAmount,
+        String admittedAmount
     ) {
         this.totalAmount = totalAmount;
         this.subTotalAmount = subTotalAmount;
@@ -28,6 +30,7 @@ public class AmountContent {
         this.feeAmount = feeAmount;
         this.paidAmount = paidAmount;
         this.remainingAmount = remainingAmount;
+        this.admittedAmount = admittedAmount;
     }
 
     public InterestContent getInterest() {
@@ -52,6 +55,10 @@ public class AmountContent {
 
     public String getRemainingAmount() {
         return remainingAmount;
+    }
+
+    public String getAdmittedAmount() {
+        return admittedAmount;
     }
 
     @Override

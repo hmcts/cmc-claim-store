@@ -115,9 +115,22 @@
 
 <header>
   <table>
-    <tr align="right">
-      <td colspan="2"><h3 class="row-spacing">Request for judgment by default</h3></td>
-    </tr>
+    {% set responseType = ccj.responseType %}
+    {% if responseType is defined and (responseType == 'FULL_ADMISSION' or responseType == 'PART_ADMISSION')  %}
+      {% set admissionResponse = true %}
+    {% else %}
+     {% set admissionResponse = false %}
+    {% endif %}
+
+    {% if admissionResponse == true  %}
+      <tr align="right">
+        <td colspan="2"><h3 class="row-spacing">Judgment by admission</h3></td>
+      </tr>
+    {% else %}
+      <tr align="right">
+        <td colspan="2"><h3 class="row-spacing">Request for judgment by default</h3></td>
+      </tr>
+    {% endif %}
     <tr>
       <td colspan="2"><p>In the County Court Business Centre</p></td>
     </tr>
@@ -383,16 +396,29 @@
   </div>
     <div class="section">
       <div class="section-heading">
+        {% if admissionResponse == true %}
+        <strong>Judgment details</strong>
+      {% else %}
         <strong>Total amount</strong>
+      {% endif %}
       </div>
       <div class="section-body">
-          <table>
+      <table>
+        {% if admissionResponse == true %}
+        <tr>
+          <td><strong>Judgment amount:</strong></td>
+          <td>
+            {{ ccj.amount.admittedAmount }}
+          </td>
+        </tr>
+        {% else %}
         <tr>
           <td><strong>Claim amount:</strong></td>
           <td>
             {{ ccj.amount.totalAmount }}
           </td>
         </tr>
+        {% endif %}
         {% if ccj.amount.interest is defined %}
         <tr class="no-border">
           <td><strong>Interest to date of judgment:</strong></td>

@@ -35,7 +35,6 @@ public class CCDCase {
     private LocalDateTime settlementReachedAt;
     private CCDDocument sealedClaimDocument;
     private String features;
-    private LocalDateTime countyCourtJudgmentIssuedAt;
     private LocalDate moneyReceivedOn;
     private CCDClaimantResponse claimantResponse;
     private LocalDateTime claimantRespondedAt;
