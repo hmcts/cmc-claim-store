@@ -8,13 +8,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -28,14 +32,26 @@ public class SealedClaimJsonMapperTest {
     @Autowired
     private SealedClaimJsonMapper mapper;
 
+    private LocalDate issueDate = LocalDate.of(2018, 4, 26);
+    private Interest interest = SampleInterest.builder()
+        .withInterestDate(
+            new InterestDate(InterestDate.InterestDateType.CUSTOM,
+                issueDate.minusDays(101),
+                "reason",
+                InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT))
+        .withType(Interest.InterestType.STANDARD)
+        .withRate(new BigDecimal(8))
+        .build();
+
     @Test
     public void shouldMapIndividualCitizenClaimToRPA() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().individual())
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
+                .withInterest(interest)
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withIssuedOn(issueDate)
             .build();
 
         String expected = new ResourceReader().read("/claim/individual_rpa_case.json").trim();
@@ -49,10 +65,11 @@ public class SealedClaimJsonMapperTest {
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().withBusinessName("AutoTraders").soleTrader())
                 .withDefendant(SampleTheirDetails.builder().withBusinessName("RoboticsTraders").soleTraderDetails())
+                .withInterest(interest)
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withIssuedOn(issueDate)
             .build();
-
+        
         String expected = new ResourceReader().read("/claim/sole_trader_rpa_case.json").trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
@@ -64,8 +81,9 @@ public class SealedClaimJsonMapperTest {
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().company())
                 .withDefendant(SampleTheirDetails.builder().companyDetails())
+                .withInterest(interest)
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withIssuedOn(issueDate)
             .build();
 
         String expected = new ResourceReader().read("/claim/company_rpa_case.json").trim();
@@ -81,8 +99,9 @@ public class SealedClaimJsonMapperTest {
                     .organisation())
                 .withDefendant(SampleTheirDetails.builder()
                     .organisationDetails())
+                .withInterest(interest)
                 .build())
-            .withIssuedOn(LocalDate.of(2018, 4, 26))
+            .withIssuedOn(issueDate)
             .build();
 
         String expected = new ResourceReader().read("/claim/organisation_rpa_case.json").trim();
