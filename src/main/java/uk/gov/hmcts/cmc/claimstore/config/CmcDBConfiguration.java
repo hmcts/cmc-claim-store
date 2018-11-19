@@ -41,10 +41,11 @@ public class CmcDBConfiguration {
     }
 
     private void migrateFlyway(DataSource dataSource) {
-        final Flyway flyway = new Flyway();
-        flyway.setDataSource(dataSource);
-        flyway.setLocations("cmc/db/migration");
-        flyway.migrate();
+        Flyway.configure()
+            .dataSource(dataSource)
+            .locations("cmc/db/migration")
+            .load()
+            .migrate();
     }
 
     @Bean("cmcTransactionManager")

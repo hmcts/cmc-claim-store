@@ -26,13 +26,12 @@ public interface CaseRepository {
     void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     );
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
-    void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
+    Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
     void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation);
 

@@ -19,6 +19,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
 public class DefendantResponseContentProvider {
@@ -79,14 +80,18 @@ public class DefendantResponseContentProvider {
 
         switch (defendantResponse.getResponseType()) {
             case FULL_DEFENCE:
+                claim.getTotalAmountTillToday().ifPresent(
+                    amount -> content.put("amount", formatMoney(amount))
+                );
                 content.putAll(
                     fullDefenceResponseContentProvider.createContent((FullDefenceResponse) defendantResponse)
                 );
                 break;
             case FULL_ADMISSION:
-                content.putAll(
-                    fullAdmissionResponseContentProvider.createContent((FullAdmissionResponse) defendantResponse)
-                );
+                content.putAll(fullAdmissionResponseContentProvider
+                    .createContent((FullAdmissionResponse) defendantResponse,
+                        claim.getTotalAmountTillToday()
+                            .orElseThrow(() -> new IllegalArgumentException("Claim aount cant be empty or null"))));
                 break;
             case PART_ADMISSION:
                 content.putAll(
@@ -95,9 +100,7 @@ public class DefendantResponseContentProvider {
                 break;
             default:
                 throw new MappingException("Invalid responseType " + defendantResponse.getResponseType());
-
         }
-
         return content;
     }
 }

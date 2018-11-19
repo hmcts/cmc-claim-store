@@ -90,10 +90,9 @@ public class CCDCaseRepository implements CaseRepository {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment, issue);
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
 
     }
 
@@ -107,8 +106,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
-        coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
+    public Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
+        return coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
     }
 
     @Override

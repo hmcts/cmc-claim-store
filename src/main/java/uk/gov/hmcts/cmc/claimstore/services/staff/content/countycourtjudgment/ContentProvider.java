@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.CCJContent;
+import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Collections;
@@ -29,7 +30,8 @@ public class ContentProvider {
             claimContentProvider.createContent(claim),
             claim.getCountyCourtJudgment(),
             claim.getCountyCourtJudgmentRequestedAt(),
-            amountContentProvider.create(claim)
+            amountContentProvider.create(claim),
+            ResponseHelper.getResponseType(claim)
             )
         );
     }

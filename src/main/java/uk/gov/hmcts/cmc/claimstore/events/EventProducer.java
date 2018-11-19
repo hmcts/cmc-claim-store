@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 import java.time.LocalDate;
@@ -48,8 +47,10 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
-        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation, issue));
+    public void createCountyCourtJudgmentEvent(
+        Claim claim,
+        String authorisation) {
+        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation));
     }
 
     public void createOfferMadeEvent(Claim claim) {
@@ -84,7 +85,7 @@ public class EventProducer {
         publisher.publishEvent(new ReDeterminationEvent(claim, authorisation, submitterName));
     }
 
-    public void createInterlocutoryJudgmentEvent(Claim claim, ResponseAcceptation responseAcceptation) {
-        publisher.publishEvent(new InterlocutoryJudgmentEvent(claim, responseAcceptation));
+    public void createInterlocutoryJudgmentEvent(Claim claim) {
+        publisher.publishEvent(new InterlocutoryJudgmentEvent(claim));
     }
 }

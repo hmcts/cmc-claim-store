@@ -84,22 +84,16 @@ public class ClaimantResponseTest extends BaseTest {
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
         assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
-        assertThat(claimWithClaimantResponse.getCountyCourtJudgmentIssuedAt()).isNotEmpty();
     }
 
     @Test
-    public void shouldSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
+    public void shouldNotSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
         commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntention(),
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
             claim.getExternalId(),
             claimant
         ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertClaimantResponseFormaliseAsCCJ(claimWithClaimantResponse);
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
@@ -136,21 +130,6 @@ public class ClaimantResponseTest extends BaseTest {
     public void shouldSaveClaimantResponseAcceptationIssueSettlementWithDefendantPaymentIntention() {
         commonOperations.submitClaimantResponse(
             ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithDefendantPaymentIntention(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        Claim claimWithClaimantResponse = commonOperations
-            .retrieveClaim(claim.getExternalId(), claimant.getAuthorisation());
-
-        assertClaimantResponseFormaliseAsSettlement(claimWithClaimantResponse);
-    }
-
-    @Test
-    public void shouldSaveClaimantResponseAcceptationIssueSettlementWithClaimantPaymentIntention() {
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention(),
             claim.getExternalId(),
             claimant
         ).then()

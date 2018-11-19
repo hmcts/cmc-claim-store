@@ -8,12 +8,12 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-@Documented
-@Constraint(validatedBy = ValidCourtPaymentIntentionConstraintValidator.class)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidCourtDetermination {
-    String message() default "Court payment intention is required";
+@Constraint(validatedBy = ValidResponseAcceptanceConstraintValidator.class)
+@Documented
+public @interface ValidResponseAcceptance {
+    String message() default "Invalid Response Acceptance";
 
     Class<?>[] groups() default {};
 

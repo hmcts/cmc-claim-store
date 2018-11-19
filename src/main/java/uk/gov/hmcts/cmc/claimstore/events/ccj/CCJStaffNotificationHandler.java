@@ -6,16 +6,22 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ReDeterminationEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
 
 @Component
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class CCJStaffNotificationHandler {
 
     private final CCJStaffNotificationService ccjStaffNotificationService;
+    private final InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService;
 
     @Autowired
-    public CCJStaffNotificationHandler(CCJStaffNotificationService ccjStaffNotificationService) {
+    public CCJStaffNotificationHandler(
+        CCJStaffNotificationService ccjStaffNotificationService,
+        InterlocutoryJudgmentStaffNotificationService interlocutoryJudgmentStaffNotificationService
+    ) {
         this.ccjStaffNotificationService = ccjStaffNotificationService;
+        this.interlocutoryJudgmentStaffNotificationService = interlocutoryJudgmentStaffNotificationService;
     }
 
     @EventListener
@@ -27,5 +33,10 @@ public class CCJStaffNotificationHandler {
     public void onRedeterminationRequest(ReDeterminationEvent event) {
         this.ccjStaffNotificationService
             .notifyStaffCCJReDeterminationRequest(event.getClaim(), event.getSubmitterName());
+    }
+
+    @EventListener
+    public void onInterlocutoryJudgmentEvent(InterlocutoryJudgmentEvent event) {
+        this.interlocutoryJudgmentStaffNotificationService.notifyStaffInterlocutoryJudgmentSubmitted(event.getClaim());
     }
 }

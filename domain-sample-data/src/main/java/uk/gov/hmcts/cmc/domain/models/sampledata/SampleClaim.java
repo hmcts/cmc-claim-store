@@ -61,7 +61,6 @@ public final class SampleClaim {
     private List<String> features = Collections.singletonList("admissions");
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
-    private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
@@ -112,6 +111,17 @@ public final class SampleClaim {
             .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
+    public static Claim getWithClaimantResponse() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
     }
 
@@ -192,7 +202,6 @@ public final class SampleClaim {
             features,
             claimantRespondedAt,
             claimantResponse,
-            countyCourtJudgmentIssuedAt,
             directionsQuestionnaireDeadline,
             moneyReceivedOn,
             reDetermination,
@@ -262,11 +271,6 @@ public final class SampleClaim {
 
     public SampleClaim withCountyCourtJudgmentRequestedAt(LocalDateTime countyCourtJudgmentRequestedAt) {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
-        return this;
-    }
-
-    public SampleClaim withCountyCourtJudgmentIssuedAt(LocalDateTime countyCourtJudgmentIssuedAt) {
-        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         return this;
     }
 
