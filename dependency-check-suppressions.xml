@@ -2,7 +2,14 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
     <suppress>
         <notes><![CDATA[
-            We are not using STOMP: https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#websocket-stomp-enable
+         Specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
+        ]]></notes>
+        <gav regex="true">^com\.google\.guava:guava:.*$</gav>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+         We are not using STOMP: https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#websocket-stomp-enable
         ]]></notes>
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1270</cve>

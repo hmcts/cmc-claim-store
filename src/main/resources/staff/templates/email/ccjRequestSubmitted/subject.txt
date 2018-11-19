@@ -1,1 +1,1 @@
-Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} default judgment requested
+Civil money claims: {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }} {{ admissionResponse ? "judgment by admission requested" : "default judgment requested" }}

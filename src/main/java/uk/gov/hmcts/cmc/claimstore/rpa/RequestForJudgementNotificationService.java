@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -46,9 +47,20 @@ public class RequestForJudgementNotificationService {
     @EventListener
     public void notifyRobotics(CountyCourtJudgmentEvent event) {
         requireNonNull(event);
-
-        EmailData emailData = prepareEmailData(event.getClaim());
-        emailService.sendEmail(emailProperties.getSender(), emailData);
+        CountyCourtJudgmentType countyCourtJudgmentType = event.getClaim().getCountyCourtJudgment().getCcjType();
+        switch (countyCourtJudgmentType) {
+            case DEFAULT:
+                EmailData emailData = prepareEmailData(event.getClaim());
+                emailService.sendEmail(emailProperties.getSender(), emailData);
+                break;
+            case DETERMINATION:
+            case ADMISSIONS:
+                //No RPA email sent
+                break;
+            default:
+                throw new IllegalArgumentException("CountyCourtJudgmentType types not support "
+                    + countyCourtJudgmentType);
+        }
     }
 
     private EmailData prepareEmailData(Claim claim) {
@@ -63,7 +75,8 @@ public class RequestForJudgementNotificationService {
 
     private EmailAttachment createRequestForJudgementJsonAttachment(Claim claim) {
         return EmailAttachment.json(jsonMapper.map(claim).toString().getBytes(),
-            DocumentNameUtils.buildJsonRequestForJudgementFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
+            DocumentNameUtils.buildJsonRequestForJudgementFileBaseName(claim.getReferenceNumber())
+                + JSON_EXTENSION);
     }
 
     private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
