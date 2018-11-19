@@ -457,7 +457,7 @@
   </div>
 </div>
 
-{% if paymentOption == 'By instalments' or paymentOption == 'By a set date' %}
+{% if (paymentOption == 'By instalments' or paymentOption == 'By a set date') and  defendant.partyType == "INDIVIDUAL" %}
 <div class="section">
   <div class="section-heading">
     <strong>The defendant’s financial details</strong>
