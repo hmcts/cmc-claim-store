@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import java.math.BigDecimal;
 
 import static java.math.BigDecimal.ZERO;
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 import static uk.gov.hmcts.cmc.domain.models.Interest.InterestType.NO_INTEREST;
 
@@ -34,6 +35,8 @@ public class AmountContentProvider {
             ? ((PartAdmissionResponse) response).getAmount()
             : claimAmount;
 
+        requireNonNull(claim.getCountyCourtJudgment());
+
         BigDecimal paidAmount = claim.getCountyCourtJudgment().getPaidAmount().orElse(ZERO);
         InterestContent interestContent = null;
         BigDecimal interestRealValue = ZERO;
@@ -51,7 +54,7 @@ public class AmountContentProvider {
 
         return new AmountContent(
             formatMoney(claimAmount),
-            formatMoney(claimAmount
+            formatMoney(admittedAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)),
             interestContent,
@@ -60,7 +63,8 @@ public class AmountContentProvider {
             formatMoney(admittedAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
-                .subtract(paidAmount))
+                .subtract(paidAmount)),
+            formatMoney(admittedAmount)
         );
 
     }

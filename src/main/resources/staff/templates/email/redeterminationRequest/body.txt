@@ -2,6 +2,8 @@
 
 {% if interlocutoryJudgement is defined and interlocutoryJudgement %}
 Please issue an interlocutory judgement to be made against the defendant & re-determination by District Judge.
+{% else %}
+Reason for request: {{ reasonForReDetermination }}.
 {% endif %}
 
 This email has been sent from the HMCTS Civil Money Claims online court.

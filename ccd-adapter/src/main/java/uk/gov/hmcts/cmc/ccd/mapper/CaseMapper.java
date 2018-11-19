@@ -59,8 +59,6 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
         }
 
-        claim.getCountyCourtJudgmentIssuedAt().ifPresent(builder::countyCourtJudgmentIssuedAt);
-
         if (claim.getRespondedAt() != null) {
             builder.respondedAt(claim.getRespondedAt());
         }
@@ -129,7 +127,6 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .defendantEmail(ccdCase.getDefendantEmail())
             .countyCourtJudgmentRequestedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentRequestedAt()))
             .settlementReachedAt(fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()))
-            .countyCourtJudgmentIssuedAt(fromNullableUTCtoLocalZone(ccdCase.getCountyCourtJudgmentIssuedAt()))
             .claimantRespondedAt(fromNullableUTCtoLocalZone(ccdCase.getClaimantRespondedAt()));
 
         if (ccdCase.getCountyCourtJudgment() != null) {
