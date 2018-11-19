@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 
-@FeignClient(name = "idam-api", url = "${idam.api.url}")
+@FeignClient(name = "tactical-idam-api", url = "${idam.api.url}")
 public interface TacticalIdamApi {
     @RequestMapping(method = RequestMethod.POST, value = "/oauth2/authorize")
     AuthenticateUserResponse upliftUser(
