@@ -84,7 +84,16 @@ public class ClaimantResponseTest extends BaseTest {
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
         assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
-        assertThat(claimWithClaimantResponse.getCountyCourtJudgmentIssuedAt()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldNotSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
+        commonOperations.submitClaimantResponse(
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test

@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -49,14 +48,6 @@ public class ClaimPdfTest extends BasePdfTest {
         assertThat(pdfAsText).contains("Claim amount: "
             + Formatting.formatMoney(((AmountBreakDown) createdCase.getClaimData().getAmount()).getTotalAmount()));
         assertThat(pdfAsText).contains(Formatting.formatDate(createdCase.getResponseDeadline()));
-    }
-
-    private static String getFullAddressString(Address address) {
-        return address.getLine1() + " \n"
-            + address.getLine2() + " \n"
-            + address.getLine3() + " \n"
-            + address.getCity() + " \n"
-            + address.getPostcode();
     }
 
 }

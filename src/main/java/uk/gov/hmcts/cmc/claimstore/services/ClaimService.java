@@ -297,10 +297,10 @@ public class ClaimService {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
+
     ) {
-        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
+        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
         appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
     }
 
