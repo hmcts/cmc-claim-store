@@ -93,4 +93,7 @@ public class PartyUtils {
         return Optional.empty();
     }
 
+    public static boolean isCompanyOrOrganisation(Party party) {
+        return (party instanceof Company) || (party instanceof Organisation);
+    }
 }
