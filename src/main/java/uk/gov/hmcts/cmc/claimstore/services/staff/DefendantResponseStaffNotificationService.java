@@ -27,6 +27,7 @@ import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -96,11 +97,12 @@ public class DefendantResponseStaffNotificationService {
             .getDefendant()
             .getMobilePhone()
             .orElse(null));
+        map.put("isCompanyOrOrganisation", isCompanyOrOrganisation(response.getDefendant()));
 
         if (isFullAdmission(response.getResponseType())) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
             map.put("responseType", "full admission");
-            map.put("partAdmitPaymentIntention", fullAdmissionResponse.getPaymentIntention() != null);
+            map.put("admissionPaymentIntention", fullAdmissionResponse.getPaymentIntention() != null);
             map.put("paymentOptionDescription", fullAdmissionResponse.getPaymentIntention()
                 .getPaymentOption().getDescription().toLowerCase());
         }
@@ -110,7 +112,7 @@ public class DefendantResponseStaffNotificationService {
 
             map.put("responseType", "partial admission");
             Optional<PaymentIntention> responsePaymentIntention = partAdmissionResponse.getPaymentIntention();
-            map.put("partAdmitPaymentIntention", responsePaymentIntention.isPresent());
+            map.put("admissionPaymentIntention", responsePaymentIntention.isPresent());
             responsePaymentIntention.ifPresent(paymentIntention ->
                 map.put("paymentOptionDescription", paymentIntention.getPaymentOption()
                     .getDescription().toLowerCase()));

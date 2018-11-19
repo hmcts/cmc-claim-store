@@ -135,4 +135,32 @@ public class PartyUtilsTest {
             .isEqualTo(Optional.of(claimant.getDateOfBirth()));
     }
 
+    @Test
+    public void shouldReturnFalseForPartyIsNull() {
+        assertThat(PartyUtils.isCompanyOrOrganisation(null)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnFalseForPartyIndividual() {
+        Individual individual = SampleParty.builder().individual();
+        assertThat(PartyUtils.isCompanyOrOrganisation(individual)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnFalseForPartySoleTrader() {
+        SoleTrader soleTrader = SampleParty.builder().soleTrader();
+        assertThat(PartyUtils.isCompanyOrOrganisation(soleTrader)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueForPartyCompany() {
+        Company company = SampleParty.builder().company();
+        assertThat(PartyUtils.isCompanyOrOrganisation(company)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnTrueForPartyOrganisation() {
+        Organisation organisation = SampleParty.builder().organisation();
+        assertThat(PartyUtils.isCompanyOrOrganisation(organisation)).isTrue();
+    }
 }
