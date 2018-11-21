@@ -48,10 +48,11 @@ public class ClaimantResponseService {
         ClaimantResponse response,
         String authorization
     ) {
+
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
-        claimantResponseRule.isValid(claim);
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
+        claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(response, updatedClaim, authorization);
         eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
