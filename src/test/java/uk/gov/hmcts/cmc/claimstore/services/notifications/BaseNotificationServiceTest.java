@@ -14,6 +14,7 @@ import java.util.Map;
 
 public abstract class BaseNotificationServiceTest {
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
+    protected static final String RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT = "responseByClaimantEmailToDefendant";
     protected static final String DEFENDANT_RESPONSE_TEMPLATE = "fullDefence";
     protected static final String DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE = "fullDefence-noMediation";
     protected static final String CLAIMANT_CCJ_REQUESTED_TEMPLATE = "claimantCcjRequested";

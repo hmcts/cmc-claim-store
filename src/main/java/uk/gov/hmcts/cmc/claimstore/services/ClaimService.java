@@ -201,7 +201,6 @@ public class ClaimService {
             authorisation
         );
 
-
         Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
         trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
         eventProducer.createCCDClaimIssuedEvent(retrievedClaim, authorisation);
@@ -305,11 +304,11 @@ public class ClaimService {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
+
     ) {
-        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment, issue);
-        eventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment, issue);
+        caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
+        eventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
         appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
     }
 

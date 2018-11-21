@@ -91,8 +91,7 @@ public class CCDCaseHandler {
         Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
             .orElseThrow(IllegalStateException::new);
 
-        ccdCaseRepository.saveCountyCourtJudgment(authorization, ccdClaim, event.getCountyCourtJudgment(),
-            event.isIssue());
+        ccdCaseRepository.saveCountyCourtJudgment(authorization, ccdClaim, event.getCountyCourtJudgment());
 
     }
 

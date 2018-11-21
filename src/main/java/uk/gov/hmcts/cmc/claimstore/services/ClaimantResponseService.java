@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
@@ -52,14 +54,21 @@ public class ClaimantResponseService {
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
-        if (ACCEPTATION == response.getType()) {
-            formaliseResponseAcceptanceService.formalise(updatedClaim, (ResponseAcceptation) response, authorization);
-        }
+        formaliseResponseAcceptance(response, updatedClaim, authorization);
 
         eventProducer.createClaimantResponseEvent(updatedClaim);
         eventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
 
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
+    }
+
+    private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if (ACCEPTATION == claimantResponse.getType()
+            && !ResponseUtils.isResponseStatesPaid(response)) {
+            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+        }
     }
 
     private AppInsightsEvent getAppInsightsEvent(ClaimantResponse claimantResponse) {

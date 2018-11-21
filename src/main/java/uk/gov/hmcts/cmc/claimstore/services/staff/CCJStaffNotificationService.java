@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ReDeterminationNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.RequestSubmittedNotificationEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -65,14 +66,16 @@ public class CCJStaffNotificationService {
 
     private Map<String, Object> createParameterMap(Claim claim, String submitterName) {
         Map<String, Object> map = new HashMap<>();
+
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
         map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
-
+        map.put("admissionResponse", ResponseHelper.admissionResponse(claim));
         Optional.ofNullable(submitterName).ifPresent(name -> map.put("partyName", name));
-
+        claim.getReDetermination()
+            .ifPresent(reDetermination -> map.put("reasonForReDetermination", reDetermination.getExplanation()));
         return map;
     }
 

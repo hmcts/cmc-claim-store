@@ -62,8 +62,10 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
-        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation, issue));
+    public void createCountyCourtJudgmentEvent(
+        Claim claim,
+        String authorisation) {
+        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation));
     }
 
     public void createOfferMadeEvent(Claim claim) {
@@ -125,10 +127,9 @@ public class EventProducer {
     public void createCCDCountyCourtJudgmentEvent(
         Claim claim,
         String authorisation,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     ) {
-        publisher.publishEvent(new CCDCountyCourtJudgmentEvent(authorisation, claim, countyCourtJudgment, issue));
+        publisher.publishEvent(new CCDCountyCourtJudgmentEvent(authorisation, claim, countyCourtJudgment));
     }
 
     public void linkSealedClaimDocumentCCDEvent(String authorisation, Claim claim, URI sealedClaimDocument) {

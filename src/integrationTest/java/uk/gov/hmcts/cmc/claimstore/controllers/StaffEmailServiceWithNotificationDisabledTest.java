@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -82,8 +83,11 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     }
 
     @Test
-    public void shouldNotSendStaffNotificationWhenCCJRequestSubmitted() throws Exception {
-        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
+    public void shouldNotSendStaffNotificationWhenDefaultCCJRequestSubmitted() throws Exception {
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
+            .build();
 
         makeRequest(claim.getExternalId(), countyCourtJudgment).andExpect(status().isOk());
 

@@ -14,18 +14,15 @@ public class CCDCountyCourtJudgmentEvent {
     private final String authorization;
     private final Claim claim;
     private final CountyCourtJudgment countyCourtJudgment;
-    private final boolean issue;
 
     public CCDCountyCourtJudgmentEvent(
         String authorization,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     ) {
         this.authorization = authorization;
         this.claim = claim;
         this.countyCourtJudgment = countyCourtJudgment;
-        this.issue = issue;
     }
 
     @Override

@@ -171,8 +171,7 @@ public class FormaliseResponseAcceptanceService {
         this.countyCourtJudgmentService.save(
             countyCourtJudgment.build(),
             claim.getExternalId(),
-            authorisation,
-            true);
+            authorisation);
     }
 
     private LocalDate defendantDateOfBirth(Party party) {

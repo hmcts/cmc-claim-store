@@ -13,8 +13,14 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantEvidence;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantTimeline;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import java.math.BigDecimal;
@@ -104,11 +110,44 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOkForAcceptation() throws Exception {
+
+        claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant(), SUBMITTER_ID, LocalDate.now());
+
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withMail(DEFENDANT_EMAIL)
+            .withRoles("letter-" + claim.getLetterHolderId())
+            .build();
+
+        UserDetails claimantDetails = SampleUserDetails.builder()
+            .withUserId(SUBMITTER_ID)
+            .withMail(CLAIMANT_EMAIL)
+            .build();
+
+        when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(userDetails);
+        when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(claimantDetails);
+        given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, claimantDetails));
+        given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
+        caseRepository.linkDefendant(BEARER_TOKEN);
+
+
+        Response defendantResponse = PartAdmissionResponse.builder()
+            .defendant(SampleParty.builder().individual())
+            .moreTimeNeeded(YesNoOption.NO)
+            .amount(BigDecimal.valueOf(120))
+            .paymentDeclaration(null)
+            .defence("defense")
+            .timeline(SampleDefendantTimeline.validDefaults())
+            .evidence(SampleDefendantEvidence.validDefaults())
+            .build();
+        claimStore.saveResponse(claim, defendantResponse);
+
         ClaimantResponse response = builder().buildAcceptationIssueCCJWithCourtDetermination();
 
         makeRequest(claim.getExternalId(), SUBMITTER_ID, response);
 
-        verify(notificationClient, times(2))
+        verify(notificationClient, times(1))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 

@@ -61,6 +61,16 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
+    public void shouldNotSaveReDeterminationByClaimantPaymentIntentionWithoutCourtDetermination() {
+        commonOperations.submitClaimantResponse(
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
     public void shouldSaveReDeterminationWithDefendantPaymentIntentionAccepted() {
         String explanation = "I want it sooner";
         commonOperations.submitClaimantResponse(
