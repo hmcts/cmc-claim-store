@@ -48,7 +48,7 @@ public class FormaliseResponseAcceptanceService {
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
-        switch (responseAcceptation.getFormaliseOption()) {
+        switch (responseAcceptation.getFormaliseOption().get()) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;
@@ -64,7 +64,6 @@ public class FormaliseResponseAcceptanceService {
     }
 
     private void createEventForReferToJudge(Claim claim) {
-
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (isCompanyOrOrganisation(response.getDefendant())) {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);

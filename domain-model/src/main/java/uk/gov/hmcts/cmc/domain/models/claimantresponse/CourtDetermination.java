@@ -22,7 +22,6 @@ public class CourtDetermination {
     private final PaymentIntention courtDecision;
 
     @Valid
-    @NotNull
     private final PaymentIntention courtPaymentIntention;
 
     private final String rejectionReason;

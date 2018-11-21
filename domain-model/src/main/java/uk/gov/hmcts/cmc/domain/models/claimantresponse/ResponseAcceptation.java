@@ -5,19 +5,15 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.constraints.ValidResponseAcceptance;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
-
 import java.math.BigDecimal;
 import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
-@ValidResponseAcceptance
 public class ResponseAcceptation extends ClaimantResponse {
 
     @Valid
@@ -26,7 +22,6 @@ public class ResponseAcceptation extends ClaimantResponse {
     @Valid
     private final PaymentIntention claimantPaymentIntention;
 
-    @NotNull
     private final FormaliseOption formaliseOption;
 
     @Builder
@@ -49,6 +44,10 @@ public class ResponseAcceptation extends ClaimantResponse {
 
     public Optional<PaymentIntention> getClaimantPaymentIntention() {
         return Optional.ofNullable(claimantPaymentIntention);
+    }
+
+    public Optional<FormaliseOption> getFormaliseOption() {
+        return Optional.ofNullable(formaliseOption);
     }
 
     @Override

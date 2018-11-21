@@ -9,12 +9,11 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
-
-import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
 @Service
 public class ClaimantResponseService {
@@ -51,21 +50,21 @@ public class ClaimantResponseService {
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
-
+        claimantResponseRule.isValid(claim);
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
-
         formaliseResponseAcceptance(response, updatedClaim, authorization);
-
         eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }
 
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
-        if (ACCEPTATION == claimantResponse.getType()
-            && !ResponseUtils.isResponseStatesPaid(response)) {
-            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+        if (claimantResponse.getType() == ClaimantResponseType.ACCEPTATION) {
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+            if (responseAcceptation.getFormaliseOption().isPresent() && !ResponseUtils.isResponseStatesPaid(response)) {
+                formaliseResponseAcceptanceService
+                    .formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+            }
         }
     }
 
