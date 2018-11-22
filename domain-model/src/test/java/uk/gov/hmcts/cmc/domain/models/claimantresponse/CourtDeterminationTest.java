@@ -143,7 +143,7 @@ public class CourtDeterminationTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenDisposableIsZeroForOtherDecisionType() {
+    public void shouldBeValidWhenDisposableIsZeroForOtherDecisionType() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(bySetDate())
             .courtPaymentIntention(PaymentIntention.builder()
@@ -155,12 +155,11 @@ public class CourtDeterminationTest {
             .build();
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(1)
-            .containsOnly("disposableIncome : should be greater than 0 for CLAIMANT decision type");
+        assertThat(response).hasSize(0);
     }
 
     @Test
-    public void shouldBeInvalidWhenDisposableIsNegative() {
+    public void shouldBeValidWhenDisposableIsNegative() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(bySetDate())
             .courtPaymentIntention(PaymentIntention.builder()
@@ -172,7 +171,6 @@ public class CourtDeterminationTest {
             .build();
         Set<String> response = validate(courtDetermination);
 
-        assertThat(response).hasSize(1)
-            .containsOnly("disposableIncome : should not be less than 0");
+        assertThat(response).hasSize(0);
     }
 }

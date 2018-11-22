@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
 
@@ -18,8 +19,8 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaim
 public class CCJStaffNotificationHandlerTest {
 
     private static final CountyCourtJudgmentEvent EVENT = new CountyCourtJudgmentEvent(
-        getDefault(), "Bearer token here", false
-    );
+        getDefault(),
+        "Bearer token here");
     private CCJStaffNotificationHandler handler;
 
     @Mock
@@ -37,11 +38,23 @@ public class CCJStaffNotificationHandlerTest {
     }
 
     @Test
-    public void notifyStaffCCJRequestSubmitted() {
-        handler.onDefaultJudgmentRequestSubmitted(EVENT);
+    public void notifyStaffDefaultCCJRequestSubmitted() {
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
+            SampleClaimIssuedEvent.CLAIM, "Bearer token here");
 
-        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(EVENT.getClaim()));
+        handler.onDefaultJudgmentRequestSubmitted(event);
 
+        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
+    }
+
+    @Test
+    public void notifyStaffCCJRequestByAdmissionSubmitted() {
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(
+            SampleClaimIssuedEvent.CLAIM, "Bearer token here");
+
+        handler.onDefaultJudgmentRequestSubmitted(event);
+
+        verify(ccjStaffNotificationService, once()).notifyStaffCCJRequestSubmitted(eq(SampleClaimIssuedEvent.CLAIM));
     }
 
     @Test

@@ -11,7 +11,6 @@ public enum AppInsightsEvent {
     SETTLEMENT_AGREEMENT_REJECTED("Settlement agreement rejected"),
     SETTLEMENT_REACHED("Settlement reached"),
     CCJ_REQUESTED("CCJ requested"),
-    CCJ_ISSUED("CCJ issued"),
     RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
     RESPONSE_MORE_TIME_REQUESTED_PAPER("Response - more time requested paper"),
     CLAIMANT_RESPONSE_GENERATED_OFFER_MADE("Claimant response - Generated offer made"),
