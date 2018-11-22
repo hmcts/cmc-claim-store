@@ -73,8 +73,7 @@ public class SettlementAgreementService {
 
         PartyStatement lastStatement = settlement.getLastStatement();
 
-        if (settlement.getLastOfferStatement().getMadeBy() != MadeBy.CLAIMANT
-            || lastStatement.getType() != StatementType.ACCEPTATION) {
+        if (lastStatement.getType() != StatementType.ACCEPTATION) {
             throw new ConflictException(
                 format(REJECTION_EXPECTED_STATE_ERROR, claim.getId()));
         }
