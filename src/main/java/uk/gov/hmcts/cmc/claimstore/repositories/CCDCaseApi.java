@@ -218,7 +218,7 @@ public class CCDCaseApi {
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
         Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
+//        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
