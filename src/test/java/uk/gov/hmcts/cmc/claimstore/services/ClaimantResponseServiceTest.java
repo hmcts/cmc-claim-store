@@ -7,6 +7,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -53,6 +54,9 @@ public class ClaimantResponseServiceTest {
     private EventProducer eventProducer;
 
     @Mock
+    private CCDEventProducer ccdEventProducer;
+
+    @Mock
     private AppInsights appInsights;
 
     @Mock
@@ -66,8 +70,8 @@ public class ClaimantResponseServiceTest {
             caseRepository,
             new ClaimantResponseRule(),
             eventProducer,
-            formaliseResponseAcceptanceService
-        );
+            formaliseResponseAcceptanceService,
+            ccdEventProducer);
     }
 
     @Test

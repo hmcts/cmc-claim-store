@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPartAdmissionResponse;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentDeclaration;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.mapper.DefendantEvidenceMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PartyMapper;
@@ -84,6 +85,7 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
         CCDYesNoOption ccdFreeMediation = ccdPartAdmissionResponse.getFreeMediationOption();
         CCDYesNoOption moreTimeNeeded = ccdPartAdmissionResponse.getMoreTimeNeededOption();
         CCDPaymentDeclaration paymentDeclaration = ccdPartAdmissionResponse.getPaymentDeclaration();
+        CCDPaymentIntention paymentIntention = ccdPartAdmissionResponse.getPaymentIntention();
 
         PartAdmissionResponse.PartAdmissionResponseBuilder builder = PartAdmissionResponse.builder()
             .freeMediation(YesNoOption.valueOf(Optional.ofNullable(ccdFreeMediation).orElse(CCDYesNoOption.NO).name()))
@@ -91,7 +93,6 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
             .defendant(partyMapper.from(ccdPartAdmissionResponse.getDefendant()))
             .statementOfTruth(statementOfTruthMapper.from(ccdPartAdmissionResponse.getStatementOfTruth()))
             .amount(ccdPartAdmissionResponse.getAmount())
-            .paymentIntention(paymentIntentionMapper.from(ccdPartAdmissionResponse.getPaymentIntention()))
             .defence(ccdPartAdmissionResponse.getDefence())
             .timeline(timelineMapper.from(ccdPartAdmissionResponse.getTimeline()))
             .evidence(evidenceMapper.from(ccdPartAdmissionResponse.getEvidence()))
@@ -99,6 +100,10 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
 
         if (paymentDeclaration != null) {
             builder.paymentDeclaration(paymentDeclarationMapper.from(paymentDeclaration));
+        }
+
+        if (paymentIntention != null) {
+            builder.paymentIntention(paymentIntentionMapper.from(paymentIntention));
         }
 
         return builder.build();

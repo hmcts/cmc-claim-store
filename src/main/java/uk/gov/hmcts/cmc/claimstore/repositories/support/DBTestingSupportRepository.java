@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -9,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
 @Service("supportRepository")
 public class DBTestingSupportRepository implements SupportRepository {
 

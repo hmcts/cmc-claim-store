@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -33,7 +32,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseApi {
 
     public static enum CaseState {
@@ -220,7 +218,7 @@ public class CCDCaseApi {
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
         Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
+//        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {

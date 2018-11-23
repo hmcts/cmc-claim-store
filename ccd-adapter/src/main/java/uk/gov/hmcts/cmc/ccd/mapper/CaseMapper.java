@@ -88,8 +88,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
                 .build())
         );
 
-        claim.getClaimantResponse()
-            .ifPresent(claimantResponse -> builder.claimantResponse(claimantResponseMapper.to(claimantResponse)));
+        claim.getClaimantResponse().map(claimantResponseMapper::to).ifPresent(builder::claimantResponse);
 
         return builder
             .id(claim.getId())

@@ -46,12 +46,34 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willReturn(Collections.emptyList());
 
-        given(coreCaseDataApi.startForCaseworker(
+        given(coreCaseDataApi.startForCitizen(
             eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN), eq(USER_ID),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(SUBMIT_CLAIM_EVENT)
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+
+        given(coreCaseDataApi.submitForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(IGNORE_WARNING),
+            any()
+            )
+        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+
+        given(coreCaseDataApi.startForCaseworker(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SUBMIT_CLAIM_EVENT)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -83,7 +105,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(EVENT_ID)
+                eq(SUBMIT_CLAIM_EVENT)
             );
 
         verify(coreCaseDataApi)
@@ -118,7 +140,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(SUBMIT_CLAIM_EVENT)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -150,7 +172,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(EVENT_ID)
+                eq(SUBMIT_CLAIM_EVENT)
             );
 
         verify(coreCaseDataApi)
@@ -186,7 +208,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(SUBMIT_CLAIM_EVENT)
             )
         ).willThrow(FeignException.class);
 
@@ -221,7 +243,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(SUBMIT_CLAIM_EVENT)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 

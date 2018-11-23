@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -24,17 +25,20 @@ public class DefendantResponseService {
     private final ClaimService claimService;
     private final UserService userService;
     private final AppInsights appInsights;
+    private CCDEventProducer ccdEventProducer;
 
     public DefendantResponseService(
         EventProducer eventProducer,
         ClaimService claimService,
         UserService userService,
-        AppInsights appInsights
+        AppInsights appInsights,
+        CCDEventProducer ccdEventProducer
     ) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
         this.appInsights = appInsights;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -66,6 +70,7 @@ public class DefendantResponseService {
         Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
+        ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
         appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()), claim.getReferenceNumber());
 
