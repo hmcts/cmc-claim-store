@@ -36,7 +36,8 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
     protected static final String USER_ID = "1";
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
-    protected static final String EVENT_ID = "submitClaimEvent";
+    protected static final String SUBMIT_CLAIM_EVENT = "submitClaimEvent";
+    protected static final String SUBMIT_PRE_PAYMENT = "SubmitPrePayment";
     protected static final boolean IGNORE_WARNING = true;
 
     @Autowired

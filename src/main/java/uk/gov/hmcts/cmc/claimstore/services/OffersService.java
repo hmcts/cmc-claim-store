@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -30,18 +31,21 @@ public class OffersService {
     private final CaseRepository caseRepository;
     private final EventProducer eventProducer;
     private final AppInsights appInsights;
+    private CCDEventProducer ccdEventProducer;
 
     @Autowired
     public OffersService(
         ClaimService claimService,
         CaseRepository caseRepository,
         EventProducer eventProducer,
-        AppInsights appInsights
+        AppInsights appInsights,
+        CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
         this.caseRepository = caseRepository;
         this.eventProducer = eventProducer;
         this.appInsights = appInsights;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     public Claim makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
@@ -53,7 +57,7 @@ public class OffersService {
         String userAction = userAction("OFFER_MADE_BY", party.name());
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
 
-        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
         appInsights.trackEvent(OFFER_MADE, updated.getReferenceNumber());
@@ -70,7 +74,7 @@ public class OffersService {
 
         String userAction = userAction("OFFER_ACCEPTED_BY", party.name());
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
-        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferAcceptedEvent(updated, party);
@@ -88,7 +92,7 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
-        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
         appInsights.trackEvent(OFFER_REJECTED, updated.getReferenceNumber());
         return updated;
     }
@@ -104,7 +108,7 @@ public class OffersService {
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
 
-        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
         appInsights.trackEvent(SETTLEMENT_REACHED, updated.getReferenceNumber());
         return updated;
     }
@@ -131,7 +135,7 @@ public class OffersService {
 
         final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createSignSettlementAgreementEvent(signedSettlementClaim);
-        this.eventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
         appInsights.trackEvent(CLAIMANT_RESPONSE_GENERATED_OFFER_MADE, signedSettlementClaim.getReferenceNumber());
 
         return signedSettlementClaim;

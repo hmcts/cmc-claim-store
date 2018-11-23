@@ -1,7 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.events.ccd;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.controllers.advices.ResourceExceptionHandler;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
 public class CCDCaseHandler {
+    private static final Logger logger = LoggerFactory.getLogger(CCDCaseHandler.class);
     private final CCDCaseRepository ccdCaseRepository;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
@@ -26,14 +32,17 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void savePrePayment(CCDPrePaymentEvent event) {
+        logger.info("running async method with thread '{}'", Thread.currentThread());
         ccdCaseRepository.savePrePaymentClaim(event.getExternalId(), event.getAuthorisation());
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void saveClaim(CCDClaimIssuedEvent event) {
+        logger.info("running async method with thread '{}'", Thread.currentThread());
+
         Claim claim = event.getClaim();
         String authorization = event.getAuthorization();
 
@@ -57,7 +66,7 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void saveDefendantResponse(CCDDefendantResponseEvent event) {
         Claim claim = event.getClaim();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
@@ -75,7 +84,7 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void requestMoreTimeForResponse(CCDMoreTimeRequestedEvent event) {
         Claim claim = ccdCaseRepository.getClaimByExternalId(event.getExternalId(), event.getAuthorization())
             .orElseThrow(IllegalStateException::new);
@@ -84,7 +93,7 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void saveCountyCourtJudgment(CCDCountyCourtJudgmentEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -96,7 +105,7 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void saveClaimantResponse(CCDClaimantResponseEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -107,13 +116,13 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void linkDefendantToClaim(CCDLinkDefendantEvent event) {
         ccdCaseRepository.linkDefendant(event.getAuthorisation());
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void linkSealedClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -124,7 +133,7 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async
+    @Async("threadPoolTaskExecutor")
     public void updateSettlement(CCDSettlementEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();

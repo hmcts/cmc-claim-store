@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -25,6 +26,7 @@ public class ClaimantResponseService {
     private final ClaimantResponseRule claimantResponseRule;
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
+    private CCDEventProducer ccdEventProducer;
 
     public ClaimantResponseService(
         ClaimService claimService,
@@ -32,14 +34,15 @@ public class ClaimantResponseService {
         CaseRepository caseRepository,
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
-        FormaliseResponseAcceptanceService formaliseResponseAcceptanceService
-    ) {
+        FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
+        CCDEventProducer ccdEventProducer) {
         this.claimService = claimService;
         this.appInsights = appInsights;
         this.caseRepository = caseRepository;
         this.claimantResponseRule = claimantResponseRule;
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -57,7 +60,7 @@ public class ClaimantResponseService {
         formaliseResponseAcceptance(response, updatedClaim, authorization);
 
         eventProducer.createClaimantResponseEvent(updatedClaim);
-        eventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
+        ccdEventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
 
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
     }

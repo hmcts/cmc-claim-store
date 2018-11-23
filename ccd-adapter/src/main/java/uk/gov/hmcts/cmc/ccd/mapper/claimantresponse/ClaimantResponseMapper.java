@@ -28,6 +28,10 @@ public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, Claim
 
     @Override
     public CCDClaimantResponse to(ClaimantResponse claimantResponse) {
+        if (claimantResponse == null) {
+            return null;
+        }
+
         CCDClaimantResponse.CCDClaimantResponseBuilder builder = CCDClaimantResponse.builder();
         switch (claimantResponse.getType()) {
             case ACCEPTATION:
@@ -48,7 +52,6 @@ public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, Claim
 
     @Override
     public ClaimantResponse from(CCDClaimantResponse ccdClaimantResponse) {
-        CCDClaimantResponseType type = ccdClaimantResponse.getClaimantResponseType();
         switch (ccdClaimantResponse.getClaimantResponseType()) {
             case ACCEPTATION:
                 CCDResponseAcceptation responseAcceptation = ccdClaimantResponse.getResponseAcceptation();

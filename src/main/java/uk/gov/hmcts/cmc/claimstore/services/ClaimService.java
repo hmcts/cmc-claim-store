@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -61,6 +62,7 @@ public class ClaimService {
     private final AppInsights appInsights;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
     private final PaidInFullRule paidInFullRule;
+    private CCDEventProducer ccdEventProducer;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -75,8 +77,8 @@ public class ClaimService {
         EventProducer eventProducer,
         AppInsights appInsights,
         CCDCaseDataToClaim ccdCaseDataToClaim,
-        PaidInFullRule paidInFullRule
-    ) {
+        PaidInFullRule paidInFullRule,
+        CCDEventProducer ccdEventProducer) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -88,6 +90,7 @@ public class ClaimService {
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
         this.paidInFullRule = paidInFullRule;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     public Claim getClaimById(long claimId) {
@@ -151,7 +154,7 @@ public class ClaimService {
 
     public CaseReference savePrePayment(String externalId, String authorisation) {
         CaseReference caseReference = caseRepository.savePrePaymentClaim(externalId, authorisation);
-        eventProducer.createCCDPrePaymentEvent(externalId, authorisation);
+        ccdEventProducer.createCCDPrePaymentEvent(externalId, authorisation);
         return caseReference;
     }
 
@@ -203,7 +206,7 @@ public class ClaimService {
 
         Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
         trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
-        eventProducer.createCCDClaimIssuedEvent(retrievedClaim, authorisation);
+        ccdEventProducer.createCCDClaimIssuedEvent(retrievedClaim, authorisation);
 
         return retrievedClaim;
     }
@@ -228,7 +231,7 @@ public class ClaimService {
         claim = getClaimByExternalId(externalId, authorisation);
         UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
-        eventProducer.createMoreTimeForCCDResponseRequestedEvent(authorisation, externalId, newDeadline);
+        ccdEventProducer.createMoreTimeForCCDResponseRequestedEvent(authorisation, externalId, newDeadline);
 
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, claim.getReferenceNumber());
         return claim;
@@ -288,13 +291,12 @@ public class ClaimService {
 
     public void linkDefendantToClaim(String authorisation) {
         caseRepository.linkDefendant(authorisation);
-        eventProducer.linkDefendantCCDEvent(authorisation);
+        ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
         caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
-        eventProducer.linkSealedClaimDocumentCCDEvent(authorisation, claim, sealedClaimDocument);
-
+        ccdEventProducer.linkSealedClaimDocumentCCDEvent(authorisation, claim, sealedClaimDocument);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
@@ -305,10 +307,9 @@ public class ClaimService {
         String authorisation,
         Claim claim,
         CountyCourtJudgment countyCourtJudgment
-
     ) {
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
-        eventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
+        ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
         appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
     }
 
