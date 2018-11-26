@@ -50,6 +50,13 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
+        public ClaimantResponse buildStatePaidAcceptationWithoutFormaliseOption() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(null)
+                .build();
+        }
+
         public ClaimantResponse buildAcceptationIssueCCJWithDefendantPaymentIntention() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)

@@ -109,6 +109,22 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void shouldSaveClaimantResponseAcceptationWithoutFormaliseOptionOnStatePaid() throws Exception {
+        ClaimantResponse response = builder().buildStatePaidAcceptationWithoutFormaliseOption();
+
+        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
+            .andExpect(status().isCreated());
+
+        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
+
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
+
+        ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
+            .orElseThrow(AssertionError::new);
+
+    }
+
+    @Test
     public void shouldSendNotificationsWhenEverythingIsOkForAcceptation() throws Exception {
 
         claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant(), SUBMITTER_ID, LocalDate.now());
