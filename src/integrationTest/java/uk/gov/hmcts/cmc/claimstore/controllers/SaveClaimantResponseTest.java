@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -117,11 +118,11 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
 
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
+        assertThat(claimWithClaimantResponse.getClaimantResponse()).isPresent();
 
-        ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
+        ClaimantResponse claimantResponse = claimWithClaimantResponse.getClaimantResponse().orElseThrow(AssertionError::new);
 
+        assertThat(claimantResponse.getType()).isEqualTo(ClaimantResponseType.ACCEPTATION);
     }
 
     @Test
