@@ -28,6 +28,7 @@ public class StatementOfMeansContentProvider {
         requireNonNull(statementOfMeans);
 
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
+        contentBuilder.put("statementOfMeans", statementOfMeans);
 
         Residence residence = statementOfMeans.getResidence();
         contentBuilder.put("residence", residence);
