@@ -6,10 +6,10 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,12 +77,16 @@ public class ClaimantResponseContentProvider {
                 content.put("defendantAdmissionAccepted", "I accept this amount");
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
                 content.putAll(responseAcceptationContentProvider.createContent(responseAcceptation));
-                content.put("formaliseOption", responseAcceptation.getFormaliseOption().get().getDescription());
 
-                claim.getTotalAmountTillDateOfIssue().ifPresent(totalAmount -> content.put("totalAmount",
-                    formatMoney(totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO)))));
+                claim.getTotalAmountTillDateOfIssue().ifPresent(
+                    totalAmount -> content.put("totalAmount", formatMoney(totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO))))
+                );
 
-                addFormalisedOption(claim, content, responseAcceptation);
+                if (responseAcceptation.getFormaliseOption().isPresent()) {
+                    FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption().get();
+                    content.put("formaliseOption", formaliseOption.getDescription());
+                    addFormalisedOption(claim, content, formaliseOption);
+                }
             }
             break;
             case REJECTION:
@@ -100,9 +104,9 @@ public class ClaimantResponseContentProvider {
     private void addFormalisedOption(
         Claim claim,
         Map<String, Object> content,
-        ResponseAcceptation responseAcceptation
+        FormaliseOption formaliseOption
     ) {
-        switch (responseAcceptation.getFormaliseOption().get()) {
+        switch (formaliseOption) {
             case CCJ:
                 content.put("ccj", claim.getCountyCourtJudgment());
                 break;
@@ -111,7 +115,7 @@ public class ClaimantResponseContentProvider {
                 //No Action
                 break;
             default:
-                throw new MappingException("Invalid formalization type " + responseAcceptation.getFormaliseOption());
+                throw new MappingException("Invalid formalization type " + formaliseOption);
         }
     }
 }

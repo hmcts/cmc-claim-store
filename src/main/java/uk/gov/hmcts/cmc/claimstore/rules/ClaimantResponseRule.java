@@ -20,17 +20,15 @@ import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 public class ClaimantResponseRule {
     public void isValid(Claim claim) {
         if (!isDefendantCompanyOrOrganisation(claim)) {
-            ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+            ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
             if (claimantResponse.getType() == ClaimantResponseType.ACCEPTATION) {
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation)claimantResponse;
-                if (!Optional.ofNullable(responseAcceptation.getFormaliseOption()).isPresent()) {
-                    throw new ForbiddenActionException("Formalise option can not be null");
+                if (!responseAcceptation.getFormaliseOption().isPresent()){
+                    throw new IllegalStateException("Formalise option can not be null");
                 }
                 checkCourtDeterminationAndPaymentIntention(responseAcceptation);
             }
-
         }
-
     }
 
     public void assertCanBeRequested(Claim claim, String claimantId) {
