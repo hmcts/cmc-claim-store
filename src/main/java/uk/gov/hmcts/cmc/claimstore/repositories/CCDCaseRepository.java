@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -20,7 +21,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service("caseRepository")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;

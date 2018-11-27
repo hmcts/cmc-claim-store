@@ -113,7 +113,8 @@ staff-notifications:
 feature_toggles:
   watermark_pdf: false
   emailToStaff: true
-  ccd_parallel_run: true
+  ccd_async_enabled: true
+  ccd_enabled: false
 
 feign:
   httpclient:

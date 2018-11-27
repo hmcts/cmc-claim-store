@@ -4,4 +4,6 @@ respond_to_claim_url = "https://www.moneyclaims.demo.platform.hmcts.net/first-co
 db_host = "preprod-data-lb.moneyclaim.reform.hmcts.net"
 capacity = "2"
 enable_staff_email = "false"
+ccd_enabled = "true"
+ccd_async_enabled = "true"
 dm_url = "false"

@@ -15,8 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
@@ -24,7 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "feature_toggles.ccd_parallel_run=true"
+        "feature_toggles.ccd_async_enabled=true"
     }
 )
 public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
@@ -94,71 +92,12 @@ public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
         assertThat(prepayment.getResponse().getContentAsString())
             .isEqualTo(String.format("{\"case_reference\":\"%s\"}", claimData.getExternalId()));
 
-        MvcResult result = makeIssueClaimRequest(claimData)
+        MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
-        Thread.sleep(10000);
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
             .isEqualTo(claimData);
-        Thread.sleep(10000);
-
-        verify(coreCaseDataApi, atLeast(2)).searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            any()
-        );
-        Thread.sleep(10000);
-
-        verify(coreCaseDataApi)
-            .startForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(SUBMIT_PRE_PAYMENT)
-            );
-        Thread.sleep(10000);
-
-        verify(coreCaseDataApi)
-            .submitForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(IGNORE_WARNING),
-                any()
-            );
-
-        Thread.sleep(10000);
-
-        verify(coreCaseDataApi)
-            .startForCaseworker(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(SUBMIT_CLAIM_EVENT)
-            );
-
-        Thread.sleep(10000);
-
-        verify(coreCaseDataApi)
-            .submitForCaseworker(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(IGNORE_WARNING),
-                any()
-            );
     }
 }

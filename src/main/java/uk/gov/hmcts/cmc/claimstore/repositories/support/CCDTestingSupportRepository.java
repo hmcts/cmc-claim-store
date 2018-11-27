@@ -12,7 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@Service("ccdSupportRepository")
+@Service("supportRepository")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDTestingSupportRepository implements SupportRepository {
 
     private final UserService userService;

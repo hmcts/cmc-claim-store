@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -55,6 +56,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_I
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CoreCaseDataService {
 
     private final CaseMapper caseMapper;

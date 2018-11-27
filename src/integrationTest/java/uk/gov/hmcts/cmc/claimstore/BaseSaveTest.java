@@ -20,6 +20,12 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, userDetails));
 
+        UserDetails solicitorDetails = SampleUserDetails.builder().withRoles("solicitor").build();
+        given(userService.getUserDetails(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(solicitorDetails);
+        given(userService.getUser(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(new User(SOLICITOR_AUTHORISATION_TOKEN, solicitorDetails));
+
         given(userService.generatePin("John Smith", AUTHORISATION_TOKEN))
             .willReturn(new GeneratePinResponse("my-pin", "2"));
 

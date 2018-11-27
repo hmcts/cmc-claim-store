@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.events.ccd;
 
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
