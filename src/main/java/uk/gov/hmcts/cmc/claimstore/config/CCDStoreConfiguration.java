@@ -84,7 +84,7 @@ public class CCDStoreConfiguration {
     }
 
     @Bean
-    public CCDTestingSupportRepository supportRepository(
+    public CCDTestingSupportRepository ccdSupportRepository(
         UserService userService,
         CCDCaseApi ccdCaseApi,
         CoreCaseDataService coreCaseDataService
@@ -111,8 +111,8 @@ public class CCDStoreConfiguration {
     @Bean
     @ConditionalOnProperty("claim-store.test-support.enabled")
     public CCDTestingSupportHandler ccdTestingSupportHandler(
-        CCDTestingSupportRepository supportRepository
+        CCDTestingSupportRepository ccdSupportRepository
     ) {
-        return new CCDTestingSupportHandler(supportRepository);
+        return new CCDTestingSupportHandler(ccdSupportRepository);
     }
 }
