@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.util.StopWatch;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
@@ -73,7 +72,7 @@ public class CCDCaseHandler {
         logger.info("Saving claim completed in '{}' ms", stopWatch.getLastTaskTimeMillis());
     }
 
-//    @EventListener
+    //    @EventListener
     @Async("threadPoolTaskExecutor")
     public void saveDefendantResponse(CCDDefendantResponseEvent event) {
         Claim claim = event.getClaim();
@@ -91,7 +90,7 @@ public class CCDCaseHandler {
         }
     }
 
-//    @EventListener
+    //    @EventListener
     @Async("threadPoolTaskExecutor")
     public void requestMoreTimeForResponse(CCDMoreTimeRequestedEvent event) {
         Claim claim = ccdCaseRepository.getClaimByExternalId(event.getExternalId(), event.getAuthorization())
@@ -100,7 +99,7 @@ public class CCDCaseHandler {
         ccdCaseRepository.requestMoreTimeForResponse(event.getAuthorization(), claim, event.getNewDeadline());
     }
 
-//    @EventListener
+    //    @EventListener
     @Async("threadPoolTaskExecutor")
     public void saveCountyCourtJudgment(CCDCountyCourtJudgmentEvent event) {
         String authorization = event.getAuthorization();
@@ -112,7 +111,7 @@ public class CCDCaseHandler {
 
     }
 
-//    @EventListener
+    //    @EventListener
     @Async("threadPoolTaskExecutor")
     public void saveClaimantResponse(CCDClaimantResponseEvent event) {
         String authorization = event.getAuthorization();
@@ -123,13 +122,13 @@ public class CCDCaseHandler {
         ccdCaseRepository.saveClaimantResponse(ccdClaim, event.getResponse(), authorization);
     }
 
-//    @EventListener
+    //    @EventListener
     @Async("threadPoolTaskExecutor")
     public void linkDefendantToClaim(CCDLinkDefendantEvent event) {
         ccdCaseRepository.linkDefendant(event.getAuthorisation());
     }
 
-//    @EventListener
+    //    @EventListener
     @Async("threadPoolTaskExecutor")
     public void linkSealedClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
         String authorization = event.getAuthorization();
@@ -140,7 +139,7 @@ public class CCDCaseHandler {
         ccdCaseRepository.linkSealedClaimDocument(authorization, ccdClaim, event.getSealedClaimDocument());
     }
 
-//    @EventListener
+    //    @EventListener
     @Async("threadPoolTaskExecutor")
     public void updateSettlement(CCDSettlementEvent event) {
         String authorization = event.getAuthorization();
