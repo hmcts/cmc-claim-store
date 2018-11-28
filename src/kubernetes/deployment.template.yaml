@@ -99,7 +99,7 @@ spec:
             - name: REFORM_ENVIRONMENT
               value: 'preview'
             - name: CORE_CASE_DATA_API_URL
-              value: 'false'
+              value: '${CORE_CASE_DATA_API_URL}'
             - name: SMOKE_TEST_CITIZEN_USERNAME
               value: '${SMOKE_TEST_CITIZEN_USERNAME}'
             - name: SMOKE_TEST_SOLICITOR_USERNAME
