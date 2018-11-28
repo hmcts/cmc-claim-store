@@ -71,6 +71,15 @@ public class FormaliseResponseAcceptanceServiceTest {
         );
     }
 
+    @Test
+    public void formaliseWhenFormaliseOptionNotPresentShouldReturnWithoutException() {
+        Claim claim = SampleClaim.builder().build();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation
+            .builder()
+            .build();
+        formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
+    }
+
     @Test(expected = IllegalStateException.class)
     public void formaliseWhenResponseNotPresent() {
         Claim claim = SampleClaim.builder().build();

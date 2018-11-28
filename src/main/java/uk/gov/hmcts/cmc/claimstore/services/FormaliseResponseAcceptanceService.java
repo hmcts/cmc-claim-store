@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -47,6 +48,9 @@ public class FormaliseResponseAcceptanceService {
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
+        if(Objects.isNull(responseAcceptation.getFormaliseOption()))
+            return;
+
         switch (responseAcceptation.getFormaliseOption()) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
