@@ -184,6 +184,9 @@ module "claim-store-api" {
     FEATURE_TOGGLES_CCD_ENABLED = "${var.ccd_enabled}"
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
 
+    //thread pool configs
+    ASYNC_MAX_THREADPOOL_SIZE = 50
+
     ROOT_APPENDER = "CMC"
   }
 }
