@@ -72,7 +72,7 @@ public class DefendantResponseService {
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
         ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
-        appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()), claim.getReferenceNumber());
+        appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()), "referenceNumber", claim.getReferenceNumber());
 
         return claimAfterSavingResponse;
     }

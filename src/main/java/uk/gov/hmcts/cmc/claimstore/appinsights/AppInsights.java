@@ -13,7 +13,7 @@ public class AppInsights extends AbstractAppInsights {
         super(telemetryClient);
     }
 
-    public void trackEvent(AppInsightsEvent appInsightsEvent, String claimNumber) {
-        telemetry.trackEvent(appInsightsEvent.toString(), singletonMap("referenceNumber", claimNumber), null);
+    public void trackEvent(AppInsightsEvent appInsightsEvent, String referenceType, String claimNumber) {
+        telemetry.trackEvent(appInsightsEvent.toString(), singletonMap(referenceType, claimNumber), null);
     }
 }

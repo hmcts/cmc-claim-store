@@ -60,7 +60,7 @@ public class OffersService {
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
-        appInsights.trackEvent(OFFER_MADE, updated.getReferenceNumber());
+        appInsights.trackEvent(OFFER_MADE, "referenceNumber", updated.getReferenceNumber());
         return updated;
     }
 
@@ -93,7 +93,7 @@ public class OffersService {
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
-        appInsights.trackEvent(OFFER_REJECTED, updated.getReferenceNumber());
+        appInsights.trackEvent(OFFER_REJECTED, "referenceNumber", updated.getReferenceNumber());
         return updated;
     }
 
@@ -109,7 +109,7 @@ public class OffersService {
         eventProducer.createAgreementCountersignedEvent(updated, party);
 
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, SETTLED_PRE_JUDGMENT.name());
-        appInsights.trackEvent(SETTLEMENT_REACHED, updated.getReferenceNumber());
+        appInsights.trackEvent(SETTLEMENT_REACHED, "referenceNumber", updated.getReferenceNumber());
         return updated;
     }
 
@@ -136,7 +136,7 @@ public class OffersService {
         final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createSignSettlementAgreementEvent(signedSettlementClaim);
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
-        appInsights.trackEvent(CLAIMANT_RESPONSE_GENERATED_OFFER_MADE, signedSettlementClaim.getReferenceNumber());
+        appInsights.trackEvent(CLAIMANT_RESPONSE_GENERATED_OFFER_MADE, "referenceNumber", signedSettlementClaim.getReferenceNumber());
 
         return signedSettlementClaim;
     }

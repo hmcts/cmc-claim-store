@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingSupportHandler;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -104,9 +105,12 @@ public class CCDStoreConfiguration {
     @Bean
     public CCDCaseHandler ccdCaseHandler(
         CCDCaseRepository ccdCaseRepository,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
+        AppInsights appInsights,
+        UserService userService
     ) {
-        return new CCDCaseHandler(ccdCaseRepository, directionsQuestionnaireDeadlineCalculator);
+        return new CCDCaseHandler(ccdCaseRepository, directionsQuestionnaireDeadlineCalculator,
+            appInsights, userService);
     }
 
     @Bean

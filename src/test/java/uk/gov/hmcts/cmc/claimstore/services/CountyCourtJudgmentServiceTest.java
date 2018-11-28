@@ -87,7 +87,7 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), "referenceNumber", eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class CountyCourtJudgmentServiceTest {
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), "referenceNumber", eq(claim.getReferenceNumber()));
     }
 
     @Test

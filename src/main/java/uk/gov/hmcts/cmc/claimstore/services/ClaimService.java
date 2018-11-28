@@ -213,9 +213,9 @@ public class ClaimService {
 
     private void trackClaimIssued(String referenceNumber, boolean represented) {
         if (represented) {
-            appInsights.trackEvent(CLAIM_ISSUED_LEGAL, referenceNumber);
+            appInsights.trackEvent(CLAIM_ISSUED_LEGAL, "referenceNumber", referenceNumber);
         } else {
-            appInsights.trackEvent(CLAIM_ISSUED_CITIZEN, referenceNumber);
+            appInsights.trackEvent(CLAIM_ISSUED_CITIZEN, "referenceNumber", referenceNumber);
         }
     }
 
@@ -233,7 +233,7 @@ public class ClaimService {
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
         ccdEventProducer.createMoreTimeForCCDResponseRequestedEvent(authorisation, externalId, newDeadline);
 
-        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, claim.getReferenceNumber());
+        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, "referenceNumber", claim.getReferenceNumber());
         return claim;
     }
 
@@ -275,7 +275,7 @@ public class ClaimService {
             claim.getResponseDeadline(),
             claim.getClaimData().getDefendant().getEmail().orElse(null)
         );
-        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, claim.getReferenceNumber());
+        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, "referenceNumber", claim.getReferenceNumber());
 
         return SubmittedCallbackResponse.builder()
             .build();
@@ -310,7 +310,7 @@ public class ClaimService {
     ) {
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
         ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
-        appInsights.trackEvent(CCJ_REQUESTED, claim.getReferenceNumber());
+        appInsights.trackEvent(CCJ_REQUESTED, "referenceNumber", claim.getReferenceNumber());
     }
 
     public void saveDefendantResponse(

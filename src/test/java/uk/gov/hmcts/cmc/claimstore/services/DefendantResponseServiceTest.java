@@ -92,7 +92,7 @@ public class DefendantResponseServiceTest {
             .createDefendantResponseEvent(eq(claim));
 
         verify(appInsights, once())
-            .trackEvent(any(AppInsightsEvent.class), eq(claim.getReferenceNumber()));
+            .trackEvent(any(AppInsightsEvent.class), "referenceNumber", eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = DefendantLinkingException.class)

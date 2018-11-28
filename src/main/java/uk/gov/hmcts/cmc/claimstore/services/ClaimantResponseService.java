@@ -62,7 +62,7 @@ public class ClaimantResponseService {
         eventProducer.createClaimantResponseEvent(updatedClaim);
         ccdEventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
 
-        appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
+        appInsights.trackEvent(getAppInsightsEvent(response), "referenceNumber", claim.getReferenceNumber());
     }
 
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
