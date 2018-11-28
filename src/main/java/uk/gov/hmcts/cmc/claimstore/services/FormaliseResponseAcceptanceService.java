@@ -23,7 +23,6 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;

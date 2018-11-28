@@ -29,8 +29,9 @@ public class ResponseUtils {
     }
 
     public static boolean isResponsePartAdmitPayImmediately(Response response) {
-        if (response.getResponseType() != ResponseType.PART_ADMISSION)
+        if (response.getResponseType() != ResponseType.PART_ADMISSION) {
             return false;
+        }
 
         PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
         if (partAdmissionResponse.getPaymentIntention().isPresent()) {
