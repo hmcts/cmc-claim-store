@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
-import org.springframework.util.StopWatch;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogMe;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -21,8 +21,6 @@ public class CCDCaseHandler {
     private static final Logger logger = LoggerFactory.getLogger(CCDCaseHandler.class);
     private final CCDCaseRepository ccdCaseRepository;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
-    private StopWatch stopWatch = new StopWatch();
-
 
     public CCDCaseHandler(
         CCDCaseRepository ccdCaseRepository,
@@ -34,20 +32,15 @@ public class CCDCaseHandler {
 
     @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void savePrePayment(CCDPrePaymentEvent event) {
-        logger.info("Saving pre payment claim in ccd start with thread '{}'", Thread.currentThread());
-        stopWatch.start();
         ccdCaseRepository.savePrePaymentClaim(event.getExternalId(), event.getAuthorisation());
-        stopWatch.stop();
-        logger.info("Saving pre payment claim completed in '{}' ms", stopWatch.getLastTaskTimeMillis());
     }
 
     @TransactionalEventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void saveClaim(CCDClaimIssuedEvent event) {
-        logger.info("saving claim in ccd with thread '{}'", Thread.currentThread());
-        stopWatch.start();
-
         Claim claim = event.getClaim();
         String authorization = event.getAuthorization();
 
@@ -68,12 +61,11 @@ public class CCDCaseHandler {
             .build();
 
         ccdCaseRepository.saveClaim(authorization, ccdClaim);
-        stopWatch.stop();
-        logger.info("Saving claim completed in '{}' ms", stopWatch.getLastTaskTimeMillis());
     }
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void saveDefendantResponse(CCDDefendantResponseEvent event) {
         Claim claim = event.getClaim();
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
@@ -92,6 +84,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void requestMoreTimeForResponse(CCDMoreTimeRequestedEvent event) {
         Claim claim = ccdCaseRepository.getClaimByExternalId(event.getExternalId(), event.getAuthorization())
             .orElseThrow(IllegalStateException::new);
@@ -101,6 +94,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void saveCountyCourtJudgment(CCDCountyCourtJudgmentEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -113,6 +107,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void saveClaimantResponse(CCDClaimantResponseEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -124,12 +119,14 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void linkDefendantToClaim(CCDLinkDefendantEvent event) {
         ccdCaseRepository.linkDefendant(event.getAuthorisation());
     }
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void linkSealedClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -141,6 +138,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
+    @LogMe
     public void updateSettlement(CCDSettlementEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,9 +38,9 @@ import java.util.concurrent.Executor;
 public class CCDStoreConfiguration {
 
     @Bean(name = "threadPoolTaskExecutor")
-    public Executor threadPoolTaskExecutor() {
+    public Executor threadPoolTaskExecutor(@Value("${async.max.threadPool.size}") Integer maxThreadPoolSize) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setMaxPoolSize(50);
+        executor.setMaxPoolSize(maxThreadPoolSize);
         executor.initialize();
         return executor;
     }

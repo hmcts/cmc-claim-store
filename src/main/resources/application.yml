@@ -11,6 +11,10 @@ management:
   endpoint:
     health:
       show-details: always
+async:
+  max:
+    threadPool:
+      size: 50
 
 spring:
   application:
