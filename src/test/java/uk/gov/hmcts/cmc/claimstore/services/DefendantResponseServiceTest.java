@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
@@ -45,7 +46,6 @@ public class DefendantResponseServiceTest {
     private static final Claim claim = SampleClaim.getDefault();
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String DEFENDANT_EMAIL = "test@example.com";
-    public static final String REFERENCE_NUMBER = "referenceNumber";
 
     private DefendantResponseService responseService;
 

@@ -32,6 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_REJECTED;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -41,7 +42,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 public class ClaimantResponseServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    public static final String REFERENCE_NUMBER = "referenceNumber";
 
     private ClaimantResponseService claimantResponseService;
 

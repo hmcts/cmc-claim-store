@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
@@ -21,7 +22,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 @Service
 public class DefendantResponseService {
 
-    public static final String REFERENCE_NUMBER = "referenceNumber";
     private final EventProducer eventProducer;
     private final ClaimService claimService;
     private final UserService userService;

@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.ccd;
 
 import feign.FeignException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -20,13 +18,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CCD_LINK_DEFENDANT_ID;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
 
 public class CCDCaseHandler {
-    private static final Logger logger = LoggerFactory.getLogger(CCDCaseHandler.class);
-    public static final String REFERENCE_NUMBER = "referenceNumber";
-    public static final String CCD_LINK_DEFENDANT_ID = "ccdLink.defendantId";
-    public static final String CLAIM_EXTERNAL_ID = "claim.externalId";
     private final CCDCaseRepository ccdCaseRepository;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private AppInsights appInsights;
@@ -51,7 +48,7 @@ public class CCDCaseHandler {
         try {
             ccdCaseRepository.savePrePaymentClaim(event.getExternalId(), event.getAuthorisation());
         } catch (FeignException e) {
-            appInsights.trackEvent(CCD_ASYNC_FAILURE, "claim.externalId", event.getExternalId());
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, CLAIM_EXTERNAL_ID, event.getExternalId());
             throw e;
         }
     }
@@ -82,7 +79,7 @@ public class CCDCaseHandler {
 
             ccdCaseRepository.saveClaim(authorization, ccdClaim);
         } catch (FeignException e) {
-            appInsights.trackEvent(CCD_ASYNC_FAILURE, "referenceNumber", claim.getReferenceNumber());
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;
         }
     }
@@ -106,7 +103,7 @@ public class CCDCaseHandler {
                 ccdCaseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
             }
         } catch (FeignException e) {
-            appInsights.trackEvent(CCD_ASYNC_FAILURE, "referenceNumber", claim.getReferenceNumber());
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;
         }
     }

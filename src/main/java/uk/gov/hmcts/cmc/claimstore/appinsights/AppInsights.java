@@ -8,6 +8,9 @@ import static java.util.Collections.singletonMap;
 
 @Component
 public class AppInsights extends AbstractAppInsights {
+    public static final String REFERENCE_NUMBER = "referenceNumber";
+    public static final String CCD_LINK_DEFENDANT_ID = "ccdLink.defendantId";
+    public static final String CLAIM_EXTERNAL_ID = "claim.externalId";
 
     public AppInsights(TelemetryClient telemetryClient) {
         super(telemetryClient);
