@@ -77,7 +77,10 @@ public class ClaimantResponseContentProvider {
                 content.put("defendantAdmissionAccepted", "I accept this amount");
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
                 content.putAll(responseAcceptationContentProvider.createContent(responseAcceptation));
-                content.put("formaliseOption", responseAcceptation.getFormaliseOption().getDescription());
+
+                if (responseAcceptation.getFormaliseOption().isPresent()) {
+                    content.put("formaliseOption", responseAcceptation.getFormaliseOption().get().getDescription());
+                }
 
                 claim.getTotalAmountTillDateOfIssue().ifPresent(totalAmount -> content.put("totalAmount",
                     formatMoney(totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO)))));
@@ -102,7 +105,7 @@ public class ClaimantResponseContentProvider {
         Map<String, Object> content,
         ResponseAcceptation responseAcceptation
     ) {
-        switch (responseAcceptation.getFormaliseOption()) {
+        switch (responseAcceptation.getFormaliseOption().orElseThrow(IllegalArgumentException::new)) {
             case CCJ:
                 content.put("ccj", claim.getCountyCourtJudgment());
                 break;

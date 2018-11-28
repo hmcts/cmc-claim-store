@@ -155,4 +155,36 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), eq(claim.getReferenceNumber()));
     }
+
+    @Test
+    public void saveResponseAcceptationShouldSucceedWhenPartAdmitPayImmediatelyWithNoFormalisation() {
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(
+                SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately()
+            )
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .build();
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .withFormaliseOption(null)
+            .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, eventProducer, appInsights);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        inOrder.verify(formaliseResponseAcceptanceService, never())
+            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), eq(claim.getReferenceNumber()));
+    }
 }

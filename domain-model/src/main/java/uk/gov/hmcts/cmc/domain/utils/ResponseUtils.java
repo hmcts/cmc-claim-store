@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 public class ResponseUtils {
 
@@ -24,5 +26,17 @@ public class ResponseUtils {
             default:
                 return false;
         }
+    }
+
+    public static boolean isResponsePartAdmitPayImmediately(Response response) {
+        if (response.getResponseType() != ResponseType.PART_ADMISSION)
+            return false;
+
+        PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+        if (partAdmissionResponse.getPaymentIntention().isPresent()) {
+            return partAdmissionResponse.getPaymentIntention().get().getPaymentOption() == PaymentOption.IMMEDIATELY;
+        }
+
+        return false;
     }
 }

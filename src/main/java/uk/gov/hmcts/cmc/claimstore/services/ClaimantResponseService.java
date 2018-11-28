@@ -8,9 +8,12 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
@@ -63,8 +66,7 @@ public class ClaimantResponseService {
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
-        if (ACCEPTATION == claimantResponse.getType()
-            && !ResponseUtils.isResponseStatesPaid(response)) {
+        if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
         }
     }
@@ -77,5 +79,11 @@ public class ClaimantResponseService {
         } else {
             throw new IllegalStateException("Unknown response type");
         }
+    }
+
+    private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
+        return ACCEPTATION == claimantResponse.getType() &&
+            !ResponseUtils.isResponseStatesPaid(response) &&
+            !ResponseUtils.isResponsePartAdmitPayImmediately(response);
     }
 }
