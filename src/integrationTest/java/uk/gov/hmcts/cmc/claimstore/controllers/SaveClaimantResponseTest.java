@@ -120,7 +120,8 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         assertThat(claimWithClaimantResponse.getClaimantResponse()).isPresent();
 
-        ClaimantResponse claimantResponse = claimWithClaimantResponse.getClaimantResponse().orElseThrow(AssertionError::new);
+        ClaimantResponse claimantResponse = claimWithClaimantResponse.getClaimantResponse()
+            .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getType()).isEqualTo(ClaimantResponseType.ACCEPTATION);
     }
