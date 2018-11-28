@@ -4,8 +4,11 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+
+import java.util.function.Predicate;
 
 public class ResponseUtils {
 
@@ -34,10 +37,9 @@ public class ResponseUtils {
         }
 
         PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
-        if (partAdmissionResponse.getPaymentIntention().isPresent()) {
-            return partAdmissionResponse.getPaymentIntention().get().getPaymentOption() == PaymentOption.IMMEDIATELY;
-        }
-
-        return false;
+        return partAdmissionResponse.getPaymentIntention()
+            .map(PaymentIntention::getPaymentOption)
+            .filter(Predicate.isEqual(PaymentOption.IMMEDIATELY))
+            .isPresent();
     }
 }
