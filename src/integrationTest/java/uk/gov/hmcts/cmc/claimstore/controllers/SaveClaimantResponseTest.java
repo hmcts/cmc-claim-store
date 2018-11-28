@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -106,6 +107,23 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
         assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
+    }
+
+    @Test
+    public void shouldSaveClaimantResponseAcceptationWithoutFormaliseOptionOnStatePaid() throws Exception {
+        ClaimantResponse response = builder().buildStatePaidAcceptationWithoutFormaliseOption();
+
+        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
+            .andExpect(status().isCreated());
+
+        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
+
+        assertThat(claimWithClaimantResponse.getClaimantResponse()).isPresent();
+
+        ClaimantResponse claimantResponse = claimWithClaimantResponse.getClaimantResponse()
+            .orElseThrow(AssertionError::new);
+
+        assertThat(claimantResponse.getType()).isEqualTo(ClaimantResponseType.ACCEPTATION);
     }
 
     @Test
