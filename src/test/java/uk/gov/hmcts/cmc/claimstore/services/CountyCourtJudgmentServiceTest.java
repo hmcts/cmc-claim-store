@@ -39,6 +39,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public class CountyCourtJudgmentServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
+    public static final String REFERENCE_NUMBER = "referenceNumber";
 
     private CountyCourtJudgmentService countyCourtJudgmentService;
 
@@ -87,7 +88,8 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), "referenceNumber", eq(claim.getReferenceNumber()));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
+            eq("referenceNumber"), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -105,7 +107,8 @@ public class CountyCourtJudgmentServiceTest {
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), "referenceNumber", eq(claim.getReferenceNumber()));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test

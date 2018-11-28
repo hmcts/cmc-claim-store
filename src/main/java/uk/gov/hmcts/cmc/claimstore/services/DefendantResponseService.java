@@ -21,6 +21,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 @Service
 public class DefendantResponseService {
 
+    public static final String REFERENCE_NUMBER = "referenceNumber";
     private final EventProducer eventProducer;
     private final ClaimService claimService;
     private final UserService userService;
@@ -72,7 +73,8 @@ public class DefendantResponseService {
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
         ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
-        appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()), "referenceNumber", claim.getReferenceNumber());
+        appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()),
+            REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return claimAfterSavingResponse;
     }

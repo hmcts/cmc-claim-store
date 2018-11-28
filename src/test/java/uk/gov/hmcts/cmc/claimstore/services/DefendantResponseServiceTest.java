@@ -45,6 +45,7 @@ public class DefendantResponseServiceTest {
     private static final Claim claim = SampleClaim.getDefault();
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String DEFENDANT_EMAIL = "test@example.com";
+    public static final String REFERENCE_NUMBER = "referenceNumber";
 
     private DefendantResponseService responseService;
 
@@ -92,7 +93,7 @@ public class DefendantResponseServiceTest {
             .createDefendantResponseEvent(eq(claim));
 
         verify(appInsights, once())
-            .trackEvent(any(AppInsightsEvent.class), "referenceNumber", eq(claim.getReferenceNumber()));
+            .trackEvent(any(AppInsightsEvent.class), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = DefendantLinkingException.class)

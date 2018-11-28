@@ -41,6 +41,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 public class ClaimantResponseServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
+    public static final String REFERENCE_NUMBER = "referenceNumber";
 
     private ClaimantResponseService claimantResponseService;
 
@@ -95,7 +96,8 @@ public class ClaimantResponseServiceTest {
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED), "referenceNumber", eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
     }
@@ -126,7 +128,8 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), "referenceNumber", eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
     }
 
@@ -157,6 +160,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(formaliseResponseAcceptanceService, never())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), "referenceNumber", eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }
