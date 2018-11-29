@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -212,11 +214,8 @@ public class ClaimService {
     }
 
     private void trackClaimIssued(String referenceNumber, boolean represented) {
-        if (represented) {
-            appInsights.trackEvent(CLAIM_ISSUED_LEGAL, "referenceNumber", referenceNumber);
-        } else {
-            appInsights.trackEvent(CLAIM_ISSUED_CITIZEN, "referenceNumber", referenceNumber);
-        }
+        AppInsightsEvent event = represented ? CLAIM_ISSUED_LEGAL : CLAIM_ISSUED_CITIZEN;
+        appInsights.trackEvent(event, REFERENCE_NUMBER, referenceNumber);
     }
 
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {

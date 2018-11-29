@@ -15,7 +15,7 @@ public class LoggerHandler {
     private static final String LOG_MESSAGE_FORMAT = "%s.%s execution time : %d ms";
     private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
 
-    @Pointcut("execution(@uk.gov.hmcts.cmc.claimstore.stereotypes.LogMe * *(..))")
+    @Pointcut("execution(@uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime * *(..))")
     public void isAnnotated() {
     }
 

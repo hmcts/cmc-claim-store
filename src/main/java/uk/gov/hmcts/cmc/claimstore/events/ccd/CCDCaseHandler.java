@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.stereotypes.LogMe;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -43,7 +43,7 @@ public class CCDCaseHandler {
 
     @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void savePrePayment(CCDPrePaymentEvent event) {
         try {
             ccdCaseRepository.savePrePaymentClaim(event.getExternalId(), event.getAuthorisation());
@@ -55,7 +55,7 @@ public class CCDCaseHandler {
 
     @TransactionalEventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         try {
@@ -86,7 +86,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void saveDefendantResponse(CCDDefendantResponseEvent event) {
         Claim claim = event.getClaim();
         try {
@@ -110,7 +110,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void requestMoreTimeForResponse(CCDMoreTimeRequestedEvent event) {
         try {
             Claim claim = ccdCaseRepository.getClaimByExternalId(event.getExternalId(), event.getAuthorization())
@@ -125,7 +125,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void saveCountyCourtJudgment(CCDCountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         String authorization = event.getAuthorization();
@@ -143,7 +143,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void saveClaimantResponse(CCDClaimantResponseEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -160,7 +160,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void linkDefendantToClaim(CCDLinkDefendantEvent event) {
         String authorisation = event.getAuthorisation();
         try {
@@ -174,7 +174,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void linkSealedClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
@@ -191,7 +191,7 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @Async("threadPoolTaskExecutor")
-    @LogMe
+    @LogExecutionTime
     public void updateSettlement(CCDSettlementEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
