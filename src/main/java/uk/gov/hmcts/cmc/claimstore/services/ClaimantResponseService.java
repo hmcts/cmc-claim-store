@@ -32,7 +32,6 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
-
     public ClaimantResponseService(
         ClaimService claimService,
         AppInsights appInsights,
@@ -65,7 +64,7 @@ public class ClaimantResponseService {
 
         formaliseResponseAcceptance(response, updatedClaim, authorization);
         if (isRejectPartAdmitNoMediation(response, updatedClaim)) {
-            updateDirectionsQuestionnaireDeadline(response, updatedClaim, authorization);
+            updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
 
         eventProducer.createClaimantResponseEvent(updatedClaim);
@@ -79,12 +78,7 @@ public class ClaimantResponseService {
             && !((ResponseRejection) claimantResponse).getFreeMediation().orElse(false);
     }
 
-    private void updateDirectionsQuestionnaireDeadline(
-        ClaimantResponse claimantResponse,
-        Claim claim,
-        String authorization
-    ) {
-
+    private void updateDirectionsQuestionnaireDeadline(Claim claim, String authorization) {
         LocalDate deadline = directionsQuestionnaireDeadlineCalculator
             .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
         caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
