@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,6 +26,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "feature_toggles.ccd_async_enabled=true"
     }
 )
+@Ignore("Need to enable only when CCDCaseHandler.saveClaim is enabled for event listener")
 public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
 
     @Test
