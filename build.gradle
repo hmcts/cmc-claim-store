@@ -313,7 +313,7 @@ sonarqube {
       "**/ClaimRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**," +
-      "**/EmailData.java",
+      "**/EmailData.java," +
       "**/CCDCaseHandler.java"
   }
 }
