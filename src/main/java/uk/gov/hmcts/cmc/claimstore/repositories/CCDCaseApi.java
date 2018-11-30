@@ -69,7 +69,7 @@ public class CCDCaseApi {
     private static final int MINIMUM_SIZE_TO_CHECK_FOR_MORE_PAGES = 10;
     private static final int MAX_NUM_OF_PAGES_TO_CHECK = 10;
 
-
+    @SuppressWarnings("squid:S00107") // All parameters are required here
     public CCDCaseApi(
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,

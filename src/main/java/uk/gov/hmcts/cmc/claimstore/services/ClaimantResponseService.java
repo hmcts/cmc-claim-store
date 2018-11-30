@@ -34,6 +34,7 @@ public class ClaimantResponseService {
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final CCDEventProducer ccdEventProducer;
 
+    @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
         ClaimService claimService,
         AppInsights appInsights,
