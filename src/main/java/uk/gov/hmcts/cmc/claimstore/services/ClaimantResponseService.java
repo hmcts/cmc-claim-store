@@ -9,10 +9,15 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
@@ -25,6 +30,7 @@ public class ClaimantResponseService {
     private final ClaimantResponseRule claimantResponseRule;
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
+    private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
     public ClaimantResponseService(
         ClaimService claimService,
@@ -32,7 +38,8 @@ public class ClaimantResponseService {
         CaseRepository caseRepository,
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
-        FormaliseResponseAcceptanceService formaliseResponseAcceptanceService
+        FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -40,6 +47,7 @@ public class ClaimantResponseService {
         this.claimantResponseRule = claimantResponseRule;
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
+        this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -55,9 +63,25 @@ public class ClaimantResponseService {
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
 
         formaliseResponseAcceptance(response, updatedClaim, authorization);
+        if (isRejectPartAdmitNoMediation(response, updatedClaim)) {
+            updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
+        }
 
         eventProducer.createClaimantResponseEvent(updatedClaim);
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
+    }
+
+    private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        return ResponseType.PART_ADMISSION.equals(response.getResponseType())
+            && ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
+            && !((ResponseRejection) claimantResponse).getFreeMediation().orElse(false);
+    }
+
+    private void updateDirectionsQuestionnaireDeadline(Claim claim, String authorization) {
+        LocalDate deadline = directionsQuestionnaireDeadlineCalculator
+            .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
+        caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
     }
 
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
