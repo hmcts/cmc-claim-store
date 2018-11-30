@@ -72,6 +72,14 @@ variable "enable_staff_email" {
   default = "true"
 }
 
+variable "ccd_enabled" {
+  default = "false"
+}
+
+variable "ccd_async_enabled" {
+  default = "false"
+}
+
 variable "common_tags" {
   type = "map"
 }

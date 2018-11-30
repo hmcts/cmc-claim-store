@@ -37,6 +37,16 @@ public class ResourceLoader {
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 
+    public static CaseDetails successfulCoreCaseDataStoreSubmitRepresentativeResponse() {
+        String response = getResource("/core-case-data/submit-representative-response.success.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
+    }
+
+    public static CaseDetails successfulPrePaymentCoreCaseDataStoreSubmitResponse() {
+        String response = getResource("/core-case-data/search-prepayment-response.success.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
+    }
+
     private static String getResource(String resourceName) {
         return new ResourceReader().read(resourceName);
     }

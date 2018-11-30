@@ -27,7 +27,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "false")
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimRepository claimRepository;
