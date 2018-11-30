@@ -58,6 +58,9 @@ public class ClaimantResponseServiceTest {
     @Mock
     private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
 
+    @Mock
+    private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+
     @Before
     public void setUp() {
         claimantResponseService = new ClaimantResponseService(
@@ -66,7 +69,8 @@ public class ClaimantResponseServiceTest {
             caseRepository,
             new ClaimantResponseRule(),
             eventProducer,
-            formaliseResponseAcceptanceService
+            formaliseResponseAcceptanceService,
+            directionsQuestionnaireDeadlineCalculator
         );
     }
 
@@ -154,5 +158,35 @@ public class ClaimantResponseServiceTest {
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void saveResponseRejectionOfPartAdmitWithNoMediationShouldUpdateDirectionsQuestionnaireDeadline() {
+        final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
+        final LocalDate dqDeadline = respondedAt.plusDays(19).toLocalDate();
+
+        final Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.PartAdmission.builder().build())
+            .withRespondedAt(respondedAt)
+            .build();
+
+        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(directionsQuestionnaireDeadlineCalculator
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any()))
+            .thenReturn(dqDeadline);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        verify(directionsQuestionnaireDeadlineCalculator)
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
+        verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
+        verify(eventProducer).createClaimantResponseEvent(any(Claim.class));
+        verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED), eq(claim.getReferenceNumber()));
     }
 }
