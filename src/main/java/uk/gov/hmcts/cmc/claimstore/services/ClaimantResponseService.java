@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -31,7 +32,9 @@ public class ClaimantResponseService {
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+    private final CCDEventProducer ccdEventProducer;
 
+    @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
         ClaimService claimService,
         AppInsights appInsights,
@@ -39,7 +42,8 @@ public class ClaimantResponseService {
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
+        CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -48,6 +52,7 @@ public class ClaimantResponseService {
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -68,7 +73,9 @@ public class ClaimantResponseService {
         }
 
         eventProducer.createClaimantResponseEvent(updatedClaim);
-        appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
+        ccdEventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
+
+        appInsights.trackEvent(getAppInsightsEvent(response), "referenceNumber", claim.getReferenceNumber());
     }
 
     private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {

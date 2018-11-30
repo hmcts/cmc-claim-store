@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -33,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseApi {
 
     public static enum CaseState {
@@ -61,12 +62,14 @@ public class CCDCaseApi {
     private final CoreCaseDataService coreCaseDataService;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
     private final JobSchedulerService jobSchedulerService;
+    private final boolean ccdAsyncEnabled;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
     private static final int MINIMUM_SIZE_TO_CHECK_FOR_MORE_PAGES = 10;
     private static final int MAX_NUM_OF_PAGES_TO_CHECK = 10;
 
+    @SuppressWarnings("squid:S00107") // All parameters are required here
     public CCDCaseApi(
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
@@ -74,7 +77,8 @@ public class CCDCaseApi {
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CCDCaseDataToClaim ccdCaseDataToClaim,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        @Value("${feature_toggles.ccd_async_enabled}") boolean ccdAsyncEnabled
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -83,6 +87,7 @@ public class CCDCaseApi {
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
         this.jobSchedulerService = jobSchedulerService;
+        this.ccdAsyncEnabled = ccdAsyncEnabled;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -219,8 +224,10 @@ public class CCDCaseApi {
         String defendantEmail = defendantUser.getUserDetails().getEmail();
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
-        Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
+        if (!ccdAsyncEnabled) {
+            Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
+            jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
+        }
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
