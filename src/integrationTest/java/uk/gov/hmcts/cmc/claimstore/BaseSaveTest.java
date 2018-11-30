@@ -35,5 +35,8 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
         given(userService.authenticateAnonymousCaseWorker())
             .willReturn(new User(ANONYMOUS_BEARER_TOKEN,
                 SampleUserDetails.builder().withUserId(ANONYMOUS_USER_ID).build()));
+
+        given(referenceNumberRepository.getReferenceNumberForLegal()).willReturn("000LR001");
+        given(referenceNumberRepository.getReferenceNumberForCitizen()).willReturn("000MC001");
     }
 }

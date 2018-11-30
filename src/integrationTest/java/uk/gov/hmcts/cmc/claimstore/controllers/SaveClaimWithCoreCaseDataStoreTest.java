@@ -25,7 +25,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulPrePaym
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "core_case_data.api.url=http://core-case-data-api",
         "feature_toggles.ccd_async_enabled=false",
         "feature_toggles.ccd_enabled=true"
     }
@@ -204,7 +203,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed updating claim in CCD store for claim 000LR003 on event SUBMIT_POST_PAYMENT");
+            .contains("Failed updating claim in CCD store for claim 000LR001 on event SUBMIT_POST_PAYMENT");
     }
 
     @Test
