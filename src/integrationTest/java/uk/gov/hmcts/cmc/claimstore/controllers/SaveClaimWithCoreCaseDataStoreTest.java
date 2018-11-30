@@ -25,6 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulPrePaym
 @TestPropertySource(
     properties = {
         "document_management.url=false",
+        "core_case_data.api.url=http://core-case-data-api",
         "feature_toggles.ccd_async_enabled=false",
         "feature_toggles.ccd_enabled=true"
     }
