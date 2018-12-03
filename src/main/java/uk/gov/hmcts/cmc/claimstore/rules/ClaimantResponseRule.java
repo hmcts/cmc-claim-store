@@ -28,7 +28,7 @@ public class ClaimantResponseRule {
         if (!isDefendantCompanyOrOrganisation(claim)) {
             ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
             if (claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
-                && ! isFormaliseOptionExpectedForResponse(claim.getResponse().orElseThrow(IllegalStateException::new))
+                && isFormaliseOptionExpectedForResponse(claim.getResponse().orElseThrow(IllegalStateException::new))
             ) {
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
                 if (!responseAcceptation.getFormaliseOption().isPresent()) {
@@ -94,14 +94,14 @@ public class ClaimantResponseRule {
             case PART_ADMISSION:
                 return ((PartAdmissionResponse) response).getPaymentIntention()
                     .orElseThrow(IllegalStateException::new)
-                    .getPaymentOption()  == PaymentOption.IMMEDIATELY;
+                    .getPaymentOption() != PaymentOption.IMMEDIATELY;
             case FULL_ADMISSION:
                 return ((FullAdmissionResponse) response).getPaymentIntention()
-                    .getPaymentOption() == PaymentOption.IMMEDIATELY;
+                    .getPaymentOption() != PaymentOption.IMMEDIATELY;
             case FULL_DEFENCE:
-                return true;
-            default:
                 return false;
+            default:
+                return true;
         }
     }
 }
