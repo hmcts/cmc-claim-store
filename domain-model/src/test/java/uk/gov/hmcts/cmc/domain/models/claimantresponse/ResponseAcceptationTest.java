@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Set;
 
 import static java.math.BigDecimal.TEN;
@@ -49,27 +52,6 @@ public class ResponseAcceptationTest {
         Set<String> response = validate(claimantResponse);
 
         assertThat(response).hasSize(1);
-    }
-
-
-    @Test
-    public void shouldBeInvalidWhenHaveCourtDeterminationButMissesClaimantPaymentIntention() {
-        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
-            .amountPaid(TEN)
-            .claimantPaymentIntention(null)
-            .courtDetermination(CourtDetermination.builder()
-                .courtDecision(bySetDate())
-                .courtPaymentIntention(SamplePaymentIntention.bySetDate())
-                .disposableIncome(TEN)
-                .decisionType(CLAIMANT)
-                .build())
-            .formaliseOption(CCJ)
-            .build();
-
-        Set<String> response = validate(claimantResponse);
-
-        assertThat(response).hasSize(1)
-            .containsOnly("claimantPaymentIntention : is mandatory when courtDetermination is present");
     }
 
     @Test
