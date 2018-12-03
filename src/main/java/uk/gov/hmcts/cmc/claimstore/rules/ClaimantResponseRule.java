@@ -66,7 +66,7 @@ public class ClaimantResponseRule {
         boolean isBothPresent = (claimantPaymentIntention.isPresent() || courtDetermination.isPresent())
             && (claimantPaymentIntention.isPresent() && courtDetermination.isPresent());
         if (!isBothEmpty && !isBothPresent) {
-                throw new IllegalStateException(
+            throw new IllegalStateException(
                 "Court determination should be present when "
                 + "claimant payment intention is present or vice versa"
             );
