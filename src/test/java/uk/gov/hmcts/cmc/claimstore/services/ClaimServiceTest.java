@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
@@ -91,6 +92,8 @@ public class ClaimServiceTest {
     @Mock
     private EventProducer eventProducer;
     @Mock
+    private CCDEventProducer ccdEventProducer;
+    @Mock
     private AppInsights appInsights;
     @Mock
     private CCDCaseDataToClaim ccdCaseDataToClaim;
@@ -110,7 +113,8 @@ public class ClaimServiceTest {
             eventProducer,
             appInsights,
             ccdCaseDataToClaim,
-            new PaidInFullRule());
+            new PaidInFullRule(),
+            ccdEventProducer);
     }
 
     @Test
