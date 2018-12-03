@@ -74,14 +74,19 @@ public class CountyCourtJudgmentService {
 
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
-        authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
+        authorisationService.assertIsParticipantOnClaim(claim, userDetails.getId());
         countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgement(claim);
 
         claimService.saveReDetermination(authorisation, claim, redetermination, userDetails.getId());
 
         Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
 
-        eventProducer.createRedeterminationEvent(claimWithReDetermination, authorisation, userDetails.getFullName());
+        eventProducer.createRedeterminationEvent(
+            claimWithReDetermination,
+            authorisation,
+            userDetails.getFullName(),
+            redetermination.getPartyType()
+        );
 
         return claimWithReDetermination;
 

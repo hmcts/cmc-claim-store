@@ -58,6 +58,16 @@ public class CCJNotificationService {
         );
     }
 
+    public void notifyClaimantForRedeterminationRequest(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        sendNotificationEmail(
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getRedeterminationEmailToClaimant(),
+            parameters,
+            NotificationReferenceBuilder.RedeterminationRequested.referenceForClaimant(claim.getReferenceNumber())
+        );
+    }
+
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendNotificationEmail(
         String targetEmail,
@@ -73,6 +83,7 @@ public class CCJNotificationService {
     }
 
     @Recover
+    @SuppressWarnings("unused")
     public void logNotificationFailure(
         NotificationException exception,
         String targetEmail,
@@ -89,14 +100,12 @@ public class CCJNotificationService {
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
-
-        HashMap<String, String> parameters = new HashMap<>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         parameters.put("ccjRequestedDate", Formatting.formatDate(claim.getCountyCourtJudgmentRequestedAt()));
-
         return parameters;
     }
 }
