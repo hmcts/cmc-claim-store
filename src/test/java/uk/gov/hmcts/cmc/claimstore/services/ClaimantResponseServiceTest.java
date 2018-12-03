@@ -228,6 +228,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(formaliseResponseAcceptanceService, never())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }
