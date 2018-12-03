@@ -94,8 +94,7 @@ public class ClaimantResponseService {
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
-        if (ACCEPTATION == claimantResponse.getType()
-            && !ResponseUtils.isResponseStatesPaid(response)) {
+        if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
         }
     }
@@ -108,5 +107,11 @@ public class ClaimantResponseService {
         } else {
             throw new IllegalStateException("Unknown response type");
         }
+    }
+
+    private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
+        return ACCEPTATION == claimantResponse.getType()
+            && !ResponseUtils.isResponseStatesPaid(response)
+            && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
     }
 }
