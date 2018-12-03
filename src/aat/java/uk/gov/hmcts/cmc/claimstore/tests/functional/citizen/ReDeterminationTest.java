@@ -67,7 +67,7 @@ public class ReDeterminationTest extends BaseTest {
             claim.getExternalId(),
             claimant
         ).then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @Test

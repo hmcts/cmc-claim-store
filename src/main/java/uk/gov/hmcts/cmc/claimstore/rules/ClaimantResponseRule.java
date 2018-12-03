@@ -21,6 +21,7 @@ import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 
 @Service
 public class ClaimantResponseRule {
+
     public void isValid(Claim claim) {
         if (!isDefendantCompanyOrOrganisation(claim)) {
             ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
@@ -61,8 +62,11 @@ public class ClaimantResponseRule {
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
 
-        if (claimantPaymentIntention.isPresent() ^ courtDetermination.isPresent()) {
-            throw new IllegalStateException(
+        boolean isBothEmpty = !claimantPaymentIntention.isPresent() && !courtDetermination.isPresent();
+        boolean isBothPresent = (claimantPaymentIntention.isPresent() || courtDetermination.isPresent())
+            && (claimantPaymentIntention.isPresent() && courtDetermination.isPresent());
+        if (!isBothEmpty && !isBothPresent) {
+                throw new IllegalStateException(
                 "Court determination should be present when "
                 + "claimant payment intention is present or vice versa"
             );
