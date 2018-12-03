@@ -70,6 +70,10 @@ public class EventProducer {
         publisher.publishEvent(new SettlementAgreementRejectedEvent(claim));
     }
 
+    public void createSettlementAgreementCountersignedEvent(Claim claim) {
+        publisher.publishEvent(new SettlementAgreementRejectedEvent(claim));
+    }
+
     public void createAgreementCountersignedEvent(Claim claim, MadeBy party) {
         publisher.publishEvent(new AgreementCountersignedEvent(claim, party));
     }
