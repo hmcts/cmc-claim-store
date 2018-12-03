@@ -97,8 +97,7 @@ public class ClaimantResponseService {
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
             if (responseAcceptation.getFormaliseOption().isPresent() && !ResponseUtils.isResponseStatesPaid(response)) {
-                formaliseResponseAcceptanceService
-                    .formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+                formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, authorization);
             }
         }
     }

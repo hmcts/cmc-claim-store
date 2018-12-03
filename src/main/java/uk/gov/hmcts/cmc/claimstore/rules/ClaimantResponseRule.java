@@ -23,7 +23,7 @@ public class ClaimantResponseRule {
             ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
             if (claimantResponse.getType() == ClaimantResponseType.ACCEPTATION) {
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation)claimantResponse;
-                if (!responseAcceptation.getFormaliseOption().isPresent()){
+                if (!responseAcceptation.getFormaliseOption().isPresent()) {
                     throw new IllegalStateException("Formalise option can not be null");
                 }
                 checkCourtDeterminationAndPaymentIntention(responseAcceptation);
@@ -56,10 +56,11 @@ public class ClaimantResponseRule {
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
 
-        if (claimantPaymentIntention.isPresent() && !courtDetermination.isPresent()
-            || (courtDetermination.isPresent() && !claimantPaymentIntention.isPresent())) {
-            throw new IllegalStateException("Court determination should be present when "
-                + "claimant payment intention is present or vice versa");
+        if (claimantPaymentIntention.isPresent() ^ courtDetermination.isPresent()) {
+            throw new IllegalStateException(
+                "Court determination should be present when "
+                + "claimant payment intention is present or vice versa"
+            );
         }
     }
 
