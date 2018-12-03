@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;

@@ -82,13 +82,14 @@ public class ClaimantResponseServiceTest {
     @Test
     public void saveResponseRejection() {
 
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
             .build();
-
-        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
@@ -109,16 +110,17 @@ public class ClaimantResponseServiceTest {
     @Test
     public void saveResponseAcceptation() {
 
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.FullAdmission.validDefaults())
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .build();
-
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
             .buildAcceptationIssueCCJWithDefendantPaymentIntention();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
+            .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
@@ -139,17 +141,19 @@ public class ClaimantResponseServiceTest {
 
     @Test
     public void saveResponseAcceptationShouldSucceedWhenStatesPaidWithNoFormalisation() {
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build())
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .build();
 
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
             .withFormaliseOption(null)
             .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
@@ -173,13 +177,14 @@ public class ClaimantResponseServiceTest {
         final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
         final LocalDate dqDeadline = respondedAt.plusDays(19).toLocalDate();
 
+        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
         final Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.PartAdmission.builder().build())
             .withRespondedAt(respondedAt)
+            .withClaimantResponse(claimantResponse)
             .build();
-
-        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
