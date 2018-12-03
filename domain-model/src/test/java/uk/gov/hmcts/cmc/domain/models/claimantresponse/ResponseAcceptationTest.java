@@ -51,20 +51,6 @@ public class ResponseAcceptationTest {
         assertThat(response).hasSize(1);
     }
 
-    @Test
-    public void shouldBeInvalidWhenMissingCourtDetermination() {
-        ClaimantResponse claimantResponse = ResponseAcceptation.builder()
-            .amountPaid(TEN)
-            .claimantPaymentIntention(bySetDate())
-            .courtDetermination(null)
-            .formaliseOption(CCJ)
-            .build();
-
-        Set<String> response = validate(claimantResponse);
-
-        assertThat(response).hasSize(1)
-            .containsOnly("courtDetermination : is mandatory when claimantPaymentIntention is present");
-    }
 
     @Test
     public void shouldBeInvalidWhenHaveCourtDeterminationButMissesClaimantPaymentIntention() {
