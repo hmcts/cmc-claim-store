@@ -26,11 +26,10 @@ public class ResponseAcceptationMapper implements Mapper<CCDResponseAcceptation,
     public CCDResponseAcceptation to(ResponseAcceptation responseAcceptation) {
         CCDResponseAcceptation.CCDResponseAcceptationBuilder builder = CCDResponseAcceptation.builder();
 
-        if(responseAcceptation.getFormaliseOption().isPresent()) {
-            builder.formaliseOption(
-                CCDFormaliseOption.valueOf(responseAcceptation.getFormaliseOption().get().name())
-            );
-        }
+        responseAcceptation.getFormaliseOption()
+            .map(FormaliseOption::name)
+            .map(CCDFormaliseOption::valueOf)
+            .ifPresent(builder::formaliseOption);
 
         responseAcceptation.getAmountPaid().ifPresent(builder::amountPaid);
 

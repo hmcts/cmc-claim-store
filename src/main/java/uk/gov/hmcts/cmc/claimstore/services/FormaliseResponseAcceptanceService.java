@@ -49,10 +49,7 @@ public class FormaliseResponseAcceptanceService {
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
-        FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption()
-            .orElseThrow(IllegalStateException::new);
-
-        switch (formaliseOption) {
+        switch (responseAcceptation.getFormaliseOption().orElseThrow(IllegalStateException::new)) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;

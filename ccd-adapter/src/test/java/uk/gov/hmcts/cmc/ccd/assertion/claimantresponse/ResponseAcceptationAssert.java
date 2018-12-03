@@ -16,7 +16,10 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
     public ResponseAcceptationAssert isEqualTo(CCDResponseAcceptation ccdResponseAcceptation) {
         isNotNull();
 
-        if (!Objects.equals(actual.getFormaliseOption().get(), ccdResponseAcceptation.getFormaliseOption().name())) {
+        if (!Objects.equals(
+            actual.getFormaliseOption().orElseThrow(IllegalArgumentException::new).name(),
+            ccdResponseAcceptation.getFormaliseOption().name()
+        )) {
             failWithMessage("Expected ResponseAcceptation.formaliseOption to be <%s> but was <%s>",
                 ccdResponseAcceptation.getFormaliseOption(), actual.getFormaliseOption());
         }

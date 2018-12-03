@@ -27,31 +27,38 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocum
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=false"
+        "document_management.url=http://localhost:8085",
+        "feature_toggles.ccd_async_enabled=false",
+        "feature_toggles.ccd_enabled=false"
     }
 )
 public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldUploadSealedCopyOfNonRepresentedClaimIntoDocumentManagementStore() throws Exception {
-        assertSealedClaimIsUploadedIntoDocumentManagementStore(SampleClaimData.submittedByClaimant());
+        assertSealedClaimIsUploadedIntoDocumentManagementStore(SampleClaimData.submittedByClaimant(),
+            AUTHORISATION_TOKEN);
     }
 
     @Test
     public void shouldUploadSealedCopyOfRepresentedClaimIntoDocumentManagementStore() throws Exception {
-        assertSealedClaimIsUploadedIntoDocumentManagementStore(SampleClaimData.submittedByLegalRepresentative());
+        assertSealedClaimIsUploadedIntoDocumentManagementStore(SampleClaimData.submittedByLegalRepresentative(),
+            SOLICITOR_AUTHORISATION_TOKEN);
     }
 
-    private void assertSealedClaimIsUploadedIntoDocumentManagementStore(ClaimData claimData) throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+    private void assertSealedClaimIsUploadedIntoDocumentManagementStore(
+        ClaimData claimData,
+        String authorization
+    ) throws Exception {
+        given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
-        MvcResult result = makeIssueClaimRequest(claimData)
+        MvcResult result = makeIssueClaimRequest(claimData, authorization)
             .andExpect(status().isOk())
             .andReturn();
 
         verify(documentUploadClient).upload(
-            eq(AUTHORISATION_TOKEN),
+            eq(authorization),
             any(),
             any(),
             eq(
@@ -69,19 +76,19 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldLinkSealedCopyOfNonRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByClaimant());
+        assertSealedClaimIsLinked(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN);
     }
 
     @Test
     public void shouldLinkSealedCopyOfRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByLegalRepresentative());
+        assertSealedClaimIsLinked(SampleClaimData.submittedByLegalRepresentative(), SOLICITOR_AUTHORISATION_TOKEN);
     }
 
-    private void assertSealedClaimIsLinked(ClaimData claimData) throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+    private void assertSealedClaimIsLinked(ClaimData claimData, String authorization) throws Exception {
+        given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
-        MvcResult result = makeIssueClaimRequest(claimData)
+        MvcResult result = makeIssueClaimRequest(claimData, authorization)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -94,7 +101,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
-        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build())
+        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build(), AUTHORISATION_TOKEN)
             .andExpect(status().isInternalServerError());
 
         verify(emailService, never()).sendEmail(anyString(), any());
