@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
@@ -87,7 +88,8 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -105,7 +107,8 @@ public class CountyCourtJudgmentServiceTest {
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED), eq(claim.getReferenceNumber()));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
