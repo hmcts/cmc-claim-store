@@ -49,6 +49,10 @@ public class ResponseAcceptation extends ClaimantResponse {
         return Optional.ofNullable(claimantPaymentIntention);
     }
 
+    public Optional<FormaliseOption> getFormaliseOption() {
+        return Optional.ofNullable(formaliseOption);
+    }
+
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
