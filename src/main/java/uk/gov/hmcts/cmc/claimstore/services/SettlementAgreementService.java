@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REJECTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 
 @Service
 @Transactional(transactionManager = "transactionManager")
@@ -57,7 +58,7 @@ public class SettlementAgreementService {
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createSettlementAgreementRejectedEvent(updated);
-        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REJECTED, updated.getReferenceNumber());
+        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REJECTED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
     }
 
