@@ -125,11 +125,12 @@ public class MixMapperTest {
         String json = processor.toJson(amountBreakDown);
         System.out.println(json);
 
-        AmountBreakDown output = processor.fromJson(json, new com.fasterxml.jackson.core.type.TypeReference<AmountBreakDown>() {
-        });
+        AmountBreakDown output = processor.fromJson(json, AmountBreakDown.class);
         String outputJson = processor.toJson(output);
+        System.out.println(amountBreakDown.toString());
+        System.out.println(output.toString());
 
-//        assertThat(output,  CoreMatchers.is(amountBreakDown));
+        assertThat(output,  CoreMatchers.is(amountBreakDown));
         assertThat(json, CoreMatchers.equalTo(outputJson));
     }
 

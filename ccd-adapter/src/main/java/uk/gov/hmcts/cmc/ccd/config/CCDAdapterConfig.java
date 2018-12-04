@@ -11,6 +11,8 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimDataMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyDetailsMixIn;
@@ -36,6 +38,7 @@ import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -53,16 +56,18 @@ import java.util.List;
 
 
 @Configuration
-@ComponentScan(basePackages = {"uk.gov.hmcts.cmc.ccd"})
+@ComponentScan(basePackages = {"uk.gov.hmcts.cmc"})
 public class CCDAdapterConfig {
     @Bean
     public ObjectMapper ccdObjectMapper() {
         ListItemDeserializer listItemDeserializer = new ListItemDeserializer();
+        ListItemSerializer listItemSerializer = new ListItemSerializer(List.class);
         return new ObjectMapper()
             .registerModule(new Jdk8Module())
             .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
             .registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .registerModule(new SimpleModule().addDeserializer(List.class, listItemDeserializer))
+            .registerModule(new SimpleModule().addSerializer(List.class, listItemSerializer))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .addMixIn(Individual.class, IndividualMixIn.class)
@@ -79,6 +84,7 @@ public class CCDAdapterConfig {
             .addMixIn(Evidence.class, EvidenceMixIn.class)
             .addMixIn(Timeline.class, TimelineMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
+            .addMixIn(AmountBreakDown.class, AmountBreakDownMixIn.class)
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
             .addMixIn(ClaimData.class, ClaimDataMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
