@@ -171,8 +171,5 @@ public class MixMapperTest {
         String outputJson = processor.toJson(output);
 
         assertThat(json, CoreMatchers.equalTo(outputJson));
-
     }
-
-
 }

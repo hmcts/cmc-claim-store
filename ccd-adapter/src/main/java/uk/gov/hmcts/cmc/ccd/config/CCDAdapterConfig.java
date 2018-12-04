@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountRangeMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimDataMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyDetailsMixIn;
@@ -44,6 +45,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -92,6 +94,7 @@ public class CCDAdapterConfig {
             .addMixIn(Amount.class, AmountMixIn.class)
             .addMixIn(Payment.class, PaymentMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
+            .addMixIn(AmountRange.class, AmountRangeMixIn.class)
             .addMixIn(AmountBreakDown.class, AmountBreakDownMixIn.class)
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
             .addMixIn(PersonalInjury.class, PersonalInjuryMixIn.class)
