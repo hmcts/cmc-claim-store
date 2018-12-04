@@ -12,33 +12,24 @@ import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class ClaimDataMixIn {
+public abstract class PaymentMixIn {
 
-    abstract List<Party> getClaimants();
+    @JsonProperty("paymentAmount")
+    abstract BigDecimal getAmount();
 
-    abstract List<TheirDetails> getDefendants();
+    @JsonProperty("paymentId")
+    abstract String getId();
 
-    @JsonUnwrapped
-    abstract Interest getInterest();
+    @JsonProperty("paymentReference")
+    abstract String getReference();
 
-    @JsonUnwrapped
-    abstract Payment getPayment();
+    @JsonProperty("paymentStatus")
+    abstract String getStatus();
 
-    @JsonUnwrapped
-    abstract Optional<StatementOfTruth> getStatementOfTruth();
-
-    @JsonUnwrapped
-    abstract Optional<HousingDisrepair> getHousingDisrepair();
-
-    @JsonUnwrapped
-    abstract Optional<PersonalInjury> getPersonalInjury();
-
-//    @JsonUnwrapped
-//    abstract Optional<Timeline> getTimeline();
-//
-//    @JsonUnwrapped
-//    abstract Optional<Evidence> getEvidence();
+    @JsonProperty("paymentDateCreated")
+    abstract String getDateCreated();
 }

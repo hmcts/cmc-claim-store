@@ -7,6 +7,5 @@ import java.util.List;
 
 public abstract class TimelineMixIn extends PartyMixIn {
 
-    @JsonProperty("timeline")
     List<TimelineEvent> events;
 }

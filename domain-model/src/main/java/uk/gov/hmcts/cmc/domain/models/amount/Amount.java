@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.amount;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+    import com.fasterxml.jackson.annotation.JsonSubTypes;
+    import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes(
@@ -12,5 +12,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     }
 )
 public interface Amount {
-
 }

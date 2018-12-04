@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimDataMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyDetailsMixIn;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.InterestDateMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.InterestMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.OrganisationDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.OrganisationMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.PaymentMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.PersonalInjuryMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.RepresentativeMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderDetailsMixIn;
@@ -38,7 +40,9 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
+import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
@@ -85,6 +89,8 @@ public class CCDAdapterConfig {
             .addMixIn(InterestDate.class, InterestDateMixIn.class)
             .addMixIn(Evidence.class, EvidenceMixIn.class)
             .addMixIn(Timeline.class, TimelineMixIn.class)
+            .addMixIn(Amount.class, AmountMixIn.class)
+            .addMixIn(Payment.class, PaymentMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
             .addMixIn(AmountBreakDown.class, AmountBreakDownMixIn.class)
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
