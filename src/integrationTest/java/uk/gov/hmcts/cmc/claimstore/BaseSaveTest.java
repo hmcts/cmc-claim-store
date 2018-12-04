@@ -20,6 +20,12 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, userDetails));
 
+        UserDetails solicitorDetails = SampleUserDetails.builder().withRoles("solicitor").build();
+        given(userService.getUserDetails(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(solicitorDetails);
+        given(userService.getUser(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(new User(SOLICITOR_AUTHORISATION_TOKEN, solicitorDetails));
+
         given(userService.generatePin("John Smith", AUTHORISATION_TOKEN))
             .willReturn(new GeneratePinResponse("my-pin", "2"));
 
@@ -29,5 +35,8 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
         given(userService.authenticateAnonymousCaseWorker())
             .willReturn(new User(ANONYMOUS_BEARER_TOKEN,
                 SampleUserDetails.builder().withUserId(ANONYMOUS_USER_ID).build()));
+
+        given(referenceNumberRepository.getReferenceNumberForLegal()).willReturn("000LR001");
+        given(referenceNumberRepository.getReferenceNumberForCitizen()).willReturn("000MC001");
     }
 }

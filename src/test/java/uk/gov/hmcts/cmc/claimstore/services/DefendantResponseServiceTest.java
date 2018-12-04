@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -25,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
@@ -51,6 +53,9 @@ public class DefendantResponseServiceTest {
     private EventProducer eventProducer;
 
     @Mock
+    private CCDEventProducer ccdEventProducer;
+
+    @Mock
     private UserService userService;
 
     @Mock
@@ -65,8 +70,8 @@ public class DefendantResponseServiceTest {
             eventProducer,
             claimService,
             userService,
-            appInsights
-        );
+            appInsights,
+            ccdEventProducer);
     }
 
     @Test
@@ -88,7 +93,7 @@ public class DefendantResponseServiceTest {
             .createDefendantResponseEvent(eq(claim));
 
         verify(appInsights, once())
-            .trackEvent(any(AppInsightsEvent.class), eq(claim.getReferenceNumber()));
+            .trackEvent(any(AppInsightsEvent.class), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = DefendantLinkingException.class)

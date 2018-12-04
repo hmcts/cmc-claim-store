@@ -42,7 +42,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "core_case_data.api.url=false",
+        "feature_toggles.ccd_enabled=false",
         "feature_toggles.emailToStaff=false"
     }
 )
@@ -76,7 +76,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationsForCitizenClaimIssuedEvent() throws Exception {
-        makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 

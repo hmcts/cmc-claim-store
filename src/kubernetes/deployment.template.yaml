@@ -88,6 +88,10 @@ spec:
               value: 'true'
             - name: FEATURE_TOGGLES_EMAILTOSTAFF
               value: 'true'
+            - name: FEATURE_TOGGLES_CCD_ENABLED
+              value: 'false'
+            - name: FEATURE_TOGGLES_CCD_ASYNC_ENABLED
+              value: 'false'
             - name: ROOT_APPENDER
               value: 'CMC'
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
