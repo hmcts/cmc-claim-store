@@ -7,6 +7,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_REJECTED;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -53,6 +55,9 @@ public class ClaimantResponseServiceTest {
     private EventProducer eventProducer;
 
     @Mock
+    private CCDEventProducer ccdEventProducer;
+
+    @Mock
     private AppInsights appInsights;
 
     @Mock
@@ -70,8 +75,8 @@ public class ClaimantResponseServiceTest {
             new ClaimantResponseRule(),
             eventProducer,
             formaliseResponseAcceptanceService,
-            directionsQuestionnaireDeadlineCalculator
-        );
+            directionsQuestionnaireDeadlineCalculator,
+            ccdEventProducer);
     }
 
     @Test
@@ -95,7 +100,8 @@ public class ClaimantResponseServiceTest {
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED), eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
     }
@@ -126,7 +132,8 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
     }
 
@@ -157,7 +164,8 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(formaliseResponseAcceptanceService, never())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -187,6 +195,40 @@ public class ClaimantResponseServiceTest {
             .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class));
-        verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void saveResponseAcceptationShouldSucceedWhenPartAdmitPayImmediatelyWithNoFormalisation() {
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(
+                SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately()
+            )
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .build();
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .withFormaliseOption(null)
+            .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, eventProducer, appInsights);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        inOrder.verify(formaliseResponseAcceptanceService, never())
+            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }
