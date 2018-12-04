@@ -142,7 +142,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.1'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.3'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -166,7 +166,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.2.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
@@ -189,7 +189,7 @@ dependencies {
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.1'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
 
 }

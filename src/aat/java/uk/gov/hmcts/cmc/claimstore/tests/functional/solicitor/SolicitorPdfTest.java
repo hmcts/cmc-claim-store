@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
@@ -46,14 +45,6 @@ public class SolicitorPdfTest extends BasePdfTest {
     @Override
     protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
         return testData::submittedBySolicitorBuilder;
-    }
-
-    private static String getFullAddressString(Address address) {
-        return address.getLine1() + " \n"
-            + address.getLine2() + " \n"
-            // line 3 is not used
-            + address.getCity() + " \n"
-            + address.getPostcode();
     }
 
 }

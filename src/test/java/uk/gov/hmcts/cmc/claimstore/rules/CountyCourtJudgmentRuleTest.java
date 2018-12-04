@@ -9,6 +9,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -36,7 +37,6 @@ public class CountyCourtJudgmentRuleTest {
     private ClaimDeadlineService claimDeadlineService = new ClaimDeadlineService();
 
     private CountyCourtJudgmentRule countyCourtJudgmentRule;
-    private boolean issue = false;
 
     @Before
     public void beforeEachTest() {
@@ -47,27 +47,28 @@ public class CountyCourtJudgmentRuleTest {
     public void shouldNotThrowExceptionWhenDeadlineWasYesterdayAndCCJCanBeRequested() {
         Claim claim = SampleClaim.builder().withResponseDeadline(LocalDate.now().minusDays(1)).build();
         assertThatCode(() ->
-            countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue)
+            countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT)
         ).doesNotThrowAnyException();
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void shouldThrowExceptionWhenUserCannotRequestCountyCourtJudgmentBecauseDeadlineIsTomorrow() {
         Claim claim = SampleClaim.getWithResponseDeadline(LocalDate.now().plusDays(1));
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT);
     }
 
     @Test(expected = ForbiddenActionException.class)
     public void shouldThrowExceptionWhenClaimWasResponded() {
         Claim respondedClaim = SampleClaim.builder().withRespondedAt(now().minusDays(2)).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(respondedClaim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(respondedClaim,
+            CountyCourtJudgmentType.DEFAULT);
     }
 
     @Test
     public void shouldCallClaimDeadlineServicePassingCurrentUKTimeToCheckIfJudgementCanBeRequested() {
         LocalDate deadlineDay = LocalDate.now().minusMonths(2);
         Claim claim = SampleClaim.builder().withResponseDeadline(deadlineDay).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT);
 
         verify(claimDeadlineService).isPastDeadline(currentDateTime.capture(), eq(deadlineDay));
         assertThat(currentDateTime.getValue()).isCloseTo(nowInLocalZone(), within(10, ChronoUnit.SECONDS));
@@ -82,7 +83,7 @@ public class CountyCourtJudgmentRuleTest {
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, issue);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.DEFAULT);
     }
 
     @Test(expected = ForbiddenActionException.class)
@@ -95,6 +96,6 @@ public class CountyCourtJudgmentRuleTest {
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, true);
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
     }
 }

@@ -23,11 +23,13 @@ public class CCJContent {
     private final RepaymentPlanContent repaymentPlan;
     private final String signerName;
     private final String signerRole;
+    private final String responseType;
 
     public CCJContent(Map<String, Object> claim,
                       CountyCourtJudgment countyCourtJudgment,
                       LocalDateTime countyCourtJudgmentRequestedAt,
-                      AmountContent amount) {
+                      AmountContent amount,
+                      String responseType) {
         requireNonNull(claim);
         requireNonNull(countyCourtJudgment);
         requireNonNull(countyCourtJudgmentRequestedAt);
@@ -47,6 +49,7 @@ public class CCJContent {
         Optional<StatementOfTruth> optionalStatementOfTruth = countyCourtJudgment.getStatementOfTruth();
         this.signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         this.signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
+        this.responseType = responseType;
     }
 
     public Map<String, Object> getClaim() {
@@ -79,5 +82,9 @@ public class CCJContent {
 
     public String getSignerRole() {
         return signerRole;
+    }
+
+    public String getResponseType() {
+        return responseType;
     }
 }
