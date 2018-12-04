@@ -13,6 +13,6 @@ public abstract class InterestBreakDownMixIn {
     @JsonProperty("interestBreakDownAmount")
     abstract BigDecimal getTotalAmount();
 
-    @JsonProperty("interestBreakDownCalc")
+    @JsonProperty("interestBreakDownExplanation")
     abstract String getExplanation();
 }
