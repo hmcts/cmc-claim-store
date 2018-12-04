@@ -22,10 +22,10 @@ public class SampleTheirDetails {
     private String contactPerson = "Arnold Schwarzenegger";
     private String businessName = "Sole Trading & Sons";
     private String title = "Dr.";
-    private Representative representative;
-    private String companiesHouseNumber;
-    private Address serviceAddress;
-    private LocalDate dateOfBirth;
+    private Representative representative = SampleRepresentative.builder().build();
+    private String companiesHouseNumber = "12345";
+    private Address serviceAddress = SampleAddress.builder().build();
+    private LocalDate dateOfBirth = LocalDate.of(1970, 10,10);
 
     public static SampleTheirDetails builder() {
         return new SampleTheirDetails();
