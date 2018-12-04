@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.math.BigDecimal;
@@ -19,10 +20,10 @@ import java.util.Optional;
 
 public abstract class ClaimDataMixIn {
 
-    @JsonProperty("listOfClaimants")
+    @JsonProperty("claimants")
     abstract List<Party> getClaimants();
 
-    @JsonProperty("listOfDefendants")
+    @JsonProperty("defendants")
     abstract List<TheirDetails> getDefendants();
 
     @JsonUnwrapped
@@ -33,6 +34,9 @@ public abstract class ClaimDataMixIn {
 
     @JsonUnwrapped
     abstract Optional<StatementOfTruth> getStatementOfTruth();
+
+    @JsonUnwrapped
+    abstract Optional<HousingDisrepair> getHousingDisrepair();
 
     @JsonUnwrapped
     abstract Optional<Timeline> getTimeline();

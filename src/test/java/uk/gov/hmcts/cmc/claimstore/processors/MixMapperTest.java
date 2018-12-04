@@ -1,18 +1,20 @@
 package uk.gov.hmcts.cmc.claimstore.processors;
 
+import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static org.junit.Assert.assertThat;
 
 public class MixMapperTest {
 
@@ -39,7 +41,15 @@ public class MixMapperTest {
         //given
         Party company = SampleParty.builder().company();
 
-        System.out.println(processor.toJson(company));
+        String json = processor.toJson(company);
+        System.out.println(json);
+
+        Company output = processor.fromJson(json, Company.class);
+        String outputJson = processor.toJson(output);
+        assertThat(json,  CoreMatchers.equalTo(outputJson));
+
+//        assertThat(output,  CoreMatchers.is(company));
+
     }
 
     @Test
@@ -50,7 +60,11 @@ public class MixMapperTest {
         String json = processor.toJson(organisation);
         System.out.println(json);
 
-//        assertThat(processor.fromJson(json, Organisation.class)).isEqualTo(organisation);
+        Organisation output = processor.fromJson(json, Organisation.class);
+        String outputJson = processor.toJson(output);
+
+        assertThat(json,  CoreMatchers.equalTo(outputJson));
+//        assertThat(output,  CoreMatchers.is(organisation));
     }
 
     @Test
