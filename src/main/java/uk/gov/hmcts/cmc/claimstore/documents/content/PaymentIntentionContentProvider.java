@@ -24,8 +24,8 @@ public class PaymentIntentionContentProvider {
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
             .put(source + "paymentOption", paymentOption.getDescription())
-            .put(source + "whenWillTheyFinishPaying", createWhenTheyPay(paymentOption, paymentDate, paymentAmount, repaymentPlan)
-            );
+            .put(source + "whenWillTheyPay", createWhenTheyPay(paymentOption, paymentDate,
+                                                                paymentAmount, repaymentPlan));
 
         Optional.ofNullable(repaymentPlan).ifPresent(plan ->
             contentBuilder.put(source + "repaymentPlan", create(paymentOption, plan, plan.getFirstPaymentDate()))
