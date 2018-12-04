@@ -67,7 +67,7 @@ public class ReDeterminationTest extends BaseTest {
             claim.getExternalId(),
             claimant
         ).then()
-            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

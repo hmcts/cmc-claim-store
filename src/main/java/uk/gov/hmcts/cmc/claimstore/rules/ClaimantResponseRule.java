@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -30,7 +31,7 @@ public class ClaimantResponseRule {
             ) {
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
                 if (!responseAcceptation.getFormaliseOption().isPresent()) {
-                    throw new IllegalStateException("Formalise option can not be null");
+                    throw new BadRequestException("Formalise option can not be null");
                 }
                 checkCourtDeterminationAndPaymentIntention(responseAcceptation);
             }
@@ -58,7 +59,7 @@ public class ClaimantResponseRule {
         }
     }
 
-    private void checkCourtDeterminationAndPaymentIntention(ResponseAcceptation responseAcceptation) {
+    private void checkCourtDeterminationAndPaymentIntention(ResponseAcceptation responseAcceptation) throws BadRequestException {
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
 
@@ -66,7 +67,7 @@ public class ClaimantResponseRule {
         boolean isBothPresent = (claimantPaymentIntention.isPresent() || courtDetermination.isPresent())
             && (claimantPaymentIntention.isPresent() && courtDetermination.isPresent());
         if (!isBothEmpty && !isBothPresent) {
-            throw new IllegalStateException(
+            throw new BadRequestException(
                 "Court determination should be present when "
                 + "claimant payment intention is present or vice versa"
             );
