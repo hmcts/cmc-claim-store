@@ -93,7 +93,7 @@ public class ClaimantResponseTest extends BaseTest {
             claim.getExternalId(),
             claimant
         ).then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 
 @Service
 public class FormaliseResponseAcceptanceService {
@@ -55,10 +56,19 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                eventProducer.createInterlocutoryJudgmentEvent(claim);
+                createEventForReferToJudge(claim);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
+        }
+    }
+
+    private void createEventForReferToJudge(Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        if (isCompanyOrOrganisation(response.getDefendant())) {
+            eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
+        } else {
+            eventProducer.createInterlocutoryJudgmentEvent(claim);
         }
     }
 
