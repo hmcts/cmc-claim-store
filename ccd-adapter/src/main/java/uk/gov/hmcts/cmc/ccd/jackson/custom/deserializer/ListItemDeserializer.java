@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.custom.deserializer;
+package uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -29,7 +29,7 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.StatementOfTruthMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.TimelineMixIn;
-import uk.gov.hmcts.cmc.custom.deserializer.ListItemDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
