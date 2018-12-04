@@ -59,7 +59,7 @@ public class ClaimantResponseRule {
         }
     }
 
-    private void checkCourtDeterminationAndPaymentIntention(ResponseAcceptation responseAcceptation) throws BadRequestException {
+    private void checkCourtDeterminationAndPaymentIntention(ResponseAcceptation responseAcceptation) {
         Optional<CourtDetermination> courtDetermination = responseAcceptation.getCourtDetermination();
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
 
