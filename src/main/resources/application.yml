@@ -125,6 +125,11 @@ feature_toggles:
 feign:
   httpclient:
     enabled: true
+  client:
+    config:
+      feignName:
+        connectTimeout: 10000
+        readTimeout: 10000
 
 claim-store:
   test-support:

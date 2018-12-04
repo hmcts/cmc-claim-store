@@ -10,11 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.sendletter.api.Document;
+import uk.gov.hmcts.reform.sendletter.api.Letter;
 
 import java.util.UUID;
 
@@ -48,10 +52,12 @@ public class BulkPrintRequestTest extends BaseSaveTest {
     public void shouldNotSendNotificationWhenEverythingIsOk() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        wireMockServer.stubFor(post(urlEqualTo("/letters"))
-            .willReturn(aResponse()
+        wireMockServer.stubFor(
+            post(urlEqualTo("/letters")).willReturn(
+                aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .withHeader(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .withBody("{ \"letter_id\":\"" + UUID.randomUUID().toString() + "\" }")
             )
         );

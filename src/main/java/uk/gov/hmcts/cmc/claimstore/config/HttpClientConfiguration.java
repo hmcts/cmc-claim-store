@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.config;
 
-import feign.Client;
-import feign.httpclient.ApacheHttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -12,11 +10,6 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class HttpClientConfiguration {
-
-    @Bean
-    public Client getFeignHttpClient() {
-        return new ApacheHttpClient(getHttpClient());
-    }
 
     @Bean
     public RestTemplate restTemplate() {
