@@ -15,12 +15,12 @@ public class ListItemDeserializer extends JsonDeserializer<List<JsonNode>> {
     @Override
     public List<JsonNode> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        ArrayList<JsonNode> retunList = new ArrayList<>();
+        ArrayList<JsonNode> returnList = new ArrayList<>();
         if (node.isArray()) {
             for (JsonNode childNode : node) {
-                retunList.add(childNode.get("value"));
+                returnList.add(childNode.get("value"));
             }
         }
-        return retunList;
+        return returnList;
     }
 }

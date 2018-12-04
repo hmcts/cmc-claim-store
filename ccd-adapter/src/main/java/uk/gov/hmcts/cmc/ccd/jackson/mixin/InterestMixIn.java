@@ -14,7 +14,7 @@ public abstract class InterestMixIn {
     @JsonProperty("interestType")
     abstract InterestType getType();
 
-    @JsonProperty("InterestRate")
+    @JsonProperty("interestRate")
     abstract BigDecimal getRate();
 
     @JsonUnwrapped
