@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.cmc.ccd.deserialize.ClaimDataMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.CompanyDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.CompanyMixIn;
+import uk.gov.hmcts.cmc.ccd.deserialize.EvidenceMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.IndividualDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.IndividualMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.InterestBreakDownMixIn;
@@ -23,11 +24,14 @@ import uk.gov.hmcts.cmc.ccd.deserialize.OrganisationMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.RepresentativeMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.SoleTraderDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.deserialize.SoleTraderMixIn;
+import uk.gov.hmcts.cmc.ccd.deserialize.TimelineMixIn;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
+import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
@@ -71,6 +75,8 @@ public class JacksonConfiguration {
             .addMixIn(Interest.class, InterestMixIn.class)
             .addMixIn(InterestBreakdown.class, InterestBreakDownMixIn.class)
             .addMixIn(InterestDate.class, InterestDateMixIn.class)
+            .addMixIn(Evidence.class, EvidenceMixIn.class)
+            .addMixIn(Timeline.class, TimelineMixIn.class)
             .addMixIn(ClaimData.class, ClaimDataMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class);
 
