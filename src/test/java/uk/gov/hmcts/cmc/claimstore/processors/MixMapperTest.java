@@ -3,8 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
-import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
+import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -19,13 +18,11 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
-import java.util.List;
-
 import static org.junit.Assert.assertThat;
 
 public class MixMapperTest {
 
-    private JsonMapper processor = new JsonMapper(new JacksonConfiguration().ccdObjectMapper());
+    private JsonMapper processor = new JsonMapper(new CCDAdapterConfig().ccdObjectMapper());
 
     @Test
     public void shouldProcessIndividualToCCDJson() throws JSONException {
@@ -53,7 +50,7 @@ public class MixMapperTest {
 
         Company output = processor.fromJson(json, Company.class);
         String outputJson = processor.toJson(output);
-        assertThat(json,  CoreMatchers.equalTo(outputJson));
+        assertThat(json, CoreMatchers.equalTo(outputJson));
 
 //        assertThat(output,  CoreMatchers.is(company));
 
@@ -70,7 +67,7 @@ public class MixMapperTest {
         Organisation output = processor.fromJson(json, Organisation.class);
         String outputJson = processor.toJson(output);
 
-        assertThat(json,  CoreMatchers.equalTo(outputJson));
+        assertThat(json, CoreMatchers.equalTo(outputJson));
 //        assertThat(output,  CoreMatchers.is(organisation));
     }
 
@@ -133,7 +130,7 @@ public class MixMapperTest {
         String outputJson = processor.toJson(output);
 
 //        assertThat(output,  CoreMatchers.is(amountBreakDown));
-        assertThat(json,  CoreMatchers.equalTo(outputJson));
+        assertThat(json, CoreMatchers.equalTo(outputJson));
     }
 
 
