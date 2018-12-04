@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain.offers;
 public enum CCDStatementType {
     OFFER("offer"),
     ACCEPTATION("acceptation"),
-    REJECTION("rejection"),
+    REJECTION("rejected"),
     COUNTERSIGNATURE("counter signature");
 
     private final String value;

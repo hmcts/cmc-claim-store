@@ -39,12 +39,20 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/ccjRequestSubmitted/subject.txt");
     }
 
-    public String getSettlementAgreementEmailBody() {
-        return readString("/staff/templates/email/settlementAgreement/body.txt");
+    public String getSettlementAgreementAcceptedEmailBody() {
+        return readString("/staff/templates/email/settlementAgreement/accepted/body.txt");
     }
 
-    public String getSettlementAgreementEmailSubject() {
-        return readString("/staff/templates/email/settlementAgreement/subject.txt");
+    public String getSettlementAgreementAcceptedEmailSubject() {
+        return readString("/staff/templates/email/settlementAgreement/accepted/subject.txt");
+    }
+
+    public String getSettlementAgreementRejectedEmailBody() {
+        return readString("/staff/templates/email/settlementAgreement/rejected/body.txt");
+    }
+
+    public String getSettlementAgreementRejectedEmailSubject() {
+        return readString("/staff/templates/email/settlementAgreement/rejected/subject.txt");
     }
 
     public String getBulkPrintEmailBody() {
