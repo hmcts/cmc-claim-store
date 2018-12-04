@@ -1,4 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.jackson.mixin;
 
-public abstract class IndividualDetailsMixIn extends IndividualMixIn {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDate;
+
+public abstract class IndividualDetailsMixIn extends TheirDetailsMixIn {
+    @JsonProperty("claimantProvidedDateOfBirth")
+    abstract LocalDate getDateOfBirth();
 }

@@ -114,7 +114,13 @@ public class MixMapperTest {
         String json = processor.toJson(claimData);
         System.out.println(json);
 
-//        assertThat(processor.fromJson(json, Organisation.class)).isEqualTo(organisation);
+        ClaimData output = processor.fromJson(json, ClaimData.class);
+        String outputJson = processor.toJson(output);
+        System.out.println(claimData.toString());
+        System.out.println(output.toString());
+
+        assertThat(output, CoreMatchers.is(claimData));
+        assertThat(json, CoreMatchers.equalTo(outputJson));
     }
 
     @Test
@@ -130,7 +136,7 @@ public class MixMapperTest {
         System.out.println(amountBreakDown.toString());
         System.out.println(output.toString());
 
-        assertThat(output,  CoreMatchers.is(amountBreakDown));
+        assertThat(output, CoreMatchers.is(amountBreakDown));
         assertThat(json, CoreMatchers.equalTo(outputJson));
     }
 
@@ -142,6 +148,12 @@ public class MixMapperTest {
 
         String json = processor.toJson(claim);
         System.out.println(json);
+
+        Claim output = processor.fromJson(json, Claim.class);
+        String outputJson = processor.toJson(output);
+
+        assertThat(output, CoreMatchers.is(claim));
+        assertThat(json, CoreMatchers.equalTo(outputJson));
 
     }
 

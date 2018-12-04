@@ -11,6 +11,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimDataMixIn;
@@ -26,12 +27,12 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.InterestDateMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.InterestMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.OrganisationDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.OrganisationMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.PersonalInjuryMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.RepresentativeMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.StatementOfTruthMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.TimelineMixIn;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -47,6 +48,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
+import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -86,6 +88,7 @@ public class CCDAdapterConfig {
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
             .addMixIn(AmountBreakDown.class, AmountBreakDownMixIn.class)
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
+            .addMixIn(PersonalInjury.class, PersonalInjuryMixIn.class)
             .addMixIn(ClaimData.class, ClaimDataMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class);
