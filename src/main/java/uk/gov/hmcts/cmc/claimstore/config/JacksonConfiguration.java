@@ -12,9 +12,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimDataMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.EvidenceMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.HousingDisrepairMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.IndividualDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.IndividualMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.InterestBreakDownMixIn;
@@ -25,7 +27,10 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.OrganisationMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.RepresentativeMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.StatementOfTruthMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.TimelineMixIn;
+import uk.gov.hmcts.cmc.custom.deserializer.ListItemDeserializer;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
@@ -38,6 +43,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
+import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -83,7 +89,9 @@ public class JacksonConfiguration {
             .addMixIn(Evidence.class, EvidenceMixIn.class)
             .addMixIn(Timeline.class, TimelineMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
+            .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
             .addMixIn(ClaimData.class, ClaimDataMixIn.class)
+            .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class);
 
     }

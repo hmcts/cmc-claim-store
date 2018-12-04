@@ -3,16 +3,23 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+
+import java.util.List;
 
 import static org.junit.Assert.assertThat;
 
@@ -111,6 +118,33 @@ public class MixMapperTest {
         System.out.println(json);
 
 //        assertThat(processor.fromJson(json, Organisation.class)).isEqualTo(organisation);
+    }
+
+    @Test
+    public void shouldProcessAmountBreakDownToCCDJson() throws JSONException {
+        //given
+        AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder().build();
+
+        String json = processor.toJson(amountBreakDown);
+        System.out.println(json);
+
+        AmountBreakDown output = processor.fromJson(json, new com.fasterxml.jackson.core.type.TypeReference<AmountBreakDown>() {
+        });
+        String outputJson = processor.toJson(output);
+
+//        assertThat(output,  CoreMatchers.is(amountBreakDown));
+        assertThat(json,  CoreMatchers.equalTo(outputJson));
+    }
+
+
+    @Test
+    public void shouldProcessClaimToCCDJson() throws JSONException {
+        //given
+        Claim claim = SampleClaim.builder().withResponse(null).build();
+
+        String json = processor.toJson(claim);
+        System.out.println(json);
+
     }
 
 
