@@ -66,7 +66,7 @@ public class ClaimantResponseService {
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
-
+        claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(response, updatedClaim, authorization);
         if (isRejectPartAdmitNoMediation(response, updatedClaim)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
@@ -95,7 +95,10 @@ public class ClaimantResponseService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
-            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+            if (responseAcceptation.getFormaliseOption().isPresent() && !ResponseUtils.isResponseStatesPaid(response)) {
+                formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, authorization);
+            }
         }
     }
 

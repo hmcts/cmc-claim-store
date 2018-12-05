@@ -30,7 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     properties = {
         "core_case_data.api.url=false",
         "feature_toggles.ccd_async_enabled=false",
-        "feature_toggles.ccd_enabled=false"
+        "feature_toggles.ccd_enabled=false",
+        "feature_toggles.reminderEmails=true"
     }
 )
 public class LinkDefendantToClaimTest extends BaseIntegrationTest {
