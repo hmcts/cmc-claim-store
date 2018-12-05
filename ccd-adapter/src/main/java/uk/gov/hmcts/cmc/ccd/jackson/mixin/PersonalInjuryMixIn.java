@@ -5,6 +5,6 @@ import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 public abstract class PersonalInjuryMixIn {
 
-    @JsonProperty("personalInjuryGeneralDamages")
+//    @JsonProperty("personalInjuryGeneralDamages")
     abstract DamagesExpectation getGeneralDamages();
 }

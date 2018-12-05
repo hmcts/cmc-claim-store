@@ -40,9 +40,9 @@ public abstract class ClaimDataMixIn {
     @JsonIgnore
     abstract UUID getExternalId();
 
-    @JsonUnwrapped
+    //    @JsonUnwrapped
     abstract Optional<Timeline> getTimeline();
 
-    @JsonUnwrapped
+    //    @JsonUnwrapped
     abstract Optional<Evidence> getEvidence();
 }

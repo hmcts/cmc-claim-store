@@ -4,7 +4,6 @@ import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -27,7 +26,6 @@ import static org.junit.Assert.assertThat;
 public class MixMapperTest {
 
     private JsonMapper processor = new JsonMapper(new CCDAdapterConfig().ccdObjectMapper());
-    private JsonMapper defaultProcessor = new JsonMapper(new JacksonConfiguration().objectMapper());
 
     @Test
     public void shouldProcessIndividualToCCDJson() throws JSONException {
@@ -140,7 +138,6 @@ public class MixMapperTest {
         ClaimData claimData = SampleClaimData.builder().build();
 
         String json = processor.toJson(claimData);
-        System.out.println(json);
 
         ClaimData output = processor.fromJson(json, ClaimData.class);
         String outputJson = processor.toJson(output);
@@ -167,15 +164,9 @@ public class MixMapperTest {
         Claim claim = SampleClaim.builder().withResponse(null).withFeatures(null).build();
 
         String json = processor.toJson(claim);
-        System.out.println(json);
 
         Claim output = processor.fromJson(json, Claim.class);
         String outputJson = processor.toJson(output);
-        System.out.println(outputJson);
-
-        String defaultOne = defaultProcessor.toJson(claim);
-        System.out.println(defaultOne);
-        System.out.println(defaultProcessor.fromJson(defaultOne, Claim.class));
 
         assertThat(json, CoreMatchers.equalTo(outputJson));
     }
