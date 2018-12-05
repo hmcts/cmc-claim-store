@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,7 +27,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "false")
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimRepository claimRepository;
@@ -111,15 +110,11 @@ public class DBCaseRepository implements CaseRepository {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     ) {
         final String externalId = claim.getExternalId();
-        LocalDateTime ccjIssuedDate = issue ? nowInUTC() : null;
 
-        claimRepository.saveCountyCourtJudgment(externalId,
-            jsonMapper.toJson(countyCourtJudgment), nowInUTC(), ccjIssuedDate
-        );
+        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment), nowInUTC());
     }
 
     @Override

@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 
 @Service
 public class FormaliseResponseAcceptanceService {
@@ -47,7 +48,7 @@ public class FormaliseResponseAcceptanceService {
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
-        switch (responseAcceptation.getFormaliseOption()) {
+        switch (responseAcceptation.getFormaliseOption().orElseThrow(IllegalStateException::new)) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;
@@ -55,10 +56,19 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                eventProducer.createInterlocutoryJudgmentEvent(claim);
+                createEventForReferToJudge(claim);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
+        }
+    }
+
+    private void createEventForReferToJudge(Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        if (isCompanyOrOrganisation(response.getDefendant())) {
+            eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
+        } else {
+            eventProducer.createInterlocutoryJudgmentEvent(claim);
         }
     }
 
@@ -171,8 +181,7 @@ public class FormaliseResponseAcceptanceService {
         this.countyCourtJudgmentService.save(
             countyCourtJudgment.build(),
             claim.getExternalId(),
-            authorisation,
-            true);
+            authorisation);
     }
 
     private LocalDate defendantDateOfBirth(Party party) {

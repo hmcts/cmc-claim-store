@@ -80,11 +80,20 @@ public class ClaimantResponseTest extends BaseTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
-        assertThat(claimantResponse.getFormaliseOption()).isEqualTo(CCJ);
+        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
         assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
-        assertThat(claimWithClaimantResponse.getCountyCourtJudgmentIssuedAt()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldNotSaveClaimantResponseAcceptationIssueCCJWithClaimantPaymentIntention() {
+        commonOperations.submitClaimantResponse(
+            ClaimantResponseAcceptation.builder().buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate(),
+            claim.getExternalId(),
+            claimant
+        ).then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -138,7 +147,7 @@ public class ClaimantResponseTest extends BaseTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
-        assertThat(claimantResponse.getFormaliseOption()).isEqualTo(SETTLEMENT);
+        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
     }

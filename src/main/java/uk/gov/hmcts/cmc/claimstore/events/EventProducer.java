@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.RejectOrganisationPaymentPlanEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
@@ -47,8 +48,10 @@ public class EventProducer {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
-    public void createCountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
-        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation, issue));
+    public void createCountyCourtJudgmentEvent(
+        Claim claim,
+        String authorisation) {
+        publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation));
     }
 
     public void createOfferMadeEvent(Claim claim) {
@@ -85,5 +88,9 @@ public class EventProducer {
 
     public void createInterlocutoryJudgmentEvent(Claim claim) {
         publisher.publishEvent(new InterlocutoryJudgmentEvent(claim));
+    }
+
+    public void createRejectOrganisationPaymentPlanEvent(Claim claim) {
+        publisher.publishEvent(new RejectOrganisationPaymentPlanEvent(claim));
     }
 }

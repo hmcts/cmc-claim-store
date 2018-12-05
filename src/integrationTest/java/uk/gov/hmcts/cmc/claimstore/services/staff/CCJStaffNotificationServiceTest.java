@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
@@ -49,6 +50,8 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
     private Claim claim;
 
+    private Claim claimWithAdmission;
+
     @Before
     public void setup() {
         claim = SampleClaim
@@ -61,6 +64,22 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
             .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
+
+        Response admissionResponse = SampleResponse
+            .FullAdmission
+            .builder()
+            .buildWithPaymentOptionBySpecifiedDate();
+
+        claimWithAdmission = SampleClaim
+            .builder()
+            .withResponse(admissionResponse)
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .withCountyCourtJudgment(SampleCountyCourtJudgment
+                .builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .build())
+            .build();
+
     }
 
     @Test(expected = NullPointerException.class)
@@ -78,13 +97,33 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
     }
 
     @Test
+    public void shouldSendAdmissionEmailWithExpectedContent() {
+        service.notifyStaffCCJRequestSubmitted(claimWithAdmission);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        assertThat(emailDataArgument.getValue()
+            .getSubject())
+            .startsWith("Civil money claims:")
+            .endsWith("judgment by admission requested");
+
+        assertThat(emailDataArgument.getValue()
+            .getMessage()).startsWith(
+            "The claimant has asked for a County Court Judgment to be made against the defendant."
+        );
+    }
+
+    @Test
     public void shouldSendEmailWithExpectedContent() {
         service.notifyStaffCCJRequestSubmitted(claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Civil money claims:");
+            .getSubject())
+            .startsWith("Civil money claims:")
+            .endsWith("default judgment requested");
+
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
             "The claimant has asked for a County Court Judgment to be made against the defendant."
@@ -97,6 +136,19 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
+        verifyPdfFileNameAndContentType();
+    }
+
+    @Test
+    public void shouldSendEmailWithExpectedPDFAttachmentsWhenByAdmission() throws IOException {
+        service.notifyStaffCCJRequestSubmitted(claimWithAdmission);
+
+        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+
+        verifyPdfFileNameAndContentType();
+    }
+
+    private void verifyPdfFileNameAndContentType() {
         EmailAttachment emailAttachment = emailDataArgument.getValue()
             .getAttachments()
             .get(0);

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -41,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_ISSUED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
@@ -54,7 +56,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_I
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CoreCaseDataService {
 
     private final CaseMapper caseMapper;
@@ -143,7 +145,10 @@ public class CoreCaseDataService {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
         CCDCase ccdCase = caseMapper.to(claim);
-        ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+
+        if (StringUtils.isBlank(claim.getReferenceNumber())) {
+            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+        }
 
         CaseDetails caseDetails = update(authorisation, ccdCase, SUBMIT_POST_PAYMENT);
 
@@ -173,17 +178,16 @@ public class CoreCaseDataService {
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
         Long caseId,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     ) {
         CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
             .id(caseId)
             .countyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment))
             .countyCourtJudgmentRequestedAt(nowInUTC());
 
-        if (issue) {
-            ccdCase.countyCourtJudgmentIssuedAt(nowInUTC());
-            return update(authorisation, ccdCase.build(), CCJ_ISSUED);
+        CountyCourtJudgmentType countyCourtJudgmentType = countyCourtJudgment.getCcjType();
+        if (countyCourtJudgmentType.equals(CountyCourtJudgmentType.ADMISSIONS)) {
+            return update(authorisation, ccdCase.build(), CCJ_BY_ADMISSION);
         } else {
             return update(authorisation, ccdCase.build(), DEFAULT_CCJ_REQUESTED);
         }

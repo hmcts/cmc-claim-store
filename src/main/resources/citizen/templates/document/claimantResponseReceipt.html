@@ -206,13 +206,6 @@
         </td>
       </tr>
 
-      <tr>
-        <td><strong>when will the defendant pay by:</strong></td>
-        <td>
-          {{ whenWillTheyPay }}
-        </td>
-      </tr>
-
       {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
       <tr class="no-border">
         <td><strong>Regular payments of:</strong></td>
@@ -227,12 +220,19 @@
         </td>
       </tr>
       <tr class="no-border">
-        <td><strong>Make the first payment on:</strong></td>
+        <td><strong>First payment by:</strong></td>
         <td>
           {{ repaymentPlan.firstPaymentDate }}
         </td>
       </tr>
       {% endif %}
+
+      <tr class="no-border">
+        <td><strong>Last payment by:</strong></td>
+        <td>
+          {{ whenWillTheyFinishPaying }}
+        </td>
+      </tr>
     </table>
   </div>
 </div>
@@ -250,15 +250,13 @@
         </td>
       </tr>
 
-      <tr>
-        <td><strong>when will the defendant pay by:</strong></td>
+      {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By instalments" %}
+      <tr class="no-border">
+        <td><strong>First payment by:</strong></td>
         <td>
-          {{ courtPaymentIntentionwhenWillTheyPay }}
+          {{ courtPaymentIntentionrepaymentPlan.firstPaymentDate }}
         </td>
       </tr>
-
-      {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By
-      instalments" %}
       <tr class="no-border">
         <td><strong>Regular payments of:</strong></td>
         <td>
@@ -271,13 +269,14 @@
           {{ courtPaymentIntentionrepaymentPlan.paymentSchedule }}
         </td>
       </tr>
+      {% endif %}
+
       <tr class="no-border">
-        <td><strong>Make the first payment on:</strong></td>
+        <td><strong>Last payment by:</strong></td>
         <td>
-          {{ courtPaymentIntentionrepaymentPlan.firstPaymentDate }}
+          {{ courtPaymentIntentionwhenWillTheyFinishPaying }}
         </td>
       </tr>
-      {% endif %}
     </table>
   </div>
 </div>
@@ -294,14 +293,13 @@
         </td>
       </tr>
 
-      <tr>
-        <td><strong>when will the defendant pay by:</strong></td>
+      {% if courtDecisionrepaymentPlan is defined and courtDecisionrepaymentPlan.repaymentOption == "By instalments" %}
+      <tr class="no-border">
+        <td><strong>First payment by:</strong></td>
         <td>
-          {{ courtDecisionwhenWillTheyPay }}
+          {{ courtDecisionrepaymentPlan.firstPaymentDate }}
         </td>
       </tr>
-
-      {% if courtDecisionrepaymentPlan is defined and courtDecisionrepaymentPlan.repaymentOption == "By instalments" %}
       <tr class="no-border">
         <td><strong>Regular payments of:</strong></td>
         <td>
@@ -314,13 +312,14 @@
           {{ courtDecisionrepaymentPlan.paymentSchedule }}
         </td>
       </tr>
+      {% endif %}
+
       <tr class="no-border">
-        <td><strong>Make the first payment on:</strong></td>
+        <td><strong>Last payment by:</strong></td>
         <td>
-          {{ courtDecisionrepaymentPlan.firstPaymentDate }}
+          {{ courtDecisionwhenWillTheyFinishPaying }}
         </td>
       </tr>
-      {% endif %}
     </table>
   </div>
 </div>

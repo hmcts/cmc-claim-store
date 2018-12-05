@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
@@ -90,10 +90,9 @@ public class CCDCaseRepository implements CaseRepository {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment, issue);
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
 
     }
 

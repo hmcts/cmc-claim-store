@@ -43,7 +43,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 @TestPropertySource(
     properties = {
         "document_management.api_gateway.url=false",
-        "core_case_data.api.url=http://core-case-data-api"
+        "feature_toggles.ccd_async_enabled=false",
+        "feature_toggles.ccd_enabled=true",
+        "feature_toggles.reminderEmails=true"
     }
 )
 public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegrationTest {
