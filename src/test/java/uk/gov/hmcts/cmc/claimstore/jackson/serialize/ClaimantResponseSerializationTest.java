@@ -21,14 +21,12 @@ public class ClaimantResponseSerializationTest {
     public void claimantResponseForDefendantPartAdmitWithImmediatePayment() {
         Claim claim = SampleClaim.builder().build();
         String json = processor.toJson(claim);
-        System.out.println("claim");
-        System.out.println(json);
         String claimantResponse = new ResourceReader().read("/jackson-serialization-samples/claimant-response.json");
         assertThat(json, isJson());
         //TODO : either this
         assertEquals(json,claimantResponse);
         //TODO: or if you want more granular testing this.
-        assertThat(json, hasJsonPath("$.defendants[:1].value.asdfadsfasdfasdfasdf"));
+        assertThat(json, hasJsonPath("$.defendants[:1].value.claimantResponse.CourtDetermination"));
         assertThat(json, hasJsonPath("$.defendants[:1].value.claimantResponse.claimantPaymentIntention"));
     }
 }
