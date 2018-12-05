@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.time.LocalDate;
 
-@SuppressWarnings({"squid:S1610", "squid:S00112"})
+@SuppressWarnings("squid:S1610")
 public abstract class PartyMixIn {
     @JsonProperty("partyDateOfBirth")
     abstract LocalDate getDateOfBirth();
