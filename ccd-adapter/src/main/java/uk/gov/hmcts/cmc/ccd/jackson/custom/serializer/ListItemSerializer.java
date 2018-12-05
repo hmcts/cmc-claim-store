@@ -18,7 +18,11 @@ public class ListItemSerializer extends StdSerializer<List> {
     }
 
     @Override
-    public void serialize(List listItems, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(
+        List listItems,
+        JsonGenerator jsonGenerator,
+        SerializerProvider serializerProvider
+    ) throws IOException {
         jsonGenerator.writeStartArray();
 
         listItems.forEach(listItem -> {

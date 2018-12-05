@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public abstract class AmountRangeMixIn extends AmountMixIn{
+public abstract class AmountRangeMixIn extends AmountMixIn {
 
     @JsonProperty("amountLowerValue")
     abstract Optional<BigDecimal> getLowerValue();

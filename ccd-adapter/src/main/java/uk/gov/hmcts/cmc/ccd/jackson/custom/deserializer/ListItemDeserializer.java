@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +12,10 @@ import java.util.List;
 public class ListItemDeserializer extends JsonDeserializer<List<JsonNode>> {
 
     @Override
-    public List<JsonNode> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public List<JsonNode> deserialize(
+        JsonParser jsonParser,
+        DeserializationContext deserializationContext
+    ) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         ArrayList<JsonNode> returnList = new ArrayList<>();
         if (node.isArray()) {
