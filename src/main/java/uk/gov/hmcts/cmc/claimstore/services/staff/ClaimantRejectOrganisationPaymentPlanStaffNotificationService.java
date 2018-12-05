@@ -18,7 +18,7 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class RejectOrganisationPaymentPlanStaffNotificationService {
+public class ClaimantRejectOrganisationPaymentPlanStaffNotificationService {
 
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
@@ -26,7 +26,7 @@ public class RejectOrganisationPaymentPlanStaffNotificationService {
     private final ReDeterminationNotificationEmailContentProvider reDeterminationNotificationEmailContentProvider;
 
     @Autowired
-    public RejectOrganisationPaymentPlanStaffNotificationService(
+    public ClaimantRejectOrganisationPaymentPlanStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties staffEmailProperties,
         StaffPdfCreatorService staffPdfCreatorService,
@@ -66,7 +66,6 @@ public class RejectOrganisationPaymentPlanStaffNotificationService {
             .put("claimantName", claim.getClaimData().getClaimant().getName())
             .put("defendantName", claim.getClaimData().getDefendant().getName())
             .put("partyName", claim.getClaimData().getClaimant().getName())
-            .put("interlocutoryJudgement", false)
             .build();
     }
 

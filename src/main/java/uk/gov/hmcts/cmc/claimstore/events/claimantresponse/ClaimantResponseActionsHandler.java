@@ -3,20 +3,20 @@ package uk.gov.hmcts.cmc.claimstore.events.claimantresponse;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.RejectOrganisationPaymentPlanStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrganisationPaymentPlanStaffNotificationService;
 
 @Component
 public class ClaimantResponseActionsHandler {
 
     private final NotificationToDefendantService notificationService;
-    private final RejectOrganisationPaymentPlanStaffNotificationService rejectOrganisationPaymentPlanStaffNotificationService;
+    private final ClaimantRejectOrganisationPaymentPlanStaffNotificationService claimantRejectOrganisationPaymentPlanStaffNotificationService;
 
     public ClaimantResponseActionsHandler(
         NotificationToDefendantService notificationService,
-        RejectOrganisationPaymentPlanStaffNotificationService rejectOrganisationPaymentPlanStaffNotificationService
+        ClaimantRejectOrganisationPaymentPlanStaffNotificationService claimantRejectOrganisationPaymentPlanStaffNotificationService
     ) {
         this.notificationService = notificationService;
-        this.rejectOrganisationPaymentPlanStaffNotificationService = rejectOrganisationPaymentPlanStaffNotificationService;
+        this.claimantRejectOrganisationPaymentPlanStaffNotificationService = claimantRejectOrganisationPaymentPlanStaffNotificationService;
     }
 
     @EventListener
@@ -26,6 +26,6 @@ public class ClaimantResponseActionsHandler {
 
     @EventListener
     public void sendClaimantRejectOrganisationPaymentPlanNotificationToStaff(RejectOrganisationPaymentPlanEvent event) {
-        this.rejectOrganisationPaymentPlanStaffNotificationService.notifyStaffClaimantRejectOrganisationPaymentPlan(event.getClaim());
+        this.claimantRejectOrganisationPaymentPlanStaffNotificationService.notifyStaffClaimantRejectOrganisationPaymentPlan(event.getClaim());
     }
 }
