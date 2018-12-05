@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.util.Optional;
 
+@SuppressWarnings("squid:S1610")
 public abstract class HousingDisrepairMixIn {
 
     @JsonProperty("housingDisrepairCostOfRepairDamages")

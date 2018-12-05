@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
+@SuppressWarnings({"squid:S1610", "squid:S00112"})
 public abstract class TheirDetailsMixIn {
 
     @JsonProperty("claimantProvidedName")

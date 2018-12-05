@@ -4,7 +4,8 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
 import java.util.List;
 
-public abstract class TimelineMixIn extends PartyMixIn {
+@SuppressWarnings("squid:S1610")
+public abstract class TimelineMixIn {
 
     List<TimelineEvent> events;
 }

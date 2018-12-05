@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 
+@SuppressWarnings("squid:S1610")
 public abstract class PaymentMixIn {
 
     @JsonProperty("paymentAmount")

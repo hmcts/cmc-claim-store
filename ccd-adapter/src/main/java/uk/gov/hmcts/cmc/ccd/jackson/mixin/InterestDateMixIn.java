@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.time.LocalDate;
 
+@SuppressWarnings("squid:S1610")
 public abstract class InterestDateMixIn {
 
     @JsonProperty("interestDateType")

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@SuppressWarnings("squid:S1610")
 public abstract class ClaimDataMixIn {
 
     abstract List<Party> getClaimants();

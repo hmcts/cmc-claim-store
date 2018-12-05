@@ -11,6 +11,8 @@ import java.util.List;
 
 public class ListItemDeserializer extends JsonDeserializer<List<JsonNode>> {
 
+    public static final String VALUE = "value";
+
     @Override
     public List<JsonNode> deserialize(
         JsonParser jsonParser,
@@ -20,7 +22,7 @@ public class ListItemDeserializer extends JsonDeserializer<List<JsonNode>> {
         ArrayList<JsonNode> returnList = new ArrayList<>();
         if (node.isArray()) {
             for (JsonNode childNode : node) {
-                returnList.add(childNode.get("value"));
+                returnList.add(childNode.get(VALUE));
             }
         }
         return returnList;

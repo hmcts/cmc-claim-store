@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
 
+@SuppressWarnings("squid:S1610")
 public abstract class InterestMixIn {
 
     @JsonProperty("interestType")

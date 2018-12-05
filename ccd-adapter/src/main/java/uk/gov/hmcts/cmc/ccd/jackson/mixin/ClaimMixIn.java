@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+@SuppressWarnings("squid:S1610")
 public abstract class ClaimMixIn {
 
     @JsonUnwrapped

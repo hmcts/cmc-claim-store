@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 
+@SuppressWarnings("squid:S1610")
 public abstract class RepresentativeMixIn {
 
     @JsonProperty("representativeOrganisationName")

@@ -4,14 +4,15 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 
 import java.io.IOException;
 import java.util.List;
 
 public class ListItemSerializer extends StdSerializer<List> {
 
-    private final String idFieldName = "id";
-    private final String valueFieldName = "value";
+    private static final String ID = "id";
+    private static final String VALUE = "value";
 
     public ListItemSerializer(Class<List> t) {
         super(t);
@@ -28,11 +29,11 @@ public class ListItemSerializer extends StdSerializer<List> {
         listItems.forEach(listItem -> {
             try {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeObjectField(idFieldName, StringUtils.EMPTY);
-                jsonGenerator.writeObjectField(valueFieldName, listItem);
+                jsonGenerator.writeObjectField(ID, StringUtils.EMPTY);
+                jsonGenerator.writeObjectField(VALUE, listItem);
                 jsonGenerator.writeEndObject();
-            } catch (Exception gene) {
-                throw new RuntimeException("Unable to serialize list items.");
+            } catch (Exception e) {
+                throw new MappingException("Unable to serialize list items.", e);
             }
         });
 
