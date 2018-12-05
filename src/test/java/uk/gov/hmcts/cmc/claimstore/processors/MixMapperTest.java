@@ -4,6 +4,7 @@ import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThat;
 public class MixMapperTest {
 
     private JsonMapper processor = new JsonMapper(new CCDAdapterConfig().ccdObjectMapper());
+    private JsonMapper defaultProcessor = new JsonMapper(new JacksonConfiguration().objectMapper());
 
     @Test
     public void shouldProcessIndividualToCCDJson() throws JSONException {
@@ -163,12 +164,18 @@ public class MixMapperTest {
     @Test
     public void shouldProcessClaimToCCDJson() throws JSONException {
         //given
-        Claim claim = SampleClaim.builder().withResponse(null).build();
+        Claim claim = SampleClaim.builder().withResponse(null).withFeatures(null).build();
 
         String json = processor.toJson(claim);
+        System.out.println(json);
 
         Claim output = processor.fromJson(json, Claim.class);
         String outputJson = processor.toJson(output);
+        System.out.println(outputJson);
+
+        String defaultOne = defaultProcessor.toJson(claim);
+        System.out.println(defaultOne);
+        System.out.println(defaultProcessor.fromJson(defaultOne, Claim.class));
 
         assertThat(json, CoreMatchers.equalTo(outputJson));
     }

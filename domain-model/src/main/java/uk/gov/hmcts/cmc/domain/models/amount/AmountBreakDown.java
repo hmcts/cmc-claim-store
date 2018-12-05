@@ -1,19 +1,19 @@
 package uk.gov.hmcts.cmc.domain.models.amount;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.MinTotalAmount;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -27,8 +27,7 @@ public class AmountBreakDown implements Amount {
     @MinTotalAmount("0.01")
     private final List<AmountRow> rows;
 
-    @JsonCreator
-    public AmountBreakDown(List<AmountRow> rows) {
+    public AmountBreakDown(@JsonProperty("rows") List<AmountRow> rows) {
         this.rows = rows;
     }
 

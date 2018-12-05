@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public abstract class InterestMixIn {
 

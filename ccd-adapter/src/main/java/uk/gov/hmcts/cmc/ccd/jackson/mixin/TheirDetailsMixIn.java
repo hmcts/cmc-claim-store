@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
-import java.time.LocalDate;
-
 public abstract class TheirDetailsMixIn {
 
     @JsonProperty("claimantProvidedName")

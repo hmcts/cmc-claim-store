@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.jackson.mixin;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public abstract class InterestDateMixIn {

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.jackson.mixin;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class ClaimDataMixIn {
 
@@ -36,9 +37,12 @@ public abstract class ClaimDataMixIn {
     @JsonUnwrapped
     abstract Optional<PersonalInjury> getPersonalInjury();
 
-//    @JsonUnwrapped
-//    abstract Optional<Timeline> getTimeline();
-//
-//    @JsonUnwrapped
-//    abstract Optional<Evidence> getEvidence();
+    @JsonIgnore
+    abstract UUID getExternalId();
+
+    @JsonUnwrapped
+    abstract Optional<Timeline> getTimeline();
+
+    @JsonUnwrapped
+    abstract Optional<Evidence> getEvidence();
 }

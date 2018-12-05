@@ -7,6 +7,6 @@ import java.util.List;
 
 public abstract class AmountBreakDownMixIn extends AmountMixIn{
 
-    @JsonProperty("amountBreakDown")
+    @JsonProperty("rows")
     abstract List<AmountRow> getRows();
 }

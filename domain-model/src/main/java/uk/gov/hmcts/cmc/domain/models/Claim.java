@@ -65,7 +65,6 @@ public class Claim {
     private final LocalDateTime reDeterminationRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
-    @JsonCreator
     public Claim(
         Long id,
         String submitterId,
