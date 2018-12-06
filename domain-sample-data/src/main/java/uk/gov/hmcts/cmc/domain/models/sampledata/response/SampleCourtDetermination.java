@@ -35,8 +35,10 @@ public class SampleCourtDetermination {
     public static CourtDetermination instalments() {
         return builder()
             .courtDecision(SamplePaymentIntention.instalments())
+            .courtPaymentIntention(SamplePaymentIntention.instalments())
             .disposableIncome(TEN)
             .decisionType(COURT)
             .build();
     }
+
 }

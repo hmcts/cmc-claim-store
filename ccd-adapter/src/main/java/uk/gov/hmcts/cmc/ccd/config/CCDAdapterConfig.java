@@ -37,6 +37,7 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.StatementOfTruthMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.TimelineMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.*;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -47,6 +48,7 @@ import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
@@ -61,6 +63,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.util.List;
 
@@ -103,7 +106,10 @@ public class CCDAdapterConfig {
             .addMixIn(ClaimData.class, ClaimDataMixIn.class)
             .addMixIn(ContactDetails.class, ContactDetailsMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
-            .addMixIn(Representative.class, RepresentativeMixIn.class);
+            .addMixIn(Representative.class, RepresentativeMixIn.class)
+            .addMixIn(ClaimantResponse.class, ClaimantResponseMixin.class)
+            .addMixIn(PaymentIntention.class, PaymentIntentionMixin.class)
+            .enable(SerializationFeature.INDENT_OUTPUT);
 
     }
 }
