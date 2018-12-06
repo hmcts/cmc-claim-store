@@ -16,13 +16,13 @@ public class SampleResponseAcceptation {
         return ResponseAcceptation.builder();
     }
 
-    public static ResponseAcceptation partAdmitPayImmediately(){
+    public static ResponseAcceptation partAdmitPayImmediately() {
         return builder().formaliseOption(FormaliseOption.SETTLEMENT)
             .amountPaid(new BigDecimal(100))
             .build();
     }
 
-    public static ResponseAcceptation partAdmitPayBySetDate(){
+    public static ResponseAcceptation partAdmitPayBySetDate() {
         return builder().formaliseOption(FormaliseOption.SETTLEMENT)
             .amountPaid(new BigDecimal(100))
             .courtDetermination(SampleCourtDetermination.instalments())
@@ -30,7 +30,7 @@ public class SampleResponseAcceptation {
             .build();
     }
 
-    public static ResponseAcceptation partAdmitPayByInstalments(){
+    public static ResponseAcceptation partAdmitPayByInstalments() {
         return builder().formaliseOption(FormaliseOption.SETTLEMENT)
             .amountPaid(new BigDecimal(100))
             .courtDetermination(SampleCourtDetermination.instalments())
