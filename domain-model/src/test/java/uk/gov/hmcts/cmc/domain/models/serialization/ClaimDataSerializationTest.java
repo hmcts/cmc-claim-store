@@ -37,7 +37,7 @@ public class ClaimDataSerializationTest {
                         SampleInterestDate.builder()
                             .withDate(LocalDate.of(2015, 2, 2))
                             .build())
-                .build())
+                    .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
             .withFeeAccountNumber(null)
@@ -47,9 +47,10 @@ public class ClaimDataSerializationTest {
             .clearClaimants()
             .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
-                    .withRepresentative(null)
-                    .withServiceAddress(null)
-                    .individualDetails())
+                .withRepresentative(null)
+                .withServiceAddress(null)
+                .withDateOfBirth(null)
+                .individualDetails())
             .build();
 
         assertThat(claimData).isEqualTo(other);

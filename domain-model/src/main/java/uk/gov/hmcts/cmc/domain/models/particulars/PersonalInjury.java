@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.particulars;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -14,8 +14,7 @@ public class PersonalInjury {
     @NotNull
     private final DamagesExpectation generalDamages;
 
-    @JsonCreator
-    public PersonalInjury(DamagesExpectation generalDamages) {
+    public PersonalInjury(@JsonProperty("generalDamages") DamagesExpectation generalDamages) {
         this.generalDamages = generalDamages;
     }
 
