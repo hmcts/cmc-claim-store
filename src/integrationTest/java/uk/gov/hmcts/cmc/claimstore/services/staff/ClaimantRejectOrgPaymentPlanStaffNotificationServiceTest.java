@@ -16,8 +16,7 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
@@ -57,16 +56,14 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends Mo
     public void shouldSendEmailToExpectedRecipient() {
         service.notifyStaffClaimantRejectOrganisationPaymentPlan(claim);
 
-        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
-
-        assertThat(senderArgument.getValue()).isEqualTo(emailProperties.getSender());
+        verify(emailService).sendEmail(eq(emailProperties.getSender()), any(EmailData.class));
     }
 
     @Test
     public void shouldSendEmailWithExpectedContent() {
         service.notifyStaffClaimantRejectOrganisationPaymentPlan(claim);
 
-        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+        verify(emailService).sendEmail(anyString(), emailDataArgument.capture());
         String subject = String.format("Redetermination request %s %s v %s",
             claim.getReferenceNumber(),
             claim.getClaimData().getClaimant().getName(),
@@ -91,7 +88,7 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends Mo
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
         List<EmailAttachment> attachments = emailDataArgument.getValue().getAttachments();
-        assertThat(attachments.size()).isEqualTo(3);
+        assertThat(attachments).hasSize(3);
 
         EmailAttachment claimEmailAttachment = attachments.get(0);
         String sealedClaimFileName = buildSealedClaimFileBaseName(claim.getReferenceNumber()) + PDF.EXTENSION;
