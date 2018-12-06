@@ -26,9 +26,8 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 )
 public class SettlementAgreementController {
 
-    private ClaimService claimService;
-    private SettlementAgreementService settlementAgreementService;
-
+    private final ClaimService claimService;
+    private final SettlementAgreementService settlementAgreementService;
 
     @Autowired
     public SettlementAgreementController(

@@ -42,7 +42,6 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
         claim = claimStore.saveClaim(SampleClaimData.builder()
             .withExternalId(UUID.randomUUID()).build(), SUBMITTER_ID, LocalDate.now());
 
-
         UserDetails defendantDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
             .withMail(DEFENDANT_EMAIL)
@@ -77,6 +76,14 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
 
         assertThat(claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new)
             .getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
+    }
+
+    @Test
+    public void shouldReturn400WhenClaimIsNotInStateForSettlementAgreementRejection() throws Exception {
+        Settlement settlement = new Settlement();
+        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, SUBMITTER_ID);
+
+        makeRequest(claim.getExternalId()).andExpect(status().isBadRequest());
     }
 
     private ResultActions makeRequest(String externalId) throws Exception {

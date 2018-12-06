@@ -24,7 +24,6 @@ public class SettlementAgreementService {
     private static final String REJECTION_EXPECTED_STATE_ERROR =
         "Expecting last statement for claim %d to be ACCEPTATION from CLAIMANT";
 
-
     private final ClaimService claimService;
     private final CaseRepository caseRepository;
     private final EventProducer eventProducer;
