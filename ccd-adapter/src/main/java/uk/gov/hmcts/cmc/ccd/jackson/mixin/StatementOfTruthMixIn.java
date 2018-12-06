@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @SuppressWarnings("squid:S1610")
 public abstract class StatementOfTruthMixIn {
 
-    @JsonProperty("sotSignerName")
+    @JsonProperty("statementOfTruthSignerName")
     abstract String getSignerName();
 
-    @JsonProperty("sotSignerRole")
+    @JsonProperty("statementOfTruthSignerRole")
     abstract String getSignerRole();
 }

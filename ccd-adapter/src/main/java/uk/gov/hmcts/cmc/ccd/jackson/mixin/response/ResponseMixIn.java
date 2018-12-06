@@ -7,13 +7,15 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import java.util.Optional;
+
 public abstract class ResponseMixIn {
 
     @JsonProperty("responseType")
     abstract ResponseType getResponseType();
 
     @JsonProperty("responseFreeMediationOption")
-    abstract YesNoOption getFreeMediation();
+    abstract Optional<YesNoOption> getFreeMediation();
 
     @JsonProperty("responseMoreTimeNeededOption")
     abstract YesNoOption getMoreTimeNeeded();
@@ -22,6 +24,6 @@ public abstract class ResponseMixIn {
     abstract Party getDdefendant();
 
     @JsonUnwrapped
-    abstract StatementOfTruth getStatementOfTruth();
+    abstract Optional<StatementOfTruth> getStatementOfTruth();
 
 }
