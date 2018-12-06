@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;

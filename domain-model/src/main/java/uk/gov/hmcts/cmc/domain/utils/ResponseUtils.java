@@ -1,10 +1,13 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import java.util.function.Predicate;
+
 
 public class ResponseUtils {
 
@@ -27,6 +30,7 @@ public class ResponseUtils {
         }
     }
 
+
     public static boolean isResponseFullDefenceStatesPaid(Response response) {
         if (response == null) {
             return false;
@@ -37,5 +41,17 @@ public class ResponseUtils {
         }
 
         return false;
+    }
+    
+    public static boolean isResponsePartAdmitPayImmediately(Response response) {
+        if (response.getResponseType() != ResponseType.PART_ADMISSION) {
+            return false;
+        }
+
+        PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+        return partAdmissionResponse.getPaymentIntention()
+            .map(PaymentIntention::getPaymentOption)
+            .filter(Predicate.isEqual(PaymentOption.IMMEDIATELY))
+            .isPresent();
     }
 }
