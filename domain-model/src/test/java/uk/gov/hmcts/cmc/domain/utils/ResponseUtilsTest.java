@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 public class ResponseUtilsTest {
 
     @Test
@@ -55,6 +56,40 @@ public class ResponseUtilsTest {
         assertThat(ResponseUtils.isResponseStatesPaid(response)).isFalse();
     }
 
+    @Test
+    public void isResponseFullDefenceStatesPaidShouldBeTrue() {
+        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build();
+
+        assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(response)).isTrue();
+    }
+
+    @Test
+    public void isResponseFullDefenceStatesPaidFullDefenseWithDisputeShouldBeFalse() {
+        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE).build();
+
+        assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(response)).isFalse();
+    }
+
+    @Test
+    public void isResponseFullDefenceStatesPaidFullAdmissionShouldBeFalse() {
+        Response response = SampleResponse.FullAdmission.builder().build();
+
+        assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(response)).isFalse();
+    }
+
+    @Test
+    public void isResponseFullDefenceStatesPaidPartAdmissionWithPaymentDeclarationShouldBeFalse() {
+        Response response = PartAdmissionResponse.builder()
+            .paymentDeclaration(SamplePaymentDeclaration.builder().build()).build();
+
+        assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(response)).isFalse();
+    }
+
+    @Test
+    public void isResponseFullDefenceStatesPaidNullResponseShouldBeFalse() {
+        assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(null)).isFalse();
+    }
+  
     @Test
     public void isResponsePartAdmitPayImmediatelyOnPartAdmissionWithPayImmediatelyShouldBeTrue() {
         Response response = PartAdmissionResponse.builder().paymentIntention(

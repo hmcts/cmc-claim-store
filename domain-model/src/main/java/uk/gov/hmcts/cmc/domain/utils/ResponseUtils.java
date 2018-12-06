@@ -31,6 +31,18 @@ public class ResponseUtils {
         }
     }
 
+    public static boolean isResponseFullDefenceStatesPaid(Response response) {
+        if (response == null) {
+            return false;
+        }
+
+        if (response.getResponseType() == ResponseType.FULL_DEFENCE) {
+            return isResponseStatesPaid(response);
+        }
+
+        return false;
+    }
+
     public static boolean isResponsePartAdmitPayImmediately(Response response) {
         if (response.getResponseType() != ResponseType.PART_ADMISSION) {
             return false;
