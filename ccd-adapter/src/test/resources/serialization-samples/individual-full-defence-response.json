@@ -1,0 +1,57 @@
+{
+  "responseType": "FULL_DEFENCE",
+  "partyName": "John Rambo",
+  "partyAddress": {
+    "line1": "52",
+    "line2": "Down Street",
+    "line3": "Salford",
+    "city": "Manchester",
+    "postcode": "DF1 3LJ"
+  },
+  "partyCorrespondenceAddress": {
+    "line1": "52",
+    "line2": "Down Street",
+    "line3": "Salford",
+    "city": "Manchester",
+    "postcode": "DF1 3LJ"
+  },
+  "partyMobileName": "07873727165",
+  "partyDateOfBirth": "1968-01-02",
+  "statementOfTruthSignerName": "Signer Name",
+  "statementOfTruthSignerRole": "Signer Role",
+  "paymentDeclarationPaidDate": "2016-01-02",
+  "paymentDeclarationExplanation": "Paid cash",
+  "defendantTimeLineEvents": [
+    {
+      "id": "",
+      "value": {
+        "date": "Last Year",
+        "description": "signed a contract"
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "",
+      "value": {
+        "date": "Last Year",
+        "description": "signed a contract"
+      }
+    }
+  ],
+  "defendantTimeLineComment": "More information",
+  "responseEvidenceRows": [
+    {
+      "id": "",
+      "value": {
+        "type": "CORRESPONDENCE",
+        "description": "description"
+      }
+    }
+  ],
+  "responseEvidenceComment": "More information",
+  "responseFreeMediationOption": "yes",
+  "responseMoreTimeNeededOption": "yes",
+  "responseDefenceType": "DISPUTE",
+  "responseDefence": "defence string"
+}
