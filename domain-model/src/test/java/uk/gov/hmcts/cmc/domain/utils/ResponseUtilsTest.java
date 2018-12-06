@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 public class ResponseUtilsTest {
 
     @Test
@@ -55,7 +56,6 @@ public class ResponseUtilsTest {
         assertThat(ResponseUtils.isResponseStatesPaid(response)).isFalse();
     }
 
-
     @Test
     public void isResponseFullDefenceStatesPaidShouldBeTrue() {
         Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build();
@@ -89,7 +89,7 @@ public class ResponseUtilsTest {
     public void isResponseFullDefenceStatesPaidNullResponseShouldBeFalse() {
         assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(null)).isFalse();
     }
-
+  
     @Test
     public void isResponsePartAdmitPayImmediatelyOnPartAdmissionWithPayImmediatelyShouldBeTrue() {
         Response response = PartAdmissionResponse.builder().paymentIntention(
