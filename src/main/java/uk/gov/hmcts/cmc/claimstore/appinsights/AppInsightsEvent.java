@@ -8,6 +8,7 @@ public enum AppInsightsEvent {
     RESPONSE_PART_ADMISSION_SUBMITTED("Response part admission submitted"),
     OFFER_MADE("Offer made"),
     OFFER_REJECTED("Offer rejected"),
+    SETTLEMENT_AGREEMENT_REJECTED("Settlement agreement rejected"),
     SETTLEMENT_REACHED("Settlement reached"),
     CCJ_REQUESTED("CCJ requested"),
     RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
