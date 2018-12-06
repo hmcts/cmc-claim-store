@@ -37,6 +37,8 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.StatementOfTruthMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.TimelineMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.response.DefendantEvidenceMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.response.DefendantTimelineMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.response.FullDefenceResponseMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.response.PaymentDeclarationMixIn;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -50,6 +52,7 @@ import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
@@ -64,6 +67,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
+import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 
 import java.util.List;
@@ -84,6 +88,7 @@ public class CCDAdapterConfig {
             .registerModule(new SimpleModule().addSerializer(List.class, listItemSerializer))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS) //TODO: Failing desearlisation
             .addMixIn(Individual.class, IndividualMixIn.class)
             .addMixIn(SoleTrader.class, SoleTraderMixIn.class)
             .addMixIn(Company.class, CompanyMixIn.class)
@@ -108,6 +113,8 @@ public class CCDAdapterConfig {
             .addMixIn(ContactDetails.class, ContactDetailsMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class)
+            .addMixIn(DefendantEvidence.class, DefendantEvidenceMixIn.class)
+            .addMixIn(DefendantTimeline.class, DefendantTimelineMixIn.class)
             .addMixIn(FullDefenceResponse.class, FullDefenceResponseMixIn.class)
             .addMixIn(PaymentDeclaration.class, PaymentDeclarationMixIn.class);
     }

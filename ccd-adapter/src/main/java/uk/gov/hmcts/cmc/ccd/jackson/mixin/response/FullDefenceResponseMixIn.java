@@ -7,20 +7,22 @@ import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 
+import java.util.Optional;
+
 public abstract class FullDefenceResponseMixIn extends ResponseMixIn {
 
     @JsonProperty("responseDefenceType")
     abstract DefenceType getDefenceType();
 
     @JsonProperty("responseDefence")
-    abstract String getDefence();
+    abstract Optional<String> getDefence();
 
     @JsonUnwrapped
-    abstract PaymentDeclaration getPaymentDeclaration();
+    abstract Optional<PaymentDeclaration> getPaymentDeclaration();
 
-    @JsonProperty("defendantTimeLineEvents")
-    abstract DefendantTimeline getTimeline();
+    @JsonUnwrapped
+    abstract Optional<DefendantTimeline> getTimeline();
 
-    @JsonProperty("responseEvidenceRows")
-    abstract DefendantEvidence getEvidence();
+    @JsonUnwrapped
+    abstract Optional<DefendantEvidence> getEvidence();
 }

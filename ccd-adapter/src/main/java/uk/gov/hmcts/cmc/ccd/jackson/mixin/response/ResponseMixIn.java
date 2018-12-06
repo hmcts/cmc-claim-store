@@ -21,7 +21,7 @@ public abstract class ResponseMixIn {
     abstract YesNoOption getMoreTimeNeeded();
 
     @JsonUnwrapped
-    abstract Party getDdefendant();
+    abstract Party getDefendant();
 
     @JsonUnwrapped
     abstract Optional<StatementOfTruth> getStatementOfTruth();
