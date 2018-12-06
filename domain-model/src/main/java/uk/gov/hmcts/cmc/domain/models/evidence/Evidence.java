@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.evidence;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -17,8 +17,7 @@ public class Evidence {
     @Size(max = 1000)
     private final List<EvidenceRow> rows;
 
-    @JsonCreator
-    public Evidence(List<EvidenceRow> rows) {
+    public Evidence(@JsonProperty("rows") List<EvidenceRow> rows) {
         this.rows = rows;
     }
 
