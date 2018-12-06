@@ -304,6 +304,7 @@ sonarqube {
     property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
     property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
     property "sonar.exclusions", "**/ccd/domain/**," +
+      "**/ccd/jackson/mixin/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/claimstore/idam/models/**," +
       "**/ExceptionForClient.java," +
