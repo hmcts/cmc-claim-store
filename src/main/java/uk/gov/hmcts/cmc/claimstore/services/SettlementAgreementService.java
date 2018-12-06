@@ -71,7 +71,7 @@ public class SettlementAgreementService {
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
 
         eventProducer.createSettlementAgreementCountersignedEvent(updated);
-        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED, updated.getReferenceNumber());
+        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED, AppInsights.REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
 
     }

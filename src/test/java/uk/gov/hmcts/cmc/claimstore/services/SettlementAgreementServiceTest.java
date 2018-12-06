@@ -78,6 +78,27 @@ public class SettlementAgreementServiceTest {
         settlementAgreementService.reject(claim, AUTHORISATION);
     }
 
+    @Test
+    public void shouldSuccessfullyCountersignSettlementAgreement() {
+        Claim claimWithSettlementAgreement = buildClaimWithSettlementAgreementOffer();
+
+        when(claimService.getClaimByExternalId(claimWithSettlementAgreement.getExternalId(), AUTHORISATION))
+            .thenReturn(claimWithSettlementAgreement);
+
+        settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
+
+        verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
+            eq(AUTHORISATION), eq("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
+    }
+
+    @Test(expected = ConflictException.class)
+    public void shouldRaiseConflictExceptionWhenCountersigningAgreementAlreadyRejected() {
+        Claim claim = buildClaimWithSettlementAgreementRejected();
+        settlementAgreementService.countersign(claim);
+    }
+
+    @Test(expected = ConflictException.class)
+
     private Claim buildClaimWithSettlementAgreementOffer() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT);
