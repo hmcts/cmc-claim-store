@@ -12,23 +12,10 @@ public class ClaimSerializer extends JsonSerializer<Claim> {
 
     @Override
     public void serialize(Claim claim, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField("submitterId", claim.getSubmitterId());
-        jsonGenerator.writeStringField("externalId",claim.getExternalId());
-        jsonGenerator.writeStringField("referenceNumber",claim.getReferenceNumber());
-
-        jsonGenerator.writeStringField("reason",claim.getClaimData().getReason());
-        //TODO check why this is not working
-       // claim.getClaimData().getFeeCode().isPresent(feeCode -> jsonGenerator.writeStringField("feeCode",feeCode);
-        if(claim.getClaimData().getFeeCode().isPresent()){
-            jsonGenerator.writeStringField("feeCode",claim.getClaimData().getFeeCode().get());
-        }
-        //jsonGenerator.writeStringField("amountType",claim.getClaimData().getAmount().getType());
-        jsonGenerator.writeObjectField("amountBreakDown", claim.getClaimData().getAmount());
-        jsonGenerator.writeEndObject();
-    }
-
-    private void writeClaim(Claim claim, JsonGenerator jsonGenerator, SerializerProvider serializerProvider){
 
     }
+
+    private void serializeCCJIntoDefendant(Claim claim, JsonGenerator generator, SerializerProvider serializers){
+    }
+
 }

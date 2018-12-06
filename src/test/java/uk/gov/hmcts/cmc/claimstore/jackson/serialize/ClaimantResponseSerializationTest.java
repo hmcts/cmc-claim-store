@@ -1,84 +1,66 @@
 package uk.gov.hmcts.cmc.claimstore.jackson.serialize;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertThat;
 
-@Ignore
+
 public class ClaimantResponseSerializationTest {
 
     private JsonMapper processor = new JsonMapper(new CCDAdapterConfig().ccdObjectMapper());
+    private static final String JASON_PATH_PREFIX = "$.";
 
     @Test
     public void claimantResponseForDefendantPartAdmitWithImmediatePayment() {
-        Claim claim = SampleClaim.builder().build();
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayImmediately();
-
         String json = processor.toJson(responseAcceptation);
-//        System.out.println(json);
-        String expectedClaimantResponse = new ResourceReader().read("/jackson-serialization-samples/claimant-response.json");
-//        assertThat(json, isJson());
-        //TODO : either this
-        //assertEquals(json,claimantResponse);
-        //TODO: or if you want more granular testing this.
-//        assertThat(claimantResponse, hasJsonPath("$.defendants[:1].value.claimantResponse.CourtDetermination"));
-//        assertThat(claimantResponse, hasJsonPath("$.defendants[:1].value.claimantResponse.claimantPaymentIntention"));
+        assertCommon(json);
+        assertThat(json, hasNoJsonPath(JASON_PATH_PREFIX+"CourtDetermination"));
     }
-
 
     @Test
     public void claimantResponseCounterOfferForDefendantPartAdmitPayBySetDate() {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayBySetDate();
         String json = processor.toJson(responseAcceptation);
-        System.out.println(json);
-        String expectedClaimantResponse = new ResourceReader().read("/jackson-serialization-samples/claimant-response.json");
-//        assertThat(json, isJson());
-
-        //assertEquals(json,claimantResponse);
-        //TODO: or if you want more granular testing this.
-//        assertThat(claimantResponse, hasJsonPath("$.defendants[:1].value.claimantResponse.CourtDetermination"));
-//        assertThat(claimantResponse, hasJsonPath("$.defendants[:1].value.claimantResponse.claimantPaymentIntention"));
+        assertCommon(json);
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"courtDetermination"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantPaymentIntention.paymentOption", equalToIgnoringCase("BY_SPECIFIED_DATE")));
     }
-
 
     @Test
     public void claimantResponseCounterOfferForDefendantPartAdmitPayByInstalments() {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayByInstalments();
         String json = processor.toJson(responseAcceptation);
-        System.out.println(json);
-        String expectedClaimantResponse = new ResourceReader().read("/jackson-serialization-samples/claimant-response.json");
-//        assertThat(json, isJson());
-        //TODO : either this
-        //assertEquals(json,claimantResponse);
-        //TODO: or if you want more granular testing this.
-//        assertThat(claimantResponse, hasJsonPath("$.defendants[:1].value.claimantResponse.CourtDetermination"));
-//        assertThat(claimantResponse, hasJsonPath("$.defendants[:1].value.claimantResponse.claimantPaymentIntention"));
+        assertCommon(json);
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"courtDetermination.courtDecision"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"courtDetermination.courtPaymentIntention"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantPaymentIntention.paymentOption", equalToIgnoringCase("INSTALMENTS")));
     }
 
     @Test
     public void claimantResponseRejectDefendantOffer() {
         ResponseRejection responseRejection = (ResponseRejection) SampleClaimantResponse.ClaimantResponseRejection.validDefaultRejection();
         String json = processor.toJson(responseRejection);
-        System.out.println(json);
-        //TODO : either this
-        //assertEquals(json,claimantResponse);
+        assertThat(json, isJson());
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantResponseType",equalToIgnoringCase("REJECTION")));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"freeMediation",equalTo(false)));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"reason",equalToIgnoringCase("Some valid reason")));
+    }
 
-        //TODO: or if you want more granular testing this.
-        assertThat(json, hasJsonPath("$.defendants[:1].value.claimantResponse.CourtDetermination"));
-        assertThat(json, hasJsonPath("$.defendants[:1].value.claimantResponse.claimantPaymentIntention"));
+    private void assertCommon(String json){
+        assertThat(json, isJson());
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantResponseType"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"amountPaid"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"formaliseOption"));
     }
 
 }
