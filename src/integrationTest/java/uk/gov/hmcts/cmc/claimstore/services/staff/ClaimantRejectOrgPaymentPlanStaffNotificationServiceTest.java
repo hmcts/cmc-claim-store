@@ -24,12 +24,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantR
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
-public class ClaimantRejectOrganisationPaymentPlanStaffNotificationServiceTest extends MockSpringTest {
+public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends MockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
-    private ClaimantRejectOrganisationPaymentPlanStaffNotificationService service;
+    private ClaimantRejectOrgPaymentPlanStaffNotificationService service;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;

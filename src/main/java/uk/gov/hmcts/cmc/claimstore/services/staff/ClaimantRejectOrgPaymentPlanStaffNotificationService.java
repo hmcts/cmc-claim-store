@@ -18,7 +18,7 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class ClaimantRejectOrganisationPaymentPlanStaffNotificationService {
+public class ClaimantRejectOrgPaymentPlanStaffNotificationService {
 
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
@@ -26,7 +26,7 @@ public class ClaimantRejectOrganisationPaymentPlanStaffNotificationService {
     private final ClaimantRejectOrgRepaymentPlanStaffEmailContentProvider claimantRejectOrgRepaymentPlanStaffEmailContentProvider;
 
     @Autowired
-    public ClaimantRejectOrganisationPaymentPlanStaffNotificationService(
+    public ClaimantRejectOrgPaymentPlanStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties staffEmailProperties,
         StaffPdfCreatorService staffPdfCreatorService,
