@@ -78,17 +78,15 @@ import java.util.List;
 public class CCDAdapterConfig {
     @Bean
     public ObjectMapper ccdObjectMapper() {
-        ListItemDeserializer listItemDeserializer = new ListItemDeserializer();
-        ListItemSerializer listItemSerializer = new ListItemSerializer(List.class);
         return new ObjectMapper()
             .registerModule(new Jdk8Module())
             .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
             .registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .registerModule(new SimpleModule().addDeserializer(List.class, listItemDeserializer))
-            .registerModule(new SimpleModule().addSerializer(List.class, listItemSerializer))
+            .registerModule(new SimpleModule().addDeserializer(List.class, new ListItemDeserializer()))
+            .registerModule(new SimpleModule().addSerializer(List.class, new ListItemSerializer(List.class)))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-            .disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS) //TODO: Failing desearlisation
+            .disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS) //TODO: Failing Deserializer
             .addMixIn(Individual.class, IndividualMixIn.class)
             .addMixIn(SoleTrader.class, SoleTraderMixIn.class)
             .addMixIn(Company.class, CompanyMixIn.class)
