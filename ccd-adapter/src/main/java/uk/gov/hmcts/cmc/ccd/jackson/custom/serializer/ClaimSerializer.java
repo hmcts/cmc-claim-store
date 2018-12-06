@@ -11,7 +11,8 @@ public class ClaimSerializer extends JsonSerializer<Claim> {
 
 
     @Override
-    public void serialize(Claim claim, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(Claim claim, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
+        throws IOException {
 
     }
 
