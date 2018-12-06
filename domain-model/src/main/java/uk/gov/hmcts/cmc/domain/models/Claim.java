@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -65,7 +64,6 @@ public class Claim {
     private final LocalDateTime reDeterminationRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
-    @JsonCreator
     public Claim(
         Long id,
         String submitterId,
@@ -123,7 +121,7 @@ public class Claim {
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
     }
-    
+
     public Optional<Response> getResponse() {
         return Optional.ofNullable(response);
     }

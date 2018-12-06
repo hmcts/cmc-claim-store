@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
@@ -10,8 +10,7 @@ public class InterestAmount {
 
     private final BigDecimal amount;
 
-    @JsonCreator
-    public InterestAmount(BigDecimal amount) {
+    public InterestAmount(@JsonProperty("amount") BigDecimal amount) {
         this.amount = amount;
     }
 
