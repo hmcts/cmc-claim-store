@@ -8,7 +8,9 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponseAcceptation;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.*;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertThat;
@@ -24,7 +26,7 @@ public class ClaimantResponseSerializationTest {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayImmediately();
         String json = processor.toJson(responseAcceptation);
         assertCommon(json);
-        assertThat(json, hasNoJsonPath(JASON_PATH_PREFIX+"CourtDetermination"));
+        assertThat(json, hasNoJsonPath(JASON_PATH_PREFIX + "CourtDetermination"));
     }
 
     @Test
@@ -32,8 +34,9 @@ public class ClaimantResponseSerializationTest {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayBySetDate();
         String json = processor.toJson(responseAcceptation);
         assertCommon(json);
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"courtDetermination"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantPaymentIntention.paymentOption", equalToIgnoringCase("BY_SPECIFIED_DATE")));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "courtDetermination"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantPaymentIntention.paymentOption",
+            equalToIgnoringCase("BY_SPECIFIED_DATE")));
     }
 
     @Test
@@ -41,26 +44,28 @@ public class ClaimantResponseSerializationTest {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayByInstalments();
         String json = processor.toJson(responseAcceptation);
         assertCommon(json);
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"courtDetermination.courtDecision"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"courtDetermination.courtPaymentIntention"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantPaymentIntention.paymentOption", equalToIgnoringCase("INSTALMENTS")));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "courtDetermination.courtDecision"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "courtDetermination.courtPaymentIntention"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantPaymentIntention.paymentOption",
+            equalToIgnoringCase("INSTALMENTS")));
     }
 
     @Test
     public void claimantResponseRejectDefendantOffer() {
-        ResponseRejection responseRejection = (ResponseRejection) SampleClaimantResponse.ClaimantResponseRejection.validDefaultRejection();
+        ResponseRejection responseRejection = (ResponseRejection) SampleClaimantResponse
+            .ClaimantResponseRejection.validDefaultRejection();
         String json = processor.toJson(responseRejection);
         assertThat(json, isJson());
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantResponseType",equalToIgnoringCase("REJECTION")));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"freeMediation",equalTo(false)));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"reason",equalToIgnoringCase("Some valid reason")));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantResponseType",equalToIgnoringCase("REJECTION")));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "freeMediation",equalTo(false)));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "reason",equalToIgnoringCase("Some valid reason")));
     }
 
-    private void assertCommon(String json){
+    private void assertCommon(String json) {
         assertThat(json, isJson());
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"claimantResponseType"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"amountPaid"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX+"formaliseOption"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantResponseType"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "amountPaid"));
+        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "formaliseOption"));
     }
 
 }
