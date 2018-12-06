@@ -173,6 +173,26 @@ public final class SampleClaim {
             ).build();
     }
 
+    public static Claim getClaimFullDefenceStatesPaidWithAcceptation() {
+        return builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(YesNoOption.NO)
+                    .build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .build()
+            )
+            .build();
+    }
+
     public static SampleClaim builder() {
         return new SampleClaim();
     }
