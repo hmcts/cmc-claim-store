@@ -17,33 +17,33 @@ import java.util.Optional;
 import java.util.UUID;
 
 @SuppressWarnings("squid:S1610")
-public abstract class ClaimDataMixIn {
+public interface ClaimDataMixIn {
 
-    abstract List<Party> getClaimants();
+    List<Party> getClaimants();
 
-    abstract List<TheirDetails> getDefendants();
-
-    @JsonUnwrapped
-    abstract Interest getInterest();
+    List<TheirDetails> getDefendants();
 
     @JsonUnwrapped
-    abstract Payment getPayment();
+    Interest getInterest();
 
     @JsonUnwrapped
-    abstract Optional<StatementOfTruth> getStatementOfTruth();
+    Payment getPayment();
 
     @JsonUnwrapped
-    abstract Optional<HousingDisrepair> getHousingDisrepair();
+    Optional<StatementOfTruth> getStatementOfTruth();
 
     @JsonUnwrapped
-    abstract Optional<PersonalInjury> getPersonalInjury();
+    Optional<HousingDisrepair> getHousingDisrepair();
+
+    @JsonUnwrapped
+    Optional<PersonalInjury> getPersonalInjury();
 
     @JsonIgnore
-    abstract UUID getExternalId();
+    UUID getExternalId();
+
+//    @JsonUnwrapped
+    Optional<Timeline> getTimeline();
 
     //    @JsonUnwrapped
-    abstract Optional<Timeline> getTimeline();
-
-    //    @JsonUnwrapped
-    abstract Optional<Evidence> getEvidence();
+    Optional<Evidence> getEvidence();
 }

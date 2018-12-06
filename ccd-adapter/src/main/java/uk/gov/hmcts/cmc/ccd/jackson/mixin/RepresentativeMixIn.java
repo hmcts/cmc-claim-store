@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import java.util.Optional;
 
 @SuppressWarnings("squid:S1610")
-public abstract class RepresentativeMixIn {
+public interface RepresentativeMixIn {
 
     @JsonProperty("representativeOrganisationName")
     abstract String getOrganisationName();

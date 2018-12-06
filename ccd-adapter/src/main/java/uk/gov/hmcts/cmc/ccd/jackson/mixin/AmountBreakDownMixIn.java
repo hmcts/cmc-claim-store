@@ -5,9 +5,8 @@ import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
 import java.util.List;
 
-@SuppressWarnings("squid:S1610")
-public abstract class AmountBreakDownMixIn extends AmountMixIn {
+public interface AmountBreakDownMixIn extends AmountMixIn {
 
     @JsonProperty("rows")
-    abstract List<AmountRow> getRows();
+    List<AmountRow> getRows();
 }

@@ -8,28 +8,28 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import java.time.LocalDate;
 
 @SuppressWarnings("squid:S1610")
-public abstract class PartyMixIn {
+public interface PartyMixIn {
     @JsonProperty("partyDateOfBirth")
-    abstract LocalDate getDateOfBirth();
+    LocalDate getDateOfBirth();
 
     @JsonProperty("partyName")
-    abstract String getName();
+    String getName();
 
     @JsonProperty("partyAddress")
-    abstract Address getAddress();
+    Address getAddress();
 
     @JsonProperty("partyEmail")
-    abstract String getEmail();
+    String getEmail();
 
     @JsonProperty("partyCorrespondenceAddress")
-    abstract Address getCorrespondenceAddress();
+    Address getCorrespondenceAddress();
 
     @JsonProperty("partyMobileName")
-    abstract String getMobilePhone();
+    String getMobilePhone();
 
     @JsonUnwrapped
-    abstract Representative getRepresentative();
+    Representative getRepresentative();
 
     @JsonProperty("partyServiceAddress")
-    abstract Address getServiceAddress();
+    Address getServiceAddress();
 }

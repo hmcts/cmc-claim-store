@@ -8,24 +8,23 @@ import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.math.BigDecimal;
 
-@SuppressWarnings("squid:S1610")
-public abstract class InterestMixIn {
+public interface InterestMixIn {
 
     @JsonProperty("interestType")
-    abstract InterestType getType();
+     InterestType getType();
 
     @JsonProperty("interestRate")
-    abstract BigDecimal getRate();
+     BigDecimal getRate();
 
     @JsonUnwrapped
-    abstract InterestBreakdown getInterestBreakdown();
+     InterestBreakdown getInterestBreakdown();
 
     @JsonProperty("interestReason")
-    abstract String getReason();
+     String getReason();
 
     @JsonProperty("interestSpecificDailyAmount")
-    abstract BigDecimal getSpecificDailyAmount();
+     BigDecimal getSpecificDailyAmount();
 
     @JsonUnwrapped
-    abstract InterestDate getInterestDate();
+     InterestDate getInterestDate();
 }

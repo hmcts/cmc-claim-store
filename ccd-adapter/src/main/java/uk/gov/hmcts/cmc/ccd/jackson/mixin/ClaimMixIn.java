@@ -7,24 +7,23 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-@SuppressWarnings("squid:S1610")
-public abstract class ClaimMixIn {
+public interface ClaimMixIn {
 
     @JsonUnwrapped
-    abstract ClaimData getClaimData();
+    ClaimData getClaimData();
 
     @JsonIgnore
-    abstract Optional<BigDecimal> getAmountWithInterest();
+    Optional<BigDecimal> getAmountWithInterest();
 
     @JsonIgnore
-    abstract Optional<BigDecimal> getAmountWithInterestUntilIssueDate();
+    Optional<BigDecimal> getAmountWithInterestUntilIssueDate();
 
     @JsonIgnore
-    abstract Optional<BigDecimal> getTotalAmountTillToday();
+    Optional<BigDecimal> getTotalAmountTillToday();
 
     @JsonIgnore
-    abstract Optional<BigDecimal> getTotalAmountTillDateOfIssue();
+    Optional<BigDecimal> getTotalAmountTillDateOfIssue();
 
     @JsonIgnore
-    abstract Optional<BigDecimal> getTotalInterest();
+    Optional<BigDecimal> getTotalInterest();
 }

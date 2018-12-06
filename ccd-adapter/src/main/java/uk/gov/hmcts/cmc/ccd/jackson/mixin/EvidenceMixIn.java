@@ -4,8 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 
 import java.util.List;
 
-@SuppressWarnings("squid:S1610")
-public abstract class EvidenceMixIn {
+public interface EvidenceMixIn {
 
-    abstract List<EvidenceRow> getRows();
+    List<EvidenceRow> getRows();
 }

@@ -4,21 +4,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 
-@SuppressWarnings("squid:S1610")
-public abstract class PaymentMixIn {
+public interface PaymentMixIn {
 
     @JsonProperty("paymentAmount")
-    abstract BigDecimal getAmount();
+    BigDecimal getAmount();
 
     @JsonProperty("paymentId")
-    abstract String getId();
+    String getId();
 
     @JsonProperty("paymentReference")
-    abstract String getReference();
+    String getReference();
 
     @JsonProperty("paymentStatus")
-    abstract String getStatus();
+    String getStatus();
 
     @JsonProperty("paymentDateCreated")
-    abstract String getDateCreated();
+    String getDateCreated();
 }

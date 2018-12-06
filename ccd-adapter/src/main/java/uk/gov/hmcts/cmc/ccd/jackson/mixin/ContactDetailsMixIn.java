@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Optional;
 
-@SuppressWarnings("squid:S1610")
-public abstract class ContactDetailsMixIn {
+public interface ContactDetailsMixIn {
     @JsonProperty("representativeOrganisationPhone")
-    abstract Optional<String> getPhone();
+    Optional<String> getPhone();
 
     @JsonProperty("representativeOrganisationEmail")
-    abstract Optional<String> getEmail();
+    Optional<String> getEmail();
 
     @JsonProperty("representativeOrganisationDxAddress")
-    abstract Optional<String> getDxAddress();
+    Optional<String> getDxAddress();
 }

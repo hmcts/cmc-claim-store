@@ -7,24 +7,23 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import java.util.Optional;
 
-@SuppressWarnings("squid:S1610")
-public abstract class TheirDetailsMixIn {
+public interface TheirDetailsMixIn {
 
     @JsonProperty("claimantProvidedName")
-    abstract String getName();
+    String getName();
 
     @JsonProperty("claimantProvidedAddress")
-    abstract Address getAddress();
+    Address getAddress();
 
     @JsonProperty("claimantProvidedEmail")
-    abstract Optional<String> getEmail();
+    Optional<String> getEmail();
 
     @JsonProperty("claimantProvidedMobileName")
-    abstract String getMobilePhone();
+    String getMobilePhone();
 
     @JsonUnwrapped
-    abstract Optional<Representative> getRepresentative();
+    Optional<Representative> getRepresentative();
 
     @JsonProperty("claimantProvidedServiceAddress")
-    abstract Optional<Address> getServiceAddress();
+    Optional<Address> getServiceAddress();
 }

@@ -5,12 +5,11 @@ import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 
 import java.util.Optional;
 
-@SuppressWarnings("squid:S1610")
-public abstract class HousingDisrepairMixIn {
+public interface HousingDisrepairMixIn {
 
     @JsonProperty("housingDisrepairCostOfRepairDamages")
-    abstract DamagesExpectation getCostOfRepairsDamages();
+    DamagesExpectation getCostOfRepairsDamages();
 
     @JsonProperty("housingDisrepairOtherDamages")
-    abstract Optional<DamagesExpectation> getOtherDamages();
+    Optional<DamagesExpectation> getOtherDamages();
 }

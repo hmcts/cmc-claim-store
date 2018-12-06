@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 
-@SuppressWarnings("squid:S1610")
-public abstract class InterestBreakDownMixIn {
+public interface InterestBreakDownMixIn {
 
     @JsonProperty("interestBreakDownAmount")
-    abstract BigDecimal getTotalAmount();
+     BigDecimal getTotalAmount();
 
     @JsonProperty("interestBreakDownExplanation")
-    abstract String getExplanation();
+     String getExplanation();
 }
