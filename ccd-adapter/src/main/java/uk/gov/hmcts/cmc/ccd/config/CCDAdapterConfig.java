@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimDataMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.ContactDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.EvidenceMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.HousingDisrepairMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.IndividualDetailsMixIn;
@@ -47,6 +48,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
+import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
@@ -99,6 +101,7 @@ public class CCDAdapterConfig {
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
             .addMixIn(PersonalInjury.class, PersonalInjuryMixIn.class)
             .addMixIn(ClaimData.class, ClaimDataMixIn.class)
+            .addMixIn(ContactDetails.class, ContactDetailsMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class);
 
