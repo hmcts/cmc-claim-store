@@ -1,0 +1,198 @@
+{
+  "id": 3,
+  "submitterId": "1",
+  "letterHolderId": "2",
+  "defendantId": "4",
+  "externalId": "b0fc014d-d36b-4e1f-bdcf-bc8aecb496c5",
+  "referenceNumber": "000CM001",
+  "externalId": "88e12edc-b8d2-494c-bc5a-f8afefdcad59",
+  "amount": 4000,
+  "reference": "RC-1524-6488-1670-7520",
+  "status": "success",
+  "amount": {
+    "type": "breakdown",
+    "amountBreakDown": [
+      {
+        "id": "",
+        "value": {
+          "reason": "reason",
+          "amount": 40
+        }
+      }
+    ]
+  },
+  "feeAmountInPennies": 4000,
+  "feeCode": "X0012",
+  "interestDateType": "custom",
+  "interestClaimStartDate": "2018-08-25",
+  "interestStartDateReason": "I want to claim from this date because that's when that happened",
+  "interestEndDateType": "settled_or_judgment",
+  "interestType": "standard",
+  "interestRate": 8,
+  "personalInjury": {
+    "generalDamages": "moreThanThousandPounds"
+  },
+  "housingDisrepairCostOfRepairDamages": "moreThanThousandPounds",
+  "housingDisrepairOtherDamages": "moreThanThousandPounds",
+  "timeline": [
+    {
+      "id": "",
+      "value": {
+        "description": "signed a contract",
+        "date": "Last Year"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "",
+      "value": {
+        "type": "CORRESPONDENCE",
+        "description": "description"
+      }
+    }
+  ],
+  "reason": "reason",
+  "sotSignerName": "John Rambo",
+  "sotSignerRole": "Director",
+  "feeAccountNumber": "PBA1234567",
+  "externalReferenceNumber": "CLAIM234324",
+  "preferredCourt": "LONDON COUNTY COUNCIL",
+  "claimants": [
+    {
+      "id": "",
+      "value": {
+        "type": "individual",
+        "representativeOrganisationphone": "7873738547",
+        "representativeOrganisationemail": "representative@example.org",
+        "representativeOrganisationdxAddress": "DX123456",
+        "representativeOrganisationName": "Trading ltd",
+        "representativeOrganisationAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        },
+        "partyName": "John Rambo",
+        "partyAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        },
+        "partyCorrespondenceAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        },
+        "partyMobileName": "07873727165",
+        "partyDateOfBirth": "1968-01-02"
+      }
+    }
+  ],
+  "defendants": [
+    {
+      "id": "",
+      "value": {
+        "type": "individual",
+        "representativeOrganisationphone": "7873738547",
+        "representativeOrganisationemail": "representative@example.org",
+        "representativeOrganisationdxAddress": "DX123456",
+        "representativeOrganisationName": "Trading ltd",
+        "representativeOrganisationAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        },
+        "claimantResponse":{
+          "claimantResponseType": "ACCEPTATION|REJECTION",
+          "amountPaid":100,
+          "formaliseOption":"CCJ|SETTLEMENT|REFER_TO_JUDGE",
+          "claimantPaymentIntention":{
+            "paymentOption":"IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
+            "paymentDate":"2018-08-25",
+            "repaymentPlanLabel":"-ignore-",
+            "rpInstalmentAmount":100,
+            "rpfirstPaymentDate":"2018-08-25",
+            "rpPaymentLength":"12",
+            "rpCompletionDate":"2018-08-25",
+            "rpPaymentSchedule":"EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
+          },
+          "freeMediationOption":"Yes",
+          "reason":"adsfadsf",
+          "reDeterminationExplaination":"adsfasdf",
+          "reDeterminationRequestedDate":"2018-08-25",
+          "CourtDetermination" : {
+            "courtIntention":{
+              "paymentOption":"IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
+              "paymentDate":"2018-08-25",
+              "repaymentPlanLabel":"-ignore-",
+              "rpInstalmentAmount":100,
+              "rpfirstPaymentDate":"2018-08-25",
+              "rpPaymentLength":"12",
+              "rpCompletionDate":"2018-08-25",
+              "rpPaymentSchedule":"EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
+            },
+            "courtDecision":{
+              "paymentOption":"IMMEDIATELY|BY_SPECIFIED_DATE|INSTALMENTS",
+              "paymentDate":"2018-08-25",
+              "repaymentPlanLabel":"-ignore-",
+              "rpInstalmentAmount":100,
+              "rpfirstPaymentDate":"2018-08-25",
+              "rpPaymentLength":"12",
+              "rpCompletionDate":"2018-08-25",
+              "rpPaymentSchedule":"EACH_WEEK|EVERY_TWO_WEEKS|EVERY_MONTH"
+            },
+            "rejectionReason":"adsfadsf",
+            "disposableIncome":1000,
+            "decisionType":"CLAIMANT_IN_FAVOUR_OF_DEFENDANT|CLAIMANT|DEFENDANTCOURT"
+          }
+        },
+        "partyName": "John Smith",
+        "partyAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        },
+        "partyEmail": "j.smith@example.com",
+        "partyServiceAddress": {
+          "line1": "52",
+          "line2": "Down Street",
+          "line3": "Salford",
+          "city": "Manchester",
+          "postcode": "DF1 3LJ"
+        },
+        "partyDateOfBirth": "1970-10-10"
+      }
+    }
+  ],
+  "createdAt": "2018-12-04T13:46:32.891",
+  "issuedOn": "2018-12-05",
+  "responseDeadline": "2018-12-19",
+  "moreTimeRequested": false,
+  "submitterEmail": "claimant@mail.com",
+  "features": [
+    {
+      "id": "",
+      "value": "admissions"
+    }
+  ],
+  "reDetermination": {
+    "explanation": "I feel defendant can pay",
+    "partyType": "CLAIMANT"
+  },
+  "serviceDate": "2018-12-10",
+  "amountWithInterest": 40.89,
+  "amountWithInterestUntilIssueDate": 40.89,
+  "totalAmountTillToday": 80.89,
+  "totalAmountTillDateOfIssue": 80.89,
+  "totalInterest": 0.89
+}
