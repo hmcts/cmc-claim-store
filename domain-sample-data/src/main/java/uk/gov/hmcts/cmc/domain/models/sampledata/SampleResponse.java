@@ -145,6 +145,11 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+        public FullDefence withStatementOfTruth(StatementOfTruth statementOfTruth) {
+            this.statementOfTruth = statementOfTruth;
+            return this;
+        }
+
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
                 freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,

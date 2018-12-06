@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @Ignore
@@ -24,7 +25,7 @@ public class ClaimantResponseSerializationTest {
         String claimantResponse = new ResourceReader().read("/jackson-serialization-samples/claimant-response.json");
         assertThat(json, isJson());
         //TODO : either this
-        //assertEquals(json, claimantResponse);
+        assertEquals(json, claimantResponse);
         //TODO: or if you want more granular testing this.
         assertThat(json, hasJsonPath("$.defendants[:1].value.claimantResponse.CourtDetermination"));
         assertThat(json, hasJsonPath("$.defendants[:1].value.claimantResponse.claimantPaymentIntention"));
