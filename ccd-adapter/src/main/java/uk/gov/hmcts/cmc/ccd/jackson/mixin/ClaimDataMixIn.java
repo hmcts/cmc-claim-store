@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
+import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -17,33 +18,36 @@ import java.util.Optional;
 import java.util.UUID;
 
 @SuppressWarnings("squid:S1610")
-public interface ClaimDataMixIn {
+public abstract class ClaimDataMixIn {
 
-    List<Party> getClaimants();
+    abstract List<Party> getClaimants();
 
-    List<TheirDetails> getDefendants();
-
-    @JsonUnwrapped
-    Interest getInterest();
+    abstract List<TheirDetails> getDefendants();
 
     @JsonUnwrapped
-    Payment getPayment();
+    abstract Interest getInterest();
 
     @JsonUnwrapped
-    Optional<StatementOfTruth> getStatementOfTruth();
+    abstract Payment getPayment();
 
     @JsonUnwrapped
-    Optional<HousingDisrepair> getHousingDisrepair();
+    abstract Optional<StatementOfTruth> getStatementOfTruth();
 
     @JsonUnwrapped
-    Optional<PersonalInjury> getPersonalInjury();
+    abstract Optional<HousingDisrepair> getHousingDisrepair();
+
+    @JsonUnwrapped
+    abstract Optional<PersonalInjury> getPersonalInjury();
 
     @JsonIgnore
-    UUID getExternalId();
-
-//    @JsonUnwrapped
-    Optional<Timeline> getTimeline();
+    abstract UUID getExternalId();
 
     //    @JsonUnwrapped
-    Optional<Evidence> getEvidence();
+    Amount amount;
+
+    //    @JsonUnwrapped
+    abstract Optional<Timeline> getTimeline();
+
+    //    @JsonUnwrapped
+    abstract Optional<Evidence> getEvidence();
 }
