@@ -64,12 +64,12 @@ public class FullAdmissionResponseContentProviderTest {
     public void shouldProvideFullAmountInContentMap() {
         FullAdmissionResponse fullAdmissionResponse = builder().buildWithPaymentOptionBySpecifiedDate();
         Map<String, Object> content = provider.createContent(fullAdmissionResponse, BigDecimal.valueOf(900));
-        assertThat(content).containsKey("whenWillTheyPay");
-        String whenWillTheyPay = (String)content.get("whenWillTheyPay");
-        assertThat(whenWillTheyPay).startsWith("£900.00, no later");
+        assertThat(content).containsKey("whenWillTheyFinishPaying");
+        String whenWillTheyFinishPaying = (String)content.get("whenWillTheyFinishPaying");
+        assertThat(whenWillTheyFinishPaying).startsWith("£900.00, no later");
 
         content = provider.createContent(fullAdmissionResponse, BigDecimal.valueOf(2000));
-        whenWillTheyPay = (String)content.get("whenWillTheyPay");
-        assertThat(whenWillTheyPay).startsWith("£2,000.00, no later");
+        whenWillTheyFinishPaying = (String)content.get("whenWillTheyFinishPaying");
+        assertThat(whenWillTheyFinishPaying).startsWith("£2,000.00, no later");
     }
 }

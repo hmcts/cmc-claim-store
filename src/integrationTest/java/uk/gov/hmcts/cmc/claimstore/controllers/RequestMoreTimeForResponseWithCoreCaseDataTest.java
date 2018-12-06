@@ -42,7 +42,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
     properties = {
         "document_management.api_gateway.url=false",
         "feature_toggles.ccd_async_enabled=false",
-        "feature_toggles.ccd_enabled=true"
+        "feature_toggles.ccd_enabled=true",
+        "feature_toggles.reminderEmails=true"
     }
 )
 public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrationTest {
