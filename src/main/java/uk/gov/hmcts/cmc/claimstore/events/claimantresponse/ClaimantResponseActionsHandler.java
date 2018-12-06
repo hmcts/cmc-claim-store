@@ -9,14 +9,16 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanSt
 public class ClaimantResponseActionsHandler {
 
     private final NotificationToDefendantService notificationService;
-    private final ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService;
+    private final ClaimantRejectOrgPaymentPlanStaffNotificationService
+        claimantRejectOrgPaymentPlanStaffNotificationService;
 
     public ClaimantResponseActionsHandler(
         NotificationToDefendantService notificationService,
         ClaimantRejectOrgPaymentPlanStaffNotificationService claimantRejectOrgPaymentPlanStaffNotificationService
     ) {
         this.notificationService = notificationService;
-        this.claimantRejectOrgPaymentPlanStaffNotificationService = claimantRejectOrgPaymentPlanStaffNotificationService;
+        this.claimantRejectOrgPaymentPlanStaffNotificationService =
+            claimantRejectOrgPaymentPlanStaffNotificationService;
     }
 
     @EventListener
@@ -26,6 +28,8 @@ public class ClaimantResponseActionsHandler {
 
     @EventListener
     public void sendClaimantRejectOrganisationPaymentPlanNotificationToStaff(RejectOrganisationPaymentPlanEvent event) {
-        this.claimantRejectOrgPaymentPlanStaffNotificationService.notifyStaffClaimantRejectOrganisationPaymentPlan(event.getClaim());
+        this.claimantRejectOrgPaymentPlanStaffNotificationService.notifyStaffClaimantRejectOrganisationPaymentPlan(
+            event.getClaim()
+        );
     }
 }

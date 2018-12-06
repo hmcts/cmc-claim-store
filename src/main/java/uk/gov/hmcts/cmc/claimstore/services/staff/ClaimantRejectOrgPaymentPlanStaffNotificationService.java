@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantRejectOrgRepaymentPlanStaffEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantRejectOrgPaymentPlanStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -23,19 +23,21 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationService {
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
     private final StaffPdfCreatorService staffPdfCreatorService;
-    private final ClaimantRejectOrgRepaymentPlanStaffEmailContentProvider claimantRejectOrgRepaymentPlanStaffEmailContentProvider;
+    private final ClaimantRejectOrgPaymentPlanStaffEmailContentProvider
+        claimantRejectOrgPaymentPlanStaffEmailContentProvider;
 
     @Autowired
     public ClaimantRejectOrgPaymentPlanStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties staffEmailProperties,
         StaffPdfCreatorService staffPdfCreatorService,
-        ClaimantRejectOrgRepaymentPlanStaffEmailContentProvider claimantRejectOrgRepaymentPlanStaffEmailContentProvider
+        ClaimantRejectOrgPaymentPlanStaffEmailContentProvider claimantRejectOrgPaymentPlanStaffEmailContentProvider
     ) {
         this.emailService = emailService;
         this.staffEmailProperties = staffEmailProperties;
         this.staffPdfCreatorService = staffPdfCreatorService;
-        this.claimantRejectOrgRepaymentPlanStaffEmailContentProvider = claimantRejectOrgRepaymentPlanStaffEmailContentProvider;
+        this.claimantRejectOrgPaymentPlanStaffEmailContentProvider =
+            claimantRejectOrgPaymentPlanStaffEmailContentProvider;
     }
 
     public void notifyStaffClaimantRejectOrganisationPaymentPlan(Claim claim) {
@@ -50,7 +52,7 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationService {
 
     private EmailData prepareClaimantRejectOrganisationPaymentPlanEmailData(Claim claim) {
         Map<String, Object> map = createParameterMap(claim);
-        EmailContent emailContent = claimantRejectOrgRepaymentPlanStaffEmailContentProvider.createContent(map);
+        EmailContent emailContent = claimantRejectOrgPaymentPlanStaffEmailContentProvider.createContent(map);
 
         return EmailData.builder()
             .to(staffEmailProperties.getRecipient())
