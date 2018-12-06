@@ -74,12 +74,12 @@ public class ClaimantRejectOrganisationPaymentPlanStaffNotificationServiceTest e
         );
 
         assertThat(emailDataArgument.getValue()
-        .getSubject()).isEqualTo(subject);
+            .getSubject()).isEqualTo(subject);
         assertThat(emailDataArgument.getValue()
-        .getMessage()).startsWith(
-            String.format("%s has requested a redetermination, please refer the attached to a District Judge.",
-                claim.getClaimData().getClaimant().getName()
-            )
+            .getMessage()).startsWith(
+                String.format("%s has requested a redetermination, please refer the attached to a District Judge.",
+                    claim.getClaimData().getClaimant().getName()
+                )
         );
     }
 
