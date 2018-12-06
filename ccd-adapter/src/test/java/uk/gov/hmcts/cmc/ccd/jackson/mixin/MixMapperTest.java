@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.processors;
+package uk.gov.hmcts.cmc.ccd.jackson.mixin;
 
 import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
