@@ -34,8 +34,6 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends Mo
     private ClaimantRejectOrgPaymentPlanStaffNotificationService service;
 
     @Captor
-    private ArgumentCaptor<String> senderArgument;
-    @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     @Autowired
