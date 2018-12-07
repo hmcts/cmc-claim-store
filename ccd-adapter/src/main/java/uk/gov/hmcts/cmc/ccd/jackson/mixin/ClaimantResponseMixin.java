@@ -15,5 +15,5 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 public abstract class ClaimantResponseMixin {
 
     @JsonIgnore
-    abstract ClaimantResponseType getType();
+    public abstract ClaimantResponseType getType();
 }
