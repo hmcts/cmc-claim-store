@@ -68,6 +68,7 @@ public class JsonMapperTest {
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .withServiceAddress(null)
+                .withDateOfBirth(null)
                 .individualDetails())
             .withFeeCode("X0012")
             .build();
@@ -112,6 +113,7 @@ public class JsonMapperTest {
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
                 .withServiceAddress(null)
+                .withDateOfBirth(null)
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
@@ -151,6 +153,7 @@ public class JsonMapperTest {
                 SampleTheirDetails.builder()
                     .withRepresentative(SampleRepresentative.builder().build())
                     .withServiceAddress(SampleAddress.builder().build())
+                    .withDateOfBirth(null)
                     .individualDetails())
             .withTimeline(null)
             .withPayment(null)

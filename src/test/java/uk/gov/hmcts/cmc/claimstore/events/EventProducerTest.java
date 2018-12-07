@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
+import uk.gov.hmcts.cmc.claimstore.events.offer.SettlementAgreementRejectedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -153,5 +154,15 @@ public class EventProducerTest {
 
         //then
         verify(publisher).publishEvent(eq(event));
+    }
+
+    @Test
+    public void shouldCreateRejectSettlementAgreementEvent() throws Exception {
+        SettlementAgreementRejectedEvent event = new SettlementAgreementRejectedEvent(CLAIM);
+
+        eventProducer.createSettlementAgreementRejectedEvent(CLAIM);
+
+        verify(publisher).publishEvent(eq(event));
+
     }
 }

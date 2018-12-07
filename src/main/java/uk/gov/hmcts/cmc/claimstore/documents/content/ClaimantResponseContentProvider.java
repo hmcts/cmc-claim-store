@@ -4,8 +4,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -77,11 +79,17 @@ public class ClaimantResponseContentProvider {
                 content.put("defendantAdmissionAccepted", "I accept this amount");
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
                 content.putAll(responseAcceptationContentProvider.createContent(responseAcceptation));
-                content.put("formaliseOption", responseAcceptation.getFormaliseOption().getDescription());
-
-                claim.getTotalAmountTillDateOfIssue().ifPresent(totalAmount -> content.put("totalAmount",
-                    formatMoney(totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO)))));
-
+                responseAcceptation.getFormaliseOption()
+                    .map(FormaliseOption::getDescription)
+                    .ifPresent(
+                        x -> content.put("formaliseOption", x)
+                    );
+                claim.getTotalAmountTillDateOfIssue()
+                    .map(totalAmount ->
+                        totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO))
+                    )
+                    .map(Formatting::formatMoney)
+                    .ifPresent(formattedAmount -> content.put("totalAmount", formattedAmount));
                 addFormalisedOption(claim, content, responseAcceptation);
             }
             break;
@@ -102,7 +110,7 @@ public class ClaimantResponseContentProvider {
         Map<String, Object> content,
         ResponseAcceptation responseAcceptation
     ) {
-        switch (responseAcceptation.getFormaliseOption()) {
+        switch (responseAcceptation.getFormaliseOption().orElseThrow(IllegalArgumentException::new)) {
             case CCJ:
                 content.put("ccj", claim.getCountyCourtJudgment());
                 break;

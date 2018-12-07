@@ -6,10 +6,12 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.RejectOrganisationPaymentPlanEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.offer.SettlementAgreementRejectedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -65,6 +67,10 @@ public class EventProducer {
         publisher.publishEvent(new OfferRejectedEvent(claim, party));
     }
 
+    public void createSettlementAgreementRejectedEvent(Claim claim) {
+        publisher.publishEvent(new SettlementAgreementRejectedEvent(claim));
+    }
+
     public void createAgreementCountersignedEvent(Claim claim, MadeBy party) {
         publisher.publishEvent(new AgreementCountersignedEvent(claim, party));
     }
@@ -87,5 +93,9 @@ public class EventProducer {
 
     public void createInterlocutoryJudgmentEvent(Claim claim) {
         publisher.publishEvent(new InterlocutoryJudgmentEvent(claim));
+    }
+
+    public void createRejectOrganisationPaymentPlanEvent(Claim claim) {
+        publisher.publishEvent(new RejectOrganisationPaymentPlanEvent(claim));
     }
 }

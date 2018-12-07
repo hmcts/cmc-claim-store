@@ -8,6 +8,7 @@ public enum AppInsightsEvent {
     RESPONSE_PART_ADMISSION_SUBMITTED("Response part admission submitted"),
     OFFER_MADE("Offer made"),
     OFFER_REJECTED("Offer rejected"),
+    SETTLEMENT_AGREEMENT_REJECTED("Settlement agreement rejected"),
     SETTLEMENT_REACHED("Settlement reached"),
     CCJ_REQUESTED("CCJ requested"),
     RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
@@ -16,7 +17,8 @@ public enum AppInsightsEvent {
     BULK_PRINT_FAILED("Bulk print failed"),
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
-    CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted");
+    CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
+    CCD_ASYNC_FAILURE("CCD Async handling - failure");
 
     private String displayName;
 

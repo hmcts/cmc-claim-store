@@ -22,7 +22,7 @@ public class EvidenceMapper implements Mapper<CCDEvidence, Evidence> {
 
     @Override
     public CCDEvidence to(Evidence evidence) {
-        if (evidence == null) {
+        if (evidence == null || evidence.getRows() == null || evidence.getRows().isEmpty()) {
             return null;
         }
         CCDEvidence.CCDEvidenceBuilder builder = CCDEvidence.builder();
