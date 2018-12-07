@@ -15,10 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-<<<<<<< HEAD
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED;
-=======
->>>>>>> origin/master
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REJECTED;
 
 @Service
@@ -47,7 +44,6 @@ public class SettlementAgreementService {
     }
 
     public Claim reject(Claim claim, String authorisation) {
-<<<<<<< HEAD
 
         Settlement settlement = assertSettlementCanBeResponded(claim);
         settlement.reject(MadeBy.DEFENDANT);
@@ -58,27 +54,11 @@ public class SettlementAgreementService {
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
 
-=======
-        assertSettlementIsNotReached(claim);
-        assertLastStatementIsClaimantAcceptation(claim);
-
-        MadeBy party = MadeBy.DEFENDANT;
-
-        Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Settlement agreement has not yet been made."));
-
-        settlement.reject(party);
-
-        String userAction = format("SETTLEMENT_AGREEMENT_REJECTED_BY_%s", party.name());
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
-        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
->>>>>>> origin/master
         eventProducer.createSettlementAgreementRejectedEvent(updated);
         appInsights.trackEvent(SETTLEMENT_AGREEMENT_REJECTED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
     }
 
-<<<<<<< HEAD
     public Claim countersign(Claim claim, String authorisation) {
 
         Settlement settlement = assertSettlementCanBeResponded(claim);
@@ -99,14 +79,11 @@ public class SettlementAgreementService {
         assertSettlementIsNotReached(claim);
         assertLastStatementIsClaimantAcceptation(claim);
 
-        Settlement settlement = claim.getSettlement()
+        return claim.getSettlement()
             .orElseThrow(() -> new ConflictException("Settlement agreement has not yet been made."));
 
-        return settlement;
     }
 
-=======
->>>>>>> origin/master
     private void assertSettlementIsNotReached(Claim claim) {
         if (claim.getSettlementReachedAt() != null) {
             throw new ConflictException(format("Settlement for claim %d has been already reached", claim.getId()));
@@ -124,9 +101,4 @@ public class SettlementAgreementService {
                 format(REJECTION_EXPECTED_STATE_ERROR, claim.getId()));
         }
     }
-<<<<<<< HEAD
-
-
-=======
->>>>>>> origin/master
 }
