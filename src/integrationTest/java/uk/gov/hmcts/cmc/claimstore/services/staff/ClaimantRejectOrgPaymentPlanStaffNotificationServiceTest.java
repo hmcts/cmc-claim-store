@@ -88,7 +88,7 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends Mo
 
         service.notifyStaffClaimantRejectOrganisationPaymentPlan(claim);
 
-        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+        verify(emailService).sendEmail(anyString(), emailDataArgument.capture());
 
         List<EmailAttachment> attachments = emailDataArgument.getValue().getAttachments();
         assertThat(attachments).hasSize(3);
