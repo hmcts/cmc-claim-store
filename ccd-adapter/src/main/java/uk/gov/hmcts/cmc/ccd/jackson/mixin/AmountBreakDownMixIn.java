@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface AmountBreakDownMixIn extends AmountMixIn {
 
-    @JsonProperty("rows")
+    @JsonProperty("amountBreakdown")
     List<AmountRow> getRows();
 }

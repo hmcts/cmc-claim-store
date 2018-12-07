@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.jackson.mixin;
 import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Test;
+import uk.gov.hmcts.cmc.ccd.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -181,8 +182,6 @@ public class MixMapperTest {
             .build();
 
         String json = processor.toJson(claim);
-
-        System.out.println(json);
 
         Claim output = processor.fromJson(json, Claim.class);
         String outputJson = processor.toJson(output);

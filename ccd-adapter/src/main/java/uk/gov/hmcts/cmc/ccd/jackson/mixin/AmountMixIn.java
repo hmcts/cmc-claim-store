@@ -5,6 +5,6 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountType;
 
 public interface AmountMixIn {
 
-    @JsonProperty("type")
-    AmountType getType();
+    @JsonProperty("amountType")
+    String getType();
 }

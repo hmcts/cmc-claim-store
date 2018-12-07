@@ -18,8 +18,8 @@ import javax.validation.constraints.Size;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
-@EqualsAndHashCode
-public class AmountBreakDown implements Amount {
+@EqualsAndHashCode(callSuper = true)
+public class AmountBreakDown extends Amount {
 
     @Valid
     @NotNull
@@ -28,6 +28,7 @@ public class AmountBreakDown implements Amount {
     private final List<AmountRow> rows;
 
     public AmountBreakDown(@JsonProperty("rows") List<AmountRow> rows) {
+        super(AmountType.breakdown.name());
         this.rows = rows;
     }
 

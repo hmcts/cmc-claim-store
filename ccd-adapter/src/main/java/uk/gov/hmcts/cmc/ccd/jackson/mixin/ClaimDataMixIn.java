@@ -2,6 +2,10 @@ package uk.gov.hmcts.cmc.ccd.jackson.mixin;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.AmountSerializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.EvidenceSerializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.TimelineSerializer;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
@@ -42,12 +46,16 @@ public abstract class ClaimDataMixIn {
     @JsonIgnore
     abstract UUID getExternalId();
 
-    //    @JsonUnwrapped
-    Amount amount;
+    @JsonUnwrapped
+    abstract Amount getAmount();
 
-    //    @JsonUnwrapped
+    @JsonUnwrapped
+    @JsonSerialize(using = TimelineSerializer.class)
     abstract Optional<Timeline> getTimeline();
 
-    //    @JsonUnwrapped
+
+    @JsonUnwrapped
+    @JsonSerialize(using = EvidenceSerializer.class)
     abstract Optional<Evidence> getEvidence();
+
 }
