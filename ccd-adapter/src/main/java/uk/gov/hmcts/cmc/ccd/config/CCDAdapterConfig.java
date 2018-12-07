@@ -84,6 +84,7 @@ public class CCDAdapterConfig {
             .registerModule(new SimpleModule().addSerializer(List.class, listItemSerializer))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .enable(SerializationFeature.INDENT_OUTPUT)
             .addMixIn(Individual.class, IndividualMixIn.class)
             .addMixIn(SoleTrader.class, SoleTraderMixIn.class)
             .addMixIn(Company.class, CompanyMixIn.class)
@@ -109,8 +110,7 @@ public class CCDAdapterConfig {
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class)
             .addMixIn(ClaimantResponse.class, ClaimantResponseMixin.class)
-            .addMixIn(PaymentIntention.class, PaymentIntentionMixin.class)
-            .enable(SerializationFeature.INDENT_OUTPUT);
+            .addMixIn(PaymentIntention.class, PaymentIntentionMixin.class);
 
     }
 }

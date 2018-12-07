@@ -12,7 +12,7 @@ public class SampleResponseAcceptation {
 
     private SampleResponseAcceptation(){}
 
-    public static ResponseAcceptationBuilder builder() {
+    private static ResponseAcceptationBuilder builder() {
         return ResponseAcceptation.builder();
     }
 

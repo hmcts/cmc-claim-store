@@ -19,14 +19,14 @@ import static org.junit.Assert.assertThat;
 public class ClaimantResponseSerializationTest {
 
     private JsonMapper processor = new JsonMapper(new CCDAdapterConfig().ccdObjectMapper());
-    private static final String JASON_PATH_PREFIX = "$.";
+    private static final String JSON_PATH_PREFIX = "$.";
 
     @Test
     public void claimantResponseForDefendantPartAdmitWithImmediatePayment() {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayImmediately();
         String json = processor.toJson(responseAcceptation);
         assertCommon(json);
-        assertThat(json, hasNoJsonPath(JASON_PATH_PREFIX + "CourtDetermination"));
+        assertThat(json, hasNoJsonPath(JSON_PATH_PREFIX + "CourtDetermination"));
     }
 
     @Test
@@ -34,8 +34,8 @@ public class ClaimantResponseSerializationTest {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayBySetDate();
         String json = processor.toJson(responseAcceptation);
         assertCommon(json);
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "courtDetermination"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantPaymentIntention.paymentOption",
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "courtDetermination"));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "claimantPaymentIntention.paymentOption",
             equalToIgnoringCase("BY_SPECIFIED_DATE")));
     }
 
@@ -44,9 +44,9 @@ public class ClaimantResponseSerializationTest {
         ResponseAcceptation responseAcceptation = SampleResponseAcceptation.partAdmitPayByInstalments();
         String json = processor.toJson(responseAcceptation);
         assertCommon(json);
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "courtDetermination.courtDecision"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "courtDetermination.courtPaymentIntention"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantPaymentIntention.paymentOption",
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "courtDetermination.courtDecision"));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "courtDetermination.courtPaymentIntention"));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "claimantPaymentIntention.paymentOption",
             equalToIgnoringCase("INSTALMENTS")));
     }
 
@@ -56,16 +56,16 @@ public class ClaimantResponseSerializationTest {
             .ClaimantResponseRejection.validDefaultRejection();
         String json = processor.toJson(responseRejection);
         assertThat(json, isJson());
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantResponseType",equalToIgnoringCase("REJECTION")));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "freeMediation",equalTo(false)));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "reason",equalToIgnoringCase("Some valid reason")));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "claimantResponseType",equalToIgnoringCase("REJECTION")));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "freeMediation",equalTo(false)));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "reason",equalToIgnoringCase("Some valid reason")));
     }
 
     private void assertCommon(String json) {
         assertThat(json, isJson());
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "claimantResponseType"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "amountPaid"));
-        assertThat(json, hasJsonPath(JASON_PATH_PREFIX + "formaliseOption"));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "claimantResponseType"));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "amountPaid"));
+        assertThat(json, hasJsonPath(JSON_PATH_PREFIX + "formaliseOption"));
     }
 
 }
