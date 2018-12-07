@@ -10,8 +10,10 @@ import java.util.Optional;
 
 public class DefendantTimelineSerializer extends JsonSerializer<Optional<DefendantTimeline>> {
 
-    private static final String ID = "id";
-    private static final String VALUE = "value";
+    @Override
+    public boolean isUnwrappingSerializer() {
+        return true;
+    }
 
     @Override
     public void serialize(
@@ -24,17 +26,14 @@ public class DefendantTimelineSerializer extends JsonSerializer<Optional<Defenda
 
         String comment = defendantTimeline.getComment().orElse("");
 
-//        serializerProvider.defaultSerializeValue(comment, jsonGenerator); // If I swap the order of this statement with next, throws error
-
-        jsonGenerator.writeStartObject();
-        jsonGenerator.writeObjectField("defendantTimeLineComment", comment);
-        jsonGenerator.writeEndObject();
+        serializerProvider.defaultSerializeField(
+            "defendantTimeLineComment",
+            comment,
+            jsonGenerator);
 
         serializerProvider.defaultSerializeField(
             "defendantTimeLineEvents",
             defendantTimeline.getEvents(),
             jsonGenerator);
-
-
     }
 }
