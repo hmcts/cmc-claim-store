@@ -42,7 +42,6 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
         claim = claimStore.saveClaim(SampleClaimData.builder()
             .withExternalId(UUID.randomUUID()).build(), SUBMITTER_ID, LocalDate.now());
 
-
         UserDetails defendantDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
             .withMail(DEFENDANT_EMAIL)
@@ -78,7 +77,7 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
         Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
-        assertThat(settlement.getLastStatement().getMadeBy() == MadeBy.DEFENDANT);
+        assertThat(settlement.getLastStatement().getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
     }
 
     @Test
@@ -91,6 +90,14 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
         assertThat(settlement.getLastStatement().getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
+    }
+
+    @Test
+    public void shouldReturn400WhenClaimIsNotInStateForSettlementAgreementRejection() throws Exception {
+        Settlement settlement = new Settlement();
+        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, SUBMITTER_ID);
+
+        makeRequest(claim.getExternalId(), "reject").andExpect(status().isBadRequest());
     }
 
     private ResultActions makeRequest(String externalId, String action) throws Exception {

@@ -14,9 +14,9 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REJECTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 
 @Service
 @Transactional(transactionManager = "transactionManager")
@@ -24,7 +24,6 @@ public class SettlementAgreementService {
 
     private static final String REJECTION_EXPECTED_STATE_ERROR =
         "Expecting last statement for claim %d to be ACCEPTATION from CLAIMANT";
-
 
     private final ClaimService claimService;
     private final CaseRepository caseRepository;
@@ -71,7 +70,7 @@ public class SettlementAgreementService {
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
 
         eventProducer.createSettlementAgreementCountersignedEvent(updated);
-        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED, AppInsights.REFERENCE_NUMBER, updated.getReferenceNumber());
+        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
 
     }

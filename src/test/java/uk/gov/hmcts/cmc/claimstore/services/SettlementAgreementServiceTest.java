@@ -94,10 +94,8 @@ public class SettlementAgreementServiceTest {
     @Test(expected = ConflictException.class)
     public void shouldRaiseConflictExceptionWhenCountersigningAgreementAlreadyRejected() {
         Claim claim = buildClaimWithSettlementAgreementRejected();
-        settlementAgreementService.countersign(claim);
+        settlementAgreementService.countersign(claim, AUTHORISATION);
     }
-
-    @Test(expected = ConflictException.class)
 
     private Claim buildClaimWithSettlementAgreementOffer() {
         Settlement settlement = new Settlement();

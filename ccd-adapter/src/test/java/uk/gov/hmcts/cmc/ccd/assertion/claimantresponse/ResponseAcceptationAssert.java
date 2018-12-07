@@ -17,7 +17,7 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
         isNotNull();
 
         if (!Objects.equals(
-            actual.getFormaliseOption().orElseThrow(IllegalArgumentException::new).name(),
+            actual.getFormaliseOption().orElseThrow(AssertionError::new).name(),
             ccdResponseAcceptation.getFormaliseOption().name()
         )) {
             failWithMessage("Expected ResponseAcceptation.formaliseOption to be <%s> but was <%s>",

@@ -94,7 +94,7 @@ public class Settlement {
 
         if (!lastStatementIsOffer() && !lastStatementIsAcceptationNotBy(party)) {
             throw new IllegalSettlementStatementException(
-                format("Last statement was: %s , offer or acceptation expected.",
+                format("Last statement was: %s, offer or acceptation expected.",
                     getLastStatement().getType().name().toLowerCase())
             );
         }
