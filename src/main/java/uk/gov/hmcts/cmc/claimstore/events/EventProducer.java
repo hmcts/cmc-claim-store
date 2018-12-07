@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.ReDeterminationEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.RejectOrganisationPaymentPlanEvent;
@@ -87,8 +88,8 @@ public class EventProducer {
         publisher.publishEvent(new PaidInFullEvent(claim));
     }
 
-    public void createRedeterminationEvent(Claim claim, String authorisation, String submitterName) {
-        publisher.publishEvent(new ReDeterminationEvent(claim, authorisation, submitterName));
+    public void createRedeterminationEvent(Claim claim, String authorisation, String submitterName, MadeBy partyType) {
+        publisher.publishEvent(new ReDeterminationEvent(claim, authorisation, submitterName, partyType));
     }
 
     public void createInterlocutoryJudgmentEvent(Claim claim) {
