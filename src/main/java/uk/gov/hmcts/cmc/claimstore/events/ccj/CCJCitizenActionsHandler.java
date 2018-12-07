@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.CCJNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+
+import java.util.Objects;
 
 @Component
 public class CCJCitizenActionsHandler {
@@ -17,7 +20,7 @@ public class CCJCitizenActionsHandler {
     }
 
     @EventListener
-    public void sendNotification(CountyCourtJudgmentEvent event) {
+    public void onCountyCourtJudgment(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         CountyCourtJudgmentType countyCourtJudgmentType = claim.getCountyCourtJudgment().getCcjType();
         switch (countyCourtJudgmentType) {
@@ -34,6 +37,14 @@ public class CCJCitizenActionsHandler {
             default:
                 throw new IllegalArgumentException("Incorrect event provided: "
                     + countyCourtJudgmentType);
+        }
+    }
+
+    @EventListener
+    public void onRedetermination(ReDeterminationEvent event) {
+        Objects.requireNonNull(event);
+        if (event.getPartyType() == MadeBy.DEFENDANT) {
+            ccjNotificationService.notifyClaimantForRedeterminationRequest(event.getClaim());
         }
     }
 }
