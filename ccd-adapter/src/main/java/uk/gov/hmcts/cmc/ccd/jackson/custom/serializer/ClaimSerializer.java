@@ -13,7 +13,7 @@ public class ClaimSerializer extends JsonSerializer<Claim> {
     @Override
     public void serialize(Claim claim, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
         throws IOException {
-        // TODO: flesh out the implementation
+        //  flesh out the implementation
     }
 
 
