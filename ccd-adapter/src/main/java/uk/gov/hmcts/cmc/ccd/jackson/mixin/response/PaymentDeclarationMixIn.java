@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 
-public abstract class PaymentDeclarationMixIn {
+public interface PaymentDeclarationMixIn {
 
     @JsonProperty("paymentDeclarationPaidDate")
-    abstract LocalDate getPaidDate();
+    LocalDate getPaidDate();
 
     @JsonProperty("paymentDeclarationExplanation")
-    abstract String getExplanation();
+    String getExplanation();
 }

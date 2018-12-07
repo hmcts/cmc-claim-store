@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import java.io.IOException;
 import java.util.Map;
 
-@Service
+@Service("ccdJsonMapper")
 public class JsonMapper {
 
     private static final String SERIALISATION_ERROR_MESSAGE = "Failed to serialize '%s' to JSON";

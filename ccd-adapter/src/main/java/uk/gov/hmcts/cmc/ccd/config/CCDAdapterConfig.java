@@ -2,16 +2,18 @@ package uk.gov.hmcts.cmc.ccd.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.DefendantTimelineDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.DefendantTimelineSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountMixIn;
@@ -71,12 +73,13 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Configuration
 @ComponentScan(basePackages = {"uk.gov.hmcts.cmc"})
 public class CCDAdapterConfig {
-    @Bean
+
     public ObjectMapper ccdObjectMapper() {
         return new ObjectMapper()
             .registerModule(new Jdk8Module())
@@ -84,9 +87,17 @@ public class CCDAdapterConfig {
             .registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .registerModule(new SimpleModule().addDeserializer(List.class, new ListItemDeserializer()))
             .registerModule(new SimpleModule().addSerializer(List.class, new ListItemSerializer(List.class)))
+
+//            .registerModule(new SimpleModule().addSerializer(DefendantTimeline.class, new DefendantTimelineSerializer()))
+//            .registerModule(new SimpleModule().addDeserializer(DefendantTimeline.class, new DefendantTimelineDeserializer()))
+
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS) //TODO: Failing Deserializer
+
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
+
             .addMixIn(Individual.class, IndividualMixIn.class)
             .addMixIn(SoleTrader.class, SoleTraderMixIn.class)
             .addMixIn(Company.class, CompanyMixIn.class)
@@ -99,7 +110,7 @@ public class CCDAdapterConfig {
             .addMixIn(InterestBreakdown.class, InterestBreakDownMixIn.class)
             .addMixIn(InterestDate.class, InterestDateMixIn.class)
             .addMixIn(Evidence.class, EvidenceMixIn.class)
-            .addMixIn(Timeline.class, TimelineMixIn.class)
+//            .addMixIn(Timeline.class, TimelineMixIn.class)
             .addMixIn(Amount.class, AmountMixIn.class)
             .addMixIn(Payment.class, PaymentMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
@@ -112,7 +123,7 @@ public class CCDAdapterConfig {
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class)
             .addMixIn(DefendantEvidence.class, DefendantEvidenceMixIn.class)
-            .addMixIn(DefendantTimeline.class, DefendantTimelineMixIn.class)
+//            .addMixIn(DefendantTimeline.class, DefendantTimelineMixIn.class)
             .addMixIn(FullDefenceResponse.class, FullDefenceResponseMixIn.class)
             .addMixIn(PaymentDeclaration.class, PaymentDeclarationMixIn.class);
     }
