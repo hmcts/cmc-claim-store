@@ -31,6 +31,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/defendantAdmission/subject.txt");
     }
 
+    public String getStatesPaidEmailBody() {
+        return readString("/staff/templates/email/statesPaid/body.txt");
+    }
+
+    public String getStatesPaidEmailSubject() {
+        return readString("/staff/templates/email/statesPaid/subject.txt");
+    }
+
     public String getCCJRequestSubmittedEmailBody() {
         return readString("/staff/templates/email/ccjRequestSubmitted/body.txt");
     }
