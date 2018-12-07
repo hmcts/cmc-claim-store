@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.ccd.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,20 +12,19 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.AmountSerializer;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.OptionalSerializer;
-import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.AmountDeserializer;
-import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountMixIn;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.AmountRangeDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.EvidenceDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.TimelineDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
+import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountRangeMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimDataMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ClaimMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.CompanyMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.ContactDetailsMixIn;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.EvidenceDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.HousingDisrepairMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.IndividualDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.IndividualMixIn;
@@ -40,7 +39,6 @@ import uk.gov.hmcts.cmc.ccd.jackson.mixin.RepresentativeMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderDetailsMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.SoleTraderMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.StatementOfTruthMixIn;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.TimelineDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.TimelineMixIn;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -68,7 +66,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Configuration
@@ -79,7 +76,7 @@ public class CCDAdapterConfig {
         ListItemDeserializer listItemDeserializer = new ListItemDeserializer();
         ListItemSerializer listItemSerializer = new ListItemSerializer(List.class);
 
-        return new ObjectMapper()
+        ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new Jdk8Module())
             .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
             .registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -87,12 +84,12 @@ public class CCDAdapterConfig {
             .registerModule(new SimpleModule().addDeserializer(Evidence.class, new EvidenceDeserializer()))
             .registerModule(new SimpleModule().addDeserializer(Timeline.class, new TimelineDeserializer()))
             .registerModule(new SimpleModule().addDeserializer(Amount.class, new AmountDeserializer()))
-//            .registerModule(new SimpleModule().addSerializer(List.class, listItemSerializer))
+            .registerModule(new SimpleModule().addDeserializer(AmountRange.class, new AmountRangeDeserializer()))
+            .registerModule(new SimpleModule().addSerializer(List.class, listItemSerializer))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .enable(SerializationFeature.INDENT_OUTPUT)
             .disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS)
-            .enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
             .addMixIn(Individual.class, IndividualMixIn.class)
             .addMixIn(SoleTrader.class, SoleTraderMixIn.class)
             .addMixIn(Company.class, CompanyMixIn.class)
@@ -107,7 +104,6 @@ public class CCDAdapterConfig {
             .addMixIn(Timeline.class, TimelineMixIn.class)
             .addMixIn(Payment.class, PaymentMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
-            .addMixIn(Amount.class, AmountMixIn.class)
             .addMixIn(AmountRange.class, AmountRangeMixIn.class)
             .addMixIn(AmountBreakDown.class, AmountBreakDownMixIn.class)
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
@@ -116,6 +112,9 @@ public class CCDAdapterConfig {
             .addMixIn(ContactDetails.class, ContactDetailsMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class);
+        objectMapper.registerSubtypes(new NamedType(AmountRange.class, "amountRange"));
+        objectMapper.registerSubtypes(new NamedType(AmountBreakDown.class, "amountBreakDown"));
+        return objectMapper;
 
     }
 }

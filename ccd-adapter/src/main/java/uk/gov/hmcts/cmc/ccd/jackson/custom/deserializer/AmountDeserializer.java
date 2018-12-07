@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
@@ -16,11 +17,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class AmountDeserializer extends JsonDeserializer<AmountBreakDown> {
+public class AmountDeserializer extends JsonDeserializer<Amount> {
     private static final String VALUE = "value";
 
     @Override
-    public AmountBreakDown deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
+    public Amount deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
         throws IOException, JsonProcessingException {
         JsonNode productNode = jsonParser.getCodec().readTree(jsonParser);
         ArrayList<AmountRow> returnList = new ArrayList<>();
@@ -30,7 +31,9 @@ public class AmountDeserializer extends JsonDeserializer<AmountBreakDown> {
                 AmountRow row = new AmountRow(jsonNode.get("reason").asText(), BigDecimal.valueOf(jsonNode.get("amount").asDouble()));
                 returnList.add(row);
             }
+            return new AmountBreakDown(returnList);
+        } else {
+            return new AmountRange(BigDecimal.valueOf(productNode.get("amountLowerValue").asDouble()), BigDecimal.valueOf(productNode.get("amountHigherValue").asDouble()));
         }
-        return new AmountBreakDown(returnList);
     }
 }

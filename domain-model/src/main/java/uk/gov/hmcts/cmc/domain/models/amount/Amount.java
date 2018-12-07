@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.amount;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.EqualsAndHashCode;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
@@ -17,7 +18,7 @@ public abstract class Amount {
 
     private String type;
 
-    public Amount(String type){
+    public Amount(String type) {
         this.type = type;
     }
 

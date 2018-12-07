@@ -182,6 +182,8 @@ public class MixMapperTest {
             .build();
 
         String json = processor.toJson(claim);
+        System.out.println(json);
+
 
         Claim output = processor.fromJson(json, Claim.class);
         String outputJson = processor.toJson(output);

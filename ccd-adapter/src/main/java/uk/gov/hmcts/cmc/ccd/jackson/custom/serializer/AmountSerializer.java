@@ -9,12 +9,12 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.io.IOException;
 
-public class AmountSerializer extends JsonSerializer {
+public class AmountSerializer extends JsonSerializer<Amount> {
 
     private static final String VALUE = "value";
 
     @Override
-    public void serialize(Object amount, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(Amount amount, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 
         jsonGenerator.writeStartArray();
         if (amount instanceof AmountBreakDown) {
