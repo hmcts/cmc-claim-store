@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.ccd.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,11 +12,13 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.AmountBreakDownDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.AmountDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.AmountRangeDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.EvidenceDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.TimelineDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.AmountSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountRangeMixIn;
@@ -76,15 +78,17 @@ public class CCDAdapterConfig {
         ListItemDeserializer listItemDeserializer = new ListItemDeserializer();
         ListItemSerializer listItemSerializer = new ListItemSerializer(List.class);
 
-        ObjectMapper objectMapper = new ObjectMapper()
+        return new ObjectMapper()
+            .configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false)
             .registerModule(new Jdk8Module())
             .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
             .registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .registerModule(new SimpleModule().addDeserializer(List.class, listItemDeserializer))
             .registerModule(new SimpleModule().addDeserializer(Evidence.class, new EvidenceDeserializer()))
             .registerModule(new SimpleModule().addDeserializer(Timeline.class, new TimelineDeserializer()))
-            .registerModule(new SimpleModule().addDeserializer(Amount.class, new AmountDeserializer()))
+            .registerModule(new SimpleModule().addDeserializer(AmountBreakDown.class, new AmountBreakDownDeserializer()))
             .registerModule(new SimpleModule().addDeserializer(AmountRange.class, new AmountRangeDeserializer()))
+            .registerModule(new SimpleModule().addDeserializer(Amount.class, new AmountDeserializer()))
             .registerModule(new SimpleModule().addSerializer(List.class, listItemSerializer))
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
@@ -104,7 +108,7 @@ public class CCDAdapterConfig {
             .addMixIn(Timeline.class, TimelineMixIn.class)
             .addMixIn(Payment.class, PaymentMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
-            .addMixIn(AmountRange.class, AmountRangeMixIn.class)
+//            .addMixIn(AmountRange.class, AmountRangeMixIn.class)
             .addMixIn(AmountBreakDown.class, AmountBreakDownMixIn.class)
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
             .addMixIn(PersonalInjury.class, PersonalInjuryMixIn.class)
@@ -112,9 +116,6 @@ public class CCDAdapterConfig {
             .addMixIn(ContactDetails.class, ContactDetailsMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class);
-        objectMapper.registerSubtypes(new NamedType(AmountRange.class, "amountRange"));
-        objectMapper.registerSubtypes(new NamedType(AmountBreakDown.class, "amountBreakDown"));
-        return objectMapper;
 
     }
 }

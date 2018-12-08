@@ -15,8 +15,8 @@ public class AmountRangeDeserializer extends JsonDeserializer<AmountRange> {
     public AmountRange deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
         throws IOException, JsonProcessingException {
         JsonNode productNode = jsonParser.getCodec().readTree(jsonParser);
-        return new AmountRange(BigDecimal.valueOf(productNode.get("amountLowerValue").asDouble()),
-            BigDecimal.valueOf(productNode.get("amountHigherValue").asDouble())
+        return new AmountRange(BigDecimal.valueOf(productNode.get("amountLowerValue").asLong()),
+            BigDecimal.valueOf(productNode.get("amountHigherValue").asLong())
         );
     }
 }

@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountRange;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
@@ -153,6 +155,19 @@ public class MixMapperTest {
         String json = processor.toJson(amountBreakDown);
 
         AmountBreakDown output = processor.fromJson(json, AmountBreakDown.class);
+        String outputJson = processor.toJson(output);
+
+        assertThat(json, CoreMatchers.equalTo(outputJson));
+    }
+
+    @Test
+    public void shouldProcessAmountRangeToCCDJson() throws JSONException {
+        //given
+        AmountRange amountBreakDown = SampleAmountRange.builder().build();
+        String json = processor.toJson(amountBreakDown);
+        System.out.println(json);
+
+        AmountRange output = processor.fromJson(json, AmountRange.class);
         String outputJson = processor.toJson(output);
 
         assertThat(json, CoreMatchers.equalTo(outputJson));

@@ -46,7 +46,8 @@ public abstract class ClaimDataMixIn {
     @JsonIgnore
     abstract UUID getExternalId();
 
-    @JsonUnwrapped
+//        @JsonUnwrapped
+    @JsonSerialize(contentUsing = AmountSerializer.class)
     abstract Amount getAmount();
 
     @JsonUnwrapped
