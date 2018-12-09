@@ -1,15 +1,19 @@
 package uk.gov.hmcts.cmc.ccd.jackson.mixin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountType;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
-public abstract class AmountRangeMixIn extends AmountMixIn {
+public interface AmountRangeMixIn {
 
-    public AmountRangeMixIn(
-        @JsonProperty("amountLowerValue") BigDecimal lowerValue,
-        @JsonProperty("amountHigherValue") BigDecimal higherValue
-    ) {
-    }
+    @JsonProperty("type")
+    AmountType getType();
+
+    @JsonProperty("amountLowerValue")
+    BigDecimal getLowerValue();
+
+    @JsonProperty("amountHigherValue")
+    BigDecimal getHigherValue();
+
 }

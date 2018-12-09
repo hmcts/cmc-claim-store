@@ -165,7 +165,6 @@ public class MixMapperTest {
         //given
         AmountRange amountBreakDown = SampleAmountRange.builder().build();
         String json = processor.toJson(amountBreakDown);
-        System.out.println(json);
 
         AmountRange output = processor.fromJson(json, AmountRange.class);
         String outputJson = processor.toJson(output);
@@ -179,8 +178,6 @@ public class MixMapperTest {
         Claim claim = SampleClaim.builder().withResponse(null).withFeatures(null).build();
 
         String json = processor.toJson(claim);
-
-        System.out.println(json);
 
         Claim output = processor.fromJson(json, Claim.class);
         String outputJson = processor.toJson(output);
@@ -197,8 +194,6 @@ public class MixMapperTest {
             .build();
 
         String json = processor.toJson(claim);
-        System.out.println(json);
-
 
         Claim output = processor.fromJson(json, Claim.class);
         String outputJson = processor.toJson(output);

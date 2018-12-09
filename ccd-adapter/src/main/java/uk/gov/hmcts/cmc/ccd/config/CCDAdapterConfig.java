@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.AmountRangeDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.EvidenceDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.ListItemDeserializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.TimelineDeserializer;
-import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.AmountSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.ListItemSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountBreakDownMixIn;
 import uk.gov.hmcts.cmc.ccd.jackson.mixin.AmountRangeMixIn;
@@ -93,7 +92,6 @@ public class CCDAdapterConfig {
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .enable(SerializationFeature.INDENT_OUTPUT)
-            .disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS)
             .addMixIn(Individual.class, IndividualMixIn.class)
             .addMixIn(SoleTrader.class, SoleTraderMixIn.class)
             .addMixIn(Company.class, CompanyMixIn.class)
@@ -108,7 +106,7 @@ public class CCDAdapterConfig {
             .addMixIn(Timeline.class, TimelineMixIn.class)
             .addMixIn(Payment.class, PaymentMixIn.class)
             .addMixIn(StatementOfTruth.class, StatementOfTruthMixIn.class)
-//            .addMixIn(AmountRange.class, AmountRangeMixIn.class)
+            .addMixIn(AmountRange.class, AmountRangeMixIn.class)
             .addMixIn(AmountBreakDown.class, AmountBreakDownMixIn.class)
             .addMixIn(HousingDisrepair.class, HousingDisrepairMixIn.class)
             .addMixIn(PersonalInjury.class, PersonalInjuryMixIn.class)
