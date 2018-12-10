@@ -2,11 +2,16 @@ package uk.gov.hmcts.cmc.domain.models.legalrep;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Size;
 
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
+
 @Builder
+@Getter
 @EqualsAndHashCode
 public class StatementOfTruth {
 
@@ -23,12 +28,8 @@ public class StatementOfTruth {
         this.signerRole = signerRole;
     }
 
-    public String getSignerName() {
-        return signerName;
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
     }
-
-    public String getSignerRole() {
-        return signerRole;
-    }
-
 }

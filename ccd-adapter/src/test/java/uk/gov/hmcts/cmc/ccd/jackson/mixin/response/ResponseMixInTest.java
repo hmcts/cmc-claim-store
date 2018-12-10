@@ -28,6 +28,10 @@ public class ResponseMixInTest {
 
         String json = processor.toJson(fullDefenceResponse);
         System.out.println(json);
+
+        FullDefenceResponse output = processor.fromJson(json, FullDefenceResponse.class);
+        System.out.println("===================");
+        System.out.println(output);
 //        String individualFullDefenceResponse = new ResourceReader()
 //            .read("/serialization-samples/individual-full-defence-response.json");
 //        JsonNode expected = objectMapper.readTree(individualFullDefenceResponse);
@@ -35,4 +39,14 @@ public class ResponseMixInTest {
 //        assertEquals(result, expected);
     }
 
+//    @JsonSerialize(using = DefendantTimelineSerializer.class)
+//    @JsonUnwrapped
+//    DefendantTimeline timeline = SampleDefendantTimeline.validDefaults();
+//
+//    @Test
+//    public void defendantTimeLine() throws IOException {
+//        String json = processor.toJson(timeline);
+//        System.out.println(json);
+//
+//    }
 }

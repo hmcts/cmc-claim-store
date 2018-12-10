@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.jackson.mixin.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.deserializer.DefendantTimelineDeserializer;
+import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.DefendantEvidenceSerializer;
 import uk.gov.hmcts.cmc.ccd.jackson.custom.serializer.DefendantTimelineSerializer;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
@@ -26,12 +26,12 @@ public interface FullDefenceResponseMixIn extends ResponseMixIn {
     Optional<PaymentDeclaration> getPaymentDeclaration();
 
 
-//    @JsonDeserialize(using = DefendantTimelineDeserializer.class)
-    @JsonSerialize(using = DefendantTimelineSerializer.class)
     @JsonUnwrapped
+    @JsonSerialize(using = DefendantTimelineSerializer.class)
+    @JsonDeserialize(using = DefendantTimelineDeserializer.class)
     Optional<DefendantTimeline> getTimeline();
 
-//    @JsonUnwrapped
-    @JsonIgnore
+    @JsonUnwrapped
+    @JsonSerialize(using = DefendantEvidenceSerializer.class)
     Optional<DefendantEvidence> getEvidence();
 }

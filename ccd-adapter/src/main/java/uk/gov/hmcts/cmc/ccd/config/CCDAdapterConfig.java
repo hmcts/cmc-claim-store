@@ -122,7 +122,7 @@ public class CCDAdapterConfig {
             .addMixIn(ContactDetails.class, ContactDetailsMixIn.class)
             .addMixIn(Claim.class, ClaimMixIn.class)
             .addMixIn(Representative.class, RepresentativeMixIn.class)
-            .addMixIn(DefendantEvidence.class, DefendantEvidenceMixIn.class)
+//            .addMixIn(DefendantEvidence.class, DefendantEvidenceMixIn.class)
 //            .addMixIn(DefendantTimeline.class, DefendantTimelineMixIn.class)
             .addMixIn(FullDefenceResponse.class, FullDefenceResponseMixIn.class)
             .addMixIn(PaymentDeclaration.class, PaymentDeclarationMixIn.class);
