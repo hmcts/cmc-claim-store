@@ -28,13 +28,12 @@ public class ClaimantResponseActionsHandler {
     }
 
     @EventListener
-    public void sendNotificationToDefendantWhenInterlocutoryJudgementRequested
-        (InterlocutoryJudgmentEvent event) {
+    public void sendNotificationToDefendantWhenInterlocutoryJudgementRequested(InterlocutoryJudgmentEvent event) {
         this.notificationService.notifyDefendantWhenInterlocutoryJudgementRequested(event.getClaim());
     }
 
     public void sendClaimantRejectOrganisationPaymentPlanNotificationToStaff(RejectOrganisationPaymentPlanEvent event) {
-        this.claimantRejectOrgPaymentPlanStaffNotificationService.
-            notifyStaffClaimantRejectOrganisationPaymentPlan(event.getClaim());
+        this.claimantRejectOrgPaymentPlanStaffNotificationService
+            .notifyStaffClaimantRejectOrganisationPaymentPlan(event.getClaim());
     }
 }
