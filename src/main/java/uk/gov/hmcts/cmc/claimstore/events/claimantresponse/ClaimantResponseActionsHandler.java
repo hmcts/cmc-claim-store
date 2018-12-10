@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events.claimantresponse;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 
 @Component
@@ -16,5 +17,11 @@ public class ClaimantResponseActionsHandler {
     @EventListener
     public void sendNotificationToDefendant(ClaimantResponseEvent event) {
         this.notificationService.notifyDefendant(event.getClaim());
+    }
+
+    @EventListener
+    public void sendNotificationToDefendantWhenInterlocutoryJudgementRequested
+        (InterlocutoryJudgmentEvent event) {
+        this.notificationService.notifyDefendantWhenInterlocutoryJudgementRequested(event.getClaim());
     }
 }

@@ -131,6 +131,35 @@ public class ClaimantResponseServiceTest {
     }
 
     @Test
+    public void saveResponseAcceptationReferredToJudge() {
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .build();
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .buildAcceptationReferToJudgeWithCourtDetermination();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, eventProducer, appInsights);
+
+        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        inOrder.verify(formaliseResponseAcceptanceService, once())
+            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED), eq(claim.getReferenceNumber()));
+
+        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class));
+    }
+
+    @Test
     public void saveResponseAcceptationShouldSucceedWhenStatesPaidWithNoFormalisation() {
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))

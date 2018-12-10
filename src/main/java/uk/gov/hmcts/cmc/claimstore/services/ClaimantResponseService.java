@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -66,9 +67,21 @@ public class ClaimantResponseService {
         if (isRejectPartAdmitNoMediation(response, updatedClaim)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
-
-        eventProducer.createClaimantResponseEvent(updatedClaim);
+        if (!isReferredToJudge(response)) {
+            eventProducer.createClaimantResponseEvent(updatedClaim);
+        }
         appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
+    }
+
+    private boolean isReferredToJudge(ClaimantResponse response) {
+        if (response.getType().equals(ClaimantResponseType.ACCEPTATION)) {
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
+            if (responseAcceptation.getFormaliseOption() != null &&
+                responseAcceptation.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {

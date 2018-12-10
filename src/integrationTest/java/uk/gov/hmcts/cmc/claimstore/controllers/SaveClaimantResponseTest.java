@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -89,6 +90,26 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
+    }
+
+    @Test
+    public void shouldSaveClaimantResponseAcceptationReferToJudge() throws Exception {
+        ClaimantResponse response = builder().buildAcceptationReferToJudgeWithCourtDetermination();
+
+        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
+            .andExpect(status().isCreated());
+
+        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
+
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
+
+        ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
+            .orElseThrow(AssertionError::new);
+
+        assertThat(claimantResponse.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE));
+        assertThat(claimantResponse.getCourtDetermination()).isPresent();
+        assertThat(claimantResponse.getClaimantPaymentIntention()).isPresent();
+
     }
 
     @Test
