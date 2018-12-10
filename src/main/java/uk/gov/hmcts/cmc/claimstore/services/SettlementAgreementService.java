@@ -56,7 +56,7 @@ public class SettlementAgreementService {
         String userAction = format("SETTLEMENT_AGREEMENT_REJECTED_BY_%s", party.name());
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
-        eventProducer.createSettlementAgreementRejectedEvent(updated);
+        eventProducer.createRejectSettlementAgreementEvent(updated);
         appInsights.trackEvent(SETTLEMENT_AGREEMENT_REJECTED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
     }
