@@ -31,6 +31,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/defendantAdmission/subject.txt");
     }
 
+    public String getStatesPaidEmailBody() {
+        return readString("/staff/templates/email/statesPaid/body.txt");
+    }
+
+    public String getStatesPaidEmailSubject() {
+        return readString("/staff/templates/email/statesPaid/subject.txt");
+    }
+
     public String getCCJRequestSubmittedEmailBody() {
         return readString("/staff/templates/email/ccjRequestSubmitted/body.txt");
     }
@@ -70,5 +78,13 @@ public class StaffEmailTemplates {
 
     public String getReDeterminationRequestEmailSubject() {
         return readString("/staff/templates/email/redeterminationRequest/subject.txt");
+    }
+
+    public String getClaimantRejectOrganisationRepaymentPlanEmailBody() {
+        return readString("/staff/templates/email/claimantRejectOrganisationRepaymentPlan/body.txt");
+    }
+
+    public String getClaimantRejectOrganisationRepaymentPlanEmailSubject() {
+        return readString("/staff/templates/email/claimantRejectOrganisationRepaymentPlan/subject.txt");
     }
 }

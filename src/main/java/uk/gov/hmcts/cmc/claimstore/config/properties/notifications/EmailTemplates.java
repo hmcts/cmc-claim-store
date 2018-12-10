@@ -87,4 +87,6 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantRequestedInterlocutoryJudgement;
+
+    private String redeterminationEmailToClaimant;
 }

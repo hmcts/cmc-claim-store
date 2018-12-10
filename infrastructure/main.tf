@@ -9,7 +9,7 @@ locals {
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
   ccdCnpUrl = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
-  ccdApiUrl = "${var.env == "sprod" ? local.ccdCnpUrl : "false"}"
+  ccdApiUrl = "${var.env == "sprod" || var.env == "demo" ? local.ccdCnpUrl : "false"}"
 
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
@@ -182,6 +182,11 @@ module "claim-store-api" {
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
+    FEATURE_TOGGLES_CCD_ENABLED = "${var.ccd_enabled}"
+    FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
+
+    //thread pool configs
+    ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
   }

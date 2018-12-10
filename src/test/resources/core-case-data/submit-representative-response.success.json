@@ -1,0 +1,116 @@
+{
+  "id": 1513250998636210,
+  "jurisdiction": "CMC",
+  "case_type_id": "MoneyClaimCase",
+  "created_date": "2017-12-14T11:29:58.625",
+  "last_modified": "2017-12-14T11:29:58.625",
+  "state": "open",
+  "locked_by_user_id": null,
+  "security_level": null,
+  "case_data": {
+    "moreTimeRequested": "NO",
+    "referenceNumber": "004MC931",
+    "submitterId": "23",
+    "letterHolderId": "1581",
+    "submittedOn": "2018-05-13T14:13:59.562",
+    "claimData": {
+      "amount": {
+        "type": "RANGE",
+        "amountRange": {
+          "lowerValue": 5000,
+          "higherValue" : 7000
+        }
+      },
+      "reason": "A strong sense of entitlement.",
+      "payment": {
+        "amount": 185,
+        "status": "Success",
+        "reference": "RC-1526-2207-1964-8145"
+      },
+      "evidence": {},
+      "interest": {
+        "type": "NO_INTEREST"
+      },
+      "timeline": {
+        "events": [
+          {
+            "id": "502677e7-b66a-42b3-8d32-a4ad3cd279e3",
+            "value": {
+              "date": "27 May 1997",
+              "description": "The day the first bill was issued"
+            }
+          },
+          {
+            "id": "917d12f3-8904-42d2-a8dc-16a60ca3b28a",
+            "value": {
+              "date": "23 March 2018",
+              "description": "A historic day with enormous importance"
+            }
+          }
+        ]
+      },
+      "claimants": [
+        {
+          "id": "7a631109-a761-4e07-a16e-42fd00165136",
+          "value": {
+            "type": "ORGANISATION",
+            "organisation": {
+              "name": "Davids and Sons Limited",
+              "contactPerson": "Jack Davids",
+              "email": "jack.davids@dslimited.com",
+              "address": {
+                "city": "London",
+                "line1": "Flat 1",
+                "line2": "Street 1",
+                "line3": "Cool house name",
+                "postcode": "SW1A 2AA"
+              },
+              "phoneNumber": "07112358132",
+              "representative": {
+                "organisationName": "David and Sons Limited",
+                "organisationAddress": {
+                  "city": "London",
+                  "line1": "Flat 1",
+                  "line2": "Street 1",
+                  "line3": "Cool house name",
+                  "postcode": "SW1A 2AA"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "defendants": [
+        {
+          "id": "1f3a4788-9ea6-4695-8a50-73b10f1ee9b6",
+          "value": {
+            "type": "INDIVIDUAL",
+            "individual": {
+              "name": "Daniel Murphy",
+              "address": {
+                "city": "London",
+                "line1": "Flat 3",
+                "line2": "Street 1",
+                "line3": "Cooler house name",
+                "postcode": "SW1A 2AA"
+              }
+            }
+          }
+        }
+      ],
+      "statementOfTruth": {
+        "signerName": "Daniel Murphy",
+        "signerRole": "Director"
+      },
+      "externalId": "bde7fc34-65fd-4ae0-8ed7-ea492207a6c4",
+      "feeAmountInPennies": 18500
+    },
+    "externalId": "bde7fc34-65fd-4ae0-8ed7-ea492207a6c4",
+    "responseDeadline": "2020-02-06",
+    "issuedOn": "2020-01-17",
+    "submitterEmail": "claimant@mail.com",
+    "features": "admissions"
+  },
+  "security_classification": "PUBLIC"
+}
+

@@ -60,7 +60,7 @@ public class CountyCourtJudgmentService {
 
         eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation);
 
-        appInsights.trackEvent(AppInsightsEvent.CCJ_REQUESTED, claim.getReferenceNumber());
+        appInsights.trackEvent(AppInsightsEvent.CCJ_REQUESTED, "referenceNumber", claim.getReferenceNumber());
 
         return claimWithCCJ;
     }
@@ -74,14 +74,19 @@ public class CountyCourtJudgmentService {
 
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
-        authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
+        authorisationService.assertIsParticipantOnClaim(claim, userDetails.getId());
         countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgement(claim);
 
         claimService.saveReDetermination(authorisation, claim, redetermination, userDetails.getId());
 
         Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
 
-        eventProducer.createRedeterminationEvent(claimWithReDetermination, authorisation, userDetails.getFullName());
+        eventProducer.createRedeterminationEvent(
+            claimWithReDetermination,
+            authorisation,
+            userDetails.getFullName(),
+            redetermination.getPartyType()
+        );
 
         return claimWithReDetermination;
 

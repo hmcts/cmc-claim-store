@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -32,7 +33,9 @@ public class ClaimantResponseService {
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+    private final CCDEventProducer ccdEventProducer;
 
+    @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
         ClaimService claimService,
         AppInsights appInsights,
@@ -40,7 +43,8 @@ public class ClaimantResponseService {
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
+        CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -49,6 +53,7 @@ public class ClaimantResponseService {
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -62,7 +67,7 @@ public class ClaimantResponseService {
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
-
+        claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(response, updatedClaim, authorization);
         if (isRejectPartAdmitNoMediation(response, updatedClaim)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
@@ -70,14 +75,15 @@ public class ClaimantResponseService {
         if (!isReferredToJudge(response)) {
             eventProducer.createClaimantResponseEvent(updatedClaim);
         }
-        appInsights.trackEvent(getAppInsightsEvent(response), claim.getReferenceNumber());
+        ccdEventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
+        appInsights.trackEvent(getAppInsightsEvent(response), "referenceNumber", claim.getReferenceNumber());
     }
 
     private boolean isReferredToJudge(ClaimantResponse response) {
         if (response.getType().equals(ClaimantResponseType.ACCEPTATION)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
-            if (responseAcceptation.getFormaliseOption() != null &&
-                responseAcceptation.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE)) {
+            if (responseAcceptation.getFormaliseOption().isPresent() &&
+                responseAcceptation.getFormaliseOption().get().equals(FormaliseOption.REFER_TO_JUDGE)) {
                 return true;
             }
         }
@@ -100,9 +106,11 @@ public class ClaimantResponseService {
     private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
-        if (ACCEPTATION == claimantResponse.getType()
-            && !ResponseUtils.isResponseStatesPaid(response)) {
-            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+        if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+            if (responseAcceptation.getFormaliseOption().isPresent() && !ResponseUtils.isResponseStatesPaid(response)) {
+                formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, authorization);
+            }
         }
     }
 
@@ -114,5 +122,11 @@ public class ClaimantResponseService {
         } else {
             throw new IllegalStateException("Unknown response type");
         }
+    }
+
+    private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
+        return ACCEPTATION == claimantResponse.getType()
+            && !ResponseUtils.isResponseStatesPaid(response)
+            && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
     }
 }
