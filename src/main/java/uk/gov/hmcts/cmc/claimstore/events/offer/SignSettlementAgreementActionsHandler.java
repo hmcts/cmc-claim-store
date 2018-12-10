@@ -3,20 +3,26 @@ package uk.gov.hmcts.cmc.claimstore.events.offer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.SettlementAgreementNotificationService;
 
 @Component
 public class SignSettlementAgreementActionsHandler {
 
-    private final NotificationToDefendantService notificationToDefendantService;
+    private final SettlementAgreementNotificationService settlementAgreementNotificationService;
 
     @Autowired
-    public SignSettlementAgreementActionsHandler(NotificationToDefendantService notificationToDefendantService) {
-        this.notificationToDefendantService = notificationToDefendantService;
+    public SignSettlementAgreementActionsHandler(
+        SettlementAgreementNotificationService notificationToDefendantService) {
+        this.settlementAgreementNotificationService = notificationToDefendantService;
     }
 
     @EventListener
     public void sendNotificationToDefendant(SignSettlementAgreementEvent event) {
-        this.notificationToDefendantService.notifyDefendant(event.getClaim());
+        this.settlementAgreementNotificationService.notifyDefendant(event.getClaim());
+    }
+
+    @EventListener
+    public void sendNotificationToClaimant(SignSettlementAgreementEvent event) {
+        this.settlementAgreementNotificationService.notifyClaimant(event.getClaim());
     }
 }

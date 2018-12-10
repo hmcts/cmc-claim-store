@@ -112,6 +112,8 @@ notifications:
       responseByClaimantEmailToDefendant: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
       claimantSaysDefendantHasPaidInFull: "221e3923-1321-413a-a02e-ee8c94816cbf"
       redeterminationEmailToClaimant: "6236ce5c-fc18-4a67-b495-57159f3936b4"
+      claimantSignedSettlementAgreementToDefendant: "d66f1f81-ac86-41ae-9497-3e96cdd35a4e"
+      claimantSignedSettlementAgreementToClaimant: "05d211d9-74d3-4fdb-b152-c4689828d170"
 
 staff-notifications:
   sender:
