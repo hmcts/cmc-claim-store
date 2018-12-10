@@ -6,10 +6,12 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -190,6 +192,20 @@ public final class SampleClaim {
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             )
+            .build();
+    }
+
+    public static Claim getClaimWithSettlementAgreementRejected() {
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT);
+        settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
+        settlement.reject(MadeBy.DEFENDANT);
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withSettlement(settlement)
             .build();
     }
 

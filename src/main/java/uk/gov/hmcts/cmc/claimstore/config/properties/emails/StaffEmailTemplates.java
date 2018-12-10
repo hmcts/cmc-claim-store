@@ -48,11 +48,11 @@ public class StaffEmailTemplates {
     }
 
     public String getSettlementAgreementAcceptedEmailBody() {
-        return readString("/staff/templates/email/settlementAgreement/accepted/body.txt");
+        return readString("/staff/templates/email/settlementAgreement/offerAccepted/body.txt");
     }
 
     public String getSettlementAgreementAcceptedEmailSubject() {
-        return readString("/staff/templates/email/settlementAgreement/accepted/subject.txt");
+        return readString("/staff/templates/email/settlementAgreement/offerAccepted/subject.txt");
     }
 
     public String getSettlementAgreementRejectedEmailBody() {
