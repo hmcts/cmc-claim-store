@@ -176,4 +176,14 @@ public class NotificationReferenceBuilder {
             return reference("%s-paid-in-full-notification-%s", CLAIMANT, claimReferenceNumber);
         }
     }
+
+    public static class RedeterminationRequested {
+        private RedeterminationRequested() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return reference("%s-requested-redetermination-%s", DEFENDANT, claimReferenceNumber);
+        }
+    }
 }
