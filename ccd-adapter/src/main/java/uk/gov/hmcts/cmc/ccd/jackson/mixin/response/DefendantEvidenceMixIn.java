@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface DefendantEvidenceMixIn {
 
-    @JsonProperty("responseEvidenceRows")
+    @JsonProperty("Rows")
     List<EvidenceRow> getRows();
 
-    @JsonProperty("responseEvidenceComment")
+    @JsonProperty("Comment")
     Optional<String> getComment();
 }

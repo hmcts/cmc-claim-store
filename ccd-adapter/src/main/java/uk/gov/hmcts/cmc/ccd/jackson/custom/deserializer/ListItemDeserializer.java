@@ -9,20 +9,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListItemDeserializer extends JsonDeserializer<List<JsonNode>> {
+public class ListItemDeserializer extends JsonDeserializer<List> {
 
     public static final String VALUE = "value";
 
     @Override
-    public List<JsonNode> deserialize(
+    public List deserialize(
         JsonParser jsonParser,
         DeserializationContext deserializationContext
     ) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        ArrayList<JsonNode> returnList = new ArrayList<>();
+        Class type;
+        ArrayList returnList = new ArrayList<>();
         if (node.isArray()) {
             for (JsonNode childNode : node) {
-                returnList.add(childNode.get(VALUE));
+                JsonNode valueNode = childNode.get(VALUE);
+                JsonNode valueType = childNode.get("type");
+                try {
+                    type = (Class.forName(valueType.textValue()));
+                } catch (ClassNotFoundException cls) {
+                    throw new RuntimeException("Class not found exception " + valueType);
+                }
+                returnList.add(jsonParser.getCodec().treeToValue(valueNode, type));
             }
         }
         return returnList;

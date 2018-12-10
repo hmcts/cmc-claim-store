@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.jackson.mixin.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
@@ -9,12 +8,9 @@ import java.util.Optional;
 
 public abstract class DefendantTimelineMixIn {
 
-    @JsonProperty("defendantTimeLineEvents")
-    abstract List<TimelineEvent> getEvents();
+    @JsonProperty("Rows")
+    abstract List<TimelineEvent> getRows();
 
-    @JsonIgnore
-    abstract List<TimelineEvent> rows();
-
-    @JsonProperty("defendantTimeLineComment")
+    @JsonProperty("Comment")
     abstract Optional<String> getComment();
 }

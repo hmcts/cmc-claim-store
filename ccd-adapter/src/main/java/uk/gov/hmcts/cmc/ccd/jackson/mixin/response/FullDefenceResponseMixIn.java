@@ -26,12 +26,12 @@ public interface FullDefenceResponseMixIn extends ResponseMixIn {
     Optional<PaymentDeclaration> getPaymentDeclaration();
 
 
-    @JsonUnwrapped
-    @JsonSerialize(using = DefendantTimelineSerializer.class)
-    @JsonDeserialize(using = DefendantTimelineDeserializer.class)
+    @JsonUnwrapped(prefix = "responseTimeline")
+//    @JsonSerialize(using = DefendantTimelineSerializer.class)
+//    @JsonDeserialize(using = DefendantTimelineDeserializer.class)
     Optional<DefendantTimeline> getTimeline();
 
-    @JsonUnwrapped
-    @JsonSerialize(using = DefendantEvidenceSerializer.class)
+    @JsonUnwrapped(prefix = "responseEvidence")
+//    @JsonSerialize(using = DefendantEvidenceSerializer.class)
     Optional<DefendantEvidence> getEvidence();
 }

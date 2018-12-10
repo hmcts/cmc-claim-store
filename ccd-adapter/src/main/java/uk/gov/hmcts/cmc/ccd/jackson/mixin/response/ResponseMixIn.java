@@ -31,7 +31,7 @@ public interface ResponseMixIn {
     @JsonProperty("responseMoreTimeNeededOption")
     YesNoOption getMoreTimeNeeded();
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "responseParty")
     Party getDefendant();
 
     @JsonUnwrapped

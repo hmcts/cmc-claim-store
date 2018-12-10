@@ -10,12 +10,12 @@ import java.util.Optional;
 @SuppressWarnings("squid:S1610")
 public abstract class RepresentativeMixIn {
 
-    @JsonProperty("representativeOrganisationName")
+    @JsonProperty("OrganisationName")
     abstract String getOrganisationName();
 
-    @JsonProperty("representativeOrganisationAddress")
+    @JsonProperty("OrganisationAddress")
     abstract Address getOrganisationAddress();
 
-    @JsonUnwrapped
+    @JsonUnwrapped(prefix = "claimantProvided")
     abstract Optional<ContactDetails> getOrganisationContactDetails();
 }
