@@ -79,4 +79,12 @@ public class StaffEmailTemplates {
     public String getReDeterminationRequestEmailSubject() {
         return readString("/staff/templates/email/redeterminationRequest/subject.txt");
     }
+
+    public String getClaimantRejectOrganisationRepaymentPlanEmailBody() {
+        return readString("/staff/templates/email/claimantRejectOrganisationRepaymentPlan/body.txt");
+    }
+
+    public String getClaimantRejectOrganisationRepaymentPlanEmailSubject() {
+        return readString("/staff/templates/email/claimantRejectOrganisationRepaymentPlan/subject.txt");
+    }
 }
