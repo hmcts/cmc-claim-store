@@ -160,7 +160,7 @@ public class EventProducerTest {
     public void shouldCreateRejectSettlementAgreementEvent() {
         RejectSettlementAgreementEvent event = new RejectSettlementAgreementEvent(CLAIM);
 
-        eventProducer.createSettlementAgreementRejectedEvent(CLAIM);
+        eventProducer.createRejectSettlementAgreementEvent(CLAIM);
 
         verify(publisher).publishEvent(eq(event));
     }

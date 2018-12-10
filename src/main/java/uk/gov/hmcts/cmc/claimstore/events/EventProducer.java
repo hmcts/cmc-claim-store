@@ -68,7 +68,7 @@ public class EventProducer {
         publisher.publishEvent(new OfferRejectedEvent(claim, party));
     }
 
-    public void createSettlementAgreementRejectedEvent(Claim claim) {
+    public void createRejectSettlementAgreementEvent(Claim claim) {
         publisher.publishEvent(new RejectSettlementAgreementEvent(claim));
     }
 
