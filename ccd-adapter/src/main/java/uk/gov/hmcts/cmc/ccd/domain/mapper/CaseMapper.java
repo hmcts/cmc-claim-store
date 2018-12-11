@@ -1,8 +1,10 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper;
+package uk.gov.hmcts.cmc.ccd.domain.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ClaimMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
@@ -21,7 +23,6 @@ import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.fromNullableUTCtoLocalZone;
 
 @Component
-@Deprecated
 public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     private final ClaimMapper claimMapper;
