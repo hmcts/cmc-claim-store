@@ -2,10 +2,9 @@ package uk.gov.hmcts.cmc.domain.models.amount;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.EqualsAndHashCode;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes(
     {
         @JsonSubTypes.Type(value = AmountBreakDown.class, name = "breakdown"),
@@ -14,7 +13,7 @@ import lombok.EqualsAndHashCode;
     }
 )
 @EqualsAndHashCode
-public abstract class Amount {
+public class Amount {
 
     private String type;
 
