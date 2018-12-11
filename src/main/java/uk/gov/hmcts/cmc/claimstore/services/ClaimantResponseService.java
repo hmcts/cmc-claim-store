@@ -80,7 +80,7 @@ public class ClaimantResponseService {
     }
 
     private boolean isReferredToJudge(ClaimantResponse response) {
-        if (response.getType().equals(ClaimantResponseType.ACCEPTATION)) {
+        if (response.getType().equals(ACCEPTATION)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
             if (responseAcceptation.getFormaliseOption().isPresent()
                 && responseAcceptation.getFormaliseOption().get().equals(FormaliseOption.REFER_TO_JUDGE)) {
