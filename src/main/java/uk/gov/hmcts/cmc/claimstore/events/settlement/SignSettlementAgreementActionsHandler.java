@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.events.offer;
+package uk.gov.hmcts.cmc.claimstore.events.settlement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;

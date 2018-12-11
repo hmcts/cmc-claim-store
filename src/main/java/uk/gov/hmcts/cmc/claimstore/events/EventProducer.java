@@ -12,11 +12,11 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.SettlementAgreementRejectedEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
+import uk.gov.hmcts.cmc.claimstore.events.settlement.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -68,8 +68,8 @@ public class EventProducer {
         publisher.publishEvent(new OfferRejectedEvent(claim, party));
     }
 
-    public void createSettlementAgreementRejectedEvent(Claim claim) {
-        publisher.publishEvent(new SettlementAgreementRejectedEvent(claim));
+    public void createRejectSettlementAgreementEvent(Claim claim) {
+        publisher.publishEvent(new RejectSettlementAgreementEvent(claim));
     }
 
     public void createAgreementCountersignedEvent(Claim claim, MadeBy party) {
