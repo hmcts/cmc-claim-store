@@ -104,6 +104,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();
         }
+
         public ClaimantResponse buildAcceptationReferToJudgeWithCourtDetermination() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)

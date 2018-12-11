@@ -168,9 +168,9 @@ public class ClaimantResponseServiceTest {
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(ccdEventProducer)
             .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
-        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
-            eq(REFERENCE_NUMBER),
-            eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
+            REFERENCE_NUMBER,
+            claim.getReferenceNumber());
 
         verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class));
     }

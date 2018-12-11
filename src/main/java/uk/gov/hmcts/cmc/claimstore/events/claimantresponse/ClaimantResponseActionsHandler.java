@@ -28,7 +28,7 @@ public class ClaimantResponseActionsHandler {
     }
 
     @EventListener
-    public void sendNotificationToDefendantWhenInterlocutoryJudgementRequested(InterlocutoryJudgmentEvent event) {
+    public void sendNotificationToDefendantWhenInterlocutoryJudgmentRequested(InterlocutoryJudgmentEvent event) {
         this.notificationService.notifyDefendantWhenInterlocutoryJudgementRequested(event.getClaim());
     }
 

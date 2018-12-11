@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
@@ -82,10 +83,9 @@ public class ClaimantResponseService {
     private boolean isReferredToJudge(ClaimantResponse response) {
         if (response.getType().equals(ACCEPTATION)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
-            if (responseAcceptation.getFormaliseOption().isPresent()
-                && responseAcceptation.getFormaliseOption().get().equals(FormaliseOption.REFER_TO_JUDGE)) {
-                return true;
-            }
+            return responseAcceptation.getFormaliseOption()
+                .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE))
+                .isPresent();
         }
         return false;
     }
