@@ -23,7 +23,7 @@ public class SelfEmployment {
 
     @NotNull
     @Money
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0")
     private final BigDecimal annualTurnover;
 
     @Valid
