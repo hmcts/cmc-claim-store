@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REJECTED;
 
 @Service
@@ -43,22 +44,44 @@ public class SettlementAgreementService {
     }
 
     public Claim reject(Claim claim, String authorisation) {
-        assertSettlementIsNotReached(claim);
-        assertLastStatementIsClaimantAcceptation(claim);
 
-        MadeBy party = MadeBy.DEFENDANT;
+        Settlement settlement = assertSettlementCanBeResponded(claim);
+        settlement.reject(MadeBy.DEFENDANT);
 
-        Settlement settlement = claim.getSettlement()
-            .orElseThrow(() -> new ConflictException("Settlement agreement has not yet been made."));
 
-        settlement.reject(party);
-
-        String userAction = format("SETTLEMENT_AGREEMENT_REJECTED_BY_%s", party.name());
+        String userAction = format("SETTLEMENT_AGREEMENT_REJECTED_BY_%s", MadeBy.DEFENDANT.name());
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+
         eventProducer.createRejectSettlementAgreementEvent(updated);
         appInsights.trackEvent(SETTLEMENT_AGREEMENT_REJECTED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
+    }
+
+    public Claim countersign(Claim claim, String authorisation) {
+
+        Settlement settlement = assertSettlementCanBeResponded(claim);
+        settlement.countersign(MadeBy.DEFENDANT);
+
+        String userAction = format("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_%s", MadeBy.DEFENDANT.name());
+        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+
+        Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
+
+        eventProducer.createSettlementAgreementCountersignedEvent(updated);
+        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED, REFERENCE_NUMBER, updated.getReferenceNumber());
+        return updated;
+
+    }
+
+    private Settlement assertSettlementCanBeResponded(Claim claim) {
+        assertSettlementIsNotReached(claim);
+        assertLastStatementIsClaimantAcceptation(claim);
+
+        return claim.getSettlement()
+            .orElseThrow(() -> new ConflictException("Settlement agreement has not yet been made."));
+
     }
 
     private void assertSettlementIsNotReached(Claim claim) {

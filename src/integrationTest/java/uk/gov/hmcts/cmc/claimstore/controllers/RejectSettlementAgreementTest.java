@@ -70,12 +70,26 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRejectSettlementAgreement() throws Exception {
-        makeRequest(claim.getExternalId()).andExpect(status().isCreated());
+        makeRequest(claim.getExternalId(), "reject").andExpect(status().isCreated());
 
         Claim claimWithSettlementAgreement = claimStore.getClaimByExternalId(claim.getExternalId());
 
-        assertThat(claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new)
-            .getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
+        Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
+
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
+        assertThat(settlement.getLastStatement().getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
+    }
+
+    @Test
+    public void shouldCountersignSettlementAgreement() throws Exception {
+        makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
+
+        Claim claimWithSettlementAgreement = claimStore.getClaimByExternalId(claim.getExternalId());
+
+        Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
+
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
+        assertThat(settlement.getLastStatement().getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
     }
 
     @Test
@@ -83,11 +97,11 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
         Settlement settlement = new Settlement();
         caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, SUBMITTER_ID);
 
-        makeRequest(claim.getExternalId()).andExpect(status().isBadRequest());
+        makeRequest(claim.getExternalId(), "reject").andExpect(status().isBadRequest());
     }
 
-    private ResultActions makeRequest(String externalId) throws Exception {
-        String path = String.format("/claims/%s/settlement-agreement/reject", externalId);
+    private ResultActions makeRequest(String externalId, String action) throws Exception {
+        String path = String.format("/claims/%s/settlement-agreement/%s", externalId, action);
 
         return webClient
             .perform(post(path)
