@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
@@ -71,11 +73,21 @@ public class ClaimantResponseService {
         if (isRejectPartAdmitNoMediation(response, updatedClaim)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
-
-        eventProducer.createClaimantResponseEvent(updatedClaim);
+        if (!isReferredToJudge(response)) {
+            eventProducer.createClaimantResponseEvent(updatedClaim);
+        }
         ccdEventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
-
         appInsights.trackEvent(getAppInsightsEvent(response), "referenceNumber", claim.getReferenceNumber());
+    }
+
+    private boolean isReferredToJudge(ClaimantResponse response) {
+        if (response.getType().equals(ACCEPTATION)) {
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
+            return responseAcceptation.getFormaliseOption()
+                .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE))
+                .isPresent();
+        }
+        return false;
     }
 
     private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {

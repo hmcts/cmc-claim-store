@@ -140,6 +140,42 @@ public class ClaimantResponseServiceTest {
     }
 
     @Test
+    public void saveResponseAcceptationReferredToJudge() {
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .buildAcceptationReferToJudgeWithCourtDetermination();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, ccdEventProducer, appInsights);
+
+        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        inOrder.verify(formaliseResponseAcceptanceService, once())
+            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
+        inOrder.verify(ccdEventProducer)
+            .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
+        inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
+            REFERENCE_NUMBER,
+            claim.getReferenceNumber());
+
+        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class));
+    }
+
+    @Test
     public void saveResponseAcceptationShouldSucceedWhenStatesPaidWithNoFormalisation() {
 
         ClaimantResponse claimantResponse = SampleClaimantResponse
