@@ -125,7 +125,7 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
 
         verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
-            eq(AUTHORISATION), eq(userDetails.getFullName()));
+            eq(AUTHORISATION), eq(userDetails.getFullName()), eq(reDetermination.getPartyType()));
 
         verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(), eq(reDetermination), eq(USER_ID));
     }
