@@ -40,12 +40,24 @@ public class SettlementAgreementController {
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/settlement-agreement/reject",
         consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Rejects an offer as a party")
+    @ApiOperation("Rejects a settlement agreement as a defendant")
     public Claim reject(
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return settlementAgreementService.reject(claim, authorisation);
+    }
+
+    @PostMapping(value = "{externalId:" + UUID_PATTERN + "}/settlement-agreement/countersign",
+        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Countersigns a settlement agreement as a defendant")
+    public Claim counterSign(
+        @PathVariable("externalId") String externalId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        return settlementAgreementService.countersign(claim, authorisation);
     }
 }
