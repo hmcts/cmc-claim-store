@@ -306,6 +306,7 @@ sonarqube {
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/ccd/jackson/mixin/**," +
       "**/cmc/domain/models/**," +
+      "**/cmc/ccd/deprecated/**," +
       "**/cmc/claimstore/idam/models/**," +
       "**/ExceptionForClient.java," +
       "**/config/**," +
