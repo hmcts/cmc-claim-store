@@ -32,6 +32,7 @@ public class ClaimantResponseActionsHandler {
         this.notificationService.notifyDefendantWhenInterlocutoryJudgementRequested(event.getClaim());
     }
 
+    @EventListener
     public void sendClaimantRejectOrganisationPaymentPlanNotificationToStaff(RejectOrganisationPaymentPlanEvent event) {
         this.claimantRejectOrgPaymentPlanStaffNotificationService
             .notifyStaffClaimantRejectOrganisationPaymentPlan(event.getClaim());
