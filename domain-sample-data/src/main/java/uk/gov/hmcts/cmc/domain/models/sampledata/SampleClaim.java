@@ -198,8 +198,8 @@ public final class SampleClaim {
     public static Claim getClaimWithSettlementAgreementRejected() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT);
-        settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
+        settlement.acceptCourtDetermination(CLAIMANT);
         settlement.reject(MadeBy.DEFENDANT);
 
         return builder()

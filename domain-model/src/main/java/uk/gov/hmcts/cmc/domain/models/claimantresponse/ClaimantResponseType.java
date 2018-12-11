@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ClaimantResponseType {
     ACCEPTATION("acceptation"),
-    REJECTION("rejected");
+    REJECTION("rejection");
 
     String description;
 

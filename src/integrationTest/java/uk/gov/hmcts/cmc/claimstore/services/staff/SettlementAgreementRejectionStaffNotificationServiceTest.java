@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.email.EmailData;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 public class SettlementAgreementRejectionStaffNotificationServiceTest extends MockSpringTest {
@@ -65,7 +66,7 @@ public class SettlementAgreementRejectionStaffNotificationServiceTest extends Mo
     public void shouldSendEmailWithExpectedContent() {
         service.notifySettlementRejected(claim);
 
-        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
+        verify(emailService).sendEmail(eq(emailProperties.getSender()), emailDataArgument.capture());
 
         assertThat(emailDataArgument.getValue()
             .getSubject()).startsWith("Settlement Agreement rejected");

@@ -5,16 +5,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.SettlementAgreementRejectedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementAgreementRejectionStaffNotificationHandlerTest {
-    private static final SettlementAgreementRejectedEvent event = new SettlementAgreementRejectedEvent(
+    private static final RejectSettlementAgreementEvent event = new RejectSettlementAgreementEvent(
         SampleClaim.getClaimWithSettlementAgreementRejected());
 
     private SettlementAgreementRejectionStaffNotificationHandler handler;
@@ -33,7 +33,7 @@ public class SettlementAgreementRejectionStaffNotificationHandlerTest {
     public void notifyStaffClaimantResponseStatesPaidSubmittedFor() {
         handler.onSettlementAgreementRejected(event);
 
-        verify(settlementAgreementRejectedStaffNotificationService, once())
-            .notifySettlementRejected(eq(event.getClaim()));
+        verify(settlementAgreementRejectedStaffNotificationService)
+            .notifySettlementRejected(event.getClaim());
     }
 }
