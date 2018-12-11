@@ -10,9 +10,9 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.claimstore.services.staff.SettlementAgreementRejectedStaffNotificationService.wrapInMap;
+import static uk.gov.hmcts.cmc.claimstore.services.staff.RejectSettlementAgreementStaffNotificationService.wrapInMap;
 
-public class SettlementAgreementRejectionEmailContentProviderTest {
+public class RejectSettlementAgreementEmailContentProviderTest {
 
     private TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
@@ -20,11 +20,11 @@ public class SettlementAgreementRejectionEmailContentProviderTest {
 
     private StaffEmailTemplates templates = new StaffEmailTemplates();
 
-    private SettlementAgreementRejectionEmailContentProvider service;
+    private RejectSettlementAgreementEmailContentProvider service;
 
     @Before
     public void beforeEachTest() {
-        service = new SettlementAgreementRejectionEmailContentProvider(
+        service = new RejectSettlementAgreementEmailContentProvider(
             templateService,
             templates
         );

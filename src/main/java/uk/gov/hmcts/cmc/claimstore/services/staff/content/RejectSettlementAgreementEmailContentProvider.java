@@ -11,12 +11,12 @@ import java.util.Map;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 @Component
-public class SettlementAgreementRejectionEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
+public class RejectSettlementAgreementEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
     private final StaffEmailTemplates staffEmailTemplates;
 
-    public SettlementAgreementRejectionEmailContentProvider(
+    public RejectSettlementAgreementEmailContentProvider(
         TemplateService templateService,
         StaffEmailTemplates staffEmailTemplates
     ) {

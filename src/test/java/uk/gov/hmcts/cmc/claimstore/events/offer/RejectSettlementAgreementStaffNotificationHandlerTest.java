@@ -6,26 +6,25 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
-import uk.gov.hmcts.cmc.claimstore.services.staff.SettlementAgreementRejectedStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.RejectSettlementAgreementStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SettlementAgreementRejectionStaffNotificationHandlerTest {
+public class RejectSettlementAgreementStaffNotificationHandlerTest {
     private static final RejectSettlementAgreementEvent event = new RejectSettlementAgreementEvent(
         SampleClaim.getClaimWithSettlementAgreementRejected());
 
-    private SettlementAgreementRejectionStaffNotificationHandler handler;
+    private RejectSettlementAgreementStaffNotificationHandler handler;
 
     @Mock
-    private SettlementAgreementRejectedStaffNotificationService settlementAgreementRejectedStaffNotificationService;
+    private RejectSettlementAgreementStaffNotificationService rejectSettlementAgreementStaffNotificationService;
 
     @Before
     public void setUp() {
-        handler = new SettlementAgreementRejectionStaffNotificationHandler(
-            settlementAgreementRejectedStaffNotificationService
+        handler = new RejectSettlementAgreementStaffNotificationHandler(
+            rejectSettlementAgreementStaffNotificationService
         );
     }
 
@@ -33,7 +32,7 @@ public class SettlementAgreementRejectionStaffNotificationHandlerTest {
     public void notifyStaffClaimantResponseStatesPaidSubmittedFor() {
         handler.onSettlementAgreementRejected(event);
 
-        verify(settlementAgreementRejectedStaffNotificationService)
+        verify(rejectSettlementAgreementStaffNotificationService)
             .notifySettlementRejected(event.getClaim());
     }
 }

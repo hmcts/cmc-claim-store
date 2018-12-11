@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.SettlementAgreementRejectionEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.RejectSettlementAgreementEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -16,17 +16,17 @@ import java.util.Map;
 
 
 @Service
-public class SettlementAgreementRejectedStaffNotificationService {
+public class RejectSettlementAgreementStaffNotificationService {
 
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
-    private final SettlementAgreementRejectionEmailContentProvider emailContentProvider;
+    private final RejectSettlementAgreementEmailContentProvider emailContentProvider;
 
     @Autowired
-    public SettlementAgreementRejectedStaffNotificationService(
+    public RejectSettlementAgreementStaffNotificationService(
         EmailService emailService,
         StaffEmailProperties emailProperties,
-        SettlementAgreementRejectionEmailContentProvider emailContentProvider
+        RejectSettlementAgreementEmailContentProvider emailContentProvider
     ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;

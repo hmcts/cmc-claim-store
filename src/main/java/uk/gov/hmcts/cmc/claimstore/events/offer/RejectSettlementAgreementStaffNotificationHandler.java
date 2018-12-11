@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
-import uk.gov.hmcts.cmc.claimstore.services.staff.SettlementAgreementRejectedStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.RejectSettlementAgreementStaffNotificationService;
 
 @Component
-public class SettlementAgreementRejectionStaffNotificationHandler {
+public class RejectSettlementAgreementStaffNotificationHandler {
 
-    private final SettlementAgreementRejectedStaffNotificationService notificationService;
+    private final RejectSettlementAgreementStaffNotificationService notificationService;
 
     @Autowired
-    public SettlementAgreementRejectionStaffNotificationHandler(
-        SettlementAgreementRejectedStaffNotificationService notificationService) {
+    public RejectSettlementAgreementStaffNotificationHandler(
+        RejectSettlementAgreementStaffNotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
