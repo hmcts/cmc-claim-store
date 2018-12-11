@@ -63,8 +63,8 @@ public class CCDCase {
     private String housingDisrepairOtherDamages;
     private String sotSignerName;
     private String sotSignerRole;
-    private List<CCDCollectionElement<CCDParty>> claimants;
-    private List<CCDCollectionElement<CCDParty>> defendants;
+    private List<CCDCollectionElement<CCDClaimant>> claimants;
+    private List<CCDCollectionElement<CCDDefendant>> defendants;
     private List<CCDCollectionElement<CCDTimelineEvent>> timeline;
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
 
