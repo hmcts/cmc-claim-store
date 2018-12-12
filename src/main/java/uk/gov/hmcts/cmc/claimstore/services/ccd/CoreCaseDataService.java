@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapperOld;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -63,7 +63,7 @@ public class CoreCaseDataService {
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
-    private final ClaimantResponseMapper claimantResponseMapper;
+    private final ClaimantResponseMapperOld claimantResponseMapperOld;
     private final UserService userService;
     private final JsonMapper jsonMapper;
     private final ReferenceNumberService referenceNumberService;
@@ -79,7 +79,7 @@ public class CoreCaseDataService {
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
-        ClaimantResponseMapper claimantResponseMapper,
+        ClaimantResponseMapperOld claimantResponseMapperOld,
         UserService userService,
         JsonMapper jsonMapper,
         ReferenceNumberService referenceNumberService,
@@ -92,7 +92,7 @@ public class CoreCaseDataService {
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
-        this.claimantResponseMapper = claimantResponseMapper;
+        this.claimantResponseMapperOld = claimantResponseMapperOld;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.referenceNumberService = referenceNumberService;
@@ -243,7 +243,7 @@ public class CoreCaseDataService {
 
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .claimantResponse(claimantResponseMapper.to(response))
+            .claimantResponse(claimantResponseMapperOld.to(response))
             .claimantRespondedAt(nowInUTC())
             .build();
 

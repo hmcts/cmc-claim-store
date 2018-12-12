@@ -13,14 +13,14 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 @Component
-public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, ClaimantResponse> {
+public class ClaimantResponseMapperOld implements Mapper<CCDClaimantResponse, ClaimantResponse> {
 
     private final ResponseAcceptationMapper responseAcceptationMapper;
     private final ResponseRejectionMapper responseRejectionMapper;
 
     @Autowired
-    public ClaimantResponseMapper(ResponseAcceptationMapper responseAcceptationMapper,
-                                  ResponseRejectionMapper responseRejectionMapper) {
+    public ClaimantResponseMapperOld(ResponseAcceptationMapper responseAcceptationMapper,
+                                     ResponseRejectionMapper responseRejectionMapper) {
 
         this.responseAcceptationMapper = responseAcceptationMapper;
         this.responseRejectionMapper = responseRejectionMapper;

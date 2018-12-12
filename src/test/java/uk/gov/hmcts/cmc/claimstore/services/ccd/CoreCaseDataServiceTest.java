@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantRespon
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapperOld;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -94,7 +94,7 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
     @Mock
-    private ClaimantResponseMapper claimantResponseMapper;
+    private ClaimantResponseMapperOld claimantResponseMapperOld;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -160,7 +160,7 @@ public class CoreCaseDataServiceTest {
             countyCourtJudgmentMapper,
             responseMapper,
             settlementMapper,
-            claimantResponseMapper,
+            claimantResponseMapperOld,
             userService,
             jsonMapper,
             referenceNumberService,
@@ -331,7 +331,7 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
 
-        when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(claimantResponseMapperOld.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
         
@@ -353,7 +353,7 @@ public class CoreCaseDataServiceTest {
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueCCJWithDefendantPaymentIntention();
 
-        when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(claimantResponseMapperOld.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
@@ -375,7 +375,7 @@ public class CoreCaseDataServiceTest {
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention();
 
-        when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(claimantResponseMapperOld.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
@@ -393,7 +393,7 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
-        when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(claimantResponseMapperOld.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 

@@ -21,7 +21,7 @@ import java.util.Optional;
 public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionResponse, PartAdmissionResponse> {
 
     private final PartyMapper partyMapper;
-    private final PaymentIntentionMapper paymentIntentionMapper;
+    private final PaymentIntentionMapperOld paymentIntentionMapperOld;
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final PaymentDeclarationMapper paymentDeclarationMapper;
     private final DefendantTimelineMapper timelineMapper;
@@ -31,7 +31,7 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
     @Autowired
     public PartAdmissionResponseMapper(
         PartyMapper partyMapper,
-        PaymentIntentionMapper paymentIntentionMapper,
+        PaymentIntentionMapperOld paymentIntentionMapperOld,
         StatementOfMeansMapper statementOfMeansMapper,
         PaymentDeclarationMapper paymentDeclarationMapper,
         DefendantTimelineMapper timelineMapper,
@@ -39,7 +39,7 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
         StatementOfTruthMapper statementOfTruthMapper
     ) {
         this.partyMapper = partyMapper;
-        this.paymentIntentionMapper = paymentIntentionMapper;
+        this.paymentIntentionMapperOld = paymentIntentionMapperOld;
         this.statementOfMeansMapper = statementOfMeansMapper;
         this.paymentDeclarationMapper = paymentDeclarationMapper;
         this.timelineMapper = timelineMapper;
@@ -58,7 +58,7 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
             .amount(partAdmissionResponse.getAmount());
 
         partAdmissionResponse.getPaymentIntention()
-            .ifPresent(paymentIntention -> builder.paymentIntention(paymentIntentionMapper.to(paymentIntention)));
+            .ifPresent(paymentIntention -> builder.paymentIntention(paymentIntentionMapperOld.to(paymentIntention)));
 
         if (partAdmissionResponse.getMoreTimeNeeded() != null) {
             builder.moreTimeNeededOption(CCDYesNoOption.valueOf(partAdmissionResponse.getMoreTimeNeeded().name()));
@@ -103,7 +103,7 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
         }
 
         if (paymentIntention != null) {
-            builder.paymentIntention(paymentIntentionMapper.from(paymentIntention));
+            builder.paymentIntention(paymentIntentionMapperOld.from(paymentIntention));
         }
 
         return builder.build();

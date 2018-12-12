@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapperOld;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,19 +27,19 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
-    private final ClaimantResponseMapper claimantResponseMapper;
+    private final ClaimantResponseMapperOld claimantResponseMapperOld;
 
     public CaseMapper(ClaimMapper claimMapper,
                       CountyCourtJudgmentMapper countyCourtJudgmentMapper,
                       ResponseMapper responseMapper,
                       SettlementMapper settlementMapper,
-                      ClaimantResponseMapper claimantResponseMapper
+                      ClaimantResponseMapperOld claimantResponseMapperOld
     ) {
         this.claimMapper = claimMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
-        this.claimantResponseMapper = claimantResponseMapper;
+        this.claimantResponseMapperOld = claimantResponseMapperOld;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
                 .build())
         );
 
-        claim.getClaimantResponse().map(claimantResponseMapper::to).ifPresent(builder::claimantResponse);
+        claim.getClaimantResponse().map(claimantResponseMapperOld::to).ifPresent(builder::claimantResponse);
 
         return builder
             .id(claim.getId())
@@ -149,7 +149,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
         }
 
         if (ccdCase.getClaimantResponse() != null) {
-            builder.claimantResponse(claimantResponseMapper.from(ccdCase.getClaimantResponse()));
+            builder.claimantResponse(claimantResponseMapperOld.from(ccdCase.getClaimantResponse()));
         }
 
         if (ccdCase.getDirectionsQuestionnaireDeadline() != null) {

@@ -5,21 +5,21 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.PaymentIntentionMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.PaymentIntentionMapperOld;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 
 @Component
 public class ResponseAcceptationMapper implements Mapper<CCDResponseAcceptation, ResponseAcceptation> {
 
-    private final PaymentIntentionMapper paymentIntentionMapper;
-    private final CourtDeterminationMapper courtDeterminationMapper;
+    private final PaymentIntentionMapperOld paymentIntentionMapperOld;
+    private final CourtDeterminationMapperOld courtDeterminationMapperOld;
 
     @Autowired
-    public ResponseAcceptationMapper(PaymentIntentionMapper paymentIntentionMapper,
-                                     CourtDeterminationMapper courtDeterminationMapper) {
-        this.paymentIntentionMapper = paymentIntentionMapper;
-        this.courtDeterminationMapper = courtDeterminationMapper;
+    public ResponseAcceptationMapper(PaymentIntentionMapperOld paymentIntentionMapperOld,
+                                     CourtDeterminationMapperOld courtDeterminationMapperOld) {
+        this.paymentIntentionMapperOld = paymentIntentionMapperOld;
+        this.courtDeterminationMapperOld = courtDeterminationMapperOld;
     }
 
     @Override
@@ -34,11 +34,11 @@ public class ResponseAcceptationMapper implements Mapper<CCDResponseAcceptation,
         responseAcceptation.getAmountPaid().ifPresent(builder::amountPaid);
 
         responseAcceptation.getClaimantPaymentIntention().ifPresent(
-            paymentIntention -> builder.claimantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
+            paymentIntention -> builder.claimantPaymentIntention(paymentIntentionMapperOld.to(paymentIntention))
         );
 
         responseAcceptation.getCourtDetermination().ifPresent(
-            courtDetermination -> builder.courtDetermination(courtDeterminationMapper.to(courtDetermination))
+            courtDetermination -> builder.courtDetermination(courtDeterminationMapperOld.to(courtDetermination))
         );
 
         return builder.build();
@@ -49,8 +49,9 @@ public class ResponseAcceptationMapper implements Mapper<CCDResponseAcceptation,
         return ResponseAcceptation.builder()
             .amountPaid(ccdResponseAcceptation.getAmountPaid())
             .formaliseOption(FormaliseOption.valueOf(ccdResponseAcceptation.getFormaliseOption().name()))
-            .claimantPaymentIntention(paymentIntentionMapper.from(ccdResponseAcceptation.getClaimantPaymentIntention()))
-            .courtDetermination(courtDeterminationMapper.from(ccdResponseAcceptation.getCourtDetermination()))
+            .claimantPaymentIntention(paymentIntentionMapperOld
+                .from(ccdResponseAcceptation.getClaimantPaymentIntention()))
+            .courtDetermination(courtDeterminationMapperOld.from(ccdResponseAcceptation.getCourtDetermination()))
             .build();
     }
 }

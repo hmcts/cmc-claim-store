@@ -19,27 +19,27 @@ public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, Payme
         CCDPaymentIntention.CCDPaymentIntentionBuilder builder = CCDPaymentIntention.builder();
         builder.paymentOption(CCDPaymentOption.valueOf(paymentIntention.getPaymentOption().name()));
         builder.paymentDate(paymentIntention.getPaymentDate().orElse(null));
-        paymentIntention.getRepaymentPlan().ifPresent( repaymentPlan -> {
+        paymentIntention.getRepaymentPlan().ifPresent(repaymentPlan ->
             builder.instalmentAmount(repaymentPlan.getInstalmentAmount())
                 .firstPaymentDate(repaymentPlan.getFirstPaymentDate())
                 .paymentSchedule(CCDPaymentSchedule.valueOf(repaymentPlan.getPaymentSchedule().name()))
                 .completionDate(repaymentPlan.getCompletionDate())
-                .paymentLength(repaymentPlan.getPaymentLength());
-        });
-       return builder.build();
+                .paymentLength(repaymentPlan.getPaymentLength())
+        );
+        return builder.build();
     }
 
     @Override
     public PaymentIntention from(CCDPaymentIntention ccdPaymentIntention) {
         PaymentIntention.PaymentIntentionBuilder builder = PaymentIntention.builder();
-        if (ccdPaymentIntention.hasRepaymentPlanInfo()){
+        if (ccdPaymentIntention.hasRepaymentPlanInfo()) {
             builder.repaymentPlan(RepaymentPlan.builder()
-            .paymentSchedule(PaymentSchedule.valueOf(ccdPaymentIntention.getPaymentSchedule().name()))
-            .firstPaymentDate(ccdPaymentIntention.getFirstPaymentDate())
-            .instalmentAmount(ccdPaymentIntention.getInstalmentAmount())
-            .completionDate(ccdPaymentIntention.getCompletionDate())
-            .paymentLength(ccdPaymentIntention.getPaymentLength())
-            .build());
+                .paymentSchedule(PaymentSchedule.valueOf(ccdPaymentIntention.getPaymentSchedule().name()))
+                .firstPaymentDate(ccdPaymentIntention.getFirstPaymentDate())
+                .instalmentAmount(ccdPaymentIntention.getInstalmentAmount())
+                .completionDate(ccdPaymentIntention.getCompletionDate())
+                .paymentLength(ccdPaymentIntention.getPaymentLength())
+                .build());
         }
         builder.paymentOption(PaymentOption.valueOf(ccdPaymentIntention.getPaymentOption().name()));
         builder.paymentDate(ccdPaymentIntention.getPaymentDate());

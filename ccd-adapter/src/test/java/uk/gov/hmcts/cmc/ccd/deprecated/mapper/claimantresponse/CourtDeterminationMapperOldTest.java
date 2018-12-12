@@ -21,10 +21,10 @@ import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class CourtDeterminationMapperTest {
+public class CourtDeterminationMapperOldTest {
 
     @Autowired
-    private CourtDeterminationMapper mapper;
+    private CourtDeterminationMapperOld mapper;
 
     @Test
     public void shouldMapToCCDCourtDeterminationFromCourtDetermination() {

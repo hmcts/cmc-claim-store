@@ -19,10 +19,10 @@ import static uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDFormali
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ClaimantResponseMapperTest {
+public class ClaimantResponseMapperOldTest {
 
     @Autowired
-    private ClaimantResponseMapper mapper;
+    private ClaimantResponseMapperOld mapper;
 
     @Test
     public void shouldMapClaimantAcceptanceWithCCJFormalisationFromCCD() {

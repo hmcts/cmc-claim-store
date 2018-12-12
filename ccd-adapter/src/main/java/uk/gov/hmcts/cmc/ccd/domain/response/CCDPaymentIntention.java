@@ -21,11 +21,11 @@ public class CCDPaymentIntention {
     private String paymentLength;
 
     @JsonIgnore
-    public boolean hasRepaymentPlanInfo(){
-        return null==instalmentAmount
-            && null==firstPaymentDate
-            && null==paymentSchedule
-            && null==completionDate
-            && null==paymentLength ;
+    public boolean hasRepaymentPlanInfo() {
+        return null == instalmentAmount
+            && null == firstPaymentDate
+            && null == paymentSchedule
+            && null == completionDate
+            && null == paymentLength;
     }
 }

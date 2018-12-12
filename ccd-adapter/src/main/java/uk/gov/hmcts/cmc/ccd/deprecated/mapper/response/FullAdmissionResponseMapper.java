@@ -17,19 +17,19 @@ import java.util.Optional;
 public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionResponse, FullAdmissionResponse> {
 
     private final PartyMapper partyMapper;
-    private final PaymentIntentionMapper paymentIntentionMapper;
+    private final PaymentIntentionMapperOld paymentIntentionMapperOld;
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
 
     @Autowired
     public FullAdmissionResponseMapper(
         PartyMapper partyMapper,
-        PaymentIntentionMapper paymentIntentionMapper,
+        PaymentIntentionMapperOld paymentIntentionMapperOld,
         StatementOfMeansMapper statementOfMeansMapper,
         StatementOfTruthMapper statementOfTruthMapper
     ) {
         this.partyMapper = partyMapper;
-        this.paymentIntentionMapper = paymentIntentionMapper;
+        this.paymentIntentionMapperOld = paymentIntentionMapperOld;
         this.statementOfMeansMapper = statementOfMeansMapper;
         this.statementOfTruthMapper = statementOfTruthMapper;
     }
@@ -41,7 +41,7 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
                 fullAdmissionResponse.getFreeMediation().orElse(YesNoOption.NO).name())
             )
             .defendant(partyMapper.to(fullAdmissionResponse.getDefendant()))
-            .paymentIntention(paymentIntentionMapper.to(fullAdmissionResponse.getPaymentIntention()));
+            .paymentIntention(paymentIntentionMapperOld.to(fullAdmissionResponse.getPaymentIntention()));
 
         if (fullAdmissionResponse.getMoreTimeNeeded() != null) {
             builder.moreTimeNeededOption(CCDYesNoOption.valueOf(fullAdmissionResponse.getMoreTimeNeeded().name()));
@@ -65,7 +65,7 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
             .moreTimeNeeded(YesNoOption.valueOf(Optional.ofNullable(moreTimeNeeded).orElse(CCDYesNoOption.NO).name()))
             .defendant(partyMapper.from(ccdFullAdmissionResponse.getDefendant()))
             .statementOfTruth(statementOfTruthMapper.from(ccdFullAdmissionResponse.getStatementOfTruth()))
-            .paymentIntention(paymentIntentionMapper.from(ccdFullAdmissionResponse.getPaymentIntention()))
+            .paymentIntention(paymentIntentionMapperOld.from(ccdFullAdmissionResponse.getPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(ccdFullAdmissionResponse.getStatementOfMeans()))
             .build();
     }
