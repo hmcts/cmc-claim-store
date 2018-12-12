@@ -56,20 +56,4 @@ public class PaidInFullStaffNotificationServiceTest extends MockSpringTest {
             .getMessage()).contains(
             "01/12/2025");
     }
-
-    @Test
-    public void shouldSendEmailWithExpectedContentPaidInFullNull() {
-        Claim claimWithPaidInFull = SampleClaim.builder()
-            .build();
-
-        service.notifyPaidInFull(claimWithPaidInFull);
-
-        verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
-
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Paid in Full");
-        assertThat(emailDataArgument.getValue()
-            .getMessage()).contains(
-            "ERROR: NO MONEY RECEIVED ON DATE");
-    }
 }

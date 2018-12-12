@@ -1,1 +1,1 @@
-{{ claimantName }} has confirmed that the claim has been satisfied{% if not moneyReceivedOn.isEmpty() %} on {{ moneyReceivedOn }}{% else %} ERROR: NO MONEY RECEIVED ON DATE {% endif %}. The case is settled and no further action is required.
+{{ claimantName }} has confirmed that the claim has been satisfied on {{ moneyReceivedOn }}. The case is settled and no further action is required.
