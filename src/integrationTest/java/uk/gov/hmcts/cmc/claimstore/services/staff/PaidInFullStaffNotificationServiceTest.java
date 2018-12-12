@@ -29,9 +29,6 @@ public class PaidInFullStaffNotificationServiceTest extends MockSpringTest {
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     @Autowired
-    private StaffEmailProperties emailProperties;
-
-    @Autowired
     private PaidInFullStaffNotificationService service;
 
     @Before
@@ -50,10 +47,7 @@ public class PaidInFullStaffNotificationServiceTest extends MockSpringTest {
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Paid in Full");
-        assertThat(emailDataArgument.getValue()
-            .getMessage()).contains(
-            "01/12/2025");
+        assertThat(emailDataArgument.getValue().getSubject()).startsWith("Paid in Full");
+        assertThat(emailDataArgument.getValue().getMessage()).contains("01/12/2025");
     }
 }
