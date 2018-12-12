@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CCDDefendant {
+public class CCDDefendant implements CCDPartyElement {
     private CCDPartyType claimantProvidedType;
     private String claimantProvidedEmail;
     private CCDAddress claimantProvidedServiceAddress;

@@ -40,5 +40,6 @@ public class RepresentativeMapper implements BuilderMapper<CCDClaimant, Represen
             addressMapper.from(ccdClaimant.getRepresentativeOrganisationAddress()),
             contactDetailsMapper.from(ccdClaimant)
         );
+
     }
 }

@@ -11,10 +11,10 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 public class OrganisationDetailsMapper implements BuilderMapper<CCDDefendant, OrganisationDetails, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
-    private final RepresentativeMapper representativeMapper;
+    private final DefendantRepresentativeMapper representativeMapper;
 
     @Autowired
-    public OrganisationDetailsMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
+    public OrganisationDetailsMapper(AddressMapper addressMapper, DefendantRepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
     }
@@ -41,8 +41,8 @@ public class OrganisationDetailsMapper implements BuilderMapper<CCDDefendant, Or
             ccdOrganisation.getPartyName(),
             addressMapper.from(ccdOrganisation.getPartyAddress()),
             ccdOrganisation.getPartyEmail(),
-            addressMapper.from(ccdOrganisation.getPartyServiceAddress()),
             representativeMapper.from(ccdOrganisation),
+            addressMapper.from(ccdOrganisation.getPartyServiceAddress()),
             ccdOrganisation.getPartyContactPerson(),
             ccdOrganisation.getPartyCompaniesHouseNumber()
         );

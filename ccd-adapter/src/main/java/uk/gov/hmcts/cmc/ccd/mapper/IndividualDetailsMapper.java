@@ -12,12 +12,15 @@ import java.time.format.DateTimeFormatter;
 public class IndividualDetailsMapper implements BuilderMapper<CCDDefendant, IndividualDetails, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
-    private final RepresentativeMapper representativeMapper;
+    private DefendantRepresentativeMapper defendantRepresentativeMapper;
 
     @Autowired
-    public IndividualDetailsMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
+    public IndividualDetailsMapper(
+        AddressMapper addressMapper,
+        DefendantRepresentativeMapper defendantRepresentativeMapper
+    ) {
         this.addressMapper = addressMapper;
-        this.representativeMapper = representativeMapper;
+        this.defendantRepresentativeMapper = defendantRepresentativeMapper;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class IndividualDetailsMapper implements BuilderMapper<CCDDefendant, Indi
             .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
 
         individual.getRepresentative()
-            .ifPresent(representative -> representativeMapper.to(representative, builder));
+            .ifPresent(representative -> defendantRepresentativeMapper.to(representative, builder));
 
         individual.getDateOfBirth().ifPresent(dob ->
             builder.partyDateOfBirth(dob.format(DateTimeFormatter.ISO_DATE)));
@@ -41,15 +44,15 @@ public class IndividualDetailsMapper implements BuilderMapper<CCDDefendant, Indi
     }
 
     @Override
-    public IndividualDetails from(CCDDefendant ccdClaimant) {
+    public IndividualDetails from(CCDDefendant ccdDefendant) {
 
         return new IndividualDetails(
-            ccdClaimant.getPartyName(),
-            addressMapper.from(ccdClaimant.getPartyAddress()),
-            addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()),
-            ccdClaimant.getPartyPhoneNumber(),
-            representativeMapper.from(ccdClaimant),
-            LocalDate.parse(ccdClaimant.getPartyDateOfBirth(), DateTimeFormatter.ISO_DATE)
+            ccdDefendant.getPartyName(),
+            addressMapper.from(ccdDefendant.getPartyAddress()),
+            ccdDefendant.getPartyEmail(),
+            defendantRepresentativeMapper.from(ccdDefendant),
+            addressMapper.from(ccdDefendant.getPartyServiceAddress()),
+            LocalDate.parse(ccdDefendant.getPartyDateOfBirth(), DateTimeFormatter.ISO_DATE)
         );
     }
 }

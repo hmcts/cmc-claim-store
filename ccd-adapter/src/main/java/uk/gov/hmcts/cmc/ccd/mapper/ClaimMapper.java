@@ -76,7 +76,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
             .collect(Collectors.toList()));
 
         builder.defendants(claimData.getDefendants().stream().map(defendantMapper::to)
-            .map(this::mapClaimantToValue)
+            .map(this::mapDefendantToValue)
             .collect(Collectors.toList()));
 
         claimData.getTimeline().ifPresent(timeline -> timelineMapper.to(timeline, builder));

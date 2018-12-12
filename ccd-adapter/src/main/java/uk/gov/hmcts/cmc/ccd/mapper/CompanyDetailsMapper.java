@@ -10,10 +10,10 @@ public class CompanyDetailsMapper
     implements BuilderMapper<CCDDefendant, CompanyDetails, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
-    private final RepresentativeMapper representativeMapper;
+    private final DefendantRepresentativeMapper representativeMapper;
 
     @Autowired
-    public CompanyDetailsMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
+    public CompanyDetailsMapper(AddressMapper addressMapper, DefendantRepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
     }

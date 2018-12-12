@@ -28,7 +28,7 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
     private final SoleTraderMapper soleTraderMapper;
     private final SoleTraderDetailsMapper soleTraderDetailsMapper;
     private final AddressMapper addressMapper;
-    private final RepresentativeMapper representativeMapper;
+    private final DefendantRepresentativeMapper representativeMapper;
 
     @Autowired
     public DefendantMapper(
@@ -41,7 +41,7 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
         SoleTraderMapper soleTraderMapper,
         SoleTraderDetailsMapper soleTraderDetailsMapper,
         AddressMapper addressMapper,
-        RepresentativeMapper representativeMapper
+        DefendantRepresentativeMapper representativeMapper
     ) {
 
         this.individualMapper = individualMapper;
@@ -85,22 +85,27 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
         switch (ccdDefendant.getPartyType()) {
             case COMPANY:
                 return new CompanyDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
-                    addressMapper.from(ccdDefendant.getPartyServiceAddress()), ccdDefendant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdDefendant), ccdDefendant.getPartyContactPerson());
+                    ccdDefendant.getPartyEmail(),
+                    representativeMapper.from(ccdDefendant),
+                    addressMapper.from(ccdDefendant.getPartyServiceAddress()),
+                    ccdDefendant.getPartyContactPerson());
             case INDIVIDUAL:
                 return new IndividualDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
-                    ccdDefendant.getPartyEmail(), addressMapper.from(ccdDefendant.getPartyServiceAddress()),
+                    ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
+                    addressMapper.from(ccdDefendant.getPartyServiceAddress()),
                     parseDob(ccdDefendant.getPartyDateOfBirth()));
             case SOLE_TRADER:
                 return new SoleTraderDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
-                    addressMapper.from(ccdDefendant.getPartyServiceAddress()), ccdDefendant.getPartyPhoneNumber(),
+                    ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
+                    addressMapper.from(ccdDefendant.getPartyServiceAddress()),
                     ccdDefendant.getPartyTitle(), ccdDefendant.getPartyBusinessName());
             case ORGANISATION:
                 return new OrganisationDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
-                    addressMapper.from(ccdDefendant.getPartyServiceAddress()), ccdDefendant.getPartyPhoneNumber(),
+                    ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
+                    addressMapper.from(ccdDefendant.getPartyServiceAddress()),
                     ccdDefendant.getPartyContactPerson(), ccdDefendant.getPartyCompaniesHouseNumber());
             default:
                 throw new MappingException();
