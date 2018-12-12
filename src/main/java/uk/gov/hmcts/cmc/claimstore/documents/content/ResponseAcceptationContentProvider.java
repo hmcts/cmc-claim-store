@@ -17,6 +17,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 public class ResponseAcceptationContentProvider {
     public static final String ADMISSIONS_FORM_NO = "OCON9A";
 
+    public static final LocalDate SYSTEM_MAX_DATE = LocalDate.of(9999, 12, 31);
     private final PaymentIntentionContentProvider paymentIntentionContentProvider;
 
     public ResponseAcceptationContentProvider(
@@ -43,7 +44,7 @@ public class ResponseAcceptationContentProvider {
             Optional<LocalDate> paymentDate = courtPaymentIntention.getPaymentDate();
             if (courtPaymentIntention.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE
                 && paymentDate.isPresent()
-                && paymentDate.get().equals(LocalDate.of(9999, 12, 31))) {
+                && paymentDate.get().equals(SYSTEM_MAX_DATE)) {
                 content.put("hasNegativeDisposableIncome", "The defendant’s disposable income is " +
                     formatMoney(courtDetermination.getDisposableIncome()) +
                     ". As such, the court has selected the defendant’s repayment plan.");
