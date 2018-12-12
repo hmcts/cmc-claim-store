@@ -1,9 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.domain.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,4 +19,13 @@ public class CCDPaymentIntention {
     private CCDPaymentSchedule paymentSchedule;
     private LocalDate completionDate;
     private String paymentLength;
+
+    @JsonIgnore
+    public boolean hasRepaymentPlanInfo(){
+        return null==instalmentAmount
+            && null==firstPaymentDate
+            && null==paymentSchedule
+            && null==completionDate
+            && null==paymentLength ;
+    }
 }
