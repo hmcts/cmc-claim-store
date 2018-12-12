@@ -27,7 +27,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof IndividualDetails) {
             if (!Objects.equals(INDIVIDUAL, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), INDIVIDUAL);
             }
             assertThat((IndividualDetails) actual).isEqualTo(ccdParty.getIndividual());
@@ -35,7 +35,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof OrganisationDetails) {
             if (!Objects.equals(ORGANISATION, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), ORGANISATION);
             }
             assertThat((OrganisationDetails) actual).isEqualTo(ccdParty.getOrganisation());
@@ -43,7 +43,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof CompanyDetails) {
             if (!Objects.equals(COMPANY, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), COMPANY);
             }
             assertThat((CompanyDetails) actual).isEqualTo(ccdParty.getCompany());
@@ -51,7 +51,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof SoleTraderDetails) {
             if (!Objects.equals(SOLE_TRADER, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), SOLE_TRADER);
             }
             assertThat((SoleTraderDetails) actual).isEqualTo(ccdParty.getSoleTrader());
