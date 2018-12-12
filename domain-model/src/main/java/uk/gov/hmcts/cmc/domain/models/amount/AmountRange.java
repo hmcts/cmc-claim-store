@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
-@EqualsAndHashCode(callSuper = true)
-public class AmountRange extends Amount {
+@EqualsAndHashCode
+public class AmountRange implements Amount {
 
     @Money
     @DecimalMin(value = "0.01")
@@ -26,7 +26,6 @@ public class AmountRange extends Amount {
     private final BigDecimal higherValue;
 
     public AmountRange(BigDecimal lowerValue, BigDecimal higherValue) {
-        super(AmountType.range.name());
         this.lowerValue = lowerValue;
         this.higherValue = higherValue;
     }
