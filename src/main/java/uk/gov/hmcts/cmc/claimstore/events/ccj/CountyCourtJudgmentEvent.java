@@ -13,12 +13,10 @@ public class CountyCourtJudgmentEvent {
 
     private final Claim claim;
     private final String authorisation;
-    private final boolean issue;
 
-    public CountyCourtJudgmentEvent(Claim claim, String authorisation, boolean issue) {
+    public CountyCourtJudgmentEvent(Claim claim, String authorisation) {
         this.claim = claim;
         this.authorisation = authorisation;
-        this.issue = issue;
     }
 
     @Override

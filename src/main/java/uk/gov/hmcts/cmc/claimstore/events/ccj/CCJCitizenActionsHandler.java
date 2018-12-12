@@ -5,26 +5,46 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.CCJNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+
+import java.util.Objects;
 
 @Component
 public class CCJCitizenActionsHandler {
     private final CCJNotificationService ccjNotificationService;
 
     @Autowired
-    public CCJCitizenActionsHandler(
-        CCJNotificationService ccjNotificationService
-    ) {
+    public CCJCitizenActionsHandler(CCJNotificationService ccjNotificationService) {
         this.ccjNotificationService = ccjNotificationService;
     }
 
     @EventListener
-    public void sendNotification(CountyCourtJudgmentEvent event) {
+    public void onCountyCourtJudgment(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
+        CountyCourtJudgmentType countyCourtJudgmentType = claim.getCountyCourtJudgment().getCcjType();
+        switch (countyCourtJudgmentType) {
+            case DEFAULT:
+                ccjNotificationService.notifyClaimantForCCJRequest(claim);
+                break;
+            case ADMISSIONS:
+                ccjNotificationService.notifyClaimantForCCJRequest(claim);
+                ccjNotificationService.notifyDefendantForCCJRequested(claim);
+                break;
+            case DETERMINATION:
+                // TODO: Action to be taken
+                break;
+            default:
+                throw new IllegalArgumentException("Incorrect event provided: "
+                    + countyCourtJudgmentType);
+        }
+    }
 
-        if (event.isIssue()) {
-            ccjNotificationService.notifyDefendantForCCJIssue(claim);
-        } else {
-            ccjNotificationService.notifyClaimantForCCJRequest(claim);
+    @EventListener
+    public void onRedetermination(ReDeterminationEvent event) {
+        Objects.requireNonNull(event);
+        if (event.getPartyType() == MadeBy.DEFENDANT) {
+            ccjNotificationService.notifyClaimantForRedeterminationRequest(event.getClaim());
         }
     }
 }

@@ -56,7 +56,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             )
         );
 
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
+        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -76,7 +76,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             )
         );
 
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
+        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -96,7 +96,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("Internal server error occurred")));
 
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
+        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 

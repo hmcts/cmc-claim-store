@@ -9,9 +9,10 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
-import uk.gov.hmcts.cmc.claimstore.events.offer.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
+import uk.gov.hmcts.cmc.claimstore.events.settlement.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -107,13 +108,11 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateCountyCourtJudgmentSubmittedEvent() throws Exception {
-
-        // given
-        boolean issue = false;
-        CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM, AUTHORISATION, issue);
+    public void shouldCreateDefaultCountyCourtJudgmentSubmittedEvent() throws Exception {
+        //given
+        CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM, AUTHORISATION);
         // when
-        eventProducer.createCountyCourtJudgmentEvent(CLAIM, AUTHORISATION, issue);
+        eventProducer.createCountyCourtJudgmentEvent(CLAIM, AUTHORISATION);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));
@@ -154,6 +153,15 @@ public class EventProducerTest {
         eventProducer.createSignSettlementAgreementEvent(CLAIM);
 
         //then
+        verify(publisher).publishEvent(eq(event));
+    }
+
+    @Test
+    public void shouldCreateRejectSettlementAgreementEvent() {
+        RejectSettlementAgreementEvent event = new RejectSettlementAgreementEvent(CLAIM);
+
+        eventProducer.createRejectSettlementAgreementEvent(CLAIM);
+
         verify(publisher).publishEvent(eq(event));
     }
 }

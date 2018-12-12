@@ -19,21 +19,27 @@ public class PaymentIntentionContentProvider {
         PaymentOption paymentOption,
         RepaymentPlan repaymentPlan,
         LocalDate paymentDate,
-        String paymentAmount
-    ) {
+        String paymentAmount,
+        String source) {
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
-            .put("paymentOption", paymentOption.getDescription())
-            .put("whenWillTheyPay", createWhenTheyPay(paymentOption, paymentDate, paymentAmount));
+            .put(source + "paymentOption", paymentOption.getDescription())
+            .put(source + "whenWillTheyFinishPaying", createWhenTheyPay(paymentOption, paymentDate,
+                                                                paymentAmount, repaymentPlan));
 
         Optional.ofNullable(repaymentPlan).ifPresent(plan ->
-            contentBuilder.put("repaymentPlan", create(paymentOption, plan, plan.getFirstPaymentDate()))
+            contentBuilder.put(source + "repaymentPlan", create(paymentOption, plan, plan.getFirstPaymentDate()))
         );
 
         return contentBuilder.build();
     }
 
-    private String createWhenTheyPay(PaymentOption paymentOption, LocalDate paymentDate, String paymentAmount) {
+    private String createWhenTheyPay(
+        PaymentOption paymentOption,
+        LocalDate paymentDate,
+        String paymentAmount,
+        RepaymentPlan repaymentPlan
+    ) {
         switch (paymentOption) {
             case IMMEDIATELY:
             case BY_SPECIFIED_DATE:
@@ -42,7 +48,9 @@ public class PaymentIntentionContentProvider {
                     + formatDate(Optional.ofNullable(paymentDate)
                     .orElseThrow(IllegalStateException::new));
             default:
-                return paymentOption.getDescription();
+                return Optional.ofNullable(repaymentPlan).isPresent()
+                    ? formatDate(repaymentPlan.getCompletionDate())
+                    : paymentOption.getDescription();
         }
     }
 }

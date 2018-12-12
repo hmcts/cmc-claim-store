@@ -5,13 +5,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,11 +37,12 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
 
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(properties.getTemplates()).thenReturn(templates);
-        when(emailTemplates.getClaimantCCJRequested()).thenReturn(CLAIMANT_CCJ_REQUESTED_TEMPLATE);
     }
 
     @Test
     public void notifyClaimantShouldCallNotify() throws Exception {
+        when(emailTemplates.getClaimantCCJRequested()).thenReturn(CLAIMANT_CCJ_REQUESTED_TEMPLATE);
+
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
@@ -51,5 +56,66 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
                 anyMap(),
                 eq(NotificationReferenceBuilder.CCJRequested.referenceForClaimant(claim.getReferenceNumber()))
             );
+    }
+
+    @Test (expected = NotificationException.class)
+    public void shouldThrowExceptionWhenNotificationFails() throws Exception {
+        when(emailTemplates.getClaimantCCJRequested()).thenReturn(CLAIMANT_CCJ_REQUESTED_TEMPLATE);
+
+        Claim claim = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+
+        when(notificationClient
+            .sendEmail(anyString(),anyString(), anyMap(), anyString()))
+            .thenThrow(new NotificationClientException("Some problem"));
+
+        ccjNotificationService.notifyClaimantForCCJRequest(claim);
+
+        verify(notificationClient).sendEmail(anyString(),anyString(), anyMap(), anyString());
+    }
+
+    @Test
+    public void notifyDefendantsShouldCallNotifyWhenCCJByAdmission() throws Exception {
+        when(emailTemplates.getResponseByClaimantEmailToDefendant())
+            .thenReturn(RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT);
+
+        Claim claim = SampleClaim
+            .builder()
+            .withDefendantEmail(SampleClaim.DEFENDANT_EMAIL)
+            .withResponse(SampleResponse.PartAdmission.builder().build())
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+
+        ccjNotificationService.notifyDefendantForCCJRequested(claim);
+
+        verify(notificationClient)
+            .sendEmail(
+                eq(RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT),
+                eq(claim.getDefendantEmail()),
+                anyMap(),
+                eq(NotificationReferenceBuilder.CCJIssued.referenceForDefendant(claim.getReferenceNumber()))
+            );
+    }
+
+    @Test (expected = NotificationException.class)
+    public void shouldThrowExceptionWhenNotificationFailsCCJByAdmission() throws Exception {
+        when(emailTemplates.getResponseByClaimantEmailToDefendant())
+            .thenReturn(RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT);
+
+        Claim claim = SampleClaim
+            .builder()
+            .withDefendantEmail(SampleClaim.DEFENDANT_EMAIL)
+            .withResponse(SampleResponse.PartAdmission.builder().build())
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+
+        when(notificationClient
+            .sendEmail(anyString(),anyString(), anyMap(), anyString()))
+            .thenThrow(new NotificationClientException("Some problem"));
+
+        ccjNotificationService.notifyDefendantForCCJRequested(claim);
+
+        verify(notificationClient).sendEmail(anyString(),anyString(), anyMap(), anyString());
     }
 }
