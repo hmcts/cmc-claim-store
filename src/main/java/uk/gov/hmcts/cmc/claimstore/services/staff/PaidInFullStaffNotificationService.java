@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.PaidInFullStaffEmailContentProvider;
@@ -10,12 +11,14 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
 
 @Service
 public class PaidInFullStaffNotificationService {
 
+    private final static DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
     private final PaidInFullStaffEmailContentProvider emailContentProvider;
@@ -49,6 +52,7 @@ public class PaidInFullStaffNotificationService {
             .put("claimReferenceNumber", claim.getReferenceNumber())
             .put("claimantName", claim.getClaimData().getClaimant().getName())
             .put("defendantName", claim.getClaimData().getDefendant().getName())
+            .put("moneyReceivedOn", claim.getMoneyReceivedOn().get().format(df))
             .build();
     }
 }
