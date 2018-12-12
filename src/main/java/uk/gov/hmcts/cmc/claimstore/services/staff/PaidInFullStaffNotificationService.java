@@ -52,7 +52,7 @@ public class PaidInFullStaffNotificationService {
             .put("claimReferenceNumber", claim.getReferenceNumber())
             .put("claimantName", claim.getClaimData().getClaimant().getName())
             .put("defendantName", claim.getClaimData().getDefendant().getName())
-            .put("moneyReceivedOn", claim.getMoneyReceivedOn().get().format(df))
+            .put("moneyReceivedOn", claim.getMoneyReceivedOn().orElseThrow(IllegalArgumentException::new).format(df))
             .build();
     }
 }
