@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimelineEvent;
 
 import java.util.List;
 
-@Deprecated
 @Value
 @Builder
 public class CCDDefendantTimeline {

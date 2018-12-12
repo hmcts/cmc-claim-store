@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 
 import java.time.LocalDate;
 
-@Deprecated
 @Builder
 @Value
 public class CCDPaymentIntention {

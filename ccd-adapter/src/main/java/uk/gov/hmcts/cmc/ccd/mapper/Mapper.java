@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper;
 
 public interface Mapper<K, V> {
 

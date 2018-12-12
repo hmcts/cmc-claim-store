@@ -2,10 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimelineEvent;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.evidence.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
@@ -68,7 +65,6 @@ public class CCDDefendant {
     private CCDYesNoOption responseMoreTimeNeededOption;
     private String responseDefendantSOTSignerName;
     private String responseDefendantSOTSignerRole;
-    private CCDStatementOfMeans statementOfMeans;
     private LocalDate paidInFullDate;
 
     private List<CCDCollectionElement<CCDPartyStatement>> settlementPartyStatements;

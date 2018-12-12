@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Deprecated
 @Value
 @Builder
 public class CCDRepaymentPlan {
