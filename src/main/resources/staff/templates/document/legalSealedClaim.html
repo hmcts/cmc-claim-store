@@ -168,6 +168,10 @@
           {{ claimant.address.line2 }}
           <br/>
           {% endif %}
+          {% if claimant.address.line3 is defined %}
+          {{ claimant.address.line3 }}
+          <br/>
+          {% endif %}
           {{ claimant.address.city }}
           <br/>
           {{ claimant.address.postcode }}
@@ -304,7 +308,7 @@
               <br/>
               {% if defendant.serviceAddress.line2 is defined %}
                 {{ defendant.serviceAddress.line2 }}
-                <br/>
+              <br/>
               {% endif %}
               {{ defendant.serviceAddress.city }}
               <br/>
@@ -321,6 +325,10 @@
               {% if defendant.address.line2 is defined %}
                 {{ defendant.address.line2 }}
                 <br/>
+              {% endif %}
+              {% if defendant.address.line3 is defined %}
+               {{ defendant.address.line3 }}
+               <br/>
               {% endif %}
               {{ defendant.address.city }}
               <br/>

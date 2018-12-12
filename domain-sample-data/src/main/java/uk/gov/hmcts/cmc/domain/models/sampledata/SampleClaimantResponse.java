@@ -50,6 +50,13 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
+        public ClaimantResponse buildStatePaidAcceptationWithoutFormaliseOption() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(null)
+                .build();
+        }
+
         public ClaimantResponse buildAcceptationIssueCCJWithDefendantPaymentIntention() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
@@ -57,7 +64,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
-        public ClaimantResponse buildAcceptationIssueCCJWithClaimantPaymentIntention() {
+        public ClaimantResponse buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate() {
             return ResponseAcceptation.builder()
                 .amountPaid(amountPaid)
                 .formaliseOption(CCJ)
@@ -97,6 +104,16 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();
         }
+
+        public ClaimantResponse buildAcceptationReferToJudgeWithCourtDetermination() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(REFER_TO_JUDGE)
+                .claimantPaymentIntention(bySetDate())
+                .courtDetermination(SampleCourtDetermination.bySetDate())
+                .build();
+        }
+
     }
 
     public static class ClaimantResponseRejection extends SampleClaimantResponse<ClaimantResponseAcceptation> {

@@ -7,16 +7,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponse;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.response.ResponseMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.deprecated.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
+import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -49,6 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,10 +61,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
+import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
+import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
+import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 
@@ -253,14 +255,16 @@ public class CoreCaseDataServiceTest {
     @Test
     public void saveCountyCourtJudgmentShouldReturnCaseDetails() {
         Claim providedClaim = SampleClaim.getDefault();
-        CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment.builder().build();
+        CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
+            .build();
 
         when(countyCourtJudgmentMapper.to(providedCCJ)).thenReturn(CCDCountyCourtJudgment.builder().build());
 
         CaseDetails caseDetails = service.saveCountyCourtJudgment(AUTHORISATION,
             providedClaim.getId(),
-            providedCCJ,
-            false);
+            providedCCJ);
 
         assertNotNull(caseDetails);
     }
@@ -322,75 +326,84 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void saveClaimantAcceptationResponseShouldReturnCaseDetails() {
+    public void saveClaimantAcceptationResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultAcceptation();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
-
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
+        
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
             AUTHORISATION
         );
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
     }
 
     @Test
-    public void saveClaimantAcceptationWithCCJResponseShouldReturnCaseDetails() {
+    public void saveClaimantAcceptationWithCCJResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueCCJWithDefendantPaymentIntention();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
             AUTHORISATION
         );
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
     }
 
     @Test
-    public void saveClaimantAcceptationWithSettlementResponseShouldReturnCaseDetails() {
+    public void saveClaimantAcceptationWithSettlementResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseAcceptation
             .builder().buildAcceptationIssueSettlementWithClaimantPaymentIntention();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
-            claimantResponse,
-            AUTHORISATION
-        );
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(), claimantResponse, AUTHORISATION);
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_ACCEPTATION.getValue()));
     }
 
     @Test
-    public void saveClaimantRejectionResponseShouldReturnCaseDetails() {
+    public void saveClaimantRejectionResponseShouldReturnClaim() {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
+        when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        CaseDetails caseDetails = service.saveClaimantResponse(providedClaim.getId(),
+        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
             AUTHORISATION
         );
 
-        assertNotNull(caseDetails);
+        assertThat(claim).isNotNull();
+        assertThat(claim.getClaimantResponse()).isPresent();
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(CLAIMANT_RESPONSE_REJECTION.getValue()));
     }

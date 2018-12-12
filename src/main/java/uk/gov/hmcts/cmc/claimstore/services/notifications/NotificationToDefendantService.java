@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
@@ -45,6 +46,18 @@ public class NotificationToDefendantService {
             parameters,
             referenceForDefendant(claim.getReferenceNumber())
         );
+    }
+
+    public void notifyDefendantWhenInterlocutoryJudgementRequested(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        sendNotificationEmail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantRequestedInterlocutoryJudgement(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
+
     }
 
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -58,13 +57,13 @@ public class Claim {
     private final List<String> features;
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponse claimantResponse;
-    private final LocalDateTime countyCourtJudgmentIssuedAt;
     private final LocalDate directionsQuestionnaireDeadline;
     @DateNotInTheFuture
     private final LocalDate moneyReceivedOn;
+    private final ReDetermination reDetermination;
+    private final LocalDateTime reDeterminationRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
-    @JsonCreator
     public Claim(
         Long id,
         String submitterId,
@@ -89,9 +88,10 @@ public class Claim {
         List<String> features,
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
-        LocalDateTime countyCourtJudgmentIssuedAt,
         LocalDate directionsQuestionnaireDeadline,
-        LocalDate moneyReceivedOn
+        LocalDate moneyReceivedOn,
+        ReDetermination reDetermination,
+        LocalDateTime reDeterminationRequestedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -116,9 +116,10 @@ public class Claim {
         this.features = features;
         this.claimantRespondedAt = claimantRespondedAt;
         this.claimantResponse = claimantResponse;
-        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
         this.moneyReceivedOn = moneyReceivedOn;
+        this.reDetermination = reDetermination;
+        this.reDeterminationRequestedAt = reDeterminationRequestedAt;
     }
 
     public Optional<Response> getResponse() {
@@ -165,12 +166,16 @@ public class Claim {
         return Optional.ofNullable(claimantRespondedAt);
     }
 
-    public Optional<LocalDateTime> getCountyCourtJudgmentIssuedAt() {
-        return Optional.ofNullable(countyCourtJudgmentIssuedAt);
-    }
-
     public Optional<LocalDate> getMoneyReceivedOn() {
         return Optional.ofNullable(moneyReceivedOn);
+    }
+
+    public Optional<LocalDateTime> getReDeterminationRequestedAt() {
+        return Optional.ofNullable(reDeterminationRequestedAt);
+    }
+
+    public Optional<ReDetermination> getReDetermination() {
+        return Optional.ofNullable(reDetermination);
     }
 
     @Override

@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -59,9 +61,10 @@ public final class SampleClaim {
     private List<String> features = Collections.singletonList("admissions");
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
-    private LocalDateTime countyCourtJudgmentIssuedAt = null;
     private LocalDate directionsQuestionnaireDeadline;
     private LocalDate moneyReceivedOn;
+    private LocalDateTime reDeterminationRequestedAt;
+    private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
 
     private SampleClaim() {
     }
@@ -108,6 +111,17 @@ public final class SampleClaim {
             .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
+    public static Claim getWithClaimantResponse() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
     }
 
@@ -159,6 +173,26 @@ public final class SampleClaim {
             ).build();
     }
 
+    public static Claim getClaimFullDefenceStatesPaidWithAcceptation() {
+        return builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(YesNoOption.NO)
+                    .build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .build()
+            )
+            .build();
+    }
+
     public static SampleClaim builder() {
         return new SampleClaim();
     }
@@ -188,9 +222,10 @@ public final class SampleClaim {
             features,
             claimantRespondedAt,
             claimantResponse,
-            countyCourtJudgmentIssuedAt,
             directionsQuestionnaireDeadline,
-            moneyReceivedOn
+            moneyReceivedOn,
+            reDetermination,
+            reDeterminationRequestedAt
         );
     }
 
@@ -259,11 +294,6 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withCountyCourtJudgmentIssuedAt(LocalDateTime countyCourtJudgmentIssuedAt) {
-        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
-        return this;
-    }
-
     public SampleClaim withClaimData(ClaimData claimData) {
         this.claimData = claimData;
         return this;
@@ -294,6 +324,17 @@ public final class SampleClaim {
         return this;
     }
 
+
+    public SampleClaim withReDetermination(ReDetermination reDetermination) {
+        this.reDetermination = reDetermination;
+        return this;
+    }
+
+    public SampleClaim withReDeterminationRequestedAt(LocalDateTime reDeterminationRequestedAt) {
+        this.reDeterminationRequestedAt = reDeterminationRequestedAt;
+        return this;
+    }
+
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
         this.sealedClaimDocument = sealedClaimDocument;
         return this;
@@ -313,12 +354,12 @@ public final class SampleClaim {
         this.directionsQuestionnaireDeadline = dqDeadline;
         return this;
     }
-  
+
     public SampleClaim withMoneyReceivedOn(LocalDate moneyReceivedOn) {
         this.moneyReceivedOn = moneyReceivedOn;
         return this;
     }
-  
+
     public SampleClaim withFeatures(List<String> features) {
         this.features = features;
         return this;

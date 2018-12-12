@@ -98,7 +98,7 @@ public class SupportController {
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
-            new CountyCourtJudgmentEvent(claim, authorisation, false)
+            new CountyCourtJudgmentEvent(claim, authorisation)
         );
     }
 
