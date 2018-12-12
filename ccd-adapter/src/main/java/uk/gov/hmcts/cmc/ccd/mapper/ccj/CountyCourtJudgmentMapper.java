@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.mapper.RepaymentPlanMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
@@ -21,15 +19,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.valueOf;
 
 @Component
 public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment, CountyCourtJudgment> {
-    private final StatementOfTruthMapper statementOfTruthMapper;
-    private final RepaymentPlanMapper repaymentPlanMapper;
 
     @Autowired
-    public CountyCourtJudgmentMapper(
-        StatementOfTruthMapper statementOfTruthMapper,
-        RepaymentPlanMapper repaymentPlanMapper) {
-        this.statementOfTruthMapper = statementOfTruthMapper;
-        this.repaymentPlanMapper = repaymentPlanMapper;
+    public CountyCourtJudgmentMapper() {
     }
 
     @Override
@@ -53,9 +45,9 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
                 builder.statementOfTruthSignerName(sot.getSignerName());
                 builder.statementOfTruthSignerRole(sot.getSignerRole());
             });
-        Optional.ofNullable(countyCourtJudgment.getCcjType()).ifPresent(ccjType -> {
-            builder.ccjType(CCDCountyCourtJudgmentType.valueOf(ccjType.name()));
-        });
+        Optional.ofNullable(countyCourtJudgment.getCcjType()).ifPresent(ccjType ->
+            builder.ccjType(CCDCountyCourtJudgmentType.valueOf(ccjType.name()))
+        );
 
         return builder.build();
     }
