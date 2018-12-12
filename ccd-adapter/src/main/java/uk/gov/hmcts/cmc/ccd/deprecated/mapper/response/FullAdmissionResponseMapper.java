@@ -6,8 +6,8 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDFullAdmissionResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PartyMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans.StatementOfMeansMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 

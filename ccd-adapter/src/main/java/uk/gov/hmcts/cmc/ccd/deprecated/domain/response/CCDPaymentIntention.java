@@ -2,8 +2,8 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain.response;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDRepaymentPlan;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
 
 import java.time.LocalDate;
 

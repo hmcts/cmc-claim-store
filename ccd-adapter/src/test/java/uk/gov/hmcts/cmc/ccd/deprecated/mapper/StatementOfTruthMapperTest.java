@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDStatementOfTruth;
+import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;

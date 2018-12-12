@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain;
+package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Value;

@@ -9,14 +9,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -260,7 +260,8 @@ public class CoreCaseDataServiceTest {
             .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
 
-        when(countyCourtJudgmentMapper.to(providedCCJ)).thenReturn(CCDCountyCourtJudgment.builder().build());
+        when(countyCourtJudgmentMapper.to(providedCCJ)).thenReturn(
+                CCDCountyCourtJudgment.builder().build());
 
         CaseDetails caseDetails = service.saveCountyCourtJudgment(AUTHORISATION,
             providedClaim.getId(),
