@@ -11,9 +11,9 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponseType.FULL_ADMISSION;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponseType.FULL_DEFENCE;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponseType.PART_ADMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType.FULL_ADMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType.FULL_DEFENCE;
+import static uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType.PART_ADMISSION;
 
 @Component
 public class ResponseMapper implements Mapper<CCDResponse, Response> {

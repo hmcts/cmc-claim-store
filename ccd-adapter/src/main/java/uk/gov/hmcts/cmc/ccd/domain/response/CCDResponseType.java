@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain.response;
+package uk.gov.hmcts.cmc.ccd.domain.response;
 
 public enum CCDResponseType {
     FULL_DEFENCE,

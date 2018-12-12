@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.evidence.CCDDefendantEvidence;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
 
 @Value
 @Builder

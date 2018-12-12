@@ -2,11 +2,12 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain.response;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDRepaymentPlan;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 
 import java.time.LocalDate;
 
+@Deprecated
 @Builder
 @Value
 public class CCDPaymentIntention {
@@ -14,3 +15,4 @@ public class CCDPaymentIntention {
     private LocalDate paymentDate;
     private CCDRepaymentPlan repaymentPlan;
 }
+

@@ -1,17 +1,16 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain;
+package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Deprecated
-@Value
 @Builder
-public class CCDRepaymentPlan {
-
+@Value
+public class CCDPaymentIntention {
+    private CCDPaymentOption paymentOption;
+    private LocalDate paymentDate;
     private BigDecimal instalmentAmount;
     private LocalDate firstPaymentDate;
     private CCDPaymentSchedule paymentSchedule;

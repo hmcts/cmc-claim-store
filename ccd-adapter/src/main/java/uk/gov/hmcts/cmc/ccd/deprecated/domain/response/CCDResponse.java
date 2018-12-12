@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain.response;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
 
 @Value
 @Builder

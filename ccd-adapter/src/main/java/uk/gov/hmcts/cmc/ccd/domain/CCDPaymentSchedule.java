@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain;
+package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CCDPaymentSchedule {
     EACH_WEEK("Every week"),
