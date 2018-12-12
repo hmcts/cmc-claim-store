@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDInterest;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 
-@Component
+//@Component
 public class InterestMapper implements Mapper<CCDInterest, Interest> {
 
     private InterestBreakdownMapper interestBreakdownMapper;

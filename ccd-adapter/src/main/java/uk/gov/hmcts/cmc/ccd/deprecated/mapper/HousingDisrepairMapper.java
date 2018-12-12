@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDHousingDisrepair;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
 
-@Component
+//@Component
 public class HousingDisrepairMapper implements Mapper<CCDHousingDisrepair, HousingDisrepair> {
 
     @Override

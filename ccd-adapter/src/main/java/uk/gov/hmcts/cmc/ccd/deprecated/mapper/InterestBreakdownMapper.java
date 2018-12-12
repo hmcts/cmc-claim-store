@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDInterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 
-@Component
+//@Component
 public class InterestBreakdownMapper implements Mapper<CCDInterestBreakdown, InterestBreakdown> {
     @Override
     public CCDInterestBreakdown to(InterestBreakdown interestBreakdown) {

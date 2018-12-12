@@ -14,7 +14,7 @@ import static uk.gov.hmcts.cmc.ccd.deprecated.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.AmountType.NOT_KNOWN;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.AmountType.RANGE;
 
-@Component
+//@Component
 public class AmountMapper implements Mapper<CCDAmount, Amount> {
 
     private final AmountRangeMapper amountRangeMapper;

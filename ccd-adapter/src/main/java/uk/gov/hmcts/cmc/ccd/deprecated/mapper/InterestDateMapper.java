@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType;
 
-@Component
+//@Component
 public class InterestDateMapper implements Mapper<CCDInterestDate, InterestDate> {
 
     @Override

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
-@Component
+//@Component
 public class AmountRowMapper implements Mapper<CCDAmountRow, AmountRow> {
 
     @Override

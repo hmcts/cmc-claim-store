@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDSoleTrader;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
-@Component
+//@Component
 public class SoleTraderMapper implements Mapper<CCDSoleTrader, SoleTrader> {
 
     private final AddressMapper addressMapper;

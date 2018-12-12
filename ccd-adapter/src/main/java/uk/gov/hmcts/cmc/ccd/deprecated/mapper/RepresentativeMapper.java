@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDRepresentative;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
-@Component
+//@Component
 public class RepresentativeMapper implements Mapper<CCDRepresentative, Representative> {
 
     private final AddressMapper addressMapper;

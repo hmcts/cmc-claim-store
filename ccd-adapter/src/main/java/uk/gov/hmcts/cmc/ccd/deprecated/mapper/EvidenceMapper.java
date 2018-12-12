@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class EvidenceMapper implements Mapper<CCDEvidence, Evidence> {
 
     private final EvidenceRowMapper evidenceRowMapper;

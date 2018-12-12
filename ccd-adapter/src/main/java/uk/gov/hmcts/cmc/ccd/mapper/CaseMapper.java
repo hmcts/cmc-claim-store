@@ -15,7 +15,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
-@Component
+@Component("ccdCaseMapper")
 public class CaseMapper {
 
     private final ClaimMapper claimMapper;

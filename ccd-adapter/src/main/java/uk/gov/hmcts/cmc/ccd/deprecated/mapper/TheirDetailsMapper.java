@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPartyType.SOLE_TRADER;
 
-@Component
+//@Component
 public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
 
     private final IndividualDetailsMapper individualDetailsMapper;

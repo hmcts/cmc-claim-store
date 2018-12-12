@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAmountRange;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 
-@Component
+//@Component
 public class AmountRangeMapper implements Mapper<CCDAmountRange, AmountRange> {
 
     @Override

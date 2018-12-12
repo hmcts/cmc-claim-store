@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.RepresentativeMapper;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 
-@Component
+//@Component
 public class OrganisationDetailsMapper implements Mapper<CCDOrganisation, OrganisationDetails> {
 
     private final AddressMapper addressMapper;
