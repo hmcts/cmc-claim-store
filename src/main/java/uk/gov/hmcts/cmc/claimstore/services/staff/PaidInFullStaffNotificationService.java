@@ -48,11 +48,12 @@ public class PaidInFullStaffNotificationService {
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {
+        String moneyReceivedOn = claim.getMoneyReceivedOn().isPresent() ? claim.getMoneyReceivedOn().get().format(df) : "";
         return ImmutableMap.<String, Object>builder()
             .put("claimReferenceNumber", claim.getReferenceNumber())
             .put("claimantName", claim.getClaimData().getClaimant().getName())
             .put("defendantName", claim.getClaimData().getDefendant().getName())
-            .put("moneyReceivedOn", claim.getMoneyReceivedOn().get().format(df))
+            .put("moneyReceivedOn", moneyReceivedOn)
             .build();
     }
 }
