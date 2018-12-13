@@ -181,8 +181,8 @@ module "claim-store-api" {
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
-    FEATURE_TOGGLES_CCD_ENABLED = "${var.ccd_enabled}"
-    FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
+    FEATURE_TOGGLES_CCD_ENABLED = "false"
+    FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "true"
 
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
