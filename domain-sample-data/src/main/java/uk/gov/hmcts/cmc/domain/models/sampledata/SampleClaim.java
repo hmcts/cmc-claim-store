@@ -71,7 +71,7 @@ public final class SampleClaim {
 
     public static Claim getDefault() {
         return builder()
-            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(EXTERNAL_ID).build())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .paymentOption(PaymentOption.IMMEDIATELY)

@@ -90,9 +90,9 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getExternalReferenceNumber(), actual.getClaimData().getExternalReferenceNumber().orElse(null));
         }
 
-        if (!actual.getClaimData().getExternalId().toString().equals(ccdCase.getExternalId())) {
+        if (!Objects.equals(actual.getClaimData().getExternalId().toString(), ccdCase.getExternalId())) {
             failWithMessage("Expected CCDClaim.externalId to be <%s> but was <%s>",
-                ccdCase.getExternalId(), actual.getExternalId().toString());
+                ccdCase.getExternalId(), actual.getClaimData().getExternalId().toString());
         }
 
         if (!Objects.equals(actual.getClaimData().getPreferredCourt().orElse(null), ccdCase.getPreferredCourt())) {
@@ -129,7 +129,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                         failWithMessage("Expected CCDCase.interestRate to be <%s> but was <%s>",
                             ccdCase.getInterestRate(), interest.getRate());
                     }
-                    if (!Objects.equals(interest.getType(), ccdCase.getInterestType())) {
+                    if (!Objects.equals(interest.getType().name(), ccdCase.getInterestType().name())) {
                         failWithMessage("Expected CCDCase.interestType to be <%s> but was <%s>",
                             ccdCase.getInterestType(), interest.getType());
                     }
@@ -150,7 +150,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                                 failWithMessage("Expected CCDCase.interestClaimStartDate to be <%s> but was <%s>",
                                     ccdCase.getInterestClaimStartDate(), interestDate.getDate());
                             }
-                            if (!Objects.equals(interestDate.getType(), ccdCase.getInterestDateType())) {
+                            if (!Objects.equals(interestDate.getType().name(), ccdCase.getInterestDateType().name())) {
                                 failWithMessage("Expected CCDCase.interestDateType to be <%s> but was <%s>",
                                     ccdCase.getInterestDateType(), interestDate.getType());
                             }
@@ -160,7 +160,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                                     ccdCase.getInterestStartDateReason(), interestDate.getReason());
                             }
 
-                            if (!Objects.equals(interestDate.getEndDateType(), ccdCase.getInterestEndDateType())) {
+                            if (!Objects.equals(interestDate.getEndDateType().name(), ccdCase.getInterestEndDateType().name())) {
                                 failWithMessage("Expected CCDCase.interestEndDateType to be <%s> but was <%s>",
                                     ccdCase.getInterestEndDateType(), interestDate.getEndDateType());
                             }

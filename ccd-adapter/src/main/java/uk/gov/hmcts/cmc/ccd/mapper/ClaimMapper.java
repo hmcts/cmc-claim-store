@@ -89,8 +89,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
 
         builder
             .reason(claimData.getReason())
-            .feeAmountInPennies(claimData.getFeeAmountInPennies())
-            .externalId(claimData.getExternalId().toString());
+            .feeAmountInPennies(claimData.getFeeAmountInPennies());
     }
 
     private CCDCollectionElement<CCDClaimant> mapClaimantToValue(CCDClaimant ccdParty) {
