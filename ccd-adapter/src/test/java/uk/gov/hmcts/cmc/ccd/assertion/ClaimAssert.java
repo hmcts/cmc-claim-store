@@ -90,9 +90,9 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getExternalReferenceNumber(), actual.getClaimData().getExternalReferenceNumber().orElse(null));
         }
 
-        if (!Objects.equals(actual.getClaimData().getExternalId().toString(), ccdCase.getExternalId())) {
+        if (!actual.getClaimData().getExternalId().toString().equals(ccdCase.getExternalId())) {
             failWithMessage("Expected CCDClaim.externalId to be <%s> but was <%s>",
-                ccdCase.getExternalId(), actual.getExternalId());
+                ccdCase.getExternalId(), actual.getExternalId().toString());
         }
 
         if (!Objects.equals(actual.getClaimData().getPreferredCourt().orElse(null), ccdCase.getPreferredCourt())) {
