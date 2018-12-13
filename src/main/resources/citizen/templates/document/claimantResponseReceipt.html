@@ -243,40 +243,44 @@
   </div>
   <div class="section-body">
     <table>
-      <tr>
-        <td><strong>How the defendant will pay?</strong></td>
-        <td>
-          {{ courtPaymentIntentionpaymentOption }}
-        </td>
-      </tr>
+      {% if hasNegativeDisposableIncome is defined %}
+        {{ hasNegativeDisposableIncome }}
+      {% else %}
+        <tr>
+          <td><strong>How the defendant will pay?</strong></td>
+          <td>
+            {{ courtPaymentIntentionpaymentOption }}
+          </td>
+        </tr>
 
-      {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By instalments" %}
-      <tr class="no-border">
-        <td><strong>First payment by:</strong></td>
-        <td>
-          {{ courtPaymentIntentionrepaymentPlan.firstPaymentDate }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Regular payments of:</strong></td>
-        <td>
-          {{ courtPaymentIntentionrepaymentPlan.instalmentAmount }}
-        </td>
-      </tr>
-      <tr class="no-border">
-        <td><strong>Frequency of payments:</strong></td>
-        <td>
-          {{ courtPaymentIntentionrepaymentPlan.paymentSchedule }}
-        </td>
-      </tr>
+        {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By instalments" %}
+        <tr class="no-border">
+          <td><strong>First payment by:</strong></td>
+          <td>
+            {{ courtPaymentIntentionrepaymentPlan.firstPaymentDate }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Regular payments of:</strong></td>
+          <td>
+            {{ courtPaymentIntentionrepaymentPlan.instalmentAmount }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Frequency of payments:</strong></td>
+          <td>
+            {{ courtPaymentIntentionrepaymentPlan.paymentSchedule }}
+          </td>
+        </tr>
+        {% endif %}
+
+        <tr class="no-border">
+          <td><strong>Last payment by:</strong></td>
+          <td>
+            {{ courtPaymentIntentionwhenWillTheyFinishPaying }}
+          </td>
+        </tr>
       {% endif %}
-
-      <tr class="no-border">
-        <td><strong>Last payment by:</strong></td>
-        <td>
-          {{ courtPaymentIntentionwhenWillTheyFinishPaying }}
-        </td>
-      </tr>
     </table>
   </div>
 </div>
