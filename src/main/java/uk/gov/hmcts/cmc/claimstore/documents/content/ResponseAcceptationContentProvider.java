@@ -45,9 +45,9 @@ public class ResponseAcceptationContentProvider {
             if (courtPaymentIntention.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE
                 && paymentDate.isPresent()
                 && paymentDate.get().equals(SYSTEM_MAX_DATE)) {
-                content.put("hasNegativeDisposableIncome", "The defendant’s disposable income is " +
-                    formatMoney(courtDetermination.getDisposableIncome()) +
-                    ". As such, the court has selected the defendant’s repayment plan.");
+                content.put("hasNegativeDisposableIncome", "The defendant’s disposable income is "
+                    + formatMoney(courtDetermination.getDisposableIncome())
+                    + ". As such, the court has selected the defendant’s repayment plan.");
             } else {
                 content.putAll(paymentIntentionContentProvider.createContent(
                     courtPaymentIntention.getPaymentOption(),
