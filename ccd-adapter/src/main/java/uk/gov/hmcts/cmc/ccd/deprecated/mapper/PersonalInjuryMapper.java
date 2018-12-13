@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPersonalInjury;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 
-@Component
+//@Component
 public class PersonalInjuryMapper implements Mapper<CCDPersonalInjury, PersonalInjury> {
 
     @Override

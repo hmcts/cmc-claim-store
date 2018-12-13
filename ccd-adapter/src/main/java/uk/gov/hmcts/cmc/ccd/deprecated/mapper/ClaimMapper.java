@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class ClaimMapper implements Mapper<CCDClaim, ClaimData> {
 
     private final PersonalInjuryMapper personalInjuryMapper;

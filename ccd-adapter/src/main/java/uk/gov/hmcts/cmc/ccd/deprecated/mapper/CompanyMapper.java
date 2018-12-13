@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCompany;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 
-@Component
+//@Component
 public class CompanyMapper implements Mapper<CCDCompany, Company> {
 
     private final AddressMapper addressMapper;

@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class AmountBreakDownMapper implements Mapper<CCDAmountBreakDown, AmountBreakDown> {
     private final AmountRowMapper amountRowMapper;
 

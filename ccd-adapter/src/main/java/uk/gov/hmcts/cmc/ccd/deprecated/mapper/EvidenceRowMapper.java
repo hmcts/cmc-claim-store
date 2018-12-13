@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.evidence.CCDEvidenceType;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
-@Component
+//@Component
 public class EvidenceRowMapper implements Mapper<CCDEvidenceRow, EvidenceRow> {
 
     @Override

@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Timeline;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class TimelineMapper implements Mapper<CCDTimeline, Timeline> {
 
     private final TimelineEventMapper timelineEventMapper;

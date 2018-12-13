@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
-@Component
+//@Component
 public class TimelineEventMapper implements Mapper<CCDTimelineEvent, TimelineEvent> {
 
     @Override

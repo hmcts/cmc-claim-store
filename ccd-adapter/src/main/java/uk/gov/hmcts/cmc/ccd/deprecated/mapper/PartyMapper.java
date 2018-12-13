@@ -20,7 +20,7 @@ import java.time.LocalDate;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 
-@Component
+//@Component
 public class PartyMapper implements Mapper<CCDParty, Party> {
 
     private final IndividualMapper individualMapper;

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAddress;
 import uk.gov.hmcts.cmc.domain.models.Address;
 
-@Component
+//@Component
 public class AddressMapper implements Mapper<CCDAddress, Address> {
 
     @Override

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 
-@Component
+//@Component
 public class ContactDetailsMapper implements Mapper<CCDContactDetails, ContactDetails> {
 
     @Override

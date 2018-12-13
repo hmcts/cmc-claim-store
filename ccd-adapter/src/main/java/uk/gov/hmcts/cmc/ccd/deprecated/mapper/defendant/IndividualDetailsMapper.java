@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 
-@Component
+//@Component
 public class IndividualDetailsMapper implements Mapper<CCDIndividual, IndividualDetails> {
 
     private final AddressMapper addressMapper;

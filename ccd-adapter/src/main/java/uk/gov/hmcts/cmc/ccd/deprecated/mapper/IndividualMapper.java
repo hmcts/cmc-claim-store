@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Component
+//@Component
 public class IndividualMapper implements Mapper<CCDIndividual, Individual> {
 
     private final AddressMapper addressMapper;

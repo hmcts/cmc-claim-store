@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.RepresentativeMapper;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 
-@Component
+//@Component
 public class SoleTraderDetailsMapper implements Mapper<CCDSoleTrader, SoleTraderDetails> {
 
     private final AddressMapper addressMapper;
