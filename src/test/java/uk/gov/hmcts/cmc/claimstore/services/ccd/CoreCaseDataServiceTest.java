@@ -261,7 +261,7 @@ public class CoreCaseDataServiceTest {
             .build();
 
         when(countyCourtJudgmentMapper.to(providedCCJ)).thenReturn(
-                CCDCountyCourtJudgment.builder().build());
+            CCDCountyCourtJudgment.builder().build());
 
         CaseDetails caseDetails = service.saveCountyCourtJudgment(AUTHORISATION,
             providedClaim.getId(),
@@ -335,7 +335,7 @@ public class CoreCaseDataServiceTest {
         when(claimantResponseMapper.to(claimantResponse)).thenReturn(CCDClaimantResponse.builder().build());
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
-        
+
         Claim claim = service.saveClaimantResponse(providedClaim.getId(),
             claimantResponse,
             AUTHORISATION

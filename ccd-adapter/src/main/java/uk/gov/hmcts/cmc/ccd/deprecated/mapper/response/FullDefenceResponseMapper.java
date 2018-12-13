@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.DefendantEvidenceMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PaymentDeclarationMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.StatementOfTruthMapper;
+import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;

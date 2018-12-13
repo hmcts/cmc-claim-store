@@ -20,7 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatemen
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption.BY_SPECIFIED_DATE;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyIndividual;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfTruth;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;

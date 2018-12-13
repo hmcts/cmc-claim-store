@@ -128,6 +128,7 @@ public class CaseMapper implements Mapper<CCDCase, Claim> {
             .settlementReachedAt(fromNullableUTCtoLocalZone(ccdCase.getSettlementReachedAt()))
             .claimantRespondedAt(fromNullableUTCtoLocalZone(ccdCase.getClaimantRespondedAt()));
 
+
         if (ccdCase.getCountyCourtJudgment() != null) {
             builder.countyCourtJudgment(countyCourtJudgmentMapper.from(ccdCase.getCountyCourtJudgment()));
         }

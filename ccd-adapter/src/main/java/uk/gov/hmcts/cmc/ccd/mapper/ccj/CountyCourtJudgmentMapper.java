@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.ccj;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
@@ -19,10 +18,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.valueOf;
 
 @Component
 public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment, CountyCourtJudgment> {
-
-    @Autowired
-    public CountyCourtJudgmentMapper() {
-    }
 
     @Override
     public CCDCountyCourtJudgment to(CountyCourtJudgment countyCourtJudgment) {
