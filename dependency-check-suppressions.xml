@@ -109,4 +109,11 @@
    ]]></notes>
         <cve>CVE-2018-11040</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+			The offending library and class and not used in our code
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-8088</cve>
+    </suppress>
 </suppressions>
