@@ -111,8 +111,9 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-     org.slf4j.ext.EventData in the slf4j-ext module in QOS.CH SLF4J before 1.8.0-beta2 allows remote attackers to bypass intended access restrictions via crafted data.
-    ]]></notes>
+			The offending library and class and not used in our code
+			]]></notes>
+        <gav regex="true">.*</gav>
         <cve>CVE-2018-8088</cve>
     </suppress>
 </suppressions>
