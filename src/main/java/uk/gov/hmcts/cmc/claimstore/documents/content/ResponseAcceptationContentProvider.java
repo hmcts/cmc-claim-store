@@ -17,7 +17,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 public class ResponseAcceptationContentProvider {
     public static final String ADMISSIONS_FORM_NO = "OCON9A";
 
-    public static final LocalDate SYSTEM_MAX_DATE = LocalDate.of(9999, 12, 31);
+    static final LocalDate SYSTEM_MAX_DATE = LocalDate.of(9999, 12, 31);
     private final PaymentIntentionContentProvider paymentIntentionContentProvider;
 
     public ResponseAcceptationContentProvider(
