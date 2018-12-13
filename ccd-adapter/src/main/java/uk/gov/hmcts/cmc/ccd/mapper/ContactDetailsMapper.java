@@ -2,10 +2,9 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyElement;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public class ContactDetailsMapper implements BuilderMapper<CCDClaimant, ContactDetails, CCDClaimant.CCDClaimantBuilder> {
@@ -20,7 +19,10 @@ public class ContactDetailsMapper implements BuilderMapper<CCDClaimant, ContactD
 
     @Override
     public ContactDetails from(CCDClaimant ccdClaimant) {
-        if (ccdClaimant == null) {
+        if (isBlank(ccdClaimant.getRepresentativeOrganisationPhone())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
+            && ccdClaimant.getRepresentativeOrganisationDxAddress() == null
+        ) {
             return null;
         }
 

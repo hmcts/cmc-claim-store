@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.particulars.HousingDisrepair;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class HousingDisrepairMapper implements BuilderMapper<CCDCase, HousingDisrepair, CCDCase.CCDCaseBuilder> {
 
@@ -16,7 +18,9 @@ public class HousingDisrepairMapper implements BuilderMapper<CCDCase, HousingDis
 
     @Override
     public HousingDisrepair from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (isBlank(ccdCase.getHousingDisrepairCostOfRepairDamages())
+            && isBlank(ccdCase.getHousingDisrepairOtherDamages())
+        ) {
             return null;
         }
 

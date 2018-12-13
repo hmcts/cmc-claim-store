@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class RepresentativeMapper implements BuilderMapper<CCDClaimant, Representative, CCDClaimant.CCDClaimantBuilder> {
 
@@ -31,7 +33,12 @@ public class RepresentativeMapper implements BuilderMapper<CCDClaimant, Represen
 
     @Override
     public Representative from(CCDClaimant ccdClaimant) {
-        if (ccdClaimant == null) {
+        if (isBlank(ccdClaimant.getRepresentativeOrganisationName())
+            && ccdClaimant.getRepresentativeOrganisationAddress() == null
+            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationPhone())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
+        ) {
             return null;
         }
 

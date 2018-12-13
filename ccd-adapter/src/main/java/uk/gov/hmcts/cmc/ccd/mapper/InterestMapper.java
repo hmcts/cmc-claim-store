@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.CCDCaseBuilder> {
 
@@ -34,12 +36,19 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
         builder
             .interestType(CCDInterestType.valueOf(interest.getType().name()))
             .interestRate(interest.getRate())
-            .reason(interest.getReason());
+            .interestReason(interest.getReason());
     }
 
     @Override
     public Interest from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (ccdCase.getInterestType() == null
+            && ccdCase.getInterestRate() == null
+            && isBlank(ccdCase.getInterestReason())
+            && ccdCase.getInterestSpecificDailyAmount() == null
+            && ccdCase.getInterestBreakDownAmount() == null
+            && isBlank(ccdCase.getInterestBreakDownExplanation())
+            && ccdCase.getInterestDateType() == null
+        ) {
             return null;
         }
 
@@ -47,7 +56,7 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             Interest.InterestType.valueOf(ccdCase.getInterestType().name()),
             interestBreakdownMapper.from(ccdCase),
             ccdCase.getInterestRate(),
-            ccdCase.getReason(),
+            ccdCase.getInterestReason(),
             ccdCase.getInterestSpecificDailyAmount(),
             interestDateMapper.from(ccdCase)
         );

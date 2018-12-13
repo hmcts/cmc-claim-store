@@ -18,13 +18,13 @@ public class InterestDateMapper implements BuilderMapper<CCDCase, InterestDate, 
 
         builder.interestDateType(CCDInterestDateType.valueOf(interestDate.getType().name()))
             .interestClaimStartDate(interestDate.getDate())
-            .interestReason(interestDate.getReason())
+            .interestStartDateReason(interestDate.getReason())
             .interestEndDateType(CCDInterestEndDateType.valueOf(interestDate.getEndDateType().name()));
     }
 
     @Override
     public InterestDate from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (ccdCase.getInterestDateType() == null) {
             return null;
         }
 
@@ -35,7 +35,7 @@ public class InterestDateMapper implements BuilderMapper<CCDCase, InterestDate, 
         return new InterestDate(
             InterestDate.InterestDateType.valueOf(ccdCase.getInterestDateType().name()),
             ccdCase.getInterestClaimStartDate(),
-            ccdCase.getInterestReason(),
+            ccdCase.getInterestStartDateReason(),
             endDateType
         );
     }

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CCDCaseBuilder> {
 
@@ -23,7 +25,12 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
 
     @Override
     public Payment from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (isBlank(ccdCase.getPaymentId())
+            && ccdCase.getPaymentAmount() == null
+            && isBlank(ccdCase.getPaymentReference())
+            && isBlank(ccdCase.getPaymentDateCreated())
+            && isBlank(ccdCase.getPaymentStatus())
+        ) {
             return null;
         }
 
