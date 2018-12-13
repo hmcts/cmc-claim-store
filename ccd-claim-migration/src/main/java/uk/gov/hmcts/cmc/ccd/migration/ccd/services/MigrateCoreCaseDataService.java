@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapperNew;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -29,7 +29,7 @@ public class MigrateCoreCaseDataService {
     private final AuthTokenGenerator authTokenGenerator;
     private final CaseAccessApi caseAccessApi;
     private final UserService userService;
-    private final CaseMapper caseMapper;
+    private final CaseMapperNew caseMapper;
 
     @Autowired
     public MigrateCoreCaseDataService(
@@ -37,7 +37,7 @@ public class MigrateCoreCaseDataService {
         AuthTokenGenerator authTokenGenerator,
         CaseAccessApi caseAccessApi,
         UserService userService,
-        CaseMapper caseMapper
+        CaseMapperNew caseMapper
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;

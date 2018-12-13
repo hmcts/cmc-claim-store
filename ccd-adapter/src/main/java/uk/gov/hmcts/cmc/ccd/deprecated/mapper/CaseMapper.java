@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.fromNullableUTCtoLocalZone;
 
-//@Component
+@Component
 public class CaseMapper implements Mapper<CCDCase, Claim> {
 
     private final ClaimMapper claimMapper;

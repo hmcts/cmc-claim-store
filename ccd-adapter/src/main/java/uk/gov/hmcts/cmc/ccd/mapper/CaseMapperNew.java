@@ -16,12 +16,11 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 @Component("ccdCaseMapper")
-public class CaseMapper {
+public class CaseMapperNew {
 
     private final ClaimMapper claimMapper;
 
-    public CaseMapper(ClaimMapper claimMapper
-    ) {
+    public CaseMapperNew(ClaimMapper claimMapper) {
         this.claimMapper = claimMapper;
     }
 

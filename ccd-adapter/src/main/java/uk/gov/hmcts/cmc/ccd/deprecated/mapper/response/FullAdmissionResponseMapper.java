@@ -1,13 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDFullAdmissionResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans.StatementOfMeansMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.DefendantMapper;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -16,14 +15,14 @@ import java.util.Optional;
 //@Component
 public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionResponse, FullAdmissionResponse> {
 
-    private final PartyMapper partyMapper;
+    private final DefendantMapper partyMapper;
     private final PaymentIntentionMapper paymentIntentionMapper;
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final StatementOfTruthMapper statementOfTruthMapper;
 
     @Autowired
     public FullAdmissionResponseMapper(
-        PartyMapper partyMapper,
+        DefendantMapper partyMapper,
         PaymentIntentionMapper paymentIntentionMapper,
         StatementOfMeansMapper statementOfMeansMapper,
         StatementOfTruthMapper statementOfTruthMapper
