@@ -1,9 +1,12 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public class DefendantRepresentativeMapper implements BuilderMapper<CCDDefendant, Representative, CCDDefendant.CCDDefendantBuilder> {
@@ -31,10 +34,14 @@ public class DefendantRepresentativeMapper implements BuilderMapper<CCDDefendant
 
     @Override
     public Representative from(CCDDefendant ccdDefendant) {
-        if (ccdDefendant == null) {
+        if (isBlank(ccdDefendant.getRepresentativeOrganisationName())
+            && ccdDefendant.getRepresentativeOrganisationAddress() == null
+            && isBlank(ccdDefendant.getRepresentativeOrganisationEmail())
+            && isBlank(ccdDefendant.getRepresentativeOrganisationPhone())
+            && isBlank(ccdDefendant.getRepresentativeOrganisationEmail())
+        ) {
             return null;
         }
-
 
         return new Representative(
             ccdDefendant.getRepresentativeOrganisationName(),

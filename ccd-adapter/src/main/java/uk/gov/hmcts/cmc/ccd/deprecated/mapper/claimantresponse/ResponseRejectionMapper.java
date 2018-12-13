@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseReject
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
-@Component
+//@Component
 public class ResponseRejectionMapper implements Mapper<CCDResponseRejection, ResponseRejection> {
     @Override
     public CCDResponseRejection to(ResponseRejection responseRejection) {

@@ -12,10 +12,10 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyCompany;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyIndividual;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyOrganisation;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartySoleTrader;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartyCompany;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartyIndividual;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartyOrganisation;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartySoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

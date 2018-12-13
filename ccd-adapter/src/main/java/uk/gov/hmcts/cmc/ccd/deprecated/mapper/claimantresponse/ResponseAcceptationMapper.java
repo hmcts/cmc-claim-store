@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 
-@Component
+//@Component
 public class ResponseAcceptationMapper implements Mapper<CCDResponseAcceptation, ResponseAcceptation> {
 
     private final PaymentIntentionMapper paymentIntentionMapper;

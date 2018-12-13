@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-@Component
+//@Component
 public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse, FullDefenceResponse> {
 
     private final StatementOfTruthMapper statementOfTruthMapper;

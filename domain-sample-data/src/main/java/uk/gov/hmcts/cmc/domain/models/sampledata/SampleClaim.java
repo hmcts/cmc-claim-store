@@ -32,7 +32,7 @@ public final class SampleClaim {
     public static final String DEFENDANT_ID = "4";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000CM001";
-    public static final String EXTERNAL_ID = UUID.randomUUID().toString();
+    public static final UUID EXTERNAL_ID = UUID.randomUUID();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
@@ -43,7 +43,7 @@ public final class SampleClaim {
     private String defendantId = DEFENDANT_ID;
     private Long claimId = CLAIM_ID;
     private String referenceNumber = REFERENCE_NUMBER;
-    private String externalId = EXTERNAL_ID;
+    private String externalId = EXTERNAL_ID.toString();
     private boolean isMoreTimeRequested = NOT_REQUESTED_FOR_MORE_TIME;
     private LocalDate responseDeadline = RESPONSE_DEADLINE;
     private String submitterEmail = SUBMITTER_EMAIL;
@@ -52,7 +52,7 @@ public final class SampleClaim {
     private LocalDate issuedOn = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
-    private ClaimData claimData = SampleClaimData.validDefaults();
+    private ClaimData claimData = SampleClaimData.builder().withExternalId(EXTERNAL_ID).build();
     private Response response;
     private String defendantEmail;
     private Settlement settlement = null;
@@ -135,7 +135,7 @@ public final class SampleClaim {
             .submitterId(USER_ID)
             .letterHolderId(LETTER_HOLDER_ID)
             .defendantId(DEFENDANT_ID)
-            .externalId(EXTERNAL_ID)
+            .externalId(EXTERNAL_ID.toString())
             .referenceNumber(referenceNumber)
             .claimData(Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()))
             .createdAt(NOW_IN_LOCAL_ZONE)

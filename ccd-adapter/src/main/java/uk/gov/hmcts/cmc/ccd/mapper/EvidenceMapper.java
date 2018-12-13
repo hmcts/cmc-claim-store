@@ -38,7 +38,7 @@ public class EvidenceMapper implements BuilderMapper<CCDCase, Evidence, CCDCase.
 
     @Override
     public Evidence from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (ccdCase.getEvidence() == null || ccdCase.getEvidence().isEmpty()) {
             return null;
         }
         return new Evidence(

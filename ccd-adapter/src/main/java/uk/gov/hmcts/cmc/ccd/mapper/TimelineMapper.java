@@ -38,7 +38,7 @@ public class TimelineMapper implements BuilderMapper<CCDCase, Timeline, CCDCase.
 
     @Override
     public Timeline from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (ccdCase.getTimeline() == null || ccdCase.getTimeline().isEmpty()) {
             return null;
         }
         return new Timeline(

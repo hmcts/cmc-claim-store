@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Optional;
 
-@Component
+//@Component
 public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionResponse, PartAdmissionResponse> {
 
     private final PartyMapper partyMapper;

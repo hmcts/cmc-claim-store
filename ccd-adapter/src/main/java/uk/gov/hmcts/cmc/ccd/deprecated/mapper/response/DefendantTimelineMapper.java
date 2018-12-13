@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 public class DefendantTimelineMapper implements Mapper<CCDDefendantTimeline, DefendantTimeline> {
 
     private final TimelineEventMapper timelineEventMapper;

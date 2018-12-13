@@ -19,7 +19,7 @@ public class EvidenceRowMapper implements Mapper<CCDEvidenceRow, EvidenceRow> {
 
     @Override
     public EvidenceRow from(CCDEvidenceRow row) {
-        if (row == null) {
+        if (row.getType() == null) {
             return null;
         }
         EvidenceType type = row.getType() != null ? EvidenceType.valueOf(row.getType().name()) : null;

@@ -31,7 +31,6 @@ public class OrganisationDetailsMapper implements BuilderMapper<CCDDefendant, Or
         builder
             .partyName(organisation.getName())
             .partyAddress(addressMapper.to(organisation.getAddress()));
-
     }
 
     @Override

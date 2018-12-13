@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDResponse;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDResponse;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

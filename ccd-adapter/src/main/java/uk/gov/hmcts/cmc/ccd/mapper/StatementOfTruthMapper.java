@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class StatementOfTruthMapper implements BuilderMapper<CCDCase, StatementOfTruth, CCDCase.CCDCaseBuilder> {
 
@@ -11,13 +13,13 @@ public class StatementOfTruthMapper implements BuilderMapper<CCDCase, StatementO
     public void to(StatementOfTruth statementOfTruth, CCDCase.CCDCaseBuilder builder) {
 
         builder
-            .sotSignerName (statementOfTruth.getSignerName())
+            .sotSignerName(statementOfTruth.getSignerName())
             .sotSignerRole(statementOfTruth.getSignerRole());
     }
 
     @Override
     public StatementOfTruth from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (isBlank(ccdCase.getSotSignerName()) && isBlank(ccdCase.getSotSignerRole())) {
             return null;
         }
 

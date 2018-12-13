@@ -35,7 +35,6 @@ public class OrganisationMapper implements BuilderMapper<CCDClaimant, Organisati
 
     @Override
     public Organisation from(CCDClaimant ccdOrganisation) {
-
         return new Organisation(
             ccdOrganisation.getPartyName(),
             addressMapper.from(ccdOrganisation.getPartyAddress()),

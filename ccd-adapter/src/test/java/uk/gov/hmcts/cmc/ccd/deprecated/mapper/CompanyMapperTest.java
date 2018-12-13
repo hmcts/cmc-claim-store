@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDCompany;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDCompany;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

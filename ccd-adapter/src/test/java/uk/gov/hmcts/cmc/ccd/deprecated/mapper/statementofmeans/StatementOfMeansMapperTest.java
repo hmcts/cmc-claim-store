@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatemen
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfMeans;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDStatementOfMeans;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

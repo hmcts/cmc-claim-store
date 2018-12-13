@@ -5,6 +5,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation;
 import uk.gov.hmcts.cmc.domain.models.particulars.PersonalInjury;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class PersonalInjuryMapper implements BuilderMapper<CCDCase, PersonalInjury, CCDCase.CCDCaseBuilder> {
 
@@ -15,7 +17,7 @@ public class PersonalInjuryMapper implements BuilderMapper<CCDCase, PersonalInju
 
     @Override
     public PersonalInjury from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (isBlank(ccdCase.getPersonalInjuryGeneralDamages())) {
             return null;
         }
 

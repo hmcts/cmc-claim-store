@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
-@Component
+//@Component
 public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, ClaimantResponse> {
 
     private final ResponseAcceptationMapper responseAcceptationMapper;

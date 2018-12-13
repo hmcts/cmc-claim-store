@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.util;
+package uk.gov.hmcts.cmc.ccd.deprecated;
 
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAmount;

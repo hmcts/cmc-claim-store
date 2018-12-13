@@ -19,7 +19,7 @@ public class InterestBreakdownMapper implements BuilderMapper<CCDCase, InterestB
 
     @Override
     public InterestBreakdown from(CCDCase ccdCase) {
-        if (ccdCase == null) {
+        if (ccdCase.getInterestBreakDownAmount() == null && ccdCase.getInterestBreakDownExplanation() == null) {
             return null;
         }
 
