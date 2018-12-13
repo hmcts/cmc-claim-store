@@ -125,18 +125,70 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
         Optional.ofNullable(actual.getClaimData().getInterest())
             .ifPresent(interest ->
                 {
-                    if (!Objects.equals(lowerAmount, ccdCase.getAmountLowerValue())) {
-                        failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                            ccdCase.getAmountLowerValue(), lowerAmount);
+                    if (!Objects.equals(interest.getRate(), ccdCase.getInterestRate())) {
+                        failWithMessage("Expected CCDCase.interestRate to be <%s> but was <%s>",
+                            ccdCase.getInterestRate(), interest.getRate());
                     }
+                    if (!Objects.equals(interest.getType(), ccdCase.getInterestType())) {
+                        failWithMessage("Expected CCDCase.interestType to be <%s> but was <%s>",
+                            ccdCase.getInterestType(), interest.getType());
+                    }
+                    if (!Objects.equals(interest.getReason(), ccdCase.getInterestReason())) {
+                        failWithMessage("Expected CCDCase.interestReason to be <%s> but was <%s>",
+                            ccdCase.getInterestReason(), interest.getRate());
+                    }
+                    interest.getSpecificDailyAmount().ifPresent(dailyAmount -> {
+                        if (!Objects.equals(dailyAmount, ccdCase.getInterestSpecificDailyAmount())) {
+                            failWithMessage("Expected CCDCase.interestSpecificDailyAmount to be <%s> but was <%s>",
+                                ccdCase.getInterestSpecificDailyAmount(), dailyAmount);
+
+                        }
+                    });
+                    Optional.ofNullable(interest.getInterestDate())
+                        .ifPresent(interestDate -> {
+                            if (!Objects.equals(interestDate.getDate(), ccdCase.getInterestClaimStartDate())) {
+                                failWithMessage("Expected CCDCase.interestClaimStartDate to be <%s> but was <%s>",
+                                    ccdCase.getInterestClaimStartDate(), interestDate.getDate());
+                            }
+                            if (!Objects.equals(interestDate.getType(), ccdCase.getInterestDateType())) {
+                                failWithMessage("Expected CCDCase.interestDateType to be <%s> but was <%s>",
+                                    ccdCase.getInterestDateType(), interestDate.getType());
+                            }
+
+                            if (!Objects.equals(interestDate.getReason(), ccdCase.getInterestStartDateReason())) {
+                                failWithMessage("Expected CCDCase.interestStartDateReason to be <%s> but was <%s>",
+                                    ccdCase.getInterestStartDateReason(), interestDate.getReason());
+                            }
+
+                            if (!Objects.equals(interestDate.getEndDateType(), ccdCase.getInterestEndDateType())) {
+                                failWithMessage("Expected CCDCase.interestEndDateType to be <%s> but was <%s>",
+                                    ccdCase.getInterestEndDateType(), interestDate.getEndDateType());
+                            }
+                        });
                 }
             );
 
         Optional.ofNullable(actual.getClaimData().getPayment())
             .ifPresent(payment -> {
-                    if (!Objects.equals(lowerAmount, ccdCase.getAmountLowerValue())) {
-                        failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                            ccdCase.getAmountLowerValue(), lowerAmount);
+                    if (!Objects.equals(payment.getId(), ccdCase.getPaymentId())) {
+                        failWithMessage("Expected CCDCase.paymentId to be <%s> but was <%s>",
+                            ccdCase.getPaymentId(), payment.getId());
+                    }
+                    if (!Objects.equals(payment.getReference(), ccdCase.getPaymentReference())) {
+                        failWithMessage("Expected CCDCase.paymentReference to be <%s> but was <%s>",
+                            ccdCase.getPaymentReference(), payment.getReference());
+                    }
+                    if (!Objects.equals(payment.getAmount(), ccdCase.getPaymentAmount())) {
+                        failWithMessage("Expected CCDCase.paymentAmount to be <%s> but was <%s>",
+                            ccdCase.getPaymentAmount(), payment.getAmount());
+                    }
+                    if (!Objects.equals(payment.getDateCreated(), ccdCase.getPaymentDateCreated())) {
+                        failWithMessage("Expected CCDCase.paymentDateCreated to be <%s> but was <%s>",
+                            ccdCase.getPaymentDateCreated(), payment.getDateCreated());
+                    }
+                    if (!Objects.equals(payment.getStatus(), ccdCase.getPaymentStatus())) {
+                        failWithMessage("Expected CCDCase.paymentStatus to be <%s> but was <%s>",
+                            ccdCase.getPaymentStatus(), payment.getStatus());
                     }
                 }
             );
@@ -144,26 +196,40 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
         actual.getClaimData().getPersonalInjury()
             .ifPresent(personalInjury ->
             {
-                if (!Objects.equals(lowerAmount, ccdCase.getAmountLowerValue())) {
-                    failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                        ccdCase.getAmountLowerValue(), lowerAmount);
+                if (!Objects.equals(personalInjury.getGeneralDamages().name(),
+                    ccdCase.getPersonalInjuryGeneralDamages())) {
+                    failWithMessage("Expected CCDCase.personalInjuryGeneralDamages to be <%s> but was <%s>",
+                        ccdCase.getPersonalInjuryGeneralDamages(), personalInjury.getGeneralDamages());
                 }
             });
 
 
         actual.getClaimData().getHousingDisrepair().ifPresent(housingDisrepair ->
         {
-            if (!Objects.equals(lowerAmount, ccdCase.getAmountLowerValue())) {
-                failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                    ccdCase.getAmountLowerValue(), lowerAmount);
+            if (!Objects.equals(housingDisrepair.getCostOfRepairsDamages().name(), ccdCase.getHousingDisrepairCostOfRepairDamages())) {
+                failWithMessage("Expected CCDCase.housingDisrepairCostOfRepairDamages to be <%s> but was <%s>",
+                    ccdCase.getHousingDisrepairCostOfRepairDamages(), housingDisrepair.getCostOfRepairsDamages());
             }
+            housingDisrepair.getOtherDamages().ifPresent(damagesExpectation ->
+            {
+                if (!Objects.equals(damagesExpectation.name(), ccdCase.getHousingDisrepairOtherDamages())) {
+                    failWithMessage("Expected CCDCase.housingDisrepairOtherDamages to be <%s> but was <%s>",
+                        ccdCase.getHousingDisrepairOtherDamages(), damagesExpectation.name());
+                }
+            });
+
         });
 
         actual.getClaimData().getStatementOfTruth().ifPresent(statementOfTruth ->
         {
-            if (!Objects.equals(lowerAmount, ccdCase.getAmountLowerValue())) {
+            if (!Objects.equals(statementOfTruth.getSignerName(), ccdCase.getSotSignerName())) {
                 failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                    ccdCase.getAmountLowerValue(), lowerAmount);
+                    ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
+            }
+
+            if (!Objects.equals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole())) {
+                failWithMessage("Expected CCDCase.sotSignerRole to be <%s> but was <%s>",
+                    ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
             }
         });
 

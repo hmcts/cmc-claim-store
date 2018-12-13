@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDContactDetailsAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDInterestAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDInterestDateAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDPaymentAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.ClaimAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.ClaimAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.ClaimDataAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CompanyAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CompanyDetailsAssert;
