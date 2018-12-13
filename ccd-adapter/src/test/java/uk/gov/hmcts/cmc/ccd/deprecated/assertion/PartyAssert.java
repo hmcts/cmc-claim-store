@@ -27,7 +27,7 @@ public class PartyAssert extends AbstractAssert<PartyAssert, Party> {
 
         if (actual instanceof Individual) {
             if (!Objects.equals(INDIVIDUAL, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), INDIVIDUAL);
             }
             assertThat((Individual) actual).isEqualTo(ccdParty.getIndividual());
@@ -35,7 +35,7 @@ public class PartyAssert extends AbstractAssert<PartyAssert, Party> {
 
         if (actual instanceof Organisation) {
             if (!Objects.equals(ORGANISATION, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), ORGANISATION);
             }
             assertThat((Organisation) actual).isEqualTo(ccdParty.getOrganisation());
@@ -43,7 +43,7 @@ public class PartyAssert extends AbstractAssert<PartyAssert, Party> {
 
         if (actual instanceof Company) {
             if (!Objects.equals(COMPANY, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), COMPANY);
             }
             assertThat((Company) actual).isEqualTo(ccdParty.getCompany());
@@ -51,7 +51,7 @@ public class PartyAssert extends AbstractAssert<PartyAssert, Party> {
 
         if (actual instanceof SoleTrader) {
             if (!Objects.equals(SOLE_TRADER, ccdParty.getType())) {
-                failWithMessage("Expected CCDParty.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
                     ccdParty.getType(), SOLE_TRADER);
             }
             assertThat((SoleTrader) actual).isEqualTo(ccdParty.getSoleTrader());
