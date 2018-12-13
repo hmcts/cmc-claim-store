@@ -9,7 +9,6 @@ locals {
   pdfserviceUrl = "http://cmc-pdf-service-${local.local_env}.service.${local.local_ase}.internal"
 
   ccdCnpUrl = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
-  ccdApiUrl = "${var.env == "sprod" || var.env == "demo" ? local.ccdCnpUrl : "false"}"
 
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
@@ -158,7 +157,7 @@ module "claim-store-api" {
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_URL = "${var.dm_url}"
-    CORE_CASE_DATA_API_URL = "${local.ccdApiUrl}"
+    CORE_CASE_DATA_API_URL = "${local.ccdCnpUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
     // mail
