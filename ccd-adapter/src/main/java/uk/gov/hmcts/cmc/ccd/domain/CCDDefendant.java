@@ -50,6 +50,7 @@ public class CCDDefendant {
     private String representativeOrganisationDxAddress;
 
     private LocalDateTime responseSubmittedDateTime;
+    private LocalDate responseDeadline;
     private CCDResponseType responseType;
     private BigDecimal responseAmount;
     private LocalDate paymentDeclarationPaidDate;
