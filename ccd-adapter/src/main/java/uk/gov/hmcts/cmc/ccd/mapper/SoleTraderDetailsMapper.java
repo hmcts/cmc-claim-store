@@ -39,7 +39,7 @@ public class SoleTraderDetailsMapper
             ccdSoleTrader.getPartyEmail(),
             representativeMapper.from(ccdSoleTrader),
             addressMapper.from(ccdSoleTrader.getPartyServiceAddress()),
-            ccdSoleTrader.getPartyPhoneNumber(),
+            ccdSoleTrader.getPartyPhone(),
             ccdSoleTrader.getPartyTitle()
         );
     }
