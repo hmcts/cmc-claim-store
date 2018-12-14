@@ -30,7 +30,8 @@ public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAsser
                     paymentIntention.getFirstPaymentDate(), repaymentPlan.getFirstPaymentDate());
             }
 
-            if (!Objects.equals(repaymentPlan.getPaymentSchedule().name(), paymentIntention.getPaymentSchedule().name())) {
+            if (!Objects.equals(repaymentPlan.getPaymentSchedule().name(),
+                paymentIntention.getPaymentSchedule().name())) {
                 failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
                     paymentIntention.getPaymentSchedule().name(), repaymentPlan.getPaymentSchedule().name());
             }

@@ -70,7 +70,7 @@ public class ClaimantResponseMapper implements Mapper<CCDClaimantResponse, Claim
         }
         if (ccdClaimantResponse.getClaimantResponseType() == CCDClaimantResponseType.ACCEPTATION) {
             CCDResponseAcceptation ccdResponseAcceptation = (CCDResponseAcceptation) ccdClaimantResponse;
-           return ResponseAcceptation.builder()
+            return ResponseAcceptation.builder()
                 .amountPaid(ccdResponseAcceptation.getAmountPaid())
                 .formaliseOption(FormaliseOption.valueOf(ccdResponseAcceptation.getFormaliseOption().name()))
                 .claimantPaymentIntention(paymentIntentionMapper.from(ccdResponseAcceptation

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
-import uk.gov.hmcts.cmc.ccd.assertion.response.PaymentIntentionAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseAcceptationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseRejectionAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.PaymentIntentionAssert;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
