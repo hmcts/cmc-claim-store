@@ -59,7 +59,6 @@ public class CCDDefendant {
     private BigDecimal responseAmount;
     private LocalDate paymentDeclarationPaidDate;
     private String paymentDeclarationExplanation;
-    private CCDPaymentIntention defendantPaymentIntention;
     private List<CCDCollectionElement<CCDTimelineEvent>> defendantTimeLineEvents;
     private String defendantTimeLineComment;
     private List<CCDCollectionElement<CCDEvidenceRow>> responseEvidenceRows;
@@ -70,6 +69,10 @@ public class CCDDefendant {
     private CCDYesNoOption responseMoreTimeNeededOption;
     private String responseDefendantSOTSignerName;
     private String responseDefendantSOTSignerRole;
+
+    private CCDPaymentIntention defendantPaymentIntention;
+    private CCDStatementOfMeans statementOfMeans;
+
     private LocalDate paidInFullDate;
 
     private List<CCDCollectionElement<CCDPartyStatement>> settlementPartyStatements;

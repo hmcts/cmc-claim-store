@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.deprecated.mapper;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCompany;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDIndividual;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDOrganisation;

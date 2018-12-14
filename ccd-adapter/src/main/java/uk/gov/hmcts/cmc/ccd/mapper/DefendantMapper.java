@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
@@ -94,7 +94,7 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
                     ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
                     addressMapper.from(ccdDefendant.getPartyServiceAddress()),
-                    parseDob(ccdDefendant.getPartyDateOfBirth()));
+                    ccdDefendant.getPartyDateOfBirth());
             case SOLE_TRADER:
                 return new SoleTraderDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
                     ccdDefendant.getPartyEmail(),

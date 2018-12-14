@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper;
 
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;

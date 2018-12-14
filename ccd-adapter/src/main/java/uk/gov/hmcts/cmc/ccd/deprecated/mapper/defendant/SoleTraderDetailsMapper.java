@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.defendant;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDSoleTrader;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.AddressMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;

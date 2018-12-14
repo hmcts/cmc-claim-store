@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.RepaymentPlanMapper;

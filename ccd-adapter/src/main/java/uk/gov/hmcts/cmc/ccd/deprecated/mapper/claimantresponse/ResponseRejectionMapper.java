@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse;
 
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;

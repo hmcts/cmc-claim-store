@@ -11,11 +11,11 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDParty;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartyCompany;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartyIndividual;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartyOrganisation;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDPartySoleTrader;
+import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

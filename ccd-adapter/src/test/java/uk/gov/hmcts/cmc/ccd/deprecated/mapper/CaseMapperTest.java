@@ -13,9 +13,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.util.UUID;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDCitizenClaim;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDLegalClaim;
+import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

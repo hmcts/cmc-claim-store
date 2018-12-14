@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDOrganisation;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDOrganisation;
+import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

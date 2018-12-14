@@ -5,10 +5,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

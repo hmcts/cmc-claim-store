@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimeline;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimelineEvent;

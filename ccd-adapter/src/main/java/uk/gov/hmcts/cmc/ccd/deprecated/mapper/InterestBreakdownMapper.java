@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper;
 
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDInterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 
