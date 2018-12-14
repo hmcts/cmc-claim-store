@@ -71,7 +71,6 @@ public class CountyCourtJudgmentMapperTest {
             .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
             .payBySetDate(now())
             .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
-            .ccjType(CountyCourtJudgmentType.DEFAULT)
             .build();
 
         //when
