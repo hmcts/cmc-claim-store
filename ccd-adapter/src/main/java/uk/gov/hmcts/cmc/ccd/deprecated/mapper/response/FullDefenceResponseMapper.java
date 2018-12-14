@@ -2,24 +2,25 @@ package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDFullDefenceResponse;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.DefendantEvidenceMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PaymentDeclarationMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.mapper.DefendantMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantEvidenceMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantTimelineMapper;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-//@Component
+@Component
 public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse, FullDefenceResponse> {
 
     private final StatementOfTruthMapper statementOfTruthMapper;
-    private final PartyMapper partyMapper;
+    private final DefendantMapper partyMapper;
     private final PaymentDeclarationMapper paymentDeclarationMapper;
     private final DefendantTimelineMapper timelineMapper;
     private final DefendantEvidenceMapper evidenceMapper;
@@ -27,7 +28,7 @@ public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse,
     @Autowired
     public FullDefenceResponseMapper(
         StatementOfTruthMapper statementOfTruthMapper,
-        PartyMapper partyMapper,
+        DefendantMapper partyMapper,
         PaymentDeclarationMapper paymentDeclarationMapper,
         DefendantTimelineMapper timelineMapper,
         DefendantEvidenceMapper evidenceMapper
@@ -53,7 +54,7 @@ public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse,
             builder.moreTimeNeededOption(CCDYesNoOption.valueOf(fullDefenceResponse.getMoreTimeNeeded().name()));
         }
 
-        builder.defendant(partyMapper.to(fullDefenceResponse.getDefendant()));
+        //builder.defendant(partyMapper.to(fullDefenceResponse.getDefendant()));
 
         fullDefenceResponse.getStatementOfTruth()
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
@@ -64,9 +65,9 @@ public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse,
         fullDefenceResponse.getPaymentDeclaration().ifPresent(paymentDeclaration ->
             builder.paymentDeclaration(paymentDeclarationMapper.to(paymentDeclaration)));
 
-        fullDefenceResponse.getTimeline().ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
+        //fullDefenceResponse.getTimeline().ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
 
-        fullDefenceResponse.getEvidence().ifPresent(evidence -> builder.evidence(evidenceMapper.to(evidence)));
+        //fullDefenceResponse.getEvidence().ifPresent(evidence -> builder.evidence(evidenceMapper.to(evidence)));
 
         return builder.build();
     }
@@ -88,13 +89,16 @@ public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse,
         return new FullDefenceResponse(
             freeMediation,
             YesNoOption.valueOf(response.getMoreTimeNeededOption().name()),
-            partyMapper.from(response.getDefendant()),
+            //partyMapper.from(response.getDefendant()),
+            null,
             statementOfTruth,
             DefenceType.valueOf(response.getDefenceType().name()),
             response.getDefence(),
             paymentDeclarationMapper.from(response.getPaymentDeclaration()),
-            timelineMapper.from(response.getTimeline()),
-            evidenceMapper.from(response.getEvidence())
+            //timelineMapper.from(response.getTimeline()),
+            //evidenceMapper.from(response.getEvidence())
+            null,
+            null
         );
     }
 }

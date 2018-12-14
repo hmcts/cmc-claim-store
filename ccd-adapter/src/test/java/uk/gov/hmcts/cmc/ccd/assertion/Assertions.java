@@ -1,45 +1,15 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.AddressAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.AmountAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.AmountRangeAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDAddressAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDContactDetailsAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDInterestAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDInterestDateAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CCDPaymentAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.ClaimAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.ClaimDataAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CompanyAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CompanyDetailsAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.ContactDetailsAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.CountyCourtJudgmentAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.DefendantEvidenceAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.DefendantTimelineAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.EvidenceAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.EvidenceRowAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.IndividualAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.IndividualDetailsAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.InterestAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.InterestBreakdownAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.InterestDateAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.LivingPartnerAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.OfferAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.OrganisationAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.OrganisationDetailsAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.PartyAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.PartyStatementAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.PaymentAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.PaymentDeclarationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.RepaymentPlanAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.RepresentativeAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.SettlementAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.SoleTraderAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.SoleTraderDetailsAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.StatementOfTruthAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.TheirDetailsAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.TimelineAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantResponseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;
@@ -60,48 +30,22 @@ import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.ExpenseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.SelfEmploymentAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.StatementOfMeansAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDContactDetails;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDInterest;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDInterestDate;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPayment;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDRepresentative;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
-import uk.gov.hmcts.cmc.domain.models.InterestDate;
-import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
-import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-import uk.gov.hmcts.cmc.domain.models.amount.Amount;
-import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
-import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
-import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
-import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
-import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
-import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
-import uk.gov.hmcts.cmc.domain.models.party.Company;
-import uk.gov.hmcts.cmc.domain.models.party.Individual;
-import uk.gov.hmcts.cmc.domain.models.party.Organisation;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
@@ -131,105 +75,8 @@ public class Assertions {
         return new AddressAssert(address);
     }
 
-    public static InterestAssert assertThat(Interest interest) {
-        return new InterestAssert(interest);
-    }
-
-    public static InterestDateAssert assertThat(InterestDate interestDate) {
-        return new InterestDateAssert(interestDate);
-    }
-
-    public static PaymentAssert assertThat(Payment payment) {
-        return new PaymentAssert(payment);
-    }
-
     public static CCDAddressAssert assertThat(CCDAddress ccdAddress) {
         return new CCDAddressAssert(ccdAddress);
-    }
-
-    public static CCDInterestAssert assertThat(CCDInterest ccdInterest) {
-        return new CCDInterestAssert(ccdInterest);
-    }
-
-    public static CCDPaymentAssert assertThat(CCDPayment ccdPayment) {
-        return new CCDPaymentAssert(ccdPayment);
-    }
-
-    public static CCDInterestDateAssert assertThat(CCDInterestDate ccdInterestDate) {
-        return new CCDInterestDateAssert(ccdInterestDate);
-    }
-
-    public static ContactDetailsAssert assertThat(ContactDetails contactDetails) {
-        return new ContactDetailsAssert(contactDetails);
-    }
-
-    public static CCDContactDetailsAssert assertThat(CCDContactDetails ccdContactDetails) {
-        return new CCDContactDetailsAssert(ccdContactDetails);
-    }
-
-    public static RepresentativeAssert assertThat(CCDRepresentative ccdRepresentative) {
-        return new RepresentativeAssert(ccdRepresentative);
-    }
-
-    public static IndividualAssert assertThat(Individual individual) {
-        return new IndividualAssert(individual);
-    }
-
-    public static SoleTraderAssert assertThat(SoleTrader soleTrader) {
-        return new SoleTraderAssert(soleTrader);
-    }
-
-    public static OrganisationAssert assertThat(Organisation organisation) {
-        return new OrganisationAssert(organisation);
-    }
-
-    public static CompanyAssert assertThat(Company company) {
-        return new CompanyAssert(company);
-    }
-
-    public static PartyAssert assertThat(Party party) {
-        return new PartyAssert(party);
-    }
-
-
-    public static TheirDetailsAssert assertThat(TheirDetails party) {
-        return new TheirDetailsAssert(party);
-    }
-
-    public static ClaimDataAssert assertThat(ClaimData claimData) {
-        return new ClaimDataAssert(claimData);
-    }
-
-    public static CompanyDetailsAssert assertThat(CompanyDetails companyDetails) {
-        return new CompanyDetailsAssert(companyDetails);
-    }
-
-    public static OrganisationDetailsAssert assertThat(OrganisationDetails organisationDetails) {
-        return new OrganisationDetailsAssert(organisationDetails);
-    }
-
-    public static IndividualDetailsAssert assertThat(IndividualDetails individualDetails) {
-        return new IndividualDetailsAssert(individualDetails);
-    }
-
-    public static SoleTraderDetailsAssert assertThat(SoleTraderDetails soleTraderDetails) {
-        return new SoleTraderDetailsAssert(soleTraderDetails);
-    }
-
-    public static AmountRangeAssert assertThat(AmountRange amountRange) {
-        return new AmountRangeAssert(amountRange);
-    }
-
-    public static AmountAssert assertThat(Amount amount) {
-        return new AmountAssert(amount);
-    }
-
-    public static StatementOfTruthAssert assertThat(StatementOfTruth statementOfTruth) {
-        return new StatementOfTruthAssert(statementOfTruth);
-    }
-
-    public static ClaimAssert assertThat(Claim claim) {
-        return new ClaimAssert(claim);
     }
 
     public static RepaymentPlanAssert assertThat(RepaymentPlan repaymentPlan) {
@@ -264,20 +111,8 @@ public class Assertions {
         return new TimelineEventAssert(timelineEvent);
     }
 
-    public static TimelineAssert assertThat(Timeline timeline) {
-        return new TimelineAssert(timeline);
-    }
-
     public static EvidenceRowAssert assertThat(EvidenceRow evidenceRow) {
         return new EvidenceRowAssert(evidenceRow);
-    }
-
-    public static EvidenceAssert assertThat(Evidence evidence) {
-        return new EvidenceAssert(evidence);
-    }
-
-    public static InterestBreakdownAssert assertThat(InterestBreakdown interestBreakdown) {
-        return new InterestBreakdownAssert(interestBreakdown);
     }
 
     public static DefendantTimelineAssert assertThat(DefendantTimeline timeline) {
@@ -286,6 +121,10 @@ public class Assertions {
 
     public static DefendantEvidenceAssert assertThat(DefendantEvidence evidence) {
         return new DefendantEvidenceAssert(evidence);
+    }
+
+    public static ClaimAssert assertThat(Claim claim) {
+        return new ClaimAssert(claim);
     }
 
     public static ResponseAssert assertThat(Response response) {

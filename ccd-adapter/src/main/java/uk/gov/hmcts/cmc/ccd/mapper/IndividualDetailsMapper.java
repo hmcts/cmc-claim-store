@@ -9,7 +9,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class IndividualDetailsMapper implements BuilderMapper<CCDDefendant, IndividualDetails, CCDDefendant.CCDDefendantBuilder> {
+public class IndividualDetailsMapper
+    implements BuilderMapper<CCDDefendant, IndividualDetails, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
     private DefendantRepresentativeMapper defendantRepresentativeMapper;

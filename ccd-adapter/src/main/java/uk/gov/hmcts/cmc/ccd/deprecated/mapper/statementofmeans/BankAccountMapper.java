@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.valueOf;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;
 
 @Component
 public class BankAccountMapper implements Mapper<CCDBankAccount, BankAccount> {

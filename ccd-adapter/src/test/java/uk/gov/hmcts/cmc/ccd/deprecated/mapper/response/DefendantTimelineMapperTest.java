@@ -7,9 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimelineEvent;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDDefendantTimeline;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
+import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefendantTimeline;
+import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantTimelineMapper;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDDefendantTimeline;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 

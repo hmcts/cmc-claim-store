@@ -8,7 +8,8 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
-public class RepresentativeMapper implements BuilderMapper<CCDClaimant, Representative, CCDClaimant.CCDClaimantBuilder> {
+public class RepresentativeMapper
+    implements BuilderMapper<CCDClaimant, Representative, CCDClaimant.CCDClaimantBuilder> {
 
     private final AddressMapper addressMapper;
     private final ContactDetailsMapper contactDetailsMapper;

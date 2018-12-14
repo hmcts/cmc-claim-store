@@ -26,6 +26,9 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
 public class SampleData {
+    //Utility class
+    private SampleData() {
+    }
 
     public static CCDAddress getCCDAddress() {
         return CCDAddress.builder()
@@ -128,6 +131,10 @@ public class SampleData {
 
 
     public static CCDCase getCCDLegalCase() {
+        List<CCDCollectionElement<CCDClaimant>> claimants
+            = singletonList(CCDCollectionElement.<CCDClaimant>builder().value(getCCDClaimantIndividual()).build());
+        List<CCDCollectionElement<CCDDefendant>> defendants
+            = singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build());
         return CCDCase.builder()
             .id(1L)
             .submittedOn("2017-11-01T10:15:30")
@@ -151,12 +158,17 @@ public class SampleData {
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .claimants(singletonList(CCDCollectionElement.<CCDClaimant>builder().value(getCCDClaimantIndividual()).build()))
-            .defendants(singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build()))
+            .claimants(claimants)
+            .defendants(defendants)
             .build();
     }
 
     public static CCDCase getCCDCitizenCase(List<CCDCollectionElement<CCDAmountRow>> amountBreakDown) {
+        List<CCDCollectionElement<CCDClaimant>> claimants
+            = singletonList(CCDCollectionElement.<CCDClaimant>builder().value(getCCDClaimantIndividual()).build());
+        List<CCDCollectionElement<CCDDefendant>> defendants
+            = singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build());
+
         return CCDCase.builder()
             .id(1L)
             .submittedOn("2017-11-01T10:15:30")
@@ -189,8 +201,8 @@ public class SampleData {
             .interestClaimStartDate(LocalDate.now())
             .interestSpecificDailyAmount(BigDecimal.valueOf(10))
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-            .claimants(singletonList(CCDCollectionElement.<CCDClaimant>builder().value(getCCDClaimantIndividual()).build()))
-            .defendants(singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build()))
+            .claimants(claimants)
+            .defendants(defendants)
             .build();
     }
 

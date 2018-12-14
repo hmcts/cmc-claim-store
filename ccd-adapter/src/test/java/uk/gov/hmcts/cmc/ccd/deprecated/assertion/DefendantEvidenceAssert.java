@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.evidence.CCDDefendantEvidence;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 

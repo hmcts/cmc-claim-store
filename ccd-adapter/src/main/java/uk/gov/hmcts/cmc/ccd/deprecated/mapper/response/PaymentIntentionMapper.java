@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.RepaymentPlanMapper;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
-//@Component
+@Component
 public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, PaymentIntention> {
 
     private final RepaymentPlanMapper repaymentPlanMapper;

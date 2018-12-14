@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 public class CaseMapperTest {
 
     @Autowired
-    private CaseMapperNew ccdCaseMapper;
+    private CaseMapper ccdCaseMapper;
 
     @Test
     public void shouldMapLegalClaimToCCD() {

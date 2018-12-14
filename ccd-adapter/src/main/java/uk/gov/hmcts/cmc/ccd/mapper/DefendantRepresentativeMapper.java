@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
@@ -9,13 +8,17 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
-public class DefendantRepresentativeMapper implements BuilderMapper<CCDDefendant, Representative, CCDDefendant.CCDDefendantBuilder> {
+public class DefendantRepresentativeMapper
+    implements BuilderMapper<CCDDefendant, Representative, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
     private DefendantContactDetailsMapper defendantContactDetailsMapper;
 
     @Autowired
-    public DefendantRepresentativeMapper(AddressMapper addressMapper, DefendantContactDetailsMapper defendantContactDetailsMapper) {
+    public DefendantRepresentativeMapper(
+        AddressMapper addressMapper,
+        DefendantContactDetailsMapper defendantContactDetailsMapper
+    ) {
         this.addressMapper = addressMapper;
         this.defendantContactDetailsMapper = defendantContactDetailsMapper;
     }

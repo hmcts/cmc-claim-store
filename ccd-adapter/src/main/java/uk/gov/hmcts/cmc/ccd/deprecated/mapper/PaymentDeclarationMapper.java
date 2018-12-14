@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 
-//@Component
+@Component
 public class PaymentDeclarationMapper implements Mapper<CCDPaymentDeclaration, PaymentDeclaration> {
 
     @Override

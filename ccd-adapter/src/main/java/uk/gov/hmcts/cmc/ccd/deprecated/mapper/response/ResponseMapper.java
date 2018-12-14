@@ -15,7 +15,7 @@ import static uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponseType.FU
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponseType.PART_ADMISSION;
 
-//@Component
+@Component
 public class ResponseMapper implements Mapper<CCDResponse, Response> {
 
     private final FullDefenceResponseMapper fullDefenceResponseMapper;

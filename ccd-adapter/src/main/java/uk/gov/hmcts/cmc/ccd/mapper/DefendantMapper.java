@@ -84,25 +84,29 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
     public TheirDetails from(CCDDefendant ccdDefendant) {
         switch (ccdDefendant.getPartyType()) {
             case COMPANY:
-                return new CompanyDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
+                return new CompanyDetails(ccdDefendant.getPartyName(),
+                    addressMapper.from(ccdDefendant.getPartyAddress()),
                     ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
                     addressMapper.from(ccdDefendant.getPartyServiceAddress()),
                     ccdDefendant.getPartyContactPerson());
             case INDIVIDUAL:
-                return new IndividualDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
+                return new IndividualDetails(ccdDefendant.getPartyName(),
+                    addressMapper.from(ccdDefendant.getPartyAddress()),
                     ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
                     addressMapper.from(ccdDefendant.getPartyServiceAddress()),
                     parseDob(ccdDefendant.getPartyDateOfBirth()));
             case SOLE_TRADER:
-                return new SoleTraderDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
+                return new SoleTraderDetails(ccdDefendant.getPartyName(),
+                    addressMapper.from(ccdDefendant.getPartyAddress()),
                     ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
                     addressMapper.from(ccdDefendant.getPartyServiceAddress()),
                     ccdDefendant.getPartyTitle(), ccdDefendant.getPartyBusinessName());
             case ORGANISATION:
-                return new OrganisationDetails(ccdDefendant.getPartyName(), addressMapper.from(ccdDefendant.getPartyAddress()),
+                return new OrganisationDetails(ccdDefendant.getPartyName(),
+                    addressMapper.from(ccdDefendant.getPartyAddress()),
                     ccdDefendant.getPartyEmail(),
                     representativeMapper.from(ccdDefendant),
                     addressMapper.from(ccdDefendant.getPartyServiceAddress()),
