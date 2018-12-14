@@ -1,9 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;

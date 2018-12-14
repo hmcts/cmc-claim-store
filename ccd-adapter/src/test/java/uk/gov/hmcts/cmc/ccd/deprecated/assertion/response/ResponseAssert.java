@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.assertion.response;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 

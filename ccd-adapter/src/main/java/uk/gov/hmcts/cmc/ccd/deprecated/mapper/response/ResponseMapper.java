@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDFullDefenceResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
@@ -11,9 +10,9 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import static uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType.FULL_ADMISSION;
-import static uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType.FULL_DEFENCE;
-import static uk.gov.hmcts.cmc.ccd.domain.response.CCDResponseType.PART_ADMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_DEFENCE;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.PART_ADMISSION;
 
 //@Component
 public class ResponseMapper implements Mapper<CCDResponse, Response> {

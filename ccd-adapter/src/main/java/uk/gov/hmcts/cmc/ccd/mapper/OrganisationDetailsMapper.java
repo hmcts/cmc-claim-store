@@ -2,10 +2,8 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
-import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 
 @Component
 public class OrganisationDetailsMapper implements BuilderMapper<CCDDefendant, OrganisationDetails, CCDDefendant.CCDDefendantBuilder> {

@@ -1,13 +1,15 @@
-package uk.gov.hmcts.cmc.ccd.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
+import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
@@ -20,15 +22,21 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Component
-public class CCDDefendantMapper {
+public class DefendantMapper {
 
     private final EvidenceRowMapper evidenceRowMapper;
     private final TimelineEventMapper timelineEventMapper;
+    private final DefendantPartyMapper defendantPartyMapper;
 
     @Autowired
-    public CCDDefendantMapper(EvidenceRowMapper evidenceRowMapper, TimelineEventMapper timelineEventMapper) {
+    public DefendantMapper(
+        EvidenceRowMapper evidenceRowMapper,
+        TimelineEventMapper timelineEventMapper,
+        DefendantPartyMapper defendantPartyMapper
+    ) {
         this.evidenceRowMapper = evidenceRowMapper;
         this.timelineEventMapper = timelineEventMapper;
+        this.defendantPartyMapper = defendantPartyMapper;
     }
 
     public CCDDefendant to(Claim claim) {
@@ -50,7 +58,7 @@ public class CCDDefendantMapper {
                         builder.responseDefendantSOTSignerRole(statementOfTruth.getSignerRole());
                     }
                 );
-                // PartyMapper
+                defendantPartyMapper.to(builder, response.getDefendant());
                 switch (response.getResponseType()) {
                     case FULL_DEFENCE:
                         toFullDefenceResponse(builder, (FullDefenceResponse) response);
@@ -59,10 +67,9 @@ public class CCDDefendantMapper {
                         toFullAdmissionResponse(builder, (FullAdmissionResponse) response);
                         break;
                     case PART_ADMISSION:
-                        toPartAdmissionResponse(builder, (PartAdmissionResponse)response);
+                        toPartAdmissionResponse(builder, (PartAdmissionResponse) response);
                         break;
                 }
-//                builder.courtDetermination();
             }
         );
 
@@ -112,4 +119,7 @@ public class CCDDefendantMapper {
         });
     }
 
+    public void from(CCDDefendant ccdDefendant, Claim.ClaimBuilder claimBuilder) {
+
+    }
 }

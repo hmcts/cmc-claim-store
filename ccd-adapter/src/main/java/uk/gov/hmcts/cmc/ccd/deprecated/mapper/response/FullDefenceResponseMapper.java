@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDFullDefenceResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.DefendantEvidenceMapper;
@@ -9,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PaymentDeclarationMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefenceType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;

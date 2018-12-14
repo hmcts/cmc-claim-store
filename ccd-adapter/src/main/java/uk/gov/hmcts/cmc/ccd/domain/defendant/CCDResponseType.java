@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain.response;
+package uk.gov.hmcts.cmc.ccd.domain.defendant;
 
 public enum CCDResponseType {
     FULL_DEFENCE,
