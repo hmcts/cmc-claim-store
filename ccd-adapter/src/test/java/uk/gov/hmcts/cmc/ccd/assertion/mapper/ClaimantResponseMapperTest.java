@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse;
+package uk.gov.hmcts.cmc.ccd.assertion.mapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,30 +7,35 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDFormaliseOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
+import uk.gov.hmcts.cmc.ccd.domain.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ClaimantResponseMapperOldTest {
+public class ClaimantResponseMapperTest {
 
     @Autowired
-    private ClaimantResponseMapperOld mapper;
+    private ClaimantResponseMapper mapper;
 
     @Test
     public void shouldMapClaimantAcceptanceWithCCJFormalisationFromCCD() {
         //given
-        CCDClaimantResponse ccdResponse = SampleData.getCCDClaimantAcceptanceResponse(CCDFormaliseOption.CCJ);
+        CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(CCDFormaliseOption.CCJ);
 
         //when
-        ClaimantResponse response = mapper.from(ccdResponse);
+        ResponseAcceptation response = (ResponseAcceptation)mapper.from(ccdResponse);
 
         //then
         assertThat(response).isEqualTo(ccdResponse);
@@ -46,31 +51,31 @@ public class ClaimantResponseMapperOldTest {
         CCDClaimantResponse ccdResponse = mapper.to(response);
 
         //then
-        assertThat(response).isEqualTo(ccdResponse);
+        assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation)ccdResponse);
     }
 
     @Test
     public void shouldMapClaimantAcceptanceWithSettlementFormalisationFromCCD() {
         //given
-        CCDClaimantResponse ccdResponse = SampleData.getCCDClaimantAcceptanceResponse(SETTLEMENT);
+        CCDClaimantResponse ccdResponse = SampleData.getResponseAcceptation(SETTLEMENT);
 
         //when
         ClaimantResponse response = mapper.from(ccdResponse);
 
         //then
-        assertThat(response).isEqualTo(ccdResponse);
+        assertThat((ResponseAcceptation)response).isEqualTo((CCDResponseAcceptation) ccdResponse);
     }
 
     @Test
     public void shouldMapClaimantRejectionFromCCD() {
         //given
-        CCDClaimantResponse ccdResponse = SampleData.getCCDClaimantREjectionResponse();
+        CCDResponseRejection ccdResponse = SampleData.getResponseRejection();
 
         //when
         ClaimantResponse response = mapper.from(ccdResponse);
 
         //then
-        assertThat(response).isEqualTo(ccdResponse);
+        assertThat((ResponseRejection) response).isEqualTo(ccdResponse);
     }
 
     @Test
@@ -82,6 +87,18 @@ public class ClaimantResponseMapperOldTest {
         CCDClaimantResponse ccdResponse = mapper.to(response);
 
         //then
-        assertThat(response).isEqualTo(ccdResponse);
+        assertThat((ResponseRejection)response).isEqualTo((CCDResponseRejection)ccdResponse);
+    }
+
+    @Test
+    public void shouldMapResponseRejectionFromCCD() {
+        //given
+        CCDResponseRejection ccdResponseRejection = SampleData.getResponseRejection();
+
+        //when
+        ResponseRejection response = (ResponseRejection)mapper.from(ccdResponseRejection);
+
+        //then
+        assertThat(response).isEqualTo(ccdResponseRejection);
     }
 }

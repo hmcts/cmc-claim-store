@@ -1,8 +1,8 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse;
+package uk.gov.hmcts.cmc.ccd.assertion.claimantresponse;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseRejection;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 import java.util.Objects;
@@ -14,7 +14,7 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
     }
 
     public ResponseRejectionAssert isEqualTo(CCDResponseRejection ccdResponseRejection) {
-       /* isNotNull();
+        isNotNull();
 
         CCDYesNoOption freeMediation = CCDYesNoOption.valueOf(actual.getFreeMediation().orElse(false));
         if (!Objects.equals(freeMediation, ccdResponseRejection.getFreeMediationOption())) {
@@ -34,7 +34,7 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
                 failWithMessage("Expected ResponseRejection.reason to be <%s> but was <%s>",
                     ccdResponseRejection.getReason(), reason);
             }
-        });*/
+        });
 
         return this;
     }
