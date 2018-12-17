@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,10 +38,9 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
             }
 
             if (actual.getDateOfBirth() != null) {
-                String dateOfBirth = actual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE);
-                if (!Objects.equals(dateOfBirth, ccdParty.getPartyDateOfBirth())) {
+                if (!Objects.equals(actual.getDateOfBirth(), ccdParty.getPartyDateOfBirth())) {
                     failWithMessage("Expected CCDIndividual.dateOfBirth to be <%s> but was <%s>",
-                        ccdParty.getPartyDateOfBirth(), dateOfBirth);
+                        ccdParty.getPartyDateOfBirth(), actual.getDateOfBirth());
                 }
             }
             assertThat((actual).getAddress()).isEqualTo(ccdParty.getPartyAddress());

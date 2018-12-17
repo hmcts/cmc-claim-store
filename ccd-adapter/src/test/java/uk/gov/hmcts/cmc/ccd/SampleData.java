@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class SampleData {
             .claimantProvidedType(INDIVIDUAL)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Individual")
-            .claimantProvidedDateOfBirth("1950-01-01")
+            .claimantProvidedDateOfBirth(LocalDate.of(1950, 01, 01))
             .claimantProvidedServiceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
@@ -114,7 +115,7 @@ public class SampleData {
             .partyAddress(ccdAddress)
             .partyName("Individual")
             .partyPhoneNumber("07987654321")
-            .partyDateOfBirth("1950-01-01")
+            .partyDateOfBirth(LocalDate.of(1950, 01, 01))
             .partyCorrespondenceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
@@ -188,8 +189,8 @@ public class SampleData {
             = singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build());
         return CCDCase.builder()
             .id(1L)
-            .submittedOn("2017-11-01T10:15:30")
-            .issuedOn("2017-11-15")
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
             .referenceNumber("ref no")
@@ -222,8 +223,8 @@ public class SampleData {
 
         return CCDCase.builder()
             .id(1L)
-            .submittedOn("2017-11-01T10:15:30")
-            .issuedOn("2017-11-15")
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
             .referenceNumber("ref no")

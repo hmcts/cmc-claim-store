@@ -6,12 +6,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
@@ -49,8 +45,8 @@ public class CaseMapper {
             .referenceNumber(claim.getReferenceNumber())
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
-            .issuedOn(claim.getIssuedOn().format(ISO_DATE))
-            .submittedOn(claim.getCreatedAt().format(ISO_DATE_TIME))
+            .issuedOn(claim.getIssuedOn())
+            .submittedOn(claim.getCreatedAt())
             .responseDeadline(claim.getResponseDeadline())
             .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
             .defendantEmail(claim.getDefendantEmail())
@@ -68,8 +64,8 @@ public class CaseMapper {
             .externalId(ccdCase.getExternalId())
             .referenceNumber(ccdCase.getReferenceNumber())
             .claimData(claimMapper.from(ccdCase))
-            .createdAt(LocalDateTime.parse(ccdCase.getSubmittedOn(), ISO_DATE_TIME))
-            .issuedOn(LocalDate.parse(ccdCase.getIssuedOn(), ISO_DATE))
+            .createdAt(ccdCase.getSubmittedOn())
+            .issuedOn(ccdCase.getIssuedOn())
             .responseDeadline(ccdCase.getResponseDeadline())
             .moreTimeRequested(ccdCase.getMoreTimeRequested() == YES)
             .submitterEmail(ccdCase.getSubmitterEmail())

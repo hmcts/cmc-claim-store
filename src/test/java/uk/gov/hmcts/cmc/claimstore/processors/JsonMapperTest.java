@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
@@ -222,9 +220,9 @@ public class JsonMapperTest {
             .id(1L)
             .referenceNumber("000MC001")
             .submitterId("2")
-            .submittedOn(timestamp.format(ISO_DATE_TIME))
+            .submittedOn(timestamp)
             .externalId(uuid)
-            .issuedOn(date.format(ISO_DATE))
+            .issuedOn(date)
             .responseDeadline(date.plusDays(14))
             .moreTimeRequested(CCDYesNoOption.NO)
             .build();

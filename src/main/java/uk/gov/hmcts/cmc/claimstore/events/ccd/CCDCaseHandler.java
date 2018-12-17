@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.events.ccd;
 import feign.FeignException;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.event.TransactionalEventListener;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
@@ -52,7 +53,7 @@ public class CCDCaseHandler {
         }
     }
 
-    //    @TransactionalEventListener
+    @TransactionalEventListener
     @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void saveClaim(CCDClaimIssuedEvent event) {

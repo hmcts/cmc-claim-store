@@ -5,8 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Component
 public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, CCDClaimant.CCDClaimantBuilder> {
@@ -31,9 +30,7 @@ public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, 
         individual.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
-        if (individual.getDateOfBirth() != null) {
-            builder.partyDateOfBirth(individual.getDateOfBirth().format(DateTimeFormatter.ISO_DATE));
-        }
+        Optional.ofNullable(individual.getDateOfBirth()).ifPresent(builder::partyDateOfBirth);
 
         builder
             .partyName(individual.getName())
@@ -49,7 +46,7 @@ public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, 
             addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()),
             ccdClaimant.getPartyPhoneNumber(),
             representativeMapper.from(ccdClaimant),
-            LocalDate.parse(ccdClaimant.getPartyDateOfBirth(), DateTimeFormatter.ISO_DATE)
+            ccdClaimant.getPartyDateOfBirth()
         );
     }
 }

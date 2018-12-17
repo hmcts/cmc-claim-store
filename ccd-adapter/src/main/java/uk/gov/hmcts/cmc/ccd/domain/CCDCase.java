@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -18,9 +19,9 @@ public class CCDCase {
     private String submitterId;
     private String letterHolderId;
     private String defendantId;
-    private String submittedOn;
+    private LocalDateTime submittedOn;
     private String externalId;
-    private String issuedOn;
+    private LocalDate issuedOn;
     private LocalDate responseDeadline;
     private CCDYesNoOption moreTimeRequested;
     private String submitterEmail;

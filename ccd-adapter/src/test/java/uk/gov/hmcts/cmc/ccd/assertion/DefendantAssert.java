@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 
 import java.util.Objects;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
@@ -175,8 +174,7 @@ public class DefendantAssert extends AbstractAssert<DefendantAssert, TheirDetail
             failWithMessage("Expected CCDIndividual.email to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedEmail(), actual.getEmail().orElse(null));
         }
-        actual.getDateOfBirth().ifPresent(dob -> assertThat(dob.format(ISO_DATE))
-            .isEqualTo(ccdParty.getClaimantProvidedDateOfBirth()));
+        actual.getDateOfBirth().ifPresent(dob -> assertThat(dob).isEqualTo(ccdParty.getClaimantProvidedDateOfBirth()));
 
         actual.getServiceAddress().ifPresent(address ->
             assertThat(ccdParty.getClaimantProvidedServiceAddress()).isEqualTo(address)
