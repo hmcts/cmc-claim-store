@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.CourtOrderMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 
 import java.math.BigDecimal;

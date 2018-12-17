@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDEmployment;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.EmployerMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 
 import java.util.stream.Collectors;
