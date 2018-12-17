@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
@@ -122,8 +121,8 @@ public class CountyCourtJudgmentMapperTest {
 
         final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .paymentOption(CCDPaymentOption.INSTALMENTS)
-            .repaymentPlanCompletionDate(LocalDate.now().plusMonths(5))
-            .repaymentPlanFirstPaymentDate(LocalDate.now())
+            .repaymentPlanCompletionDate(now().plusMonths(5))
+            .repaymentPlanFirstPaymentDate(now())
             .repaymentPlanPaymentLength("1 light years")
             .repaymentPlanInstalmentAmount(BigDecimal.TEN)
             .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EACH_WEEK)
