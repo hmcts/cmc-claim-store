@@ -11,13 +11,13 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption.valueOf;
 
 @Component
-public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment, CountyCourtJudgment> {
+public class CountyCourtJudgmentMapperOld implements Mapper<CCDCountyCourtJudgment, CountyCourtJudgment> {
 
     private final StatementOfTruthMapper statementOfTruthMapper;
     private final RepaymentPlanMapper repaymentPlanMapper;
 
     @Autowired
-    public CountyCourtJudgmentMapper(
+    public CountyCourtJudgmentMapperOld(
         StatementOfTruthMapper statementOfTruthMapper,
         RepaymentPlanMapper repaymentPlanMapper) {
 
