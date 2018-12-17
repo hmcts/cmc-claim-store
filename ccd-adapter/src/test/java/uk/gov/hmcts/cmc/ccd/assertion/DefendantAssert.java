@@ -29,9 +29,9 @@ public class DefendantAssert extends AbstractAssert<DefendantAssert, TheirDetail
         isNotNull();
 
         if (actual instanceof IndividualDetails) {
-            if (!Objects.equals(INDIVIDUAL, ccdParty.getPartyType())) {
+            if (!Objects.equals(INDIVIDUAL, ccdParty.getClaimantProvidedType())) {
                 failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
-                    ccdParty.getPartyType(), INDIVIDUAL);
+                    ccdParty.getClaimantProvidedType(), INDIVIDUAL);
             }
 
             IndividualDetails actual = (IndividualDetails) this.actual;
@@ -58,9 +58,9 @@ public class DefendantAssert extends AbstractAssert<DefendantAssert, TheirDetail
         }
 
         if (actual instanceof OrganisationDetails) {
-            if (!Objects.equals(ORGANISATION, ccdParty.getPartyType())) {
+            if (!Objects.equals(ORGANISATION, ccdParty.getClaimantProvidedType())) {
                 failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
-                    ccdParty.getPartyType(), ORGANISATION);
+                    ccdParty.getClaimantProvidedType(), ORGANISATION);
             }
 
             OrganisationDetails actual = (OrganisationDetails) this.actual;
@@ -98,9 +98,9 @@ public class DefendantAssert extends AbstractAssert<DefendantAssert, TheirDetail
         }
 
         if (actual instanceof CompanyDetails) {
-            if (!Objects.equals(COMPANY, ccdParty.getPartyType())) {
+            if (!Objects.equals(COMPANY, ccdParty.getClaimantProvidedType())) {
                 failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
-                    ccdParty.getPartyType(), COMPANY);
+                    ccdParty.getClaimantProvidedType(), COMPANY);
             }
 
             CompanyDetails actual = (CompanyDetails) this.actual;
@@ -132,9 +132,9 @@ public class DefendantAssert extends AbstractAssert<DefendantAssert, TheirDetail
         }
 
         if (actual instanceof SoleTraderDetails) {
-            if (!Objects.equals(SOLE_TRADER, ccdParty.getPartyType())) {
+            if (!Objects.equals(SOLE_TRADER, ccdParty.getClaimantProvidedType())) {
                 failWithMessage("Expected CCDClaimant.type to be <%s> but was <%s>",
-                    ccdParty.getPartyType(), SOLE_TRADER);
+                    ccdParty.getClaimantProvidedType(), SOLE_TRADER);
             }
             SoleTraderDetails actual = (SoleTraderDetails) this.actual;
             assertThat(actual.getAddress()).isEqualTo(ccdParty.getClaimantProvidedAddress());

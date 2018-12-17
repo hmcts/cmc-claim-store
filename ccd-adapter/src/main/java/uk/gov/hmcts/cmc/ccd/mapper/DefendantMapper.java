@@ -38,19 +38,19 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
 
         if (party instanceof IndividualDetails) {
-            builder.partyType(CCDPartyType.INDIVIDUAL);
+            builder.claimantProvidedType(CCDPartyType.INDIVIDUAL);
             IndividualDetails individual = (IndividualDetails) party;
             individualDetailsMapper.to(individual, builder);
         } else if (party instanceof CompanyDetails) {
-            builder.partyType(CCDPartyType.COMPANY);
+            builder.claimantProvidedType(CCDPartyType.COMPANY);
             CompanyDetails company = (CompanyDetails) party;
             companyDetailsMapper.to(company, builder);
         } else if (party instanceof OrganisationDetails) {
-            builder.partyType(CCDPartyType.ORGANISATION);
+            builder.claimantProvidedType(CCDPartyType.ORGANISATION);
             OrganisationDetails organisation = (OrganisationDetails) party;
             organisationDetailsMapper.to(organisation, builder);
         } else if (party instanceof SoleTraderDetails) {
-            builder.partyType(CCDPartyType.SOLE_TRADER);
+            builder.claimantProvidedType(CCDPartyType.SOLE_TRADER);
             SoleTraderDetails soleTrader = (SoleTraderDetails) party;
             soleTraderDetailsMapper.to(soleTrader, builder);
         }
@@ -59,7 +59,7 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
 
     @Override
     public TheirDetails from(CCDDefendant ccdDefendant) {
-        switch (ccdDefendant.getPartyType()) {
+        switch (ccdDefendant.getClaimantProvidedType()) {
             case COMPANY:
                 return companyDetailsMapper.from(ccdDefendant);
             case INDIVIDUAL:

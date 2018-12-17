@@ -34,7 +34,7 @@ public class IndividualDetailsMapper
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
         individual.getDateOfBirth().ifPresent(dob ->
-            builder.partyDateOfBirth(dob.format(DateTimeFormatter.ISO_DATE)));
+            builder.claimantProvidedDateOfBirth(dob.format(DateTimeFormatter.ISO_DATE)));
 
 
         individual.getEmail().ifPresent(builder::claimantProvidedEmail);

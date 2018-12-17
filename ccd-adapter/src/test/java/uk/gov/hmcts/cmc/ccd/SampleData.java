@@ -43,7 +43,7 @@ public class SampleData {
     public static CCDDefendant getCCDDefendantIndividual() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(INDIVIDUAL)
+            .claimantProvidedType(INDIVIDUAL)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Individual")
             .claimantProvidedDateOfBirth("1950-01-01")
@@ -59,7 +59,7 @@ public class SampleData {
     public static CCDDefendant getCCDDefendantOrganisation() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(ORGANISATION)
+            .claimantProvidedType(ORGANISATION)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Organisation")
             .claimantProvidedServiceAddress(ccdAddress)
@@ -76,7 +76,7 @@ public class SampleData {
     public static CCDDefendant getCCDDefendantCompany() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(COMPANY)
+            .claimantProvidedType(COMPANY)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Abc Ltd")
             .claimantProvidedAddress(ccdAddress)
@@ -93,7 +93,7 @@ public class SampleData {
     public static CCDDefendant getCCDDefendantSoleTrader() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(SOLE_TRADER)
+            .claimantProvidedType(SOLE_TRADER)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedTitle("Mr.")
             .claimantProvidedName("SoleTrader")
