@@ -50,22 +50,41 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
     @Override
     public CountyCourtJudgment from(CCDCountyCourtJudgment ccdCountyCourtJudgment) {
 
-        return new CountyCourtJudgment(
-            ccdCountyCourtJudgment.getDefendantDateOfBirth(),
-            PaymentOption.valueOf(ccdCountyCourtJudgment.getPaymentOption().name()),
-            ccdCountyCourtJudgment.getPaidAmount(),
-            RepaymentPlan.builder().paymentLength(ccdCountyCourtJudgment.getRepaymentPlanPaymentLength())
-                .instalmentAmount(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount())
-                .firstPaymentDate(ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate())
-                .completionDate(ccdCountyCourtJudgment.getRepaymentPlanCompletionDate())
-                .paymentSchedule(
-                    PaymentSchedule.valueOf(ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().name()))
-                .build(),
-            ccdCountyCourtJudgment.getPayBySetDate(),
-            StatementOfTruth.builder().signerName(ccdCountyCourtJudgment.getStatementOfTruthSignerName())
-                .signerRole(ccdCountyCourtJudgment.getStatementOfTruthSignerRole()).build(),
-            ccdCountyCourtJudgment.getCcjType() != null
-                ? CountyCourtJudgmentType.valueOf(ccdCountyCourtJudgment.getCcjType().name()) : null
+        CountyCourtJudgment.CountyCourtJudgmentBuilder builder = CountyCourtJudgment.builder()
+            .defendantDateOfBirth(ccdCountyCourtJudgment.getDefendantDateOfBirth())
+            .paidAmount(ccdCountyCourtJudgment.getPaidAmount())
+            .payBySetDate(ccdCountyCourtJudgment.getPayBySetDate());
+
+        if (ccdCountyCourtJudgment.getPaymentOption() != null) {
+            builder.paymentOption(PaymentOption.valueOf(ccdCountyCourtJudgment.getPaymentOption().name()));
+        }
+
+        if (ccdCountyCourtJudgment.getCcjType() != null) {
+            builder.ccjType(CountyCourtJudgmentType.valueOf(ccdCountyCourtJudgment.getCcjType().name()));
+        }
+
+        if (ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate() != null
+            && ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule() != null) {
+
+            builder.repaymentPlan(
+                RepaymentPlan.builder()
+                    .paymentLength(ccdCountyCourtJudgment.getRepaymentPlanPaymentLength())
+                    .instalmentAmount(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount())
+                    .firstPaymentDate(ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate())
+                    .completionDate(ccdCountyCourtJudgment.getRepaymentPlanCompletionDate())
+                    .paymentSchedule(
+                        PaymentSchedule.valueOf(ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().name()))
+                    .build());
+        }
+
+        Optional.ofNullable(ccdCountyCourtJudgment.getStatementOfTruthSignerName()).ifPresent(sotSignerName ->
+            builder.statementOfTruth(
+                StatementOfTruth.builder()
+                    .signerName(ccdCountyCourtJudgment.getStatementOfTruthSignerName())
+                    .signerRole(ccdCountyCourtJudgment.getStatementOfTruthSignerRole()).build())
         );
+
+
+        return builder.build();
     }
 }

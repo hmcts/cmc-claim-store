@@ -146,7 +146,6 @@ public class CountyCourtJudgmentMapperTest {
         final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .defendantDateOfBirth(now().minusYears(20))
             .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
-            .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .payBySetDate(now())
             .paidAmount(BigDecimal.TEN)
             .statementOfTruthSignerRole("PM")
