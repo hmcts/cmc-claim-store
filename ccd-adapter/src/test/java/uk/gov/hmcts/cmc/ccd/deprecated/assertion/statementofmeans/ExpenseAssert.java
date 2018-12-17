@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 
 import java.util.Objects;
@@ -30,9 +30,9 @@ public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
                 ccdExpense.getAmountPaid(), actual.getAmount());
         }
 
-        if (!Objects.equals(actual.getOtherName().orElse(null), ccdExpense.getOtherName())) {
-            failWithMessage("Expected Expense.otherName to be <%s> but was <%s>",
-                ccdExpense.getOtherName(), actual.getOtherName());
+        if (!Objects.equals(actual.getOtherName().orElse(null), ccdExpense.getDescription())) {
+            failWithMessage("Expected Expense.description to be <%s> but was <%s>",
+                ccdExpense.getDescription(), actual.getOtherName());
         }
         return this;
     }

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
 import java.util.Objects;

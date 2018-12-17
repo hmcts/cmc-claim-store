@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 
@@ -14,7 +14,7 @@ public class ExpenseMapper implements Mapper<CCDExpense, Expense> {
             .type(expense.getType())
             .amountPaid(expense.getAmount())
             .frequency(expense.getFrequency())
-            .otherName(expense.getOtherName().orElse(null))
+            .description(expense.getOtherName().orElse(null))
             .build();
     }
 
@@ -27,7 +27,7 @@ public class ExpenseMapper implements Mapper<CCDExpense, Expense> {
             .amount(ccdExpense.getAmountPaid())
             .type(ccdExpense.getType())
             .frequency(ccdExpense.getFrequency())
-            .otherName(ccdExpense.getOtherName())
+            .otherName(ccdExpense.getDescription())
             .build();
     }
 }

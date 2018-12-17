@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans;
 
 import lombok.Builder;
 import lombok.Value;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Value
 public class CCDExpense {
     private Expense.ExpenseType type;
-    private String otherName;
+    private String description;
     private PaymentFrequency frequency;
     private BigDecimal amountPaid;
 }

@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDBankAccount;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDCourtOrder;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
