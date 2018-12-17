@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,9 @@ public class ResponseRejectionContentProvider {
         Map<String, Object> content = new HashMap<>();
 
         responseRejection.getReason().ifPresent(reason -> content.put("rejectionReason", reason));
-        content.put("freeMediation", CCDYesNoOption.valueOf(responseRejection.getFreeMediation().orElse(false)));
+        content.put("freeMediation", CCDYesNoOption.valueOf(responseRejection
+            .getFreeMediation()
+            .orElse(YesNoOption.NO).name()));
         content.put("formNumber", DEFENCE_FORM_NO);
         return content;
     }

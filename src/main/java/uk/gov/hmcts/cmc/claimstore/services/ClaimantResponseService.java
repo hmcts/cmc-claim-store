@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
@@ -92,9 +93,12 @@ public class ClaimantResponseService {
 
     private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
         return ResponseType.PART_ADMISSION.equals(response.getResponseType())
             && ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
-            && !((ResponseRejection) claimantResponse).getFreeMediation().orElse(false);
+            && ((ResponseRejection) claimantResponse).getFreeMediation()
+            .filter(Predicate.isEqual(YesNoOption.NO))
+            .isPresent();
     }
 
     private void updateDirectionsQuestionnaireDeadline(Claim claim, String authorization) {
