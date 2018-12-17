@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain.defendant;
+package uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans;
 
 public enum CCDEmploymentStatus {
     EMPLOYED,

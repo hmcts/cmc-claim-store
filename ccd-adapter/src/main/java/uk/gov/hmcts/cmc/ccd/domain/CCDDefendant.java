@@ -5,7 +5,7 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.math.BigDecimal;

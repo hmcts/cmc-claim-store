@@ -1,12 +1,7 @@
-package uk.gov.hmcts.cmc.ccd.domain.defendant;
+package uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;

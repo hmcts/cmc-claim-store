@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
