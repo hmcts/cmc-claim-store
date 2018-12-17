@@ -3,11 +3,12 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
@@ -51,15 +52,12 @@ public class DefendantMapper {
         this.statementOfMeansMapper = statementOfMeansMapper;
     }
 
-    public CCDDefendant to(Claim claim) {
+    public void to(CCDDefendant.CCDDefendantBuilder builder, Claim claim) {
 
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
         builder.responseDeadline(claim.getResponseDeadline());
         builder.responseSubmittedDateTime(claim.getRespondedAt());
 
         claim.getResponse().ifPresent(response -> toResponse(builder, response));
-
-        return builder.build();
     }
 
     private void toResponse(CCDDefendant.CCDDefendantBuilder builder, Response response) {
@@ -77,6 +75,7 @@ public class DefendantMapper {
             }
         );
         defendantPartyMapper.to(builder, response.getDefendant());
+
         switch (response.getResponseType()) {
             case FULL_DEFENCE:
                 toFullDefenceResponse(builder, (FullDefenceResponse) response);
@@ -87,6 +86,8 @@ public class DefendantMapper {
             case PART_ADMISSION:
                 toPartAdmissionResponse(builder, (PartAdmissionResponse) response);
                 break;
+            default:
+                throw new MappingException("Invalid response type " + response.getResponseType());
         }
     }
 
@@ -164,7 +165,7 @@ public class DefendantMapper {
         };
     }
 
-    public void from(CCDDefendant ccdDefendant, Claim.ClaimBuilder claimBuilder) {
+    public void from(CCDDefendant.CCDDefendantBuilder builder, Claim.ClaimBuilder claimBuilder) {
 
     }
 }

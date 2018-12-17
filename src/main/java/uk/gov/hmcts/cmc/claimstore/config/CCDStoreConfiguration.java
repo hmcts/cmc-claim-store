@@ -10,7 +10,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
@@ -55,7 +54,6 @@ public class CCDStoreConfiguration {
     public CoreCaseDataService coreCaseDataService(
         CaseMapper caseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
         ClaimantResponseMapper claimantResponseMapper,
         UserService userService,
@@ -66,7 +64,7 @@ public class CCDStoreConfiguration {
         CaseAccessApi caseAccessApi,
         JobSchedulerService jobSchedulerService
     ) {
-        return new CoreCaseDataService(caseMapper, countyCourtJudgmentMapper, responseMapper, settlementMapper,
+        return new CoreCaseDataService(caseMapper, countyCourtJudgmentMapper, settlementMapper,
             claimantResponseMapper, userService, jsonMapper, referenceNumberService, coreCaseDataApi,
             authTokenGenerator, caseAccessApi, jobSchedulerService);
     }

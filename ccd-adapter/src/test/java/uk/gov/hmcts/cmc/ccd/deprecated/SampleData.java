@@ -1,20 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.deprecated;
 
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentSchedule;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDRepaymentPlan;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponseType;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDCourtDetermination;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDFormaliseOption;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseRejection;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDDefenceType;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDFullDefenceResponse;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPaymentIntention;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDChild;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDCourtOrder;
@@ -29,18 +18,15 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDResidence;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
 import static java.util.Arrays.asList;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDDefendantIndividual;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
@@ -64,30 +50,6 @@ public class SampleData {
             .build();
     }
 
-    public static CCDFullDefenceResponse getFullDefenceResponse() {
-        return CCDFullDefenceResponse.builder()
-            .moreTimeNeededOption(CCDYesNoOption.YES)
-            .defence("My defence")
-            .defenceType(CCDDefenceType.DISPUTE)
-            .defendant(getCCDDefendantIndividual())
-            .build();
-
-    }
-
-    public static CCDResponse getCCDResponse() {
-        return CCDResponse.builder()
-            .responseType(CCDResponseType.FULL_DEFENCE)
-            .fullDefenceResponse(getFullDefenceResponse())
-            .build();
-    }
-
-    public static CCDClaimantResponse getCCDClaimantAcceptanceResponse(CCDFormaliseOption formaliseOption) {
-        return CCDClaimantResponse.builder()
-            .claimantResponseType(CCDClaimantResponseType.ACCEPTATION)
-            .responseAcceptation(getResponseAcceptation(formaliseOption))
-            .build();
-    }
-
     public static CCDClaimantResponse getCCDClaimantREjectionResponse() {
         return CCDClaimantResponse.builder()
             .claimantResponseType(CCDClaimantResponseType.REJECTION)
@@ -95,47 +57,12 @@ public class SampleData {
             .build();
     }
 
-    public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
-        return CCDResponseAcceptation.builder()
-            .amountPaid(BigDecimal.valueOf(123.98))
-            .claimantPaymentIntention(getCCDPaymentIntention())
-            .courtDetermination(getCCDCourtDetermination())
-            .formaliseOption(formaliseOption)
-            .build();
-    }
 
     public static CCDResponseRejection getResponseRejection() {
         return CCDResponseRejection.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
             .freeMediationOption(CCDYesNoOption.YES)
             .reason("Rejection Reason")
-            .build();
-    }
-
-    public static CCDCourtDetermination getCCDCourtDetermination() {
-        return CCDCourtDetermination.builder()
-            .rejectionReason("Rejection reason")
-            .courtPaymentIntention(getCCDPaymentIntention())
-            .courtDecision(getCCDPaymentIntention())
-            .disposableIncome(BigDecimal.valueOf(300))
-            .decisionType(DecisionType.COURT)
-            .build();
-    }
-
-    private static CCDPaymentIntention getCCDPaymentIntention() {
-        return CCDPaymentIntention.builder()
-            .paymentDate(LocalDate.of(2017, 10, 12))
-            .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
-            .repaymentPlan(getCCDRepaymentplan())
-            .build();
-    }
-
-    private static CCDRepaymentPlan getCCDRepaymentplan() {
-        return CCDRepaymentPlan.builder()
-            .firstPaymentDate(LocalDate.of(2017, 10, 12))
-            .instalmentAmount(BigDecimal.valueOf(123.98))
-            .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
-            .completionDate(LocalDate.of(2018, 10, 12))
             .build();
     }
 

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -60,7 +59,6 @@ public class CoreCaseDataService {
 
     private final CaseMapper caseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    private final ResponseMapper responseMapper;
     private final SettlementMapper settlementMapper;
     private final ClaimantResponseMapper claimantResponseMapper;
     private final UserService userService;
@@ -76,7 +74,6 @@ public class CoreCaseDataService {
     public CoreCaseDataService(
         CaseMapper caseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        ResponseMapper responseMapper,
         SettlementMapper settlementMapper,
         ClaimantResponseMapper claimantResponseMapper,
         UserService userService,
@@ -89,7 +86,6 @@ public class CoreCaseDataService {
     ) {
         this.caseMapper = caseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
-        this.responseMapper = responseMapper;
         this.settlementMapper = settlementMapper;
         this.claimantResponseMapper = claimantResponseMapper;
         this.userService = userService;

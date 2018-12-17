@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponseType;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseAcceptation;

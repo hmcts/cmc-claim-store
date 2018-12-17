@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -78,8 +77,7 @@ public class CoreCaseDataServiceTest {
     private CaseMapper caseMapper;
     @Mock
     private CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    @Mock
-    private ResponseMapper responseMapper;
+
     @Mock
     private SettlementMapper settlementMapper;
     @Mock
@@ -155,7 +153,6 @@ public class CoreCaseDataServiceTest {
         this.service = new CoreCaseDataService(
             caseMapper,
             countyCourtJudgmentMapper,
-            responseMapper,
             settlementMapper,
             claimantResponseMapper,
             userService,

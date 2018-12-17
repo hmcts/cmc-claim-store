@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
