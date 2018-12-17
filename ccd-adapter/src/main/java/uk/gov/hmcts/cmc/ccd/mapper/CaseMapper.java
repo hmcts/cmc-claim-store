@@ -49,7 +49,6 @@ public class CaseMapper {
             .submittedOn(claim.getCreatedAt())
             .responseDeadline(claim.getResponseDeadline())
             .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
-            .defendantEmail(claim.getDefendantEmail())
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .build();
     }
@@ -68,8 +67,7 @@ public class CaseMapper {
             .issuedOn(ccdCase.getIssuedOn())
             .responseDeadline(ccdCase.getResponseDeadline())
             .moreTimeRequested(ccdCase.getMoreTimeRequested() == YES)
-            .submitterEmail(ccdCase.getSubmitterEmail())
-            .defendantEmail(ccdCase.getDefendantEmail());
+            .submitterEmail(ccdCase.getSubmitterEmail());
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

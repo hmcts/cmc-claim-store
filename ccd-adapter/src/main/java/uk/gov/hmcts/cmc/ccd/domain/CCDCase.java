@@ -19,8 +19,8 @@ public class CCDCase {
     private String submitterId;
     private String letterHolderId;
     private String defendantId;
-    private LocalDateTime submittedOn;
     private String externalId;
+    private LocalDateTime submittedOn;
     private LocalDate issuedOn;
     private LocalDate responseDeadline;
     private CCDYesNoOption moreTimeRequested;
@@ -48,8 +48,8 @@ public class CCDCase {
     private String paymentId;
     private BigDecimal paymentAmount;
     private String paymentReference;
-    private String paymentDateCreated;
     private String paymentStatus;
+    private String paymentDateCreated;
     private String preferredCourt;
     private String personalInjuryGeneralDamages;
     private String housingDisrepairCostOfRepairDamages;
@@ -60,9 +60,6 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDDefendant>> defendants;
     private List<CCDCollectionElement<CCDTimelineEvent>> timeline;
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
-    private String defendantEmail;
     private CCDDocument sealedClaimDocument;
     private String features;
-    private LocalDate moneyReceivedOn;
-
 }

@@ -154,10 +154,6 @@ public class CoreCaseDataServiceTest {
 
         this.service = new CoreCaseDataService(
             caseMapper,
-            countyCourtJudgmentMapper,
-            responseMapper,
-            settlementMapper,
-            claimantResponseMapper,
             userService,
             jsonMapper,
             referenceNumberService,

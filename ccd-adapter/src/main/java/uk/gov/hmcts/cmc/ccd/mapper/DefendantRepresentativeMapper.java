@@ -39,8 +39,8 @@ public class DefendantRepresentativeMapper
     public Representative from(CCDDefendant ccdDefendant) {
         if (isBlank(ccdDefendant.getRepresentativeOrganisationName())
             && ccdDefendant.getRepresentativeOrganisationAddress() == null
-            && isBlank(ccdDefendant.getRepresentativeOrganisationEmail())
             && isBlank(ccdDefendant.getRepresentativeOrganisationPhone())
+            && isBlank(ccdDefendant.getRepresentativeOrganisationDxAddress())
             && isBlank(ccdDefendant.getRepresentativeOrganisationEmail())
         ) {
             return null;
