@@ -1,25 +1,27 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPartAdmissionResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPaymentDeclaration;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPaymentIntention;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.DefendantEvidenceMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PartyMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.PaymentDeclarationMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans.StatementOfMeansMapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.mapper.DefendantMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantEvidenceMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantTimelineMapper;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Optional;
 
-//@Component
+@Component
 public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionResponse, PartAdmissionResponse> {
 
-    private final PartyMapper partyMapper;
+    private final DefendantMapper partyMapper;
     private final PaymentIntentionMapper paymentIntentionMapper;
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final PaymentDeclarationMapper paymentDeclarationMapper;
@@ -29,7 +31,7 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
 
     @Autowired
     public PartAdmissionResponseMapper(
-        PartyMapper partyMapper,
+        DefendantMapper partyMapper,
         PaymentIntentionMapper paymentIntentionMapper,
         StatementOfMeansMapper statementOfMeansMapper,
         PaymentDeclarationMapper paymentDeclarationMapper,
@@ -52,7 +54,7 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
             .freeMediationOption(CCDYesNoOption.valueOf(
                 partAdmissionResponse.getFreeMediation().orElse(YesNoOption.NO).name())
             )
-            .defendant(partyMapper.to(partAdmissionResponse.getDefendant()))
+            //.defendant(partyMapper.to(partAdmissionResponse.getDefendant()))
             .defence(partAdmissionResponse.getDefence())
             .amount(partAdmissionResponse.getAmount());
 
@@ -69,9 +71,9 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
         partAdmissionResponse.getPaymentDeclaration().ifPresent(paymentDeclaration ->
             builder.paymentDeclaration(paymentDeclarationMapper.to(paymentDeclaration)));
 
-        partAdmissionResponse.getTimeline().ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
+        //partAdmissionResponse.getTimeline().ifPresent(timeline -> builder.timeline(timelineMapper.to(timeline)));
 
-        partAdmissionResponse.getEvidence().ifPresent(evidence -> builder.evidence(evidenceMapper.to(evidence)));
+        //partAdmissionResponse.getEvidence().ifPresent(evidence -> builder.evidence(evidenceMapper.to(evidence)));
 
         partAdmissionResponse.getStatementOfTruth()
             .ifPresent(statementOfTruth -> builder.statementOfTruth(statementOfTruthMapper.to(statementOfTruth)));
@@ -89,12 +91,12 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
         PartAdmissionResponse.PartAdmissionResponseBuilder builder = PartAdmissionResponse.builder()
             .freeMediation(YesNoOption.valueOf(Optional.ofNullable(ccdFreeMediation).orElse(CCDYesNoOption.NO).name()))
             .moreTimeNeeded(YesNoOption.valueOf(Optional.ofNullable(moreTimeNeeded).orElse(CCDYesNoOption.NO).name()))
-            .defendant(partyMapper.from(ccdPartAdmissionResponse.getDefendant()))
+            //.defendant(partyMapper.from(ccdPartAdmissionResponse.getDefendant()))
             .statementOfTruth(statementOfTruthMapper.from(ccdPartAdmissionResponse.getStatementOfTruth()))
             .amount(ccdPartAdmissionResponse.getAmount())
             .defence(ccdPartAdmissionResponse.getDefence())
-            .timeline(timelineMapper.from(ccdPartAdmissionResponse.getTimeline()))
-            .evidence(evidenceMapper.from(ccdPartAdmissionResponse.getEvidence()))
+            //.timeline(timelineMapper.from(ccdPartAdmissionResponse.getTimeline()))
+            //.evidence(evidenceMapper.from(ccdPartAdmissionResponse.getEvidence()))
             .statementOfMeans(statementOfMeansMapper.from(ccdPartAdmissionResponse.getStatementOfMeans()));
 
         if (paymentDeclaration != null) {

@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.valueOf;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;
 
 @Component
 public class UmemploymentMapper implements Mapper<CCDUnemployment, Unemployment> {

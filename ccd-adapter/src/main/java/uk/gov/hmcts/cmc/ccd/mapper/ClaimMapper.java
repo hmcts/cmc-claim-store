@@ -19,7 +19,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
 
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
-    private final StatementOfTruthMapper statementOfTruthMapper;
+    private final StatementOfTruthCaseMapper statementOfTruthCaseMapper;
     private ClaimantMapper claimantMapper;
     private final DefendantMapper defendantMapper;
     private final AmountMapper amountMapper;
@@ -32,7 +32,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
     public ClaimMapper(
         PersonalInjuryMapper personalInjuryMapper,
         HousingDisrepairMapper housingDisrepairMapper,
-        StatementOfTruthMapper statementOfTruthMapper,
+        StatementOfTruthCaseMapper statementOfTruthCaseMapper,
         ClaimantMapper claimantMapper,
         DefendantMapper defendantMapper,
         AmountMapper amountMapper,
@@ -44,7 +44,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
     ) {
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
-        this.statementOfTruthMapper = statementOfTruthMapper;
+        this.statementOfTruthCaseMapper = statementOfTruthCaseMapper;
         this.claimantMapper = claimantMapper;
         this.defendantMapper = defendantMapper;
         this.amountMapper = amountMapper;
@@ -57,14 +57,13 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
     @Override
     public void to(ClaimData claimData, CCDCase.CCDCaseBuilder builder) {
         Objects.requireNonNull(claimData, "claimData must not be null");
-//        CCDClaim.CCDClaimBuilder builder = CCDClaim.builder();
         claimData.getFeeCode().ifPresent(builder::feeCode);
         claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
         claimData.getExternalReferenceNumber().ifPresent(builder::externalReferenceNumber);
         claimData.getPreferredCourt().ifPresent(builder::preferredCourt);
 
         claimData.getStatementOfTruth()
-            .ifPresent(statementOfTruth -> statementOfTruthMapper.to(statementOfTruth, builder));
+            .ifPresent(statementOfTruth -> statementOfTruthCaseMapper.to(statementOfTruth, builder));
 
         claimData.getPersonalInjury().ifPresent(personalInjury -> personalInjuryMapper.to(personalInjury, builder));
 
@@ -89,8 +88,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
 
         builder
             .reason(claimData.getReason())
-            .feeAmountInPennies(claimData.getFeeAmountInPennies())
-            .externalId(claimData.getExternalId().toString());
+            .feeAmountInPennies(claimData.getFeeAmountInPennies());
     }
 
     private CCDCollectionElement<CCDClaimant> mapClaimantToValue(CCDClaimant ccdParty) {
@@ -128,7 +126,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
             personalInjuryMapper.from(ccdCase),
             housingDisrepairMapper.from(ccdCase),
             ccdCase.getReason(),
-            statementOfTruthMapper.from(ccdCase),
+            statementOfTruthCaseMapper.from(ccdCase),
             ccdCase.getFeeAccountNumber(),
             ccdCase.getExternalReferenceNumber(),
             ccdCase.getPreferredCourt(),

@@ -14,7 +14,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSI
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.PART_ADMISSION;
 
-//@Component
+@Component
 public class ResponseMapper implements Mapper<CCDResponse, Response> {
 
     private final FullDefenceResponseMapper fullDefenceResponseMapper;

@@ -1,13 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.SampleData;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -25,30 +23,6 @@ public class CaseMapperTest {
 
     @Autowired
     private CaseMapper ccdCaseMapper;
-
-    @Autowired
-    private JsonMapper ccdJsonMapper;
-
-    @Test
-    public void shouldConvertToAndFromLegalClaimToCCD() {
-        //given
-        Claim claim = SampleClaim.builder().withReDetermination(null).build();
-
-        String claimJson = ccdJsonMapper.toJson(claim);
-
-        //when
-        CCDCase ccdCase = ccdCaseMapper.to(claim);
-
-        //then
-        String json = ccdJsonMapper.toJson(ccdCase);
-        System.out.println(json);
-
-        CCDCase aCase = ccdJsonMapper.fromJson(json, CCDCase.class);
-
-        Claim from = ccdCaseMapper.from(aCase);
-        String output = ccdJsonMapper.toJson(from);
-        Assertions.assertThat(output).isEqualTo(claimJson);
-    }
 
     @Test
     public void shouldMapLegalClaimToCCD() {

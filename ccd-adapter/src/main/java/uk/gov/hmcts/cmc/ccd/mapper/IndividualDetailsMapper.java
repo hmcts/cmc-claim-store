@@ -9,10 +9,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class IndividualDetailsMapper implements BuilderMapper<CCDDefendant, IndividualDetails, CCDDefendant.CCDDefendantBuilder> {
+public class IndividualDetailsMapper
+    implements BuilderMapper<CCDDefendant, IndividualDetails, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
-    private DefendantRepresentativeMapper defendantRepresentativeMapper;
+    private DefendantRepresentativeMapper representativeMapper;
 
     @Autowired
     public IndividualDetailsMapper(
@@ -20,39 +21,39 @@ public class IndividualDetailsMapper implements BuilderMapper<CCDDefendant, Indi
         DefendantRepresentativeMapper defendantRepresentativeMapper
     ) {
         this.addressMapper = addressMapper;
-        this.defendantRepresentativeMapper = defendantRepresentativeMapper;
+        this.representativeMapper = defendantRepresentativeMapper;
     }
 
     @Override
     public void to(IndividualDetails individual, CCDDefendant.CCDDefendantBuilder builder) {
 
         individual.getServiceAddress()
-            .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.claimantProvidedServiceAddress(addressMapper.to(address)));
 
         individual.getRepresentative()
-            .ifPresent(representative -> defendantRepresentativeMapper.to(representative, builder));
+            .ifPresent(representative -> representativeMapper.to(representative, builder));
 
         individual.getDateOfBirth().ifPresent(dob ->
             builder.partyDateOfBirth(dob.format(DateTimeFormatter.ISO_DATE)));
 
 
-        individual.getEmail().ifPresent(builder::partyEmail);
+        individual.getEmail().ifPresent(builder::claimantProvidedEmail);
 
         builder
-            .partyName(individual.getName())
-            .partyAddress(addressMapper.to(individual.getAddress()));
+            .claimantProvidedName(individual.getName())
+            .claimantProvidedAddress(addressMapper.to(individual.getAddress()));
     }
 
     @Override
     public IndividualDetails from(CCDDefendant ccdDefendant) {
 
         return new IndividualDetails(
-            ccdDefendant.getPartyName(),
-            addressMapper.from(ccdDefendant.getPartyAddress()),
-            ccdDefendant.getPartyEmail(),
-            defendantRepresentativeMapper.from(ccdDefendant),
-            addressMapper.from(ccdDefendant.getPartyServiceAddress()),
-            LocalDate.parse(ccdDefendant.getPartyDateOfBirth(), DateTimeFormatter.ISO_DATE)
+            ccdDefendant.getClaimantProvidedName(),
+            addressMapper.from(ccdDefendant.getClaimantProvidedAddress()),
+            ccdDefendant.getClaimantProvidedEmail(),
+            representativeMapper.from(ccdDefendant),
+            addressMapper.from(ccdDefendant.getClaimantProvidedServiceAddress()),
+            LocalDate.parse(ccdDefendant.getClaimantProvidedDateOfBirth(), DateTimeFormatter.ISO_DATE)
         );
     }
 }

@@ -32,7 +32,8 @@ public final class SampleClaim {
     public static final String DEFENDANT_ID = "4";
     public static final Long CLAIM_ID = 3L;
     public static final String REFERENCE_NUMBER = "000CM001";
-    public static final UUID EXTERNAL_ID = UUID.randomUUID();
+    public static final UUID RAND_UUID = UUID.randomUUID();
+    public static final String EXTERNAL_ID = RAND_UUID.toString();
     public static final boolean NOT_REQUESTED_FOR_MORE_TIME = false;
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
@@ -43,7 +44,7 @@ public final class SampleClaim {
     private String defendantId = DEFENDANT_ID;
     private Long claimId = CLAIM_ID;
     private String referenceNumber = REFERENCE_NUMBER;
-    private String externalId = EXTERNAL_ID.toString();
+    private String externalId = EXTERNAL_ID;
     private boolean isMoreTimeRequested = NOT_REQUESTED_FOR_MORE_TIME;
     private LocalDate responseDeadline = RESPONSE_DEADLINE;
     private String submitterEmail = SUBMITTER_EMAIL;
@@ -52,7 +53,7 @@ public final class SampleClaim {
     private LocalDate issuedOn = ISSUE_DATE;
     private CountyCourtJudgment countyCourtJudgment = null;
     private LocalDateTime countyCourtJudgmentRequestedAt = null;
-    private ClaimData claimData = SampleClaimData.builder().withExternalId(EXTERNAL_ID).build();
+    private ClaimData claimData = SampleClaimData.builder().withExternalId(RAND_UUID).build();
     private Response response;
     private String defendantEmail;
     private Settlement settlement = null;
@@ -71,7 +72,7 @@ public final class SampleClaim {
 
     public static Claim getDefault() {
         return builder()
-            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .paymentOption(PaymentOption.IMMEDIATELY)

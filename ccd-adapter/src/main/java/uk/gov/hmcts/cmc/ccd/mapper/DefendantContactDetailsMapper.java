@@ -7,7 +7,8 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
-public class DefendantContactDetailsMapper implements BuilderMapper<CCDDefendant, ContactDetails, CCDDefendant.CCDDefendantBuilder> {
+public class DefendantContactDetailsMapper
+    implements BuilderMapper<CCDDefendant, ContactDetails, CCDDefendant.CCDDefendantBuilder> {
 
     @Override
     public void to(ContactDetails contactDetails, CCDDefendant.CCDDefendantBuilder builder) {

@@ -15,13 +15,12 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
-@Component("ccdCaseMapper")
+@Component
 public class CaseMapper {
 
     private final ClaimMapper claimMapper;
 
-    public CaseMapper(ClaimMapper claimMapper
-    ) {
+    public CaseMapper(ClaimMapper claimMapper) {
         this.claimMapper = claimMapper;
     }
 

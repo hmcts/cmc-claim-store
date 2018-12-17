@@ -21,18 +21,18 @@ public class CompanyDetailsMapper
     @Override
     public void to(CompanyDetails company, CCDDefendant.CCDDefendantBuilder builder) {
 
-        company.getEmail().ifPresent(builder::partyEmail);
-        company.getContactPerson().ifPresent(builder::partyContactPerson);
+        company.getEmail().ifPresent(builder::claimantProvidedEmail);
+        company.getContactPerson().ifPresent(builder::claimantProvidedContactPerson);
 
         company.getServiceAddress()
-            .ifPresent(address -> builder.partyServiceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.claimantProvidedServiceAddress(addressMapper.to(address)));
 
         company.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
         builder
-            .partyName(company.getName())
-            .partyAddress(addressMapper.to(company.getAddress()));
+            .claimantProvidedName(company.getName())
+            .claimantProvidedAddress(addressMapper.to(company.getAddress()));
 
     }
 
@@ -40,12 +40,12 @@ public class CompanyDetailsMapper
     public CompanyDetails from(CCDDefendant company) {
 
         return new CompanyDetails(
-            company.getPartyName(),
-            addressMapper.from(company.getPartyAddress()),
-            company.getPartyEmail(),
+            company.getClaimantProvidedName(),
+            addressMapper.from(company.getClaimantProvidedAddress()),
+            company.getClaimantProvidedEmail(),
             representativeMapper.from(company),
-            addressMapper.from(company.getPartyServiceAddress()),
-            company.getPartyContactPerson()
+            addressMapper.from(company.getClaimantProvidedServiceAddress()),
+            company.getClaimantProvidedContactPerson()
         );
     }
 }

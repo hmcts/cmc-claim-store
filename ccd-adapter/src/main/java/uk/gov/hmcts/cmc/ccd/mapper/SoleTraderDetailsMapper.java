@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 
 @Component
@@ -21,26 +21,29 @@ public class SoleTraderDetailsMapper
     @Override
     public void to(SoleTraderDetails soleTrader, CCDDefendant.CCDDefendantBuilder builder) {
 
-        soleTrader.getTitle().ifPresent(builder::partyTitle);
-        soleTrader.getBusinessName().ifPresent(builder::partyBusinessName);
+        soleTrader.getTitle().ifPresent(builder::claimantProvidedTitle);
+        soleTrader.getBusinessName().ifPresent(builder::claimantProvidedBusinessName);
         soleTrader.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
+        soleTrader.getEmail().ifPresent(builder::claimantProvidedEmail);
+        soleTrader.getServiceAddress().ifPresent(addressMapper::to);
+
         builder
-            .partyName(soleTrader.getName())
-            .partyAddress(addressMapper.to(soleTrader.getAddress()));
+            .claimantProvidedName(soleTrader.getName())
+            .claimantProvidedAddress(addressMapper.to(soleTrader.getAddress()));
 
     }
 
     @Override
     public SoleTraderDetails from(CCDDefendant ccdSoleTrader) {
         return new SoleTraderDetails(
-            ccdSoleTrader.getPartyName(),
-            addressMapper.from(ccdSoleTrader.getPartyAddress()),
-            ccdSoleTrader.getPartyEmail(),
+            ccdSoleTrader.getClaimantProvidedName(),
+            addressMapper.from(ccdSoleTrader.getClaimantProvidedAddress()),
+            ccdSoleTrader.getClaimantProvidedEmail(),
             representativeMapper.from(ccdSoleTrader),
-            addressMapper.from(ccdSoleTrader.getPartyServiceAddress()),
-            ccdSoleTrader.getPartyPhone(),
-            ccdSoleTrader.getPartyTitle()
+            addressMapper.from(ccdSoleTrader.getClaimantProvidedServiceAddress()),
+            ccdSoleTrader.getClaimantProvidedTitle(),
+            ccdSoleTrader.getClaimantProvidedBusinessName()
         );
     }
 }

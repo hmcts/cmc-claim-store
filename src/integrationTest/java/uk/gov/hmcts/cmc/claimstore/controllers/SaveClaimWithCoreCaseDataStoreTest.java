@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableList;
 import feign.FeignException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulPrePaym
         "feature_toggles.ccd_enabled=true"
     }
 )
+@Ignore
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test

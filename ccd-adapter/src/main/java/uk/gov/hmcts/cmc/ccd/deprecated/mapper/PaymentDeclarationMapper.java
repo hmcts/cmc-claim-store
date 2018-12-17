@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 
-//@Component
+@Component
 public class PaymentDeclarationMapper implements Mapper<CCDPaymentDeclaration, PaymentDeclaration> {
 
     @Override

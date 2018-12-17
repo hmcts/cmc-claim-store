@@ -2,11 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 
 @Component
-public class OrganisationDetailsMapper implements BuilderMapper<CCDDefendant, OrganisationDetails, CCDDefendant.CCDDefendantBuilder> {
+public class OrganisationDetailsMapper
+    implements BuilderMapper<CCDDefendant, OrganisationDetails, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
     private final DefendantRepresentativeMapper representativeMapper;
@@ -21,27 +22,28 @@ public class OrganisationDetailsMapper implements BuilderMapper<CCDDefendant, Or
     public void to(OrganisationDetails organisation, CCDDefendant.CCDDefendantBuilder builder) {
 
         organisation.getServiceAddress()
-            .ifPresent(address -> builder.partyServiceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.claimantProvidedServiceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        organisation.getContactPerson().ifPresent(builder::partyContactPerson);
-        organisation.getCompaniesHouseNumber().ifPresent(builder::partyCompaniesHouseNumber);
+        organisation.getContactPerson().ifPresent(builder::claimantProvidedContactPerson);
+        organisation.getCompaniesHouseNumber().ifPresent(builder::claimantProvidedCompaniesHouseNumber);
+        organisation.getEmail().ifPresent(builder::claimantProvidedEmail);
         builder
-            .partyName(organisation.getName())
-            .partyAddress(addressMapper.to(organisation.getAddress()));
+            .claimantProvidedName(organisation.getName())
+            .claimantProvidedAddress(addressMapper.to(organisation.getAddress()));
     }
 
     @Override
     public OrganisationDetails from(CCDDefendant ccdOrganisation) {
 
         return new OrganisationDetails(
-            ccdOrganisation.getPartyName(),
-            addressMapper.from(ccdOrganisation.getPartyAddress()),
-            ccdOrganisation.getPartyEmail(),
+            ccdOrganisation.getClaimantProvidedName(),
+            addressMapper.from(ccdOrganisation.getClaimantProvidedAddress()),
+            ccdOrganisation.getClaimantProvidedEmail(),
             representativeMapper.from(ccdOrganisation),
-            addressMapper.from(ccdOrganisation.getPartyServiceAddress()),
-            ccdOrganisation.getPartyContactPerson(),
-            ccdOrganisation.getPartyCompaniesHouseNumber()
+            addressMapper.from(ccdOrganisation.getClaimantProvidedServiceAddress()),
+            ccdOrganisation.getClaimantProvidedContactPerson(),
+            ccdOrganisation.getClaimantProvidedCompaniesHouseNumber()
         );
     }
 }

@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
-//@Component
+@Component
 public class StatementOfTruthMapper implements Mapper<CCDStatementOfTruth, StatementOfTruth> {
 
     @Override

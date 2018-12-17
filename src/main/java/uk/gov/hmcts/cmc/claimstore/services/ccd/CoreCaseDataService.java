@@ -4,14 +4,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -42,18 +42,17 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.CCJ_BY_ADMISSION;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.LINK_SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.SUBMIT_POST_PAYMENT;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_BY_ADMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
@@ -182,8 +181,9 @@ public class CoreCaseDataService {
     ) {
         CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
             .id(caseId)
-            .countyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment))
-            .countyCourtJudgmentRequestedAt(nowInUTC());
+            //.countyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment))
+            //.countyCourtJudgmentRequestedAt(nowInUTC())
+            ;
 
         CountyCourtJudgmentType countyCourtJudgmentType = countyCourtJudgment.getCcjType();
         if (countyCourtJudgmentType.equals(CountyCourtJudgmentType.ADMISSIONS)) {
@@ -214,9 +214,9 @@ public class CoreCaseDataService {
 
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .response(responseMapper.to(response))
+            //.response(responseMapper.to(response))
             .defendantEmail(defendantEmail)
-            .respondedAt(nowInUTC())
+            //.respondedAt(nowInUTC())
             .build();
 
         return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response)));
@@ -243,8 +243,8 @@ public class CoreCaseDataService {
 
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .claimantResponse(claimantResponseMapper.to(response))
-            .claimantRespondedAt(nowInUTC())
+            //.claimantResponse(claimantResponseMapper.to(response))
+            //.claimantRespondedAt(nowInUTC())
             .build();
 
         CaseDetails caseDetails = update(authorisation, ccdCase,
@@ -261,7 +261,7 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .settlement(settlementMapper.to(settlement))
+            //.settlement(settlementMapper.to(settlement))
             .build();
 
         return update(authorisation, ccdCase, event);
@@ -275,8 +275,8 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .settlement(settlementMapper.to(settlement))
-            .settlementReachedAt(nowInUTC())
+            //.settlement(settlementMapper.to(settlement))
+            //.settlementReachedAt(nowInUTC())
             .build();
 
         return update(authorisation, ccdCase, event);
@@ -475,7 +475,7 @@ public class CoreCaseDataService {
     public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .directionsQuestionnaireDeadline(dqDeadline)
+            //.directionsQuestionnaireDeadline(dqDeadline)
             .build();
 
         update(authorisation, ccdCase, DIRECTIONS_QUESTIONNAIRE_DEADLINE);
