@@ -2,10 +2,10 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain;
 
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
