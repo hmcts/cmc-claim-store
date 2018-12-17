@@ -7,8 +7,6 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import java.util.Optional;
-
 @Component
 public class ResponseRejectionMapper implements Mapper<CCDResponseRejection, ResponseRejection> {
     @Override
@@ -32,7 +30,7 @@ public class ResponseRejectionMapper implements Mapper<CCDResponseRejection, Res
             .reason(ccdResponseRejection.getReason());
 
         if (ccdResponseRejection.getFreeMediationOption() != null) {
-            YesNoOption yesNoOption = YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().getValue());
+            YesNoOption yesNoOption = YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name());
             builder.freeMediation(yesNoOption);
         }
 

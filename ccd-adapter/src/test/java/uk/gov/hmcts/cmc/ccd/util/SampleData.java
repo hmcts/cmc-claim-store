@@ -326,7 +326,7 @@ public class SampleData {
             .build();
     }
 
-    public static CCDClaimantResponse getCCDClaimantREjectionResponse() {
+    public static CCDClaimantResponse getCCDClaimantRejectionResponse() {
         return CCDClaimantResponse.builder()
             .claimantResponseType(CCDClaimantResponseType.REJECTION)
             .responseRejection(getResponseRejection())
