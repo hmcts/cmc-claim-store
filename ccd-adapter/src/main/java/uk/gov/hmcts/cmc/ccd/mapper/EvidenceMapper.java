@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -11,6 +12,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
+@Ignore
 public class EvidenceMapper implements BuilderMapper<CCDCase, Evidence, CCDCase.CCDCaseBuilder> {
 
     private final EvidenceRowMapper evidenceRowMapper;

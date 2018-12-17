@@ -52,7 +52,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
             );
 
             actual.getRepresentative()
-                .ifPresent(representative -> assertRespresentativeDetails(representative, ccdParty));
+                .ifPresent(representative -> assertRepresentativeDetails(representative, ccdParty));
         }
 
         if (actual instanceof Organisation) {
@@ -93,7 +93,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
             );
 
             actual.getRepresentative()
-                .ifPresent(representative -> assertRespresentativeDetails(representative, ccdParty));
+                .ifPresent(representative -> assertRepresentativeDetails(representative, ccdParty));
         }
 
         if (actual instanceof Company) {
@@ -126,7 +126,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
             );
 
             actual.getRepresentative()
-                .ifPresent(representative -> assertRespresentativeDetails(representative, ccdParty));
+                .ifPresent(representative -> assertRepresentativeDetails(representative, ccdParty));
         }
 
         if (actual instanceof SoleTrader) {
@@ -160,14 +160,14 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
             );
 
             actual.getRepresentative()
-                .ifPresent(representative -> assertRespresentativeDetails(representative, ccdParty));
+                .ifPresent(representative -> assertRepresentativeDetails(representative, ccdParty));
 
         }
 
         return this;
     }
 
-    private void assertRespresentativeDetails(Representative representative, CCDClaimant ccdParty) {
+    private void assertRepresentativeDetails(Representative representative, CCDClaimant ccdParty) {
         if (!Objects.equals(representative.getOrganisationName(), ccdParty.getRepresentativeOrganisationName())) {
             failWithMessage("Expected Representative.organisationName to be <%s> but was <%s>",
                 ccdParty.getRepresentativeOrganisationName(), representative.getOrganisationName());

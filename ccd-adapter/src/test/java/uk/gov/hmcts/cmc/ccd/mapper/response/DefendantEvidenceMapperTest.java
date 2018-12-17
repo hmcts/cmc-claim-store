@@ -1,5 +1,6 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
+package uk.gov.hmcts.cmc.ccd.mapper.response;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDDefendantEvidence;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantEvidenceMapper;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 
@@ -22,6 +22,7 @@ import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.CORRESPONDENC
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
+@Ignore
 public class DefendantEvidenceMapperTest {
 
     @Autowired

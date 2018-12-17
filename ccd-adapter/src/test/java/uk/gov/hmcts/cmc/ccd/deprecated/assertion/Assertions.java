@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
 import uk.gov.hmcts.cmc.ccd.assertion.StatementOfTruthAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantEvidenceAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantTimelineAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantResponseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;

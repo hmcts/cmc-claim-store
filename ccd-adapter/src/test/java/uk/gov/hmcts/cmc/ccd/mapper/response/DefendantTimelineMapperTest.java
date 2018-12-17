@@ -1,5 +1,6 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.response;
+package uk.gov.hmcts.cmc.ccd.mapper.response;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +11,16 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDDefendantTimeline;
-import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantTimelineMapper;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 
 import static java.util.Arrays.asList;
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
+@Ignore
 public class DefendantTimelineMapperTest {
 
     @Autowired

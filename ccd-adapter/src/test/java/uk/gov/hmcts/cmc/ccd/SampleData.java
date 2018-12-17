@@ -44,11 +44,61 @@ public class SampleData {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
             .partyType(INDIVIDUAL)
-            .partyAddress(ccdAddress)
-            .partyName("Individual")
-            .partyPhoneNumber("07987654321")
-            .partyDateOfBirth("1950-01-01")
-            .partyCorrespondenceAddress(ccdAddress)
+            .claimantProvidedAddress(ccdAddress)
+            .claimantProvidedName("Individual")
+            .claimantProvidedDateOfBirth("1950-01-01")
+            .claimantProvidedServiceAddress(ccdAddress)
+            .representativeOrganisationAddress(ccdAddress)
+            .representativeOrganisationName("My Org")
+            .representativeOrganisationPhone("07987654321")
+            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationDxAddress("dx123")
+            .build();
+    }
+
+    public static CCDDefendant getCCDDefendantOrganisation() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDDefendant.builder()
+            .partyType(ORGANISATION)
+            .claimantProvidedAddress(ccdAddress)
+            .claimantProvidedName("Organisation")
+            .claimantProvidedServiceAddress(ccdAddress)
+            .representativeOrganisationAddress(ccdAddress)
+            .representativeOrganisationName("My Org")
+            .representativeOrganisationPhone("07987654321")
+            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationDxAddress("dx123")
+            .claimantProvidedContactPerson("MR. Hyde")
+            .claimantProvidedCompaniesHouseNumber("12345678")
+            .build();
+    }
+
+    public static CCDDefendant getCCDDefendantCompany() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDDefendant.builder()
+            .partyType(COMPANY)
+            .claimantProvidedAddress(ccdAddress)
+            .claimantProvidedName("Abc Ltd")
+            .claimantProvidedAddress(ccdAddress)
+            .claimantProvidedServiceAddress(ccdAddress)
+            .representativeOrganisationAddress(ccdAddress)
+            .representativeOrganisationName("My Org")
+            .representativeOrganisationPhone("07987654321")
+            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationDxAddress("dx123")
+            .claimantProvidedContactPerson("MR. Hyde")
+            .build();
+    }
+
+    public static CCDDefendant getCCDDefendantSoleTrader() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDDefendant.builder()
+            .partyType(SOLE_TRADER)
+            .claimantProvidedAddress(ccdAddress)
+            .claimantProvidedTitle("Mr.")
+            .claimantProvidedName("SoleTrader")
+            .claimantProvidedBusinessName("My Trade")
+            .claimantProvidedServiceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
@@ -120,6 +170,7 @@ public class SampleData {
             .partyName("Individual")
             .partyBusinessName("My Trade")
             .partyPhoneNumber("07987654321")
+            .partyAddress(ccdAddress)
             .partyCorrespondenceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")

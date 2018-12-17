@@ -22,27 +22,28 @@ public class OrganisationDetailsMapper
     public void to(OrganisationDetails organisation, CCDDefendant.CCDDefendantBuilder builder) {
 
         organisation.getServiceAddress()
-            .ifPresent(address -> builder.partyServiceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.claimantProvidedServiceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        organisation.getContactPerson().ifPresent(builder::partyContactPerson);
-        organisation.getCompaniesHouseNumber().ifPresent(builder::partyCompaniesHouseNumber);
+        organisation.getContactPerson().ifPresent(builder::claimantProvidedContactPerson);
+        organisation.getCompaniesHouseNumber().ifPresent(builder::claimantProvidedCompaniesHouseNumber);
+        organisation.getEmail().ifPresent(builder::claimantProvidedEmail);
         builder
-            .partyName(organisation.getName())
-            .partyAddress(addressMapper.to(organisation.getAddress()));
+            .claimantProvidedName(organisation.getName())
+            .claimantProvidedAddress(addressMapper.to(organisation.getAddress()));
     }
 
     @Override
     public OrganisationDetails from(CCDDefendant ccdOrganisation) {
 
         return new OrganisationDetails(
-            ccdOrganisation.getPartyName(),
-            addressMapper.from(ccdOrganisation.getPartyAddress()),
-            ccdOrganisation.getPartyEmail(),
+            ccdOrganisation.getClaimantProvidedName(),
+            addressMapper.from(ccdOrganisation.getClaimantProvidedAddress()),
+            ccdOrganisation.getClaimantProvidedEmail(),
             representativeMapper.from(ccdOrganisation),
-            addressMapper.from(ccdOrganisation.getPartyServiceAddress()),
-            ccdOrganisation.getPartyContactPerson(),
-            ccdOrganisation.getPartyCompaniesHouseNumber()
+            addressMapper.from(ccdOrganisation.getClaimantProvidedServiceAddress()),
+            ccdOrganisation.getClaimantProvidedContactPerson(),
+            ccdOrganisation.getClaimantProvidedCompaniesHouseNumber()
         );
     }
 }

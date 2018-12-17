@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
