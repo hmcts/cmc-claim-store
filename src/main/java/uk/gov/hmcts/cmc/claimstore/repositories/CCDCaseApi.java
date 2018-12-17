@@ -263,7 +263,7 @@ public class CCDCaseApi {
             defendantUser.getAuthorisation(),
             CCDCase.builder().id(Long.valueOf(caseId))
                 .defendantId(defendantId)
-//                .defendantEmail(defendantEmail)
+                //.defendantEmail(defendantEmail)
                 .build(),
             CaseEvent.LINK_DEFENDANT
         );

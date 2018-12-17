@@ -158,6 +158,7 @@ public class CoreCaseDataService {
         return extractClaim(updates);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
         Long caseId,
@@ -189,6 +190,7 @@ public class CoreCaseDataService {
         return update(authorisation, ccdCase, LINK_SEALED_CLAIM);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveDefendantResponse(
         Long caseId,
         String defendantEmail,
@@ -219,6 +221,7 @@ public class CoreCaseDataService {
         }
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public Claim saveClaimantResponse(
         Long caseId,
         ClaimantResponse response,
@@ -237,6 +240,7 @@ public class CoreCaseDataService {
         return extractClaim(caseDetails);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveSettlement(
         Long caseId,
         Settlement settlement,
@@ -251,6 +255,7 @@ public class CoreCaseDataService {
         return update(authorisation, ccdCase, event);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails reachSettlementAgreement(
         Long caseId,
         Settlement settlement,
@@ -456,6 +461,7 @@ public class CoreCaseDataService {
         return caseMapper.from(ccdCase);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
