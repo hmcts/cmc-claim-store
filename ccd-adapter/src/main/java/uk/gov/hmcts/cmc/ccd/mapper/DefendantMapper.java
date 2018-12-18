@@ -72,7 +72,7 @@ public class DefendantMapper {
             case ORGANISATION:
                 return organisationDetailsMapper.from(ccdDefendant);
             default:
-                throw new MappingException();
+                throw new MappingException("Invalid defendant type, " + ccdDefendant.getClaimantProvidedType());
         }
     }
 }

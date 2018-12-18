@@ -73,7 +73,7 @@ public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
             case ORGANISATION:
                 return organisationMapper.from(ccdClaimant);
             default:
-                throw new MappingException();
+                throw new MappingException("Invalid claimant type, " + ccdClaimant.getPartyType());
         }
     }
 }

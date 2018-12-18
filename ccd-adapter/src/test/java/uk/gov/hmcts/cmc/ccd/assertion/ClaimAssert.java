@@ -15,7 +15,6 @@ import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
@@ -56,16 +55,6 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
             failWithMessage("Expected CCDCase.submitterEmail to be <%s> but was <%s>",
                 ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
         }
-
-//        if (!Objects.equals(actual.getResponseDeadline(), ccdCase.getResponseDeadline())) {
-//            failWithMessage("Expected CCDCase.responseDeadline to be <%s> but was <%s>",
-//                ccdCase.getResponseDeadline(), actual.getResponseDeadline());
-//        }
-//
-//        if (!Objects.equals(actual.isMoreTimeRequested(), ccdCase.getMoreTimeRequested() == YES)) {
-//            failWithMessage("Expected CCDCase.moreTimeRequested to be <%s> but was <%s>",
-//                ccdCase.getMoreTimeRequested(), actual.isMoreTimeRequested());
-//        }
 
         ClaimData claimData = actual.getClaimData();
         if (!Objects.equals(claimData.getReason(), ccdCase.getReason())) {

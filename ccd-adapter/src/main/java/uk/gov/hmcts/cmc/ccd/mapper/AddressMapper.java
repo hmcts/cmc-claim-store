@@ -25,7 +25,7 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
             return null;
         }
 
-        return new Address(address.getAddressLine1(), address.getAddressLine3(), address.getAddressLine3(),
+        return new Address(address.getAddressLine1(), address.getAddressLine2(), address.getAddressLine3(),
             address.getPostTown(), address.getPostCode());
     }
 }
