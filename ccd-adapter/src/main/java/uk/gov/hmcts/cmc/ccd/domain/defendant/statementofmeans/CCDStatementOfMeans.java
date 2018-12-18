@@ -23,7 +23,7 @@ public class CCDStatementOfMeans {
     private CCDYesNoOption anyDisabledChildren;
     private Integer numberOfOtherDependants;
     private String otherDependantDetails;
-    private List<CCDCollectionElement<CCDEmployment>> employers;
+    private List<CCDCollectionElement<CCDEmployer>> employers;
     private String taxPaymentsReason;
     private BigDecimal taxYouOwe;
     private String selfEmploymentJobTitle;

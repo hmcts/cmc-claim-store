@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployment;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
@@ -36,7 +36,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private final IncomeMapper incomeMapper;
     private final ExpenseMapper expenseMapper;
     private final CourtOrderMapper courtOrderMapper;
-    private final EmploymentMapper employmentMapper;
+    private final EmployerMapper employerMapper;
     private final ChildCategoryMapper childCategoryMapper;
 
     @Autowired
@@ -46,7 +46,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         IncomeMapper incomeMapper,
         ExpenseMapper expenseMapper,
         CourtOrderMapper courtOrderMapper,
-        EmploymentMapper employmentMapper,
+        EmployerMapper employerMapper,
         ChildCategoryMapper childCategoryMapper
     ) {
         this.bankAccountMapper = bankAccountMapper;
@@ -54,7 +54,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         this.incomeMapper = incomeMapper;
         this.expenseMapper = expenseMapper;
         this.courtOrderMapper = courtOrderMapper;
-        this.employmentMapper = employmentMapper;
+        this.employerMapper = employerMapper;
         this.childCategoryMapper = childCategoryMapper;
     }
 
@@ -106,9 +106,9 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
 
             builder.employers(
                 asStream(employment.getEmployers())
-                    .map(employmentMapper::to)
+                    .map(employerMapper::to)
                     .filter(Objects::nonNull)
-                    .map(employer -> CCDCollectionElement.<CCDEmployment>builder().value(employer).build())
+                    .map(employer -> CCDCollectionElement.<CCDEmployer>builder().value(employer).build())
                     .collect(Collectors.toList()));
 
 

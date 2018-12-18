@@ -1,7 +1,7 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDEmployer;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 
 import java.util.Objects;
@@ -15,9 +15,9 @@ public class EmployerAssert extends AbstractAssert<EmployerAssert, Employer> {
     public EmployerAssert isEqualTo(CCDEmployer ccdEmployer) {
         isNotNull();
 
-        if (!Objects.equals(actual.getName(), ccdEmployer.getName())) {
+        if (!Objects.equals(actual.getName(), ccdEmployer.getEmployerName())) {
             failWithMessage("Expected Employer.name to be <%s> but was <%s>",
-                ccdEmployer.getName(), actual.getName());
+                ccdEmployer.getEmployerName(), actual.getName());
         }
 
         if (!Objects.equals(actual.getJobTitle(), ccdEmployer.getJobTitle())) {

@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CCDEmployment {
+public class CCDEmployer {
     private String jobTitle;
     private String employerName;
 }

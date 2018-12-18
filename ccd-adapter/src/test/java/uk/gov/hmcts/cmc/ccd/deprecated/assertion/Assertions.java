@@ -5,14 +5,11 @@ import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.EmployerAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantResponseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseRejectionAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.DependantAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.EmployerAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.EmploymentAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.SelfEmploymentAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -29,11 +26,8 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 
@@ -102,24 +96,12 @@ public class Assertions {
         return new CourtOrderAssert(courtOrder);
     }
 
-    public static DependantAssert assertThat(Dependant dependant) {
-        return new DependantAssert(dependant);
-    }
-
     public static EmployerAssert assertThat(Employer employer) {
         return new EmployerAssert(employer);
     }
 
     public static LivingPartnerAssert assertThat(LivingPartner livingPartner) {
         return new LivingPartnerAssert(livingPartner);
-    }
-
-    public static SelfEmploymentAssert assertThat(SelfEmployment selfEmployment) {
-        return new SelfEmploymentAssert(selfEmployment);
-    }
-
-    public static EmploymentAssert assertThat(Employment employment) {
-        return new EmploymentAssert(employment);
     }
 
     public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
