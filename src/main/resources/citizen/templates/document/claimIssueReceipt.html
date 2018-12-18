@@ -483,18 +483,18 @@
     <table>
       <tr>
         <td></td>
-        {% if claim.statementOfTruth is not defined or claim.statementOfTruth is empty %}
+        {% if claim.signerName is not defined or claim.signerName is empty %}
         <td>
           I believe that the facts stated in this claim form are true.
         </td>
         {% endif %}
-        {% if claim.statementOfTruth is defined and claim.statementOfTruth is not empty %}
+        {% if claim.signerName is defined and claim.signerName is not empty %}
         <td>
           The claimant believes that the facts stated in this claim are true.
         </td>
         {% endif %}
       </tr>
-      {% if claim.statementOfTruth is not defined or claim.statementOfTruth is empty %}
+      {% if claim.signerName is not defined or claim.signerName is empty %}
       <tr>
         <td></td>
         <td>
@@ -508,12 +508,12 @@
         </td>
       </tr>
       {% endif %}
-      {% if claim.statementOfTruth is defined and claim.statementOfTruth is not empty %}
+      {% if claim.signerName is defined and claim.signerName is not empty %}
       <tr>
         <td>
           <strong>Name:</strong>
         </td>
-        <td>{{ claim.statementOfTruth.signerName }}</td>
+        <td>{{ claim.signerName }}</td>
       </tr>
       <tr>
         <td>
@@ -529,7 +529,7 @@
         <td>
           <strong>Position held:</strong>
         </td>
-        <td>{{ claim.statementOfTruth.signerRole }}</td>
+        <td>{{ claim.signerRole }}</td>
       </tr>
       {% endif %}
     </table>
