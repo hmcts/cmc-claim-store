@@ -5,10 +5,10 @@ import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.AmountType;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.math.BigDecimal;
