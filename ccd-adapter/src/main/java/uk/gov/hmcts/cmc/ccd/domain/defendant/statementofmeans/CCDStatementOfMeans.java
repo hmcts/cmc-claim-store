@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 
 import java.math.BigDecimal;
@@ -20,7 +23,6 @@ public class CCDStatementOfMeans {
     private CCDYesNoOption anyDisabledChildren;
     private Integer numberOfOtherDependants;
     private String otherDependantDetails;
-    private CCDEmploymentStatus employmentStatus;
     private List<CCDCollectionElement<CCDEmployment>> employers;
     private String taxPaymentsReason;
     private BigDecimal taxYouOwe;
@@ -34,4 +36,11 @@ public class CCDStatementOfMeans {
     private List<CCDCollectionElement<CCDIncome>> incomes;
     private List<CCDCollectionElement<CCDExpense>> expenses;
     private List<CCDCollectionElement<CCDCourtOrder>> courtOrders;
+
+    private List<CCDCollectionElement<PriorityDebt>> priorityDebts;
+    private CCDYesNoOption carer;
+    private DisabilityStatus disabilityStatus;
+    private LivingPartner livingPartner;
+
+    private CCDEmploymentStatus employmentStatus; //TODO: Not Needed
 }

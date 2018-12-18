@@ -1,26 +1,26 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 
 @Component
-public class EmployerMapper implements Mapper<CCDEmployer, Employer> {
+public class EmploymentMapper implements Mapper<CCDEmployment, Employer> {
 
     @Override
-    public CCDEmployer to(Employer employer) {
-        return CCDEmployer.builder()
-            .name(employer.getName())
+    public CCDEmployment to(Employer employer) {
+        return CCDEmployment.builder()
+            .employerName(employer.getName())
             .jobTitle(employer.getJobTitle())
             .build();
     }
 
     @Override
-    public Employer from(CCDEmployer ccdEmployer) {
+    public Employer from(CCDEmployment ccdEmployer) {
         return new Employer(
             ccdEmployer.getJobTitle(),
-            ccdEmployer.getName()
+            ccdEmployer.getEmployerName()
         );
     }
 }

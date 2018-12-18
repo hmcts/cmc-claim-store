@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
-@Component
+@Component("ccdDefendantMapper")
 public class DefendantMapper {
 
     private final EvidenceRowMapper evidenceRowMapper;

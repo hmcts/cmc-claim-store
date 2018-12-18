@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,20 +7,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDChild;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_11_AND_15;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_16_AND_19;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ChildMapperTest {
+public class ChildCategoryMapperTest {
 
     @Autowired
-    private ChildMapper mapper;
+    private ChildCategoryMapper mapper;
 
     @Test
     public void shouldMapChildToCCD() {
@@ -32,26 +32,26 @@ public class ChildMapperTest {
             .build();
 
         //when
-        CCDChild ccdChild = mapper.to(child);
+        CCDChildCategory ccdChildCategory = mapper.to(child);
 
         //then
-        assertThat(child).isEqualTo(ccdChild);
+        assertThat(child).isEqualTo(ccdChildCategory);
 
     }
 
     @Test
     public void shouldMapChildFromCCD() {
         //given
-        CCDChild ccdChild = CCDChild.builder()
+        CCDChildCategory ccdChildCategory = CCDChildCategory.builder()
             .numberOfChildren(4)
-            .numberOfChildrenLivingWithYou(1)
+            .numberOfResidentChildren(1)
             .ageGroupType(BETWEEN_11_AND_15)
             .build();
 
         //when
-        Child child = mapper.from(ccdChild);
+        Child child = mapper.from(ccdChildCategory);
 
         //then
-        assertThat(child).isEqualTo(ccdChild);
+        assertThat(child).isEqualTo(ccdChildCategory);
     }
 }

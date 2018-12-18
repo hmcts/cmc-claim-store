@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;

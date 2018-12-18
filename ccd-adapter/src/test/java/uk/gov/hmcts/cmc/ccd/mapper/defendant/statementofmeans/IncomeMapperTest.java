@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,12 +8,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
-import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.IncomeMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
 import java.math.BigDecimal;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;

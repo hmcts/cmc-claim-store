@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,12 +9,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
-import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.BankAccountMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 
 import java.math.BigDecimal;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.CURRENT_ACCOUNT;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
 

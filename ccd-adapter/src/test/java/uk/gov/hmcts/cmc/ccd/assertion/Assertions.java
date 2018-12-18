@@ -1,5 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.DebtAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ExpenseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -7,6 +13,12 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
 
 public class Assertions {
@@ -41,4 +53,30 @@ public class Assertions {
     public static DefendantAssert assertThat(TheirDetails theirDetails) {
         return new DefendantAssert(theirDetails);
     }
+
+    public static ChildAssert assertThat(Child child) {
+        return new ChildAssert(child);
+    }
+
+    public static BankAccountAssert assertThat(BankAccount bankAccount) {
+        return new BankAccountAssert(bankAccount);
+    }
+
+    public static CourtOrderAssert assertThat(CourtOrder courtOrder) {
+        return new CourtOrderAssert(courtOrder);
+    }
+
+    public static DebtAssert assertThat(Debt debt) {
+        return new DebtAssert(debt);
+    }
+
+    public static IncomeAssert assertThat(Income income) {
+        return new IncomeAssert(income);
+    }
+
+    public static ExpenseAssert assertThat(Expense expense) {
+        return new ExpenseAssert(expense);
+    }
+
+
 }

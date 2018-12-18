@@ -2,19 +2,16 @@ package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
 import uk.gov.hmcts.cmc.ccd.assertion.StatementOfTruthAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantResponseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseRejectionAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.BankAccountAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.ChildAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.CourtOrderAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.DebtAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.DependantAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.EmployerAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.EmploymentAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.ExpenseAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.SelfEmploymentAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -32,12 +29,9 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
@@ -108,24 +102,12 @@ public class Assertions {
         return new CourtOrderAssert(courtOrder);
     }
 
-    public static DebtAssert assertThat(Debt debt) {
-        return new DebtAssert(debt);
-    }
-
     public static DependantAssert assertThat(Dependant dependant) {
         return new DependantAssert(dependant);
     }
 
     public static EmployerAssert assertThat(Employer employer) {
         return new EmployerAssert(employer);
-    }
-
-    public static IncomeAssert assertThat(Income income) {
-        return new IncomeAssert(income);
-    }
-
-    public static ExpenseAssert assertThat(Expense expense) {
-        return new ExpenseAssert(expense);
     }
 
     public static LivingPartnerAssert assertThat(LivingPartner livingPartner) {
