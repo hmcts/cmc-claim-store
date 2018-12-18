@@ -263,7 +263,6 @@ public class CoreCaseDataService {
         String authorisation,
         CaseEvent event
     ) {
-        //TODO settlement need to be handled with in defendant
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             //.settlement(settlementMapper.to(settlement))
