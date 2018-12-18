@@ -11,8 +11,11 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 @Component
-public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
+public class DefendantMapper {
 
     private final IndividualDetailsMapper individualDetailsMapper;
     private final CompanyDetailsMapper companyDetailsMapper;
@@ -33,9 +36,10 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
         this.soleTraderDetailsMapper = soleTraderDetailsMapper;
     }
 
-    @Override
-    public CCDDefendant to(TheirDetails party) {
+    public CCDDefendant to(TheirDetails party, String letterHolderId, LocalDate responseDeadline) {
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        Optional.ofNullable(letterHolderId).ifPresent(builder::letterHolderId);
+        Optional.ofNullable(responseDeadline).ifPresent(builder::responseDeadline);
 
         if (party instanceof IndividualDetails) {
             builder.claimantProvidedType(CCDPartyType.INDIVIDUAL);
@@ -57,7 +61,6 @@ public class DefendantMapper implements Mapper<CCDDefendant, TheirDetails> {
         return builder.build();
     }
 
-    @Override
     public TheirDetails from(CCDDefendant ccdDefendant) {
         switch (ccdDefendant.getClaimantProvidedType()) {
             case COMPANY:

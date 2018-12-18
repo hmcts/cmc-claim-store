@@ -138,7 +138,7 @@ public final class SampleClaim {
             .submitterId(USER_ID)
             .letterHolderId(LETTER_HOLDER_ID)
             .defendantId(DEFENDANT_ID)
-            .externalId(EXTERNAL_ID.toString())
+            .externalId(EXTERNAL_ID)
             .referenceNumber(referenceNumber)
             .claimData(Optional.ofNullable(claimData).orElse(SampleClaimData.submittedByClaimant()))
             .createdAt(NOW_IN_LOCAL_ZONE)

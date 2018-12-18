@@ -27,9 +27,9 @@ public class AmountBreakDownMapper implements BuilderMapper<CCDCase, AmountBreak
     }
 
     @Override
-    public AmountBreakDown from(CCDCase ccdAmountBreakDown) {
+    public AmountBreakDown from(CCDCase ccdCase) {
         return new AmountBreakDown(
-            ccdAmountBreakDown.getAmountBreakDown().stream()
+            ccdCase.getAmountBreakDown().stream()
                 .map(CCDCollectionElement::getValue)
                 .map(amountRowMapper::from)
                 .collect(Collectors.toList())

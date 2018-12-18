@@ -23,6 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
 
+@Async("threadPoolTaskExecutor")
 public class CCDCaseHandler {
     private final CCDCaseRepository ccdCaseRepository;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
@@ -42,7 +43,6 @@ public class CCDCaseHandler {
     }
 
     @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void savePrePayment(CCDPrePaymentEvent event) {
         try {
@@ -54,7 +54,6 @@ public class CCDCaseHandler {
     }
 
     @TransactionalEventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
@@ -85,7 +84,6 @@ public class CCDCaseHandler {
     }
 
     //    @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void saveDefendantResponse(CCDDefendantResponseEvent event) {
         Claim claim = event.getClaim();
@@ -109,7 +107,6 @@ public class CCDCaseHandler {
     }
 
     //    @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void requestMoreTimeForResponse(CCDMoreTimeRequestedEvent event) {
         try {
@@ -124,7 +121,6 @@ public class CCDCaseHandler {
     }
 
     //    @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void saveCountyCourtJudgment(CCDCountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
@@ -142,7 +138,6 @@ public class CCDCaseHandler {
     }
 
     //    @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void saveClaimantResponse(CCDClaimantResponseEvent event) {
         String authorization = event.getAuthorization();
@@ -159,7 +154,6 @@ public class CCDCaseHandler {
     }
 
     //    @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void linkDefendantToClaim(CCDLinkDefendantEvent event) {
         String authorisation = event.getAuthorisation();
@@ -173,7 +167,6 @@ public class CCDCaseHandler {
     }
 
     //    @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void linkSealedClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
         String authorization = event.getAuthorization();

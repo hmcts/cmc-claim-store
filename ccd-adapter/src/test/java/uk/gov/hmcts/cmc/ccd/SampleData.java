@@ -33,11 +33,11 @@ public class SampleData {
 
     public static CCDAddress getCCDAddress() {
         return CCDAddress.builder()
-            .line1("line1")
-            .line2("line2")
-            .line3("line3")
-            .city("city")
-            .postcode("postcode")
+            .addressLine1("line1")
+            .addressLine2("line2")
+            .addressLine3("line3")
+            .postTown("city")
+            .postCode("postcode")
             .build();
     }
 

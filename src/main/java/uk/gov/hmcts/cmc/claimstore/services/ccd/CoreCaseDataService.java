@@ -38,7 +38,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -149,8 +148,8 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(claim.getId())
-            .responseDeadline(newResponseDeadline)
-            .moreTimeRequested(YES)
+            //.responseDeadline(newResponseDeadline)
+            //.moreTimeRequested(YES)
             .build();
 
         CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
@@ -262,6 +261,7 @@ public class CoreCaseDataService {
         String authorisation,
         CaseEvent event
     ) {
+        //TODO settlement need to be handled with in defendant
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             //.settlement(settlementMapper.to(settlement))
@@ -278,7 +278,7 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .responseDeadline(newResponseDeadline)
+            //.responseDeadline(newResponseDeadline)
             .build();
 
         return update(authorisation, ccdCase, TEST_SUPPORT_UPDATE);

@@ -1,26 +1,30 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.AmountType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CCDCaseBuilder> {
+public class ClaimMapper {
 
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthCaseMapper statementOfTruthCaseMapper;
-    private ClaimantMapper claimantMapper;
+    private final ClaimantMapper claimantMapper;
     private final DefendantMapper defendantMapper;
     private final AmountMapper amountMapper;
     private final PaymentMapper paymentMapper;
@@ -38,7 +42,6 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
         AmountMapper amountMapper,
         PaymentMapper paymentMapper,
         InterestMapper interestMapper,
-        InterestDateMapper interestDateMapper,
         TimelineMapper timelineMapper,
         EvidenceMapper evidenceMapper
     ) {
@@ -54,8 +57,8 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
         this.evidenceMapper = evidenceMapper;
     }
 
-    @Override
-    public void to(ClaimData claimData, CCDCase.CCDCaseBuilder builder) {
+    public void to(Claim claim, CCDCase.CCDCaseBuilder builder) {
+        ClaimData claimData = claim.getClaimData();
         Objects.requireNonNull(claimData, "claimData must not be null");
         claimData.getFeeCode().ifPresent(builder::feeCode);
         claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
@@ -74,9 +77,20 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
             .map(this::mapClaimantToValue)
             .collect(Collectors.toList()));
 
-        builder.defendants(claimData.getDefendants().stream().map(defendantMapper::to)
-            .map(this::mapDefendantToValue)
-            .collect(Collectors.toList()));
+        // For legal, we expect more than one claimants
+        if (claimData.isClaimantRepresented()) {
+            builder.defendants(claimData.getDefendants().stream()
+                .map(ccdDefendant -> defendantMapper.to(ccdDefendant, null, null))
+                .map(this::mapDefendantToValue)
+                .collect(Collectors.toList()));
+        } else {
+            builder.defendants(claimData.getDefendants().stream()
+                .map(ccdDefendant ->
+                    defendantMapper.to(ccdDefendant, claim.getLetterHolderId(), claim.getResponseDeadline())
+                )
+                .map(this::mapDefendantToValue)
+                .collect(Collectors.toList()));
+        }
 
         claimData.getTimeline().ifPresent(timeline -> timelineMapper.to(timeline, builder));
 
@@ -99,8 +113,7 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
         return CCDCollectionElement.<CCDDefendant>builder().value(ccdParty).build();
     }
 
-    @Override
-    public ClaimData from(CCDCase ccdCase) {
+    public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
         Objects.requireNonNull(ccdCase, "ccdClaim must not be null");
 
         List<Party> claimants = ccdCase.getClaimants()
@@ -115,24 +128,39 @@ public class ClaimMapper implements BuilderMapper<CCDCase, ClaimData, CCDCase.CC
             .map(defendantMapper::from)
             .collect(Collectors.toList());
 
-        return new ClaimData(
-            UUID.fromString(ccdCase.getExternalId()),
-            claimants,
-            defendants,
-            paymentMapper.from(ccdCase),
-            amountMapper.from(ccdCase),
-            ccdCase.getFeeAmountInPennies(),
-            interestMapper.from(ccdCase),
-            personalInjuryMapper.from(ccdCase),
-            housingDisrepairMapper.from(ccdCase),
-            ccdCase.getReason(),
-            statementOfTruthCaseMapper.from(ccdCase),
-            ccdCase.getFeeAccountNumber(),
-            ccdCase.getExternalReferenceNumber(),
-            ccdCase.getPreferredCourt(),
-            ccdCase.getFeeCode(),
-            timelineMapper.from(ccdCase),
-            evidenceMapper.from(ccdCase)
+        //For Citizen, we expect more than one claimants
+        Optional<CCDDefendant> firstDefendant = ccdCase.getDefendants()
+            .stream()
+            .map(CCDCollectionElement::getValue)
+            .findFirst();
+
+        if (ccdCase.getAmountType() == AmountType.BREAK_DOWN) {
+            CCDDefendant ccdDefendant = firstDefendant.orElseThrow(MappingException::new);
+
+            claimBuilder.letterHolderId(ccdDefendant.getLetterHolderId());
+            claimBuilder.responseDeadline(ccdDefendant.getResponseDeadline());
+        }
+
+        claimBuilder.claimData(
+            new ClaimData(
+                UUID.fromString(ccdCase.getExternalId()),
+                claimants,
+                defendants,
+                paymentMapper.from(ccdCase),
+                amountMapper.from(ccdCase),
+                ccdCase.getFeeAmountInPennies(),
+                interestMapper.from(ccdCase),
+                personalInjuryMapper.from(ccdCase),
+                housingDisrepairMapper.from(ccdCase),
+                ccdCase.getReason(),
+                statementOfTruthCaseMapper.from(ccdCase),
+                ccdCase.getFeeAccountNumber(),
+                ccdCase.getExternalReferenceNumber(),
+                ccdCase.getPreferredCourt(),
+                ccdCase.getFeeCode(),
+                timelineMapper.from(ccdCase),
+                evidenceMapper.from(ccdCase)
+            )
         );
     }
 }

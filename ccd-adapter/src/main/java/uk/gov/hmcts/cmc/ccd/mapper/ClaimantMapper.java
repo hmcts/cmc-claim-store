@@ -65,24 +65,13 @@ public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
     public Party from(CCDClaimant ccdClaimant) {
         switch (ccdClaimant.getPartyType()) {
             case COMPANY:
-                return new Company(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant), ccdClaimant.getPartyContactPerson());
+                return companyMapper.from(ccdClaimant);
             case INDIVIDUAL:
-                return new Individual(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant),
-                    ccdClaimant.getPartyDateOfBirth());
+                return individualMapper.from(ccdClaimant);
             case SOLE_TRADER:
-                return new SoleTrader(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant),
-                    ccdClaimant.getPartyTitle(), ccdClaimant.getPartyBusinessName());
+                return soleTraderMapper.from(ccdClaimant);
             case ORGANISATION:
-                return new Organisation(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant),
-                    ccdClaimant.getPartyContactPerson(), ccdClaimant.getPartyCompaniesHouseNumber());
+                return organisationMapper.from(ccdClaimant);
             default:
                 throw new MappingException();
         }

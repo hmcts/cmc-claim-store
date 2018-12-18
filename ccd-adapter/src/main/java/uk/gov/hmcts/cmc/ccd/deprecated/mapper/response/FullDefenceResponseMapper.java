@@ -20,7 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse, FullDefenceResponse> {
 
     private final StatementOfTruthMapper statementOfTruthMapper;
-    private final DefendantMapper partyMapper;
+    private final DefendantMapper defendantMapper;
     private final PaymentDeclarationMapper paymentDeclarationMapper;
     private final DefendantTimelineMapper timelineMapper;
     private final DefendantEvidenceMapper evidenceMapper;
@@ -28,14 +28,14 @@ public class FullDefenceResponseMapper implements Mapper<CCDFullDefenceResponse,
     @Autowired
     public FullDefenceResponseMapper(
         StatementOfTruthMapper statementOfTruthMapper,
-        DefendantMapper partyMapper,
+        DefendantMapper defendantMapper,
         PaymentDeclarationMapper paymentDeclarationMapper,
         DefendantTimelineMapper timelineMapper,
         DefendantEvidenceMapper evidenceMapper
     ) {
 
         this.statementOfTruthMapper = statementOfTruthMapper;
-        this.partyMapper = partyMapper;
+        this.defendantMapper = defendantMapper;
         this.paymentDeclarationMapper = paymentDeclarationMapper;
         this.timelineMapper = timelineMapper;
         this.evidenceMapper = evidenceMapper;

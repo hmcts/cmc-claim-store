@@ -30,7 +30,7 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().individualDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party);
+        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -42,7 +42,7 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().companyDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party);
+        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -54,7 +54,7 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().organisationDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party);
+        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -66,7 +66,7 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().soleTraderDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party);
+        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
 
         //then
         assertThat(party).isEqualTo(ccdParty);

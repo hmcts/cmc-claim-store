@@ -22,8 +22,6 @@ public class CCDCase {
     private String externalId;
     private LocalDateTime submittedOn;
     private LocalDate issuedOn;
-    private LocalDate responseDeadline;
-    private CCDYesNoOption moreTimeRequested;
     private String submitterEmail;
     private String reason;
     private String feeCode;

@@ -8,6 +8,10 @@ import java.time.LocalDate;
 @Value
 @Builder
 public class CCDDefendant {
+    private String letterHolderId;
+    private String defendantId;
+    private LocalDate responseDeadline;
+
     private CCDPartyType claimantProvidedType;
     private String claimantProvidedEmail;
     private CCDAddress claimantProvidedServiceAddress;

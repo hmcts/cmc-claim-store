@@ -8,9 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.net.URI;
 import java.util.Arrays;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-
 @Component
 public class CaseMapper {
 
@@ -23,21 +20,13 @@ public class CaseMapper {
     public CCDCase to(Claim claim) {
         final CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
-        if (claim.getLetterHolderId() != null) {
-            builder.letterHolderId(claim.getLetterHolderId());
-        }
-
-        if (claim.getDefendantId() != null) {
-            builder.defendantId(claim.getDefendantId());
-        }
-
         claim.getSealedClaimDocument().ifPresent(document -> builder
             .sealedClaimDocument(CCDDocument.builder()
                 .documentUrl(document.toString())
                 .build())
         );
 
-        claimMapper.to(claim.getClaimData(), builder);
+        claimMapper.to(claim, builder);
 
         return builder
             .id(claim.getId())
@@ -47,26 +36,22 @@ public class CaseMapper {
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
             .submittedOn(claim.getCreatedAt())
-            .responseDeadline(claim.getResponseDeadline())
-            .moreTimeRequested(claim.isMoreTimeRequested() ? YES : NO)
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .build();
     }
 
     public Claim from(CCDCase ccdCase) {
+        Claim.ClaimBuilder builder = Claim.builder();
 
-        Claim.ClaimBuilder builder = Claim.builder()
+        claimMapper.from(ccdCase, builder);
+
+        builder
             .id(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
-            .letterHolderId(ccdCase.getLetterHolderId())
-            .defendantId(ccdCase.getDefendantId())
             .externalId(ccdCase.getExternalId())
             .referenceNumber(ccdCase.getReferenceNumber())
-            .claimData(claimMapper.from(ccdCase))
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
-            .responseDeadline(ccdCase.getResponseDeadline())
-            .moreTimeRequested(ccdCase.getMoreTimeRequested() == YES)
             .submitterEmail(ccdCase.getSubmitterEmail());
 
         if (ccdCase.getFeatures() != null) {

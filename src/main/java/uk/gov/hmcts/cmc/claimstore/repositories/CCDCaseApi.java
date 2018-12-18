@@ -253,6 +253,7 @@ public class CCDCaseApi {
         );
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     private CaseDetails updateDefendantIdAndEmail(
         User defendantUser,
         String caseId,
