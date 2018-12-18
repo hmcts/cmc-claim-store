@@ -5,7 +5,6 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 
@@ -40,7 +39,7 @@ public class CCDStatementOfMeans {
     private List<CCDCollectionElement<PriorityDebt>> priorityDebts;
     private CCDYesNoOption carer;
     private DisabilityStatus disabilityStatus;
-    private LivingPartner livingPartner;
+    private CCDLivingPartner livingPartner;
 
     private CCDEmploymentStatus employmentStatus; //TODO: Not Needed
 }

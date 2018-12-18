@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDLivingPartner;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 
 import java.util.Objects;

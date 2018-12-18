@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantRespon
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseRejectionAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -28,7 +27,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 
 public class Assertions {
@@ -102,9 +100,5 @@ public class Assertions {
 
     public static LivingPartnerAssert assertThat(LivingPartner livingPartner) {
         return new LivingPartnerAssert(livingPartner);
-    }
-
-    public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
-        return new StatementOfMeansAssert(statementOfMeans);
     }
 }

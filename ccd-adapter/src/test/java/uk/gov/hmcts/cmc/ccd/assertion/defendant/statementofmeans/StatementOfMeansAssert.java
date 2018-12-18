@@ -1,13 +1,13 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
@@ -36,17 +36,6 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
                 ccdStatementOfMeans.getReason(), actual.getReason());
         }
 
-        if (!Objects.equals(actual.getResidence().getType(),
-            ccdStatementOfMeans.getResidence().getType())) {
-            failWithMessage("Expected StatementOfMeans.residence.type to be <%s> but was <%s>",
-                ccdStatementOfMeans.getResidence().getType(), actual.getResidence().getType());
-        }
-
-        actual.getEmployment()
-            .ifPresent(employment -> assertThat(employment).isEqualTo(ccdStatementOfMeans.getEmployment()));
-        actual.getDependant()
-            .ifPresent(dependant -> assertThat(dependant).isEqualTo(ccdStatementOfMeans.getDependant()));
-
         actual.getCourtOrders()
             .forEach(courtOrder -> assertCourtOrder(courtOrder, ccdStatementOfMeans.getCourtOrders()));
 
@@ -66,12 +55,12 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
             .forEach(priorityDebt -> assertPriorityDebt(priorityDebt, ccdStatementOfMeans.getPriorityDebts()));
 
         actual.getPartner()
-            .ifPresent(livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getPartner()));
+            .ifPresent(livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getLivingPartner()));
 
         assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
 
         actual.getDisability()
-            .ifPresent(disability -> assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisability()));
+            .ifPresent(disability -> assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisabilityStatus()));
 
         return this;
     }

@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAsser
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.DebtAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ExpenseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 
 public class Assertions {
@@ -78,5 +80,7 @@ public class Assertions {
         return new ExpenseAssert(expense);
     }
 
-
+    public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
+        return new StatementOfMeansAssert(statementOfMeans);
+    }
 }

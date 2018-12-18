@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans;
 
 import lombok.Builder;
 import lombok.Value;

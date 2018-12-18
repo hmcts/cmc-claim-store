@@ -38,6 +38,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private final CourtOrderMapper courtOrderMapper;
     private final EmployerMapper employerMapper;
     private final ChildCategoryMapper childCategoryMapper;
+    private final LivingPartnerMapper livingPartnerMapper;
 
     @Autowired
     public StatementOfMeansMapper(
@@ -47,7 +48,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         ExpenseMapper expenseMapper,
         CourtOrderMapper courtOrderMapper,
         EmployerMapper employerMapper,
-        ChildCategoryMapper childCategoryMapper
+        ChildCategoryMapper childCategoryMapper,
+        LivingPartnerMapper livingPartnerMapper
     ) {
         this.bankAccountMapper = bankAccountMapper;
         this.debtMapper = debtMapper;
@@ -56,6 +58,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         this.courtOrderMapper = courtOrderMapper;
         this.employerMapper = employerMapper;
         this.childCategoryMapper = childCategoryMapper;
+        this.livingPartnerMapper = livingPartnerMapper;
     }
 
     @Override
@@ -166,7 +169,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
 
         builder.carer(statementOfMeans.isCarer() ? YES : NO);
         statementOfMeans.getDisability().ifPresent(builder::disabilityStatus);
-        statementOfMeans.getPartner().ifPresent(builder::livingPartner);
+
+        statementOfMeans.getPartner().ifPresent(partner -> builder.livingPartner(livingPartnerMapper.to(partner)));
 
         return builder.build();
     }
