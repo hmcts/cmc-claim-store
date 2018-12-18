@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -258,6 +259,7 @@ public class CoreCaseDataService {
     public CaseDetails reachSettlementAgreement(
         Long caseId,
         Settlement settlement,
+        LocalDateTime settlementReachedAt,
         String authorisation,
         CaseEvent event
     ) {
@@ -265,12 +267,13 @@ public class CoreCaseDataService {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             //.settlement(settlementMapper.to(settlement))
-            //.settlementReachedAt(nowInUTC())
+            //.settlementReachedAt(settlementReachedAt)
             .build();
 
         return update(authorisation, ccdCase, event);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails updateResponseDeadline(
         String authorisation,
         Long caseId,

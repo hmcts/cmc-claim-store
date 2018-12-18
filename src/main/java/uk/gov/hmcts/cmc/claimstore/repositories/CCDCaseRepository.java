@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
+
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseRepository implements CaseRepository {
@@ -136,7 +138,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
-        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation,
+        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
             CaseEvent.valueOf(userAction));
     }
 

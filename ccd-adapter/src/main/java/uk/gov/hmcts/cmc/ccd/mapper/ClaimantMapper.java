@@ -18,23 +18,17 @@ public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
     private final CompanyMapper companyMapper;
     private final OrganisationMapper organisationMapper;
     private final SoleTraderMapper soleTraderMapper;
-    private final AddressMapper addressMapper;
-    private final RepresentativeMapper representativeMapper;
 
     @Autowired
     public ClaimantMapper(IndividualMapper individualMapper,
                           CompanyMapper companyMapper,
                           OrganisationMapper organisationMapper,
-                          SoleTraderMapper soleTraderMapper,
-                          AddressMapper addressMapper,
-                          RepresentativeMapper representativeMapper) {
+                          SoleTraderMapper soleTraderMapper) {
 
         this.individualMapper = individualMapper;
         this.companyMapper = companyMapper;
         this.organisationMapper = organisationMapper;
         this.soleTraderMapper = soleTraderMapper;
-        this.addressMapper = addressMapper;
-        this.representativeMapper = representativeMapper;
     }
 
     @Override

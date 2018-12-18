@@ -64,6 +64,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEA
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CoreCaseDataServiceTest {
@@ -422,6 +423,7 @@ public class CoreCaseDataServiceTest {
         CaseDetails caseDetails = service.reachSettlementAgreement(
             SampleClaim.CLAIM_ID,
             providedSettlement,
+            nowInUTC(),
             AUTHORISATION,
             CaseEvent.SETTLED_PRE_JUDGMENT);
 
