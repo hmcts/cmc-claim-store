@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 
 import java.math.BigDecimal;
@@ -126,7 +127,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         public ClaimantResponse build() {
             return ResponseRejection.builder()
                 .amountPaid(BigDecimal.TEN)
-                .freeMediation(false)
+                .freeMediation(YesNoOption.NO)
                 .reason("Some valid reason")
                 .build();
         }
