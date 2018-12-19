@@ -7,9 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -63,6 +60,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEA
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CoreCaseDataServiceTest {
@@ -76,11 +74,6 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CaseMapper caseMapper;
     @Mock
-    private CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-
-    @Mock
-    private SettlementMapper settlementMapper;
-    @Mock
     private UserService userService;
     @Mock
     private JsonMapper jsonMapper;
@@ -88,8 +81,6 @@ public class CoreCaseDataServiceTest {
     private ReferenceNumberService referenceNumberService;
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
-    @Mock
-    private ClaimantResponseMapper claimantResponseMapper;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -152,9 +143,6 @@ public class CoreCaseDataServiceTest {
 
         this.service = new CoreCaseDataService(
             caseMapper,
-            countyCourtJudgmentMapper,
-            settlementMapper,
-            claimantResponseMapper,
             userService,
             jsonMapper,
             referenceNumberService,
@@ -423,6 +411,7 @@ public class CoreCaseDataServiceTest {
         CaseDetails caseDetails = service.reachSettlementAgreement(
             SampleClaim.CLAIM_ID,
             providedSettlement,
+            nowInUTC(),
             AUTHORISATION,
             CaseEvent.SETTLED_PRE_JUDGMENT);
 

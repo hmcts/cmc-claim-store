@@ -30,9 +30,10 @@ public class IndividualDetailsMapper
         individual.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
-        individual.getEmail().ifPresent(builder::claimantProvidedEmail);
         individual.getDateOfBirth().ifPresent(builder::claimantProvidedDateOfBirth);
-        
+
+        individual.getEmail().ifPresent(builder::claimantProvidedEmail);
+
         builder
             .claimantProvidedName(individual.getName())
             .claimantProvidedAddress(addressMapper.to(individual.getAddress()));

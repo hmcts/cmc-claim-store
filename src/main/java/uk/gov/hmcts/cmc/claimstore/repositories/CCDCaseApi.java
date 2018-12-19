@@ -253,6 +253,7 @@ public class CCDCaseApi {
         );
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     private CaseDetails updateDefendantIdAndEmail(
         User defendantUser,
         String caseId,
@@ -263,7 +264,7 @@ public class CCDCaseApi {
             defendantUser.getAuthorisation(),
             CCDCase.builder().id(Long.valueOf(caseId))
                 .defendantId(defendantId)
-                .defendantEmail(defendantEmail)
+                //.defendantEmail(defendantEmail)
                 .build(),
             CaseEvent.LINK_DEFENDANT
         );

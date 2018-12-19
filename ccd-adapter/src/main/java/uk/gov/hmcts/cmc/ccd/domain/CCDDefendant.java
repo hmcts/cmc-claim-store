@@ -17,6 +17,8 @@ import java.util.List;
 @Builder
 public class CCDDefendant {
     private String letterHolderId;
+    private String defendantId;
+    private LocalDate responseDeadline;
 
     private CCDPartyType claimantProvidedType;
     private String claimantProvidedEmail;
@@ -51,7 +53,6 @@ public class CCDDefendant {
     private CCDAddress partyServiceAddress;
 
     private LocalDateTime responseSubmittedDateTime;
-    private LocalDate responseDeadline;
     private CCDResponseType responseType;
     private BigDecimal responseAmount;
     private LocalDate paymentDeclarationPaidDate;

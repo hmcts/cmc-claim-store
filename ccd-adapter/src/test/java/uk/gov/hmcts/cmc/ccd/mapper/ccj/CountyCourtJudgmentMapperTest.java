@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj;
+package uk.gov.hmcts.cmc.ccd.mapper.ccj;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,12 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDRepaymentPlan;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDStatementOfTruth;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
@@ -34,7 +34,9 @@ public class CountyCourtJudgmentMapperTest {
     @Test
     public void shouldMapCountyCourtJudgmentToCCD() {
         //given
-        final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
+        final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+            .build();
 
         //when
         CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(countyCourtJudgment);
@@ -47,6 +49,7 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentWithPaymentOptionImmediatelyToCCD() {
         //given
         final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
             .paymentOption(PaymentOption.IMMEDIATELY)
             .paidAmount(BigDecimal.TEN)
             .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
@@ -63,6 +66,7 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentWithPaymentOptionSpecifiedDateToCCD() {
         //given
         final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
             .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
             .payBySetDate(now())
             .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
@@ -79,6 +83,7 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentWithPaymentOptionInstalmentsToCCD() {
         //given
         final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
             .paymentOption(PaymentOption.INSTALMENTS)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
@@ -97,7 +102,10 @@ public class CountyCourtJudgmentMapperTest {
         final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .paymentOption(CCDPaymentOption.IMMEDIATELY)
             .paidAmount(BigDecimal.TEN)
-            .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())
+            .statementOfTruthSignerRole("PM")
+            .statementOfTruthSignerName("Mrs May")
+            .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
+            .ccjType(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
 
         //when
@@ -111,17 +119,17 @@ public class CountyCourtJudgmentMapperTest {
     public void shouldMapCountyCourtJudgmentWithRepaymentPlanFromCCD() {
         //given
 
-        final CCDRepaymentPlan ccdRepaymentPlan = CCDRepaymentPlan.builder()
-            .paymentSchedule(CCDPaymentSchedule.EVERY_TWO_WEEKS)
-            .instalmentAmount(BigDecimal.valueOf(100))
-            .firstPaymentDate(now())
-            .build();
-
         final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .paymentOption(CCDPaymentOption.INSTALMENTS)
-            .repaymentPlan(ccdRepaymentPlan)
+            .repaymentPlanCompletionDate(now().plusMonths(5))
+            .repaymentPlanFirstPaymentDate(now())
+            .repaymentPlanPaymentLength("1 light years")
+            .repaymentPlanInstalmentAmount(BigDecimal.TEN)
+            .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .paidAmount(BigDecimal.TEN)
-            .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())
+            .statementOfTruthSignerName("Mrs May")
+            .statementOfTruthSignerRole("PM")
+            .ccjType(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
 
         //when
@@ -139,7 +147,9 @@ public class CountyCourtJudgmentMapperTest {
             .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
             .payBySetDate(now())
             .paidAmount(BigDecimal.TEN)
-            .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())
+            .statementOfTruthSignerRole("PM")
+            .statementOfTruthSignerName("Mrs May")
+            .ccjType(CCDCountyCourtJudgmentType.DETERMINATION)
             .build();
 
         //when

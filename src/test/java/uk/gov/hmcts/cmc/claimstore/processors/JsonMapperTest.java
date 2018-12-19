@@ -5,7 +5,6 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -33,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
@@ -212,9 +209,6 @@ public class JsonMapperTest {
         data.put("submitterId", "2");
         data.put("submittedOn", timestamp);
         data.put("externalId", uuid);
-        data.put("issuedOn", date);
-        data.put("responseDeadline", date.plusDays(14));
-        data.put("moreTimeRequested", CCDYesNoOption.NO.name());
 
         CCDCase ccdCase = processor.convertValue(data, CCDCase.class);
 
@@ -222,11 +216,10 @@ public class JsonMapperTest {
             .id(1L)
             .referenceNumber("000MC001")
             .submitterId("2")
-            .submittedOn(timestamp.format(ISO_DATE_TIME))
+            .submittedOn(timestamp)
             .externalId(uuid)
-            .issuedOn(date.format(ISO_DATE))
-            .responseDeadline(date.plusDays(14))
-            .moreTimeRequested(CCDYesNoOption.NO)
+            //.responseDeadline(date.plusDays(14))
+            //.moreTimeRequested(CCDYesNoOption.NO)
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);

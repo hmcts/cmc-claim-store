@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
@@ -12,10 +11,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
-import java.time.LocalDate;
-
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-
 @Component
 public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
 
@@ -23,23 +18,17 @@ public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
     private final CompanyMapper companyMapper;
     private final OrganisationMapper organisationMapper;
     private final SoleTraderMapper soleTraderMapper;
-    private final AddressMapper addressMapper;
-    private final RepresentativeMapper representativeMapper;
 
     @Autowired
     public ClaimantMapper(IndividualMapper individualMapper,
                           CompanyMapper companyMapper,
                           OrganisationMapper organisationMapper,
-                          SoleTraderMapper soleTraderMapper,
-                          AddressMapper addressMapper,
-                          RepresentativeMapper representativeMapper) {
+                          SoleTraderMapper soleTraderMapper) {
 
         this.individualMapper = individualMapper;
         this.companyMapper = companyMapper;
         this.organisationMapper = organisationMapper;
         this.soleTraderMapper = soleTraderMapper;
-        this.addressMapper = addressMapper;
-        this.representativeMapper = representativeMapper;
     }
 
     @Override
@@ -70,34 +59,15 @@ public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
     public Party from(CCDClaimant ccdClaimant) {
         switch (ccdClaimant.getPartyType()) {
             case COMPANY:
-                return new Company(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant), ccdClaimant.getPartyContactPerson());
+                return companyMapper.from(ccdClaimant);
             case INDIVIDUAL:
-                return new Individual(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant),
-                    parseDob(ccdClaimant.getPartyDateOfBirth()));
+                return individualMapper.from(ccdClaimant);
             case SOLE_TRADER:
-                return new SoleTrader(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant),
-                    ccdClaimant.getPartyTitle(), ccdClaimant.getPartyBusinessName());
+                return soleTraderMapper.from(ccdClaimant);
             case ORGANISATION:
-                return new Organisation(ccdClaimant.getPartyName(), addressMapper.from(ccdClaimant.getPartyAddress()),
-                    addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()), ccdClaimant.getPartyPhoneNumber(),
-                    representativeMapper.from(ccdClaimant),
-                    ccdClaimant.getPartyContactPerson(), ccdClaimant.getPartyCompaniesHouseNumber());
+                return organisationMapper.from(ccdClaimant);
             default:
-                throw new MappingException();
+                throw new MappingException("Invalid claimant type, " + ccdClaimant.getPartyType());
         }
-    }
-
-    private LocalDate parseDob(String dateOfBirth) {
-        if (StringUtils.isBlank(dateOfBirth)) {
-            return null;
-        }
-
-        return LocalDate.parse(dateOfBirth, ISO_DATE);
     }
 }

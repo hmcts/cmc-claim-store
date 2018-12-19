@@ -38,7 +38,7 @@ public class RepresentativeMapper
             && ccdClaimant.getRepresentativeOrganisationAddress() == null
             && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
             && isBlank(ccdClaimant.getRepresentativeOrganisationPhone())
-            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationDxAddress())
         ) {
             return null;
         }

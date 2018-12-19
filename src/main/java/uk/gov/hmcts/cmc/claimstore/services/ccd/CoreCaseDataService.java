@@ -4,9 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -38,10 +35,10 @@ import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -58,9 +55,6 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_I
 public class CoreCaseDataService {
 
     private final CaseMapper caseMapper;
-    private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    private final SettlementMapper settlementMapper;
-    private final ClaimantResponseMapper claimantResponseMapper;
     private final UserService userService;
     private final JsonMapper jsonMapper;
     private final ReferenceNumberService referenceNumberService;
@@ -73,9 +67,6 @@ public class CoreCaseDataService {
     @Autowired
     public CoreCaseDataService(
         CaseMapper caseMapper,
-        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        SettlementMapper settlementMapper,
-        ClaimantResponseMapper claimantResponseMapper,
         UserService userService,
         JsonMapper jsonMapper,
         ReferenceNumberService referenceNumberService,
@@ -85,9 +76,6 @@ public class CoreCaseDataService {
         JobSchedulerService jobSchedulerService
     ) {
         this.caseMapper = caseMapper;
-        this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
-        this.settlementMapper = settlementMapper;
-        this.claimantResponseMapper = claimantResponseMapper;
         this.userService = userService;
         this.jsonMapper = jsonMapper;
         this.referenceNumberService = referenceNumberService;
@@ -161,8 +149,8 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(claim.getId())
-            .responseDeadline(newResponseDeadline)
-            .moreTimeRequested(YES)
+            //.responseDeadline(newResponseDeadline)
+            //.moreTimeRequested(YES)
             .build();
 
         CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
@@ -170,6 +158,7 @@ public class CoreCaseDataService {
         return extractClaim(updates);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
         Long caseId,
@@ -201,6 +190,7 @@ public class CoreCaseDataService {
         return update(authorisation, ccdCase, LINK_SEALED_CLAIM);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveDefendantResponse(
         Long caseId,
         String defendantEmail,
@@ -211,7 +201,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             //.response(responseMapper.to(response))
-            .defendantEmail(defendantEmail)
+            //.defendantEmail(defendantEmail)
             //.respondedAt(nowInUTC())
             .build();
 
@@ -231,6 +221,7 @@ public class CoreCaseDataService {
         }
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public Claim saveClaimantResponse(
         Long caseId,
         ClaimantResponse response,
@@ -249,6 +240,7 @@ public class CoreCaseDataService {
         return extractClaim(caseDetails);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveSettlement(
         Long caseId,
         Settlement settlement,
@@ -263,21 +255,24 @@ public class CoreCaseDataService {
         return update(authorisation, ccdCase, event);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails reachSettlementAgreement(
         Long caseId,
         Settlement settlement,
+        LocalDateTime settlementReachedAt,
         String authorisation,
         CaseEvent event
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
             //.settlement(settlementMapper.to(settlement))
-            //.settlementReachedAt(nowInUTC())
+            //.settlementReachedAt(settlementReachedAt)
             .build();
 
         return update(authorisation, ccdCase, event);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails updateResponseDeadline(
         String authorisation,
         Long caseId,
@@ -285,7 +280,7 @@ public class CoreCaseDataService {
     ) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)
-            .responseDeadline(newResponseDeadline)
+            //.responseDeadline(newResponseDeadline)
             .build();
 
         return update(authorisation, ccdCase, TEST_SUPPORT_UPDATE);
@@ -468,6 +463,7 @@ public class CoreCaseDataService {
         return caseMapper.from(ccdCase);
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
         CCDCase ccdCase = CCDCase.builder()
             .id(caseId)

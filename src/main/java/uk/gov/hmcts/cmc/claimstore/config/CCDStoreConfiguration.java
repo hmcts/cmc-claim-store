@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse.ClaimantResponseMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
@@ -53,9 +50,6 @@ public class CCDStoreConfiguration {
     @Bean
     public CoreCaseDataService coreCaseDataService(
         CaseMapper caseMapper,
-        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        SettlementMapper settlementMapper,
-        ClaimantResponseMapper claimantResponseMapper,
         UserService userService,
         JsonMapper jsonMapper,
         ReferenceNumberService referenceNumberService,
@@ -64,8 +58,7 @@ public class CCDStoreConfiguration {
         CaseAccessApi caseAccessApi,
         JobSchedulerService jobSchedulerService
     ) {
-        return new CoreCaseDataService(caseMapper, countyCourtJudgmentMapper, settlementMapper,
-            claimantResponseMapper, userService, jsonMapper, referenceNumberService, coreCaseDataApi,
+        return new CoreCaseDataService(caseMapper, userService, jsonMapper, referenceNumberService, coreCaseDataApi,
             authTokenGenerator, caseAccessApi, jobSchedulerService);
     }
 

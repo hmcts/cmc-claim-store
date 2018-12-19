@@ -13,11 +13,8 @@ import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 
 import java.util.Objects;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
@@ -39,9 +36,9 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getSubmitterId(), actual.getSubmitterId());
         }
 
-        if (!Objects.equals(actual.getCreatedAt().format(ISO_DATE_TIME), ccdCase.getSubmittedOn())) {
+        if (!Objects.equals(actual.getCreatedAt(), ccdCase.getSubmittedOn())) {
             failWithMessage("Expected CCDCase.submittedOn to be <%s> but was <%s>",
-                ccdCase.getSubmittedOn(), actual.getCreatedAt().format(ISO_DATE_TIME));
+                ccdCase.getSubmittedOn(), actual.getCreatedAt());
         }
 
         if (!Objects.equals(actual.getExternalId(), ccdCase.getExternalId())) {
@@ -49,24 +46,14 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getExternalId(), actual.getExternalId());
         }
 
-        if (!Objects.equals(actual.getIssuedOn().format(ISO_DATE), ccdCase.getIssuedOn())) {
+        if (!Objects.equals(actual.getIssuedOn(), ccdCase.getIssuedOn())) {
             failWithMessage("Expected CCDCase.issuedOn to be <%s> but was <%s>",
-                ccdCase.getIssuedOn(), actual.getIssuedOn().format(ISO_DATE));
+                ccdCase.getIssuedOn(), actual.getIssuedOn());
         }
 
         if (!Objects.equals(actual.getSubmitterEmail(), ccdCase.getSubmitterEmail())) {
             failWithMessage("Expected CCDCase.submitterEmail to be <%s> but was <%s>",
                 ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
-        }
-
-        if (!Objects.equals(actual.getResponseDeadline(), ccdCase.getResponseDeadline())) {
-            failWithMessage("Expected CCDCase.responseDeadline to be <%s> but was <%s>",
-                ccdCase.getResponseDeadline(), actual.getResponseDeadline());
-        }
-
-        if (!Objects.equals(actual.isMoreTimeRequested(), ccdCase.getMoreTimeRequested() == YES)) {
-            failWithMessage("Expected CCDCase.moreTimeRequested to be <%s> but was <%s>",
-                ccdCase.getMoreTimeRequested(), actual.isMoreTimeRequested());
         }
 
         ClaimData claimData = actual.getClaimData();

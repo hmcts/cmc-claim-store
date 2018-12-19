@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,21 +33,21 @@ public class SampleData {
 
     public static CCDAddress getCCDAddress() {
         return CCDAddress.builder()
-            .line1("line1")
-            .line2("line2")
-            .line3("line3")
-            .city("city")
-            .postcode("postcode")
+            .addressLine1("line1")
+            .addressLine2("line2")
+            .addressLine3("line3")
+            .postTown("city")
+            .postCode("postcode")
             .build();
     }
 
     public static CCDDefendant getCCDDefendantIndividual() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(INDIVIDUAL)
+            .claimantProvidedType(INDIVIDUAL)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Individual")
-            .claimantProvidedDateOfBirth(LocalDate.now().minusYears(30))
+            .claimantProvidedDateOfBirth(LocalDate.of(1950, 01, 01))
             .claimantProvidedServiceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
@@ -59,7 +60,7 @@ public class SampleData {
     public static CCDDefendant getCCDDefendantOrganisation() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(ORGANISATION)
+            .claimantProvidedType(ORGANISATION)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Organisation")
             .claimantProvidedServiceAddress(ccdAddress)
@@ -76,7 +77,7 @@ public class SampleData {
     public static CCDDefendant getCCDDefendantCompany() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(COMPANY)
+            .claimantProvidedType(COMPANY)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Abc Ltd")
             .claimantProvidedAddress(ccdAddress)
@@ -93,7 +94,7 @@ public class SampleData {
     public static CCDDefendant getCCDDefendantSoleTrader() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDDefendant.builder()
-            .partyType(SOLE_TRADER)
+            .claimantProvidedType(SOLE_TRADER)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedTitle("Mr.")
             .claimantProvidedName("SoleTrader")
@@ -114,7 +115,7 @@ public class SampleData {
             .partyAddress(ccdAddress)
             .partyName("Individual")
             .partyPhoneNumber("07987654321")
-            .partyDateOfBirth("1950-01-01")
+            .partyDateOfBirth(LocalDate.of(1950, 01, 01))
             .partyCorrespondenceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
@@ -188,8 +189,8 @@ public class SampleData {
             = singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build());
         return CCDCase.builder()
             .id(1L)
-            .submittedOn("2017-11-01T10:15:30")
-            .issuedOn("2017-11-15")
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
             .referenceNumber("ref no")
@@ -222,8 +223,8 @@ public class SampleData {
 
         return CCDCase.builder()
             .id(1L)
-            .submittedOn("2017-11-01T10:15:30")
-            .issuedOn("2017-11-15")
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
             .referenceNumber("ref no")
