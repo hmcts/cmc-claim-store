@@ -20,9 +20,9 @@ public class ResponseRejectionContentProvider {
         Map<String, Object> content = new HashMap<>();
 
         responseRejection.getReason().ifPresent(reason -> content.put("rejectionReason", reason));
-        content.put("freeMediation", CCDYesNoOption.valueOf(responseRejection
+        content.put("freeMediation", responseRejection
             .getFreeMediation()
-            .orElse(YesNoOption.NO).name()));
+            .orElse(YesNoOption.NO).name());
         content.put("formNumber", DEFENCE_FORM_NO);
         return content;
     }
