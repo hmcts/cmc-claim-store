@@ -82,13 +82,14 @@ public class ClaimantResponseServiceTest {
     @Test
     public void saveResponseRejection() {
 
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
             .build();
-
-        ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
@@ -109,16 +110,17 @@ public class ClaimantResponseServiceTest {
     @Test
     public void saveResponseAcceptation() {
 
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.FullAdmission.validDefaults())
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .build();
-
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
             .buildAcceptationIssueCCJWithDefendantPaymentIntention();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
+            .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
@@ -138,18 +140,56 @@ public class ClaimantResponseServiceTest {
     }
 
     @Test
-    public void saveResponseAcceptationShouldSucceedWhenStatesPaidWithNoFormalisation() {
+    public void saveResponseAcceptationReferredToJudge() {
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .buildAcceptationReferToJudgeWithCourtDetermination();
+
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build())
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments())
             .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
             .build();
+
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, ccdEventProducer, appInsights);
+
+        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        inOrder.verify(formaliseResponseAcceptanceService, once())
+            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
+        inOrder.verify(ccdEventProducer)
+            .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
+        inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
+            REFERENCE_NUMBER,
+            claim.getReferenceNumber());
+
+        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class));
+    }
+
+    @Test
+    public void saveResponseAcceptationShouldSucceedWhenStatesPaidWithNoFormalisation() {
 
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
             .withFormaliseOption(null)
             .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
@@ -173,13 +213,14 @@ public class ClaimantResponseServiceTest {
         final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
         final LocalDate dqDeadline = respondedAt.plusDays(19).toLocalDate();
 
+        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
         final Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.PartAdmission.builder().build())
             .withRespondedAt(respondedAt)
+            .withClaimantResponse(claimantResponse)
             .build();
-
-        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
@@ -201,19 +242,21 @@ public class ClaimantResponseServiceTest {
 
     @Test
     public void saveResponseAcceptationShouldSucceedWhenPartAdmitPayImmediatelyWithNoFormalisation() {
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(
-                SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately()
-            )
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .build();
 
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
             .withFormaliseOption(null)
             .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(
+                SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately()
+            )
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
             .build();
 
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);

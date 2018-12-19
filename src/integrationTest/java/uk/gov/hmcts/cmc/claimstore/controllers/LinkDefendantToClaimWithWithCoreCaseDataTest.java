@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.LINK_DEFENDANT;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
@@ -44,7 +44,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
     properties = {
         "document_management.api_gateway.url=false",
         "feature_toggles.ccd_async_enabled=false",
-        "feature_toggles.ccd_enabled=true"
+        "feature_toggles.ccd_enabled=true",
+        "feature_toggles.reminderEmails=true"
     }
 )
 public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegrationTest {

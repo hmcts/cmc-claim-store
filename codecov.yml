@@ -9,5 +9,7 @@ ignore:
   - "**/PathPatterns.java"
   - "**/cmc/claimstore/appinsights/**"
   - "**/ccd/domain/**"
+  - "**/ccd/deprecated/**,"
+  - "**/ccd/jackson/mixin/**"
   - "**/ccd/migration/**"
   - "**/EmailData.java"

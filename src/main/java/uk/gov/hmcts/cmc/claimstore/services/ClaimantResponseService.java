@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
@@ -66,16 +68,26 @@ public class ClaimantResponseService {
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, response, authorization);
-
+        claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(response, updatedClaim, authorization);
         if (isRejectPartAdmitNoMediation(response, updatedClaim)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
-
-        eventProducer.createClaimantResponseEvent(updatedClaim);
+        if (!isReferredToJudge(response)) {
+            eventProducer.createClaimantResponseEvent(updatedClaim);
+        }
         ccdEventProducer.createCCDClaimantResponseEvent(claim, response, authorization);
-
         appInsights.trackEvent(getAppInsightsEvent(response), "referenceNumber", claim.getReferenceNumber());
+    }
+
+    private boolean isReferredToJudge(ClaimantResponse response) {
+        if (response.getType().equals(ACCEPTATION)) {
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
+            return responseAcceptation.getFormaliseOption()
+                .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE))
+                .isPresent();
+        }
+        return false;
     }
 
     private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {
@@ -95,7 +107,10 @@ public class ClaimantResponseService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
-            formaliseResponseAcceptanceService.formalise(claim, (ResponseAcceptation) claimantResponse, authorization);
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+            if (responseAcceptation.getFormaliseOption().isPresent() && !ResponseUtils.isResponseStatesPaid(response)) {
+                formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, authorization);
+            }
         }
     }
 

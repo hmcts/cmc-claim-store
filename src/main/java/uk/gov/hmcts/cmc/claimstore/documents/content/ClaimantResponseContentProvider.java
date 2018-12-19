@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -83,8 +84,12 @@ public class ClaimantResponseContentProvider {
                     .ifPresent(
                         x -> content.put("formaliseOption", x)
                     );
-                claim.getTotalAmountTillDateOfIssue().ifPresent(totalAmount -> content.put("totalAmount",
-                    formatMoney(totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO)))));
+                claim.getTotalAmountTillDateOfIssue()
+                    .map(totalAmount ->
+                        totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO))
+                    )
+                    .map(Formatting::formatMoney)
+                    .ifPresent(formattedAmount -> content.put("totalAmount", formattedAmount));
                 addFormalisedOption(claim, content, responseAcceptation);
             }
             break;

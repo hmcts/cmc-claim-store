@@ -142,7 +142,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.3'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -191,6 +191,7 @@ dependencies {
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.2'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
+  testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
 
 }
 
@@ -303,7 +304,9 @@ sonarqube {
     property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
     property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
     property "sonar.exclusions", "**/ccd/domain/**," +
+      "**/ccd/jackson/mixin/**," +
       "**/cmc/domain/models/**," +
+      "**/cmc/ccd/deprecated/**," +
       "**/cmc/claimstore/idam/models/**," +
       "**/ExceptionForClient.java," +
       "**/config/**," +

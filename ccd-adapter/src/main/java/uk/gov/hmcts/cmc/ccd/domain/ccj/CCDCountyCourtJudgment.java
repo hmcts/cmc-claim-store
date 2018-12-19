@@ -3,9 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain.ccj;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
-import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
-import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,8 +15,13 @@ public class CCDCountyCourtJudgment {
     private LocalDate defendantDateOfBirth;
     private BigDecimal paidAmount;
     private CCDPaymentOption paymentOption;
-    private CCDRepaymentPlan repaymentPlan;
+    private BigDecimal repaymentPlanInstalmentAmount;
+    private LocalDate repaymentPlanFirstPaymentDate;
+    private LocalDate repaymentPlanCompletionDate;
+    private String repaymentPlanPaymentLength;
+    private CCDPaymentSchedule repaymentPlanPaymentSchedule;
     private LocalDate payBySetDate;
-    private CCDStatementOfTruth statementOfTruth;
-    private CountyCourtJudgmentType ccjType;
+    private String statementOfTruthSignerName;
+    private String statementOfTruthSignerRole;
+    private CCDCountyCourtJudgmentType ccjType;
 }

@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
@@ -67,7 +68,7 @@ public class ReDeterminationTest extends BaseTest {
             claim.getExternalId(),
             claimant
         ).then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -181,7 +182,7 @@ public class ReDeterminationTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotAllowReDeterminationWhenUserIsNotOwner() {
+    public void shouldNotAllowReDeterminationWhenUserIsNotParticipant() {
         String explanation = "I want it sooner";
 
         commonOperations.submitClaimantResponse(
@@ -191,18 +192,20 @@ public class ReDeterminationTest extends BaseTest {
         ).then()
             .statusCode(HttpStatus.CREATED.value());
 
-        User claimantNotOwner = idamTestService.createCitizen();
+        User nonParticipatingUser = idamTestService.createCitizen();
 
         commonOperations.submitReDetermination(
             ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
             claim.getExternalId(),
-            claimantNotOwner
+            nonParticipatingUser
         ).then()
             .statusCode(HttpStatus.FORBIDDEN.value())
-            .body("message", containsString("Provided user "
-                + claimantNotOwner.getUserDetails().getId()
-                + " is not a submitter on this claim (" + claimant.getUserDetails().getId()
-                + ")"));
+            .body("message", containsString(format(
+                "Provided user %s is not a participant on this claim (%s, %s)",
+                nonParticipatingUser.getUserDetails().getId(),
+                claimant.getUserDetails().getId(),
+                claim.getDefendantId()
+            )));
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
