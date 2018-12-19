@@ -11,11 +11,8 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
 @Component
-public class DefendantMapper {
+public class TheirDetailsMapper {
 
     private final IndividualDetailsMapper individualDetailsMapper;
     private final CompanyDetailsMapper companyDetailsMapper;
@@ -23,7 +20,7 @@ public class DefendantMapper {
     private final SoleTraderDetailsMapper soleTraderDetailsMapper;
 
     @Autowired
-    public DefendantMapper(
+    public TheirDetailsMapper(
         IndividualDetailsMapper individualDetailsMapper,
         CompanyDetailsMapper companyDetailsMapper,
         OrganisationDetailsMapper organisationDetailsMapper,
@@ -36,29 +33,25 @@ public class DefendantMapper {
         this.soleTraderDetailsMapper = soleTraderDetailsMapper;
     }
 
-    public CCDDefendant to(TheirDetails party, String letterHolderId, LocalDate responseDeadline) {
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
-        Optional.ofNullable(letterHolderId).ifPresent(builder::letterHolderId);
-        Optional.ofNullable(responseDeadline).ifPresent(builder::responseDeadline);
+    public void to(CCDDefendant.CCDDefendantBuilder builder, TheirDetails theirDetails) {
 
-        if (party instanceof IndividualDetails) {
+        if (theirDetails instanceof IndividualDetails) {
             builder.claimantProvidedType(CCDPartyType.INDIVIDUAL);
-            IndividualDetails individual = (IndividualDetails) party;
+            IndividualDetails individual = (IndividualDetails) theirDetails;
             individualDetailsMapper.to(individual, builder);
-        } else if (party instanceof CompanyDetails) {
+        } else if (theirDetails instanceof CompanyDetails) {
             builder.claimantProvidedType(CCDPartyType.COMPANY);
-            CompanyDetails company = (CompanyDetails) party;
+            CompanyDetails company = (CompanyDetails) theirDetails;
             companyDetailsMapper.to(company, builder);
-        } else if (party instanceof OrganisationDetails) {
+        } else if (theirDetails instanceof OrganisationDetails) {
             builder.claimantProvidedType(CCDPartyType.ORGANISATION);
-            OrganisationDetails organisation = (OrganisationDetails) party;
+            OrganisationDetails organisation = (OrganisationDetails) theirDetails;
             organisationDetailsMapper.to(organisation, builder);
-        } else if (party instanceof SoleTraderDetails) {
+        } else if (theirDetails instanceof SoleTraderDetails) {
             builder.claimantProvidedType(CCDPartyType.SOLE_TRADER);
-            SoleTraderDetails soleTrader = (SoleTraderDetails) party;
+            SoleTraderDetails soleTrader = (SoleTraderDetails) theirDetails;
             soleTraderDetailsMapper.to(soleTrader, builder);
         }
-        return builder.build();
     }
 
     public TheirDetails from(CCDDefendant ccdDefendant) {

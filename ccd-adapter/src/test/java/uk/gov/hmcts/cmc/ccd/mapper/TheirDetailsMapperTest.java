@@ -20,9 +20,9 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class DefendantMapperTest {
+public class TheirDetailsMapperTest {
     @Autowired
-    private DefendantMapper defendantMapper;
+    private TheirDetailsMapper theirDetailsMapper;
 
     @Test
     public void shouldMapIndividualToCCD() {
@@ -30,10 +30,11 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().individualDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
+        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        theirDetailsMapper.to(builder, party);
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(builder.build());
     }
 
     @Test
@@ -42,10 +43,11 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().companyDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
+        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        theirDetailsMapper.to(builder, party);
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(builder.build());
     }
 
     @Test
@@ -54,10 +56,11 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().organisationDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
+        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        theirDetailsMapper.to(builder, party);
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(builder.build());
     }
 
     @Test
@@ -66,10 +69,11 @@ public class DefendantMapperTest {
         TheirDetails party = SampleTheirDetails.builder().soleTraderDetails();
 
         //when
-        CCDDefendant ccdParty = defendantMapper.to(party, null, null);
+        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        theirDetailsMapper.to(builder, party);
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(builder.build());
     }
 
     @Test
@@ -78,7 +82,7 @@ public class DefendantMapperTest {
         CCDDefendant ccdParty = getCCDDefendantIndividual();
 
         //when
-        TheirDetails party = defendantMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper.from(ccdParty);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -90,7 +94,7 @@ public class DefendantMapperTest {
         CCDDefendant ccdParty = getCCDDefendantCompany();
 
         //when
-        TheirDetails party = defendantMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper.from(ccdParty);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -102,7 +106,7 @@ public class DefendantMapperTest {
         CCDDefendant ccdParty = getCCDDefendantOrganisation();
 
         //when
-        TheirDetails party = defendantMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper.from(ccdParty);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -114,7 +118,7 @@ public class DefendantMapperTest {
         CCDDefendant ccdParty = getCCDDefendantSoleTrader();
 
         //when
-        TheirDetails party = defendantMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper.from(ccdParty);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
