@@ -96,15 +96,13 @@
     "countyCourtJudgment": {
       "paymentOption": "INSTALMENTS",
       "paidAmount": 0,
-      "repaymentPlan": {
-        "instalmentAmount": 100,
-        "firstPaymentDate": "2100-10-10",
-        "paymentSchedule": "EACH_WEEK"
-      },
-      "statementOfTruth": {
-        "signerName": "Arnold Schwarzenegger",
-        "signerRole": "Director"
-      }
+      "repaymentPlanInstalmentAmount": 100,
+      "repaymentPlanFirstPaymentDate": "2100-10-10",
+      "repaymentPlanPaymentLength": "One Month",
+      "repaymentPlanPaymentSchedule": "EACH_WEEK",
+      "statementOfTruthSignerName": "Arnold Schwarzenegger",
+      "statementOfTruthSignerRole": "Director",
+      "payBySetDate": "2100-10-10"
     },
     "countyCourtJudgmentRequestedAt": "2018-02-17T11:45:55.944",
     "features": "admissions"

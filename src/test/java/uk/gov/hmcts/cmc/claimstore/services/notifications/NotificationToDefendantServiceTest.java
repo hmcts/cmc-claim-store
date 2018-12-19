@@ -22,6 +22,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     private static final String REFERENCE = "to-defendant-claimant’s-response-submitted-notification-000CM001";
     private static final String CLAIMANT_RESPONSE_TEMPLATE = "templateId";
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
+    private static final String INTERLOCUTORY_JUDGEMENT_TEMPLATE = "interlocutoryJudgementTemplateId";
 
     private NotificationToDefendantService service;
     private Claim claim;
@@ -34,12 +35,12 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
             .build();
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(properties.getTemplates()).thenReturn(templates);
-        when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
     }
 
     @Test(expected = NotificationException.class)
     public void shouldThrowNotificationExceptionWhenClientThrowsNotificationClientException() throws Exception {
+        when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
@@ -48,10 +49,24 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
     @Test
     public void shouldSendEmailUsingPredefinedTemplate() throws Exception {
+        when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
         service.notifyDefendant(claim);
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_RESPONSE_TEMPLATE),
+            eq(DEFENDANT_EMAIL),
+            anyMap(),
+            eq(REFERENCE)
+        );
+    }
+
+    @Test
+    public void shouldSendEmailUsingInterlocutoryCCJTemplate() throws Exception {
+        when(emailTemplates.getClaimantRequestedInterlocutoryJudgement()).thenReturn(INTERLOCUTORY_JUDGEMENT_TEMPLATE);
+        service.notifyDefendantWhenInterlocutoryJudgementRequested(claim);
+
+        verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_JUDGEMENT_TEMPLATE),
             eq(DEFENDANT_EMAIL),
             anyMap(),
             eq(REFERENCE)
