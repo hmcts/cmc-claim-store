@@ -32,9 +32,6 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
             }
         });
 
-        actual.getCourtDetermination().ifPresent(courtDetermination ->
-            assertThat(courtDetermination).isEqualTo(ccdResponseAcceptation.getCourtDetermination()));
-
         actual.getClaimantPaymentIntention().ifPresent(paymentIntention ->
             assertThat(paymentIntention).isEqualTo(ccdResponseAcceptation.getClaimantPaymentIntention()));
 

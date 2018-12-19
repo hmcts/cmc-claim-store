@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,7 +24,7 @@ public class SampleData {
         return CCDResponseAcceptation.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
             .claimantPaymentIntention(getCCDPaymentIntention())
-            .courtDetermination(getCCDCourtDetermination())
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .formaliseOption(formaliseOption)
             .build();
     }
@@ -31,6 +32,7 @@ public class SampleData {
     public static CCDResponseRejection getResponseRejection() {
         return CCDResponseRejection.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .freeMediationOption(CCDYesNoOption.YES)
             .reason("Rejection Reason")
             .build();

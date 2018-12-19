@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.ccj.CCDCountyCourtJudgment;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
+//import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
 
@@ -36,7 +36,7 @@ public class CCDCase {
     private CCDDocument sealedClaimDocument;
     private String features;
     private LocalDate moneyReceivedOn;
-    private CCDClaimantResponse claimantResponse;
+//    private CCDClaimantResponse claimantResponse;
     private LocalDateTime claimantRespondedAt;
     private LocalDate directionsQuestionnaireDeadline;
 }

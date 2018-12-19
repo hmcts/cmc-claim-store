@@ -13,10 +13,12 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
@@ -35,7 +37,7 @@ public class ClaimantResponseMapperTest {
         CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(CCDFormaliseOption.CCJ);
 
         //when
-        ResponseAcceptation response = (ResponseAcceptation)mapper.from(ccdResponse);
+        ResponseAcceptation response = (ResponseAcceptation)mapper.from(ccdResponse).getClaimantResponse().get();
 
         //then
         assertThat(response).isEqualTo(ccdResponse);
@@ -46,9 +48,12 @@ public class ClaimantResponseMapperTest {
     public void shouldMapCCDClaimantAcceptanceWithCCJFormalisationToClaimantAcceptance() {
         //given
         ClaimantResponse response = SampleClaimantResponse.ClaimantResponseAcceptation.builder().build();
-
+        Claim claim =  Claim.builder()
+                        .claimantResponse(response)
+                        .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+                        .build();
         //when
-        CCDClaimantResponse ccdResponse = mapper.to(response);
+        CCDClaimantResponse ccdResponse = mapper.to(claim);
 
         //then
         assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation)ccdResponse);
@@ -60,7 +65,7 @@ public class ClaimantResponseMapperTest {
         CCDClaimantResponse ccdResponse = SampleData.getResponseAcceptation(SETTLEMENT);
 
         //when
-        ClaimantResponse response = mapper.from(ccdResponse);
+        ClaimantResponse response = mapper.from(ccdResponse).getClaimantResponse().get();
 
         //then
         assertThat((ResponseAcceptation)response).isEqualTo((CCDResponseAcceptation) ccdResponse);
@@ -72,7 +77,7 @@ public class ClaimantResponseMapperTest {
         CCDResponseRejection ccdResponse = SampleData.getResponseRejection();
 
         //when
-        ClaimantResponse response = mapper.from(ccdResponse);
+        ClaimantResponse response = mapper.from(ccdResponse).getClaimantResponse().get();
 
         //then
         assertThat((ResponseRejection) response).isEqualTo(ccdResponse);
@@ -82,9 +87,12 @@ public class ClaimantResponseMapperTest {
     public void shouldMapCCDClaimantRejectionToClaimantRejection() {
         //given
         ClaimantResponse response = SampleClaimantResponse.ClaimantResponseRejection.builder().build();
-
+        Claim claim =  Claim.builder()
+            .claimantResponse(response)
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .build();
         //when
-        CCDClaimantResponse ccdResponse = mapper.to(response);
+        CCDClaimantResponse ccdResponse = mapper.to(claim);
 
         //then
         assertThat((ResponseRejection)response).isEqualTo((CCDResponseRejection)ccdResponse);
@@ -96,7 +104,7 @@ public class ClaimantResponseMapperTest {
         CCDResponseRejection ccdResponseRejection = SampleData.getResponseRejection();
 
         //when
-        ResponseRejection response = (ResponseRejection)mapper.from(ccdResponseRejection);
+        ResponseRejection response = (ResponseRejection)mapper.from(ccdResponseRejection).getClaimantResponse().get();
 
         //then
         assertThat(response).isEqualTo(ccdResponseRejection);

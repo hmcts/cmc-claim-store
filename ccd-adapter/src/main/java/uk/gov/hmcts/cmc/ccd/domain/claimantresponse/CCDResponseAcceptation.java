@@ -1,23 +1,29 @@
 package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Value
-@Builder
 public class CCDResponseAcceptation extends CCDClaimantResponse {
 
-    private BigDecimal amountPaid;
-    private CCDCourtDetermination courtDetermination;
     private CCDPaymentIntention claimantPaymentIntention;
     private CCDFormaliseOption formaliseOption;
 
-    @JsonProperty("claimantResponseType")
     public CCDClaimantResponseType getClaimantResponseType() {
         return CCDClaimantResponseType.ACCEPTATION;
+    }
+
+    @Builder
+    public CCDResponseAcceptation(BigDecimal amountPaid,
+                                  LocalDateTime submittedOn,
+                                  CCDPaymentIntention claimantPaymentIntention,
+                                  CCDFormaliseOption formaliseOption) {
+        super(amountPaid,submittedOn);
+        this.claimantPaymentIntention = claimantPaymentIntention;
+        this.formaliseOption = formaliseOption;
     }
 }
