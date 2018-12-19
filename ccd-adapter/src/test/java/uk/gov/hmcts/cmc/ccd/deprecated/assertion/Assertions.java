@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
-import uk.gov.hmcts.cmc.ccd.assertion.StatementOfTruthAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.EmployerAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantResponseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;
@@ -17,8 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -32,10 +30,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 public class Assertions {
 
     private Assertions() {
-    }
-
-    public static StatementOfTruthAssert assertThat(StatementOfTruth statementOfTruth) {
-        return new StatementOfTruthAssert(statementOfTruth);
     }
 
     public static RepaymentPlanAssert assertThat(RepaymentPlan repaymentPlan) {
@@ -60,10 +54,6 @@ public class Assertions {
 
     public static TimelineEventAssert assertThat(TimelineEvent timelineEvent) {
         return new TimelineEventAssert(timelineEvent);
-    }
-
-    public static EvidenceRowAssert assertThat(EvidenceRow evidenceRow) {
-        return new EvidenceRowAssert(evidenceRow);
     }
 
     public static ClaimantResponseAssert assertThat(ClaimantResponse response) {
