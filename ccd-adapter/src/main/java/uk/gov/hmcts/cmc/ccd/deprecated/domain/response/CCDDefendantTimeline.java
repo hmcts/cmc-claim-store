@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain.response;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDTimelineEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 
 import java.util.List;
 

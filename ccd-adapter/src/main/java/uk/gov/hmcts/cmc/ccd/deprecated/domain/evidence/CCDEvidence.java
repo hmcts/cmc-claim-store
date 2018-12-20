@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain.evidence;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 
 import java.util.List;
 
