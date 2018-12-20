@@ -10,6 +10,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.function.Consumer;
 
+import static java.util.Objects.requireNonNull;
+
 @Component
 public class DefendantMapper {
 
@@ -26,16 +28,20 @@ public class DefendantMapper {
     }
 
     public CCDDefendant toLegal(TheirDetails theirDetails) {
+        requireNonNull(theirDetails, "theirDetails must not be null");
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
         theirDetailsMapper.to(builder, theirDetails);
         return builder.build();
     }
 
     public CCDDefendant toCitizen(TheirDetails theirDetails, Claim claim) {
+        requireNonNull(theirDetails, "theirDetails must not be null");
+        requireNonNull(claim, "claim must not be null");
+
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
         builder.responseDeadline(claim.getResponseDeadline());
         builder.letterHolderId(claim.getLetterHolderId());
-        claim.getResponse().ifPresent(mapResponse(claim, builder));
+        claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
         return builder.build();
     }
@@ -52,7 +58,7 @@ public class DefendantMapper {
         return this.from(defendant);
     }
 
-    private Consumer<Response> mapResponse(Claim claim, CCDDefendant.CCDDefendantBuilder builder) {
+    private Consumer<Response> toResponse(Claim claim, CCDDefendant.CCDDefendantBuilder builder) {
         return response -> {
             responseMapper.to(builder, response);
             builder.responseSubmittedDateTime(claim.getRespondedAt());

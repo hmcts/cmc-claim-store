@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Component
@@ -51,6 +52,8 @@ public class ResponseMapper {
     }
 
     public void to(CCDDefendant.CCDDefendantBuilder builder, Response response) {
+        requireNonNull(builder, "builder must not be null");
+        requireNonNull(response, "response must not be null");
 
         builder.responseFreeMediationOption(
             CCDYesNoOption.valueOf(response.getFreeMediation().orElse(YesNoOption.NO).name())
@@ -154,6 +157,34 @@ public class ResponseMapper {
     }
 
     public void from(Claim.ClaimBuilder claimBuilder, CCDDefendant defendant) {
+        requireNonNull(claimBuilder, "claimBuilder must not be null");
+        requireNonNull(defendant, "defendant must not be null");
 
+        switch (defendant.getResponseType()) {
+            case FULL_DEFENCE:
+                claimBuilder.response(extractFullDefence(defendant));
+                break;
+            case FULL_ADMISSION:
+                claimBuilder.response(extractFullAdmission(defendant));
+                break;
+            case PART_ADMISSION:
+                claimBuilder.response(extractPartAdmission(defendant));
+                break;
+            default:
+                throw new MappingException();
+        }
     }
+
+    private FullDefenceResponse extractFullDefence(CCDDefendant defendant) {
+        return null;
+    }
+
+    private PartAdmissionResponse extractPartAdmission(CCDDefendant defendant) {
+        return null;
+    }
+
+    private FullAdmissionResponse extractFullAdmission(CCDDefendant defendant) {
+        return null;
+    }
+
 }
