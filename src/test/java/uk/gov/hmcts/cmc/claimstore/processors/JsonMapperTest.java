@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -33,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
@@ -52,11 +49,11 @@ public class JsonMapperTest {
         ClaimData input = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterest(SampleInterest.builder()
-                    .withType(Interest.InterestType.STANDARD)
-                    .withRate(new BigDecimal("8"))
-                    .withReason(null)
-                    .withInterestDate(interestDate)
-                    .build())
+                .withType(Interest.InterestType.STANDARD)
+                .withRate(new BigDecimal("8"))
+                .withReason(null)
+                .withInterestDate(interestDate)
+                .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
             .withFeeAccountNumber(null)
@@ -97,11 +94,11 @@ public class JsonMapperTest {
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterest(SampleInterest.builder()
-                    .withType(Interest.InterestType.STANDARD)
-                    .withRate(new BigDecimal("8"))
-                    .withReason(null)
-                    .withInterestDate(interestDate)
-                    .build())
+                .withType(Interest.InterestType.STANDARD)
+                .withRate(new BigDecimal("8"))
+                .withReason(null)
+                .withInterestDate(interestDate)
+                .build())
             .withExternalReferenceNumber(null)
             .withPreferredCourt(null)
             .withFeeAccountNumber(null)
@@ -132,18 +129,18 @@ public class JsonMapperTest {
 
         //then
         InterestDate interestDate = SampleInterestDate.builder()
-                .withDate(LocalDate.of(2015, 2, 2))
-                .build();
+            .withDate(LocalDate.of(2015, 2, 2))
+            .build();
 
         ClaimData expected = SampleClaimData.builder()
             .withExternalId(UUID.fromString("9f49d8df-b734-4e86-aeb6-e22f0c2ca78d"))
             .withInterest(
-                    SampleInterest.builder()
-                            .withType(Interest.InterestType.STANDARD)
-                            .withRate(new BigDecimal("8"))
-                            .withReason(null)
-                            .withInterestDate(interestDate)
-                            .build())
+                SampleInterest.builder()
+                    .withType(Interest.InterestType.STANDARD)
+                    .withRate(new BigDecimal("8"))
+                    .withReason(null)
+                    .withInterestDate(interestDate)
+                    .build())
             .withAmount(
                 SampleAmountRange.builder()
                     .lowerValue(BigDecimal.valueOf(123.56))
@@ -212,9 +209,6 @@ public class JsonMapperTest {
         data.put("submitterId", "2");
         data.put("submittedOn", timestamp);
         data.put("externalId", uuid);
-        data.put("issuedOn", date);
-        data.put("responseDeadline", date.plusDays(14));
-        data.put("moreTimeRequested", CCDYesNoOption.NO.name());
 
         CCDCase ccdCase = processor.convertValue(data, CCDCase.class);
 
@@ -222,11 +216,10 @@ public class JsonMapperTest {
             .id(1L)
             .referenceNumber("000MC001")
             .submitterId("2")
-            .submittedOn(timestamp.format(ISO_DATE_TIME))
+            .submittedOn(timestamp)
             .externalId(uuid)
-            .issuedOn(date.format(ISO_DATE))
-            .responseDeadline(date.plusDays(14))
-            .moreTimeRequested(CCDYesNoOption.NO)
+            //.responseDeadline(date.plusDays(14))
+            //.moreTimeRequested(CCDYesNoOption.NO)
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);
