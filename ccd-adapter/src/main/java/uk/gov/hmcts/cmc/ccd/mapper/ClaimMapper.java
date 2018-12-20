@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.DefendantMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
@@ -80,14 +80,14 @@ public class ClaimMapper {
             .collect(Collectors.toList()));
 
         // For legal, we expect more than one claimants
-        if (claimData.getAmount() instanceof AmountRange) {
+        if (claimData.getAmount() instanceof AmountBreakDown) {
             builder.defendants(claimData.getDefendants().stream()
-                .map(defendantMapper::to)
+                .map(ccdDefendant -> defendantMapper.to(ccdDefendant, claim))
                 .map(this::mapDefendantToValue)
                 .collect(Collectors.toList()));
         } else {
             builder.defendants(claimData.getDefendants().stream()
-                .map(ccdDefendant -> defendantMapper.to(ccdDefendant, claim))
+                .map(defendantMapper::to)
                 .map(this::mapDefendantToValue)
                 .collect(Collectors.toList()));
         }

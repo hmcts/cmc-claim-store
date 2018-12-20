@@ -85,11 +85,11 @@ public class ResponseMapper {
 
         builder.responseAmount(response.getAmount());
         response.getPaymentDeclaration().ifPresent(
-            paymentDeclarationConsumer(builder)
+            mapPaymentDeclaration(builder)
         );
         builder.responseDefence(response.getDefence());
-        response.getEvidence().ifPresent(defendantEvidenceConsumer(builder));
-        response.getTimeline().ifPresent(defendantTimelineConsumer(builder));
+        response.getEvidence().ifPresent(mapDefendantEvidence(builder));
+        response.getTimeline().ifPresent(mapDefendantTimeline(builder));
         response.getPaymentIntention().ifPresent(
             paymentIntention -> builder.defendantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
         );
@@ -108,47 +108,45 @@ public class ResponseMapper {
         );
     }
 
-    private void toFullDefenceResponse(CCDDefendant.CCDDefendantBuilder builder, FullDefenceResponse response) {
+    private void toFullDefenceResponse(
+        CCDDefendant.CCDDefendantBuilder builder,
+        FullDefenceResponse fullDefenceResponse
+    ) {
 
-        FullDefenceResponse fullDefenceResponse = response;
         builder.responseDefenceType(
             CCDDefenceType.valueOf(fullDefenceResponse.getDefenceType().name())
         );
         builder.responseDefence(fullDefenceResponse.getDefence().orElse(EMPTY));
-        fullDefenceResponse.getPaymentDeclaration().ifPresent(paymentDeclarationConsumer(builder));
-        fullDefenceResponse.getEvidence().ifPresent(defendantEvidenceConsumer(builder));
-        fullDefenceResponse.getTimeline().ifPresent(defendantTimelineConsumer(builder));
+        fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
+        fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
+        fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
     }
 
-    private Consumer<DefendantTimeline> defendantTimelineConsumer(CCDDefendant.CCDDefendantBuilder builder) {
+    private Consumer<DefendantTimeline> mapDefendantTimeline(CCDDefendant.CCDDefendantBuilder builder) {
         return timeline -> {
             builder.defendantTimeLineComment(timeline.getComment().orElse(EMPTY));
-            builder.defendantTimeLineEvents(
-                timeline.getEvents()
-                    .stream()
-                    .map(timelineEventMapper::to)
-                    .filter(Objects::nonNull)
-                    .map(event -> CCDCollectionElement.<CCDTimelineEvent>builder().value(event).build())
-                    .collect(Collectors.toList())
+            builder.defendantTimeLineEvents(timeline.getEvents().stream()
+                .map(timelineEventMapper::to)
+                .filter(Objects::nonNull)
+                .map(event -> CCDCollectionElement.<CCDTimelineEvent>builder().value(event).build())
+                .collect(Collectors.toList())
             );
         };
     }
 
-    private Consumer<DefendantEvidence> defendantEvidenceConsumer(CCDDefendant.CCDDefendantBuilder builder) {
+    private Consumer<DefendantEvidence> mapDefendantEvidence(CCDDefendant.CCDDefendantBuilder builder) {
         return evidence -> {
             builder.responseEvidenceComment(evidence.getComment().orElse(EMPTY));
-            builder.responseEvidenceRows(
-                evidence.getRows()
-                    .stream()
-                    .map(evidenceRowMapper::to)
-                    .filter(Objects::nonNull)
-                    .map(row -> CCDCollectionElement.<CCDEvidenceRow>builder().value(row).build())
-                    .collect(Collectors.toList())
+            builder.responseEvidenceRows(evidence.getRows().stream()
+                .map(evidenceRowMapper::to)
+                .filter(Objects::nonNull)
+                .map(row -> CCDCollectionElement.<CCDEvidenceRow>builder().value(row).build())
+                .collect(Collectors.toList())
             );
         };
     }
 
-    private Consumer<PaymentDeclaration> paymentDeclarationConsumer(CCDDefendant.CCDDefendantBuilder builder) {
+    private Consumer<PaymentDeclaration> mapPaymentDeclaration(CCDDefendant.CCDDefendantBuilder builder) {
         return paymentDeclaration -> {
             builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
             builder.paymentDeclarationPaidDate(paymentDeclaration.getPaidDate());

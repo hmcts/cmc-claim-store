@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Component
 public class DefendantMapper {
@@ -35,13 +36,7 @@ public class DefendantMapper {
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
         builder.responseDeadline(claim.getResponseDeadline());
         builder.letterHolderId(claim.getLetterHolderId());
-
-        Optional<Response> response = claim.getResponse();
-        if (response.isPresent()) {
-            responseMapper.to(builder, response.get());
-            builder.responseSubmittedDateTime(claim.getRespondedAt());
-        }
-
+        claim.getResponse().ifPresent(mapResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
         return builder.build();
     }
@@ -56,5 +51,12 @@ public class DefendantMapper {
         responseMapper.from(builder, defendant);
 
         return this.from(defendant);
+    }
+
+    private Consumer<Response> mapResponse(Claim claim, CCDDefendant.CCDDefendantBuilder builder) {
+        return response -> {
+                responseMapper.to(builder, response);
+                builder.responseSubmittedDateTime(claim.getRespondedAt());
+            };
     }
 }
