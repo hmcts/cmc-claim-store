@@ -75,9 +75,9 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
         }
 
         String mobilePhone = actual.getMobilePhone().orElse(null);
-        if (!Objects.equals(mobilePhone, ccdParty.getPartyPhoneNumber())) {
+        if (!Objects.equals(mobilePhone, ccdParty.getPartyPhone())) {
             failWithMessage("Expected CCDCompany.mobilePhone to be <%s> but was <%s>",
-                ccdParty.getPartyPhoneNumber(), mobilePhone);
+                ccdParty.getPartyPhone(), mobilePhone);
         }
 
         if (!Objects.equals(actual.getBusinessName().orElse(null), ccdParty.getPartyBusinessName())) {
@@ -103,9 +103,9 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
         }
 
         String mobilePhone = actual.getMobilePhone().orElse(null);
-        if (!Objects.equals(mobilePhone, ccdParty.getPartyPhoneNumber())) {
+        if (!Objects.equals(mobilePhone, ccdParty.getPartyPhone())) {
             failWithMessage("Expected CCDCompany.mobilePhone to be <%s> but was <%s>",
-                ccdParty.getPartyPhoneNumber(), mobilePhone);
+                ccdParty.getPartyPhone(), mobilePhone);
         }
 
         if (!Objects.equals(actual.getContactPerson().orElse(null), ccdParty.getPartyContactPerson())) {
@@ -131,9 +131,9 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
         }
 
         String mobilePhone = actual.getMobilePhone().orElse(null);
-        if (!Objects.equals(mobilePhone, ccdParty.getPartyPhoneNumber())) {
+        if (!Objects.equals(mobilePhone, ccdParty.getPartyPhone())) {
             failWithMessage("Expected CCDOrganisation.mobilePhone to be <%s> but was <%s>",
-                ccdParty.getPartyPhoneNumber(), mobilePhone);
+                ccdParty.getPartyPhone(), mobilePhone);
         }
 
         String contactPerson = actual.getContactPerson().orElse(null);

@@ -20,7 +20,7 @@ public class CompanyMapper implements BuilderMapper<CCDClaimant, Company, CCDCla
     @Override
     public void to(Company company, CCDClaimant.CCDClaimantBuilder builder) {
 
-        company.getMobilePhone().ifPresent(builder::partyPhoneNumber);
+        company.getMobilePhone().ifPresent(builder::partyPhone);
         company.getContactPerson().ifPresent(builder::partyContactPerson);
 
         company.getCorrespondenceAddress()
@@ -42,7 +42,7 @@ public class CompanyMapper implements BuilderMapper<CCDClaimant, Company, CCDCla
             company.getPartyName(),
             addressMapper.from(company.getPartyAddress()),
             addressMapper.from(company.getPartyCorrespondenceAddress()),
-            company.getPartyPhoneNumber(),
+            company.getPartyPhone(),
             representativeMapper.from(company),
             company.getPartyContactPerson()
         );
