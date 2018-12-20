@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import lombok.Builder;
 import lombok.Value;
 
+import java.time.LocalDate;
+
 @Value
 @Builder
 public class CCDClaimant {
@@ -13,7 +15,7 @@ public class CCDClaimant {
     private String partyPhoneNumber;
     private CCDAddress partyAddress;
     private CCDAddress partyCorrespondenceAddress;
-    private String partyDateOfBirth;
+    private LocalDate partyDateOfBirth;
     private String partyContactPerson;
     private String partyCompaniesHouseNumber;
     private String partyTitle;

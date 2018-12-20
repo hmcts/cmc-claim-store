@@ -1,13 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
+@Ignore
 public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
     @SpyBean

@@ -6,8 +6,8 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.NO;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 public class BankAccountAssert extends AbstractAssert<BankAccountAssert, BankAccount> {
 

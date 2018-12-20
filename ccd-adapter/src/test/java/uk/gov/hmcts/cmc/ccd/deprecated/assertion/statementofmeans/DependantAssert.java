@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDChild;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDDependant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 
@@ -24,7 +24,7 @@ public class DependantAssert extends AbstractAssert<DependantAssert, Dependant> 
 
         if (!Objects.equals(actual.getNumberOfMaintainedChildren().orElse(null),
             ccdDependant.getNumberOfMaintainedChildren())
-            ) {
+        ) {
             failWithMessage("Expected Dependant.numberOfMaintainedChildren to be <%s> but was <%s>",
                 ccdDependant.getNumberOfMaintainedChildren(), actual.getNumberOfMaintainedChildren());
         }
