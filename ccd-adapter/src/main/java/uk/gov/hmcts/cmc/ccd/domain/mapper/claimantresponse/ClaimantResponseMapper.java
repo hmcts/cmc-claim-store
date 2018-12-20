@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 @Component
 public class ClaimantResponseMapper {
@@ -47,9 +48,8 @@ public class ClaimantResponseMapper {
             return builder.build();
         } else if (ClaimantResponseType.REJECTION == claimantResponse.getType()) {
             ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
-            Boolean mediation = responseRejection.getFreeMediation().orElse(CCDYesNoOption.NO.toBoolean());
             CCDResponseRejection.CCDResponseRejectionBuilder rejection = CCDResponseRejection.builder()
-                .freeMediationOption(CCDYesNoOption.valueOf(mediation));
+                .freeMediationOption(CCDYesNoOption.valueOf(YesNoOption.NO.name()));
             responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
             responseRejection.getReason().ifPresent(rejection::reason);
             return rejection.build();
@@ -70,8 +70,8 @@ public class ClaimantResponseMapper {
                 .claimantPaymentIntention(paymentIntentionMapper.from(ccdResponseAcceptation
                     .getClaimantPaymentIntention()))
                 .build())
-            .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
-           return claimBuilder.build();
+                .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
+            return claimBuilder.build();
 
         } else if (ccdClaimantResponse.getClaimantResponseType() == CCDClaimantResponseType.REJECTION) {
             CCDResponseRejection ccdResponseRejection = (CCDResponseRejection) ccdClaimantResponse;
@@ -79,7 +79,7 @@ public class ClaimantResponseMapper {
                 .amountPaid(ccdResponseRejection.getAmountPaid())
                 .reason(ccdResponseRejection.getReason());
             if (ccdResponseRejection.getFreeMediationOption() != null) {
-                builder.freeMediation(ccdResponseRejection.getFreeMediationOption().toBoolean());
+                builder.freeMediation(YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name()));
             }
             claimBuilder.claimantResponse(builder.build())
                 .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
