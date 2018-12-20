@@ -1,12 +1,13 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
+package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
+import org.junit.Assert;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 
 public class PartyStatementAssert extends AbstractAssert<PartyStatementAssert, PartyStatement> {
@@ -29,7 +30,15 @@ public class PartyStatementAssert extends AbstractAssert<PartyStatementAssert, P
                 ccdPartyStatement.getType().name(), actual.getType().name());
         }
 
-        //actual.getOffer().ifPresent(offer -> assertThat(offer).isEqualTo(ccdPartyStatement.getOffer()));
+        actual.getOffer().ifPresent(offer -> {
+                Assert.assertEquals(offer.getContent(), ccdPartyStatement.getOfferContent());
+                Assert.assertEquals(offer.getCompletionDate(), ccdPartyStatement.getOfferCompletionDate());
+
+                offer.getPaymentIntention().ifPresent(
+                    paymentIntention -> assertThat(paymentIntention).isEqualTo(ccdPartyStatement.getPaymentIntention())
+                );
+            }
+        );
 
         return this;
     }
