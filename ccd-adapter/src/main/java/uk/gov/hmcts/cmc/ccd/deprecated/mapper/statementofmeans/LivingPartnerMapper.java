@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 
 @Component

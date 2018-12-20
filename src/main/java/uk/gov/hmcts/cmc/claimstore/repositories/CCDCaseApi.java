@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -253,6 +253,7 @@ public class CCDCaseApi {
         );
     }
 
+    @SuppressWarnings(value = "squid:S1172")
     private CaseDetails updateDefendantIdAndEmail(
         User defendantUser,
         String caseId,
@@ -263,7 +264,7 @@ public class CCDCaseApi {
             defendantUser.getAuthorisation(),
             CCDCase.builder().id(Long.valueOf(caseId))
                 .defendantId(defendantId)
-                .defendantEmail(defendantEmail)
+                //.defendantEmail(defendantEmail)
                 .build(),
             CaseEvent.LINK_DEFENDANT
         );

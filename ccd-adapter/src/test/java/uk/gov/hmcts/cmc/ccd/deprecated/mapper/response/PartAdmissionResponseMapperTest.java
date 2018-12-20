@@ -8,9 +8,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDStatementOfTruth;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPartAdmissionResponse;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
@@ -19,10 +19,10 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatemen
 
 import java.time.LocalDate;
 
+import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDDefendantIndividual;
+import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDStatementOfTruth;
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption.BY_SPECIFIED_DATE;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPartyIndividual;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfTruth;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @SpringBootTest
@@ -80,7 +80,7 @@ public class PartAdmissionResponseMapperTest {
                 .paymentOption(BY_SPECIFIED_DATE)
                 .paymentDate(LocalDate.now().plusDays(7))
                 .build())
-            .defendant(getCCDPartyIndividual())
+            .defendant(getCCDDefendantIndividual())
             .statementOfTruth(getCCDStatementOfTruth())
             .statementOfTruth(CCDStatementOfTruth.builder().signerName("Name").signerRole("A role").build())
             .build();
