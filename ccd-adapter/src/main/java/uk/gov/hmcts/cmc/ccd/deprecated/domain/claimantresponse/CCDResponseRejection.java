@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.math.BigDecimal;
 

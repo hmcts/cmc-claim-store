@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain.response;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDStatementOfTruth;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.evidence.CCDDefendantEvidence;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.math.BigDecimal;
 
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class CCDPartAdmissionResponse {
     private CCDYesNoOption moreTimeNeededOption;
     private CCDYesNoOption freeMediationOption;
-    private CCDParty defendant;
+    private CCDDefendant defendant;
     private BigDecimal amount;
     private CCDPaymentDeclaration paymentDeclaration;
     private CCDPaymentIntention paymentIntention;
