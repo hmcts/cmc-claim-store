@@ -2,8 +2,6 @@ package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDDebt;
@@ -12,6 +10,8 @@ import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDResidence;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;

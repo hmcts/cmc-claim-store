@@ -1,19 +1,22 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 @Component
 public class ResponseRejectionMapper implements Mapper<CCDResponseRejection, ResponseRejection> {
     @Override
     public CCDResponseRejection to(ResponseRejection responseRejection) {
-        Boolean mediation = responseRejection.getFreeMediation().orElse(CCDYesNoOption.NO.toBoolean());
+        CCDYesNoOption mediation = CCDYesNoOption
+            .valueOf(responseRejection.getFreeMediation()
+                .orElse(YesNoOption.NO).name());
 
         CCDResponseRejection.CCDResponseRejectionBuilder rejection = CCDResponseRejection.builder()
-            .freeMediationOption(CCDYesNoOption.valueOf(mediation));
+            .freeMediationOption(mediation);
 
         responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
         responseRejection.getReason().ifPresent(rejection::reason);
@@ -27,7 +30,8 @@ public class ResponseRejectionMapper implements Mapper<CCDResponseRejection, Res
             .reason(ccdResponseRejection.getReason());
 
         if (ccdResponseRejection.getFreeMediationOption() != null) {
-            builder.freeMediation(ccdResponseRejection.getFreeMediationOption().toBoolean());
+            YesNoOption yesNoOption = YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name());
+            builder.freeMediation(yesNoOption);
         }
 
         return builder.build();
