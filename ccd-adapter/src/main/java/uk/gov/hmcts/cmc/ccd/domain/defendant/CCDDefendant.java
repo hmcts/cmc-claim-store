@@ -1,10 +1,14 @@
-package uk.gov.hmcts.cmc.ccd.domain;
+package uk.gov.hmcts.cmc.ccd.domain.defendant;
 
 import lombok.Builder;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCJRequest;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
