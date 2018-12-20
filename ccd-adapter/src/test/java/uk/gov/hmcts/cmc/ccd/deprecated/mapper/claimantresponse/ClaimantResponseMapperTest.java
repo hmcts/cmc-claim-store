@@ -64,7 +64,7 @@ public class ClaimantResponseMapperTest {
     @Test
     public void shouldMapClaimantRejectionFromCCD() {
         //given
-        CCDClaimantResponse ccdResponse = SampleData.getCCDClaimantREjectionResponse();
+        CCDClaimantResponse ccdResponse = SampleData.getCCDClaimantRejectionResponse();
 
         //when
         ClaimantResponse response = mapper.from(ccdResponse);
