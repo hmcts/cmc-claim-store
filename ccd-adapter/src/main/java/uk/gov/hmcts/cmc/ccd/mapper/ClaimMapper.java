@@ -82,12 +82,12 @@ public class ClaimMapper {
         // For legal, we expect more than one claimants
         if (claimData.getAmount() instanceof AmountBreakDown) {
             builder.defendants(claimData.getDefendants().stream()
-                .map(ccdDefendant -> defendantMapper.to(ccdDefendant, claim))
+                .map(ccdDefendant -> defendantMapper.toCitizen(ccdDefendant, claim))
                 .map(this::mapDefendantToValue)
                 .collect(Collectors.toList()));
         } else {
             builder.defendants(claimData.getDefendants().stream()
-                .map(defendantMapper::to)
+                .map(defendantMapper::toLegal)
                 .map(this::mapDefendantToValue)
                 .collect(Collectors.toList()));
         }
