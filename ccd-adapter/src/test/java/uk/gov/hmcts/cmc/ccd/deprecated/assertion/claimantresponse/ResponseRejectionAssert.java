@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseRejection;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 import java.util.Objects;

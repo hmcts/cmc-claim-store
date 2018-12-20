@@ -2,13 +2,6 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.AmountType;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDAmountRow;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDClaimantResponse;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDSettlement;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.response.CCDResponse;
-import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.math.BigDecimal;
@@ -26,11 +19,9 @@ public class CCDCase {
     private String submitterId;
     private String letterHolderId;
     private String defendantId;
-    private String submittedOn;
     private String externalId;
-    private String issuedOn;
-    private LocalDate responseDeadline;
-    private CCDYesNoOption moreTimeRequested;
+    private LocalDateTime submittedOn;
+    private LocalDate issuedOn;
     private String submitterEmail;
     private String reason;
     private String feeCode;
@@ -55,8 +46,8 @@ public class CCDCase {
     private String paymentId;
     private BigDecimal paymentAmount;
     private String paymentReference;
-    private String paymentDateCreated;
     private String paymentStatus;
+    private String paymentDateCreated;
     private String preferredCourt;
     private String personalInjuryGeneralDamages;
     private String housingDisrepairCostOfRepairDamages;
@@ -67,19 +58,6 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDDefendant>> defendants;
     private List<CCDCollectionElement<CCDTimelineEvent>> timeline;
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
-
-    private CCDCountyCourtJudgment countyCourtJudgment;
-    private LocalDateTime countyCourtJudgmentRequestedAt;
-    private String defendantEmail;
-    private CCDResponse response;
-    private LocalDateTime respondedAt;
-    private CCDSettlement settlement;
-    private LocalDateTime settlementReachedAt;
     private CCDDocument sealedClaimDocument;
     private String features;
-    private LocalDate moneyReceivedOn;
-    private CCDClaimantResponse claimantResponse;
-    private LocalDateTime claimantRespondedAt;
-    private LocalDate directionsQuestionnaireDeadline;
-
 }

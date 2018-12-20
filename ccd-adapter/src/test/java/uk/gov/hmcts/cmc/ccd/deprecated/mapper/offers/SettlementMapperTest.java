@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDSettlement;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.PartyStatementMapper;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;

@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.mapper.claimantresponse;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.PaymentIntentionMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 
 @Component
