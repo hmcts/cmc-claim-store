@@ -22,7 +22,7 @@ public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, 
     @Override
     public void to(Individual individual, CCDClaimant.CCDClaimantBuilder builder) {
 
-        individual.getMobilePhone().ifPresent(builder::partyPhoneNumber);
+        individual.getMobilePhone().ifPresent(builder::partyPhone);
 
         individual.getCorrespondenceAddress()
             .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
@@ -44,7 +44,7 @@ public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, 
             ccdClaimant.getPartyName(),
             addressMapper.from(ccdClaimant.getPartyAddress()),
             addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()),
-            ccdClaimant.getPartyPhoneNumber(),
+            ccdClaimant.getPartyPhone(),
             representativeMapper.from(ccdClaimant),
             ccdClaimant.getPartyDateOfBirth()
         );
