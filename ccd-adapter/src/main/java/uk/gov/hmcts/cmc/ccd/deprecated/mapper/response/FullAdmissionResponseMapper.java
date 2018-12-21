@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.DefendantMapper;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -39,9 +40,9 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
         CCDFullAdmissionResponse.CCDFullAdmissionResponseBuilder builder = CCDFullAdmissionResponse.builder()
             .freeMediationOption(CCDYesNoOption.valueOf(
                 fullAdmissionResponse.getFreeMediation().orElse(YesNoOption.NO).name())
-            )
-            //.defendant(partyMapper.to(fullAdmissionResponse.getDefendant()))
-            .paymentIntention(paymentIntentionMapper.to(fullAdmissionResponse.getPaymentIntention()));
+            );
+        //.defendant(partyMapper.to(fullAdmissionResponse.getDefendant()))
+        //.paymentIntention(paymentIntentionMapper.to(fullAdmissionResponse.getPaymentIntention()));
 
         if (fullAdmissionResponse.getMoreTimeNeeded() != null) {
             builder.moreTimeNeededOption(CCDYesNoOption.valueOf(fullAdmissionResponse.getMoreTimeNeeded().name()));
@@ -65,7 +66,7 @@ public class FullAdmissionResponseMapper implements Mapper<CCDFullAdmissionRespo
             .moreTimeNeeded(YesNoOption.valueOf(Optional.ofNullable(moreTimeNeeded).orElse(CCDYesNoOption.NO).name()))
             //.defendant(partyMapper.from(ccdFullAdmissionResponse.getDefendant()))
             .statementOfTruth(statementOfTruthMapper.from(ccdFullAdmissionResponse.getStatementOfTruth()))
-            .paymentIntention(paymentIntentionMapper.from(ccdFullAdmissionResponse.getPaymentIntention()))
+            //.paymentIntention(paymentIntentionMapper.from(ccdFullAdmissionResponse.getPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(ccdFullAdmissionResponse.getStatementOfMeans()))
             .build();
     }
