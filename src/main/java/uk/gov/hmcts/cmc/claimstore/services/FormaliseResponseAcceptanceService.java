@@ -116,7 +116,7 @@ public class FormaliseResponseAcceptanceService {
                 break;
             case INSTALMENTS:
                 RepaymentPlan repaymentPlan = paymentIntention.getRepaymentPlan().orElseThrow(IllegalAccessError::new);
-                repaymentPlan.getCompletionDate().ifPresent(builder::completionDate);
+                builder.completionDate(repaymentPlan.getCompletionDate());
                 builder.content(
                     prepareOfferContentForRepayment(response, repaymentPlan, claimAmountTillDate)
                 );

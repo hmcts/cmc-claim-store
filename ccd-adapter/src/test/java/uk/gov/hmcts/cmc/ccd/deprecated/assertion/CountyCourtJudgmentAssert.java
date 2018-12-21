@@ -43,19 +43,18 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
                 ccdCountyCourtJudgment.getPaymentOption().name(), actual.getPaymentOption().name());
         }
 
-        actual.getRepaymentPlan()
-            .ifPresent(repaymentPlan -> {
-                repaymentPlan.getCompletionDate().ifPresent(localDate -> Assert.assertEquals(localDate,
-                    ccdCountyCourtJudgment.getRepaymentPlanCompletionDate()));
-                Assert.assertEquals(repaymentPlan.getFirstPaymentDate(),
-                    ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate());
-                Assert.assertEquals(repaymentPlan.getInstalmentAmount(),
-                    ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
-                repaymentPlan.getPaymentLength().ifPresent(paymentLength -> Assert.assertEquals(paymentLength,
-                    ccdCountyCourtJudgment.getRepaymentPlanPaymentLength()));
-                Assert.assertEquals(repaymentPlan.getPaymentSchedule().getDescription(),
-                    ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().getDescription());
-            });
+        actual.getRepaymentPlan().ifPresent(repaymentPlan -> {
+            Assert.assertEquals(repaymentPlan.getCompletionDate(),
+                ccdCountyCourtJudgment.getRepaymentPlanCompletionDate());
+            Assert.assertEquals(repaymentPlan.getFirstPaymentDate(),
+                ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate());
+            Assert.assertEquals(repaymentPlan.getInstalmentAmount(),
+                ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
+            Assert.assertEquals(repaymentPlan.getPaymentLength(),
+                ccdCountyCourtJudgment.getRepaymentPlanPaymentLength());
+            Assert.assertEquals(repaymentPlan.getPaymentSchedule().getDescription(),
+                ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().getDescription());
+        });
 
         actual.getStatementOfTruth().ifPresent(statementOfTruth -> {
             Assert.assertEquals(statementOfTruth.getSignerName(),

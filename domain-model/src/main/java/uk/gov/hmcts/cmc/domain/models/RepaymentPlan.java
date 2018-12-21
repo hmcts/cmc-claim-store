@@ -8,11 +8,10 @@ import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -49,14 +48,6 @@ public class RepaymentPlan {
         this.paymentSchedule = paymentSchedule;
         this.completionDate = completionDate;
         this.paymentLength = paymentLength;
-    }
-
-    public Optional<LocalDate> getCompletionDate() {
-        return Optional.ofNullable(this.completionDate);
-    }
-
-    public Optional<String> getPaymentLength() {
-        return Optional.ofNullable(this.paymentLength);
     }
 
     @Override

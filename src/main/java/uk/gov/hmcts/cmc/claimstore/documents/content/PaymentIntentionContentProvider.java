@@ -48,8 +48,8 @@ public class PaymentIntentionContentProvider {
                     + formatDate(Optional.ofNullable(paymentDate)
                     .orElseThrow(IllegalStateException::new));
             default:
-                return Optional.ofNullable(repaymentPlan).isPresent() && repaymentPlan.getCompletionDate().isPresent()
-                    ? formatDate(repaymentPlan.getCompletionDate().get())
+                return Optional.ofNullable(repaymentPlan).isPresent()
+                    ? formatDate(repaymentPlan.getCompletionDate())
                     : paymentOption.getDescription();
         }
     }

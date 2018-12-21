@@ -26,8 +26,8 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
         countyCourtJudgment.getRepaymentPlan().ifPresent(repaymentPlan -> {
             builder.repaymentPlanFirstPaymentDate(repaymentPlan.getFirstPaymentDate());
             builder.repaymentPlanInstalmentAmount(repaymentPlan.getInstalmentAmount());
-            repaymentPlan.getPaymentLength().ifPresent(builder::repaymentPlanPaymentLength);
-            repaymentPlan.getCompletionDate().ifPresent(builder::repaymentPlanCompletionDate);
+            builder.repaymentPlanPaymentLength(repaymentPlan.getPaymentLength());
+            builder.repaymentPlanCompletionDate(repaymentPlan.getCompletionDate());
             builder.repaymentPlanPaymentSchedule(repaymentPlan.getPaymentSchedule());
         });
 
@@ -55,15 +55,13 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
         if (ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate() != null
             && ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule() != null) {
 
-            RepaymentPlan.RepaymentPlanBuilder builder = RepaymentPlan.builder()
+            ccjBuilder.repaymentPlan(RepaymentPlan.builder()
                 .firstPaymentDate(ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate())
                 .instalmentAmount(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount())
-                .paymentSchedule(ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule());
-
-            ofNullable(ccdCountyCourtJudgment.getRepaymentPlanCompletionDate()).ifPresent(builder::completionDate);
-            ofNullable(ccdCountyCourtJudgment.getRepaymentPlanPaymentLength()).ifPresent(builder::paymentLength);
-
-            ccjBuilder.repaymentPlan(builder.build());
+                .paymentSchedule(ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule())
+                .completionDate(ccdCountyCourtJudgment.getRepaymentPlanCompletionDate())
+                .paymentLength(ccdCountyCourtJudgment.getRepaymentPlanPaymentLength())
+                .build());
         }
 
         if (!StringUtils.isBlank(ccdCountyCourtJudgment.getStatementOfTruthSignerName())

@@ -36,19 +36,17 @@ public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAsser
                         paymentIntention.getPaymentSchedule().name(), repaymentPlan.getPaymentSchedule().name());
                 }
 
-                repaymentPlan.getPaymentLength().ifPresent(paymentLength -> {
-                    if (!Objects.equals(paymentLength, paymentIntention.getPaymentLength())) {
-                        failWithMessage("Expected PaymentIntention.PaymentLength to be <%s> but was <%s>",
-                            paymentIntention.getPaymentLength(), paymentLength);
-                    }
-                });
 
-                repaymentPlan.getCompletionDate().ifPresent(localDate -> {
-                    if (!Objects.equals(localDate, paymentIntention.getCompletionDate())) {
-                        failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
-                            paymentIntention.getCompletionDate(), localDate);
-                    }
-                });
+                if (!Objects.equals(repaymentPlan.getPaymentLength(), paymentIntention.getPaymentLength())) {
+                    failWithMessage("Expected PaymentIntention.PaymentLength to be <%s> but was <%s>",
+                        paymentIntention.getPaymentLength(), repaymentPlan.getPaymentLength());
+                }
+
+
+                if (!Objects.equals(repaymentPlan.getCompletionDate(), paymentIntention.getCompletionDate())) {
+                    failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
+                        paymentIntention.getCompletionDate(), repaymentPlan.getCompletionDate());
+                }
             }
         );
 
