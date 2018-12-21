@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDChild;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDDependant;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.statementofmeans.CCDOtherDependants;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
