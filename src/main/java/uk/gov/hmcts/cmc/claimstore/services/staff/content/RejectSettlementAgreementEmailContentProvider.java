@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement;
+package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
@@ -11,12 +11,12 @@ import java.util.Map;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 @Component
-public class SettlementAgreementEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
+public class RejectSettlementAgreementEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
     private final StaffEmailTemplates staffEmailTemplates;
 
-    public SettlementAgreementEmailContentProvider(
+    public RejectSettlementAgreementEmailContentProvider(
         TemplateService templateService,
         StaffEmailTemplates staffEmailTemplates
     ) {
@@ -29,8 +29,8 @@ public class SettlementAgreementEmailContentProvider implements EmailContentProv
         notEmpty(input);
 
         return new EmailContent(
-            evaluateTemplate(staffEmailTemplates.getSettlementAgreementAcceptedEmailSubject(), input),
-            evaluateTemplate(staffEmailTemplates.getSettlementAgreementAcceptedEmailBody(), input)
+            evaluateTemplate(staffEmailTemplates.getSettlementAgreementRejectedEmailSubject(), input),
+            evaluateTemplate(staffEmailTemplates.getSettlementAgreementRejectedEmailBody(), input)
         );
     }
 
