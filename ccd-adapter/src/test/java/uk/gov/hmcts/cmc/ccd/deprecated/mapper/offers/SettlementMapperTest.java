@@ -7,11 +7,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDSettlement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.PartyStatementMapper;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class SettlementMapperTest {
     public void shouldMapRejectionSettlementToCCD() {
         //given
         Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.rejectPartyStatement)
+            .withPartyStatements(SamplePartyStatement.offerPartyStatement, SamplePartyStatement.rejectPartyStatement)
             .build();
 
         //when
@@ -61,7 +62,7 @@ public class SettlementMapperTest {
     public void shouldMapAcceptanceSettlementToCCD() {
         //given
         Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.acceptPartyStatement).build();
+            .withPartyStatements(SamplePartyStatement.offerPartyStatement, SamplePartyStatement.acceptPartyStatement).build();
 
         //when
         CCDSettlement ccdSettlement = settlementMapper.to(settlement);
@@ -74,8 +75,8 @@ public class SettlementMapperTest {
     public void shouldMapCounterSignSettlementToCCD() {
         //given
         Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.acceptPartyStatement,
-                SampleSettlement.counterSignPartyStatement)
+            .withPartyStatements(SamplePartyStatement.offerPartyStatement, SamplePartyStatement.acceptPartyStatement,
+                SamplePartyStatement.counterSignPartyStatement)
             .build();
 
         //when
@@ -89,12 +90,12 @@ public class SettlementMapperTest {
     public void shouldMaintainTheOrderOfPartyStatements() {
         //given
         PartyStatement[] partyStatements = {
-            SampleSettlement.offerPartyStatement,
-            SampleSettlement.rejectPartyStatement,
-            SampleSettlement.offerPartyStatement,
-            SampleSettlement.rejectPartyStatement,
-            SampleSettlement.offerPartyStatement,
-            SampleSettlement.acceptPartyStatement
+            SamplePartyStatement.offerPartyStatement,
+            SamplePartyStatement.rejectPartyStatement,
+            SamplePartyStatement.offerPartyStatement,
+            SamplePartyStatement.rejectPartyStatement,
+            SamplePartyStatement.offerPartyStatement,
+            SamplePartyStatement.acceptPartyStatement
         };
 
         Settlement settlement = SampleSettlement.builder()

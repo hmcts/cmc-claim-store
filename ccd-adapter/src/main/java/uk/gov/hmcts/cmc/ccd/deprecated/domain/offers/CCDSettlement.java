@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.offers.CCDPartyStatement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 
 import java.util.List;
 

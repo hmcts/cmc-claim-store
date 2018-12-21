@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
+import uk.gov.hmcts.cmc.ccd.assertion.PartyStatementAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;

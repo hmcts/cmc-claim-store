@@ -7,14 +7,13 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.util.Objects;
 
-public class PaymentIntentionAssert extends AbstractAssert<uk.gov.hmcts.cmc.ccd.deprecated.assertion.response.PaymentIntentionAssert, PaymentIntention> {
+public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAssert, PaymentIntention> {
 
     public PaymentIntentionAssert(PaymentIntention actual) {
-        super(actual, uk.gov.hmcts.cmc.ccd.deprecated.assertion.response.PaymentIntentionAssert.class);
+        super(actual, PaymentIntentionAssert.class);
     }
 
     public PaymentIntentionAssert isEqualTo(CCDPaymentIntention paymentIntention) {
-        isNotNull();
 
         if (!Objects.equals(actual.getPaymentOption().name(), paymentIntention.getPaymentOption().name())) {
             failWithMessage("Expected PaymentIntention.paymentOption to be <%s> but was <%s>",
