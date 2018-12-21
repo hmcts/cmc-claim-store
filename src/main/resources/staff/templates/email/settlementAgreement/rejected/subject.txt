@@ -1,0 +1,1 @@
+Settlement Agreement rejected: {{ claimReferenceNumber }}: {{ claimantName }} v {{ defendantName }}
