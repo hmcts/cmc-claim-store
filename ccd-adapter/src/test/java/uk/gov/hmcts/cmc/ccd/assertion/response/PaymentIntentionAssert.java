@@ -21,31 +21,35 @@ public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAsser
         }
 
         actual.getRepaymentPlan().ifPresent(repaymentPlan -> {
-            if (!Objects.equals(repaymentPlan.getInstalmentAmount(), paymentIntention.getInstalmentAmount())) {
-                failWithMessage("Expected PaymentIntention.instalmentAmount to be <%s> but was <%s>",
-                    paymentIntention.getInstalmentAmount(), repaymentPlan.getInstalmentAmount());
-            }
-            if (!Objects.equals(repaymentPlan.getFirstPaymentDate(), paymentIntention.getFirstPaymentDate())) {
-                failWithMessage("Expected PaymentIntention.firstPaymentDate to be <%s> but was <%s>",
-                    paymentIntention.getFirstPaymentDate(), repaymentPlan.getFirstPaymentDate());
-            }
+                if (!Objects.equals(repaymentPlan.getInstalmentAmount(), paymentIntention.getInstalmentAmount())) {
+                    failWithMessage("Expected PaymentIntention.instalmentAmount to be <%s> but was <%s>",
+                        paymentIntention.getInstalmentAmount(), repaymentPlan.getInstalmentAmount());
+                }
+                if (!Objects.equals(repaymentPlan.getFirstPaymentDate(), paymentIntention.getFirstPaymentDate())) {
+                    failWithMessage("Expected PaymentIntention.firstPaymentDate to be <%s> but was <%s>",
+                        paymentIntention.getFirstPaymentDate(), repaymentPlan.getFirstPaymentDate());
+                }
 
-            if (!Objects.equals(repaymentPlan.getPaymentSchedule().name(),
-                paymentIntention.getPaymentSchedule().name())) {
-                failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
-                    paymentIntention.getPaymentSchedule().name(), repaymentPlan.getPaymentSchedule().name());
-            }
+                if (!Objects.equals(repaymentPlan.getPaymentSchedule().name(),
+                    paymentIntention.getPaymentSchedule().name())) {
+                    failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
+                        paymentIntention.getPaymentSchedule().name(), repaymentPlan.getPaymentSchedule().name());
+                }
 
-            if (!Objects.equals(repaymentPlan.getPaymentLength(), paymentIntention.getPaymentLength())) {
-                failWithMessage("Expected PaymentIntention.PaymentLength to be <%s> but was <%s>",
-                    paymentIntention.getPaymentLength(), repaymentPlan.getPaymentLength());
-            }
+                repaymentPlan.getPaymentLength().ifPresent(paymentLength -> {
+                    if (!Objects.equals(paymentLength, paymentIntention.getPaymentLength())) {
+                        failWithMessage("Expected PaymentIntention.PaymentLength to be <%s> but was <%s>",
+                            paymentIntention.getPaymentLength(), paymentLength);
+                    }
+                });
 
-            if (!Objects.equals(repaymentPlan.getCompletionDate(), paymentIntention.getCompletionDate())) {
-                failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
-                    paymentIntention.getCompletionDate(), repaymentPlan.getCompletionDate());
+                repaymentPlan.getCompletionDate().ifPresent(localDate -> {
+                    if (!Objects.equals(localDate, paymentIntention.getCompletionDate())) {
+                        failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
+                            paymentIntention.getCompletionDate(), localDate);
+                    }
+                });
             }
-        }
         );
 
         actual.getPaymentDate().ifPresent(paymentDate -> {

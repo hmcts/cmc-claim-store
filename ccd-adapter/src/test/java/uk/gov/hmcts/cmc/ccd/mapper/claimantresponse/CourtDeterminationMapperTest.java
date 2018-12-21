@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.assertion.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper.claimantresponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
-import uk.gov.hmcts.cmc.ccd.domain.mapper.claimantresponse.CourtDeterminationMapper;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
@@ -25,7 +24,7 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 public class CourtDeterminationMapperTest {
 
     @Autowired
-    private CourtDeterminationMapper mapper;
+    private CourtDeterminationMapper courtDeterminationMapper;
 
     @Test
     public void shouldMapToCCDCourtDeterminationFromCourtDetermination() {
@@ -38,7 +37,7 @@ public class CourtDeterminationMapperTest {
             .build();
 
         //when
-        CCDCourtDetermination ccdCourtDetermination = mapper.to(courtDetermination);
+        CCDCourtDetermination ccdCourtDetermination = courtDeterminationMapper.to(courtDetermination);
 
         //then
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
@@ -50,7 +49,7 @@ public class CourtDeterminationMapperTest {
         CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDetermination();
 
         //when
-        CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
+        CourtDetermination courtDetermination = courtDeterminationMapper.from(ccdCourtDetermination);
 
         //then
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);

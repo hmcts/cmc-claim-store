@@ -45,14 +45,14 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
 
         actual.getRepaymentPlan()
             .ifPresent(repaymentPlan -> {
-                Assert.assertEquals(repaymentPlan.getCompletionDate(),
-                    ccdCountyCourtJudgment.getRepaymentPlanCompletionDate());
+                repaymentPlan.getCompletionDate().ifPresent(localDate -> Assert.assertEquals(localDate,
+                    ccdCountyCourtJudgment.getRepaymentPlanCompletionDate()));
                 Assert.assertEquals(repaymentPlan.getFirstPaymentDate(),
                     ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate());
                 Assert.assertEquals(repaymentPlan.getInstalmentAmount(),
                     ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
-                Assert.assertEquals(repaymentPlan.getPaymentLength(),
-                    ccdCountyCourtJudgment.getRepaymentPlanPaymentLength());
+                repaymentPlan.getPaymentLength().ifPresent(paymentLength -> Assert.assertEquals(paymentLength,
+                    ccdCountyCourtJudgment.getRepaymentPlanPaymentLength()));
                 Assert.assertEquals(repaymentPlan.getPaymentSchedule().getDescription(),
                     ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().getDescription());
             });

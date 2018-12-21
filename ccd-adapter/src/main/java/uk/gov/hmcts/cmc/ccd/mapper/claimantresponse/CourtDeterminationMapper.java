@@ -1,11 +1,12 @@
-package uk.gov.hmcts.cmc.ccd.domain.mapper.claimantresponse;
+package uk.gov.hmcts.cmc.ccd.mapper.claimantresponse;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
-import uk.gov.hmcts.cmc.ccd.domain.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 
+import java.util.Optional;
 
 @Component
 public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, CourtDetermination> {
@@ -22,6 +23,7 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
             .disposableIncome(courtDetermination.getDisposableIncome())
             .decisionType(courtDetermination.getDecisionType())
             .courtIntention(paymentIntentionMapper.to(courtDetermination.getCourtPaymentIntention()));
+
         courtDetermination.getRejectionReason().ifPresent(builder::rejectionReason);
         return builder.build();
     }
@@ -31,10 +33,11 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
         CourtDetermination.CourtDeterminationBuilder builder = CourtDetermination.builder()
             .courtDecision(paymentIntentionMapper.from(ccdCourtDetermination.getCourtDecision()))
             .disposableIncome(ccdCourtDetermination.getDisposableIncome())
-            .courtPaymentIntention(paymentIntentionMapper.from(ccdCourtDetermination.getCourtIntention()));
-        if (ccdCourtDetermination.getRejectionReason() != null) {
-            builder.rejectionReason(ccdCourtDetermination.getRejectionReason());
-        }
+            .courtPaymentIntention(paymentIntentionMapper.from(ccdCourtDetermination.getCourtIntention()))
+            .decisionType(ccdCourtDetermination.getDecisionType());
+
+        Optional.ofNullable(ccdCourtDetermination.getRejectionReason()).ifPresent(builder::rejectionReason);
+
         return builder.build();
     }
 }

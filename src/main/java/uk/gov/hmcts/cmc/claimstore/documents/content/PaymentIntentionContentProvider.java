@@ -25,7 +25,7 @@ public class PaymentIntentionContentProvider {
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<String, Object>()
             .put(source + "paymentOption", paymentOption.getDescription())
             .put(source + "whenWillTheyFinishPaying", createWhenTheyPay(paymentOption, paymentDate,
-                                                                paymentAmount, repaymentPlan));
+                paymentAmount, repaymentPlan));
 
         Optional.ofNullable(repaymentPlan).ifPresent(plan ->
             contentBuilder.put(source + "repaymentPlan", create(paymentOption, plan, plan.getFirstPaymentDate()))
@@ -48,8 +48,8 @@ public class PaymentIntentionContentProvider {
                     + formatDate(Optional.ofNullable(paymentDate)
                     .orElseThrow(IllegalStateException::new));
             default:
-                return Optional.ofNullable(repaymentPlan).isPresent()
-                    ? formatDate(repaymentPlan.getCompletionDate())
+                return Optional.ofNullable(repaymentPlan).isPresent() && repaymentPlan.getCompletionDate().isPresent()
+                    ? formatDate(repaymentPlan.getCompletionDate().get())
                     : paymentOption.getDescription();
         }
     }

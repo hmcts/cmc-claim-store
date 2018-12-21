@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.assertion.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper.claimantresponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,14 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
-import uk.gov.hmcts.cmc.ccd.domain.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -22,19 +22,20 @@ import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SE
 public class ClaimantAcceptanceMapperTest {
 
     @Autowired
-    private ClaimantResponseMapper mapper;
+    private ClaimantResponseMapper claimantResponseMapper;
 
     @Test
     public void shouldMapResponseAcceptanceWithCCJFormalisationFromCCD() {
         //given
-        CCDResponseAcceptation ccdResponseAcceptation = SampleData.getResponseAcceptation(CCDFormaliseOption.CCJ);
+        CCDResponseAcceptation ccdResponseAcceptation = SampleData.getResponseAcceptation(FormaliseOption.CCJ);
 
         //when
-        ResponseAcceptation response = (ResponseAcceptation)mapper.from(ccdResponseAcceptation)
-                                                                            .getClaimantResponse().orElse(null);
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+        claimantResponseMapper.from(ccdResponseAcceptation, claimBuilder);
 
         //then
-        assertThat(response).isEqualTo(ccdResponseAcceptation);
+        claimBuilder.build().getClaimantResponse().ifPresent(claimantResponse ->
+            assertThat((ResponseAcceptation) claimantResponse).isEqualTo(ccdResponseAcceptation));
     }
 
     @Test
@@ -43,10 +44,11 @@ public class ClaimantAcceptanceMapperTest {
         CCDResponseAcceptation ccdResponseAcceptation = SampleData.getResponseAcceptation(SETTLEMENT);
 
         //when
-        ResponseAcceptation response = (ResponseAcceptation)mapper.from(ccdResponseAcceptation)
-                                                                            .getClaimantResponse().orElse(null);
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+        claimantResponseMapper.from(ccdResponseAcceptation, claimBuilder);
 
         //then
-        assertThat(response).isEqualTo(ccdResponseAcceptation);
+        claimBuilder.build().getClaimantResponse().ifPresent(claimantResponse ->
+            assertThat((ResponseAcceptation) claimantResponse).isEqualTo(ccdResponseAcceptation));
     }
 }

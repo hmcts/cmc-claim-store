@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 
+import java.util.Optional;
+
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentSchedule.valueOf;
 
 @Component
@@ -13,13 +15,14 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
 
     @Override
     public CCDRepaymentPlan to(RepaymentPlan repaymentPlan) {
-        return CCDRepaymentPlan
-            .builder()
+        CCDRepaymentPlan.CCDRepaymentPlanBuilder builder = CCDRepaymentPlan.builder();
+        repaymentPlan.getCompletionDate().ifPresent(builder::completionDate);
+        repaymentPlan.getPaymentLength().ifPresent(builder::paymentLength);
+
+        return builder
             .instalmentAmount(repaymentPlan.getInstalmentAmount())
             .firstPaymentDate(repaymentPlan.getFirstPaymentDate())
             .paymentSchedule(valueOf(repaymentPlan.getPaymentSchedule().name()))
-            .completionDate(repaymentPlan.getCompletionDate())
-            .paymentLength(repaymentPlan.getPaymentLength())
             .build();
     }
 
@@ -29,12 +32,14 @@ public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPl
             return null;
         }
 
-        return RepaymentPlan.builder()
+        RepaymentPlan.RepaymentPlanBuilder builder = RepaymentPlan.builder();
+        Optional.ofNullable(ccdRepaymentPlan.getCompletionDate()).ifPresent(builder::completionDate);
+        Optional.ofNullable(ccdRepaymentPlan.getPaymentLength()).ifPresent(builder::paymentLength);
+
+        return builder
             .instalmentAmount(ccdRepaymentPlan.getInstalmentAmount())
             .firstPaymentDate(ccdRepaymentPlan.getFirstPaymentDate())
             .paymentSchedule(PaymentSchedule.valueOf(ccdRepaymentPlan.getPaymentSchedule().name()))
-            .completionDate(ccdRepaymentPlan.getCompletionDate())
-            .paymentLength(ccdRepaymentPlan.getPaymentLength())
             .build();
     }
 }

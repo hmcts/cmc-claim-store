@@ -10,20 +10,20 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 
 public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptationAssert, ResponseAcceptation> {
-    public ResponseAcceptationAssert(ResponseAcceptation responseAcceptation) {
-        super(responseAcceptation, ResponseAcceptationAssert.class);
+    public ResponseAcceptationAssert(ResponseAcceptation actual) {
+        super(actual, ResponseAcceptationAssert.class);
     }
 
     public ResponseAcceptationAssert isEqualTo(CCDResponseAcceptation ccdResponseAcceptation) {
         isNotNull();
 
-        if (!Objects.equals(
-            actual.getFormaliseOption().orElseThrow(AssertionError::new).name(),
-            ccdResponseAcceptation.getFormaliseOption().name()
-        )) {
-            failWithMessage("Expected ResponseAcceptation.formaliseOption to be <%s> but was <%s>",
-                ccdResponseAcceptation.getFormaliseOption(), actual.getFormaliseOption());
-        }
+        actual.getFormaliseOption().ifPresent(formaliseOption -> {
+            if (!Objects.equals(formaliseOption.name(), ccdResponseAcceptation.getFormaliseOption().name()
+            )) {
+                failWithMessage("Expected ResponseAcceptation.formaliseOption to be <%s> but was <%s>",
+                    ccdResponseAcceptation.getFormaliseOption(), actual.getFormaliseOption());
+            }
+        });
 
         actual.getAmountPaid().ifPresent(amountPaid -> {
             if (!Objects.equals(amountPaid, ccdResponseAcceptation.getAmountPaid())) {

@@ -17,8 +17,7 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
     public ResponseRejectionAssert isEqualTo(CCDResponseRejection ccdResponseRejection) {
         isNotNull();
 
-        CCDYesNoOption freeMediation = CCDYesNoOption.valueOf((actual.getFreeMediation()
-            .orElse(YesNoOption.NO)).name());
+        YesNoOption freeMediation = actual.getFreeMediation().orElse(YesNoOption.NO);
         if (!Objects.equals(freeMediation, ccdResponseRejection.getFreeMediationOption())) {
             failWithMessage("Expected ResponseRejection.freeMediation to be <%s> but was <%s>",
                 ccdResponseRejection.getFreeMediationOption(), freeMediation);
